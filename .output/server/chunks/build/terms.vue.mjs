@@ -14,7 +14,6 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:async_hooks';
-import 'node:url';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';

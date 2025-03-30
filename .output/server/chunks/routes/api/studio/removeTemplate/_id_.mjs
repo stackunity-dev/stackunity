@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/studio/removeTemplate/_id_');import { c as defineEventHandler, e as createError, p as pool } from '../../../../_/nitro.mjs';
+globalThis.__timing__.logStart('Load chunks/routes/api/studio/removeTemplate/_id_');import { d as defineEventHandler, c as createError, p as pool } from '../../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -7,7 +7,6 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:async_hooks';
-import 'node:url';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';

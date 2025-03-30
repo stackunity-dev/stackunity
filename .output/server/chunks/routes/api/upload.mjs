@@ -1,7 +1,7 @@
 globalThis.__timing__.logStart('Load chunks/routes/api/upload');import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import { IncomingForm } from 'formidable';
-import { c as defineEventHandler } from '../../_/nitro.mjs';
+import { d as defineEventHandler } from '../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -10,7 +10,6 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:async_hooks';
-import 'node:url';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';

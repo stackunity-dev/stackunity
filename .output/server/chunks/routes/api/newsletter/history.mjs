@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/newsletter/history');import { c as defineEventHandler, p as pool } from '../../../_/nitro.mjs';
+globalThis.__timing__.logStart('Load chunks/routes/api/newsletter/history');import { d as defineEventHandler, p as pool } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -7,7 +7,6 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:async_hooks';
-import 'node:url';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';

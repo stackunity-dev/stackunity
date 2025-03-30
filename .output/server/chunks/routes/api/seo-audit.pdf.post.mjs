@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/seo-audit.pdf.post');import { c as defineEventHandler, r as readBody, e as createError, v as setHeader } from '../../_/nitro.mjs';
+globalThis.__timing__.logStart('Load chunks/routes/api/seo-audit.pdf.post');import { d as defineEventHandler, r as readBody, c as createError, n as setHeader } from '../../_/nitro.mjs';
 import PDFDocument from 'pdfkit';
 import 'node:http';
 import 'node:https';
@@ -8,7 +8,6 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:async_hooks';
-import 'node:url';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';

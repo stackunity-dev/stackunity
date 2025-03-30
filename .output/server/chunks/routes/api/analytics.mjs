@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/analytics');import { c as defineEventHandler, r as readBody, p as pool, e as createError, g as getHeaders } from '../../_/nitro.mjs';
+globalThis.__timing__.logStart('Load chunks/routes/api/analytics');import { d as defineEventHandler, r as readBody, p as pool, c as createError, g as getHeaders } from '../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -7,7 +7,6 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:async_hooks';
-import 'node:url';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
