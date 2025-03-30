@@ -73,7 +73,9 @@ export default defineNuxtConfig({
       exclude: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor']
     },
     define: {
-      'process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD': 'true'
+      'process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD': 'true',
+      'process.env.ROLLUP_NO_VALIDATE': 'true',
+      '__ROLLUP_NO_VALIDATE__': 'true'
     },
     vue: {
       template: {
