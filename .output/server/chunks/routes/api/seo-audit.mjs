@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/seo-audit');import { c as defineEventHandler, r as readBody, e as createError } from '../../_/nitro.mjs';
+globalThis.__timing__.logStart('Load chunks/routes/api/seo-audit');import { d as defineEventHandler, r as readBody, c as createError } from '../../_/nitro.mjs';
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import puppeteer from 'puppeteer';
@@ -10,7 +10,6 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:async_hooks';
-import 'node:url';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';

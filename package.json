@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
-    "git": "npm run build && git add . && git reset .cursor .vscode",
+    "git": "npm run build && git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
     "do-build": "npm install && npm run build"
   },
   "engines": {

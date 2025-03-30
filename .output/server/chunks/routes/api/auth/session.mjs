@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/auth/session');import { c as defineEventHandler, n as getRequestHeaders, l as getCookie, A as ACCESS_TOKEN_SECRET, p as pool, m as deleteCookie, f as ACCESS_TOKEN_EXPIRY, i as setCookie, r as readBody } from '../../../_/nitro.mjs';
+globalThis.__timing__.logStart('Load chunks/routes/api/auth/session');import { d as defineEventHandler, k as getRequestHeaders, i as getCookie, A as ACCESS_TOKEN_SECRET, p as pool, j as deleteCookie, b as ACCESS_TOKEN_EXPIRY, s as setCookie, r as readBody } from '../../../_/nitro.mjs';
 import jwt from 'jsonwebtoken';
 import 'node:http';
 import 'node:https';
@@ -8,7 +8,6 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:async_hooks';
-import 'node:url';
 import 'sqlstring';
 import 'net';
 import 'tls';

@@ -4,9 +4,10 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 export default defineNuxtConfig({
   ssr: true,
   nitro: {
-    preset: 'node-server',
+    preset: 'node',
     compressPublicAssets: true,
     output: {
+      dir: '.output',
       serverDir: '.output/server',
       publicDir: '.output/public',
     },
