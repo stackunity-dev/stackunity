@@ -1,0 +1,45 @@
+globalThis.__timing__.logStart('Load chunks/build/faq.vue');import { defineComponent, withCtx, createTextVNode, toDisplayString, createVNode, createBlock, openBlock, Fragment, renderList, useSSRContext } from 'vue';
+import { ssrRenderComponent, ssrRenderStyle, ssrRenderList, ssrInterpolate } from 'vue/server-renderer';
+import { x } from './VContainer.mjs';
+import { x as x$1, A } from './VCol.mjs';
+import { j, X, O, C } from './VExpansionPanels.mjs';
+import './server.mjs';
+import '../_/nitro.mjs';
+import 'node:http';
+import 'node:https';
+import 'node:events';
+import 'node:buffer';
+import 'node:fs';
+import 'node:path';
+import 'node:crypto';
+import 'node:async_hooks';
+import 'node:url';
+import 'jsonwebtoken';
+import 'sqlstring';
+import 'net';
+import 'tls';
+import 'timers';
+import 'events';
+import 'stream';
+import 'denque';
+import 'lru.min';
+import 'buffer';
+import 'long';
+import 'iconv-lite';
+import 'process';
+import 'crypto';
+import 'zlib';
+import 'seq-queue';
+import 'generate-function';
+import 'url';
+import 'aws-ssl-profiles';
+import 'named-placeholders';
+import 'pinia';
+import 'vue-router';
+import 'deep-pick-omit';
+
+const le=defineComponent({__name:"faq",__ssrInlineRender:true,setup(G){const u=[{question:"What is DevUnity?",answer:"DevUnity is an all-in-one platform for developers who want to create, manage and optimize their web projects. It combines development tools, monitoring, SEO audit and much more."},{question:"Is there a freemium model?",answer:"Yes, you can access the application free of charge with paid premium extensions."},{question:"Can I cancel my subscription at any time?",answer:"Yes, you can cancel your subscription at any time. If you cancel, you can continue using DevUnity forever."},{question:"Are there any limitations in the free plan?",answer:"The free plan allows you to create up to 5 personal snippets and use basic features. For unlimited usage and advanced features, we recommend upgrading to the lifetime access plan."},{question:"How does technical support work?",answer:"All users have access to community support. Premium Users benefit from priority support via email."}];return (J,D,F,I)=>{D(ssrRenderComponent(x,I,{default:withCtx((K,h,T,c)=>{if(h)h(`<div class="text-center mb-12"${c}><h2 class="text-h3 font-weight-bold mb-3"${c}>Frequently Asked Questions</h2><p class="text-subtitle-1 text-medium-emphasis mx-auto" style="${ssrRenderStyle({"max-width":"700px"})}"${c}> You have questions? We have answers. </p></div>`),h(ssrRenderComponent(x$1,{justify:"center"},{default:withCtx((v,m,U,Y)=>{if(m)m(ssrRenderComponent(A,{cols:"12",md:"8"},{default:withCtx((q,p,j$1,S)=>{if(p)p(ssrRenderComponent(j,{variant:"accordion"},{default:withCtx((g,o,W,B)=>{if(o)o("<!--[-->"),ssrRenderList(u,(a,k)=>{o(ssrRenderComponent(X,{key:k},{default:withCtx((M,V,C$1,E)=>{if(V)V(ssrRenderComponent(O,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx((L,d,N,P)=>{if(d)d(`${ssrInterpolate(a.question)}`);else return [createTextVNode(toDisplayString(a.question),1)]}),_:2},C$1,E)),V(ssrRenderComponent(C,null,{default:withCtx((L,d,N,P)=>{if(d)d(`<p class="text-body-1 pt-2"${P}>${ssrInterpolate(a.answer)}</p>`);else return [createVNode("p",{class:"text-body-1 pt-2"},toDisplayString(a.answer),1)]}),_:2},C$1,E));else return [createVNode(O,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.question),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 pt-2"},toDisplayString(a.answer),1)]),_:2},1024)]}),_:2},W,B));}),o("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(u,(a,k)=>createVNode(X,{key:k},{default:withCtx(()=>[createVNode(O,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.question),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 pt-2"},toDisplayString(a.answer),1)]),_:2},1024)]),_:2},1024)),64))]}),_:1},j$1,S));else return [createVNode(j,{variant:"accordion"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(u,(g,o)=>createVNode(X,{key:o},{default:withCtx(()=>[createVNode(O,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx(()=>[createTextVNode(toDisplayString(g.question),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 pt-2"},toDisplayString(g.answer),1)]),_:2},1024)]),_:2},1024)),64))]),_:1})]}),_:1},U,Y));else return [createVNode(A,{cols:"12",md:"8"},{default:withCtx(()=>[createVNode(j,{variant:"accordion"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(u,(q,p)=>createVNode(X,{key:p},{default:withCtx(()=>[createVNode(O,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx(()=>[createTextVNode(toDisplayString(q.question),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 pt-2"},toDisplayString(q.answer),1)]),_:2},1024)]),_:2},1024)),64))]),_:1})]),_:1})]}),_:1},T,c));else return [createVNode("div",{class:"text-center mb-12"},[createVNode("h2",{class:"text-h3 font-weight-bold mb-3"},"Frequently Asked Questions"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mx-auto",style:{"max-width":"700px"}}," You have questions? We have answers. ")]),createVNode(x$1,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"8"},{default:withCtx(()=>[createVNode(j,{variant:"accordion"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(u,(v,m)=>createVNode(X,{key:m},{default:withCtx(()=>[createVNode(O,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx(()=>[createTextVNode(toDisplayString(v.question),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 pt-2"},toDisplayString(v.answer),1)]),_:2},1024)]),_:2},1024)),64))]),_:1})]),_:1})]),_:1})]}),_:1},F));}}});
+
+const e=le.setup;le.setup=(s,n)=>{const t=useSSRContext();return (t.modules||(t.modules=new Set)).add("components/faq.vue"),e?e(s,n):void 0};
+
+export { le as default };;globalThis.__timing__.logEnd('Load chunks/build/faq.vue');

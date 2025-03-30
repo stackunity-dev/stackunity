@@ -1,0 +1,43 @@
+globalThis.__timing__.logStart('Load chunks/build/default.vue');import { defineComponent, unref, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrRenderComponent, ssrRenderSlot } from 'vue/server-renderer';
+import { bM as o } from './server.mjs';
+import { D } from './analytics-collector.vue2.mjs';
+import '../_/nitro.mjs';
+import 'node:http';
+import 'node:https';
+import 'node:events';
+import 'node:buffer';
+import 'node:fs';
+import 'node:path';
+import 'node:crypto';
+import 'node:async_hooks';
+import 'node:url';
+import 'jsonwebtoken';
+import 'sqlstring';
+import 'net';
+import 'tls';
+import 'timers';
+import 'events';
+import 'stream';
+import 'denque';
+import 'lru.min';
+import 'buffer';
+import 'long';
+import 'iconv-lite';
+import 'process';
+import 'crypto';
+import 'zlib';
+import 'seq-queue';
+import 'generate-function';
+import 'url';
+import 'aws-ssl-profiles';
+import 'named-placeholders';
+import 'pinia';
+import 'vue-router';
+import 'deep-pick-omit';
+
+const S=defineComponent({__name:"default",__ssrInlineRender:true,setup(c){const o$1=o();return (n,e,r,t)=>{e(`<div${ssrRenderAttrs(t)}>`),unref(o$1).preferences.analytics?e(ssrRenderComponent(D,null,null,r)):e("<!---->"),ssrRenderSlot(n.$slots,"default",{},null,e,r),e("</div>");}}});
+
+const e=S.setup;S.setup=(o,u)=>{const t=useSSRContext();return (t.modules||(t.modules=new Set)).add("layouts/default.vue"),e?e(o,u):void 0};
+
+export { S as default };;globalThis.__timing__.logEnd('Load chunks/build/default.vue');
