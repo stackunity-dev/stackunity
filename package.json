@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
-    "git": "npm run build && git add . && git rm -r --cached .cursor/ --ignore-unmatch && git rm -r --cached .vscode/ --ignore-unmatch && echo '\n.cursor/\n.vscode/' >> .gitignore && git add .gitignore"
+    "git": "npm run build && git add . && git reset .cursor .vscode"
   },
   "engines": {
     "node": ">=18.0.0 <19.0.0",
