@@ -48,7 +48,7 @@ const listener = server.listen(path ? { path } : { port, host }, (err) => {
     return;
   }
   const baseURL = (useRuntimeConfig().app.baseURL || "").replace(/\/$/, "");
-  const url = `${protocol}://${addressInfo.family === "IPv6" ? `[${addressInfo.address}]` : addressInfo.address}:${addressInfo.port}${baseURL}`;
+  const url = `${protocol}://${addressInfo?.family === "IPv6" ? `[${addressInfo.address}]` : addressInfo?.address}:${addressInfo?.port}${baseURL}`;
   console.log(`Listening on ${url}`);
 });
 trapUnhandledNodeErrors();
