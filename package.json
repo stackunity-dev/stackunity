@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
-    "git": "npm run build && git add . && git commit -m 'update' && git push origin main"
+    "git": "npm run build && git add . && git rm -r --cached .cursor/ --ignore-unmatch && git rm -r --cached .vscode/ --ignore-unmatch && echo '\n.cursor/\n.vscode/' >> .gitignore && git add .gitignore"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
@@ -55,6 +55,7 @@
     "resend": "^4.1.2",
     "sass-embedded": "^1.85.0",
     "systeminformation": "^5.25.11",
+    "uuid": "^9.0.0",
     "vite-plugin-monaco-editor": "^1.1.0",
     "vite-plugin-vuetify": "^2.1.0",
     "vue": "latest",
