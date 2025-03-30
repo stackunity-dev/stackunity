@@ -7,6 +7,8 @@ declare module 'js-cookie' {
     sameSite?: 'strict' | 'lax' | 'none';
   }
 
+
+
   function get(name: string): string | undefined;
   function set(name: string, value: string, options?: CookieAttributes): string;
   function remove(name: string, options?: CookieAttributes): void;

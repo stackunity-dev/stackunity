@@ -72,8 +72,8 @@
                   <v-row>
                     <v-col cols="12">
                       <v-text-field v-model="cardholderName" label="Cardholder Name" variant="outlined"
-                        prepend-inner-icon="mdi-account-outline" class="mb-4" :rules="[v => !!v || 'Name required']"
-                        hide-details="auto"></v-text-field>
+                        prepend-inner-icon="mdi-account-outline" class="mb-4"
+                        :rules="[(v: any) => !!v || 'Name required']" hide-details="auto"></v-text-field>
                     </v-col>
 
                     <v-col cols="12">
@@ -121,7 +121,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '~/stores/userStore';
-
+import { definePageMeta, useHead } from '#imports';
 definePageMeta({
   layout: 'empty'
 });
