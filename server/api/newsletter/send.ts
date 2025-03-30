@@ -1,4 +1,5 @@
 // @ts-ignore
+import { readBody, defineEventHandler } from 'h3';
 import { Resend } from 'resend';
 import { pool } from '../db';
 
