@@ -1,0 +1,4 @@
+- Objectif : integrez stripe pour les paie
+- S'inspirer du style de l'application nottameent login et signup 
+- Faire la page de paiement 
+- bon design UI UX et responsive
