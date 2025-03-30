@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+# Your rule content
+
+- Never add comments 
+- Less code is good than more code
+- The optimisation is the priority
