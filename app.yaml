@@ -5,7 +5,10 @@ services:
     branch: main
     deploy_on_push: true
     repo: nurdjedidi/devunity
-  build_command: npm install && npm run build
+  build_command: |
+    npm install --platform=linux --arch=x64
+    npm install
+    npm run build
   run_command: npm run start
   envs:
   - key: NODE_ENV
