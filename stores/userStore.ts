@@ -1,7 +1,7 @@
-import { useNuxtApp } from '#app';
+import { useNuxtApp } from 'nuxt/app';
 import { defineStore } from 'pinia';
-import type { CrawlReport, SEOAuditResult } from '~/server/api/seo-audit';
-import { TokenManager } from '~/utils/TokenManager';
+import type { CrawlReport, SEOAuditResult } from '../server/api/seo-audit';
+import { TokenManager } from '../server/utils/TokenManager';
 
 interface TableColumn {
   name: string;
@@ -1029,7 +1029,12 @@ export const useUserStore = defineStore('user', {
             return {
               success: true,
               clientSecret: response.clientSecret as string,
-              taxDetails
+              taxDetails: taxDetails as {
+                baseAmount: number;
+                taxAmount: number;
+                totalAmount: number;
+                taxPercentage: number;
+              } | undefined
             };
           }
         }
