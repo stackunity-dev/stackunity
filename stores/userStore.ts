@@ -1,5 +1,6 @@
 import { useNuxtApp } from 'nuxt/app';
 import { defineStore } from 'pinia';
+import type { PersistenceOptions } from 'pinia-plugin-persistedstate';
 import type { CrawlReport, SEOAuditResult } from '../server/api/seo-audit';
 import { TokenManager } from '../server/utils/TokenManager';
 
@@ -126,30 +127,11 @@ interface User {
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    user: {
-      id: 0,
-      username: '',
-      email: '',
-      isAdmin: false,
-      isPremium: false,
-      company: '',
-      website: '',
-      bio: ''
-    } as User | null,
-    token: '' as string | null,
+    user: null as User | null,
+    token: null as string | null,
     systemData: {
-      cpu: {
-        usage: 0,
-        cores: [] as number[],
-        speed: 0
-      },
-      memory: {
-        total: 0,
-        used: 0,
-        free: 0,
-        swapUsed: 0,
-        swapTotal: 0
-      },
+      cpu: { usage: 0, cores: [] as number[], speed: 0 },
+      memory: { total: 0, used: 0, free: 0, swapUsed: 0, swapTotal: 0 },
       disks: [] as DiskData[]
     } as SystemData,
     personalSnippets: [] as BaseSnippet[],
@@ -163,21 +145,13 @@ export const useUserStore = defineStore('user', {
     seoData: null as CrawlReport | SEOAuditResult | null,
     seoError: '',
     isSeoLoading: false,
+    isPremium: false,
+    isAdmin: false
   }),
-
-  persist: false,
-
   getters: {
-    isUserAuthenticated(): boolean {
-      return this.isAuthenticated && !!this.token;
-    },
-
-    getAuthHeader(): { Authorization: string } {
-      const token = TokenManager.retrieveToken();
-      return { Authorization: `Bearer ${token || ''}` };
-    }
+    isUserAuthenticated: (state) => state.isAuthenticated && !!state.token,
+    getAuthHeader: () => ({ Authorization: `Bearer ${TokenManager.retrieveToken() || ''}` })
   },
-
   actions: {
     initializeStore() {
       const nuxtApp = useNuxtApp();
@@ -1075,4 +1049,7 @@ export const useUserStore = defineStore('user', {
       }
     }
   },
+  persist: {
+    enabled: true
+  } as PersistenceOptions
 });

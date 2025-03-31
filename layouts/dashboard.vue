@@ -2,7 +2,7 @@
   <v-app>
     <AnalyticsCollector />
 
-    <v-navigation-drawer v-model="drawer" temporary class="d-sm-none elevation-2" app clipped>
+    <v-navigation-drawer v-model="mobileDrawer" temporary class="d-sm-none" app clipped>
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-4">
           <div class="logo-container mr-3">
@@ -98,7 +98,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-navigation-drawer v-model="drawer" permanent class="d-none d-sm-block elevation-2" app clipped>
+    <v-navigation-drawer v-model="desktopDrawer" permanent class="d-none d-sm-block" app clipped>
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-4">
           <div class="logo-container mr-3">
@@ -194,35 +194,29 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar class="d-sm-none border-b page-header px-4" color="primary" flat scroll-behavior="elevate"
-      :elevation="0">
-      <v-app-bar-nav-icon @click="drawer = !drawer" color="white"></v-app-bar-nav-icon>
+    <v-app-bar class="border-b page-header px-4" color="primary" flat scroll-behavior="elevate" :elevation="0">
+      <v-app-bar-nav-icon v-if="display.smAndDown.value" @click="mobileDrawer = !mobileDrawer"
+        color="white"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
         <v-icon size="large" class="mr-3">{{ getCurrentPageIcon() }}</v-icon>
         <div class="text-h5 font-weight-bold">{{ currentPageTitle }}</div>
       </div>
     </v-app-bar>
 
-    <v-main>
-      <v-app-bar class="d-none d-sm-block border-b page-header px-4" color="primary" flat scroll-behavior="elevate"
-        :elevation="0">
-        <div class="d-flex align-center">
-          <v-icon size="large" class="mr-3">{{ getCurrentPageIcon() }}</v-icon>
-          <div class="text-h5 font-weight-bold">{{ currentPageTitle }}</div>
-        </div>
-      </v-app-bar>
-
-      <NuxtPage />
+    <v-main class="pa-0">
+      <div class="content-wrapper">
+        <NuxtPage />
+      </div>
     </v-main>
   </v-app>
 </template>
 
 <script lang="ts" setup>
-import premiumFeatures from '../components/PremiumFeature.vue';
-import AnalyticsCollector from '../components/analytics-collector.vue';
 import { computed, markRaw, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
+import premiumFeatures from '../components/PremiumFeature.vue';
+import AnalyticsCollector from '../components/analytics-collector.vue';
 import { useCookieStore } from '../stores/cookieStore';
 import { useUserStore } from '../stores/userStore';
 
@@ -233,19 +227,20 @@ const route = useRoute();
 const open = ref([]);
 const search = ref('');
 const display = useDisplay();
-const drawer = ref(!display.smAndDown.value);
+const mobileDrawer = ref(false);
+const desktopDrawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
 
 watch(() => route.path, () => {
   if (display.smAndDown.value) {
-    drawer.value = false;
+    mobileDrawer.value = false;
   }
   updatePageTitle();
 });
 
 watch(() => display.smAndDown.value, (isSmall) => {
   if (!isSmall) {
-    drawer.value = true;
+    desktopDrawer.value = true;
   }
 });
 
@@ -410,7 +405,7 @@ const getCurrentPageIcon = () => {
 
 const closeDrawer = () => {
   if (display.smAndDown.value) {
-    drawer.value = false;
+    mobileDrawer.value = false;
   }
 };
 
@@ -520,7 +515,12 @@ const items = computed(() => [
   position: relative;
   z-index: 4;
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    margin-bottom: 0;
+  }
 }
 
 .premium-menu-item {
@@ -572,5 +572,19 @@ const items = computed(() => [
   object-fit: contain;
   position: relative;
   z-index: 1;
+}
+
+.content-wrapper {
+  margin-left: 256px;
+  width: calc(100% - 256px);
+  padding-top: 64px;
+}
+
+@media (max-width: 600px) {
+  .content-wrapper {
+    margin-left: 0;
+    width: 100%;
+    padding-top: 64px;
+  }
 }
 </style>

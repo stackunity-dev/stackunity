@@ -1,8 +1,8 @@
-import chromium from '@sparticuz/chromium';
+// @ts-ignore
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { createError, defineEventHandler, readBody } from 'h3';
-import puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer';
 
 export interface SEOAuditResult {
   url: string;
@@ -224,11 +224,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
     headless: true
-  } as any);
+  });
 
   try {
     const page = await browser.newPage();
@@ -509,21 +506,16 @@ export default defineEventHandler(async (event) => {
       });
       result.externalLinks = links.filter(link => !result.internalLinks.includes(link));
 
-      result.coreWebVitals = await page.evaluate(() => {
-        const performanceEntries = performance.getEntriesByType('navigation');
-        const paintEntries = performance.getEntriesByType('paint');
+      const performanceEntries = await page.evaluate(() => performance.getEntriesByType('navigation'));
+      const paintEntries = await page.evaluate(() => performance.getEntriesByType('paint'));
+      const navEntry = performanceEntries[0] as any;
 
-        const FCP = paintEntries.find(entry => entry.name === 'first-contentful-paint')?.startTime || 0;
-        const navEntry = performanceEntries[0] as any;
-        const LCP = navEntry?.domContentLoadedEventEnd || 0;
-
-        return {
-          FCP: FCP,
-          LCP: LCP,
-          TTFB: navEntry?.responseStart || 0,
-          domLoad: navEntry?.domContentLoadedEventEnd || 0
-        };
-      });
+      result.coreWebVitals = {
+        FCP: paintEntries.find(entry => entry.name === 'first-contentful-paint')?.startTime || 0,
+        LCP: navEntry?.domContentLoadedEventEnd || 0,
+        TTFB: navEntry?.responseStart || 0,
+        domLoad: navEntry?.domContentLoadedEventEnd || 0
+      };
 
       result.headingStructure = await page.evaluate(() => {
         const headings: any = {};
