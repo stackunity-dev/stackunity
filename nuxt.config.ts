@@ -51,9 +51,18 @@ export default defineNuxtConfig({
       },
     },
     ssr: {
+      noExternal: ['@pinia-plugin-persistedstate/nuxt'],
       external: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor']
     },
   },
 
   compatibilityDate: '2025-03-31',
+
+  app: {
+    head: {
+      meta: [
+        { name: 'crossorigin', content: 'use-credentials' }
+      ]
+    }
+  }
 });
