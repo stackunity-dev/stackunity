@@ -1,5 +1,5 @@
 import { shallowReactive, reactive, effectScope, getCurrentScope, hasInjectionContext, getCurrentInstance as getCurrentInstance$1, toRef, inject as inject$1, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw, ref, watch, onScopeDispose, capitalize, computed, watchEffect, toRefs, isVNode, Comment, Fragment, unref, warn, provide, h, defineComponent as defineComponent$1, createVNode, mergeProps, defineAsyncComponent, Suspense, nextTick, useSSRContext, resolveDynamicComponent, readonly, TransitionGroup, Transition, Teleport, withDirectives, vShow, resolveDirective, camelize, Text, toDisplayString, markRaw, withCtx, createTextVNode, createBlock, openBlock, renderList, createCommentVNode, onErrorCaptured, onServerPrefetch, createApp } from 'vue';
-import { C as createHooks, D as getContext, c as createError$1, E as toRouteMatcher, F as createRouter, G as defu, H as hasProtocol, I as joinURL, J as withQuery, K as sanitizeStatusCode, L as isScriptProtocol, M as executeAsync, N as destr, O as klona, m as getRequestHeader, P as isEqual$1, s as setCookie, i as getCookie, j as deleteCookie } from '../_/nitro.mjs';
+import { E as createHooks, F as getContext, e as createError$1, G as toRouteMatcher, H as createRouter, I as defu, J as hasProtocol, K as joinURL, L as withQuery, M as sanitizeStatusCode, N as isScriptProtocol, O as executeAsync, d as destr, P as klona, q as getRequestHeader, Q as isEqual$1, i as setCookie, l as getCookie, m as deleteCookie } from '../_/nitro.mjs';
 import { shouldHydrate, defineStore, createPinia, setActivePinia } from 'pinia';
 import { START_LOCATION, createMemoryHistory, createRouter as createRouter$1, useRoute as useRoute$2, RouterView, useRouter as useRouter$2 } from 'vue-router';
 import { createPersistedState } from 'pinia-plugin-persistedstate';
@@ -953,10 +953,7 @@ const plugin$1 = defineNuxtPlugin({
   }
 });
 
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => __defNormalProp(obj, key + "" , value);
-class TokenManager {
+const _TokenManager = class _TokenManager {
   /**
    * Stocke le token d'accès dans localStorage
    */
@@ -999,8 +996,9 @@ class TokenManager {
     const token = this.retrieveToken();
     return { Authorization: `Bearer ${token || ""}` };
   }
-}
-__publicField(TokenManager, "TOKEN_KEY", "access_token");
+};
+_TokenManager.TOKEN_KEY = "access_token";
+let TokenManager = _TokenManager;
 
 const useUserStore = defineStore("user", {
   state: () => ({

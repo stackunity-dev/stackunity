@@ -1,4 +1,4 @@
-import { d as defineEventHandler, k as getRequestHeaders, i as getCookie, A as ACCESS_TOKEN_SECRET, p as pool, j as deleteCookie, b as ACCESS_TOKEN_EXPIRY, s as setCookie, r as readBody } from '../../../_/nitro.mjs';
+import { c as defineEventHandler, n as getRequestHeaders, l as getCookie, A as ACCESS_TOKEN_SECRET, p as pool, m as deleteCookie, f as ACCESS_TOKEN_EXPIRY, i as setCookie, r as readBody } from '../../../_/nitro.mjs';
 import jwt from 'jsonwebtoken';
 import 'node:http';
 import 'node:https';
@@ -7,6 +7,7 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'node:url';
 import 'mysql2/promise';
 
 const COOKIE_MAX_AGE = 30 * 24 * 60 * 60;

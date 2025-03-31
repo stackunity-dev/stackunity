@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   ssr: true,
 
   nitro: {
-    preset: 'node',
+    preset: 'node-server',
     output: {
       dir: '.output',
       serverDir: '.output/server',

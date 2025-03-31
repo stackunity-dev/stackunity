@@ -1,4 +1,4 @@
-import { d as defineEventHandler, i as getCookie, f as REFRESH_TOKEN_COOKIE_NAME, R as REFRESH_TOKEN_SECRET, p as pool, j as deleteCookie } from '../../../_/nitro.mjs';
+import { c as defineEventHandler, l as getCookie, j as REFRESH_TOKEN_COOKIE_NAME, R as REFRESH_TOKEN_SECRET, p as pool, m as deleteCookie } from '../../../_/nitro.mjs';
 import jwt from 'jsonwebtoken';
 import 'node:http';
 import 'node:https';
@@ -7,6 +7,7 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'node:url';
 import 'mysql2/promise';
 
 const logout = defineEventHandler(async (event) => {

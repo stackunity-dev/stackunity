@@ -1,6 +1,6 @@
 {
-  "date": "2025-03-31T13:38:54.228Z",
-  "preset": "node-listener",
+  "date": "2025-03-31T14:46:19.245Z",
+  "preset": "node-server",
   "framework": {
     "name": "nuxt",
     "version": "3.16.1"
@@ -8,6 +8,8 @@
   "versions": {
     "nitro": "2.11.8"
   },
-  "commands": {},
+  "commands": {
+    "preview": "node ./server/index.mjs"
+  },
   "config": {}
 }
