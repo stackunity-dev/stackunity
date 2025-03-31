@@ -699,11 +699,29 @@ export const useUserStore = defineStore('user', {
 
         const data = await response.json();
         if (data.success && data.data) {
-          this.systemData = data.data;
+          this.systemData = {
+            cpu: {
+              usage: data.data.cpu?.usage || 0,
+              cores: data.data.cpu?.cores || [],
+              speed: data.data.cpu?.speed || 0
+            },
+            memory: {
+              total: data.data.memory?.total || 0,
+              used: data.data.memory?.used || 0,
+              free: data.data.memory?.free || 0,
+              swapUsed: data.data.memory?.swapUsed || 0,
+              swapTotal: data.data.memory?.swapTotal || 0
+            },
+            disks: data.data.disks || []
+          };
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des données système:', error);
-        throw error;
+        this.systemData = {
+          cpu: { usage: 0, cores: [], speed: 0 },
+          memory: { total: 0, used: 0, free: 0, swapUsed: 0, swapTotal: 0 },
+          disks: []
+        };
       }
     },
 
@@ -716,12 +734,10 @@ export const useUserStore = defineStore('user', {
         const token = TokenManager.retrieveToken();
         console.log('Token disponible pour auditSEO:', !!token);
 
-        // Créer les headers avec le token
         const headers: HeadersInit = {
           'Content-Type': 'application/json'
         };
 
-        // Ajouter le header d'authorization si un token est disponible
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
@@ -740,15 +756,20 @@ export const useUserStore = defineStore('user', {
         });
 
         if (!response.ok) {
-          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`Erreur ${response.status}: ${errorData.message || response.statusText}`);
         }
 
         const data = await response.json();
+        if (!data) {
+          throw new Error('Aucune donnée reçue de l\'API');
+        }
+
         this.seoData = data;
         console.log('Données d\'audit SEO reçues:', data);
         return data;
       } catch (err) {
-        this.seoError = err instanceof Error ? err.message : 'An error occurred';
+        this.seoError = err instanceof Error ? err.message : 'Une erreur est survenue';
         console.error('Erreur lors de l\'audit SEO:', err);
         throw err;
       } finally {
