@@ -1,6 +1,6 @@
-import { defineNuxtPlugin } from '#app';
+import { defineNuxtPlugin } from 'nuxt/app';
 import { onUnmounted, watch } from 'vue';
-import { useUserStore } from '~/stores/userStore';
+import { useUserStore } from '../stores/userStore';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const userStore = useUserStore();

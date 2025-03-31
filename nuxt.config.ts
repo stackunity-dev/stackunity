@@ -62,7 +62,14 @@ export default defineNuxtConfig({
     head: {
       meta: [
         { name: 'crossorigin', content: 'use-credentials' }
+      ],
+      link: [
+        { rel: 'preload', as: 'fetch', crossorigin: 'use-credentials' }
       ]
     }
+  },
+
+  experimental: {
+    payloadExtraction: false
   }
 });
