@@ -1,11 +1,11 @@
-import crypto__default from 'crypto';
+import crypto from 'crypto';
 
 const rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
 
 let poolPtr = rnds8Pool.length;
 function rng() {
   if (poolPtr > rnds8Pool.length - 16) {
-    crypto__default.randomFillSync(rnds8Pool);
+    crypto.randomFillSync(rnds8Pool);
     poolPtr = 0;
   }
 
@@ -30,7 +30,7 @@ function unsafeStringify(arr, offset = 0) {
 }
 
 const native = {
-  randomUUID: crypto__default.randomUUID
+  randomUUID: crypto.randomUUID
 };
 
 function v4(options, buf, offset) {
