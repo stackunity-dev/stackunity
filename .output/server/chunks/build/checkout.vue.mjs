@@ -1,6 +1,6 @@
 import { defineComponent, ref, mergeProps, withCtx, createTextVNode, toDisplayString, createVNode, createBlock, openBlock, Fragment, renderList, createCommentVNode, withModifiers, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderAttr, ssrRenderList, ssrRenderClass, ssrInterpolate } from 'vue/server-renderer';
-import { _ as _imports_0 } from './virtual_public2.mjs';
+import { _ as _imports_0 } from './virtual_public3.mjs';
 import { useRouter } from 'vue-router';
 import { S as useUserStore, g as VIcon, f as VCard, h as VDivider, e as VBtn, bl as VProgressCircular, a1 as VSnackbar, _ as _export_sfc } from './server.mjs';
 import { u as useHead } from './v3.mjs';
