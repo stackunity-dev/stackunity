@@ -64,6 +64,7 @@
     "nuxt-stripe-module": "^3.2.0",
     "pdfkit": "^0.16.0",
     "pinia": "^3.0.1",
+    "pinia-plugin-persistedstate": "^4.2.0",
     "puppeteer": "^24.4.0",
     "puppeteer-core": "^21.0.0",
     "resend": "^4.1.2",
