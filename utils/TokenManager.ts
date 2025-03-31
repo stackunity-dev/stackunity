@@ -1,7 +1,13 @@
+/**
+ * Gestionnaire de tokens d'authentification
+ */
 
 export class TokenManager {
   static TOKEN_KEY = 'access_token';
 
+  /**
+   * Stocke le token d'accès dans localStorage
+   */
   static storeToken(token: string | null) {
     if (!token) {
       this.removeToken();
@@ -15,6 +21,9 @@ export class TokenManager {
     }
   }
 
+  /**
+   * Récupère le token d'accès depuis localStorage
+   */
   static retrieveToken(): string | null {
     try {
       return localStorage.getItem(this.TOKEN_KEY);
@@ -32,6 +41,9 @@ export class TokenManager {
     }
   }
 
+  /**
+   * Crée un en-tête d'autorisation avec le token
+   */
   static getAuthHeader(): { Authorization: string } {
     const token = this.retrieveToken();
     return { Authorization: `Bearer ${token || ''}` };

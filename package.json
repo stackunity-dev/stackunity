@@ -13,7 +13,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
-    "git": " git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
+    "git": "git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
     "clean": "rmdir /s /q node_modules .nuxt .output && del package-lock.json && npm install --legacy-peer-deps"
   },
   "config": {

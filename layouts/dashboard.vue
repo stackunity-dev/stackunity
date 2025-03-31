@@ -2,7 +2,8 @@
   <v-app>
     <AnalyticsCollector />
 
-    <v-navigation-drawer v-model="mobileDrawer" temporary class="d-sm-none" app clipped>
+    <v-navigation-drawer v-model="mobileDrawer" :mobile-breakpoint="960" :permanent="display.mdAndUp.value"
+      :temporary="display.smAndDown.value" location="left" class="dashboard-drawer">
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-4">
           <div class="logo-container mr-3">
