@@ -9,10 +9,12 @@ services:
     - name: digitalocean/nodejs-appdetect
       version: v0.0.6
   build_command: |
-    npm install --platform=linux --arch=x64
+    npm install @rollup/rollup-linux-x64-gnu@4.9.5 --platform=linux --arch=x64
     npm install --legacy-peer-deps
     npm run build
-  run_command: npm run start
+  run_command: npm start
   envs:
   - key: NODE_ENV
-    value: production 
+    value: production
+  - key: PORT
+    value: 8080 
