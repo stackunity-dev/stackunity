@@ -1,7 +1,7 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { defineComponent, withCtx, createVNode, createTextVNode, toDisplayString, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderAttr, ssrInterpolate } from 'vue/server-renderer';
-import { _ as _imports_0 } from './virtual_public2.mjs';
+import { _ as _imports_0 } from './virtual_public.mjs';
 import { u as useHead } from './v3.mjs';
 import { V as VApp, d as VSpacer, e as VBtn, f as VCard, _ as _export_sfc } from './server.mjs';
 import { V as VAppBar } from './VAppBar.mjs';
