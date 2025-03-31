@@ -10,7 +10,7 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
-import 'mysql2/promise';
+import 'mysql2';
 import 'crypto';
 
 const login = defineEventHandler(async (event) => {

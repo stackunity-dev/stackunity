@@ -8,7 +8,7 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
-import 'mysql2/promise';
+import 'mysql2';
 
 const COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 const JWT_SECRET = ACCESS_TOKEN_SECRET;

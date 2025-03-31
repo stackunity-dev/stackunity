@@ -9,7 +9,7 @@ import 'node:path';
 import 'node:crypto';
 import 'node:url';
 import 'jsonwebtoken';
-import 'mysql2/promise';
+import 'mysql2';
 
 const TAX_RATES = {
   "FR": 0.2,

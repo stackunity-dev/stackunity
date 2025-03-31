@@ -9,7 +9,7 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
-import 'mysql2/promise';
+import 'mysql2';
 import 'crypto';
 
 const refresh = defineEventHandler(async (event) => {

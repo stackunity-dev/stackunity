@@ -8,7 +8,7 @@ import 'node:path';
 import 'node:crypto';
 import 'node:url';
 import 'jsonwebtoken';
-import 'mysql2/promise';
+import 'mysql2';
 
 const analytics = defineEventHandler(async (event) => {
   var _a, _b, _c, _d, _e, _f, _g;

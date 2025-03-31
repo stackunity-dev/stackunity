@@ -19,7 +19,7 @@ import 'node:path';
 import 'node:crypto';
 import 'node:url';
 import 'jsonwebtoken';
-import 'mysql2/promise';
+import 'mysql2';
 import 'pinia';
 import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';

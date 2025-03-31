@@ -8,7 +8,7 @@ import 'node:path';
 import 'node:crypto';
 import 'node:url';
 import 'jsonwebtoken';
-import 'mysql2/promise';
+import 'mysql2';
 
 const cookies = defineEventHandler(async (event) => {
   const method = event.method;

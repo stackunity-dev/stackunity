@@ -8,7 +8,7 @@ import 'node:path';
 import 'node:crypto';
 import 'node:url';
 import 'jsonwebtoken';
-import 'mysql2/promise';
+import 'mysql2';
 
 const cache = /* @__PURE__ */ new Map();
 const CACHE_TTL = 60 * 60 * 1e3;

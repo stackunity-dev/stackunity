@@ -8,7 +8,7 @@ import 'node:path';
 import 'node:crypto';
 import 'node:url';
 import 'jsonwebtoken';
-import 'mysql2/promise';
+import 'mysql2';
 
 const createNewsletter = defineEventHandler(async (event) => {
   const { name } = await readBody(event);
