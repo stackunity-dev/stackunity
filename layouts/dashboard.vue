@@ -2,8 +2,7 @@
   <v-app>
     <AnalyticsCollector />
 
-    <v-navigation-drawer v-model="drawer" :temporary="$vuetify.display.smAndDown"
-      :permanent="!$vuetify.display.smAndDown" app clipped class="elevation-2">
+    <v-navigation-drawer v-model="drawer" temporary class="d-sm-none elevation-2" app clipped>
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-4">
           <div class="logo-container mr-3">
@@ -99,9 +98,114 @@
       </v-list>
     </v-navigation-drawer>
 
+    <v-navigation-drawer v-model="drawer" permanent class="d-none d-sm-block elevation-2" app clipped>
+      <div class="drawer-header pa-4">
+        <div class="d-flex align-center mb-4">
+          <div class="logo-container mr-3">
+            <img src="/logo/devunity-letter.png" alt="DevUnity" class="logo-devunity" />
+          </div>
+          <div>
+            <div class="text-h6 font-weight-bold">DevUnity</div>
+            <div class="text-caption text-medium-emphasis">v1.0.0</div>
+          </div>
+        </div>
+
+        <v-text-field v-model="search" density="compact" variant="outlined" placeholder="Search..."
+          prepend-inner-icon="mdi-magnify" hide-details rounded class="mb-2" bg-color="surface"></v-text-field>
+      </div>
+
+      <v-divider></v-divider>
+
+      <v-list density="compact" v-model:opened="open" nav class="px-2">
+        <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard-outline" title="Dashboard" rounded="lg"
+          class="mb-1" color="primary" nuxt @click="closeDrawer" />
+
+        <v-list-group value="Recent Projects" class="mb-1" prepend-icon="mdi-history">
+          <template #activator="{ props }">
+            <v-list-item v-bind="props" title="Recent Projects" rounded="lg" color="primary" />
+          </template>
+
+          <v-list-item v-for="(snippet, index) in recentSnippets" :key="index" :to="`/snippets?id=${snippet.id}`"
+            :title="snippet.title" :prepend-icon="getFrameworkIcon(snippet.framework)" class="ml-4" rounded="lg"
+            color="primary" nuxt @click="closeDrawer">
+            <template #subtitle>
+              <span class="text-caption">{{ getSnippetDate(snippet) }}</span>
+            </template>
+          </v-list-item>
+
+          <v-list-item v-if="recentSnippets.length === 0" class="ml-4" title="No recent projects" disabled />
+        </v-list-group>
+
+        <v-list-group value="Recent SQL schemas" class="mb-1" prepend-icon="mdi-database-outline">
+          <template #activator="{ props }">
+            <v-list-item v-bind="props" title="Recent SQL schemas" rounded="lg" color="primary" />
+          </template>
+
+          <v-list-item v-for="(schema, index) in recentSQLSchemas" :key="index" :to="`/sql-generator?id=${schema.id}`"
+            :title="schema.database_name" prepend-icon="mdi-database" class="ml-4" rounded="lg" color="primary" nuxt
+            @click="closeDrawer">
+            <template #subtitle>
+              <span class="text-caption">{{ getSchemaTablesCount(schema) }} tables</span>
+            </template>
+          </v-list-item>
+
+          <v-list-item v-if="recentSQLSchemas.length === 0" class="ml-4" title="No recent SQL schemas" disabled />
+        </v-list-group>
+
+        <v-list-subheader class="mt-2 text-uppercase font-weight-bold text-caption">Applications</v-list-subheader>
+
+        <v-list-group v-for="(item, index) in items" :key="index" :value="item.title" class="mb-1"
+          :prepend-icon="item.prependIcon">
+          <template #activator="{ props }">
+            <v-list-item v-bind="props" :title="item.title" rounded="lg" color="primary" />
+          </template>
+
+          <template v-for="(child, idx) in item.children" :key="idx">
+            <component v-if="child.component" :is="child.component.component" v-bind="child.component.props"
+              class="ml-4 my-1 premium-menu-item" />
+            <v-list-item v-else :to="child.link" :title="child.title" :prepend-icon="child.icon || 'mdi-circle-small'"
+              class="ml-4" rounded="lg" color="primary" nuxt @click="closeDrawer" />
+          </template>
+        </v-list-group>
+
+        <v-divider class="my-3"></v-divider>
+
+        <v-list-subheader class="text-uppercase font-weight-bold text-caption">System</v-list-subheader>
+
+        <client-only>
+          <v-list-group v-if="userStore.user?.isAdmin" value="Administration" class="mb-1"
+            prepend-icon="mdi-shield-account">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" title="Administration" rounded="lg" color="primary" />
+            </template>
+
+            <v-list-item to="/admin/newsletter-admin" prepend-icon="mdi-email-outline" title="Newsletter" rounded="lg"
+              class="ml-4" color="primary" nuxt @click="closeDrawer" />
+
+            <v-list-item to="/admin/analytics" prepend-icon="mdi-chart-box" title="Analytics" rounded="lg" class="ml-4"
+              color="primary" nuxt @click="closeDrawer" />
+          </v-list-group>
+        </client-only>
+
+        <v-list-item to="/settings" prepend-icon="mdi-cog-outline" title="Settings" rounded="lg" class="mb-1"
+          color="primary" nuxt @click="closeDrawer" />
+
+        <v-list-item @click="logout" prepend-icon="mdi-logout" title="Logout" rounded="lg" color="error" />
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-app-bar class="d-sm-none border-b page-header px-4" color="primary" flat scroll-behavior="elevate"
+      :elevation="0">
+      <v-app-bar-nav-icon @click="drawer = !drawer" color="white"></v-app-bar-nav-icon>
+      <div class="d-flex align-center">
+        <v-icon size="large" class="mr-3">{{ getCurrentPageIcon() }}</v-icon>
+        <div class="text-h5 font-weight-bold">{{ currentPageTitle }}</div>
+      </div>
+    </v-app-bar>
+
     <v-main>
-      <v-app-bar v-if="!$vuetify.display.smAndDown" color="primary" flat class="border-b page-header px-4"
-        scroll-behavior="elevate" :elevation="0">
+      <v-app-bar class="d-none d-sm-block border-b page-header px-4" color="primary" flat scroll-behavior="elevate"
+        :elevation="0">
         <div class="d-flex align-center">
           <v-icon size="large" class="mr-3">{{ getCurrentPageIcon() }}</v-icon>
           <div class="text-h5 font-weight-bold">{{ currentPageTitle }}</div>
@@ -114,13 +218,13 @@
 </template>
 
 <script lang="ts" setup>
-import premiumFeatures from '@/components/PremiumFeature.vue';
-import AnalyticsCollector from '@/components/analytics-collector.vue';
+import premiumFeatures from '../components/PremiumFeature.vue';
+import AnalyticsCollector from '../components/analytics-collector.vue';
 import { computed, markRaw, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
-import { useCookieStore } from '~/stores/cookieStore';
-import { useUserStore } from '~/stores/userStore';
+import { useCookieStore } from '../stores/cookieStore';
+import { useUserStore } from '../stores/userStore';
 
 const userStore = useUserStore();
 const cookieStore = useCookieStore();
