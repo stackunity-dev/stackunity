@@ -1,7 +1,7 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { defineComponent, ref, withCtx, createVNode, createTextVNode, unref, toDisplayString, isRef, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderAttr, ssrInterpolate } from 'vue/server-renderer';
-import { _ as _imports_0 } from './virtual_public.mjs';
+import { _ as _imports_0 } from './virtual_public2.mjs';
 import { bM as useCookieStore, V as VApp, d as VSpacer, e as VBtn, f as VCard, T as VList, U as VListItem, W as VListItemTitle, aC as VListItemSubtitle, a0 as VCardActions, g as VIcon, br as VDialog, $ as VCardTitle, bq as VCardSubtitle, Y as VCardText, bp as VSwitch, h as VDivider, _ as _export_sfc } from './server.mjs';
 import { u as useHead } from './v3.mjs';
 import { V as VAppBar } from './VAppBar.mjs';
