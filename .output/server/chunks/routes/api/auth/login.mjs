@@ -9,25 +9,8 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'sqlstring';
-import 'net';
-import 'tls';
-import 'timers';
-import 'events';
-import 'stream';
-import 'denque';
-import 'lru.min';
-import 'buffer';
-import 'long';
-import 'iconv-lite';
-import 'process';
+import 'mysql2/promise';
 import 'crypto';
-import 'zlib';
-import 'seq-queue';
-import 'generate-function';
-import 'url';
-import 'aws-ssl-profiles';
-import 'named-placeholders';
 
 const login = defineEventHandler(async (event) => {
   const body = await readBody(event);

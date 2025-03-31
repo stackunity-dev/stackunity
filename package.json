@@ -55,7 +55,7 @@
     "jwt-decode": "^4.0.0",
     "monaco-editor": "^0.52.2",
     "monaco-editor-vue3": "^0.1.10",
-    "mysql": "^2.18.1",
+    "mysql2": "^3.9.2",
     "nitropack": "^2.9.5",
     "nuxt": "^3.15.4",
     "nuxt-highlightjs": "^1.0.3",
