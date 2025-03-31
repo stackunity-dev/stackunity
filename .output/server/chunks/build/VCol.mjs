@@ -1,8 +1,234 @@
-globalThis.__timing__.logStart('Load chunks/build/VCol');import { f as y$1, y as y$2, k as r, n as o, F } from './server.mjs';
-import { computed, h as h$1, capitalize } from 'vue';
+import { k as genericComponent, p as propsFactory, y as makeTagProps, A as makeComponentProps, C as breakpoints } from './server.mjs';
+import { computed, h, capitalize } from 'vue';
 
-const s=["start","end","center"],f$1=["space-between","space-around","space-evenly"];function i$1(t,o){return F.reduce((n,e)=>{const a=t+capitalize(e);return n[a]=o(),n},{})}const P$1=[...s,"baseline","stretch"],g=t=>P$1.includes(t),d$1=i$1("align",()=>({type:String,default:null,validator:g})),A$1=[...s,...f$1],y=t=>A$1.includes(t),m$1=i$1("justify",()=>({type:String,default:null,validator:y})),E=[...s,...f$1,"stretch"],p=t=>E.includes(t),C=i$1("alignContent",()=>({type:String,default:null,validator:p})),u={align:Object.keys(d$1),justify:Object.keys(m$1),alignContent:Object.keys(C)},h={align:"align",justify:"justify",alignContent:"align-content"};function G(t,o,n){let e=h[t];if(n!=null){if(o){const a=o.replace(t,"");e+=`-${a}`;}return e+=`-${n}`,e.toLowerCase()}}const R=y$2({dense:Boolean,noGutters:Boolean,align:{type:String,default:null,validator:g},...d$1,justify:{type:String,default:null,validator:y},...m$1,alignContent:{type:String,default:null,validator:p},...C,...o(),...r()},"VRow"),x=y$1()({name:"VRow",props:R(),setup(t,o){let{slots:n}=o;const e=computed(()=>{const a=[];let l;for(l in u)u[l].forEach(r=>{const j=t[r],c=G(l,r,j);c&&a.push(c);});return a.push({"v-row--no-gutters":t.noGutters,"v-row--dense":t.dense,[`align-${t.align}`]:t.align,[`justify-${t.justify}`]:t.justify,[`align-content-${t.alignContent}`]:t.alignContent}),a});return ()=>h$1(t.tag,{class:["v-row",e.value,t.class],style:t.style},n.default?.())}});
+/* empty css           */
+const ALIGNMENT = ["start", "end", "center"];
+const SPACE = ["space-between", "space-around", "space-evenly"];
+function makeRowProps(prefix, def) {
+  return breakpoints.reduce((props, val) => {
+    const prefixKey = prefix + capitalize(val);
+    props[prefixKey] = def();
+    return props;
+  }, {});
+}
+const ALIGN_VALUES = [...ALIGNMENT, "baseline", "stretch"];
+const alignValidator = (str) => ALIGN_VALUES.includes(str);
+const alignProps = makeRowProps("align", () => ({
+  type: String,
+  default: null,
+  validator: alignValidator
+}));
+const JUSTIFY_VALUES = [...ALIGNMENT, ...SPACE];
+const justifyValidator = (str) => JUSTIFY_VALUES.includes(str);
+const justifyProps = makeRowProps("justify", () => ({
+  type: String,
+  default: null,
+  validator: justifyValidator
+}));
+const ALIGN_CONTENT_VALUES = [...ALIGNMENT, ...SPACE, "stretch"];
+const alignContentValidator = (str) => ALIGN_CONTENT_VALUES.includes(str);
+const alignContentProps = makeRowProps("alignContent", () => ({
+  type: String,
+  default: null,
+  validator: alignContentValidator
+}));
+const propMap$1 = {
+  align: Object.keys(alignProps),
+  justify: Object.keys(justifyProps),
+  alignContent: Object.keys(alignContentProps)
+};
+const classMap = {
+  align: "align",
+  justify: "justify",
+  alignContent: "align-content"
+};
+function breakpointClass$1(type, prop, val) {
+  let className = classMap[type];
+  if (val == null) {
+    return void 0;
+  }
+  if (prop) {
+    const breakpoint = prop.replace(type, "");
+    className += `-${breakpoint}`;
+  }
+  className += `-${val}`;
+  return className.toLowerCase();
+}
+const makeVRowProps = propsFactory({
+  dense: Boolean,
+  noGutters: Boolean,
+  align: {
+    type: String,
+    default: null,
+    validator: alignValidator
+  },
+  ...alignProps,
+  justify: {
+    type: String,
+    default: null,
+    validator: justifyValidator
+  },
+  ...justifyProps,
+  alignContent: {
+    type: String,
+    default: null,
+    validator: alignContentValidator
+  },
+  ...alignContentProps,
+  ...makeComponentProps(),
+  ...makeTagProps()
+}, "VRow");
+const VRow = genericComponent()({
+  name: "VRow",
+  props: makeVRowProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const classes = computed(() => {
+      const classList = [];
+      let type;
+      for (type in propMap$1) {
+        propMap$1[type].forEach((prop) => {
+          const value = props[prop];
+          const className = breakpointClass$1(type, prop, value);
+          if (className) classList.push(className);
+        });
+      }
+      classList.push({
+        "v-row--no-gutters": props.noGutters,
+        "v-row--dense": props.dense,
+        [`align-${props.align}`]: props.align,
+        [`justify-${props.justify}`]: props.justify,
+        [`align-content-${props.alignContent}`]: props.alignContent
+      });
+      return classList;
+    });
+    return () => {
+      var _a;
+      return h(props.tag, {
+        class: ["v-row", classes.value, props.class],
+        style: props.style
+      }, (_a = slots.default) == null ? void 0 : _a.call(slots));
+    };
+  }
+});
 
-const i=F.reduce((e,o)=>(e[o]={type:[Boolean,String,Number],default:false},e),{}),m=F.reduce((e,o)=>{const t="offset"+capitalize(o);return e[t]={type:[String,Number],default:null},e},{}),d=F.reduce((e,o)=>{const t="order"+capitalize(o);return e[t]={type:[String,Number],default:null},e},{}),f={col:Object.keys(i),offset:Object.keys(m),order:Object.keys(d)};function L(e,o,t){let r=e;if(!(t==null||t===false)){if(o){const l=o.replace(e,"");r+=`-${l}`;}return e==="col"&&(r="v-"+r),e==="col"&&(t===""||t===true)||(r+=`-${t}`),r.toLowerCase()}}const P=["auto","start","end","center","baseline","stretch"],$=y$2({cols:{type:[Boolean,String,Number],default:false},...i,offset:{type:[String,Number],default:null},...m,order:{type:[String,Number],default:null},...d,alignSelf:{type:String,default:null,validator:e=>P.includes(e)},...o(),...r()},"VCol"),A=y$1()({name:"VCol",props:$(),setup(e,o){let{slots:t}=o;const r=computed(()=>{const l=[];let s;for(s in f)f[s].forEach(n=>{const g=e[n],c=L(s,n,g);c&&l.push(c);});const b=l.some(n=>n.startsWith("v-col-"));return l.push({"v-col":!b||!e.cols,[`v-col-${e.cols}`]:e.cols,[`offset-${e.offset}`]:e.offset,[`order-${e.order}`]:e.order,[`align-self-${e.alignSelf}`]:e.alignSelf}),l});return ()=>h$1(e.tag,{class:[r.value,e.class],style:e.style},t.default?.())}});
+/* empty css           */
+const breakpointProps = (() => {
+  return breakpoints.reduce((props, val) => {
+    props[val] = {
+      type: [Boolean, String, Number],
+      default: false
+    };
+    return props;
+  }, {});
+})();
+const offsetProps = (() => {
+  return breakpoints.reduce((props, val) => {
+    const offsetKey = "offset" + capitalize(val);
+    props[offsetKey] = {
+      type: [String, Number],
+      default: null
+    };
+    return props;
+  }, {});
+})();
+const orderProps = (() => {
+  return breakpoints.reduce((props, val) => {
+    const orderKey = "order" + capitalize(val);
+    props[orderKey] = {
+      type: [String, Number],
+      default: null
+    };
+    return props;
+  }, {});
+})();
+const propMap = {
+  col: Object.keys(breakpointProps),
+  offset: Object.keys(offsetProps),
+  order: Object.keys(orderProps)
+};
+function breakpointClass(type, prop, val) {
+  let className = type;
+  if (val == null || val === false) {
+    return void 0;
+  }
+  if (prop) {
+    const breakpoint = prop.replace(type, "");
+    className += `-${breakpoint}`;
+  }
+  if (type === "col") {
+    className = "v-" + className;
+  }
+  if (type === "col" && (val === "" || val === true)) {
+    return className.toLowerCase();
+  }
+  className += `-${val}`;
+  return className.toLowerCase();
+}
+const ALIGN_SELF_VALUES = ["auto", "start", "end", "center", "baseline", "stretch"];
+const makeVColProps = propsFactory({
+  cols: {
+    type: [Boolean, String, Number],
+    default: false
+  },
+  ...breakpointProps,
+  offset: {
+    type: [String, Number],
+    default: null
+  },
+  ...offsetProps,
+  order: {
+    type: [String, Number],
+    default: null
+  },
+  ...orderProps,
+  alignSelf: {
+    type: String,
+    default: null,
+    validator: (str) => ALIGN_SELF_VALUES.includes(str)
+  },
+  ...makeComponentProps(),
+  ...makeTagProps()
+}, "VCol");
+const VCol = genericComponent()({
+  name: "VCol",
+  props: makeVColProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const classes = computed(() => {
+      const classList = [];
+      let type;
+      for (type in propMap) {
+        propMap[type].forEach((prop) => {
+          const value = props[prop];
+          const className = breakpointClass(type, prop, value);
+          if (className) classList.push(className);
+        });
+      }
+      const hasColClasses = classList.some((className) => className.startsWith("v-col-"));
+      classList.push({
+        // Default to .v-col if no other col-{bp}-* classes generated nor `cols` specified.
+        "v-col": !hasColClasses || !props.cols,
+        [`v-col-${props.cols}`]: props.cols,
+        [`offset-${props.offset}`]: props.offset,
+        [`order-${props.order}`]: props.order,
+        [`align-self-${props.alignSelf}`]: props.alignSelf
+      });
+      return classList;
+    });
+    return () => {
+      var _a;
+      return h(props.tag, {
+        class: [classes.value, props.class],
+        style: props.style
+      }, (_a = slots.default) == null ? void 0 : _a.call(slots));
+    };
+  }
+});
 
-export { A, x };;globalThis.__timing__.logEnd('Load chunks/build/VCol');
+export { VRow as V, VCol as a };
+//# sourceMappingURL=VCol.mjs.map

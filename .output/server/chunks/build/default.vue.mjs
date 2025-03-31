@@ -1,7 +1,7 @@
-globalThis.__timing__.logStart('Load chunks/build/default.vue');import { defineComponent, unref, useSSRContext } from 'vue';
+import { defineComponent, unref, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderSlot } from 'vue/server-renderer';
-import { bM as o } from './server.mjs';
-import { D } from './analytics-collector.vue2.mjs';
+import { bM as useCookieStore } from './server.mjs';
+import { _ as _sfc_main$1 } from './analytics-collector.vue2.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -10,7 +10,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -35,8 +34,30 @@ import 'pinia';
 import 'vue-router';
 import 'deep-pick-omit';
 
-const S=defineComponent({__name:"default",__ssrInlineRender:true,setup(c){const o$1=o();return (n,e,r,t)=>{e(`<div${ssrRenderAttrs(t)}>`),unref(o$1).preferences.analytics?e(ssrRenderComponent(D,null,null,r)):e("<!---->"),ssrRenderSlot(n.$slots,"default",{},null,e,r),e("</div>");}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "default",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const cookieStore = useCookieStore();
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(_attrs)}>`);
+      if (unref(cookieStore).preferences.analytics) {
+        _push(ssrRenderComponent(_sfc_main$1, null, null, _parent));
+      } else {
+        _push(`<!---->`);
+      }
+      ssrRenderSlot(_ctx.$slots, "default", {}, null, _push, _parent);
+      _push(`</div>`);
+    };
+  }
+});
 
-const e=S.setup;S.setup=(o,u)=>{const t=useSSRContext();return (t.modules||(t.modules=new Set)).add("layouts/default.vue"),e?e(o,u):void 0};
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("layouts/default.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
 
-export { S as default };;globalThis.__timing__.logEnd('Load chunks/build/default.vue');
+export { _sfc_main as default };
+//# sourceMappingURL=default.vue.mjs.map

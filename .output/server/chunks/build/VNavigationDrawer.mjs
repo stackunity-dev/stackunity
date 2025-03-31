@@ -1,10 +1,317 @@
-globalThis.__timing__.logStart('Load chunks/build/VNavigationDrawer');import { shallowRef, computed, watchEffect, onScopeDispose, toRef, ref, watch, createVNode, Fragment, mergeProps, Transition, nextTick } from 'vue';
-import { X, r, f as y, y as y$1, h as y$2, t as _, v as b, u as x, w as v$1, a2 as $, z as h$1, a3 as q, C, i, a4 as t, a5 as o, m as mt, O, o as o$1, a6 as i$1, H as P, J as he, M, k as r$1, B as g, g as yt, D as u, a7 as _$1, a8 as s, n as o$2, G as l } from './server.mjs';
+import { shallowRef, computed, watchEffect, onScopeDispose, toRef, ref, watch, createVNode, Fragment, mergeProps, Transition, nextTick } from 'vue';
+import { J as convertToUnit, m as useToggleScope, k as genericComponent, p as propsFactory, w as useRtl, D as provideTheme, F as useBorder, E as useBackgroundColor, G as useElevation, a2 as useDisplay, H as useRounded, a3 as useRouter, l as useProxiedModel, o as useSsrBoot, a4 as useScopeId, a5 as toPhysical, q as useLayoutItem, O as provideDefaults, s as useRender, a6 as useDelay, P as VImg, Q as VDefaultsProvider, K as makeThemeProps, y as makeTagProps, L as makeRoundedProps, v as makeLayoutItemProps, M as makeElevationProps, a7 as makeDisplayProps, a8 as makeDelayProps, A as makeComponentProps, N as makeBorderProps } from './server.mjs';
 
-function v(e){let{isSticky:u,layoutItemStyles:i}=e;const t=shallowRef(false),s=shallowRef(0),l=computed(()=>{const a=typeof t.value=="boolean"?"top":t.value;return [u.value?{top:"auto",bottom:"auto",height:void 0}:void 0,t.value?{[a]:X(s.value)}:{top:i.value.top}]});return {isStuck:t,stickyStyles:l}}
+function useSticky(_ref) {
+  let {
+    isSticky,
+    layoutItemStyles
+  } = _ref;
+  const isStuck = shallowRef(false);
+  const stuckPosition = shallowRef(0);
+  const stickyStyles = computed(() => {
+    const side = typeof isStuck.value === "boolean" ? "top" : isStuck.value;
+    return [isSticky.value ? {
+      top: "auto",
+      bottom: "auto",
+      height: void 0
+    } : void 0, isStuck.value ? {
+      [side]: convertToUnit(stuckPosition.value)
+    } : {
+      top: layoutItemStyles.value.top
+    }];
+  });
+  return {
+    isStuck,
+    stickyStyles
+  };
+}
 
-function h(u){let{el:t,width:l,position:e}=u;computed(()=>["left","right"].includes(e.value));const r$1=shallowRef(false),a=shallowRef(0);shallowRef(0);const o=computed(()=>r$1.value?{transform:e.value==="left"?`translateX(calc(-100% + ${a.value*l.value}px))`:e.value==="right"?`translateX(calc(100% - ${a.value*l.value}px))`:e.value==="top"?`translateY(calc(-100% + ${a.value*l.value}px))`:e.value==="bottom"?`translateY(calc(100% - ${a.value*l.value}px))`:m(),transition:"none"}:void 0);return r(r$1,()=>{const i=t.value?.style.transform??null,v=t.value?.style.transition??null;watchEffect(()=>{t.value?.style.setProperty("transform",o.value?.transform||"none"),t.value?.style.setProperty("transition",o.value?.transition||null);}),onScopeDispose(()=>{t.value?.style.setProperty("transform",i),t.value?.style.setProperty("transition",v);});}),{isDragging:r$1,dragProgress:a,dragStyles:o}}function m(){throw new Error}
+function useTouch(_ref) {
+  let {
+    el,
+    width,
+    position
+  } = _ref;
+  computed(() => ["left", "right"].includes(position.value));
+  const isDragging = shallowRef(false);
+  const dragProgress = shallowRef(0);
+  shallowRef(0);
+  const dragStyles = computed(() => {
+    return isDragging.value ? {
+      transform: position.value === "left" ? `translateX(calc(-100% + ${dragProgress.value * width.value}px))` : position.value === "right" ? `translateX(calc(100% - ${dragProgress.value * width.value}px))` : position.value === "top" ? `translateY(calc(-100% + ${dragProgress.value * width.value}px))` : position.value === "bottom" ? `translateY(calc(100% - ${dragProgress.value * width.value}px))` : oops(),
+      transition: "none"
+    } : void 0;
+  });
+  useToggleScope(isDragging, () => {
+    var _a, _b;
+    const transform = ((_a = el.value) == null ? void 0 : _a.style.transform) ?? null;
+    const transition = ((_b = el.value) == null ? void 0 : _b.style.transition) ?? null;
+    watchEffect(() => {
+      var _a2, _b2, _c, _d;
+      (_b2 = el.value) == null ? void 0 : _b2.style.setProperty("transform", ((_a2 = dragStyles.value) == null ? void 0 : _a2.transform) || "none");
+      (_d = el.value) == null ? void 0 : _d.style.setProperty("transition", ((_c = dragStyles.value) == null ? void 0 : _c.transition) || null);
+    });
+    onScopeDispose(() => {
+      var _a2, _b2;
+      (_a2 = el.value) == null ? void 0 : _a2.style.setProperty("transform", transform);
+      (_b2 = el.value) == null ? void 0 : _b2.style.setProperty("transition", transition);
+    });
+  });
+  return {
+    isDragging,
+    dragProgress,
+    dragStyles
+  };
+}
+function oops() {
+  throw new Error();
+}
 
-const De=["start","end","left","right","top","bottom"],Re=y$1({color:String,disableResizeWatcher:Boolean,disableRouteWatcher:Boolean,expandOnHover:Boolean,floating:Boolean,modelValue:{type:Boolean,default:null},permanent:Boolean,rail:{type:Boolean,default:null},railWidth:{type:[Number,String],default:56},scrim:{type:[Boolean,String],default:true},image:String,temporary:Boolean,persistent:Boolean,touchless:Boolean,width:{type:[Number,String],default:256},location:{type:String,default:"start",validator:e=>De.includes(e)},sticky:Boolean,...l(),...o$2(),...s(),..._$1({mobile:null}),...u(),...yt(),...g(),...r$1({tag:"nav"}),...M()},"VNavigationDrawer"),ea=y()({name:"VNavigationDrawer",props:Re(),emits:{"update:modelValue":e=>true,"update:rail":e=>true},setup(e,R){let{attrs:V,emit:p,slots:r$1}=R;const{isRtl:I}=y$2(),{themeClasses:N}=_(e),{borderClasses:_$1}=b(e),{backgroundColorClasses:x$1,backgroundColorStyles:T}=x(toRef(e,"color")),{elevationClasses:W}=v$1(e),{displayClasses:H,mobile:g}=$(e),{roundedClasses:O$1}=h$1(e),f=q(),i$2=C(e,"modelValue",null,a=>!!a),{ssrBootStyles:z}=i(),{scopeId:y}=t(),h$2=ref(),s=shallowRef(false),{runOpenDelay:E,runCloseDelay:L}=i$1(e,a=>{s.value=a;}),v$2=computed(()=>e.rail&&e.expandOnHover&&s.value?Number(e.width):Number(e.rail?e.railWidth:e.width)),u=computed(()=>o(e.location,I.value)),k=computed(()=>e.persistent),l=computed(()=>!e.permanent&&(g.value||e.temporary)),d=computed(()=>e.sticky&&!l.value&&u.value!=="bottom");r(()=>e.expandOnHover&&e.rail!=null,()=>{watch(s,a=>p("update:rail",!a));}),r(()=>!e.disableResizeWatcher,()=>{watch(l,a=>!e.permanent&&nextTick(()=>i$2.value=!a));}),r(()=>!e.disableRouteWatcher&&!!f,()=>{watch(f.currentRoute,()=>l.value&&(i$2.value=false));}),watch(()=>e.permanent,a=>{a&&(i$2.value=true);}),e.modelValue==null&&!l.value&&(i$2.value=e.permanent||!g.value);const{isDragging:n,dragProgress:w}=h({el:h$2,width:v$2,touchless:toRef(e,"touchless"),position:u}),M=computed(()=>{const a=l.value?0:e.rail&&e.expandOnHover?Number(e.railWidth):v$2.value;return n.value?a*w.value:a}),{layoutItemStyles:b$1,layoutItemScrimStyles:F}=mt({id:e.name,order:computed(()=>parseInt(e.order,10)),position:u,layoutSize:M,elementSize:v$2,active:computed(()=>i$2.value||n.value),disableTransitions:computed(()=>n.value),absolute:computed(()=>e.absolute||d.value&&typeof S.value!="string")}),{isStuck:S,stickyStyles:A}=v({isSticky:d,layoutItemStyles:b$1}),C$1=x(computed(()=>typeof e.scrim=="string"?e.scrim:null)),$$1=computed(()=>({...n.value?{opacity:w.value*.2,transition:"none"}:void 0,...F.value}));return O({VList:{bgColor:"transparent"}}),o$1(()=>{const a=r$1.image||e.image;return createVNode(Fragment,null,[createVNode(e.tag,mergeProps({ref:h$2,onMouseenter:E,onMouseleave:L,class:["v-navigation-drawer",`v-navigation-drawer--${u.value}`,{"v-navigation-drawer--expand-on-hover":e.expandOnHover,"v-navigation-drawer--floating":e.floating,"v-navigation-drawer--is-hovering":s.value,"v-navigation-drawer--rail":e.rail,"v-navigation-drawer--temporary":l.value,"v-navigation-drawer--persistent":k.value,"v-navigation-drawer--active":i$2.value,"v-navigation-drawer--sticky":d.value},N.value,x$1.value,_$1.value,H.value,W.value,O$1.value,e.class],style:[T.value,b$1.value,z.value,A.value,e.style]},y,V),{default:()=>[a&&createVNode("div",{key:"image",class:"v-navigation-drawer__img"},[r$1.image?createVNode(P,{key:"image-defaults",disabled:!e.image,defaults:{VImg:{alt:"",cover:true,height:"inherit",src:e.image}}},r$1.image):createVNode(he,{key:"image-img",alt:"",cover:true,height:"inherit",src:e.image},null)]),r$1.prepend&&createVNode("div",{class:"v-navigation-drawer__prepend"},[r$1.prepend?.()]),createVNode("div",{class:"v-navigation-drawer__content"},[r$1.default?.()]),r$1.append&&createVNode("div",{class:"v-navigation-drawer__append"},[r$1.append?.()])]}),createVNode(Transition,{name:"fade-transition"},{default:()=>[l.value&&(n.value||i$2.value)&&!!e.scrim&&createVNode("div",mergeProps({class:["v-navigation-drawer__scrim",C$1.backgroundColorClasses.value],style:[$$1.value,C$1.backgroundColorStyles.value],onClick:()=>{k.value||(i$2.value=false);}},y),null)]})])}),{isStuck:S}}});
+const locations = ["start", "end", "left", "right", "top", "bottom"];
+const makeVNavigationDrawerProps = propsFactory({
+  color: String,
+  disableResizeWatcher: Boolean,
+  disableRouteWatcher: Boolean,
+  expandOnHover: Boolean,
+  floating: Boolean,
+  modelValue: {
+    type: Boolean,
+    default: null
+  },
+  permanent: Boolean,
+  rail: {
+    type: Boolean,
+    default: null
+  },
+  railWidth: {
+    type: [Number, String],
+    default: 56
+  },
+  scrim: {
+    type: [Boolean, String],
+    default: true
+  },
+  image: String,
+  temporary: Boolean,
+  persistent: Boolean,
+  touchless: Boolean,
+  width: {
+    type: [Number, String],
+    default: 256
+  },
+  location: {
+    type: String,
+    default: "start",
+    validator: (value) => locations.includes(value)
+  },
+  sticky: Boolean,
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeDelayProps(),
+  ...makeDisplayProps({
+    mobile: null
+  }),
+  ...makeElevationProps(),
+  ...makeLayoutItemProps(),
+  ...makeRoundedProps(),
+  ...makeTagProps({
+    tag: "nav"
+  }),
+  ...makeThemeProps()
+}, "VNavigationDrawer");
+const VNavigationDrawer = genericComponent()({
+  name: "VNavigationDrawer",
+  props: makeVNavigationDrawerProps(),
+  emits: {
+    "update:modelValue": (val) => true,
+    "update:rail": (val) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      emit,
+      slots
+    } = _ref;
+    const {
+      isRtl
+    } = useRtl();
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(toRef(props, "color"));
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      displayClasses,
+      mobile
+    } = useDisplay(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const router = useRouter();
+    const isActive = useProxiedModel(props, "modelValue", null, (v) => !!v);
+    const {
+      ssrBootStyles
+    } = useSsrBoot();
+    const {
+      scopeId
+    } = useScopeId();
+    const rootEl = ref();
+    const isHovering = shallowRef(false);
+    const {
+      runOpenDelay,
+      runCloseDelay
+    } = useDelay(props, (value) => {
+      isHovering.value = value;
+    });
+    const width = computed(() => {
+      return props.rail && props.expandOnHover && isHovering.value ? Number(props.width) : Number(props.rail ? props.railWidth : props.width);
+    });
+    const location = computed(() => {
+      return toPhysical(props.location, isRtl.value);
+    });
+    const isPersistent = computed(() => props.persistent);
+    const isTemporary = computed(() => !props.permanent && (mobile.value || props.temporary));
+    const isSticky = computed(() => props.sticky && !isTemporary.value && location.value !== "bottom");
+    useToggleScope(() => props.expandOnHover && props.rail != null, () => {
+      watch(isHovering, (val) => emit("update:rail", !val));
+    });
+    useToggleScope(() => !props.disableResizeWatcher, () => {
+      watch(isTemporary, (val) => !props.permanent && nextTick(() => isActive.value = !val));
+    });
+    useToggleScope(() => !props.disableRouteWatcher && !!router, () => {
+      watch(router.currentRoute, () => isTemporary.value && (isActive.value = false));
+    });
+    watch(() => props.permanent, (val) => {
+      if (val) isActive.value = true;
+    });
+    if (props.modelValue == null && !isTemporary.value) {
+      isActive.value = props.permanent || !mobile.value;
+    }
+    const {
+      isDragging,
+      dragProgress
+    } = useTouch({
+      el: rootEl,
+      width,
+      touchless: toRef(props, "touchless"),
+      position: location
+    });
+    const layoutSize = computed(() => {
+      const size = isTemporary.value ? 0 : props.rail && props.expandOnHover ? Number(props.railWidth) : width.value;
+      return isDragging.value ? size * dragProgress.value : size;
+    });
+    const {
+      layoutItemStyles,
+      layoutItemScrimStyles
+    } = useLayoutItem({
+      id: props.name,
+      order: computed(() => parseInt(props.order, 10)),
+      position: location,
+      layoutSize,
+      elementSize: width,
+      active: computed(() => isActive.value || isDragging.value),
+      disableTransitions: computed(() => isDragging.value),
+      absolute: computed(() => (
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        props.absolute || isSticky.value && typeof isStuck.value !== "string"
+      ))
+    });
+    const {
+      isStuck,
+      stickyStyles
+    } = useSticky({
+      isSticky,
+      layoutItemStyles
+    });
+    const scrimColor = useBackgroundColor(computed(() => {
+      return typeof props.scrim === "string" ? props.scrim : null;
+    }));
+    const scrimStyles = computed(() => ({
+      ...isDragging.value ? {
+        opacity: dragProgress.value * 0.2,
+        transition: "none"
+      } : void 0,
+      ...layoutItemScrimStyles.value
+    }));
+    provideDefaults({
+      VList: {
+        bgColor: "transparent"
+      }
+    });
+    useRender(() => {
+      const hasImage = slots.image || props.image;
+      return createVNode(Fragment, null, [createVNode(props.tag, mergeProps({
+        "ref": rootEl,
+        "onMouseenter": runOpenDelay,
+        "onMouseleave": runCloseDelay,
+        "class": ["v-navigation-drawer", `v-navigation-drawer--${location.value}`, {
+          "v-navigation-drawer--expand-on-hover": props.expandOnHover,
+          "v-navigation-drawer--floating": props.floating,
+          "v-navigation-drawer--is-hovering": isHovering.value,
+          "v-navigation-drawer--rail": props.rail,
+          "v-navigation-drawer--temporary": isTemporary.value,
+          "v-navigation-drawer--persistent": isPersistent.value,
+          "v-navigation-drawer--active": isActive.value,
+          "v-navigation-drawer--sticky": isSticky.value
+        }, themeClasses.value, backgroundColorClasses.value, borderClasses.value, displayClasses.value, elevationClasses.value, roundedClasses.value, props.class],
+        "style": [backgroundColorStyles.value, layoutItemStyles.value, ssrBootStyles.value, stickyStyles.value, props.style]
+      }, scopeId, attrs), {
+        default: () => {
+          var _a, _b, _c;
+          return [hasImage && createVNode("div", {
+            "key": "image",
+            "class": "v-navigation-drawer__img"
+          }, [!slots.image ? createVNode(VImg, {
+            "key": "image-img",
+            "alt": "",
+            "cover": true,
+            "height": "inherit",
+            "src": props.image
+          }, null) : createVNode(VDefaultsProvider, {
+            "key": "image-defaults",
+            "disabled": !props.image,
+            "defaults": {
+              VImg: {
+                alt: "",
+                cover: true,
+                height: "inherit",
+                src: props.image
+              }
+            }
+          }, slots.image)]), slots.prepend && createVNode("div", {
+            "class": "v-navigation-drawer__prepend"
+          }, [(_a = slots.prepend) == null ? void 0 : _a.call(slots)]), createVNode("div", {
+            "class": "v-navigation-drawer__content"
+          }, [(_b = slots.default) == null ? void 0 : _b.call(slots)]), slots.append && createVNode("div", {
+            "class": "v-navigation-drawer__append"
+          }, [(_c = slots.append) == null ? void 0 : _c.call(slots)])];
+        }
+      }), createVNode(Transition, {
+        "name": "fade-transition"
+      }, {
+        default: () => [isTemporary.value && (isDragging.value || isActive.value) && !!props.scrim && createVNode("div", mergeProps({
+          "class": ["v-navigation-drawer__scrim", scrimColor.backgroundColorClasses.value],
+          "style": [scrimStyles.value, scrimColor.backgroundColorStyles.value],
+          "onClick": () => {
+            if (isPersistent.value) return;
+            isActive.value = false;
+          }
+        }, scopeId), null)]
+      })]);
+    });
+    return {
+      isStuck
+    };
+  }
+});
 
-export { ea as e };;globalThis.__timing__.logEnd('Load chunks/build/VNavigationDrawer');
+export { VNavigationDrawer as V };
+//# sourceMappingURL=VNavigationDrawer.mjs.map

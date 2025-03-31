@@ -1,6 +1,62 @@
-globalThis.__timing__.logStart('Load chunks/build/VForm');import { ref, createVNode } from 'vue';
-import { f as y, y as y$1, ax as K, as as d, o, ay as j, n as o$1 } from './server.mjs';
+import { ref, createVNode } from 'vue';
+import { k as genericComponent, p as propsFactory, ax as createForm, s as useRender, as as forwardRefs, ay as makeFormProps, A as makeComponentProps } from './server.mjs';
 
-const P=y$1({...o$1(),...j()},"VForm"),N=y()({name:"VForm",props:P(),emits:{"update:modelValue":o=>true,submit:o=>true},setup(o$1,a){let{slots:i,emit:s}=a;const r=K(o$1),m=ref();function f(n){n.preventDefault(),r.reset();}function l(n){const t=n,e=r.validate();t.then=e.then.bind(e),t.catch=e.catch.bind(e),t.finally=e.finally.bind(e),s("submit",t),t.defaultPrevented||e.then(u=>{let{valid:c}=u;c&&m.value?.submit();}),t.preventDefault();}return o(()=>createVNode("form",{ref:m,class:["v-form",o$1.class],style:o$1.style,novalidate:true,onReset:f,onSubmit:l},[i.default?.(r)])),d(r,m)}});
+const makeVFormProps = propsFactory({
+  ...makeComponentProps(),
+  ...makeFormProps()
+}, "VForm");
+const VForm = genericComponent()({
+  name: "VForm",
+  props: makeVFormProps(),
+  emits: {
+    "update:modelValue": (val) => true,
+    submit: (e) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots,
+      emit
+    } = _ref;
+    const form = createForm(props);
+    const formRef = ref();
+    function onReset(e) {
+      e.preventDefault();
+      form.reset();
+    }
+    function onSubmit(_e) {
+      const e = _e;
+      const ready = form.validate();
+      e.then = ready.then.bind(ready);
+      e.catch = ready.catch.bind(ready);
+      e.finally = ready.finally.bind(ready);
+      emit("submit", e);
+      if (!e.defaultPrevented) {
+        ready.then((_ref2) => {
+          var _a;
+          let {
+            valid
+          } = _ref2;
+          if (valid) {
+            (_a = formRef.value) == null ? void 0 : _a.submit();
+          }
+        });
+      }
+      e.preventDefault();
+    }
+    useRender(() => {
+      var _a;
+      return createVNode("form", {
+        "ref": formRef,
+        "class": ["v-form", props.class],
+        "style": props.style,
+        "novalidate": true,
+        "onReset": onReset,
+        "onSubmit": onSubmit
+      }, [(_a = slots.default) == null ? void 0 : _a.call(slots, form)]);
+    });
+    return forwardRefs(form, formRef);
+  }
+});
 
-export { N };;globalThis.__timing__.logEnd('Load chunks/build/VForm');
+export { VForm as V };
+//# sourceMappingURL=VForm.mjs.map

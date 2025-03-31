@@ -1,14 +1,14 @@
-globalThis.__timing__.logStart('Load chunks/build/settings.vue');import { defineComponent, ref, mergeProps, withCtx, createVNode, createTextVNode, toDisplayString, unref, createBlock, openBlock, createCommentVNode, useSSRContext } from 'vue';
+import { defineComponent, ref, mergeProps, withCtx, createVNode, createTextVNode, toDisplayString, unref, createBlock, openBlock, createCommentVNode, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderClass, ssrInterpolate } from 'vue/server-renderer';
-import { f } from './snackbar.vue.mjs';
-import { bx as q, N as k, q as qe, Q as Ke, R as ot, P, Y as r, L, U as C, b as We, S as i, aC as S, bp as ye, s } from './server.mjs';
-import { m } from './v3.mjs';
-import { x } from './VContainer.mjs';
-import { x as x$1, A } from './VCol.mjs';
-import { T as Te } from './VAlert.mjs';
-import { N } from './VForm.mjs';
-import { F as Fe } from './VTextField.mjs';
-import { j as je } from './VChip.mjs';
+import { S as Snackbar } from './snackbar.vue.mjs';
+import { bx as useTheme, S as useUserStore, f as VCard, T as VList, U as VListItem, h as VDivider, $ as VCardTitle, g as VIcon, Y as VCardText, e as VBtn, W as VListItemTitle, aC as VListItemSubtitle, bp as VSwitch, _ as _export_sfc } from './server.mjs';
+import { u as useHead } from './v3.mjs';
+import { V as VContainer } from './VContainer.mjs';
+import { V as VRow, a as VCol } from './VCol.mjs';
+import { V as VAlert } from './VAlert.mjs';
+import { V as VForm } from './VForm.mjs';
+import { V as VTextField } from './VTextField.mjs';
+import { V as VChip } from './VChip.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -17,7 +17,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -48,8 +47,5322 @@ import 'unhead/utils';
 import 'devalue';
 import 'unhead/plugins';
 
-const wl=defineComponent({__name:"settings",__ssrInlineRender:true,setup(Ke$1){m({title:"Settings - DevUnity",meta:[{name:"description",content:"Manage your account settings and preferences"},{name:"keywords",content:"DevUnity, settings, preferences, account, user settings"},{name:"author",content:"DevUnity"},{name:"robots",content:"index, follow"},{name:"viewport",content:"width=device-width, initial-scale=1.0"},{name:"og:title",content:"Settings - DevUnity"},{name:"og:description",content:"Manage your account settings and preferences"},{name:"og:image",content:"/logo/devunity-title.png"}]}),q();const de=k(),d=ref("security"),le=ref(false),oe=ref(""),ie=ref("success"),G=ref(false),J=ref(""),Ae=ref("dark"),$=re=>{["light","dark","system"].includes(re)&&(Ae.value=re);},E=ref({newPassword:"",confirmPassword:""}),t=ref({essential:true,functional:true,analytics:false,marketing:false}),fe=()=>{setTimeout(()=>{xe("Appearance settings updated","success");},500);},ve=async()=>{try{if(!E.value.newPassword||!E.value.confirmPassword){oe.value="New password and confirm password are required",ie.value="error",le.value=!0;return}if(E.value.newPassword!==E.value.confirmPassword){oe.value="Passwords do not match",ie.value="error",le.value=!0;return}await de.resetPassword(E.value.newPassword),oe.value="Password updated successfully",ie.value="success",le.value=!0;}catch{oe.value="An error occurred while updating the password",ie.value="error",le.value=true;}},ye$1=()=>{xe("Cookie preferences updated","success");},pe=()=>{t.value.functional=false,t.value.analytics=false,t.value.marketing=false,xe("Cookies deleted successfully","success");},ge=()=>{setTimeout(()=>{oe.value="Your data has been prepared for download",ie.value="success",le.value=true;},1e3);},be=async()=>{try{await de.deleteAccount(),oe.value="Your account has been deleted successfully",ie.value="success",le.value=!0,setTimeout(()=>{(void 0).location.href="/login";},2e3);}catch{oe.value="An error occurred while deleting your account",ie.value="error",le.value=true;}},xe=(re,Ve)=>{oe.value=re,ie.value=Ve,le.value=true;},i$1=re=>Ae.value===re;return (re,Ve,We$1,Re)=>{Ve(ssrRenderComponent(x,mergeProps({fluid:"",class:"pa-6"},Re),{default:withCtx((Oe,Ce,Se,ze)=>{if(Ce)Ce(ssrRenderComponent(x$1,null,{default:withCtx((z,Ue,Te$1,Me)=>{if(Ue)Ue(ssrRenderComponent(A,{cols:"12",lg:"3"},{default:withCtx((L,we,Ee,Pe)=>{if(we)we(ssrRenderComponent(qe,{class:"rounded-lg mb-4",elevation:"2"},{default:withCtx((j,N,ne,Z)=>{if(N)N(ssrRenderComponent(Ke,{nav:""},{default:withCtx((D,m,k,v)=>{if(m)m(ssrRenderComponent(ot,{"prepend-icon":"mdi-palette-outline",title:"Appearance",value:"appearance",onClick:y=>d.value="appearance",rounded:"lg",active:d.value==="appearance",color:"primary"},null,k,v)),m(ssrRenderComponent(ot,{"prepend-icon":"mdi-shield-outline",title:"Security",value:"security",onClick:y=>d.value="security",rounded:"lg",active:d.value==="security",color:"primary"},null,k,v)),m(ssrRenderComponent(P,{class:"my-2"},null,k,v)),m(ssrRenderComponent(ot,{"prepend-icon":"mdi-cookie-settings-outline",title:"Cookies",value:"cookies",onClick:y=>d.value="cookies",rounded:"lg",active:d.value==="cookies",color:"primary"},null,k,v)),m(ssrRenderComponent(ot,{"prepend-icon":"mdi-delete-outline",title:"Data & Privacy",value:"privacy",onClick:y=>d.value="privacy",rounded:"lg",active:d.value==="privacy",color:"primary"},null,k,v));else return [createVNode(ot,{"prepend-icon":"mdi-palette-outline",title:"Appearance",value:"appearance",onClick:y=>d.value="appearance",rounded:"lg",active:d.value==="appearance",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-shield-outline",title:"Security",value:"security",onClick:y=>d.value="security",rounded:"lg",active:d.value==="security",color:"primary"},null,8,["onClick","active"]),createVNode(P,{class:"my-2"}),createVNode(ot,{"prepend-icon":"mdi-cookie-settings-outline",title:"Cookies",value:"cookies",onClick:y=>d.value="cookies",rounded:"lg",active:d.value==="cookies",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-delete-outline",title:"Data & Privacy",value:"privacy",onClick:y=>d.value="privacy",rounded:"lg",active:d.value==="privacy",color:"primary"},null,8,["onClick","active"])]}),_:1},ne,Z));else return [createVNode(Ke,{nav:""},{default:withCtx(()=>[createVNode(ot,{"prepend-icon":"mdi-palette-outline",title:"Appearance",value:"appearance",onClick:D=>d.value="appearance",rounded:"lg",active:d.value==="appearance",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-shield-outline",title:"Security",value:"security",onClick:D=>d.value="security",rounded:"lg",active:d.value==="security",color:"primary"},null,8,["onClick","active"]),createVNode(P,{class:"my-2"}),createVNode(ot,{"prepend-icon":"mdi-cookie-settings-outline",title:"Cookies",value:"cookies",onClick:D=>d.value="cookies",rounded:"lg",active:d.value==="cookies",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-delete-outline",title:"Data & Privacy",value:"privacy",onClick:D=>d.value="privacy",rounded:"lg",active:d.value==="privacy",color:"primary"},null,8,["onClick","active"])]),_:1})]}),_:1},Ee,Pe));else return [createVNode(qe,{class:"rounded-lg mb-4",elevation:"2"},{default:withCtx(()=>[createVNode(Ke,{nav:""},{default:withCtx(()=>[createVNode(ot,{"prepend-icon":"mdi-palette-outline",title:"Appearance",value:"appearance",onClick:j=>d.value="appearance",rounded:"lg",active:d.value==="appearance",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-shield-outline",title:"Security",value:"security",onClick:j=>d.value="security",rounded:"lg",active:d.value==="security",color:"primary"},null,8,["onClick","active"]),createVNode(P,{class:"my-2"}),createVNode(ot,{"prepend-icon":"mdi-cookie-settings-outline",title:"Cookies",value:"cookies",onClick:j=>d.value="cookies",rounded:"lg",active:d.value==="cookies",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-delete-outline",title:"Data & Privacy",value:"privacy",onClick:j=>d.value="privacy",rounded:"lg",active:d.value==="privacy",color:"primary"},null,8,["onClick","active"])]),_:1})]),_:1})]}),_:1},Te$1,Me)),Ue(ssrRenderComponent(A,{cols:"12",lg:"9"},{default:withCtx((L$1,we,Ee,Pe)=>{if(we)we(ssrRenderComponent(qe,{class:"rounded-lg",elevation:"2"},{default:withCtx((j,N$1,ne,Z)=>{if(N$1)d.value==="appearance"?(N$1(`<div data-v-be6d8b82${Z}>`),N$1(ssrRenderComponent(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx((D,m,k,v)=>{if(m)m(ssrRenderComponent(L,{color:"white",class:"mr-2"},{default:withCtx((y,s,U,h)=>{if(s)s("mdi-palette-outline");else return [createTextVNode("mdi-palette-outline")]}),_:1},k,v)),m(" Appearance ");else return [createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-palette-outline")]),_:1}),createTextVNode(" Appearance ")]}),_:1},ne,Z)),N$1(ssrRenderComponent(C,{class:"pa-4"},{default:withCtx((D,m,k,v)=>{if(m)m(ssrRenderComponent(x$1,{class:"mb-4"},{default:withCtx((y,s,U,h)=>{if(s)s(ssrRenderComponent(A,{cols:"12"},{default:withCtx((S,w,q,W)=>{if(w)w(`<div class="text-subtitle-1 font-weight-bold mb-3" data-v-be6d8b82${W}>Theme</div>`),w(ssrRenderComponent(x$1,null,{default:withCtx((R,g,T,M)=>{if(g)g(ssrRenderComponent(A,{cols:"12",sm:"4"},{default:withCtx((A,P,I,ee)=>{if(P)P(ssrRenderComponent(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:ue=>$("light")},{default:withCtx((ue,te,he,ce)=>{if(te)te(ssrRenderComponent(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx((Fe,me,Le,je)=>{if(me)me("mdi-weather-sunny");else return [createTextVNode("mdi-weather-sunny")]}),_:1},he,ce)),te(`<span class="${ssrRenderClass([{"text-white":i$1("light")},"mt-2"])}" data-v-be6d8b82${ce}>Light</span>`);else return [createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]}),_:1},I,ee));else return [createVNode(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:ue=>$("light")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]),_:1},8,["color","onClick"])]}),_:1},T,M)),g(ssrRenderComponent(A,{cols:"12",sm:"4"},{default:withCtx((A,P,I,ee)=>{if(P)P(ssrRenderComponent(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:ue=>$("dark")},{default:withCtx((ue,te,he,ce)=>{if(te)te(ssrRenderComponent(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx((Fe,me,Le,je)=>{if(me)me("mdi-weather-night");else return [createTextVNode("mdi-weather-night")]}),_:1},he,ce)),te(`<span class="${ssrRenderClass([{"text-white":i$1("dark")},"mt-2"])}" data-v-be6d8b82${ce}>Dark</span>`);else return [createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]}),_:1},I,ee));else return [createVNode(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:ue=>$("dark")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]),_:1},8,["color","onClick"])]}),_:1},T,M)),g(ssrRenderComponent(A,{cols:"12",sm:"4"},{default:withCtx((A,P,I,ee)=>{if(P)P(ssrRenderComponent(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:ue=>$("system")},{default:withCtx((ue,te,he,ce)=>{if(te)te(ssrRenderComponent(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx((Fe,me,Le,je)=>{if(me)me("mdi-theme-light-dark");else return [createTextVNode("mdi-theme-light-dark")]}),_:1},he,ce)),te(`<span class="${ssrRenderClass([{"text-white":i$1("system")},"mt-2"])}" data-v-be6d8b82${ce}>System</span>`);else return [createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]}),_:1},I,ee));else return [createVNode(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:ue=>$("system")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]),_:1},8,["color","onClick"])]}),_:1},T,M));else return [createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:A=>$("light")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:A=>$("dark")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:A=>$("system")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]),_:1},8,["color","onClick"])]),_:1})]}),_:1},q,W));else return [createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Theme"),createVNode(x$1,null,{default:withCtx(()=>[createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:R=>$("light")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:R=>$("dark")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:R=>$("system")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]),_:1},8,["color","onClick"])]),_:1})]),_:1})]}),_:1},U,h));else return [createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Theme"),createVNode(x$1,null,{default:withCtx(()=>[createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:S=>$("light")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:S=>$("dark")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:S=>$("system")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]),_:1},8,["color","onClick"])]),_:1})]),_:1})]),_:1})]}),_:1},k,v)),m(ssrRenderComponent(P,{class:"my-4"},null,k,v)),m(`<div class="d-flex justify-end" data-v-be6d8b82${v}>`),m(ssrRenderComponent(We,{color:"primary",variant:"elevated",onClick:fe},{default:withCtx((y,s,U,h)=>{if(s)s(ssrRenderComponent(L,{start:""},{default:withCtx((S,w,q,W)=>{if(w)w("mdi-content-save");else return [createTextVNode("mdi-content-save")]}),_:1},U,h)),s(" Save ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]}),_:1},k,v)),m("</div>");else return [createVNode(x$1,{class:"mb-4"},{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Theme"),createVNode(x$1,null,{default:withCtx(()=>[createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:y=>$("light")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:y=>$("dark")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:y=>$("system")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]),_:1},8,["color","onClick"])]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:fe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]}),_:1},ne,Z)),N$1("</div>")):N$1("<!---->"),d.value==="security"?(N$1(`<div data-v-be6d8b82${Z}>`),N$1(ssrRenderComponent(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx((D,m,k,v)=>{if(m)m(ssrRenderComponent(L,{color:"white",class:"mr-2"},{default:withCtx((y,s,U,h)=>{if(s)s("mdi-shield-outline");else return [createTextVNode("mdi-shield-outline")]}),_:1},k,v)),m(" Security ");else return [createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-shield-outline")]),_:1}),createTextVNode(" Security ")]}),_:1},ne,Z)),N$1(ssrRenderComponent(C,{class:"pa-4"},{default:withCtx((D,m,k,v)=>{if(m)m(ssrRenderComponent(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx((y,s,U,h)=>{if(s)s(" Manage your account security settings. We recommend using a strong password and changing it regularly. ");else return [createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")]}),_:1},k,v)),m(`<div class="text-subtitle-1 font-weight-bold mb-3" data-v-be6d8b82${v}>Change Password</div>`),m(ssrRenderComponent(N,{class:"mb-6"},{default:withCtx((y,s,U,h)=>{if(s)s(ssrRenderComponent(Fe,{modelValue:E.value.newPassword,"onUpdate:modelValue":S=>E.value.newPassword=S,label:"New Password",variant:"outlined",type:"password",class:"mb-3"},null,U,h)),s(ssrRenderComponent(Fe,{modelValue:E.value.confirmPassword,"onUpdate:modelValue":S=>E.value.confirmPassword=S,label:"Confirm New Password",variant:"outlined",type:"password",class:"mb-3"},null,U,h));else return [createVNode(Fe,{modelValue:E.value.newPassword,"onUpdate:modelValue":S=>E.value.newPassword=S,label:"New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(Fe,{modelValue:E.value.confirmPassword,"onUpdate:modelValue":S=>E.value.confirmPassword=S,label:"Confirm New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},k,v)),m(ssrRenderComponent(P,{class:"my-4"},null,k,v)),m(`<div class="d-flex justify-end" data-v-be6d8b82${v}>`),m(ssrRenderComponent(We,{color:"primary",variant:"elevated",onClick:ve},{default:withCtx((y,s,U,h)=>{if(s)s(ssrRenderComponent(L,{start:""},{default:withCtx((S,w,q,W)=>{if(w)w("mdi-content-save");else return [createTextVNode("mdi-content-save")]}),_:1},U,h)),s(" Update Password ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Update Password ")]}),_:1},k,v)),m("</div>");else return [createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Change Password"),createVNode(N,{class:"mb-6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:E.value.newPassword,"onUpdate:modelValue":y=>E.value.newPassword=y,label:"New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(Fe,{modelValue:E.value.confirmPassword,"onUpdate:modelValue":y=>E.value.confirmPassword=y,label:"Confirm New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:ve},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Update Password ")]),_:1})])]}),_:1},ne,Z)),N$1("</div>")):N$1("<!---->"),d.value==="cookies"?(N$1(`<div data-v-be6d8b82${Z}>`),N$1(ssrRenderComponent(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx((D,m,k,v)=>{if(m)m(ssrRenderComponent(L,{color:"white",class:"mr-2"},{default:withCtx((y,s,U,h)=>{if(s)s("mdi-cookie-settings-outline");else return [createTextVNode("mdi-cookie-settings-outline")]}),_:1},k,v)),m(" Cookie Preferences ");else return [createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-cookie-settings-outline")]),_:1}),createTextVNode(" Cookie Preferences ")]}),_:1},ne,Z)),N$1(ssrRenderComponent(C,{class:"pa-4"},{default:withCtx((D,m,k,v)=>{if(m)m(ssrRenderComponent(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx((y,s,U,h)=>{if(s)s(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ");else return [createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")]}),_:1},k,v)),m(ssrRenderComponent(qe,{color:"surface",variant:"outlined",class:"mb-6 pa-4"},{default:withCtx((y,s,U,h)=>{if(s)s(`<h3 class="text-h6 font-weight-bold mb-3" data-v-be6d8b82${h}>Current Preferences Status</h3>`),s(ssrRenderComponent(Ke,null,{default:withCtx((S$1,w,q,W)=>{if(w)w(ssrRenderComponent(ot,null,{default:withCtx((R,g,T,M)=>{if(g)g(ssrRenderComponent(i,null,{default:withCtx((A,P,I,ee)=>{if(P)P("Essential cookies:");else return [createTextVNode("Essential cookies:")]}),_:1},T,M)),g(ssrRenderComponent(S,null,{default:withCtx((A,P,I,ee)=>{if(P)P("Enabled");else return [createTextVNode("Enabled")]}),_:1},T,M));else return [createVNode(i,null,{default:withCtx(()=>[createTextVNode("Essential cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode("Enabled")]),_:1})]}),_:1},q,W)),w(ssrRenderComponent(ot,null,{default:withCtx((R,g,T,M)=>{if(g)g(ssrRenderComponent(i,null,{default:withCtx((A,P,I,ee)=>{if(P)P("Functional cookies:");else return [createTextVNode("Functional cookies:")]}),_:1},T,M)),g(ssrRenderComponent(S,null,{default:withCtx((A,P,I,ee)=>{if(P)P(`${ssrInterpolate(t.value.functional?"Enabled":"Disabled")}`);else return [createTextVNode(toDisplayString(t.value.functional?"Enabled":"Disabled"),1)]}),_:1},T,M));else return [createVNode(i,null,{default:withCtx(()=>[createTextVNode("Functional cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.functional?"Enabled":"Disabled"),1)]),_:1})]}),_:1},q,W)),w(ssrRenderComponent(ot,null,{default:withCtx((R,g,T,M)=>{if(g)g(ssrRenderComponent(i,null,{default:withCtx((A,P,I,ee)=>{if(P)P("Analytics cookies:");else return [createTextVNode("Analytics cookies:")]}),_:1},T,M)),g(ssrRenderComponent(S,null,{default:withCtx((A,P,I,ee)=>{if(P)P(`${ssrInterpolate(t.value.analytics?"Enabled":"Disabled")}`);else return [createTextVNode(toDisplayString(t.value.analytics?"Enabled":"Disabled"),1)]}),_:1},T,M));else return [createVNode(i,null,{default:withCtx(()=>[createTextVNode("Analytics cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.analytics?"Enabled":"Disabled"),1)]),_:1})]}),_:1},q,W)),w(ssrRenderComponent(ot,null,{default:withCtx((R,g,T,M)=>{if(g)g(ssrRenderComponent(i,null,{default:withCtx((A,P,I,ee)=>{if(P)P("Marketing cookies:");else return [createTextVNode("Marketing cookies:")]}),_:1},T,M)),g(ssrRenderComponent(S,null,{default:withCtx((A,P,I,ee)=>{if(P)P(`${ssrInterpolate(t.value.marketing?"Enabled":"Disabled")}`);else return [createTextVNode(toDisplayString(t.value.marketing?"Enabled":"Disabled"),1)]}),_:1},T,M));else return [createVNode(i,null,{default:withCtx(()=>[createTextVNode("Marketing cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.marketing?"Enabled":"Disabled"),1)]),_:1})]}),_:1},q,W));else return [createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Essential cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode("Enabled")]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Functional cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.functional?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Analytics cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.analytics?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Marketing cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.marketing?"Enabled":"Disabled"),1)]),_:1})]),_:1})]}),_:1},U,h));else return [createVNode("h3",{class:"text-h6 font-weight-bold mb-3"},"Current Preferences Status"),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Essential cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode("Enabled")]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Functional cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.functional?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Analytics cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.analytics?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Marketing cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.marketing?"Enabled":"Disabled"),1)]),_:1})]),_:1})]),_:1})]}),_:1},k,v)),m(ssrRenderComponent(Ke,null,{default:withCtx((y,s,U,h)=>{if(s)s(ssrRenderComponent(ot,null,{default:withCtx((S$1,w,q,W)=>{if(w)w(ssrRenderComponent(i,null,{default:withCtx((R,g,T,M)=>{if(g)g(ssrRenderComponent(ye,{modelValue:t.value.essential,"onUpdate:modelValue":A=>t.value.essential=A,label:"Essential cookies",color:"primary",disabled:"","hide-details":"",inset:""},null,T,M));else return [createVNode(ye,{modelValue:t.value.essential,"onUpdate:modelValue":A=>t.value.essential=A,label:"Essential cookies",color:"primary",disabled:"","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},q,W)),w(ssrRenderComponent(S,{class:"text-caption mt-1"},{default:withCtx((R,g,T,M)=>{if(g)g(" Required for the site to function, they cannot be disabled. ");else return [createTextVNode(" Required for the site to function, they cannot be disabled. ")]}),_:1},q,W));else return [createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.essential,"onUpdate:modelValue":R=>t.value.essential=R,label:"Essential cookies",color:"primary",disabled:"","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Required for the site to function, they cannot be disabled. ")]),_:1})]}),_:1},U,h)),s(ssrRenderComponent(P,{class:"my-2"},null,U,h)),s(ssrRenderComponent(ot,null,{default:withCtx((S$1,w,q,W)=>{if(w)w(ssrRenderComponent(i,null,{default:withCtx((R,g,T,M)=>{if(g)g(ssrRenderComponent(ye,{modelValue:t.value.functional,"onUpdate:modelValue":A=>t.value.functional=A,label:"Functional cookies",color:"primary","hide-details":"",inset:""},null,T,M));else return [createVNode(ye,{modelValue:t.value.functional,"onUpdate:modelValue":A=>t.value.functional=A,label:"Functional cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},q,W)),w(ssrRenderComponent(S,{class:"text-caption mt-1"},{default:withCtx((R,g,T,M)=>{if(g)g(" Allow us to remember your preferences and personalize your experience. ");else return [createTextVNode(" Allow us to remember your preferences and personalize your experience. ")]}),_:1},q,W));else return [createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.functional,"onUpdate:modelValue":R=>t.value.functional=R,label:"Functional cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Allow us to remember your preferences and personalize your experience. ")]),_:1})]}),_:1},U,h)),s(ssrRenderComponent(P,{class:"my-2"},null,U,h)),s(ssrRenderComponent(ot,null,{default:withCtx((S$1,w,q,W)=>{if(w)w(ssrRenderComponent(i,null,{default:withCtx((R,g,T,M)=>{if(g)g(ssrRenderComponent(ye,{modelValue:t.value.analytics,"onUpdate:modelValue":A=>t.value.analytics=A,label:"Analytics cookies",color:"primary","hide-details":"",inset:""},null,T,M));else return [createVNode(ye,{modelValue:t.value.analytics,"onUpdate:modelValue":A=>t.value.analytics=A,label:"Analytics cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},q,W)),w(ssrRenderComponent(S,{class:"text-caption mt-1"},{default:withCtx((R,g,T,M)=>{if(g)g(" Help us understand how you use our site to improve it. ");else return [createTextVNode(" Help us understand how you use our site to improve it. ")]}),_:1},q,W));else return [createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.analytics,"onUpdate:modelValue":R=>t.value.analytics=R,label:"Analytics cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Help us understand how you use our site to improve it. ")]),_:1})]}),_:1},U,h)),s(ssrRenderComponent(P,{class:"my-2"},null,U,h)),s(ssrRenderComponent(ot,null,{default:withCtx((S$1,w,q,W)=>{if(w)w(ssrRenderComponent(i,null,{default:withCtx((R,g,T,M)=>{if(g)g(ssrRenderComponent(ye,{modelValue:t.value.marketing,"onUpdate:modelValue":A=>t.value.marketing=A,label:"Marketing cookies",color:"primary","hide-details":"",inset:""},null,T,M));else return [createVNode(ye,{modelValue:t.value.marketing,"onUpdate:modelValue":A=>t.value.marketing=A,label:"Marketing cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},q,W)),w(ssrRenderComponent(S,{class:"text-caption mt-1"},{default:withCtx((R,g,T,M)=>{if(g)g(" Used to provide you with personalized advertisements. ");else return [createTextVNode(" Used to provide you with personalized advertisements. ")]}),_:1},q,W));else return [createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.marketing,"onUpdate:modelValue":R=>t.value.marketing=R,label:"Marketing cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Used to provide you with personalized advertisements. ")]),_:1})]}),_:1},U,h));else return [createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.essential,"onUpdate:modelValue":S=>t.value.essential=S,label:"Essential cookies",color:"primary",disabled:"","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Required for the site to function, they cannot be disabled. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.functional,"onUpdate:modelValue":S=>t.value.functional=S,label:"Functional cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Allow us to remember your preferences and personalize your experience. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.analytics,"onUpdate:modelValue":S=>t.value.analytics=S,label:"Analytics cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Help us understand how you use our site to improve it. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.marketing,"onUpdate:modelValue":S=>t.value.marketing=S,label:"Marketing cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Used to provide you with personalized advertisements. ")]),_:1})]),_:1})]}),_:1},k,v)),m(ssrRenderComponent(P,{class:"my-4"},null,k,v)),m(`<div class="d-flex justify-space-between" data-v-be6d8b82${v}>`),m(ssrRenderComponent(We,{color:"error",variant:"outlined",onClick:pe},{default:withCtx((y,s,U,h)=>{if(s)s(ssrRenderComponent(L,{start:""},{default:withCtx((S,w,q,W)=>{if(w)w("mdi-cookie-remove");else return [createTextVNode("mdi-cookie-remove")]}),_:1},U,h)),s(" Delete all cookies ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-cookie-remove")]),_:1}),createTextVNode(" Delete all cookies ")]}),_:1},k,v)),m(ssrRenderComponent(We,{color:"primary",variant:"elevated",onClick:ye$1},{default:withCtx((y,s,U,h)=>{if(s)s(ssrRenderComponent(L,{start:""},{default:withCtx((S,w,q,W)=>{if(w)w("mdi-content-save");else return [createTextVNode("mdi-content-save")]}),_:1},U,h)),s(" Save ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]}),_:1},k,v)),m("</div>");else return [createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")]),_:1}),createVNode(qe,{color:"surface",variant:"outlined",class:"mb-6 pa-4"},{default:withCtx(()=>[createVNode("h3",{class:"text-h6 font-weight-bold mb-3"},"Current Preferences Status"),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Essential cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode("Enabled")]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Functional cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.functional?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Analytics cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.analytics?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Marketing cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.marketing?"Enabled":"Disabled"),1)]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.essential,"onUpdate:modelValue":y=>t.value.essential=y,label:"Essential cookies",color:"primary",disabled:"","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Required for the site to function, they cannot be disabled. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.functional,"onUpdate:modelValue":y=>t.value.functional=y,label:"Functional cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Allow us to remember your preferences and personalize your experience. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.analytics,"onUpdate:modelValue":y=>t.value.analytics=y,label:"Analytics cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Help us understand how you use our site to improve it. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.marketing,"onUpdate:modelValue":y=>t.value.marketing=y,label:"Marketing cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Used to provide you with personalized advertisements. ")]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-space-between"},[createVNode(We,{color:"error",variant:"outlined",onClick:pe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-cookie-remove")]),_:1}),createTextVNode(" Delete all cookies ")]),_:1}),createVNode(We,{color:"primary",variant:"elevated",onClick:ye$1},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]}),_:1},ne,Z)),N$1("</div>")):N$1("<!---->"),d.value==="privacy"?(N$1(`<div data-v-be6d8b82${Z}>`),N$1(ssrRenderComponent(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx((D,m,k,v)=>{if(m)m(ssrRenderComponent(L,{color:"white",class:"mr-2"},{default:withCtx((y,s,U,h)=>{if(s)s("mdi-delete-outline");else return [createTextVNode("mdi-delete-outline")]}),_:1},k,v)),m(" Data &amp; Privacy ");else return [createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-delete-outline")]),_:1}),createTextVNode(" Data & Privacy ")]}),_:1},ne,Z)),N$1(ssrRenderComponent(C,{class:"pa-4"},{default:withCtx((D,m,k,v)=>{if(m)m(ssrRenderComponent(Te,{type:"warning",variant:"tonal",class:"mb-4"},{default:withCtx((y,s,U,h)=>{if(s)s(" Warning: Actions on this page regarding your data are irreversible. ");else return [createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")]}),_:1},k,v)),m(`<div class="text-subtitle-1 font-weight-bold mb-3" data-v-be6d8b82${v}>Data Export</div><p class="mb-4" data-v-be6d8b82${v}>You can download all your personal data stored on our platform.</p>`),m(ssrRenderComponent(We,{color:"primary",variant:"outlined","prepend-icon":"mdi-download",onClick:ge,class:"mb-6",disabled:""},{default:withCtx((y,s,U,h)=>{if(s)s("Export my data");else return [createTextVNode("Export my data")]}),_:1},k,v)),m(ssrRenderComponent(P,{class:"my-4"},null,k,v)),m(`<div class="text-subtitle-1 font-weight-bold mb-3 text-success" data-v-be6d8b82${v}>Premium Status</div><p class="mb-4" data-v-be6d8b82${v}> Current status: `),unref(de).user?.isPremium?m(ssrRenderComponent(je,{color:"success"},{default:withCtx((y,s,U,h)=>{if(s)s(" Premium ");else return [createTextVNode(" Premium ")]}),_:1},k,v)):m(ssrRenderComponent(je,{color:"error"},{default:withCtx((y,s,U,h)=>{if(s)s(" Free ");else return [createTextVNode(" Free ")]}),_:1},k,v)),m("</p>"),m(ssrRenderComponent(P,{class:"my-4"},null,k,v)),m(`<div class="text-subtitle-1 font-weight-bold mb-3 text-error" data-v-be6d8b82${v}>Account Deletion</div><p class="mb-4" data-v-be6d8b82${v}>Deleting your account will permanently erase all your personal data, including your projects, settings, and history.</p>`),G.value?(m(`<div data-v-be6d8b82${v}>`),m(ssrRenderComponent(Fe,{modelValue:J.value,"onUpdate:modelValue":y=>J.value=y,label:"Type 'DELETE' to confirm",variant:"outlined",hint:"This action is irreversible","persistent-hint":"",class:"mb-4"},null,k,v)),m(`<div class="d-flex" data-v-be6d8b82${v}>`),m(ssrRenderComponent(We,{color:"error",variant:"tonal",disabled:J.value!=="DELETE",onClick:be,class:"mr-2"},{default:withCtx((y,s,U,h)=>{if(s)s(" Confirm deletion ");else return [createTextVNode(" Confirm deletion ")]}),_:1},k,v)),m(ssrRenderComponent(We,{color:"grey",variant:"text",onClick:y=>G.value=false},{default:withCtx((y,s,U,h)=>{if(s)s(" Cancel ");else return [createTextVNode(" Cancel ")]}),_:1},k,v)),m("</div></div>")):m(ssrRenderComponent(We,{color:"error",variant:"outlined","prepend-icon":"mdi-account-remove",onClick:y=>G.value=true},{default:withCtx((y,s,U,h)=>{if(s)s(" Delete my account ");else return [createTextVNode(" Delete my account ")]}),_:1},k,v));else return [createVNode(Te,{type:"warning",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Data Export"),createVNode("p",{class:"mb-4"},"You can download all your personal data stored on our platform."),createVNode(We,{color:"primary",variant:"outlined","prepend-icon":"mdi-download",onClick:ge,class:"mb-6",disabled:""},{default:withCtx(()=>[createTextVNode("Export my data")]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-success"},"Premium Status"),createVNode("p",{class:"mb-4"},[createTextVNode(" Current status: "),unref(de).user?.isPremium?(openBlock(),createBlock(je,{key:0,color:"success"},{default:withCtx(()=>[createTextVNode(" Premium ")]),_:1})):(openBlock(),createBlock(je,{key:1,color:"error"},{default:withCtx(()=>[createTextVNode(" Free ")]),_:1}))]),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-error"},"Account Deletion"),createVNode("p",{class:"mb-4"},"Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),G.value?(openBlock(),createBlock("div",{key:0},[createVNode(Fe,{modelValue:J.value,"onUpdate:modelValue":y=>J.value=y,label:"Type 'DELETE' to confirm",variant:"outlined",hint:"This action is irreversible","persistent-hint":"",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode("div",{class:"d-flex"},[createVNode(We,{color:"error",variant:"tonal",disabled:J.value!=="DELETE",onClick:be,class:"mr-2"},{default:withCtx(()=>[createTextVNode(" Confirm deletion ")]),_:1},8,["disabled"]),createVNode(We,{color:"grey",variant:"text",onClick:y=>G.value=false},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"])])])):(openBlock(),createBlock(We,{key:1,color:"error",variant:"outlined","prepend-icon":"mdi-account-remove",onClick:y=>G.value=true},{default:withCtx(()=>[createTextVNode(" Delete my account ")]),_:1},8,["onClick"]))]}),_:1},ne,Z)),N$1("</div>")):N$1("<!---->");else return [d.value==="appearance"?(openBlock(),createBlock("div",{key:0},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-palette-outline")]),_:1}),createTextVNode(" Appearance ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(x$1,{class:"mb-4"},{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Theme"),createVNode(x$1,null,{default:withCtx(()=>[createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:D=>$("light")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:D=>$("dark")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:D=>$("system")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]),_:1},8,["color","onClick"])]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:fe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="security"?(openBlock(),createBlock("div",{key:1},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-shield-outline")]),_:1}),createTextVNode(" Security ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Change Password"),createVNode(N,{class:"mb-6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:E.value.newPassword,"onUpdate:modelValue":D=>E.value.newPassword=D,label:"New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(Fe,{modelValue:E.value.confirmPassword,"onUpdate:modelValue":D=>E.value.confirmPassword=D,label:"Confirm New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:ve},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Update Password ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="cookies"?(openBlock(),createBlock("div",{key:2},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-cookie-settings-outline")]),_:1}),createTextVNode(" Cookie Preferences ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")]),_:1}),createVNode(qe,{color:"surface",variant:"outlined",class:"mb-6 pa-4"},{default:withCtx(()=>[createVNode("h3",{class:"text-h6 font-weight-bold mb-3"},"Current Preferences Status"),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Essential cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode("Enabled")]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Functional cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.functional?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Analytics cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.analytics?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Marketing cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.marketing?"Enabled":"Disabled"),1)]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.essential,"onUpdate:modelValue":D=>t.value.essential=D,label:"Essential cookies",color:"primary",disabled:"","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Required for the site to function, they cannot be disabled. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.functional,"onUpdate:modelValue":D=>t.value.functional=D,label:"Functional cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Allow us to remember your preferences and personalize your experience. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.analytics,"onUpdate:modelValue":D=>t.value.analytics=D,label:"Analytics cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Help us understand how you use our site to improve it. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.marketing,"onUpdate:modelValue":D=>t.value.marketing=D,label:"Marketing cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Used to provide you with personalized advertisements. ")]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-space-between"},[createVNode(We,{color:"error",variant:"outlined",onClick:pe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-cookie-remove")]),_:1}),createTextVNode(" Delete all cookies ")]),_:1}),createVNode(We,{color:"primary",variant:"elevated",onClick:ye$1},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="privacy"?(openBlock(),createBlock("div",{key:3},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-delete-outline")]),_:1}),createTextVNode(" Data & Privacy ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"warning",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Data Export"),createVNode("p",{class:"mb-4"},"You can download all your personal data stored on our platform."),createVNode(We,{color:"primary",variant:"outlined","prepend-icon":"mdi-download",onClick:ge,class:"mb-6",disabled:""},{default:withCtx(()=>[createTextVNode("Export my data")]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-success"},"Premium Status"),createVNode("p",{class:"mb-4"},[createTextVNode(" Current status: "),unref(de).user?.isPremium?(openBlock(),createBlock(je,{key:0,color:"success"},{default:withCtx(()=>[createTextVNode(" Premium ")]),_:1})):(openBlock(),createBlock(je,{key:1,color:"error"},{default:withCtx(()=>[createTextVNode(" Free ")]),_:1}))]),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-error"},"Account Deletion"),createVNode("p",{class:"mb-4"},"Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),G.value?(openBlock(),createBlock("div",{key:0},[createVNode(Fe,{modelValue:J.value,"onUpdate:modelValue":D=>J.value=D,label:"Type 'DELETE' to confirm",variant:"outlined",hint:"This action is irreversible","persistent-hint":"",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode("div",{class:"d-flex"},[createVNode(We,{color:"error",variant:"tonal",disabled:J.value!=="DELETE",onClick:be,class:"mr-2"},{default:withCtx(()=>[createTextVNode(" Confirm deletion ")]),_:1},8,["disabled"]),createVNode(We,{color:"grey",variant:"text",onClick:D=>G.value=false},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"])])])):(openBlock(),createBlock(We,{key:1,color:"error",variant:"outlined","prepend-icon":"mdi-account-remove",onClick:D=>G.value=true},{default:withCtx(()=>[createTextVNode(" Delete my account ")]),_:1},8,["onClick"]))]),_:1})])):createCommentVNode("",true)]}),_:1},Ee,Pe));else return [createVNode(qe,{class:"rounded-lg",elevation:"2"},{default:withCtx(()=>[d.value==="appearance"?(openBlock(),createBlock("div",{key:0},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-palette-outline")]),_:1}),createTextVNode(" Appearance ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(x$1,{class:"mb-4"},{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Theme"),createVNode(x$1,null,{default:withCtx(()=>[createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:j=>$("light")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:j=>$("dark")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:j=>$("system")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]),_:1},8,["color","onClick"])]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:fe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="security"?(openBlock(),createBlock("div",{key:1},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-shield-outline")]),_:1}),createTextVNode(" Security ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Change Password"),createVNode(N,{class:"mb-6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:E.value.newPassword,"onUpdate:modelValue":j=>E.value.newPassword=j,label:"New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(Fe,{modelValue:E.value.confirmPassword,"onUpdate:modelValue":j=>E.value.confirmPassword=j,label:"Confirm New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:ve},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Update Password ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="cookies"?(openBlock(),createBlock("div",{key:2},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-cookie-settings-outline")]),_:1}),createTextVNode(" Cookie Preferences ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")]),_:1}),createVNode(qe,{color:"surface",variant:"outlined",class:"mb-6 pa-4"},{default:withCtx(()=>[createVNode("h3",{class:"text-h6 font-weight-bold mb-3"},"Current Preferences Status"),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Essential cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode("Enabled")]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Functional cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.functional?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Analytics cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.analytics?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Marketing cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.marketing?"Enabled":"Disabled"),1)]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.essential,"onUpdate:modelValue":j=>t.value.essential=j,label:"Essential cookies",color:"primary",disabled:"","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Required for the site to function, they cannot be disabled. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.functional,"onUpdate:modelValue":j=>t.value.functional=j,label:"Functional cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Allow us to remember your preferences and personalize your experience. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.analytics,"onUpdate:modelValue":j=>t.value.analytics=j,label:"Analytics cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Help us understand how you use our site to improve it. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.marketing,"onUpdate:modelValue":j=>t.value.marketing=j,label:"Marketing cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Used to provide you with personalized advertisements. ")]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-space-between"},[createVNode(We,{color:"error",variant:"outlined",onClick:pe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-cookie-remove")]),_:1}),createTextVNode(" Delete all cookies ")]),_:1}),createVNode(We,{color:"primary",variant:"elevated",onClick:ye$1},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="privacy"?(openBlock(),createBlock("div",{key:3},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-delete-outline")]),_:1}),createTextVNode(" Data & Privacy ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"warning",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Data Export"),createVNode("p",{class:"mb-4"},"You can download all your personal data stored on our platform."),createVNode(We,{color:"primary",variant:"outlined","prepend-icon":"mdi-download",onClick:ge,class:"mb-6",disabled:""},{default:withCtx(()=>[createTextVNode("Export my data")]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-success"},"Premium Status"),createVNode("p",{class:"mb-4"},[createTextVNode(" Current status: "),unref(de).user?.isPremium?(openBlock(),createBlock(je,{key:0,color:"success"},{default:withCtx(()=>[createTextVNode(" Premium ")]),_:1})):(openBlock(),createBlock(je,{key:1,color:"error"},{default:withCtx(()=>[createTextVNode(" Free ")]),_:1}))]),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-error"},"Account Deletion"),createVNode("p",{class:"mb-4"},"Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),G.value?(openBlock(),createBlock("div",{key:0},[createVNode(Fe,{modelValue:J.value,"onUpdate:modelValue":j=>J.value=j,label:"Type 'DELETE' to confirm",variant:"outlined",hint:"This action is irreversible","persistent-hint":"",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode("div",{class:"d-flex"},[createVNode(We,{color:"error",variant:"tonal",disabled:J.value!=="DELETE",onClick:be,class:"mr-2"},{default:withCtx(()=>[createTextVNode(" Confirm deletion ")]),_:1},8,["disabled"]),createVNode(We,{color:"grey",variant:"text",onClick:j=>G.value=false},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"])])])):(openBlock(),createBlock(We,{key:1,color:"error",variant:"outlined","prepend-icon":"mdi-account-remove",onClick:j=>G.value=true},{default:withCtx(()=>[createTextVNode(" Delete my account ")]),_:1},8,["onClick"]))]),_:1})])):createCommentVNode("",true)]),_:1})]}),_:1},Te$1,Me));else return [createVNode(A,{cols:"12",lg:"3"},{default:withCtx(()=>[createVNode(qe,{class:"rounded-lg mb-4",elevation:"2"},{default:withCtx(()=>[createVNode(Ke,{nav:""},{default:withCtx(()=>[createVNode(ot,{"prepend-icon":"mdi-palette-outline",title:"Appearance",value:"appearance",onClick:L=>d.value="appearance",rounded:"lg",active:d.value==="appearance",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-shield-outline",title:"Security",value:"security",onClick:L=>d.value="security",rounded:"lg",active:d.value==="security",color:"primary"},null,8,["onClick","active"]),createVNode(P,{class:"my-2"}),createVNode(ot,{"prepend-icon":"mdi-cookie-settings-outline",title:"Cookies",value:"cookies",onClick:L=>d.value="cookies",rounded:"lg",active:d.value==="cookies",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-delete-outline",title:"Data & Privacy",value:"privacy",onClick:L=>d.value="privacy",rounded:"lg",active:d.value==="privacy",color:"primary"},null,8,["onClick","active"])]),_:1})]),_:1})]),_:1}),createVNode(A,{cols:"12",lg:"9"},{default:withCtx(()=>[createVNode(qe,{class:"rounded-lg",elevation:"2"},{default:withCtx(()=>[d.value==="appearance"?(openBlock(),createBlock("div",{key:0},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-palette-outline")]),_:1}),createTextVNode(" Appearance ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(x$1,{class:"mb-4"},{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Theme"),createVNode(x$1,null,{default:withCtx(()=>[createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:L=>$("light")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:L=>$("dark")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:L=>$("system")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]),_:1},8,["color","onClick"])]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:fe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="security"?(openBlock(),createBlock("div",{key:1},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-shield-outline")]),_:1}),createTextVNode(" Security ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Change Password"),createVNode(N,{class:"mb-6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:E.value.newPassword,"onUpdate:modelValue":L=>E.value.newPassword=L,label:"New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(Fe,{modelValue:E.value.confirmPassword,"onUpdate:modelValue":L=>E.value.confirmPassword=L,label:"Confirm New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:ve},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Update Password ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="cookies"?(openBlock(),createBlock("div",{key:2},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-cookie-settings-outline")]),_:1}),createTextVNode(" Cookie Preferences ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")]),_:1}),createVNode(qe,{color:"surface",variant:"outlined",class:"mb-6 pa-4"},{default:withCtx(()=>[createVNode("h3",{class:"text-h6 font-weight-bold mb-3"},"Current Preferences Status"),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Essential cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode("Enabled")]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Functional cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.functional?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Analytics cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.analytics?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Marketing cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.marketing?"Enabled":"Disabled"),1)]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.essential,"onUpdate:modelValue":L=>t.value.essential=L,label:"Essential cookies",color:"primary",disabled:"","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Required for the site to function, they cannot be disabled. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.functional,"onUpdate:modelValue":L=>t.value.functional=L,label:"Functional cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Allow us to remember your preferences and personalize your experience. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.analytics,"onUpdate:modelValue":L=>t.value.analytics=L,label:"Analytics cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Help us understand how you use our site to improve it. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.marketing,"onUpdate:modelValue":L=>t.value.marketing=L,label:"Marketing cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Used to provide you with personalized advertisements. ")]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-space-between"},[createVNode(We,{color:"error",variant:"outlined",onClick:pe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-cookie-remove")]),_:1}),createTextVNode(" Delete all cookies ")]),_:1}),createVNode(We,{color:"primary",variant:"elevated",onClick:ye$1},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="privacy"?(openBlock(),createBlock("div",{key:3},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-delete-outline")]),_:1}),createTextVNode(" Data & Privacy ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"warning",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Data Export"),createVNode("p",{class:"mb-4"},"You can download all your personal data stored on our platform."),createVNode(We,{color:"primary",variant:"outlined","prepend-icon":"mdi-download",onClick:ge,class:"mb-6",disabled:""},{default:withCtx(()=>[createTextVNode("Export my data")]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-success"},"Premium Status"),createVNode("p",{class:"mb-4"},[createTextVNode(" Current status: "),unref(de).user?.isPremium?(openBlock(),createBlock(je,{key:0,color:"success"},{default:withCtx(()=>[createTextVNode(" Premium ")]),_:1})):(openBlock(),createBlock(je,{key:1,color:"error"},{default:withCtx(()=>[createTextVNode(" Free ")]),_:1}))]),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-error"},"Account Deletion"),createVNode("p",{class:"mb-4"},"Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),G.value?(openBlock(),createBlock("div",{key:0},[createVNode(Fe,{modelValue:J.value,"onUpdate:modelValue":L=>J.value=L,label:"Type 'DELETE' to confirm",variant:"outlined",hint:"This action is irreversible","persistent-hint":"",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode("div",{class:"d-flex"},[createVNode(We,{color:"error",variant:"tonal",disabled:J.value!=="DELETE",onClick:be,class:"mr-2"},{default:withCtx(()=>[createTextVNode(" Confirm deletion ")]),_:1},8,["disabled"]),createVNode(We,{color:"grey",variant:"text",onClick:L=>G.value=false},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"])])])):(openBlock(),createBlock(We,{key:1,color:"error",variant:"outlined","prepend-icon":"mdi-account-remove",onClick:L=>G.value=true},{default:withCtx(()=>[createTextVNode(" Delete my account ")]),_:1},8,["onClick"]))]),_:1})])):createCommentVNode("",true)]),_:1})]),_:1})]}),_:1},Se,ze)),Ce(ssrRenderComponent(f,{modelValue:le.value,"onUpdate:modelValue":z=>le.value=z,text:oe.value,color:ie.value,timeout:2e3},null,Se,ze));else return [createVNode(x$1,null,{default:withCtx(()=>[createVNode(A,{cols:"12",lg:"3"},{default:withCtx(()=>[createVNode(qe,{class:"rounded-lg mb-4",elevation:"2"},{default:withCtx(()=>[createVNode(Ke,{nav:""},{default:withCtx(()=>[createVNode(ot,{"prepend-icon":"mdi-palette-outline",title:"Appearance",value:"appearance",onClick:z=>d.value="appearance",rounded:"lg",active:d.value==="appearance",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-shield-outline",title:"Security",value:"security",onClick:z=>d.value="security",rounded:"lg",active:d.value==="security",color:"primary"},null,8,["onClick","active"]),createVNode(P,{class:"my-2"}),createVNode(ot,{"prepend-icon":"mdi-cookie-settings-outline",title:"Cookies",value:"cookies",onClick:z=>d.value="cookies",rounded:"lg",active:d.value==="cookies",color:"primary"},null,8,["onClick","active"]),createVNode(ot,{"prepend-icon":"mdi-delete-outline",title:"Data & Privacy",value:"privacy",onClick:z=>d.value="privacy",rounded:"lg",active:d.value==="privacy",color:"primary"},null,8,["onClick","active"])]),_:1})]),_:1})]),_:1}),createVNode(A,{cols:"12",lg:"9"},{default:withCtx(()=>[createVNode(qe,{class:"rounded-lg",elevation:"2"},{default:withCtx(()=>[d.value==="appearance"?(openBlock(),createBlock("div",{key:0},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-palette-outline")]),_:1}),createTextVNode(" Appearance ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(x$1,{class:"mb-4"},{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Theme"),createVNode(x$1,null,{default:withCtx(()=>[createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("light")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:z=>$("light")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("light")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-sunny")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("light")}]},"Light",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("dark")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:z=>$("dark")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("dark")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-weather-night")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("dark")}]},"Dark",2)]),_:1},8,["color","onClick"])]),_:1}),createVNode(A,{cols:"12",sm:"4"},{default:withCtx(()=>[createVNode(qe,{color:i$1("system")?"primary":"surface",variant:"outlined",class:"d-flex flex-column align-center pa-4",hover:"",onClick:z=>$("system")},{default:withCtx(()=>[createVNode(L,{size:"large",color:i$1("system")?"white":"primary"},{default:withCtx(()=>[createTextVNode("mdi-theme-light-dark")]),_:1},8,["color"]),createVNode("span",{class:["mt-2",{"text-white":i$1("system")}]},"System",2)]),_:1},8,["color","onClick"])]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:fe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="security"?(openBlock(),createBlock("div",{key:1},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-shield-outline")]),_:1}),createTextVNode(" Security ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Change Password"),createVNode(N,{class:"mb-6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:E.value.newPassword,"onUpdate:modelValue":z=>E.value.newPassword=z,label:"New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(Fe,{modelValue:E.value.confirmPassword,"onUpdate:modelValue":z=>E.value.confirmPassword=z,label:"Confirm New Password",variant:"outlined",type:"password",class:"mb-3"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-end"},[createVNode(We,{color:"primary",variant:"elevated",onClick:ve},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Update Password ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="cookies"?(openBlock(),createBlock("div",{key:2},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-cookie-settings-outline")]),_:1}),createTextVNode(" Cookie Preferences ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")]),_:1}),createVNode(qe,{color:"surface",variant:"outlined",class:"mb-6 pa-4"},{default:withCtx(()=>[createVNode("h3",{class:"text-h6 font-weight-bold mb-3"},"Current Preferences Status"),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Essential cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode("Enabled")]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Functional cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.functional?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Analytics cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.analytics?"Enabled":"Disabled"),1)]),_:1})]),_:1}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createTextVNode("Marketing cookies:")]),_:1}),createVNode(S,null,{default:withCtx(()=>[createTextVNode(toDisplayString(t.value.marketing?"Enabled":"Disabled"),1)]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.essential,"onUpdate:modelValue":z=>t.value.essential=z,label:"Essential cookies",color:"primary",disabled:"","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Required for the site to function, they cannot be disabled. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.functional,"onUpdate:modelValue":z=>t.value.functional=z,label:"Functional cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Allow us to remember your preferences and personalize your experience. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.analytics,"onUpdate:modelValue":z=>t.value.analytics=z,label:"Analytics cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Help us understand how you use our site to improve it. ")]),_:1})]),_:1}),createVNode(P,{class:"my-2"}),createVNode(ot,null,{default:withCtx(()=>[createVNode(i,null,{default:withCtx(()=>[createVNode(ye,{modelValue:t.value.marketing,"onUpdate:modelValue":z=>t.value.marketing=z,label:"Marketing cookies",color:"primary","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(" Used to provide you with personalized advertisements. ")]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"d-flex justify-space-between"},[createVNode(We,{color:"error",variant:"outlined",onClick:pe},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-cookie-remove")]),_:1}),createTextVNode(" Delete all cookies ")]),_:1}),createVNode(We,{color:"primary",variant:"elevated",onClick:ye$1},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-content-save")]),_:1}),createTextVNode(" Save ")]),_:1})])]),_:1})])):createCommentVNode("",true),d.value==="privacy"?(openBlock(),createBlock("div",{key:3},[createVNode(r,{class:"bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"},{default:withCtx(()=>[createVNode(L,{color:"white",class:"mr-2"},{default:withCtx(()=>[createTextVNode("mdi-delete-outline")]),_:1}),createTextVNode(" Data & Privacy ")]),_:1}),createVNode(C,{class:"pa-4"},{default:withCtx(()=>[createVNode(Te,{type:"warning",variant:"tonal",class:"mb-4"},{default:withCtx(()=>[createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")]),_:1}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3"},"Data Export"),createVNode("p",{class:"mb-4"},"You can download all your personal data stored on our platform."),createVNode(We,{color:"primary",variant:"outlined","prepend-icon":"mdi-download",onClick:ge,class:"mb-6",disabled:""},{default:withCtx(()=>[createTextVNode("Export my data")]),_:1}),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-success"},"Premium Status"),createVNode("p",{class:"mb-4"},[createTextVNode(" Current status: "),unref(de).user?.isPremium?(openBlock(),createBlock(je,{key:0,color:"success"},{default:withCtx(()=>[createTextVNode(" Premium ")]),_:1})):(openBlock(),createBlock(je,{key:1,color:"error"},{default:withCtx(()=>[createTextVNode(" Free ")]),_:1}))]),createVNode(P,{class:"my-4"}),createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-3 text-error"},"Account Deletion"),createVNode("p",{class:"mb-4"},"Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),G.value?(openBlock(),createBlock("div",{key:0},[createVNode(Fe,{modelValue:J.value,"onUpdate:modelValue":z=>J.value=z,label:"Type 'DELETE' to confirm",variant:"outlined",hint:"This action is irreversible","persistent-hint":"",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode("div",{class:"d-flex"},[createVNode(We,{color:"error",variant:"tonal",disabled:J.value!=="DELETE",onClick:be,class:"mr-2"},{default:withCtx(()=>[createTextVNode(" Confirm deletion ")]),_:1},8,["disabled"]),createVNode(We,{color:"grey",variant:"text",onClick:z=>G.value=false},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"])])])):(openBlock(),createBlock(We,{key:1,color:"error",variant:"outlined","prepend-icon":"mdi-account-remove",onClick:z=>G.value=true},{default:withCtx(()=>[createTextVNode(" Delete my account ")]),_:1},8,["onClick"]))]),_:1})])):createCommentVNode("",true)]),_:1})]),_:1})]),_:1}),createVNode(f,{modelValue:le.value,"onUpdate:modelValue":z=>le.value=z,text:oe.value,color:ie.value,timeout:2e3},null,8,["modelValue","onUpdate:modelValue","text","color"])]}),_:1},We$1));}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "settings",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useHead({
+      title: "Settings - DevUnity",
+      meta: [
+        { name: "description", content: "Manage your account settings and preferences" },
+        { name: "keywords", content: "DevUnity, settings, preferences, account, user settings" },
+        { name: "author", content: "DevUnity" },
+        { name: "robots", content: "index, follow" },
+        { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+        { name: "og:title", content: "Settings - DevUnity" },
+        { name: "og:description", content: "Manage your account settings and preferences" },
+        { name: "og:image", content: "/logo/devunity-title.png" }
+      ]
+    });
+    useTheme();
+    const userStore = useUserStore();
+    const activeTab = ref("security");
+    const snackbar = ref(false);
+    const snackbarText = ref("");
+    const snackbarColor = ref("success");
+    const showDeleteAccount = ref(false);
+    const deleteAccountConfirmation = ref("");
+    const theme = ref("dark");
+    const changeTheme = (newTheme) => {
+      if (["light", "dark", "system"].includes(newTheme)) {
+        theme.value = newTheme;
+      }
+    };
+    const security = ref({
+      newPassword: "",
+      confirmPassword: ""
+    });
+    const cookies = ref({
+      essential: true,
+      functional: true,
+      analytics: false,
+      marketing: false
+    });
+    const saveAppearance = () => {
+      setTimeout(() => {
+        showSnackbar("Appearance settings updated", "success");
+      }, 500);
+    };
+    const saveSecurity = async () => {
+      try {
+        if (!security.value.newPassword || !security.value.confirmPassword) {
+          snackbarText.value = "New password and confirm password are required";
+          snackbarColor.value = "error";
+          snackbar.value = true;
+          return;
+        }
+        if (security.value.newPassword !== security.value.confirmPassword) {
+          snackbarText.value = "Passwords do not match";
+          snackbarColor.value = "error";
+          snackbar.value = true;
+          return;
+        }
+        await userStore.resetPassword(security.value.newPassword);
+        snackbarText.value = "Password updated successfully";
+        snackbarColor.value = "success";
+        snackbar.value = true;
+      } catch (error) {
+        snackbarText.value = "An error occurred while updating the password";
+        snackbarColor.value = "error";
+        snackbar.value = true;
+      }
+    };
+    const saveCookies = () => {
+      showSnackbar("Cookie preferences updated", "success");
+    };
+    const resetCookies = () => {
+      cookies.value.functional = false;
+      cookies.value.analytics = false;
+      cookies.value.marketing = false;
+      showSnackbar("Cookies deleted successfully", "success");
+    };
+    const exportUserData = () => {
+      setTimeout(() => {
+        snackbarText.value = "Your data has been prepared for download";
+        snackbarColor.value = "success";
+        snackbar.value = true;
+      }, 1e3);
+    };
+    const confirmDeleteAccount = async () => {
+      try {
+        await userStore.deleteAccount();
+        snackbarText.value = "Your account has been deleted successfully";
+        snackbarColor.value = "success";
+        snackbar.value = true;
+        setTimeout(() => {
+          (void 0).location.href = "/login";
+        }, 2e3);
+      } catch (error) {
+        snackbarText.value = "An error occurred while deleting your account";
+        snackbarColor.value = "error";
+        snackbar.value = true;
+      }
+    };
+    const showSnackbar = (text, color) => {
+      snackbarText.value = text;
+      snackbarColor.value = color;
+      snackbar.value = true;
+    };
+    const isActiveTheme = (themeName) => {
+      return theme.value === themeName;
+    };
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(VContainer, mergeProps({
+        fluid: "",
+        class: "pa-6"
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VRow, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VCol, {
+                    cols: "12",
+                    lg: "3"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VCard, {
+                          class: "rounded-lg mb-4",
+                          elevation: "2"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VList, { nav: "" }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VListItem, {
+                                      "prepend-icon": "mdi-palette-outline",
+                                      title: "Appearance",
+                                      value: "appearance",
+                                      onClick: ($event) => activeTab.value = "appearance",
+                                      rounded: "lg",
+                                      active: activeTab.value === "appearance",
+                                      color: "primary"
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(ssrRenderComponent(VListItem, {
+                                      "prepend-icon": "mdi-shield-outline",
+                                      title: "Security",
+                                      value: "security",
+                                      onClick: ($event) => activeTab.value = "security",
+                                      rounded: "lg",
+                                      active: activeTab.value === "security",
+                                      color: "primary"
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(ssrRenderComponent(VDivider, { class: "my-2" }, null, _parent6, _scopeId5));
+                                    _push6(ssrRenderComponent(VListItem, {
+                                      "prepend-icon": "mdi-cookie-settings-outline",
+                                      title: "Cookies",
+                                      value: "cookies",
+                                      onClick: ($event) => activeTab.value = "cookies",
+                                      rounded: "lg",
+                                      active: activeTab.value === "cookies",
+                                      color: "primary"
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(ssrRenderComponent(VListItem, {
+                                      "prepend-icon": "mdi-delete-outline",
+                                      title: "Data & Privacy",
+                                      value: "privacy",
+                                      onClick: ($event) => activeTab.value = "privacy",
+                                      rounded: "lg",
+                                      active: activeTab.value === "privacy",
+                                      color: "primary"
+                                    }, null, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VListItem, {
+                                        "prepend-icon": "mdi-palette-outline",
+                                        title: "Appearance",
+                                        value: "appearance",
+                                        onClick: ($event) => activeTab.value = "appearance",
+                                        rounded: "lg",
+                                        active: activeTab.value === "appearance",
+                                        color: "primary"
+                                      }, null, 8, ["onClick", "active"]),
+                                      createVNode(VListItem, {
+                                        "prepend-icon": "mdi-shield-outline",
+                                        title: "Security",
+                                        value: "security",
+                                        onClick: ($event) => activeTab.value = "security",
+                                        rounded: "lg",
+                                        active: activeTab.value === "security",
+                                        color: "primary"
+                                      }, null, 8, ["onClick", "active"]),
+                                      createVNode(VDivider, { class: "my-2" }),
+                                      createVNode(VListItem, {
+                                        "prepend-icon": "mdi-cookie-settings-outline",
+                                        title: "Cookies",
+                                        value: "cookies",
+                                        onClick: ($event) => activeTab.value = "cookies",
+                                        rounded: "lg",
+                                        active: activeTab.value === "cookies",
+                                        color: "primary"
+                                      }, null, 8, ["onClick", "active"]),
+                                      createVNode(VListItem, {
+                                        "prepend-icon": "mdi-delete-outline",
+                                        title: "Data & Privacy",
+                                        value: "privacy",
+                                        onClick: ($event) => activeTab.value = "privacy",
+                                        rounded: "lg",
+                                        active: activeTab.value === "privacy",
+                                        color: "primary"
+                                      }, null, 8, ["onClick", "active"])
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VList, { nav: "" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VListItem, {
+                                      "prepend-icon": "mdi-palette-outline",
+                                      title: "Appearance",
+                                      value: "appearance",
+                                      onClick: ($event) => activeTab.value = "appearance",
+                                      rounded: "lg",
+                                      active: activeTab.value === "appearance",
+                                      color: "primary"
+                                    }, null, 8, ["onClick", "active"]),
+                                    createVNode(VListItem, {
+                                      "prepend-icon": "mdi-shield-outline",
+                                      title: "Security",
+                                      value: "security",
+                                      onClick: ($event) => activeTab.value = "security",
+                                      rounded: "lg",
+                                      active: activeTab.value === "security",
+                                      color: "primary"
+                                    }, null, 8, ["onClick", "active"]),
+                                    createVNode(VDivider, { class: "my-2" }),
+                                    createVNode(VListItem, {
+                                      "prepend-icon": "mdi-cookie-settings-outline",
+                                      title: "Cookies",
+                                      value: "cookies",
+                                      onClick: ($event) => activeTab.value = "cookies",
+                                      rounded: "lg",
+                                      active: activeTab.value === "cookies",
+                                      color: "primary"
+                                    }, null, 8, ["onClick", "active"]),
+                                    createVNode(VListItem, {
+                                      "prepend-icon": "mdi-delete-outline",
+                                      title: "Data & Privacy",
+                                      value: "privacy",
+                                      onClick: ($event) => activeTab.value = "privacy",
+                                      rounded: "lg",
+                                      active: activeTab.value === "privacy",
+                                      color: "primary"
+                                    }, null, 8, ["onClick", "active"])
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VCard, {
+                            class: "rounded-lg mb-4",
+                            elevation: "2"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VList, { nav: "" }, {
+                                default: withCtx(() => [
+                                  createVNode(VListItem, {
+                                    "prepend-icon": "mdi-palette-outline",
+                                    title: "Appearance",
+                                    value: "appearance",
+                                    onClick: ($event) => activeTab.value = "appearance",
+                                    rounded: "lg",
+                                    active: activeTab.value === "appearance",
+                                    color: "primary"
+                                  }, null, 8, ["onClick", "active"]),
+                                  createVNode(VListItem, {
+                                    "prepend-icon": "mdi-shield-outline",
+                                    title: "Security",
+                                    value: "security",
+                                    onClick: ($event) => activeTab.value = "security",
+                                    rounded: "lg",
+                                    active: activeTab.value === "security",
+                                    color: "primary"
+                                  }, null, 8, ["onClick", "active"]),
+                                  createVNode(VDivider, { class: "my-2" }),
+                                  createVNode(VListItem, {
+                                    "prepend-icon": "mdi-cookie-settings-outline",
+                                    title: "Cookies",
+                                    value: "cookies",
+                                    onClick: ($event) => activeTab.value = "cookies",
+                                    rounded: "lg",
+                                    active: activeTab.value === "cookies",
+                                    color: "primary"
+                                  }, null, 8, ["onClick", "active"]),
+                                  createVNode(VListItem, {
+                                    "prepend-icon": "mdi-delete-outline",
+                                    title: "Data & Privacy",
+                                    value: "privacy",
+                                    onClick: ($event) => activeTab.value = "privacy",
+                                    rounded: "lg",
+                                    active: activeTab.value === "privacy",
+                                    color: "primary"
+                                  }, null, 8, ["onClick", "active"])
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VCol, {
+                    cols: "12",
+                    lg: "9"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VCard, {
+                          class: "rounded-lg",
+                          elevation: "2"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              if (activeTab.value === "appearance") {
+                                _push5(`<div data-v-be6d8b82${_scopeId4}>`);
+                                _push5(ssrRenderComponent(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VIcon, {
+                                        color: "white",
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(`mdi-palette-outline`);
+                                          } else {
+                                            return [
+                                              createTextVNode("mdi-palette-outline")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(` Appearance `);
+                                    } else {
+                                      return [
+                                        createVNode(VIcon, {
+                                          color: "white",
+                                          class: "mr-2"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-palette-outline")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(" Appearance ")
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(ssrRenderComponent(VCardText, { class: "pa-4" }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VRow, { class: "mb-4" }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VCol, { cols: "12" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(`<div class="text-subtitle-1 font-weight-bold mb-3" data-v-be6d8b82${_scopeId7}>Theme</div>`);
+                                                  _push8(ssrRenderComponent(VRow, null, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VCol, {
+                                                          cols: "12",
+                                                          sm: "4"
+                                                        }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(ssrRenderComponent(VCard, {
+                                                                color: isActiveTheme("light") ? "primary" : "surface",
+                                                                variant: "outlined",
+                                                                class: "d-flex flex-column align-center pa-4",
+                                                                hover: "",
+                                                                onClick: ($event) => changeTheme("light")
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VIcon, {
+                                                                      size: "large",
+                                                                      color: isActiveTheme("light") ? "white" : "primary"
+                                                                    }, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(`mdi-weather-sunny`);
+                                                                        } else {
+                                                                          return [
+                                                                            createTextVNode("mdi-weather-sunny")
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 1
+                                                                    }, _parent11, _scopeId10));
+                                                                    _push11(`<span class="${ssrRenderClass([{ "text-white": isActiveTheme("light") }, "mt-2"])}" data-v-be6d8b82${_scopeId10}>Light</span>`);
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VIcon, {
+                                                                        size: "large",
+                                                                        color: isActiveTheme("light") ? "white" : "primary"
+                                                                      }, {
+                                                                        default: withCtx(() => [
+                                                                          createTextVNode("mdi-weather-sunny")
+                                                                        ]),
+                                                                        _: 1
+                                                                      }, 8, ["color"]),
+                                                                      createVNode("span", {
+                                                                        class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                                      }, "Light", 2)
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 1
+                                                              }, _parent10, _scopeId9));
+                                                            } else {
+                                                              return [
+                                                                createVNode(VCard, {
+                                                                  color: isActiveTheme("light") ? "primary" : "surface",
+                                                                  variant: "outlined",
+                                                                  class: "d-flex flex-column align-center pa-4",
+                                                                  hover: "",
+                                                                  onClick: ($event) => changeTheme("light")
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VIcon, {
+                                                                      size: "large",
+                                                                      color: isActiveTheme("light") ? "white" : "primary"
+                                                                    }, {
+                                                                      default: withCtx(() => [
+                                                                        createTextVNode("mdi-weather-sunny")
+                                                                      ]),
+                                                                      _: 1
+                                                                    }, 8, ["color"]),
+                                                                    createVNode("span", {
+                                                                      class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                                    }, "Light", 2)
+                                                                  ]),
+                                                                  _: 1
+                                                                }, 8, ["color", "onClick"])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCol, {
+                                                          cols: "12",
+                                                          sm: "4"
+                                                        }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(ssrRenderComponent(VCard, {
+                                                                color: isActiveTheme("dark") ? "primary" : "surface",
+                                                                variant: "outlined",
+                                                                class: "d-flex flex-column align-center pa-4",
+                                                                hover: "",
+                                                                onClick: ($event) => changeTheme("dark")
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VIcon, {
+                                                                      size: "large",
+                                                                      color: isActiveTheme("dark") ? "white" : "primary"
+                                                                    }, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(`mdi-weather-night`);
+                                                                        } else {
+                                                                          return [
+                                                                            createTextVNode("mdi-weather-night")
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 1
+                                                                    }, _parent11, _scopeId10));
+                                                                    _push11(`<span class="${ssrRenderClass([{ "text-white": isActiveTheme("dark") }, "mt-2"])}" data-v-be6d8b82${_scopeId10}>Dark</span>`);
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VIcon, {
+                                                                        size: "large",
+                                                                        color: isActiveTheme("dark") ? "white" : "primary"
+                                                                      }, {
+                                                                        default: withCtx(() => [
+                                                                          createTextVNode("mdi-weather-night")
+                                                                        ]),
+                                                                        _: 1
+                                                                      }, 8, ["color"]),
+                                                                      createVNode("span", {
+                                                                        class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                                      }, "Dark", 2)
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 1
+                                                              }, _parent10, _scopeId9));
+                                                            } else {
+                                                              return [
+                                                                createVNode(VCard, {
+                                                                  color: isActiveTheme("dark") ? "primary" : "surface",
+                                                                  variant: "outlined",
+                                                                  class: "d-flex flex-column align-center pa-4",
+                                                                  hover: "",
+                                                                  onClick: ($event) => changeTheme("dark")
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VIcon, {
+                                                                      size: "large",
+                                                                      color: isActiveTheme("dark") ? "white" : "primary"
+                                                                    }, {
+                                                                      default: withCtx(() => [
+                                                                        createTextVNode("mdi-weather-night")
+                                                                      ]),
+                                                                      _: 1
+                                                                    }, 8, ["color"]),
+                                                                    createVNode("span", {
+                                                                      class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                                    }, "Dark", 2)
+                                                                  ]),
+                                                                  _: 1
+                                                                }, 8, ["color", "onClick"])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCol, {
+                                                          cols: "12",
+                                                          sm: "4"
+                                                        }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(ssrRenderComponent(VCard, {
+                                                                color: isActiveTheme("system") ? "primary" : "surface",
+                                                                variant: "outlined",
+                                                                class: "d-flex flex-column align-center pa-4",
+                                                                hover: "",
+                                                                onClick: ($event) => changeTheme("system")
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VIcon, {
+                                                                      size: "large",
+                                                                      color: isActiveTheme("system") ? "white" : "primary"
+                                                                    }, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(`mdi-theme-light-dark`);
+                                                                        } else {
+                                                                          return [
+                                                                            createTextVNode("mdi-theme-light-dark")
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 1
+                                                                    }, _parent11, _scopeId10));
+                                                                    _push11(`<span class="${ssrRenderClass([{ "text-white": isActiveTheme("system") }, "mt-2"])}" data-v-be6d8b82${_scopeId10}>System</span>`);
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VIcon, {
+                                                                        size: "large",
+                                                                        color: isActiveTheme("system") ? "white" : "primary"
+                                                                      }, {
+                                                                        default: withCtx(() => [
+                                                                          createTextVNode("mdi-theme-light-dark")
+                                                                        ]),
+                                                                        _: 1
+                                                                      }, 8, ["color"]),
+                                                                      createVNode("span", {
+                                                                        class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                                      }, "System", 2)
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 1
+                                                              }, _parent10, _scopeId9));
+                                                            } else {
+                                                              return [
+                                                                createVNode(VCard, {
+                                                                  color: isActiveTheme("system") ? "primary" : "surface",
+                                                                  variant: "outlined",
+                                                                  class: "d-flex flex-column align-center pa-4",
+                                                                  hover: "",
+                                                                  onClick: ($event) => changeTheme("system")
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VIcon, {
+                                                                      size: "large",
+                                                                      color: isActiveTheme("system") ? "white" : "primary"
+                                                                    }, {
+                                                                      default: withCtx(() => [
+                                                                        createTextVNode("mdi-theme-light-dark")
+                                                                      ]),
+                                                                      _: 1
+                                                                    }, 8, ["color"]),
+                                                                    createVNode("span", {
+                                                                      class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                                    }, "System", 2)
+                                                                  ]),
+                                                                  _: 1
+                                                                }, 8, ["color", "onClick"])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VCol, {
+                                                            cols: "12",
+                                                            sm: "4"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VCard, {
+                                                                color: isActiveTheme("light") ? "primary" : "surface",
+                                                                variant: "outlined",
+                                                                class: "d-flex flex-column align-center pa-4",
+                                                                hover: "",
+                                                                onClick: ($event) => changeTheme("light")
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VIcon, {
+                                                                    size: "large",
+                                                                    color: isActiveTheme("light") ? "white" : "primary"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-weather-sunny")
+                                                                    ]),
+                                                                    _: 1
+                                                                  }, 8, ["color"]),
+                                                                  createVNode("span", {
+                                                                    class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                                  }, "Light", 2)
+                                                                ]),
+                                                                _: 1
+                                                              }, 8, ["color", "onClick"])
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode(VCol, {
+                                                            cols: "12",
+                                                            sm: "4"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VCard, {
+                                                                color: isActiveTheme("dark") ? "primary" : "surface",
+                                                                variant: "outlined",
+                                                                class: "d-flex flex-column align-center pa-4",
+                                                                hover: "",
+                                                                onClick: ($event) => changeTheme("dark")
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VIcon, {
+                                                                    size: "large",
+                                                                    color: isActiveTheme("dark") ? "white" : "primary"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-weather-night")
+                                                                    ]),
+                                                                    _: 1
+                                                                  }, 8, ["color"]),
+                                                                  createVNode("span", {
+                                                                    class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                                  }, "Dark", 2)
+                                                                ]),
+                                                                _: 1
+                                                              }, 8, ["color", "onClick"])
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode(VCol, {
+                                                            cols: "12",
+                                                            sm: "4"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VCard, {
+                                                                color: isActiveTheme("system") ? "primary" : "surface",
+                                                                variant: "outlined",
+                                                                class: "d-flex flex-column align-center pa-4",
+                                                                hover: "",
+                                                                onClick: ($event) => changeTheme("system")
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VIcon, {
+                                                                    size: "large",
+                                                                    color: isActiveTheme("system") ? "white" : "primary"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-theme-light-dark")
+                                                                    ]),
+                                                                    _: 1
+                                                                  }, 8, ["color"]),
+                                                                  createVNode("span", {
+                                                                    class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                                  }, "System", 2)
+                                                                ]),
+                                                                _: 1
+                                                              }, 8, ["color", "onClick"])
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Theme"),
+                                                    createVNode(VRow, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VCol, {
+                                                          cols: "12",
+                                                          sm: "4"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VCard, {
+                                                              color: isActiveTheme("light") ? "primary" : "surface",
+                                                              variant: "outlined",
+                                                              class: "d-flex flex-column align-center pa-4",
+                                                              hover: "",
+                                                              onClick: ($event) => changeTheme("light")
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VIcon, {
+                                                                  size: "large",
+                                                                  color: isActiveTheme("light") ? "white" : "primary"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-weather-sunny")
+                                                                  ]),
+                                                                  _: 1
+                                                                }, 8, ["color"]),
+                                                                createVNode("span", {
+                                                                  class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                                }, "Light", 2)
+                                                              ]),
+                                                              _: 1
+                                                            }, 8, ["color", "onClick"])
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode(VCol, {
+                                                          cols: "12",
+                                                          sm: "4"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VCard, {
+                                                              color: isActiveTheme("dark") ? "primary" : "surface",
+                                                              variant: "outlined",
+                                                              class: "d-flex flex-column align-center pa-4",
+                                                              hover: "",
+                                                              onClick: ($event) => changeTheme("dark")
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VIcon, {
+                                                                  size: "large",
+                                                                  color: isActiveTheme("dark") ? "white" : "primary"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-weather-night")
+                                                                  ]),
+                                                                  _: 1
+                                                                }, 8, ["color"]),
+                                                                createVNode("span", {
+                                                                  class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                                }, "Dark", 2)
+                                                              ]),
+                                                              _: 1
+                                                            }, 8, ["color", "onClick"])
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode(VCol, {
+                                                          cols: "12",
+                                                          sm: "4"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VCard, {
+                                                              color: isActiveTheme("system") ? "primary" : "surface",
+                                                              variant: "outlined",
+                                                              class: "d-flex flex-column align-center pa-4",
+                                                              hover: "",
+                                                              onClick: ($event) => changeTheme("system")
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VIcon, {
+                                                                  size: "large",
+                                                                  color: isActiveTheme("system") ? "white" : "primary"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-theme-light-dark")
+                                                                  ]),
+                                                                  _: 1
+                                                                }, 8, ["color"]),
+                                                                createVNode("span", {
+                                                                  class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                                }, "System", 2)
+                                                              ]),
+                                                              _: 1
+                                                            }, 8, ["color", "onClick"])
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                          } else {
+                                            return [
+                                              createVNode(VCol, { cols: "12" }, {
+                                                default: withCtx(() => [
+                                                  createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Theme"),
+                                                  createVNode(VRow, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VCol, {
+                                                        cols: "12",
+                                                        sm: "4"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VCard, {
+                                                            color: isActiveTheme("light") ? "primary" : "surface",
+                                                            variant: "outlined",
+                                                            class: "d-flex flex-column align-center pa-4",
+                                                            hover: "",
+                                                            onClick: ($event) => changeTheme("light")
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VIcon, {
+                                                                size: "large",
+                                                                color: isActiveTheme("light") ? "white" : "primary"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-weather-sunny")
+                                                                ]),
+                                                                _: 1
+                                                              }, 8, ["color"]),
+                                                              createVNode("span", {
+                                                                class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                              }, "Light", 2)
+                                                            ]),
+                                                            _: 1
+                                                          }, 8, ["color", "onClick"])
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode(VCol, {
+                                                        cols: "12",
+                                                        sm: "4"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VCard, {
+                                                            color: isActiveTheme("dark") ? "primary" : "surface",
+                                                            variant: "outlined",
+                                                            class: "d-flex flex-column align-center pa-4",
+                                                            hover: "",
+                                                            onClick: ($event) => changeTheme("dark")
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VIcon, {
+                                                                size: "large",
+                                                                color: isActiveTheme("dark") ? "white" : "primary"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-weather-night")
+                                                                ]),
+                                                                _: 1
+                                                              }, 8, ["color"]),
+                                                              createVNode("span", {
+                                                                class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                              }, "Dark", 2)
+                                                            ]),
+                                                            _: 1
+                                                          }, 8, ["color", "onClick"])
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode(VCol, {
+                                                        cols: "12",
+                                                        sm: "4"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VCard, {
+                                                            color: isActiveTheme("system") ? "primary" : "surface",
+                                                            variant: "outlined",
+                                                            class: "d-flex flex-column align-center pa-4",
+                                                            hover: "",
+                                                            onClick: ($event) => changeTheme("system")
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VIcon, {
+                                                                size: "large",
+                                                                color: isActiveTheme("system") ? "white" : "primary"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-theme-light-dark")
+                                                                ]),
+                                                                _: 1
+                                                              }, 8, ["color"]),
+                                                              createVNode("span", {
+                                                                class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                              }, "System", 2)
+                                                            ]),
+                                                            _: 1
+                                                          }, 8, ["color", "onClick"])
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              })
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(ssrRenderComponent(VDivider, { class: "my-4" }, null, _parent6, _scopeId5));
+                                      _push6(`<div class="d-flex justify-end" data-v-be6d8b82${_scopeId5}>`);
+                                      _push6(ssrRenderComponent(VBtn, {
+                                        color: "primary",
+                                        variant: "elevated",
+                                        onClick: saveAppearance
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VIcon, { start: "" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(`mdi-content-save`);
+                                                } else {
+                                                  return [
+                                                    createTextVNode("mdi-content-save")
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                            _push7(` Save `);
+                                          } else {
+                                            return [
+                                              createVNode(VIcon, { start: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-content-save")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createTextVNode(" Save ")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(`</div>`);
+                                    } else {
+                                      return [
+                                        createVNode(VRow, { class: "mb-4" }, {
+                                          default: withCtx(() => [
+                                            createVNode(VCol, { cols: "12" }, {
+                                              default: withCtx(() => [
+                                                createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Theme"),
+                                                createVNode(VRow, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VCol, {
+                                                      cols: "12",
+                                                      sm: "4"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VCard, {
+                                                          color: isActiveTheme("light") ? "primary" : "surface",
+                                                          variant: "outlined",
+                                                          class: "d-flex flex-column align-center pa-4",
+                                                          hover: "",
+                                                          onClick: ($event) => changeTheme("light")
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VIcon, {
+                                                              size: "large",
+                                                              color: isActiveTheme("light") ? "white" : "primary"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-weather-sunny")
+                                                              ]),
+                                                              _: 1
+                                                            }, 8, ["color"]),
+                                                            createVNode("span", {
+                                                              class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                            }, "Light", 2)
+                                                          ]),
+                                                          _: 1
+                                                        }, 8, ["color", "onClick"])
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VCol, {
+                                                      cols: "12",
+                                                      sm: "4"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VCard, {
+                                                          color: isActiveTheme("dark") ? "primary" : "surface",
+                                                          variant: "outlined",
+                                                          class: "d-flex flex-column align-center pa-4",
+                                                          hover: "",
+                                                          onClick: ($event) => changeTheme("dark")
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VIcon, {
+                                                              size: "large",
+                                                              color: isActiveTheme("dark") ? "white" : "primary"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-weather-night")
+                                                              ]),
+                                                              _: 1
+                                                            }, 8, ["color"]),
+                                                            createVNode("span", {
+                                                              class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                            }, "Dark", 2)
+                                                          ]),
+                                                          _: 1
+                                                        }, 8, ["color", "onClick"])
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VCol, {
+                                                      cols: "12",
+                                                      sm: "4"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VCard, {
+                                                          color: isActiveTheme("system") ? "primary" : "surface",
+                                                          variant: "outlined",
+                                                          class: "d-flex flex-column align-center pa-4",
+                                                          hover: "",
+                                                          onClick: ($event) => changeTheme("system")
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VIcon, {
+                                                              size: "large",
+                                                              color: isActiveTheme("system") ? "white" : "primary"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-theme-light-dark")
+                                                              ]),
+                                                              _: 1
+                                                            }, 8, ["color"]),
+                                                            createVNode("span", {
+                                                              class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                            }, "System", 2)
+                                                          ]),
+                                                          _: 1
+                                                        }, 8, ["color", "onClick"])
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VDivider, { class: "my-4" }),
+                                        createVNode("div", { class: "d-flex justify-end" }, [
+                                          createVNode(VBtn, {
+                                            color: "primary",
+                                            variant: "elevated",
+                                            onClick: saveAppearance
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VIcon, { start: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-content-save")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createTextVNode(" Save ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ])
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(`</div>`);
+                              } else {
+                                _push5(`<!---->`);
+                              }
+                              if (activeTab.value === "security") {
+                                _push5(`<div data-v-be6d8b82${_scopeId4}>`);
+                                _push5(ssrRenderComponent(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VIcon, {
+                                        color: "white",
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(`mdi-shield-outline`);
+                                          } else {
+                                            return [
+                                              createTextVNode("mdi-shield-outline")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(` Security `);
+                                    } else {
+                                      return [
+                                        createVNode(VIcon, {
+                                          color: "white",
+                                          class: "mr-2"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-shield-outline")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(" Security ")
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(ssrRenderComponent(VCardText, { class: "pa-4" }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VAlert, {
+                                        type: "info",
+                                        variant: "tonal",
+                                        class: "mb-4"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(` Manage your account security settings. We recommend using a strong password and changing it regularly. `);
+                                          } else {
+                                            return [
+                                              createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(`<div class="text-subtitle-1 font-weight-bold mb-3" data-v-be6d8b82${_scopeId5}>Change Password</div>`);
+                                      _push6(ssrRenderComponent(VForm, { class: "mb-6" }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VTextField, {
+                                              modelValue: security.value.newPassword,
+                                              "onUpdate:modelValue": ($event) => security.value.newPassword = $event,
+                                              label: "New Password",
+                                              variant: "outlined",
+                                              type: "password",
+                                              class: "mb-3"
+                                            }, null, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VTextField, {
+                                              modelValue: security.value.confirmPassword,
+                                              "onUpdate:modelValue": ($event) => security.value.confirmPassword = $event,
+                                              label: "Confirm New Password",
+                                              variant: "outlined",
+                                              type: "password",
+                                              class: "mb-3"
+                                            }, null, _parent7, _scopeId6));
+                                          } else {
+                                            return [
+                                              createVNode(VTextField, {
+                                                modelValue: security.value.newPassword,
+                                                "onUpdate:modelValue": ($event) => security.value.newPassword = $event,
+                                                label: "New Password",
+                                                variant: "outlined",
+                                                type: "password",
+                                                class: "mb-3"
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                              createVNode(VTextField, {
+                                                modelValue: security.value.confirmPassword,
+                                                "onUpdate:modelValue": ($event) => security.value.confirmPassword = $event,
+                                                label: "Confirm New Password",
+                                                variant: "outlined",
+                                                type: "password",
+                                                class: "mb-3"
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(ssrRenderComponent(VDivider, { class: "my-4" }, null, _parent6, _scopeId5));
+                                      _push6(`<div class="d-flex justify-end" data-v-be6d8b82${_scopeId5}>`);
+                                      _push6(ssrRenderComponent(VBtn, {
+                                        color: "primary",
+                                        variant: "elevated",
+                                        onClick: saveSecurity
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VIcon, { start: "" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(`mdi-content-save`);
+                                                } else {
+                                                  return [
+                                                    createTextVNode("mdi-content-save")
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                            _push7(` Update Password `);
+                                          } else {
+                                            return [
+                                              createVNode(VIcon, { start: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-content-save")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createTextVNode(" Update Password ")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(`</div>`);
+                                    } else {
+                                      return [
+                                        createVNode(VAlert, {
+                                          type: "info",
+                                          variant: "tonal",
+                                          class: "mb-4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Change Password"),
+                                        createVNode(VForm, { class: "mb-6" }, {
+                                          default: withCtx(() => [
+                                            createVNode(VTextField, {
+                                              modelValue: security.value.newPassword,
+                                              "onUpdate:modelValue": ($event) => security.value.newPassword = $event,
+                                              label: "New Password",
+                                              variant: "outlined",
+                                              type: "password",
+                                              class: "mb-3"
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                            createVNode(VTextField, {
+                                              modelValue: security.value.confirmPassword,
+                                              "onUpdate:modelValue": ($event) => security.value.confirmPassword = $event,
+                                              label: "Confirm New Password",
+                                              variant: "outlined",
+                                              type: "password",
+                                              class: "mb-3"
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VDivider, { class: "my-4" }),
+                                        createVNode("div", { class: "d-flex justify-end" }, [
+                                          createVNode(VBtn, {
+                                            color: "primary",
+                                            variant: "elevated",
+                                            onClick: saveSecurity
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VIcon, { start: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-content-save")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createTextVNode(" Update Password ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ])
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(`</div>`);
+                              } else {
+                                _push5(`<!---->`);
+                              }
+                              if (activeTab.value === "cookies") {
+                                _push5(`<div data-v-be6d8b82${_scopeId4}>`);
+                                _push5(ssrRenderComponent(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VIcon, {
+                                        color: "white",
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(`mdi-cookie-settings-outline`);
+                                          } else {
+                                            return [
+                                              createTextVNode("mdi-cookie-settings-outline")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(` Cookie Preferences `);
+                                    } else {
+                                      return [
+                                        createVNode(VIcon, {
+                                          color: "white",
+                                          class: "mr-2"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-cookie-settings-outline")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(" Cookie Preferences ")
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(ssrRenderComponent(VCardText, { class: "pa-4" }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VAlert, {
+                                        type: "info",
+                                        variant: "tonal",
+                                        class: "mb-4"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(` Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. `);
+                                          } else {
+                                            return [
+                                              createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(ssrRenderComponent(VCard, {
+                                        color: "surface",
+                                        variant: "outlined",
+                                        class: "mb-6 pa-4"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(`<h3 class="text-h6 font-weight-bold mb-3" data-v-be6d8b82${_scopeId6}>Current Preferences Status</h3>`);
+                                            _push7(ssrRenderComponent(VList, null, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VListItem, null, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VListItemTitle, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`Essential cookies:`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode("Essential cookies:")
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VListItemSubtitle, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`Enabled`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode("Enabled")
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VListItemTitle, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("Essential cookies:")
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode(VListItemSubtitle, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("Enabled")
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                  _push8(ssrRenderComponent(VListItem, null, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VListItemTitle, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`Functional cookies:`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode("Functional cookies:")
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VListItemSubtitle, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`${ssrInterpolate(cookies.value.functional ? "Enabled" : "Disabled")}`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode(toDisplayString(cookies.value.functional ? "Enabled" : "Disabled"), 1)
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VListItemTitle, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("Functional cookies:")
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode(VListItemSubtitle, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(cookies.value.functional ? "Enabled" : "Disabled"), 1)
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                  _push8(ssrRenderComponent(VListItem, null, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VListItemTitle, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`Analytics cookies:`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode("Analytics cookies:")
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VListItemSubtitle, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`${ssrInterpolate(cookies.value.analytics ? "Enabled" : "Disabled")}`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode(toDisplayString(cookies.value.analytics ? "Enabled" : "Disabled"), 1)
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VListItemTitle, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("Analytics cookies:")
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode(VListItemSubtitle, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(cookies.value.analytics ? "Enabled" : "Disabled"), 1)
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                  _push8(ssrRenderComponent(VListItem, null, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VListItemTitle, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`Marketing cookies:`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode("Marketing cookies:")
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VListItemSubtitle, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`${ssrInterpolate(cookies.value.marketing ? "Enabled" : "Disabled")}`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode(toDisplayString(cookies.value.marketing ? "Enabled" : "Disabled"), 1)
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 1
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VListItemTitle, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("Marketing cookies:")
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode(VListItemSubtitle, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(cookies.value.marketing ? "Enabled" : "Disabled"), 1)
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VListItem, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VListItemTitle, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("Essential cookies:")
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode(VListItemSubtitle, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("Enabled")
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItem, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VListItemTitle, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("Functional cookies:")
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode(VListItemSubtitle, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(cookies.value.functional ? "Enabled" : "Disabled"), 1)
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItem, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VListItemTitle, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("Analytics cookies:")
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode(VListItemSubtitle, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(cookies.value.analytics ? "Enabled" : "Disabled"), 1)
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItem, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VListItemTitle, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("Marketing cookies:")
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode(VListItemSubtitle, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(cookies.value.marketing ? "Enabled" : "Disabled"), 1)
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                          } else {
+                                            return [
+                                              createVNode("h3", { class: "text-h6 font-weight-bold mb-3" }, "Current Preferences Status"),
+                                              createVNode(VList, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VListItem, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VListItemTitle, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("Essential cookies:")
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode(VListItemSubtitle, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("Enabled")
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItem, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VListItemTitle, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("Functional cookies:")
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode(VListItemSubtitle, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(cookies.value.functional ? "Enabled" : "Disabled"), 1)
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItem, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VListItemTitle, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("Analytics cookies:")
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode(VListItemSubtitle, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(cookies.value.analytics ? "Enabled" : "Disabled"), 1)
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItem, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VListItemTitle, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("Marketing cookies:")
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode(VListItemSubtitle, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(cookies.value.marketing ? "Enabled" : "Disabled"), 1)
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              })
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(ssrRenderComponent(VList, null, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VListItem, null, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VListItemTitle, null, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VSwitch, {
+                                                          modelValue: cookies.value.essential,
+                                                          "onUpdate:modelValue": ($event) => cookies.value.essential = $event,
+                                                          label: "Essential cookies",
+                                                          color: "primary",
+                                                          disabled: "",
+                                                          "hide-details": "",
+                                                          inset: ""
+                                                        }, null, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VSwitch, {
+                                                            modelValue: cookies.value.essential,
+                                                            "onUpdate:modelValue": ($event) => cookies.value.essential = $event,
+                                                            label: "Essential cookies",
+                                                            color: "primary",
+                                                            disabled: "",
+                                                            "hide-details": "",
+                                                            inset: ""
+                                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                  _push8(ssrRenderComponent(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(` Required for the site to function, they cannot be disabled. `);
+                                                      } else {
+                                                        return [
+                                                          createTextVNode(" Required for the site to function, they cannot be disabled. ")
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VListItemTitle, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VSwitch, {
+                                                          modelValue: cookies.value.essential,
+                                                          "onUpdate:modelValue": ($event) => cookies.value.essential = $event,
+                                                          label: "Essential cookies",
+                                                          color: "primary",
+                                                          disabled: "",
+                                                          "hide-details": "",
+                                                          inset: ""
+                                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" Required for the site to function, they cannot be disabled. ")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VDivider, { class: "my-2" }, null, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VListItem, null, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VListItemTitle, null, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VSwitch, {
+                                                          modelValue: cookies.value.functional,
+                                                          "onUpdate:modelValue": ($event) => cookies.value.functional = $event,
+                                                          label: "Functional cookies",
+                                                          color: "primary",
+                                                          "hide-details": "",
+                                                          inset: ""
+                                                        }, null, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VSwitch, {
+                                                            modelValue: cookies.value.functional,
+                                                            "onUpdate:modelValue": ($event) => cookies.value.functional = $event,
+                                                            label: "Functional cookies",
+                                                            color: "primary",
+                                                            "hide-details": "",
+                                                            inset: ""
+                                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                  _push8(ssrRenderComponent(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(` Allow us to remember your preferences and personalize your experience. `);
+                                                      } else {
+                                                        return [
+                                                          createTextVNode(" Allow us to remember your preferences and personalize your experience. ")
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VListItemTitle, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VSwitch, {
+                                                          modelValue: cookies.value.functional,
+                                                          "onUpdate:modelValue": ($event) => cookies.value.functional = $event,
+                                                          label: "Functional cookies",
+                                                          color: "primary",
+                                                          "hide-details": "",
+                                                          inset: ""
+                                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" Allow us to remember your preferences and personalize your experience. ")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VDivider, { class: "my-2" }, null, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VListItem, null, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VListItemTitle, null, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VSwitch, {
+                                                          modelValue: cookies.value.analytics,
+                                                          "onUpdate:modelValue": ($event) => cookies.value.analytics = $event,
+                                                          label: "Analytics cookies",
+                                                          color: "primary",
+                                                          "hide-details": "",
+                                                          inset: ""
+                                                        }, null, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VSwitch, {
+                                                            modelValue: cookies.value.analytics,
+                                                            "onUpdate:modelValue": ($event) => cookies.value.analytics = $event,
+                                                            label: "Analytics cookies",
+                                                            color: "primary",
+                                                            "hide-details": "",
+                                                            inset: ""
+                                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                  _push8(ssrRenderComponent(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(` Help us understand how you use our site to improve it. `);
+                                                      } else {
+                                                        return [
+                                                          createTextVNode(" Help us understand how you use our site to improve it. ")
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VListItemTitle, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VSwitch, {
+                                                          modelValue: cookies.value.analytics,
+                                                          "onUpdate:modelValue": ($event) => cookies.value.analytics = $event,
+                                                          label: "Analytics cookies",
+                                                          color: "primary",
+                                                          "hide-details": "",
+                                                          inset: ""
+                                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" Help us understand how you use our site to improve it. ")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VDivider, { class: "my-2" }, null, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VListItem, null, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VListItemTitle, null, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VSwitch, {
+                                                          modelValue: cookies.value.marketing,
+                                                          "onUpdate:modelValue": ($event) => cookies.value.marketing = $event,
+                                                          label: "Marketing cookies",
+                                                          color: "primary",
+                                                          "hide-details": "",
+                                                          inset: ""
+                                                        }, null, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VSwitch, {
+                                                            modelValue: cookies.value.marketing,
+                                                            "onUpdate:modelValue": ($event) => cookies.value.marketing = $event,
+                                                            label: "Marketing cookies",
+                                                            color: "primary",
+                                                            "hide-details": "",
+                                                            inset: ""
+                                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                  _push8(ssrRenderComponent(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(` Used to provide you with personalized advertisements. `);
+                                                      } else {
+                                                        return [
+                                                          createTextVNode(" Used to provide you with personalized advertisements. ")
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VListItemTitle, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VSwitch, {
+                                                          modelValue: cookies.value.marketing,
+                                                          "onUpdate:modelValue": ($event) => cookies.value.marketing = $event,
+                                                          label: "Marketing cookies",
+                                                          color: "primary",
+                                                          "hide-details": "",
+                                                          inset: ""
+                                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" Used to provide you with personalized advertisements. ")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                          } else {
+                                            return [
+                                              createVNode(VListItem, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VListItemTitle, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VSwitch, {
+                                                        modelValue: cookies.value.essential,
+                                                        "onUpdate:modelValue": ($event) => cookies.value.essential = $event,
+                                                        label: "Essential cookies",
+                                                        color: "primary",
+                                                        disabled: "",
+                                                        "hide-details": "",
+                                                        inset: ""
+                                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(" Required for the site to function, they cannot be disabled. ")
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VDivider, { class: "my-2" }),
+                                              createVNode(VListItem, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VListItemTitle, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VSwitch, {
+                                                        modelValue: cookies.value.functional,
+                                                        "onUpdate:modelValue": ($event) => cookies.value.functional = $event,
+                                                        label: "Functional cookies",
+                                                        color: "primary",
+                                                        "hide-details": "",
+                                                        inset: ""
+                                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(" Allow us to remember your preferences and personalize your experience. ")
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VDivider, { class: "my-2" }),
+                                              createVNode(VListItem, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VListItemTitle, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VSwitch, {
+                                                        modelValue: cookies.value.analytics,
+                                                        "onUpdate:modelValue": ($event) => cookies.value.analytics = $event,
+                                                        label: "Analytics cookies",
+                                                        color: "primary",
+                                                        "hide-details": "",
+                                                        inset: ""
+                                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(" Help us understand how you use our site to improve it. ")
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VDivider, { class: "my-2" }),
+                                              createVNode(VListItem, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VListItemTitle, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VSwitch, {
+                                                        modelValue: cookies.value.marketing,
+                                                        "onUpdate:modelValue": ($event) => cookies.value.marketing = $event,
+                                                        label: "Marketing cookies",
+                                                        color: "primary",
+                                                        "hide-details": "",
+                                                        inset: ""
+                                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(" Used to provide you with personalized advertisements. ")
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              })
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(ssrRenderComponent(VDivider, { class: "my-4" }, null, _parent6, _scopeId5));
+                                      _push6(`<div class="d-flex justify-space-between" data-v-be6d8b82${_scopeId5}>`);
+                                      _push6(ssrRenderComponent(VBtn, {
+                                        color: "error",
+                                        variant: "outlined",
+                                        onClick: resetCookies
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VIcon, { start: "" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(`mdi-cookie-remove`);
+                                                } else {
+                                                  return [
+                                                    createTextVNode("mdi-cookie-remove")
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                            _push7(` Delete all cookies `);
+                                          } else {
+                                            return [
+                                              createVNode(VIcon, { start: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-cookie-remove")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createTextVNode(" Delete all cookies ")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(ssrRenderComponent(VBtn, {
+                                        color: "primary",
+                                        variant: "elevated",
+                                        onClick: saveCookies
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VIcon, { start: "" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(`mdi-content-save`);
+                                                } else {
+                                                  return [
+                                                    createTextVNode("mdi-content-save")
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                            _push7(` Save `);
+                                          } else {
+                                            return [
+                                              createVNode(VIcon, { start: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-content-save")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createTextVNode(" Save ")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(`</div>`);
+                                    } else {
+                                      return [
+                                        createVNode(VAlert, {
+                                          type: "info",
+                                          variant: "tonal",
+                                          class: "mb-4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VCard, {
+                                          color: "surface",
+                                          variant: "outlined",
+                                          class: "mb-6 pa-4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode("h3", { class: "text-h6 font-weight-bold mb-3" }, "Current Preferences Status"),
+                                            createVNode(VList, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VListItem, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VListItemTitle, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("Essential cookies:")
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItemSubtitle, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("Enabled")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItem, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VListItemTitle, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("Functional cookies:")
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItemSubtitle, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(cookies.value.functional ? "Enabled" : "Disabled"), 1)
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItem, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VListItemTitle, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("Analytics cookies:")
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItemSubtitle, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(cookies.value.analytics ? "Enabled" : "Disabled"), 1)
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItem, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VListItemTitle, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("Marketing cookies:")
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VListItemSubtitle, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(cookies.value.marketing ? "Enabled" : "Disabled"), 1)
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VList, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItem, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VListItemTitle, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VSwitch, {
+                                                      modelValue: cookies.value.essential,
+                                                      "onUpdate:modelValue": ($event) => cookies.value.essential = $event,
+                                                      label: "Essential cookies",
+                                                      color: "primary",
+                                                      disabled: "",
+                                                      "hide-details": "",
+                                                      inset: ""
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" Required for the site to function, they cannot be disabled. ")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VDivider, { class: "my-2" }),
+                                            createVNode(VListItem, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VListItemTitle, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VSwitch, {
+                                                      modelValue: cookies.value.functional,
+                                                      "onUpdate:modelValue": ($event) => cookies.value.functional = $event,
+                                                      label: "Functional cookies",
+                                                      color: "primary",
+                                                      "hide-details": "",
+                                                      inset: ""
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" Allow us to remember your preferences and personalize your experience. ")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VDivider, { class: "my-2" }),
+                                            createVNode(VListItem, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VListItemTitle, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VSwitch, {
+                                                      modelValue: cookies.value.analytics,
+                                                      "onUpdate:modelValue": ($event) => cookies.value.analytics = $event,
+                                                      label: "Analytics cookies",
+                                                      color: "primary",
+                                                      "hide-details": "",
+                                                      inset: ""
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" Help us understand how you use our site to improve it. ")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VDivider, { class: "my-2" }),
+                                            createVNode(VListItem, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VListItemTitle, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VSwitch, {
+                                                      modelValue: cookies.value.marketing,
+                                                      "onUpdate:modelValue": ($event) => cookies.value.marketing = $event,
+                                                      label: "Marketing cookies",
+                                                      color: "primary",
+                                                      "hide-details": "",
+                                                      inset: ""
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" Used to provide you with personalized advertisements. ")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VDivider, { class: "my-4" }),
+                                        createVNode("div", { class: "d-flex justify-space-between" }, [
+                                          createVNode(VBtn, {
+                                            color: "error",
+                                            variant: "outlined",
+                                            onClick: resetCookies
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VIcon, { start: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-cookie-remove")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createTextVNode(" Delete all cookies ")
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VBtn, {
+                                            color: "primary",
+                                            variant: "elevated",
+                                            onClick: saveCookies
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VIcon, { start: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-content-save")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createTextVNode(" Save ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ])
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(`</div>`);
+                              } else {
+                                _push5(`<!---->`);
+                              }
+                              if (activeTab.value === "privacy") {
+                                _push5(`<div data-v-be6d8b82${_scopeId4}>`);
+                                _push5(ssrRenderComponent(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VIcon, {
+                                        color: "white",
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(`mdi-delete-outline`);
+                                          } else {
+                                            return [
+                                              createTextVNode("mdi-delete-outline")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(` Data &amp; Privacy `);
+                                    } else {
+                                      return [
+                                        createVNode(VIcon, {
+                                          color: "white",
+                                          class: "mr-2"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-delete-outline")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(" Data & Privacy ")
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(ssrRenderComponent(VCardText, { class: "pa-4" }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    var _a, _b;
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VAlert, {
+                                        type: "warning",
+                                        variant: "tonal",
+                                        class: "mb-4"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(` Warning: Actions on this page regarding your data are irreversible. `);
+                                          } else {
+                                            return [
+                                              createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(`<div class="text-subtitle-1 font-weight-bold mb-3" data-v-be6d8b82${_scopeId5}>Data Export</div><p class="mb-4" data-v-be6d8b82${_scopeId5}>You can download all your personal data stored on our platform.</p>`);
+                                      _push6(ssrRenderComponent(VBtn, {
+                                        color: "primary",
+                                        variant: "outlined",
+                                        "prepend-icon": "mdi-download",
+                                        onClick: exportUserData,
+                                        class: "mb-6",
+                                        disabled: ""
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(`Export my data`);
+                                          } else {
+                                            return [
+                                              createTextVNode("Export my data")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(ssrRenderComponent(VDivider, { class: "my-4" }, null, _parent6, _scopeId5));
+                                      _push6(`<div class="text-subtitle-1 font-weight-bold mb-3 text-success" data-v-be6d8b82${_scopeId5}>Premium Status</div><p class="mb-4" data-v-be6d8b82${_scopeId5}> Current status: `);
+                                      if ((_a = unref(userStore).user) == null ? void 0 : _a.isPremium) {
+                                        _push6(ssrRenderComponent(VChip, { color: "success" }, {
+                                          default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                            if (_push7) {
+                                              _push7(` Premium `);
+                                            } else {
+                                              return [
+                                                createTextVNode(" Premium ")
+                                              ];
+                                            }
+                                          }),
+                                          _: 1
+                                        }, _parent6, _scopeId5));
+                                      } else {
+                                        _push6(ssrRenderComponent(VChip, { color: "error" }, {
+                                          default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                            if (_push7) {
+                                              _push7(` Free `);
+                                            } else {
+                                              return [
+                                                createTextVNode(" Free ")
+                                              ];
+                                            }
+                                          }),
+                                          _: 1
+                                        }, _parent6, _scopeId5));
+                                      }
+                                      _push6(`</p>`);
+                                      _push6(ssrRenderComponent(VDivider, { class: "my-4" }, null, _parent6, _scopeId5));
+                                      _push6(`<div class="text-subtitle-1 font-weight-bold mb-3 text-error" data-v-be6d8b82${_scopeId5}>Account Deletion</div><p class="mb-4" data-v-be6d8b82${_scopeId5}>Deleting your account will permanently erase all your personal data, including your projects, settings, and history.</p>`);
+                                      if (showDeleteAccount.value) {
+                                        _push6(`<div data-v-be6d8b82${_scopeId5}>`);
+                                        _push6(ssrRenderComponent(VTextField, {
+                                          modelValue: deleteAccountConfirmation.value,
+                                          "onUpdate:modelValue": ($event) => deleteAccountConfirmation.value = $event,
+                                          label: "Type 'DELETE' to confirm",
+                                          variant: "outlined",
+                                          hint: "This action is irreversible",
+                                          "persistent-hint": "",
+                                          class: "mb-4"
+                                        }, null, _parent6, _scopeId5));
+                                        _push6(`<div class="d-flex" data-v-be6d8b82${_scopeId5}>`);
+                                        _push6(ssrRenderComponent(VBtn, {
+                                          color: "error",
+                                          variant: "tonal",
+                                          disabled: deleteAccountConfirmation.value !== "DELETE",
+                                          onClick: confirmDeleteAccount,
+                                          class: "mr-2"
+                                        }, {
+                                          default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                            if (_push7) {
+                                              _push7(` Confirm deletion `);
+                                            } else {
+                                              return [
+                                                createTextVNode(" Confirm deletion ")
+                                              ];
+                                            }
+                                          }),
+                                          _: 1
+                                        }, _parent6, _scopeId5));
+                                        _push6(ssrRenderComponent(VBtn, {
+                                          color: "grey",
+                                          variant: "text",
+                                          onClick: ($event) => showDeleteAccount.value = false
+                                        }, {
+                                          default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                            if (_push7) {
+                                              _push7(` Cancel `);
+                                            } else {
+                                              return [
+                                                createTextVNode(" Cancel ")
+                                              ];
+                                            }
+                                          }),
+                                          _: 1
+                                        }, _parent6, _scopeId5));
+                                        _push6(`</div></div>`);
+                                      } else {
+                                        _push6(ssrRenderComponent(VBtn, {
+                                          color: "error",
+                                          variant: "outlined",
+                                          "prepend-icon": "mdi-account-remove",
+                                          onClick: ($event) => showDeleteAccount.value = true
+                                        }, {
+                                          default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                            if (_push7) {
+                                              _push7(` Delete my account `);
+                                            } else {
+                                              return [
+                                                createTextVNode(" Delete my account ")
+                                              ];
+                                            }
+                                          }),
+                                          _: 1
+                                        }, _parent6, _scopeId5));
+                                      }
+                                    } else {
+                                      return [
+                                        createVNode(VAlert, {
+                                          type: "warning",
+                                          variant: "tonal",
+                                          class: "mb-4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Data Export"),
+                                        createVNode("p", { class: "mb-4" }, "You can download all your personal data stored on our platform."),
+                                        createVNode(VBtn, {
+                                          color: "primary",
+                                          variant: "outlined",
+                                          "prepend-icon": "mdi-download",
+                                          onClick: exportUserData,
+                                          class: "mb-6",
+                                          disabled: ""
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("Export my data")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VDivider, { class: "my-4" }),
+                                        createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-success" }, "Premium Status"),
+                                        createVNode("p", { class: "mb-4" }, [
+                                          createTextVNode(" Current status: "),
+                                          ((_b = unref(userStore).user) == null ? void 0 : _b.isPremium) ? (openBlock(), createBlock(VChip, {
+                                            key: 0,
+                                            color: "success"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Premium ")
+                                            ]),
+                                            _: 1
+                                          })) : (openBlock(), createBlock(VChip, {
+                                            key: 1,
+                                            color: "error"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Free ")
+                                            ]),
+                                            _: 1
+                                          }))
+                                        ]),
+                                        createVNode(VDivider, { class: "my-4" }),
+                                        createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-error" }, "Account Deletion"),
+                                        createVNode("p", { class: "mb-4" }, "Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),
+                                        showDeleteAccount.value ? (openBlock(), createBlock("div", { key: 0 }, [
+                                          createVNode(VTextField, {
+                                            modelValue: deleteAccountConfirmation.value,
+                                            "onUpdate:modelValue": ($event) => deleteAccountConfirmation.value = $event,
+                                            label: "Type 'DELETE' to confirm",
+                                            variant: "outlined",
+                                            hint: "This action is irreversible",
+                                            "persistent-hint": "",
+                                            class: "mb-4"
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                          createVNode("div", { class: "d-flex" }, [
+                                            createVNode(VBtn, {
+                                              color: "error",
+                                              variant: "tonal",
+                                              disabled: deleteAccountConfirmation.value !== "DELETE",
+                                              onClick: confirmDeleteAccount,
+                                              class: "mr-2"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Confirm deletion ")
+                                              ]),
+                                              _: 1
+                                            }, 8, ["disabled"]),
+                                            createVNode(VBtn, {
+                                              color: "grey",
+                                              variant: "text",
+                                              onClick: ($event) => showDeleteAccount.value = false
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Cancel ")
+                                              ]),
+                                              _: 1
+                                            }, 8, ["onClick"])
+                                          ])
+                                        ])) : (openBlock(), createBlock(VBtn, {
+                                          key: 1,
+                                          color: "error",
+                                          variant: "outlined",
+                                          "prepend-icon": "mdi-account-remove",
+                                          onClick: ($event) => showDeleteAccount.value = true
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Delete my account ")
+                                          ]),
+                                          _: 1
+                                        }, 8, ["onClick"]))
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(`</div>`);
+                              } else {
+                                _push5(`<!---->`);
+                              }
+                            } else {
+                              return [
+                                activeTab.value === "appearance" ? (openBlock(), createBlock("div", { key: 0 }, [
+                                  createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, {
+                                        color: "white",
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-palette-outline")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Appearance ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VCardText, { class: "pa-4" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VRow, { class: "mb-4" }, {
+                                        default: withCtx(() => [
+                                          createVNode(VCol, { cols: "12" }, {
+                                            default: withCtx(() => [
+                                              createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Theme"),
+                                              createVNode(VRow, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VCol, {
+                                                    cols: "12",
+                                                    sm: "4"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VCard, {
+                                                        color: isActiveTheme("light") ? "primary" : "surface",
+                                                        variant: "outlined",
+                                                        class: "d-flex flex-column align-center pa-4",
+                                                        hover: "",
+                                                        onClick: ($event) => changeTheme("light")
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VIcon, {
+                                                            size: "large",
+                                                            color: isActiveTheme("light") ? "white" : "primary"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-weather-sunny")
+                                                            ]),
+                                                            _: 1
+                                                          }, 8, ["color"]),
+                                                          createVNode("span", {
+                                                            class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                          }, "Light", 2)
+                                                        ]),
+                                                        _: 1
+                                                      }, 8, ["color", "onClick"])
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VCol, {
+                                                    cols: "12",
+                                                    sm: "4"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VCard, {
+                                                        color: isActiveTheme("dark") ? "primary" : "surface",
+                                                        variant: "outlined",
+                                                        class: "d-flex flex-column align-center pa-4",
+                                                        hover: "",
+                                                        onClick: ($event) => changeTheme("dark")
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VIcon, {
+                                                            size: "large",
+                                                            color: isActiveTheme("dark") ? "white" : "primary"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-weather-night")
+                                                            ]),
+                                                            _: 1
+                                                          }, 8, ["color"]),
+                                                          createVNode("span", {
+                                                            class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                          }, "Dark", 2)
+                                                        ]),
+                                                        _: 1
+                                                      }, 8, ["color", "onClick"])
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VCol, {
+                                                    cols: "12",
+                                                    sm: "4"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VCard, {
+                                                        color: isActiveTheme("system") ? "primary" : "surface",
+                                                        variant: "outlined",
+                                                        class: "d-flex flex-column align-center pa-4",
+                                                        hover: "",
+                                                        onClick: ($event) => changeTheme("system")
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VIcon, {
+                                                            size: "large",
+                                                            color: isActiveTheme("system") ? "white" : "primary"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-theme-light-dark")
+                                                            ]),
+                                                            _: 1
+                                                          }, 8, ["color"]),
+                                                          createVNode("span", {
+                                                            class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                          }, "System", 2)
+                                                        ]),
+                                                        _: 1
+                                                      }, 8, ["color", "onClick"])
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VDivider, { class: "my-4" }),
+                                      createVNode("div", { class: "d-flex justify-end" }, [
+                                        createVNode(VBtn, {
+                                          color: "primary",
+                                          variant: "elevated",
+                                          onClick: saveAppearance
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VIcon, { start: "" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("mdi-content-save")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createTextVNode(" Save ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ])
+                                    ]),
+                                    _: 1
+                                  })
+                                ])) : createCommentVNode("", true),
+                                activeTab.value === "security" ? (openBlock(), createBlock("div", { key: 1 }, [
+                                  createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, {
+                                        color: "white",
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-shield-outline")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Security ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VCardText, { class: "pa-4" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VAlert, {
+                                        type: "info",
+                                        variant: "tonal",
+                                        class: "mb-4"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Change Password"),
+                                      createVNode(VForm, { class: "mb-6" }, {
+                                        default: withCtx(() => [
+                                          createVNode(VTextField, {
+                                            modelValue: security.value.newPassword,
+                                            "onUpdate:modelValue": ($event) => security.value.newPassword = $event,
+                                            label: "New Password",
+                                            variant: "outlined",
+                                            type: "password",
+                                            class: "mb-3"
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                          createVNode(VTextField, {
+                                            modelValue: security.value.confirmPassword,
+                                            "onUpdate:modelValue": ($event) => security.value.confirmPassword = $event,
+                                            label: "Confirm New Password",
+                                            variant: "outlined",
+                                            type: "password",
+                                            class: "mb-3"
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VDivider, { class: "my-4" }),
+                                      createVNode("div", { class: "d-flex justify-end" }, [
+                                        createVNode(VBtn, {
+                                          color: "primary",
+                                          variant: "elevated",
+                                          onClick: saveSecurity
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VIcon, { start: "" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("mdi-content-save")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createTextVNode(" Update Password ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ])
+                                    ]),
+                                    _: 1
+                                  })
+                                ])) : createCommentVNode("", true),
+                                activeTab.value === "cookies" ? (openBlock(), createBlock("div", { key: 2 }, [
+                                  createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, {
+                                        color: "white",
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-cookie-settings-outline")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Cookie Preferences ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VCardText, { class: "pa-4" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VAlert, {
+                                        type: "info",
+                                        variant: "tonal",
+                                        class: "mb-4"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VCard, {
+                                        color: "surface",
+                                        variant: "outlined",
+                                        class: "mb-6 pa-4"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode("h3", { class: "text-h6 font-weight-bold mb-3" }, "Current Preferences Status"),
+                                          createVNode(VList, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VListItem, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VListItemTitle, null, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("Essential cookies:")
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItemSubtitle, null, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("Enabled")
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItem, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VListItemTitle, null, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("Functional cookies:")
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItemSubtitle, null, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(cookies.value.functional ? "Enabled" : "Disabled"), 1)
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItem, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VListItemTitle, null, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("Analytics cookies:")
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItemSubtitle, null, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(cookies.value.analytics ? "Enabled" : "Disabled"), 1)
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItem, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VListItemTitle, null, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("Marketing cookies:")
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VListItemSubtitle, null, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(cookies.value.marketing ? "Enabled" : "Disabled"), 1)
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VList, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VListItem, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VListItemTitle, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VSwitch, {
+                                                    modelValue: cookies.value.essential,
+                                                    "onUpdate:modelValue": ($event) => cookies.value.essential = $event,
+                                                    label: "Essential cookies",
+                                                    color: "primary",
+                                                    disabled: "",
+                                                    "hide-details": "",
+                                                    inset: ""
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" Required for the site to function, they cannot be disabled. ")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VDivider, { class: "my-2" }),
+                                          createVNode(VListItem, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VListItemTitle, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VSwitch, {
+                                                    modelValue: cookies.value.functional,
+                                                    "onUpdate:modelValue": ($event) => cookies.value.functional = $event,
+                                                    label: "Functional cookies",
+                                                    color: "primary",
+                                                    "hide-details": "",
+                                                    inset: ""
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" Allow us to remember your preferences and personalize your experience. ")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VDivider, { class: "my-2" }),
+                                          createVNode(VListItem, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VListItemTitle, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VSwitch, {
+                                                    modelValue: cookies.value.analytics,
+                                                    "onUpdate:modelValue": ($event) => cookies.value.analytics = $event,
+                                                    label: "Analytics cookies",
+                                                    color: "primary",
+                                                    "hide-details": "",
+                                                    inset: ""
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" Help us understand how you use our site to improve it. ")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VDivider, { class: "my-2" }),
+                                          createVNode(VListItem, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VListItemTitle, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VSwitch, {
+                                                    modelValue: cookies.value.marketing,
+                                                    "onUpdate:modelValue": ($event) => cookies.value.marketing = $event,
+                                                    label: "Marketing cookies",
+                                                    color: "primary",
+                                                    "hide-details": "",
+                                                    inset: ""
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" Used to provide you with personalized advertisements. ")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VDivider, { class: "my-4" }),
+                                      createVNode("div", { class: "d-flex justify-space-between" }, [
+                                        createVNode(VBtn, {
+                                          color: "error",
+                                          variant: "outlined",
+                                          onClick: resetCookies
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VIcon, { start: "" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("mdi-cookie-remove")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createTextVNode(" Delete all cookies ")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VBtn, {
+                                          color: "primary",
+                                          variant: "elevated",
+                                          onClick: saveCookies
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VIcon, { start: "" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("mdi-content-save")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createTextVNode(" Save ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ])
+                                    ]),
+                                    _: 1
+                                  })
+                                ])) : createCommentVNode("", true),
+                                activeTab.value === "privacy" ? (openBlock(), createBlock("div", { key: 3 }, [
+                                  createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, {
+                                        color: "white",
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-delete-outline")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Data & Privacy ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VCardText, { class: "pa-4" }, {
+                                    default: withCtx(() => {
+                                      var _a;
+                                      return [
+                                        createVNode(VAlert, {
+                                          type: "warning",
+                                          variant: "tonal",
+                                          class: "mb-4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Data Export"),
+                                        createVNode("p", { class: "mb-4" }, "You can download all your personal data stored on our platform."),
+                                        createVNode(VBtn, {
+                                          color: "primary",
+                                          variant: "outlined",
+                                          "prepend-icon": "mdi-download",
+                                          onClick: exportUserData,
+                                          class: "mb-6",
+                                          disabled: ""
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("Export my data")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VDivider, { class: "my-4" }),
+                                        createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-success" }, "Premium Status"),
+                                        createVNode("p", { class: "mb-4" }, [
+                                          createTextVNode(" Current status: "),
+                                          ((_a = unref(userStore).user) == null ? void 0 : _a.isPremium) ? (openBlock(), createBlock(VChip, {
+                                            key: 0,
+                                            color: "success"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Premium ")
+                                            ]),
+                                            _: 1
+                                          })) : (openBlock(), createBlock(VChip, {
+                                            key: 1,
+                                            color: "error"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Free ")
+                                            ]),
+                                            _: 1
+                                          }))
+                                        ]),
+                                        createVNode(VDivider, { class: "my-4" }),
+                                        createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-error" }, "Account Deletion"),
+                                        createVNode("p", { class: "mb-4" }, "Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),
+                                        showDeleteAccount.value ? (openBlock(), createBlock("div", { key: 0 }, [
+                                          createVNode(VTextField, {
+                                            modelValue: deleteAccountConfirmation.value,
+                                            "onUpdate:modelValue": ($event) => deleteAccountConfirmation.value = $event,
+                                            label: "Type 'DELETE' to confirm",
+                                            variant: "outlined",
+                                            hint: "This action is irreversible",
+                                            "persistent-hint": "",
+                                            class: "mb-4"
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                          createVNode("div", { class: "d-flex" }, [
+                                            createVNode(VBtn, {
+                                              color: "error",
+                                              variant: "tonal",
+                                              disabled: deleteAccountConfirmation.value !== "DELETE",
+                                              onClick: confirmDeleteAccount,
+                                              class: "mr-2"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Confirm deletion ")
+                                              ]),
+                                              _: 1
+                                            }, 8, ["disabled"]),
+                                            createVNode(VBtn, {
+                                              color: "grey",
+                                              variant: "text",
+                                              onClick: ($event) => showDeleteAccount.value = false
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Cancel ")
+                                              ]),
+                                              _: 1
+                                            }, 8, ["onClick"])
+                                          ])
+                                        ])) : (openBlock(), createBlock(VBtn, {
+                                          key: 1,
+                                          color: "error",
+                                          variant: "outlined",
+                                          "prepend-icon": "mdi-account-remove",
+                                          onClick: ($event) => showDeleteAccount.value = true
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Delete my account ")
+                                          ]),
+                                          _: 1
+                                        }, 8, ["onClick"]))
+                                      ];
+                                    }),
+                                    _: 1
+                                  })
+                                ])) : createCommentVNode("", true)
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VCard, {
+                            class: "rounded-lg",
+                            elevation: "2"
+                          }, {
+                            default: withCtx(() => [
+                              activeTab.value === "appearance" ? (openBlock(), createBlock("div", { key: 0 }, [
+                                createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, {
+                                      color: "white",
+                                      class: "mr-2"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-palette-outline")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" Appearance ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VCardText, { class: "pa-4" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VRow, { class: "mb-4" }, {
+                                      default: withCtx(() => [
+                                        createVNode(VCol, { cols: "12" }, {
+                                          default: withCtx(() => [
+                                            createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Theme"),
+                                            createVNode(VRow, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VCol, {
+                                                  cols: "12",
+                                                  sm: "4"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VCard, {
+                                                      color: isActiveTheme("light") ? "primary" : "surface",
+                                                      variant: "outlined",
+                                                      class: "d-flex flex-column align-center pa-4",
+                                                      hover: "",
+                                                      onClick: ($event) => changeTheme("light")
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VIcon, {
+                                                          size: "large",
+                                                          color: isActiveTheme("light") ? "white" : "primary"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-weather-sunny")
+                                                          ]),
+                                                          _: 1
+                                                        }, 8, ["color"]),
+                                                        createVNode("span", {
+                                                          class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                        }, "Light", 2)
+                                                      ]),
+                                                      _: 1
+                                                    }, 8, ["color", "onClick"])
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VCol, {
+                                                  cols: "12",
+                                                  sm: "4"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VCard, {
+                                                      color: isActiveTheme("dark") ? "primary" : "surface",
+                                                      variant: "outlined",
+                                                      class: "d-flex flex-column align-center pa-4",
+                                                      hover: "",
+                                                      onClick: ($event) => changeTheme("dark")
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VIcon, {
+                                                          size: "large",
+                                                          color: isActiveTheme("dark") ? "white" : "primary"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-weather-night")
+                                                          ]),
+                                                          _: 1
+                                                        }, 8, ["color"]),
+                                                        createVNode("span", {
+                                                          class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                        }, "Dark", 2)
+                                                      ]),
+                                                      _: 1
+                                                    }, 8, ["color", "onClick"])
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VCol, {
+                                                  cols: "12",
+                                                  sm: "4"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VCard, {
+                                                      color: isActiveTheme("system") ? "primary" : "surface",
+                                                      variant: "outlined",
+                                                      class: "d-flex flex-column align-center pa-4",
+                                                      hover: "",
+                                                      onClick: ($event) => changeTheme("system")
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VIcon, {
+                                                          size: "large",
+                                                          color: isActiveTheme("system") ? "white" : "primary"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-theme-light-dark")
+                                                          ]),
+                                                          _: 1
+                                                        }, 8, ["color"]),
+                                                        createVNode("span", {
+                                                          class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                        }, "System", 2)
+                                                      ]),
+                                                      _: 1
+                                                    }, 8, ["color", "onClick"])
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VDivider, { class: "my-4" }),
+                                    createVNode("div", { class: "d-flex justify-end" }, [
+                                      createVNode(VBtn, {
+                                        color: "primary",
+                                        variant: "elevated",
+                                        onClick: saveAppearance
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VIcon, { start: "" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode("mdi-content-save")
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createTextVNode(" Save ")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ])
+                                  ]),
+                                  _: 1
+                                })
+                              ])) : createCommentVNode("", true),
+                              activeTab.value === "security" ? (openBlock(), createBlock("div", { key: 1 }, [
+                                createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, {
+                                      color: "white",
+                                      class: "mr-2"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-shield-outline")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" Security ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VCardText, { class: "pa-4" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VAlert, {
+                                      type: "info",
+                                      variant: "tonal",
+                                      class: "mb-4"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Change Password"),
+                                    createVNode(VForm, { class: "mb-6" }, {
+                                      default: withCtx(() => [
+                                        createVNode(VTextField, {
+                                          modelValue: security.value.newPassword,
+                                          "onUpdate:modelValue": ($event) => security.value.newPassword = $event,
+                                          label: "New Password",
+                                          variant: "outlined",
+                                          type: "password",
+                                          class: "mb-3"
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                        createVNode(VTextField, {
+                                          modelValue: security.value.confirmPassword,
+                                          "onUpdate:modelValue": ($event) => security.value.confirmPassword = $event,
+                                          label: "Confirm New Password",
+                                          variant: "outlined",
+                                          type: "password",
+                                          class: "mb-3"
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VDivider, { class: "my-4" }),
+                                    createVNode("div", { class: "d-flex justify-end" }, [
+                                      createVNode(VBtn, {
+                                        color: "primary",
+                                        variant: "elevated",
+                                        onClick: saveSecurity
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VIcon, { start: "" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode("mdi-content-save")
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createTextVNode(" Update Password ")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ])
+                                  ]),
+                                  _: 1
+                                })
+                              ])) : createCommentVNode("", true),
+                              activeTab.value === "cookies" ? (openBlock(), createBlock("div", { key: 2 }, [
+                                createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, {
+                                      color: "white",
+                                      class: "mr-2"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-cookie-settings-outline")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" Cookie Preferences ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VCardText, { class: "pa-4" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VAlert, {
+                                      type: "info",
+                                      variant: "tonal",
+                                      class: "mb-4"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VCard, {
+                                      color: "surface",
+                                      variant: "outlined",
+                                      class: "mb-6 pa-4"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode("h3", { class: "text-h6 font-weight-bold mb-3" }, "Current Preferences Status"),
+                                        createVNode(VList, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItem, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VListItemTitle, null, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("Essential cookies:")
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItemSubtitle, null, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("Enabled")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItem, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VListItemTitle, null, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("Functional cookies:")
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItemSubtitle, null, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(cookies.value.functional ? "Enabled" : "Disabled"), 1)
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItem, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VListItemTitle, null, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("Analytics cookies:")
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItemSubtitle, null, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(cookies.value.analytics ? "Enabled" : "Disabled"), 1)
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItem, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VListItemTitle, null, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("Marketing cookies:")
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VListItemSubtitle, null, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(cookies.value.marketing ? "Enabled" : "Disabled"), 1)
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VList, null, {
+                                      default: withCtx(() => [
+                                        createVNode(VListItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItemTitle, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VSwitch, {
+                                                  modelValue: cookies.value.essential,
+                                                  "onUpdate:modelValue": ($event) => cookies.value.essential = $event,
+                                                  label: "Essential cookies",
+                                                  color: "primary",
+                                                  disabled: "",
+                                                  "hide-details": "",
+                                                  inset: ""
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Required for the site to function, they cannot be disabled. ")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VDivider, { class: "my-2" }),
+                                        createVNode(VListItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItemTitle, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VSwitch, {
+                                                  modelValue: cookies.value.functional,
+                                                  "onUpdate:modelValue": ($event) => cookies.value.functional = $event,
+                                                  label: "Functional cookies",
+                                                  color: "primary",
+                                                  "hide-details": "",
+                                                  inset: ""
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Allow us to remember your preferences and personalize your experience. ")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VDivider, { class: "my-2" }),
+                                        createVNode(VListItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItemTitle, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VSwitch, {
+                                                  modelValue: cookies.value.analytics,
+                                                  "onUpdate:modelValue": ($event) => cookies.value.analytics = $event,
+                                                  label: "Analytics cookies",
+                                                  color: "primary",
+                                                  "hide-details": "",
+                                                  inset: ""
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Help us understand how you use our site to improve it. ")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VDivider, { class: "my-2" }),
+                                        createVNode(VListItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItemTitle, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VSwitch, {
+                                                  modelValue: cookies.value.marketing,
+                                                  "onUpdate:modelValue": ($event) => cookies.value.marketing = $event,
+                                                  label: "Marketing cookies",
+                                                  color: "primary",
+                                                  "hide-details": "",
+                                                  inset: ""
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Used to provide you with personalized advertisements. ")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VDivider, { class: "my-4" }),
+                                    createVNode("div", { class: "d-flex justify-space-between" }, [
+                                      createVNode(VBtn, {
+                                        color: "error",
+                                        variant: "outlined",
+                                        onClick: resetCookies
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VIcon, { start: "" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode("mdi-cookie-remove")
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createTextVNode(" Delete all cookies ")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VBtn, {
+                                        color: "primary",
+                                        variant: "elevated",
+                                        onClick: saveCookies
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VIcon, { start: "" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode("mdi-content-save")
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createTextVNode(" Save ")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ])
+                                  ]),
+                                  _: 1
+                                })
+                              ])) : createCommentVNode("", true),
+                              activeTab.value === "privacy" ? (openBlock(), createBlock("div", { key: 3 }, [
+                                createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, {
+                                      color: "white",
+                                      class: "mr-2"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-delete-outline")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" Data & Privacy ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VCardText, { class: "pa-4" }, {
+                                  default: withCtx(() => {
+                                    var _a;
+                                    return [
+                                      createVNode(VAlert, {
+                                        type: "warning",
+                                        variant: "tonal",
+                                        class: "mb-4"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Data Export"),
+                                      createVNode("p", { class: "mb-4" }, "You can download all your personal data stored on our platform."),
+                                      createVNode(VBtn, {
+                                        color: "primary",
+                                        variant: "outlined",
+                                        "prepend-icon": "mdi-download",
+                                        onClick: exportUserData,
+                                        class: "mb-6",
+                                        disabled: ""
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("Export my data")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VDivider, { class: "my-4" }),
+                                      createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-success" }, "Premium Status"),
+                                      createVNode("p", { class: "mb-4" }, [
+                                        createTextVNode(" Current status: "),
+                                        ((_a = unref(userStore).user) == null ? void 0 : _a.isPremium) ? (openBlock(), createBlock(VChip, {
+                                          key: 0,
+                                          color: "success"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Premium ")
+                                          ]),
+                                          _: 1
+                                        })) : (openBlock(), createBlock(VChip, {
+                                          key: 1,
+                                          color: "error"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Free ")
+                                          ]),
+                                          _: 1
+                                        }))
+                                      ]),
+                                      createVNode(VDivider, { class: "my-4" }),
+                                      createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-error" }, "Account Deletion"),
+                                      createVNode("p", { class: "mb-4" }, "Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),
+                                      showDeleteAccount.value ? (openBlock(), createBlock("div", { key: 0 }, [
+                                        createVNode(VTextField, {
+                                          modelValue: deleteAccountConfirmation.value,
+                                          "onUpdate:modelValue": ($event) => deleteAccountConfirmation.value = $event,
+                                          label: "Type 'DELETE' to confirm",
+                                          variant: "outlined",
+                                          hint: "This action is irreversible",
+                                          "persistent-hint": "",
+                                          class: "mb-4"
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                        createVNode("div", { class: "d-flex" }, [
+                                          createVNode(VBtn, {
+                                            color: "error",
+                                            variant: "tonal",
+                                            disabled: deleteAccountConfirmation.value !== "DELETE",
+                                            onClick: confirmDeleteAccount,
+                                            class: "mr-2"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Confirm deletion ")
+                                            ]),
+                                            _: 1
+                                          }, 8, ["disabled"]),
+                                          createVNode(VBtn, {
+                                            color: "grey",
+                                            variant: "text",
+                                            onClick: ($event) => showDeleteAccount.value = false
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Cancel ")
+                                            ]),
+                                            _: 1
+                                          }, 8, ["onClick"])
+                                        ])
+                                      ])) : (openBlock(), createBlock(VBtn, {
+                                        key: 1,
+                                        color: "error",
+                                        variant: "outlined",
+                                        "prepend-icon": "mdi-account-remove",
+                                        onClick: ($event) => showDeleteAccount.value = true
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Delete my account ")
+                                        ]),
+                                        _: 1
+                                      }, 8, ["onClick"]))
+                                    ];
+                                  }),
+                                  _: 1
+                                })
+                              ])) : createCommentVNode("", true)
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VCol, {
+                      cols: "12",
+                      lg: "3"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VCard, {
+                          class: "rounded-lg mb-4",
+                          elevation: "2"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode(VList, { nav: "" }, {
+                              default: withCtx(() => [
+                                createVNode(VListItem, {
+                                  "prepend-icon": "mdi-palette-outline",
+                                  title: "Appearance",
+                                  value: "appearance",
+                                  onClick: ($event) => activeTab.value = "appearance",
+                                  rounded: "lg",
+                                  active: activeTab.value === "appearance",
+                                  color: "primary"
+                                }, null, 8, ["onClick", "active"]),
+                                createVNode(VListItem, {
+                                  "prepend-icon": "mdi-shield-outline",
+                                  title: "Security",
+                                  value: "security",
+                                  onClick: ($event) => activeTab.value = "security",
+                                  rounded: "lg",
+                                  active: activeTab.value === "security",
+                                  color: "primary"
+                                }, null, 8, ["onClick", "active"]),
+                                createVNode(VDivider, { class: "my-2" }),
+                                createVNode(VListItem, {
+                                  "prepend-icon": "mdi-cookie-settings-outline",
+                                  title: "Cookies",
+                                  value: "cookies",
+                                  onClick: ($event) => activeTab.value = "cookies",
+                                  rounded: "lg",
+                                  active: activeTab.value === "cookies",
+                                  color: "primary"
+                                }, null, 8, ["onClick", "active"]),
+                                createVNode(VListItem, {
+                                  "prepend-icon": "mdi-delete-outline",
+                                  title: "Data & Privacy",
+                                  value: "privacy",
+                                  onClick: ($event) => activeTab.value = "privacy",
+                                  rounded: "lg",
+                                  active: activeTab.value === "privacy",
+                                  color: "primary"
+                                }, null, 8, ["onClick", "active"])
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VCol, {
+                      cols: "12",
+                      lg: "9"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VCard, {
+                          class: "rounded-lg",
+                          elevation: "2"
+                        }, {
+                          default: withCtx(() => [
+                            activeTab.value === "appearance" ? (openBlock(), createBlock("div", { key: 0 }, [
+                              createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, {
+                                    color: "white",
+                                    class: "mr-2"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-palette-outline")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" Appearance ")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VCardText, { class: "pa-4" }, {
+                                default: withCtx(() => [
+                                  createVNode(VRow, { class: "mb-4" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VCol, { cols: "12" }, {
+                                        default: withCtx(() => [
+                                          createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Theme"),
+                                          createVNode(VRow, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VCol, {
+                                                cols: "12",
+                                                sm: "4"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VCard, {
+                                                    color: isActiveTheme("light") ? "primary" : "surface",
+                                                    variant: "outlined",
+                                                    class: "d-flex flex-column align-center pa-4",
+                                                    hover: "",
+                                                    onClick: ($event) => changeTheme("light")
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VIcon, {
+                                                        size: "large",
+                                                        color: isActiveTheme("light") ? "white" : "primary"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-weather-sunny")
+                                                        ]),
+                                                        _: 1
+                                                      }, 8, ["color"]),
+                                                      createVNode("span", {
+                                                        class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                      }, "Light", 2)
+                                                    ]),
+                                                    _: 1
+                                                  }, 8, ["color", "onClick"])
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VCol, {
+                                                cols: "12",
+                                                sm: "4"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VCard, {
+                                                    color: isActiveTheme("dark") ? "primary" : "surface",
+                                                    variant: "outlined",
+                                                    class: "d-flex flex-column align-center pa-4",
+                                                    hover: "",
+                                                    onClick: ($event) => changeTheme("dark")
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VIcon, {
+                                                        size: "large",
+                                                        color: isActiveTheme("dark") ? "white" : "primary"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-weather-night")
+                                                        ]),
+                                                        _: 1
+                                                      }, 8, ["color"]),
+                                                      createVNode("span", {
+                                                        class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                      }, "Dark", 2)
+                                                    ]),
+                                                    _: 1
+                                                  }, 8, ["color", "onClick"])
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VCol, {
+                                                cols: "12",
+                                                sm: "4"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VCard, {
+                                                    color: isActiveTheme("system") ? "primary" : "surface",
+                                                    variant: "outlined",
+                                                    class: "d-flex flex-column align-center pa-4",
+                                                    hover: "",
+                                                    onClick: ($event) => changeTheme("system")
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VIcon, {
+                                                        size: "large",
+                                                        color: isActiveTheme("system") ? "white" : "primary"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-theme-light-dark")
+                                                        ]),
+                                                        _: 1
+                                                      }, 8, ["color"]),
+                                                      createVNode("span", {
+                                                        class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                      }, "System", 2)
+                                                    ]),
+                                                    _: 1
+                                                  }, 8, ["color", "onClick"])
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VDivider, { class: "my-4" }),
+                                  createVNode("div", { class: "d-flex justify-end" }, [
+                                    createVNode(VBtn, {
+                                      color: "primary",
+                                      variant: "elevated",
+                                      onClick: saveAppearance
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VIcon, { start: "" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-content-save")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(" Save ")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ])
+                                ]),
+                                _: 1
+                              })
+                            ])) : createCommentVNode("", true),
+                            activeTab.value === "security" ? (openBlock(), createBlock("div", { key: 1 }, [
+                              createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, {
+                                    color: "white",
+                                    class: "mr-2"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-shield-outline")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" Security ")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VCardText, { class: "pa-4" }, {
+                                default: withCtx(() => [
+                                  createVNode(VAlert, {
+                                    type: "info",
+                                    variant: "tonal",
+                                    class: "mb-4"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Change Password"),
+                                  createVNode(VForm, { class: "mb-6" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VTextField, {
+                                        modelValue: security.value.newPassword,
+                                        "onUpdate:modelValue": ($event) => security.value.newPassword = $event,
+                                        label: "New Password",
+                                        variant: "outlined",
+                                        type: "password",
+                                        class: "mb-3"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                      createVNode(VTextField, {
+                                        modelValue: security.value.confirmPassword,
+                                        "onUpdate:modelValue": ($event) => security.value.confirmPassword = $event,
+                                        label: "Confirm New Password",
+                                        variant: "outlined",
+                                        type: "password",
+                                        class: "mb-3"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VDivider, { class: "my-4" }),
+                                  createVNode("div", { class: "d-flex justify-end" }, [
+                                    createVNode(VBtn, {
+                                      color: "primary",
+                                      variant: "elevated",
+                                      onClick: saveSecurity
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VIcon, { start: "" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-content-save")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(" Update Password ")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ])
+                                ]),
+                                _: 1
+                              })
+                            ])) : createCommentVNode("", true),
+                            activeTab.value === "cookies" ? (openBlock(), createBlock("div", { key: 2 }, [
+                              createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, {
+                                    color: "white",
+                                    class: "mr-2"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-cookie-settings-outline")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" Cookie Preferences ")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VCardText, { class: "pa-4" }, {
+                                default: withCtx(() => [
+                                  createVNode(VAlert, {
+                                    type: "info",
+                                    variant: "tonal",
+                                    class: "mb-4"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VCard, {
+                                    color: "surface",
+                                    variant: "outlined",
+                                    class: "mb-6 pa-4"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode("h3", { class: "text-h6 font-weight-bold mb-3" }, "Current Preferences Status"),
+                                      createVNode(VList, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VListItem, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VListItemTitle, null, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("Essential cookies:")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItemSubtitle, null, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("Enabled")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VListItem, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VListItemTitle, null, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("Functional cookies:")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItemSubtitle, null, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(cookies.value.functional ? "Enabled" : "Disabled"), 1)
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VListItem, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VListItemTitle, null, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("Analytics cookies:")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItemSubtitle, null, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(cookies.value.analytics ? "Enabled" : "Disabled"), 1)
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VListItem, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VListItemTitle, null, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("Marketing cookies:")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VListItemSubtitle, null, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(cookies.value.marketing ? "Enabled" : "Disabled"), 1)
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VList, null, {
+                                    default: withCtx(() => [
+                                      createVNode(VListItem, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VListItemTitle, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VSwitch, {
+                                                modelValue: cookies.value.essential,
+                                                "onUpdate:modelValue": ($event) => cookies.value.essential = $event,
+                                                label: "Essential cookies",
+                                                color: "primary",
+                                                disabled: "",
+                                                "hide-details": "",
+                                                inset: ""
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Required for the site to function, they cannot be disabled. ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VDivider, { class: "my-2" }),
+                                      createVNode(VListItem, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VListItemTitle, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VSwitch, {
+                                                modelValue: cookies.value.functional,
+                                                "onUpdate:modelValue": ($event) => cookies.value.functional = $event,
+                                                label: "Functional cookies",
+                                                color: "primary",
+                                                "hide-details": "",
+                                                inset: ""
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Allow us to remember your preferences and personalize your experience. ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VDivider, { class: "my-2" }),
+                                      createVNode(VListItem, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VListItemTitle, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VSwitch, {
+                                                modelValue: cookies.value.analytics,
+                                                "onUpdate:modelValue": ($event) => cookies.value.analytics = $event,
+                                                label: "Analytics cookies",
+                                                color: "primary",
+                                                "hide-details": "",
+                                                inset: ""
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Help us understand how you use our site to improve it. ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VDivider, { class: "my-2" }),
+                                      createVNode(VListItem, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VListItemTitle, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VSwitch, {
+                                                modelValue: cookies.value.marketing,
+                                                "onUpdate:modelValue": ($event) => cookies.value.marketing = $event,
+                                                label: "Marketing cookies",
+                                                color: "primary",
+                                                "hide-details": "",
+                                                inset: ""
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Used to provide you with personalized advertisements. ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VDivider, { class: "my-4" }),
+                                  createVNode("div", { class: "d-flex justify-space-between" }, [
+                                    createVNode(VBtn, {
+                                      color: "error",
+                                      variant: "outlined",
+                                      onClick: resetCookies
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VIcon, { start: "" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-cookie-remove")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(" Delete all cookies ")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VBtn, {
+                                      color: "primary",
+                                      variant: "elevated",
+                                      onClick: saveCookies
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VIcon, { start: "" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-content-save")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(" Save ")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ])
+                                ]),
+                                _: 1
+                              })
+                            ])) : createCommentVNode("", true),
+                            activeTab.value === "privacy" ? (openBlock(), createBlock("div", { key: 3 }, [
+                              createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, {
+                                    color: "white",
+                                    class: "mr-2"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-delete-outline")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" Data & Privacy ")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VCardText, { class: "pa-4" }, {
+                                default: withCtx(() => {
+                                  var _a;
+                                  return [
+                                    createVNode(VAlert, {
+                                      type: "warning",
+                                      variant: "tonal",
+                                      class: "mb-4"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Data Export"),
+                                    createVNode("p", { class: "mb-4" }, "You can download all your personal data stored on our platform."),
+                                    createVNode(VBtn, {
+                                      color: "primary",
+                                      variant: "outlined",
+                                      "prepend-icon": "mdi-download",
+                                      onClick: exportUserData,
+                                      class: "mb-6",
+                                      disabled: ""
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("Export my data")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VDivider, { class: "my-4" }),
+                                    createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-success" }, "Premium Status"),
+                                    createVNode("p", { class: "mb-4" }, [
+                                      createTextVNode(" Current status: "),
+                                      ((_a = unref(userStore).user) == null ? void 0 : _a.isPremium) ? (openBlock(), createBlock(VChip, {
+                                        key: 0,
+                                        color: "success"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Premium ")
+                                        ]),
+                                        _: 1
+                                      })) : (openBlock(), createBlock(VChip, {
+                                        key: 1,
+                                        color: "error"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Free ")
+                                        ]),
+                                        _: 1
+                                      }))
+                                    ]),
+                                    createVNode(VDivider, { class: "my-4" }),
+                                    createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-error" }, "Account Deletion"),
+                                    createVNode("p", { class: "mb-4" }, "Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),
+                                    showDeleteAccount.value ? (openBlock(), createBlock("div", { key: 0 }, [
+                                      createVNode(VTextField, {
+                                        modelValue: deleteAccountConfirmation.value,
+                                        "onUpdate:modelValue": ($event) => deleteAccountConfirmation.value = $event,
+                                        label: "Type 'DELETE' to confirm",
+                                        variant: "outlined",
+                                        hint: "This action is irreversible",
+                                        "persistent-hint": "",
+                                        class: "mb-4"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                      createVNode("div", { class: "d-flex" }, [
+                                        createVNode(VBtn, {
+                                          color: "error",
+                                          variant: "tonal",
+                                          disabled: deleteAccountConfirmation.value !== "DELETE",
+                                          onClick: confirmDeleteAccount,
+                                          class: "mr-2"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Confirm deletion ")
+                                          ]),
+                                          _: 1
+                                        }, 8, ["disabled"]),
+                                        createVNode(VBtn, {
+                                          color: "grey",
+                                          variant: "text",
+                                          onClick: ($event) => showDeleteAccount.value = false
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Cancel ")
+                                          ]),
+                                          _: 1
+                                        }, 8, ["onClick"])
+                                      ])
+                                    ])) : (openBlock(), createBlock(VBtn, {
+                                      key: 1,
+                                      color: "error",
+                                      variant: "outlined",
+                                      "prepend-icon": "mdi-account-remove",
+                                      onClick: ($event) => showDeleteAccount.value = true
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Delete my account ")
+                                      ]),
+                                      _: 1
+                                    }, 8, ["onClick"]))
+                                  ];
+                                }),
+                                _: 1
+                              })
+                            ])) : createCommentVNode("", true)
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Snackbar, {
+              modelValue: snackbar.value,
+              "onUpdate:modelValue": ($event) => snackbar.value = $event,
+              text: snackbarText.value,
+              color: snackbarColor.value,
+              timeout: 2e3
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VRow, null, {
+                default: withCtx(() => [
+                  createVNode(VCol, {
+                    cols: "12",
+                    lg: "3"
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VCard, {
+                        class: "rounded-lg mb-4",
+                        elevation: "2"
+                      }, {
+                        default: withCtx(() => [
+                          createVNode(VList, { nav: "" }, {
+                            default: withCtx(() => [
+                              createVNode(VListItem, {
+                                "prepend-icon": "mdi-palette-outline",
+                                title: "Appearance",
+                                value: "appearance",
+                                onClick: ($event) => activeTab.value = "appearance",
+                                rounded: "lg",
+                                active: activeTab.value === "appearance",
+                                color: "primary"
+                              }, null, 8, ["onClick", "active"]),
+                              createVNode(VListItem, {
+                                "prepend-icon": "mdi-shield-outline",
+                                title: "Security",
+                                value: "security",
+                                onClick: ($event) => activeTab.value = "security",
+                                rounded: "lg",
+                                active: activeTab.value === "security",
+                                color: "primary"
+                              }, null, 8, ["onClick", "active"]),
+                              createVNode(VDivider, { class: "my-2" }),
+                              createVNode(VListItem, {
+                                "prepend-icon": "mdi-cookie-settings-outline",
+                                title: "Cookies",
+                                value: "cookies",
+                                onClick: ($event) => activeTab.value = "cookies",
+                                rounded: "lg",
+                                active: activeTab.value === "cookies",
+                                color: "primary"
+                              }, null, 8, ["onClick", "active"]),
+                              createVNode(VListItem, {
+                                "prepend-icon": "mdi-delete-outline",
+                                title: "Data & Privacy",
+                                value: "privacy",
+                                onClick: ($event) => activeTab.value = "privacy",
+                                rounded: "lg",
+                                active: activeTab.value === "privacy",
+                                color: "primary"
+                              }, null, 8, ["onClick", "active"])
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  }),
+                  createVNode(VCol, {
+                    cols: "12",
+                    lg: "9"
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VCard, {
+                        class: "rounded-lg",
+                        elevation: "2"
+                      }, {
+                        default: withCtx(() => [
+                          activeTab.value === "appearance" ? (openBlock(), createBlock("div", { key: 0 }, [
+                            createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, {
+                                  color: "white",
+                                  class: "mr-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-palette-outline")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Appearance ")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VCardText, { class: "pa-4" }, {
+                              default: withCtx(() => [
+                                createVNode(VRow, { class: "mb-4" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VCol, { cols: "12" }, {
+                                      default: withCtx(() => [
+                                        createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Theme"),
+                                        createVNode(VRow, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VCol, {
+                                              cols: "12",
+                                              sm: "4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VCard, {
+                                                  color: isActiveTheme("light") ? "primary" : "surface",
+                                                  variant: "outlined",
+                                                  class: "d-flex flex-column align-center pa-4",
+                                                  hover: "",
+                                                  onClick: ($event) => changeTheme("light")
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VIcon, {
+                                                      size: "large",
+                                                      color: isActiveTheme("light") ? "white" : "primary"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-weather-sunny")
+                                                      ]),
+                                                      _: 1
+                                                    }, 8, ["color"]),
+                                                    createVNode("span", {
+                                                      class: ["mt-2", { "text-white": isActiveTheme("light") }]
+                                                    }, "Light", 2)
+                                                  ]),
+                                                  _: 1
+                                                }, 8, ["color", "onClick"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VCol, {
+                                              cols: "12",
+                                              sm: "4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VCard, {
+                                                  color: isActiveTheme("dark") ? "primary" : "surface",
+                                                  variant: "outlined",
+                                                  class: "d-flex flex-column align-center pa-4",
+                                                  hover: "",
+                                                  onClick: ($event) => changeTheme("dark")
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VIcon, {
+                                                      size: "large",
+                                                      color: isActiveTheme("dark") ? "white" : "primary"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-weather-night")
+                                                      ]),
+                                                      _: 1
+                                                    }, 8, ["color"]),
+                                                    createVNode("span", {
+                                                      class: ["mt-2", { "text-white": isActiveTheme("dark") }]
+                                                    }, "Dark", 2)
+                                                  ]),
+                                                  _: 1
+                                                }, 8, ["color", "onClick"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VCol, {
+                                              cols: "12",
+                                              sm: "4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VCard, {
+                                                  color: isActiveTheme("system") ? "primary" : "surface",
+                                                  variant: "outlined",
+                                                  class: "d-flex flex-column align-center pa-4",
+                                                  hover: "",
+                                                  onClick: ($event) => changeTheme("system")
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VIcon, {
+                                                      size: "large",
+                                                      color: isActiveTheme("system") ? "white" : "primary"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-theme-light-dark")
+                                                      ]),
+                                                      _: 1
+                                                    }, 8, ["color"]),
+                                                    createVNode("span", {
+                                                      class: ["mt-2", { "text-white": isActiveTheme("system") }]
+                                                    }, "System", 2)
+                                                  ]),
+                                                  _: 1
+                                                }, 8, ["color", "onClick"])
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VDivider, { class: "my-4" }),
+                                createVNode("div", { class: "d-flex justify-end" }, [
+                                  createVNode(VBtn, {
+                                    color: "primary",
+                                    variant: "elevated",
+                                    onClick: saveAppearance
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-content-save")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Save ")
+                                    ]),
+                                    _: 1
+                                  })
+                                ])
+                              ]),
+                              _: 1
+                            })
+                          ])) : createCommentVNode("", true),
+                          activeTab.value === "security" ? (openBlock(), createBlock("div", { key: 1 }, [
+                            createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, {
+                                  color: "white",
+                                  class: "mr-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-shield-outline")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Security ")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VCardText, { class: "pa-4" }, {
+                              default: withCtx(() => [
+                                createVNode(VAlert, {
+                                  type: "info",
+                                  variant: "tonal",
+                                  class: "mb-4"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Manage your account security settings. We recommend using a strong password and changing it regularly. ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Change Password"),
+                                createVNode(VForm, { class: "mb-6" }, {
+                                  default: withCtx(() => [
+                                    createVNode(VTextField, {
+                                      modelValue: security.value.newPassword,
+                                      "onUpdate:modelValue": ($event) => security.value.newPassword = $event,
+                                      label: "New Password",
+                                      variant: "outlined",
+                                      type: "password",
+                                      class: "mb-3"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                    createVNode(VTextField, {
+                                      modelValue: security.value.confirmPassword,
+                                      "onUpdate:modelValue": ($event) => security.value.confirmPassword = $event,
+                                      label: "Confirm New Password",
+                                      variant: "outlined",
+                                      type: "password",
+                                      class: "mb-3"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VDivider, { class: "my-4" }),
+                                createVNode("div", { class: "d-flex justify-end" }, [
+                                  createVNode(VBtn, {
+                                    color: "primary",
+                                    variant: "elevated",
+                                    onClick: saveSecurity
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-content-save")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Update Password ")
+                                    ]),
+                                    _: 1
+                                  })
+                                ])
+                              ]),
+                              _: 1
+                            })
+                          ])) : createCommentVNode("", true),
+                          activeTab.value === "cookies" ? (openBlock(), createBlock("div", { key: 2 }, [
+                            createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, {
+                                  color: "white",
+                                  class: "mr-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-cookie-settings-outline")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Cookie Preferences ")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VCardText, { class: "pa-4" }, {
+                              default: withCtx(() => [
+                                createVNode(VAlert, {
+                                  type: "info",
+                                  variant: "tonal",
+                                  class: "mb-4"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be disabled. ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VCard, {
+                                  color: "surface",
+                                  variant: "outlined",
+                                  class: "mb-6 pa-4"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode("h3", { class: "text-h6 font-weight-bold mb-3" }, "Current Preferences Status"),
+                                    createVNode(VList, null, {
+                                      default: withCtx(() => [
+                                        createVNode(VListItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItemTitle, null, {
+                                              default: withCtx(() => [
+                                                createTextVNode("Essential cookies:")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItemSubtitle, null, {
+                                              default: withCtx(() => [
+                                                createTextVNode("Enabled")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VListItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItemTitle, null, {
+                                              default: withCtx(() => [
+                                                createTextVNode("Functional cookies:")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItemSubtitle, null, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(cookies.value.functional ? "Enabled" : "Disabled"), 1)
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VListItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItemTitle, null, {
+                                              default: withCtx(() => [
+                                                createTextVNode("Analytics cookies:")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItemSubtitle, null, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(cookies.value.analytics ? "Enabled" : "Disabled"), 1)
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VListItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VListItemTitle, null, {
+                                              default: withCtx(() => [
+                                                createTextVNode("Marketing cookies:")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VListItemSubtitle, null, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(cookies.value.marketing ? "Enabled" : "Disabled"), 1)
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VList, null, {
+                                  default: withCtx(() => [
+                                    createVNode(VListItem, null, {
+                                      default: withCtx(() => [
+                                        createVNode(VListItemTitle, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VSwitch, {
+                                              modelValue: cookies.value.essential,
+                                              "onUpdate:modelValue": ($event) => cookies.value.essential = $event,
+                                              label: "Essential cookies",
+                                              color: "primary",
+                                              disabled: "",
+                                              "hide-details": "",
+                                              inset: ""
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Required for the site to function, they cannot be disabled. ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VDivider, { class: "my-2" }),
+                                    createVNode(VListItem, null, {
+                                      default: withCtx(() => [
+                                        createVNode(VListItemTitle, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VSwitch, {
+                                              modelValue: cookies.value.functional,
+                                              "onUpdate:modelValue": ($event) => cookies.value.functional = $event,
+                                              label: "Functional cookies",
+                                              color: "primary",
+                                              "hide-details": "",
+                                              inset: ""
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Allow us to remember your preferences and personalize your experience. ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VDivider, { class: "my-2" }),
+                                    createVNode(VListItem, null, {
+                                      default: withCtx(() => [
+                                        createVNode(VListItemTitle, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VSwitch, {
+                                              modelValue: cookies.value.analytics,
+                                              "onUpdate:modelValue": ($event) => cookies.value.analytics = $event,
+                                              label: "Analytics cookies",
+                                              color: "primary",
+                                              "hide-details": "",
+                                              inset: ""
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Help us understand how you use our site to improve it. ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VDivider, { class: "my-2" }),
+                                    createVNode(VListItem, null, {
+                                      default: withCtx(() => [
+                                        createVNode(VListItemTitle, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VSwitch, {
+                                              modelValue: cookies.value.marketing,
+                                              "onUpdate:modelValue": ($event) => cookies.value.marketing = $event,
+                                              label: "Marketing cookies",
+                                              color: "primary",
+                                              "hide-details": "",
+                                              inset: ""
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Used to provide you with personalized advertisements. ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VDivider, { class: "my-4" }),
+                                createVNode("div", { class: "d-flex justify-space-between" }, [
+                                  createVNode(VBtn, {
+                                    color: "error",
+                                    variant: "outlined",
+                                    onClick: resetCookies
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-cookie-remove")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Delete all cookies ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VBtn, {
+                                    color: "primary",
+                                    variant: "elevated",
+                                    onClick: saveCookies
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-content-save")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Save ")
+                                    ]),
+                                    _: 1
+                                  })
+                                ])
+                              ]),
+                              _: 1
+                            })
+                          ])) : createCommentVNode("", true),
+                          activeTab.value === "privacy" ? (openBlock(), createBlock("div", { key: 3 }, [
+                            createVNode(VCardTitle, { class: "bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center" }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, {
+                                  color: "white",
+                                  class: "mr-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-delete-outline")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Data & Privacy ")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VCardText, { class: "pa-4" }, {
+                              default: withCtx(() => {
+                                var _a;
+                                return [
+                                  createVNode(VAlert, {
+                                    type: "warning",
+                                    variant: "tonal",
+                                    class: "mb-4"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Warning: Actions on this page regarding your data are irreversible. ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3" }, "Data Export"),
+                                  createVNode("p", { class: "mb-4" }, "You can download all your personal data stored on our platform."),
+                                  createVNode(VBtn, {
+                                    color: "primary",
+                                    variant: "outlined",
+                                    "prepend-icon": "mdi-download",
+                                    onClick: exportUserData,
+                                    class: "mb-6",
+                                    disabled: ""
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("Export my data")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VDivider, { class: "my-4" }),
+                                  createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-success" }, "Premium Status"),
+                                  createVNode("p", { class: "mb-4" }, [
+                                    createTextVNode(" Current status: "),
+                                    ((_a = unref(userStore).user) == null ? void 0 : _a.isPremium) ? (openBlock(), createBlock(VChip, {
+                                      key: 0,
+                                      color: "success"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Premium ")
+                                      ]),
+                                      _: 1
+                                    })) : (openBlock(), createBlock(VChip, {
+                                      key: 1,
+                                      color: "error"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Free ")
+                                      ]),
+                                      _: 1
+                                    }))
+                                  ]),
+                                  createVNode(VDivider, { class: "my-4" }),
+                                  createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-3 text-error" }, "Account Deletion"),
+                                  createVNode("p", { class: "mb-4" }, "Deleting your account will permanently erase all your personal data, including your projects, settings, and history."),
+                                  showDeleteAccount.value ? (openBlock(), createBlock("div", { key: 0 }, [
+                                    createVNode(VTextField, {
+                                      modelValue: deleteAccountConfirmation.value,
+                                      "onUpdate:modelValue": ($event) => deleteAccountConfirmation.value = $event,
+                                      label: "Type 'DELETE' to confirm",
+                                      variant: "outlined",
+                                      hint: "This action is irreversible",
+                                      "persistent-hint": "",
+                                      class: "mb-4"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                    createVNode("div", { class: "d-flex" }, [
+                                      createVNode(VBtn, {
+                                        color: "error",
+                                        variant: "tonal",
+                                        disabled: deleteAccountConfirmation.value !== "DELETE",
+                                        onClick: confirmDeleteAccount,
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Confirm deletion ")
+                                        ]),
+                                        _: 1
+                                      }, 8, ["disabled"]),
+                                      createVNode(VBtn, {
+                                        color: "grey",
+                                        variant: "text",
+                                        onClick: ($event) => showDeleteAccount.value = false
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Cancel ")
+                                        ]),
+                                        _: 1
+                                      }, 8, ["onClick"])
+                                    ])
+                                  ])) : (openBlock(), createBlock(VBtn, {
+                                    key: 1,
+                                    color: "error",
+                                    variant: "outlined",
+                                    "prepend-icon": "mdi-account-remove",
+                                    onClick: ($event) => showDeleteAccount.value = true
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Delete my account ")
+                                    ]),
+                                    _: 1
+                                  }, 8, ["onClick"]))
+                                ];
+                              }),
+                              _: 1
+                            })
+                          ])) : createCommentVNode("", true)
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }),
+              createVNode(Snackbar, {
+                modelValue: snackbar.value,
+                "onUpdate:modelValue": ($event) => snackbar.value = $event,
+                text: snackbarText.value,
+                color: snackbarColor.value,
+                timeout: 2e3
+              }, null, 8, ["modelValue", "onUpdate:modelValue", "text", "color"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
 
-const e=wl.setup;wl.setup=(o,r)=>{const s=useSSRContext();return (s.modules||(s.modules=new Set)).add("pages/settings.vue"),e?e(o,r):void 0};const _=s(wl,[["__scopeId","data-v-be6d8b82"]]);
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/settings.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const settings = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-be6d8b82"]]);
 
-export { _ as default };;globalThis.__timing__.logEnd('Load chunks/build/settings.vue');
+export { settings as default };
+//# sourceMappingURL=settings.vue.mjs.map

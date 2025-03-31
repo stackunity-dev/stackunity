@@ -1,7 +1,205 @@
-globalThis.__timing__.logStart('Load chunks/build/analytics-collector.vue2');import { defineComponent, watch, mergeProps } from 'vue';
+import { defineComponent, watch, mergeProps } from 'vue';
 import { ssrRenderAttrs } from 'vue/server-renderer';
-import { bM as o, N as k } from './server.mjs';
+import { bM as useCookieStore, S as useUserStore } from './server.mjs';
 
-const D=defineComponent({__name:"analytics-collector",__ssrInlineRender:true,setup(P){const l=o(),d=k();let i,a,c,r=null,s=null;const u=()=>{const e=(void 0).userAgent;return /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(e)?"tablet":/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(e)?"mobile":"desktop"},v=async()=>{try{const e=await fetch("/api/proxy/ipapi",{method:"GET",signal:AbortSignal.timeout(3e3)});if(!e.ok)throw new Error(`Erreur HTTP: ${e.status}`);const t=await e.json();return {country:t.country_name,city:t.city}}catch(e){return console.warn("Impossible de récupérer la localisation:",e),{country:"Unknown",city:"Unknown"}}},p=()=>l.hasGivenConsent&&l.preferences.analytics,_=()=>{r&&((void 0).removeEventListener("visibilitychange",r),r=null),s&&((void 0).removeEventListener("popstate",s),s=null);},m=()=>{p()&&(console.log("Démarrage du suivi analytique"),i=Date.now(),a=i,c=crypto.randomUUID(),f(),r=w,(void 0).addEventListener("visibilitychange",r),s=f,(void 0).addEventListener("popstate",s));},y=async()=>{console.log("Arrêt du suivi analytique"),_(),i&&await h();},f=async()=>{if(!p()){y();return}const e=Date.now(),t=a?e-a:0;a=e;const o=await v();try{const n=await fetch("/api/analytics/collect",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"pageview",page_url:(void 0).location.pathname,page_title:(void 0).title,user_id:d.user?.id||"anonymous",session_id:c,device_type:u(),country:o.country,city:o.city,referrer_url:(void 0).referrer,visit_duration:Math.floor(t/1e3),is_new_visitor:!1,is_bounce:!1,is_conversion:!1,browser:(void 0).userAgent.toLowerCase().includes("chrome")?"chrome":(void 0).userAgent.toLowerCase().includes("firefox")?"firefox":(void 0).userAgent.toLowerCase().includes("safari")?"safari":"other"})});if(!n.ok)throw new Error(`Erreur HTTP: ${n.status}`)}catch(n){console.error("Erreur lors de l'envoi des données analytiques:",n);}},w=async()=>{if(!p()){y();return}if((void 0).hidden){const e=Date.now()-i;try{const t=Date.now(),o=await fetch(`/api/analytics/collect?_=${t}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"session_end",session_id:c,user_id:d.user?.id||"anonymous",visit_duration:Math.floor(e/1e3),is_bounce:!1,is_conversion:!1,is_new_visitor:!1,page_url:(void 0).location.pathname,page_title:(void 0).title,device_type:u(),browser:"unknown"})});if(!o.ok)throw new Error(`Erreur HTTP: ${o.status}`)}catch(t){console.error("Erreur lors de l'envoi des données de fin de session:",t);}}},h=async()=>{const e=Date.now()-i;try{const t=Date.now(),o=await fetch(`/api/analytics/collect?_=${t}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"session_end",session_id:c,user_id:d.user?.id||"anonymous",visit_duration:Math.floor(e/1e3),is_bounce:!1,is_conversion:!1,is_new_visitor:!1,page_url:(void 0).location.pathname,page_title:(void 0).title,device_type:u(),browser:"unknown"})});if(!o.ok)throw new Error(`Erreur HTTP: ${o.status}`)}catch(t){console.error("Erreur lors de l'envoi des données de fin de session:",t);}};return watch(()=>l.preferences.analytics,e=>{e?m():y();}),(e,t,o,n)=>{t(`<div${ssrRenderAttrs(mergeProps({style:{display:"none"}},n))}></div>`);}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "analytics-collector",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const cookieStore = useCookieStore();
+    const userStore = useUserStore();
+    let sessionStartTime;
+    let lastPageViewTime;
+    let currentSessionId;
+    let visibilityListener = null;
+    let popstateListener = null;
+    const getDeviceType = () => {
+      const ua = (void 0).userAgent;
+      if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+        return "tablet";
+      }
+      if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+        return "mobile";
+      }
+      return "desktop";
+    };
+    const getLocation = async () => {
+      try {
+        const response = await fetch("/api/proxy/ipapi", {
+          method: "GET",
+          signal: AbortSignal.timeout(3e3)
+        });
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        const data = await response.json();
+        return {
+          country: data.country_name,
+          city: data.city
+        };
+      } catch (error) {
+        console.warn("Impossible de récupérer la localisation:", error);
+        return {
+          country: "Unknown",
+          city: "Unknown"
+        };
+      }
+    };
+    const isAnalyticsEnabled = () => {
+      return cookieStore.hasGivenConsent && cookieStore.preferences.analytics;
+    };
+    const cleanupEventListeners = () => {
+      if (visibilityListener) {
+        (void 0).removeEventListener("visibilitychange", visibilityListener);
+        visibilityListener = null;
+      }
+      if (popstateListener) {
+        (void 0).removeEventListener("popstate", popstateListener);
+        popstateListener = null;
+      }
+    };
+    const startTracking = () => {
+      if (!isAnalyticsEnabled()) return;
+      console.log("Démarrage du suivi analytique");
+      sessionStartTime = Date.now();
+      lastPageViewTime = sessionStartTime;
+      currentSessionId = crypto.randomUUID();
+      sendPageView();
+      visibilityListener = handleVisibilityChange;
+      (void 0).addEventListener("visibilitychange", visibilityListener);
+      popstateListener = sendPageView;
+      (void 0).addEventListener("popstate", popstateListener);
+    };
+    const stopTracking = async () => {
+      console.log("Arrêt du suivi analytique");
+      cleanupEventListeners();
+      if (sessionStartTime) {
+        await sendSessionEnd();
+      }
+    };
+    const sendPageView = async () => {
+      var _a;
+      if (!isAnalyticsEnabled()) {
+        stopTracking();
+        return;
+      }
+      const now = Date.now();
+      const timeOnPage = lastPageViewTime ? now - lastPageViewTime : 0;
+      lastPageViewTime = now;
+      const location = await getLocation();
+      try {
+        const response = await fetch("/api/analytics/collect", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            type: "pageview",
+            page_url: (void 0).location.pathname,
+            page_title: (void 0).title,
+            user_id: ((_a = userStore.user) == null ? void 0 : _a.id) || "anonymous",
+            session_id: currentSessionId,
+            device_type: getDeviceType(),
+            country: location.country,
+            city: location.city,
+            referrer_url: (void 0).referrer,
+            visit_duration: Math.floor(timeOnPage / 1e3),
+            is_new_visitor: false,
+            is_bounce: false,
+            is_conversion: false,
+            browser: (void 0).userAgent.toLowerCase().includes("chrome") ? "chrome" : (void 0).userAgent.toLowerCase().includes("firefox") ? "firefox" : (void 0).userAgent.toLowerCase().includes("safari") ? "safari" : "other"
+          })
+        });
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'envoi des données analytiques:", error);
+      }
+    };
+    const handleVisibilityChange = async () => {
+      var _a;
+      if (!isAnalyticsEnabled()) {
+        stopTracking();
+        return;
+      }
+      if ((void 0).hidden) {
+        const timeOnSite = Date.now() - sessionStartTime;
+        try {
+          const timestamp = Date.now();
+          const response = await fetch(`/api/analytics/collect?_=${timestamp}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              type: "session_end",
+              session_id: currentSessionId,
+              user_id: ((_a = userStore.user) == null ? void 0 : _a.id) || "anonymous",
+              visit_duration: Math.floor(timeOnSite / 1e3),
+              is_bounce: false,
+              is_conversion: false,
+              is_new_visitor: false,
+              page_url: (void 0).location.pathname,
+              page_title: (void 0).title,
+              device_type: getDeviceType(),
+              browser: "unknown"
+            })
+          });
+          if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+        } catch (error) {
+          console.error("Erreur lors de l'envoi des données de fin de session:", error);
+        }
+      }
+    };
+    const sendSessionEnd = async () => {
+      var _a;
+      const timeOnSite = Date.now() - sessionStartTime;
+      try {
+        const timestamp = Date.now();
+        const response = await fetch(`/api/analytics/collect?_=${timestamp}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            type: "session_end",
+            session_id: currentSessionId,
+            user_id: ((_a = userStore.user) == null ? void 0 : _a.id) || "anonymous",
+            visit_duration: Math.floor(timeOnSite / 1e3),
+            is_bounce: false,
+            is_conversion: false,
+            is_new_visitor: false,
+            page_url: (void 0).location.pathname,
+            page_title: (void 0).title,
+            device_type: getDeviceType(),
+            browser: "unknown"
+          })
+        });
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'envoi des données de fin de session:", error);
+      }
+    };
+    watch(
+      () => cookieStore.preferences.analytics,
+      (newValue) => {
+        if (newValue) {
+          startTracking();
+        } else {
+          stopTracking();
+        }
+      }
+    );
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(mergeProps({ style: { "display": "none" } }, _attrs))}></div>`);
+    };
+  }
+});
 
-export { D };;globalThis.__timing__.logEnd('Load chunks/build/analytics-collector.vue2');
+export { _sfc_main as _ };
+//# sourceMappingURL=analytics-collector.vue2.mjs.map

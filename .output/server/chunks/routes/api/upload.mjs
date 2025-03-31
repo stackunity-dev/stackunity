@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/upload');import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import { IncomingForm } from 'formidable';
 import { d as defineEventHandler } from '../../_/nitro.mjs';
@@ -9,7 +9,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -85,4 +84,5 @@ const upload = defineEventHandler(async (event) => {
   }
 });
 
-export { config, upload as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/upload');
+export { config, upload as default };
+//# sourceMappingURL=upload.mjs.map

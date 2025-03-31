@@ -1,6 +1,6 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/auth/refresh');import { d as defineEventHandler, i as getCookie, f as REFRESH_TOKEN_COOKIE_NAME, R as REFRESH_TOKEN_SECRET, p as pool, A as ACCESS_TOKEN_SECRET, b as ACCESS_TOKEN_EXPIRY, e as REFRESH_TOKEN_EXPIRY, s as setCookie, h as REFRESH_TOKEN_COOKIE_OPTIONS } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, i as getCookie, f as REFRESH_TOKEN_COOKIE_NAME, R as REFRESH_TOKEN_SECRET, p as pool, A as ACCESS_TOKEN_SECRET, b as ACCESS_TOKEN_EXPIRY, e as REFRESH_TOKEN_EXPIRY, s as setCookie, h as REFRESH_TOKEN_COOKIE_OPTIONS } from '../../../_/nitro.mjs';
 import jwt from 'jsonwebtoken';
-import { v4 } from 'uuid';
+import { v as v4 } from '../../../_/v4.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -8,7 +8,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'sqlstring';
 import 'net';
 import 'tls';
@@ -127,4 +126,5 @@ const refresh = defineEventHandler(async (event) => {
   }
 });
 
-export { refresh as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/auth/refresh');
+export { refresh as default };
+//# sourceMappingURL=refresh.mjs.map

@@ -1,9 +1,188 @@
-globalThis.__timing__.logStart('Load chunks/build/VAppBar');import { ref, shallowRef, computed, watch, toRef, createVNode, mergeProps, watchEffect } from 'vue';
-import { s as se, A } from './VToolbar.mjs';
-import { y, Z as Z$1, f as y$1, C, r, i, m as mt, o, g as yt } from './server.mjs';
+import { ref, shallowRef, computed, watch, toRef, createVNode, mergeProps, watchEffect } from 'vue';
+import { V as VToolbar, m as makeVToolbarProps } from './VToolbar.mjs';
+import { p as propsFactory, j as clamp, k as genericComponent, l as useProxiedModel, m as useToggleScope, o as useSsrBoot, q as useLayoutItem, s as useRender, v as makeLayoutItemProps } from './server.mjs';
 
-const N=y({scrollTarget:{type:String},scrollThreshold:{type:[String,Number],default:300}},"scroll");function R(h){let p=arguments.length>1&&arguments[1]!==void 0?arguments[1]:{};const{canScroll:o}=p;let a=0,u=0;const f=ref(null),l=shallowRef(0),t=shallowRef(0),i=shallowRef(0),v=shallowRef(false),s=shallowRef(false),c=computed(()=>Number(h.scrollThreshold)),d=computed(()=>Z$1((c.value-l.value)/c.value||0)),S=()=>{const e=f.value;if(!e||o&&!o.value)return;a=l.value,l.value="window"in e?e.pageYOffset:e.scrollTop;const m=e instanceof Window?(void 0).documentElement.scrollHeight:e.scrollHeight;if(u!==m){u=m;return}s.value=l.value<a,i.value=Math.abs(l.value-c.value);};return watch(s,()=>{t.value=t.value||l.value;}),watch(v,()=>{t.value=0;}),o&&watch(o,S,{immediate:true}),{scrollThreshold:c,currentScroll:l,currentThreshold:i,isScrollActive:v,scrollRatio:d,isScrollingUp:s,savedScroll:t}}
+const makeScrollProps = propsFactory({
+  scrollTarget: {
+    type: String
+  },
+  scrollThreshold: {
+    type: [String, Number],
+    default: 300
+  }
+}, "scroll");
+function useScroll(props) {
+  let args = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+  const {
+    canScroll
+  } = args;
+  let previousScroll = 0;
+  let previousScrollHeight = 0;
+  const target = ref(null);
+  const currentScroll = shallowRef(0);
+  const savedScroll = shallowRef(0);
+  const currentThreshold = shallowRef(0);
+  const isScrollActive = shallowRef(false);
+  const isScrollingUp = shallowRef(false);
+  const scrollThreshold = computed(() => {
+    return Number(props.scrollThreshold);
+  });
+  const scrollRatio = computed(() => {
+    return clamp((scrollThreshold.value - currentScroll.value) / scrollThreshold.value || 0);
+  });
+  const onScroll = () => {
+    const targetEl = target.value;
+    if (!targetEl || canScroll && !canScroll.value) return;
+    previousScroll = currentScroll.value;
+    currentScroll.value = "window" in targetEl ? targetEl.pageYOffset : targetEl.scrollTop;
+    const currentScrollHeight = targetEl instanceof Window ? (void 0).documentElement.scrollHeight : targetEl.scrollHeight;
+    if (previousScrollHeight !== currentScrollHeight) {
+      previousScrollHeight = currentScrollHeight;
+      return;
+    }
+    isScrollingUp.value = currentScroll.value < previousScroll;
+    currentThreshold.value = Math.abs(currentScroll.value - scrollThreshold.value);
+  };
+  watch(isScrollingUp, () => {
+    savedScroll.value = savedScroll.value || currentScroll.value;
+  });
+  watch(isScrollActive, () => {
+    savedScroll.value = 0;
+  });
+  canScroll && watch(canScroll, onScroll, {
+    immediate: true
+  });
+  return {
+    scrollThreshold,
+    currentScroll,
+    currentThreshold,
+    isScrollActive,
+    scrollRatio,
+    // required only for testing
+    // probably can be removed
+    // later (2 chars chlng)
+    isScrollingUp,
+    savedScroll
+  };
+}
 
-const U=y({scrollBehavior:String,modelValue:{type:Boolean,default:true},location:{type:String,default:"top",validator:l=>["top","bottom"].includes(l)},...A(),...yt(),...N(),height:{type:[Number,String],default:64}},"VAppBar"),Z=y$1()({name:"VAppBar",props:U(),emits:{"update:modelValue":l=>true},setup(l,d){let{slots:f}=d;const u=ref(),o$1=C(l,"modelValue"),t=computed(()=>{const e=new Set(l.scrollBehavior?.split(" ")??[]);return {hide:e.has("hide"),fullyHide:e.has("fully-hide"),inverted:e.has("inverted"),collapse:e.has("collapse"),elevate:e.has("elevate"),fadeImage:e.has("fade-image")}}),h=computed(()=>{const e=t.value;return e.hide||e.fullyHide||e.inverted||e.collapse||e.elevate||e.fadeImage||!o$1.value}),{currentScroll:r$1,scrollThreshold:s,isScrollingUp:p,scrollRatio:i$1}=R(l,{canScroll:h}),v=computed(()=>t.value.hide||t.value.fullyHide),g=computed(()=>l.collapse||t.value.collapse&&(t.value.inverted?i$1.value>0:i$1.value===0)),y=computed(()=>l.flat||t.value.fullyHide&&!o$1.value||t.value.elevate&&(t.value.inverted?r$1.value>0:r$1.value===0)),b=computed(()=>t.value.fadeImage?t.value.inverted?1-i$1.value:i$1.value:void 0),S=computed(()=>{if(t.value.hide&&t.value.inverted)return 0;const e=u.value?.contentHeight??0,n=u.value?.extensionHeight??0;return v.value?r$1.value<s.value||t.value.fullyHide?e+n:e:e+n});r(computed(()=>!!l.scrollBehavior),()=>{watchEffect(()=>{v.value?t.value.inverted?o$1.value=r$1.value>s.value:o$1.value=p.value||r$1.value<s.value:o$1.value=true;});});const{ssrBootStyles:B}=i(),{layoutItemStyles:V}=mt({id:l.name,order:computed(()=>parseInt(l.order,10)),position:toRef(l,"location"),layoutSize:S,elementSize:shallowRef(void 0),active:o$1,absolute:toRef(l,"absolute")});return o(()=>{const e=se.filterProps(l);return createVNode(se,mergeProps({ref:u,class:["v-app-bar",{"v-app-bar--bottom":l.location==="bottom"},l.class],style:[{...V.value,"--v-toolbar-image-opacity":b.value,height:void 0,...B.value},l.style]},e,{collapse:g.value,flat:y.value}),f)}),{}}});
+const makeVAppBarProps = propsFactory({
+  scrollBehavior: String,
+  modelValue: {
+    type: Boolean,
+    default: true
+  },
+  location: {
+    type: String,
+    default: "top",
+    validator: (value) => ["top", "bottom"].includes(value)
+  },
+  ...makeVToolbarProps(),
+  ...makeLayoutItemProps(),
+  ...makeScrollProps(),
+  height: {
+    type: [Number, String],
+    default: 64
+  }
+}, "VAppBar");
+const VAppBar = genericComponent()({
+  name: "VAppBar",
+  props: makeVAppBarProps(),
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const vToolbarRef = ref();
+    const isActive = useProxiedModel(props, "modelValue");
+    const scrollBehavior = computed(() => {
+      var _a;
+      const behavior = new Set(((_a = props.scrollBehavior) == null ? void 0 : _a.split(" ")) ?? []);
+      return {
+        hide: behavior.has("hide"),
+        fullyHide: behavior.has("fully-hide"),
+        inverted: behavior.has("inverted"),
+        collapse: behavior.has("collapse"),
+        elevate: behavior.has("elevate"),
+        fadeImage: behavior.has("fade-image")
+        // shrink: behavior.has('shrink'),
+      };
+    });
+    const canScroll = computed(() => {
+      const behavior = scrollBehavior.value;
+      return behavior.hide || behavior.fullyHide || behavior.inverted || behavior.collapse || behavior.elevate || behavior.fadeImage || // behavior.shrink ||
+      !isActive.value;
+    });
+    const {
+      currentScroll,
+      scrollThreshold,
+      isScrollingUp,
+      scrollRatio
+    } = useScroll(props, {
+      canScroll
+    });
+    const canHide = computed(() => scrollBehavior.value.hide || scrollBehavior.value.fullyHide);
+    const isCollapsed = computed(() => props.collapse || scrollBehavior.value.collapse && (scrollBehavior.value.inverted ? scrollRatio.value > 0 : scrollRatio.value === 0));
+    const isFlat = computed(() => props.flat || scrollBehavior.value.fullyHide && !isActive.value || scrollBehavior.value.elevate && (scrollBehavior.value.inverted ? currentScroll.value > 0 : currentScroll.value === 0));
+    const opacity = computed(() => scrollBehavior.value.fadeImage ? scrollBehavior.value.inverted ? 1 - scrollRatio.value : scrollRatio.value : void 0);
+    const height = computed(() => {
+      var _a, _b;
+      if (scrollBehavior.value.hide && scrollBehavior.value.inverted) return 0;
+      const height2 = ((_a = vToolbarRef.value) == null ? void 0 : _a.contentHeight) ?? 0;
+      const extensionHeight = ((_b = vToolbarRef.value) == null ? void 0 : _b.extensionHeight) ?? 0;
+      if (!canHide.value) return height2 + extensionHeight;
+      return currentScroll.value < scrollThreshold.value || scrollBehavior.value.fullyHide ? height2 + extensionHeight : height2;
+    });
+    useToggleScope(computed(() => !!props.scrollBehavior), () => {
+      watchEffect(() => {
+        if (canHide.value) {
+          if (scrollBehavior.value.inverted) {
+            isActive.value = currentScroll.value > scrollThreshold.value;
+          } else {
+            isActive.value = isScrollingUp.value || currentScroll.value < scrollThreshold.value;
+          }
+        } else {
+          isActive.value = true;
+        }
+      });
+    });
+    const {
+      ssrBootStyles
+    } = useSsrBoot();
+    const {
+      layoutItemStyles
+    } = useLayoutItem({
+      id: props.name,
+      order: computed(() => parseInt(props.order, 10)),
+      position: toRef(props, "location"),
+      layoutSize: height,
+      elementSize: shallowRef(void 0),
+      active: isActive,
+      absolute: toRef(props, "absolute")
+    });
+    useRender(() => {
+      const toolbarProps = VToolbar.filterProps(props);
+      return createVNode(VToolbar, mergeProps({
+        "ref": vToolbarRef,
+        "class": ["v-app-bar", {
+          "v-app-bar--bottom": props.location === "bottom"
+        }, props.class],
+        "style": [{
+          ...layoutItemStyles.value,
+          "--v-toolbar-image-opacity": opacity.value,
+          height: void 0,
+          ...ssrBootStyles.value
+        }, props.style]
+      }, toolbarProps, {
+        "collapse": isCollapsed.value,
+        "flat": isFlat.value
+      }), slots);
+    });
+    return {};
+  }
+});
 
-export { Z };;globalThis.__timing__.logEnd('Load chunks/build/VAppBar');
+export { VAppBar as V };
+//# sourceMappingURL=VAppBar.mjs.map

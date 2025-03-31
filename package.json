@@ -10,14 +10,7 @@
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
     "git": "npm run build && git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
-    "do-build": "npm install && npm run build"
-  },
-  "engines": {
-    "node": "18.20.6",
-    "npm": "10.9.2"
-  },
-  "overrides": {
-    "rollup": "3.29.4"
+    "clean": "rmdir /s /q node_modules .nuxt .output && del package-lock.json && npm install --legacy-peer-deps"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
@@ -42,6 +35,7 @@
     "cookie-universal-nuxt": "^2.2.2",
     "date-fns": "^4.1.0",
     "echarts": "^5.6.0",
+    "esbuild": "0.25.2",
     "fast-xml-parser": "^5.0.9",
     "formidable": "^3.5.2",
     "fs": "^0.0.1-security",
@@ -53,6 +47,7 @@
     "monaco-editor": "^0.52.2",
     "monaco-editor-vue3": "^0.1.10",
     "mysql": "^2.18.1",
+    "nitropack": "^2.9.5",
     "nuxt": "^3.15.4",
     "nuxt-highlightjs": "^1.0.3",
     "nuxt-stripe-module": "^3.2.0",

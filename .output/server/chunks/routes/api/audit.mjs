@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/audit');import { d as defineEventHandler, r as readBody, c as createError } from '../../_/nitro.mjs';
+import { d as defineEventHandler, r as readBody, c as createError } from '../../_/nitro.mjs';
 import axios from 'axios';
 import 'node:http';
 import 'node:https';
@@ -7,7 +7,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -52,4 +51,5 @@ const audit = defineEventHandler(async (event) => {
   }
 });
 
-export { audit as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/audit');
+export { audit as default };
+//# sourceMappingURL=audit.mjs.map

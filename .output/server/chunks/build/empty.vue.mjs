@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/build/empty.vue');import { s as s$1, c5 as w } from './server.mjs';
+import { _ as _export_sfc, c5 as __nuxt_component_0 } from './server.mjs';
 import { useSSRContext } from 'vue';
 import { ssrRenderComponent } from 'vue/server-renderer';
 import '../_/nitro.mjs';
@@ -9,7 +9,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -34,6 +33,18 @@ import 'pinia';
 import 'vue-router';
 import 'deep-pick-omit';
 
-const o={};function c(n,e,t,r){e(ssrRenderComponent(w,r,null,t));}const s=o.setup;o.setup=(n,e)=>{const t=useSSRContext();return (t.modules||(t.modules=new Set)).add("layouts/empty.vue"),s?s(n,e):void 0};const l=s$1(o,[["ssrRender",c]]);
+const _sfc_main = {};
+function _sfc_ssrRender(_ctx, _push, _parent, _attrs) {
+  const _component_NuxtPage = __nuxt_component_0;
+  _push(ssrRenderComponent(_component_NuxtPage, _attrs, null, _parent));
+}
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("layouts/empty.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const empty = /* @__PURE__ */ _export_sfc(_sfc_main, [["ssrRender", _sfc_ssrRender]]);
 
-export { l as default };;globalThis.__timing__.logEnd('Load chunks/build/empty.vue');
+export { empty as default };
+//# sourceMappingURL=empty.vue.mjs.map

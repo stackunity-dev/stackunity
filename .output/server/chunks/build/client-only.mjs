@@ -1,5 +1,28 @@
-globalThis.__timing__.logStart('Load chunks/build/client-only');import { defineComponent, ref, provide, createElementBlock } from 'vue';
+import { defineComponent, ref, provide, createElementBlock } from 'vue';
 
-const m=Symbol.for("nuxt:client-only"),s=defineComponent({name:"ClientOnly",inheritAttrs:false,props:["fallback","placeholder","placeholderTag","fallbackTag"],setup(d,{slots:l,attrs:t}){const n=ref(false);return provide(m,true),e=>{if(n.value)return l.default?.();const a=l.fallback||l.placeholder;if(a)return a();const o=e.fallback||e.placeholder||"",r=e.fallbackTag||e.placeholderTag||"span";return createElementBlock(r,t,o)}}});
+const clientOnlySymbol = Symbol.for("nuxt:client-only");
+const __nuxt_component_0 = defineComponent({
+  name: "ClientOnly",
+  inheritAttrs: false,
+  props: ["fallback", "placeholder", "placeholderTag", "fallbackTag"],
+  setup(_, { slots, attrs }) {
+    const mounted = ref(false);
+    provide(clientOnlySymbol, true);
+    return (props) => {
+      var _a;
+      if (mounted.value) {
+        return (_a = slots.default) == null ? void 0 : _a.call(slots);
+      }
+      const slot = slots.fallback || slots.placeholder;
+      if (slot) {
+        return slot();
+      }
+      const fallbackStr = props.fallback || props.placeholder || "";
+      const fallbackTag = props.fallbackTag || props.placeholderTag || "span";
+      return createElementBlock(fallbackTag, attrs, fallbackStr);
+    };
+  }
+});
 
-export { s };;globalThis.__timing__.logEnd('Load chunks/build/client-only');
+export { __nuxt_component_0 as _ };
+//# sourceMappingURL=client-only.mjs.map

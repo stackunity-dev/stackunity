@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/auth/deleteAccount');import { d as defineEventHandler, p as pool } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, p as pool } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -39,4 +38,5 @@ const deleteAccount = defineEventHandler(async (event) => {
   }
 });
 
-export { deleteAccount as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/auth/deleteAccount');
+export { deleteAccount as default };
+//# sourceMappingURL=deleteAccount.mjs.map

@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/seed-marketing-data');import { d as defineEventHandler, c as createError } from '../../_/nitro.mjs';
+import { d as defineEventHandler, c as createError } from '../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -37,4 +36,5 @@ const seedMarketingData = defineEventHandler(async (event) => {
   }
 });
 
-export { seedMarketingData as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/seed-marketing-data');
+export { seedMarketingData as default };
+//# sourceMappingURL=seed-marketing-data.mjs.map

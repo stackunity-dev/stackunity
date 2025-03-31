@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/auth/logout');import { d as defineEventHandler, i as getCookie, f as REFRESH_TOKEN_COOKIE_NAME, R as REFRESH_TOKEN_SECRET, p as pool, j as deleteCookie } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, i as getCookie, f as REFRESH_TOKEN_COOKIE_NAME, R as REFRESH_TOKEN_SECRET, p as pool, j as deleteCookie } from '../../../_/nitro.mjs';
 import jwt from 'jsonwebtoken';
 import 'node:http';
 import 'node:https';
@@ -7,7 +7,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'sqlstring';
 import 'net';
 import 'tls';
@@ -55,4 +54,5 @@ const logout = defineEventHandler(async (event) => {
   }
 });
 
-export { logout as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/auth/logout');
+export { logout as default };
+//# sourceMappingURL=logout.mjs.map

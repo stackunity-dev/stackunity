@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/auth/resetPassword');import { d as defineEventHandler, r as readBody, p as pool } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, r as readBody, p as pool } from '../../../_/nitro.mjs';
 import bcrypt from 'bcrypt';
 import 'node:http';
 import 'node:https';
@@ -7,7 +7,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -49,4 +48,5 @@ const resetPassword = defineEventHandler(async (event) => {
   }
 });
 
-export { resetPassword as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/auth/resetPassword');
+export { resetPassword as default };
+//# sourceMappingURL=resetPassword.mjs.map

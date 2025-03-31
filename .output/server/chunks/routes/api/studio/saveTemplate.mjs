@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/studio/saveTemplate');import { d as defineEventHandler, r as readBody, p as pool } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, r as readBody, p as pool } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -48,4 +47,5 @@ const saveTemplate = defineEventHandler(async (event) => {
   }
 });
 
-export { saveTemplate as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/studio/saveTemplate');
+export { saveTemplate as default };
+//# sourceMappingURL=saveTemplate.mjs.map

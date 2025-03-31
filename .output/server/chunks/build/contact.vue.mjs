@@ -1,19 +1,19 @@
-globalThis.__timing__.logStart('Load chunks/build/contact.vue');import { z } from './nuxt-link.mjs';
+import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { defineComponent, ref, withCtx, createVNode, createTextVNode, withModifiers, toDisplayString, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderAttr, ssrInterpolate } from 'vue/server-renderer';
-import { s } from './virtual_public.mjs';
-import { f } from './snackbar.vue.mjs';
-import { m as m$1 } from './v3.mjs';
-import { x, c, b as We, q as qe, s as s$1 } from './server.mjs';
-import { Z } from './VAppBar.mjs';
-import { x as x$1 } from './VContainer.mjs';
-import { _ } from './VMain.mjs';
-import { x as x$2, A } from './VCol.mjs';
-import { N } from './VForm.mjs';
-import { F as Fe } from './VTextField.mjs';
-import { a as at } from './VSelect.mjs';
-import { z as ze } from './VTextarea.mjs';
-import { t as te } from './VFooter.mjs';
+import { _ as _imports_0 } from './virtual_public.mjs';
+import { S as Snackbar } from './snackbar.vue.mjs';
+import { u as useHead } from './v3.mjs';
+import { V as VApp, d as VSpacer, e as VBtn, f as VCard, _ as _export_sfc } from './server.mjs';
+import { V as VAppBar } from './VAppBar.mjs';
+import { V as VContainer } from './VContainer.mjs';
+import { V as VMain } from './VMain.mjs';
+import { V as VRow, a as VCol } from './VCol.mjs';
+import { V as VForm } from './VForm.mjs';
+import { V as VTextField } from './VTextField.mjs';
+import { V as VSelect } from './VSelect.mjs';
+import { V as VTextarea } from './VTextarea.mjs';
+import { V as VFooter } from './VFooter.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -22,7 +22,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -56,8 +55,1353 @@ import './VToolbar.mjs';
 import './VCheckboxBtn.mjs';
 import './VChip.mjs';
 
-const Te=defineComponent({__name:"contact",__ssrInlineRender:true,setup(Ue){m$1({title:"Contact Us - DevUnity",meta:[{name:"description",content:"Contact the DevUnity team for any questions, suggestions or support requests. We are here to help you."},{name:"keywords",content:"DevUnity, contact, support, questions, suggestions, feedback, help, contact us, support request, contact form, contact us form, contact us page, contact us page design, contact us page development"},{name:"author",content:"DevUnity"},{name:"robots",content:"index, follow"},{name:"viewport",content:"width=device-width, initial-scale=1.0"},{name:"og:title",content:"Contact Us - DevUnity"},{name:"og:description",content:"Contact the DevUnity team for any questions, suggestions or support requests. We are here to help you."},{name:"og:image",content:"/logo/devunity-title.png"}]});const a=ref({name:"",email:"",subject:"General Question",message:""}),U=["General Question","Technical Support","Feature Request","Bug Report","Partnership","Other"],h=ref(false),f$1=ref({show:false,text:"",color:"success",timeout:2e3}),D=async()=>{h.value=true;try{(!a.value.name||!a.value.email||!a.value.subject||!a.value.message)&&(f$1.value={show:!0,text:"Please fill out all fields.",color:"error",timeout:2e3}),await new Promise(P=>setTimeout(P,1500)),a.value={name:"",email:"",subject:"General Question",message:""},f$1.value={show:!0,text:"Your message has been sent successfully! We will respond soon.",color:"success",timeout:2e3};}catch(P){console.error("Error sending message:",P),f$1.value={show:true,text:"An error occurred while sending your message. Please try again.",color:"error",timeout:2e3};}finally{h.value=false;}};return (P,ie,me,ne)=>{const G=z;ie(ssrRenderComponent(x,ne,{default:withCtx((he,z,Q,I)=>{if(z)z(ssrRenderComponent(Z,{app:"",flat:"",elevation:"2",color:"surface"},{default:withCtx((s$1,j,A,B)=>{if(j)j(ssrRenderComponent(x$1,{class:"d-flex align-center py-0 my-0"},{default:withCtx((m,_,N,Y)=>{if(_)_(ssrRenderComponent(G,{to:"/",class:"text-decoration-none"},{default:withCtx((n,S,O,$)=>{if(S)S(`<div class="d-flex align-center" data-v-ddba1113${$}><img${ssrRenderAttr("src",s)} alt="DevUnity title" width="150" data-v-ddba1113${$}></div>`);else return [createVNode("div",{class:"d-flex align-center"},[createVNode("img",{src:s,alt:"DevUnity title",width:"150"})])]}),_:1},N,Y)),_(ssrRenderComponent(c,null,null,N,Y)),_(ssrRenderComponent(We,{color:"primary",to:"/",class:"ml-4"},{default:withCtx((n,S,O,$)=>{if(S)S("Back to Home");else return [createTextVNode("Back to Home")]}),_:1},N,Y));else return [createVNode(G,{to:"/",class:"text-decoration-none"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode("img",{src:s,alt:"DevUnity title",width:"150"})])]),_:1}),createVNode(c),createVNode(We,{color:"primary",to:"/",class:"ml-4"},{default:withCtx(()=>[createTextVNode("Back to Home")]),_:1})]}),_:1},A,B));else return [createVNode(x$1,{class:"d-flex align-center py-0 my-0"},{default:withCtx(()=>[createVNode(G,{to:"/",class:"text-decoration-none"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode("img",{src:s,alt:"DevUnity title",width:"150"})])]),_:1}),createVNode(c),createVNode(We,{color:"primary",to:"/",class:"ml-4"},{default:withCtx(()=>[createTextVNode("Back to Home")]),_:1})]),_:1})]}),_:1},Q,I)),z(ssrRenderComponent(_,null,{default:withCtx((s,j,A$1,B)=>{if(j)j(ssrRenderComponent(x$1,{class:"py-12"},{default:withCtx((m,_,N$1,Y)=>{if(_)_(ssrRenderComponent(x$2,{justify:"center"},{default:withCtx((n,S,O,$)=>{if(S)S(ssrRenderComponent(A,{cols:"12",md:"10",lg:"8"},{default:withCtx((c,le,re,ce)=>{if(le)le(ssrRenderComponent(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx((b,J,be,K)=>{if(J)J(`<h1 class="text-h3 font-weight-bold mb-6" data-v-ddba1113${K}>Contact Us</h1><p class="text-subtitle-1 mb-6" data-v-ddba1113${K}> We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. </p>`),J(ssrRenderComponent(N,{onSubmit:D,class:"mb-8"},{default:withCtx((v,X,ae,te)=>{if(X)X(ssrRenderComponent(x$2,null,{default:withCtx((r,M,H,R)=>{if(M)M(ssrRenderComponent(A,{cols:"12",md:"6"},{default:withCtx((i,y,k,C)=>{if(y)y(ssrRenderComponent(Fe,{modelValue:a.value.name,"onUpdate:modelValue":o=>a.value.name=o,label:"Your name",variant:"outlined",rules:[o=>!!o||"Name is required"],"hide-details":"auto",class:"mb-4"},null,k,C));else return [createVNode(Fe,{modelValue:a.value.name,"onUpdate:modelValue":o=>a.value.name=o,label:"Your name",variant:"outlined",rules:[o=>!!o||"Name is required"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]}),_:1},H,R)),M(ssrRenderComponent(A,{cols:"12",md:"6"},{default:withCtx((i,y,k,C)=>{if(y)y(ssrRenderComponent(Fe,{modelValue:a.value.email,"onUpdate:modelValue":o=>a.value.email=o,label:"Your email",variant:"outlined",type:"email",rules:[o=>!!o||"Email is required",o=>/.+@.+\..+/.test(o)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,k,C));else return [createVNode(Fe,{modelValue:a.value.email,"onUpdate:modelValue":o=>a.value.email=o,label:"Your email",variant:"outlined",type:"email",rules:[o=>!!o||"Email is required",o=>/.+@.+\..+/.test(o)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]}),_:1},H,R)),M(ssrRenderComponent(A,{cols:"12"},{default:withCtx((i,y,k,C)=>{if(y)y(ssrRenderComponent(at,{modelValue:a.value.subject,"onUpdate:modelValue":o=>a.value.subject=o,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,k,C));else return [createVNode(at,{modelValue:a.value.subject,"onUpdate:modelValue":o=>a.value.subject=o,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},H,R)),M(ssrRenderComponent(A,{cols:"12"},{default:withCtx((i,y,k,C)=>{if(y)y(ssrRenderComponent(ze,{modelValue:a.value.message,"onUpdate:modelValue":o=>a.value.message=o,label:"Your message",variant:"outlined",rules:[o=>!!o||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,k,C));else return [createVNode(ze,{modelValue:a.value.message,"onUpdate:modelValue":o=>a.value.message=o,label:"Your message",variant:"outlined",rules:[o=>!!o||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]}),_:1},H,R));else return [createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.name,"onUpdate:modelValue":i=>a.value.name=i,label:"Your name",variant:"outlined",rules:[i=>!!i||"Name is required"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.email,"onUpdate:modelValue":i=>a.value.email=i,label:"Your email",variant:"outlined",type:"email",rules:[i=>!!i||"Email is required",i=>/.+@.+\..+/.test(i)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(at,{modelValue:a.value.subject,"onUpdate:modelValue":i=>a.value.subject=i,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:a.value.message,"onUpdate:modelValue":i=>a.value.message=i,label:"Your message",variant:"outlined",rules:[i=>!!i||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1})]}),_:1},ae,te)),X(ssrRenderComponent(We,{type:"submit",color:"primary",size:"large",loading:h.value,class:"mt-4"},{default:withCtx((r,M,H,R)=>{if(M)M(" Send Message ");else return [createTextVNode(" Send Message ")]}),_:1},ae,te));else return [createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.name,"onUpdate:modelValue":r=>a.value.name=r,label:"Your name",variant:"outlined",rules:[r=>!!r||"Name is required"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.email,"onUpdate:modelValue":r=>a.value.email=r,label:"Your email",variant:"outlined",type:"email",rules:[r=>!!r||"Email is required",r=>/.+@.+\..+/.test(r)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(at,{modelValue:a.value.subject,"onUpdate:modelValue":r=>a.value.subject=r,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:a.value.message,"onUpdate:modelValue":r=>a.value.message=r,label:"Your message",variant:"outlined",rules:[r=>!!r||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1})]),_:1}),createVNode(We,{type:"submit",color:"primary",size:"large",loading:h.value,class:"mt-4"},{default:withCtx(()=>[createTextVNode(" Send Message ")]),_:1},8,["loading"])]}),_:1},be,K));else return [createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Contact Us"),createVNode("p",{class:"text-subtitle-1 mb-6"}," We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),createVNode(N,{onSubmit:withModifiers(D,["prevent"]),class:"mb-8"},{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.name,"onUpdate:modelValue":v=>a.value.name=v,label:"Your name",variant:"outlined",rules:[v=>!!v||"Name is required"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.email,"onUpdate:modelValue":v=>a.value.email=v,label:"Your email",variant:"outlined",type:"email",rules:[v=>!!v||"Email is required",v=>/.+@.+\..+/.test(v)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(at,{modelValue:a.value.subject,"onUpdate:modelValue":v=>a.value.subject=v,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:a.value.message,"onUpdate:modelValue":v=>a.value.message=v,label:"Your message",variant:"outlined",rules:[v=>!!v||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1})]),_:1}),createVNode(We,{type:"submit",color:"primary",size:"large",loading:h.value,class:"mt-4"},{default:withCtx(()=>[createTextVNode(" Send Message ")]),_:1},8,["loading"])]),_:1})]}),_:1},re,ce));else return [createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Contact Us"),createVNode("p",{class:"text-subtitle-1 mb-6"}," We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),createVNode(N,{onSubmit:withModifiers(D,["prevent"]),class:"mb-8"},{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.name,"onUpdate:modelValue":b=>a.value.name=b,label:"Your name",variant:"outlined",rules:[b=>!!b||"Name is required"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.email,"onUpdate:modelValue":b=>a.value.email=b,label:"Your email",variant:"outlined",type:"email",rules:[b=>!!b||"Email is required",b=>/.+@.+\..+/.test(b)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(at,{modelValue:a.value.subject,"onUpdate:modelValue":b=>a.value.subject=b,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:a.value.message,"onUpdate:modelValue":b=>a.value.message=b,label:"Your message",variant:"outlined",rules:[b=>!!b||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1})]),_:1}),createVNode(We,{type:"submit",color:"primary",size:"large",loading:h.value,class:"mt-4"},{default:withCtx(()=>[createTextVNode(" Send Message ")]),_:1},8,["loading"])]),_:1})]),_:1})]}),_:1},O,$));else return [createVNode(A,{cols:"12",md:"10",lg:"8"},{default:withCtx(()=>[createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Contact Us"),createVNode("p",{class:"text-subtitle-1 mb-6"}," We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),createVNode(N,{onSubmit:withModifiers(D,["prevent"]),class:"mb-8"},{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.name,"onUpdate:modelValue":c=>a.value.name=c,label:"Your name",variant:"outlined",rules:[c=>!!c||"Name is required"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.email,"onUpdate:modelValue":c=>a.value.email=c,label:"Your email",variant:"outlined",type:"email",rules:[c=>!!c||"Email is required",c=>/.+@.+\..+/.test(c)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(at,{modelValue:a.value.subject,"onUpdate:modelValue":c=>a.value.subject=c,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:a.value.message,"onUpdate:modelValue":c=>a.value.message=c,label:"Your message",variant:"outlined",rules:[c=>!!c||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1})]),_:1}),createVNode(We,{type:"submit",color:"primary",size:"large",loading:h.value,class:"mt-4"},{default:withCtx(()=>[createTextVNode(" Send Message ")]),_:1},8,["loading"])]),_:1})]),_:1})]),_:1})]}),_:1},N$1,Y));else return [createVNode(x$2,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"10",lg:"8"},{default:withCtx(()=>[createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Contact Us"),createVNode("p",{class:"text-subtitle-1 mb-6"}," We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),createVNode(N,{onSubmit:withModifiers(D,["prevent"]),class:"mb-8"},{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.name,"onUpdate:modelValue":n=>a.value.name=n,label:"Your name",variant:"outlined",rules:[n=>!!n||"Name is required"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.email,"onUpdate:modelValue":n=>a.value.email=n,label:"Your email",variant:"outlined",type:"email",rules:[n=>!!n||"Email is required",n=>/.+@.+\..+/.test(n)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(at,{modelValue:a.value.subject,"onUpdate:modelValue":n=>a.value.subject=n,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:a.value.message,"onUpdate:modelValue":n=>a.value.message=n,label:"Your message",variant:"outlined",rules:[n=>!!n||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1})]),_:1}),createVNode(We,{type:"submit",color:"primary",size:"large",loading:h.value,class:"mt-4"},{default:withCtx(()=>[createTextVNode(" Send Message ")]),_:1},8,["loading"])]),_:1})]),_:1})]),_:1})]),_:1})]}),_:1},A$1,B));else return [createVNode(x$1,{class:"py-12"},{default:withCtx(()=>[createVNode(x$2,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"10",lg:"8"},{default:withCtx(()=>[createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Contact Us"),createVNode("p",{class:"text-subtitle-1 mb-6"}," We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),createVNode(N,{onSubmit:withModifiers(D,["prevent"]),class:"mb-8"},{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.name,"onUpdate:modelValue":m=>a.value.name=m,label:"Your name",variant:"outlined",rules:[m=>!!m||"Name is required"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.email,"onUpdate:modelValue":m=>a.value.email=m,label:"Your email",variant:"outlined",type:"email",rules:[m=>!!m||"Email is required",m=>/.+@.+\..+/.test(m)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(at,{modelValue:a.value.subject,"onUpdate:modelValue":m=>a.value.subject=m,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:a.value.message,"onUpdate:modelValue":m=>a.value.message=m,label:"Your message",variant:"outlined",rules:[m=>!!m||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1})]),_:1}),createVNode(We,{type:"submit",color:"primary",size:"large",loading:h.value,class:"mt-4"},{default:withCtx(()=>[createTextVNode(" Send Message ")]),_:1},8,["loading"])]),_:1})]),_:1})]),_:1})]),_:1})]),_:1})]}),_:1},Q,I)),z(ssrRenderComponent(te,{class:"py-4"},{default:withCtx((s,j,A,B)=>{if(j)j(ssrRenderComponent(x$1,null,{default:withCtx((m,_,N,Y)=>{if(_)_(`<div class="text-center" data-v-ddba1113${Y}><p class="text-body-2 text-medium-emphasis" data-v-ddba1113${Y}> © ${ssrInterpolate(new Date().getFullYear())} DevUnity. All rights reserved. </p></div>`);else return [createVNode("div",{class:"text-center"},[createVNode("p",{class:"text-body-2 text-medium-emphasis"}," © "+toDisplayString(new Date().getFullYear())+" DevUnity. All rights reserved. ",1)])]}),_:1},A,B));else return [createVNode(x$1,null,{default:withCtx(()=>[createVNode("div",{class:"text-center"},[createVNode("p",{class:"text-body-2 text-medium-emphasis"}," © "+toDisplayString(new Date().getFullYear())+" DevUnity. All rights reserved. ",1)])]),_:1})]}),_:1},Q,I)),z(ssrRenderComponent(f,{modelValue:f$1.value.show,"onUpdate:modelValue":s=>f$1.value.show=s,color:f$1.value.color,text:f$1.value.text,timeout:f$1.value.timeout},null,Q,I));else return [createVNode(Z,{app:"",flat:"",elevation:"2",color:"surface"},{default:withCtx(()=>[createVNode(x$1,{class:"d-flex align-center py-0 my-0"},{default:withCtx(()=>[createVNode(G,{to:"/",class:"text-decoration-none"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode("img",{src:s,alt:"DevUnity title",width:"150"})])]),_:1}),createVNode(c),createVNode(We,{color:"primary",to:"/",class:"ml-4"},{default:withCtx(()=>[createTextVNode("Back to Home")]),_:1})]),_:1})]),_:1}),createVNode(_,null,{default:withCtx(()=>[createVNode(x$1,{class:"py-12"},{default:withCtx(()=>[createVNode(x$2,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"10",lg:"8"},{default:withCtx(()=>[createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Contact Us"),createVNode("p",{class:"text-subtitle-1 mb-6"}," We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),createVNode(N,{onSubmit:withModifiers(D,["prevent"]),class:"mb-8"},{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.name,"onUpdate:modelValue":s=>a.value.name=s,label:"Your name",variant:"outlined",rules:[s=>!!s||"Name is required"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Fe,{modelValue:a.value.email,"onUpdate:modelValue":s=>a.value.email=s,label:"Your email",variant:"outlined",type:"email",rules:[s=>!!s||"Email is required",s=>/.+@.+\..+/.test(s)||"Invalid email"],"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(at,{modelValue:a.value.subject,"onUpdate:modelValue":s=>a.value.subject=s,label:"Subject",variant:"outlined",items:U,"hide-details":"auto",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:a.value.message,"onUpdate:modelValue":s=>a.value.message=s,label:"Your message",variant:"outlined",rules:[s=>!!s||"Message is required"],"hide-details":"auto",rows:"5",class:"mb-4"},null,8,["modelValue","onUpdate:modelValue","rules"])]),_:1})]),_:1}),createVNode(We,{type:"submit",color:"primary",size:"large",loading:h.value,class:"mt-4"},{default:withCtx(()=>[createTextVNode(" Send Message ")]),_:1},8,["loading"])]),_:1})]),_:1})]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(te,{class:"py-4"},{default:withCtx(()=>[createVNode(x$1,null,{default:withCtx(()=>[createVNode("div",{class:"text-center"},[createVNode("p",{class:"text-body-2 text-medium-emphasis"}," © "+toDisplayString(new Date().getFullYear())+" DevUnity. All rights reserved. ",1)])]),_:1})]),_:1}),createVNode(f,{modelValue:f$1.value.show,"onUpdate:modelValue":s=>f$1.value.show=s,color:f$1.value.color,text:f$1.value.text,timeout:f$1.value.timeout},null,8,["modelValue","onUpdate:modelValue","color","text","timeout"])]}),_:1},me));}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "contact",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useHead({
+      title: "Contact Us - DevUnity",
+      meta: [
+        { name: "description", content: "Contact the DevUnity team for any questions, suggestions or support requests. We are here to help you." },
+        { name: "keywords", content: "DevUnity, contact, support, questions, suggestions, feedback, help, contact us, support request, contact form, contact us form, contact us page, contact us page design, contact us page development" },
+        { name: "author", content: "DevUnity" },
+        { name: "robots", content: "index, follow" },
+        { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+        { name: "og:title", content: "Contact Us - DevUnity" },
+        { name: "og:description", content: "Contact the DevUnity team for any questions, suggestions or support requests. We are here to help you." },
+        { name: "og:image", content: "/logo/devunity-title.png" }
+      ]
+    });
+    const form = ref({
+      name: "",
+      email: "",
+      subject: "General Question",
+      message: ""
+    });
+    const subjects = [
+      "General Question",
+      "Technical Support",
+      "Feature Request",
+      "Bug Report",
+      "Partnership",
+      "Other"
+    ];
+    const loading = ref(false);
+    const snackbar = ref({
+      show: false,
+      text: "",
+      color: "success",
+      timeout: 2e3
+    });
+    const submitForm = async () => {
+      loading.value = true;
+      try {
+        if (!form.value.name || !form.value.email || !form.value.subject || !form.value.message) {
+          snackbar.value = {
+            show: true,
+            text: "Please fill out all fields.",
+            color: "error",
+            timeout: 2e3
+          };
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        form.value = {
+          name: "",
+          email: "",
+          subject: "General Question",
+          message: ""
+        };
+        snackbar.value = {
+          show: true,
+          text: "Your message has been sent successfully! We will respond soon.",
+          color: "success",
+          timeout: 2e3
+        };
+      } catch (error) {
+        console.error("Error sending message:", error);
+        snackbar.value = {
+          show: true,
+          text: "An error occurred while sending your message. Please try again.",
+          color: "error",
+          timeout: 2e3
+        };
+      } finally {
+        loading.value = false;
+      }
+    };
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_NuxtLink = __nuxt_component_0;
+      _push(ssrRenderComponent(VApp, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VAppBar, {
+              app: "",
+              flat: "",
+              elevation: "2",
+              color: "surface"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VContainer, { class: "d-flex align-center py-0 my-0" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(_component_NuxtLink, {
+                          to: "/",
+                          class: "text-decoration-none"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<div class="d-flex align-center" data-v-ddba1113${_scopeId4}><img${ssrRenderAttr("src", _imports_0)} alt="DevUnity title" width="150" data-v-ddba1113${_scopeId4}></div>`);
+                            } else {
+                              return [
+                                createVNode("div", { class: "d-flex align-center" }, [
+                                  createVNode("img", {
+                                    src: _imports_0,
+                                    alt: "DevUnity title",
+                                    width: "150"
+                                  })
+                                ])
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VSpacer, null, null, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VBtn, {
+                          color: "primary",
+                          to: "/",
+                          class: "ml-4"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`Back to Home`);
+                            } else {
+                              return [
+                                createTextVNode("Back to Home")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(_component_NuxtLink, {
+                            to: "/",
+                            class: "text-decoration-none"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode("div", { class: "d-flex align-center" }, [
+                                createVNode("img", {
+                                  src: _imports_0,
+                                  alt: "DevUnity title",
+                                  width: "150"
+                                })
+                              ])
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VSpacer),
+                          createVNode(VBtn, {
+                            color: "primary",
+                            to: "/",
+                            class: "ml-4"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode("Back to Home")
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VContainer, { class: "d-flex align-center py-0 my-0" }, {
+                      default: withCtx(() => [
+                        createVNode(_component_NuxtLink, {
+                          to: "/",
+                          class: "text-decoration-none"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode("div", { class: "d-flex align-center" }, [
+                              createVNode("img", {
+                                src: _imports_0,
+                                alt: "DevUnity title",
+                                width: "150"
+                              })
+                            ])
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VSpacer),
+                        createVNode(VBtn, {
+                          color: "primary",
+                          to: "/",
+                          class: "ml-4"
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode("Back to Home")
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VMain, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VContainer, { class: "py-12" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VRow, { justify: "center" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VCol, {
+                                cols: "12",
+                                md: "10",
+                                lg: "8"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`<h1 class="text-h3 font-weight-bold mb-6" data-v-ddba1113${_scopeId6}>Contact Us</h1><p class="text-subtitle-1 mb-6" data-v-ddba1113${_scopeId6}> We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. </p>`);
+                                          _push7(ssrRenderComponent(VForm, {
+                                            onSubmit: submitForm,
+                                            class: "mb-8"
+                                          }, {
+                                            default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                              if (_push8) {
+                                                _push8(ssrRenderComponent(VRow, null, {
+                                                  default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                    if (_push9) {
+                                                      _push9(ssrRenderComponent(VCol, {
+                                                        cols: "12",
+                                                        md: "6"
+                                                      }, {
+                                                        default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                          if (_push10) {
+                                                            _push10(ssrRenderComponent(VTextField, {
+                                                              modelValue: form.value.name,
+                                                              "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                              label: "Your name",
+                                                              variant: "outlined",
+                                                              rules: [(v) => !!v || "Name is required"],
+                                                              "hide-details": "auto",
+                                                              class: "mb-4"
+                                                            }, null, _parent10, _scopeId9));
+                                                          } else {
+                                                            return [
+                                                              createVNode(VTextField, {
+                                                                modelValue: form.value.name,
+                                                                "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                                label: "Your name",
+                                                                variant: "outlined",
+                                                                rules: [(v) => !!v || "Name is required"],
+                                                                "hide-details": "auto",
+                                                                class: "mb-4"
+                                                              }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                            ];
+                                                          }
+                                                        }),
+                                                        _: 1
+                                                      }, _parent9, _scopeId8));
+                                                      _push9(ssrRenderComponent(VCol, {
+                                                        cols: "12",
+                                                        md: "6"
+                                                      }, {
+                                                        default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                          if (_push10) {
+                                                            _push10(ssrRenderComponent(VTextField, {
+                                                              modelValue: form.value.email,
+                                                              "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                              label: "Your email",
+                                                              variant: "outlined",
+                                                              type: "email",
+                                                              rules: [
+                                                                (v) => !!v || "Email is required",
+                                                                (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                              ],
+                                                              "hide-details": "auto",
+                                                              class: "mb-4"
+                                                            }, null, _parent10, _scopeId9));
+                                                          } else {
+                                                            return [
+                                                              createVNode(VTextField, {
+                                                                modelValue: form.value.email,
+                                                                "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                                label: "Your email",
+                                                                variant: "outlined",
+                                                                type: "email",
+                                                                rules: [
+                                                                  (v) => !!v || "Email is required",
+                                                                  (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                                ],
+                                                                "hide-details": "auto",
+                                                                class: "mb-4"
+                                                              }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                            ];
+                                                          }
+                                                        }),
+                                                        _: 1
+                                                      }, _parent9, _scopeId8));
+                                                      _push9(ssrRenderComponent(VCol, { cols: "12" }, {
+                                                        default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                          if (_push10) {
+                                                            _push10(ssrRenderComponent(VSelect, {
+                                                              modelValue: form.value.subject,
+                                                              "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                              label: "Subject",
+                                                              variant: "outlined",
+                                                              items: subjects,
+                                                              "hide-details": "auto",
+                                                              class: "mb-4"
+                                                            }, null, _parent10, _scopeId9));
+                                                          } else {
+                                                            return [
+                                                              createVNode(VSelect, {
+                                                                modelValue: form.value.subject,
+                                                                "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                                label: "Subject",
+                                                                variant: "outlined",
+                                                                items: subjects,
+                                                                "hide-details": "auto",
+                                                                class: "mb-4"
+                                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                            ];
+                                                          }
+                                                        }),
+                                                        _: 1
+                                                      }, _parent9, _scopeId8));
+                                                      _push9(ssrRenderComponent(VCol, { cols: "12" }, {
+                                                        default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                          if (_push10) {
+                                                            _push10(ssrRenderComponent(VTextarea, {
+                                                              modelValue: form.value.message,
+                                                              "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                              label: "Your message",
+                                                              variant: "outlined",
+                                                              rules: [(v) => !!v || "Message is required"],
+                                                              "hide-details": "auto",
+                                                              rows: "5",
+                                                              class: "mb-4"
+                                                            }, null, _parent10, _scopeId9));
+                                                          } else {
+                                                            return [
+                                                              createVNode(VTextarea, {
+                                                                modelValue: form.value.message,
+                                                                "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                                label: "Your message",
+                                                                variant: "outlined",
+                                                                rules: [(v) => !!v || "Message is required"],
+                                                                "hide-details": "auto",
+                                                                rows: "5",
+                                                                class: "mb-4"
+                                                              }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                            ];
+                                                          }
+                                                        }),
+                                                        _: 1
+                                                      }, _parent9, _scopeId8));
+                                                    } else {
+                                                      return [
+                                                        createVNode(VCol, {
+                                                          cols: "12",
+                                                          md: "6"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VTextField, {
+                                                              modelValue: form.value.name,
+                                                              "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                              label: "Your name",
+                                                              variant: "outlined",
+                                                              rules: [(v) => !!v || "Name is required"],
+                                                              "hide-details": "auto",
+                                                              class: "mb-4"
+                                                            }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode(VCol, {
+                                                          cols: "12",
+                                                          md: "6"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VTextField, {
+                                                              modelValue: form.value.email,
+                                                              "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                              label: "Your email",
+                                                              variant: "outlined",
+                                                              type: "email",
+                                                              rules: [
+                                                                (v) => !!v || "Email is required",
+                                                                (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                              ],
+                                                              "hide-details": "auto",
+                                                              class: "mb-4"
+                                                            }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode(VCol, { cols: "12" }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VSelect, {
+                                                              modelValue: form.value.subject,
+                                                              "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                              label: "Subject",
+                                                              variant: "outlined",
+                                                              items: subjects,
+                                                              "hide-details": "auto",
+                                                              class: "mb-4"
+                                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode(VCol, { cols: "12" }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VTextarea, {
+                                                              modelValue: form.value.message,
+                                                              "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                              label: "Your message",
+                                                              variant: "outlined",
+                                                              rules: [(v) => !!v || "Message is required"],
+                                                              "hide-details": "auto",
+                                                              rows: "5",
+                                                              class: "mb-4"
+                                                            }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ];
+                                                    }
+                                                  }),
+                                                  _: 1
+                                                }, _parent8, _scopeId7));
+                                                _push8(ssrRenderComponent(VBtn, {
+                                                  type: "submit",
+                                                  color: "primary",
+                                                  size: "large",
+                                                  loading: loading.value,
+                                                  class: "mt-4"
+                                                }, {
+                                                  default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                    if (_push9) {
+                                                      _push9(` Send Message `);
+                                                    } else {
+                                                      return [
+                                                        createTextVNode(" Send Message ")
+                                                      ];
+                                                    }
+                                                  }),
+                                                  _: 1
+                                                }, _parent8, _scopeId7));
+                                              } else {
+                                                return [
+                                                  createVNode(VRow, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VCol, {
+                                                        cols: "12",
+                                                        md: "6"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VTextField, {
+                                                            modelValue: form.value.name,
+                                                            "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                            label: "Your name",
+                                                            variant: "outlined",
+                                                            rules: [(v) => !!v || "Name is required"],
+                                                            "hide-details": "auto",
+                                                            class: "mb-4"
+                                                          }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode(VCol, {
+                                                        cols: "12",
+                                                        md: "6"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VTextField, {
+                                                            modelValue: form.value.email,
+                                                            "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                            label: "Your email",
+                                                            variant: "outlined",
+                                                            type: "email",
+                                                            rules: [
+                                                              (v) => !!v || "Email is required",
+                                                              (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                            ],
+                                                            "hide-details": "auto",
+                                                            class: "mb-4"
+                                                          }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode(VCol, { cols: "12" }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VSelect, {
+                                                            modelValue: form.value.subject,
+                                                            "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                            label: "Subject",
+                                                            variant: "outlined",
+                                                            items: subjects,
+                                                            "hide-details": "auto",
+                                                            class: "mb-4"
+                                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode(VCol, { cols: "12" }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VTextarea, {
+                                                            modelValue: form.value.message,
+                                                            "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                            label: "Your message",
+                                                            variant: "outlined",
+                                                            rules: [(v) => !!v || "Message is required"],
+                                                            "hide-details": "auto",
+                                                            rows: "5",
+                                                            class: "mb-4"
+                                                          }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VBtn, {
+                                                    type: "submit",
+                                                    color: "primary",
+                                                    size: "large",
+                                                    loading: loading.value,
+                                                    class: "mt-4"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(" Send Message ")
+                                                    ]),
+                                                    _: 1
+                                                  }, 8, ["loading"])
+                                                ];
+                                              }
+                                            }),
+                                            _: 1
+                                          }, _parent7, _scopeId6));
+                                        } else {
+                                          return [
+                                            createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Contact Us"),
+                                            createVNode("p", { class: "text-subtitle-1 mb-6" }, " We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),
+                                            createVNode(VForm, {
+                                              onSubmit: withModifiers(submitForm, ["prevent"]),
+                                              class: "mb-8"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VRow, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VCol, {
+                                                      cols: "12",
+                                                      md: "6"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VTextField, {
+                                                          modelValue: form.value.name,
+                                                          "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                          label: "Your name",
+                                                          variant: "outlined",
+                                                          rules: [(v) => !!v || "Name is required"],
+                                                          "hide-details": "auto",
+                                                          class: "mb-4"
+                                                        }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VCol, {
+                                                      cols: "12",
+                                                      md: "6"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VTextField, {
+                                                          modelValue: form.value.email,
+                                                          "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                          label: "Your email",
+                                                          variant: "outlined",
+                                                          type: "email",
+                                                          rules: [
+                                                            (v) => !!v || "Email is required",
+                                                            (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                          ],
+                                                          "hide-details": "auto",
+                                                          class: "mb-4"
+                                                        }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VCol, { cols: "12" }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VSelect, {
+                                                          modelValue: form.value.subject,
+                                                          "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                          label: "Subject",
+                                                          variant: "outlined",
+                                                          items: subjects,
+                                                          "hide-details": "auto",
+                                                          class: "mb-4"
+                                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VCol, { cols: "12" }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VTextarea, {
+                                                          modelValue: form.value.message,
+                                                          "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                          label: "Your message",
+                                                          variant: "outlined",
+                                                          rules: [(v) => !!v || "Message is required"],
+                                                          "hide-details": "auto",
+                                                          rows: "5",
+                                                          class: "mb-4"
+                                                        }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VBtn, {
+                                                  type: "submit",
+                                                  color: "primary",
+                                                  size: "large",
+                                                  loading: loading.value,
+                                                  class: "mt-4"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" Send Message ")
+                                                  ]),
+                                                  _: 1
+                                                }, 8, ["loading"])
+                                              ]),
+                                              _: 1
+                                            })
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                        default: withCtx(() => [
+                                          createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Contact Us"),
+                                          createVNode("p", { class: "text-subtitle-1 mb-6" }, " We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),
+                                          createVNode(VForm, {
+                                            onSubmit: withModifiers(submitForm, ["prevent"]),
+                                            class: "mb-8"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VRow, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VCol, {
+                                                    cols: "12",
+                                                    md: "6"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VTextField, {
+                                                        modelValue: form.value.name,
+                                                        "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                        label: "Your name",
+                                                        variant: "outlined",
+                                                        rules: [(v) => !!v || "Name is required"],
+                                                        "hide-details": "auto",
+                                                        class: "mb-4"
+                                                      }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VCol, {
+                                                    cols: "12",
+                                                    md: "6"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VTextField, {
+                                                        modelValue: form.value.email,
+                                                        "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                        label: "Your email",
+                                                        variant: "outlined",
+                                                        type: "email",
+                                                        rules: [
+                                                          (v) => !!v || "Email is required",
+                                                          (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                        ],
+                                                        "hide-details": "auto",
+                                                        class: "mb-4"
+                                                      }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VCol, { cols: "12" }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VSelect, {
+                                                        modelValue: form.value.subject,
+                                                        "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                        label: "Subject",
+                                                        variant: "outlined",
+                                                        items: subjects,
+                                                        "hide-details": "auto",
+                                                        class: "mb-4"
+                                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VCol, { cols: "12" }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VTextarea, {
+                                                        modelValue: form.value.message,
+                                                        "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                        label: "Your message",
+                                                        variant: "outlined",
+                                                        rules: [(v) => !!v || "Message is required"],
+                                                        "hide-details": "auto",
+                                                        rows: "5",
+                                                        class: "mb-4"
+                                                      }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VBtn, {
+                                                type: "submit",
+                                                color: "primary",
+                                                size: "large",
+                                                loading: loading.value,
+                                                class: "mt-4"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" Send Message ")
+                                                ]),
+                                                _: 1
+                                              }, 8, ["loading"])
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  md: "10",
+                                  lg: "8"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                      default: withCtx(() => [
+                                        createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Contact Us"),
+                                        createVNode("p", { class: "text-subtitle-1 mb-6" }, " We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),
+                                        createVNode(VForm, {
+                                          onSubmit: withModifiers(submitForm, ["prevent"]),
+                                          class: "mb-8"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VRow, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VCol, {
+                                                  cols: "12",
+                                                  md: "6"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VTextField, {
+                                                      modelValue: form.value.name,
+                                                      "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                      label: "Your name",
+                                                      variant: "outlined",
+                                                      rules: [(v) => !!v || "Name is required"],
+                                                      "hide-details": "auto",
+                                                      class: "mb-4"
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VCol, {
+                                                  cols: "12",
+                                                  md: "6"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VTextField, {
+                                                      modelValue: form.value.email,
+                                                      "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                      label: "Your email",
+                                                      variant: "outlined",
+                                                      type: "email",
+                                                      rules: [
+                                                        (v) => !!v || "Email is required",
+                                                        (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                      ],
+                                                      "hide-details": "auto",
+                                                      class: "mb-4"
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VCol, { cols: "12" }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VSelect, {
+                                                      modelValue: form.value.subject,
+                                                      "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                      label: "Subject",
+                                                      variant: "outlined",
+                                                      items: subjects,
+                                                      "hide-details": "auto",
+                                                      class: "mb-4"
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode(VCol, { cols: "12" }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VTextarea, {
+                                                      modelValue: form.value.message,
+                                                      "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                      label: "Your message",
+                                                      variant: "outlined",
+                                                      rules: [(v) => !!v || "Message is required"],
+                                                      "hide-details": "auto",
+                                                      rows: "5",
+                                                      class: "mb-4"
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VBtn, {
+                                              type: "submit",
+                                              color: "primary",
+                                              size: "large",
+                                              loading: loading.value,
+                                              class: "mt-4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Send Message ")
+                                              ]),
+                                              _: 1
+                                            }, 8, ["loading"])
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VRow, { justify: "center" }, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                md: "10",
+                                lg: "8"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                    default: withCtx(() => [
+                                      createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Contact Us"),
+                                      createVNode("p", { class: "text-subtitle-1 mb-6" }, " We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),
+                                      createVNode(VForm, {
+                                        onSubmit: withModifiers(submitForm, ["prevent"]),
+                                        class: "mb-8"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VRow, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VCol, {
+                                                cols: "12",
+                                                md: "6"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VTextField, {
+                                                    modelValue: form.value.name,
+                                                    "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                    label: "Your name",
+                                                    variant: "outlined",
+                                                    rules: [(v) => !!v || "Name is required"],
+                                                    "hide-details": "auto",
+                                                    class: "mb-4"
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VCol, {
+                                                cols: "12",
+                                                md: "6"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VTextField, {
+                                                    modelValue: form.value.email,
+                                                    "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                    label: "Your email",
+                                                    variant: "outlined",
+                                                    type: "email",
+                                                    rules: [
+                                                      (v) => !!v || "Email is required",
+                                                      (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                    ],
+                                                    "hide-details": "auto",
+                                                    class: "mb-4"
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VCol, { cols: "12" }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VSelect, {
+                                                    modelValue: form.value.subject,
+                                                    "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                    label: "Subject",
+                                                    variant: "outlined",
+                                                    items: subjects,
+                                                    "hide-details": "auto",
+                                                    class: "mb-4"
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VCol, { cols: "12" }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VTextarea, {
+                                                    modelValue: form.value.message,
+                                                    "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                    label: "Your message",
+                                                    variant: "outlined",
+                                                    rules: [(v) => !!v || "Message is required"],
+                                                    "hide-details": "auto",
+                                                    rows: "5",
+                                                    class: "mb-4"
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VBtn, {
+                                            type: "submit",
+                                            color: "primary",
+                                            size: "large",
+                                            loading: loading.value,
+                                            class: "mt-4"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Send Message ")
+                                            ]),
+                                            _: 1
+                                          }, 8, ["loading"])
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VContainer, { class: "py-12" }, {
+                      default: withCtx(() => [
+                        createVNode(VRow, { justify: "center" }, {
+                          default: withCtx(() => [
+                            createVNode(VCol, {
+                              cols: "12",
+                              md: "10",
+                              lg: "8"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                  default: withCtx(() => [
+                                    createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Contact Us"),
+                                    createVNode("p", { class: "text-subtitle-1 mb-6" }, " We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),
+                                    createVNode(VForm, {
+                                      onSubmit: withModifiers(submitForm, ["prevent"]),
+                                      class: "mb-8"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VRow, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VCol, {
+                                              cols: "12",
+                                              md: "6"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VTextField, {
+                                                  modelValue: form.value.name,
+                                                  "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                  label: "Your name",
+                                                  variant: "outlined",
+                                                  rules: [(v) => !!v || "Name is required"],
+                                                  "hide-details": "auto",
+                                                  class: "mb-4"
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VCol, {
+                                              cols: "12",
+                                              md: "6"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VTextField, {
+                                                  modelValue: form.value.email,
+                                                  "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                  label: "Your email",
+                                                  variant: "outlined",
+                                                  type: "email",
+                                                  rules: [
+                                                    (v) => !!v || "Email is required",
+                                                    (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                  ],
+                                                  "hide-details": "auto",
+                                                  class: "mb-4"
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VCol, { cols: "12" }, {
+                                              default: withCtx(() => [
+                                                createVNode(VSelect, {
+                                                  modelValue: form.value.subject,
+                                                  "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                  label: "Subject",
+                                                  variant: "outlined",
+                                                  items: subjects,
+                                                  "hide-details": "auto",
+                                                  class: "mb-4"
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VCol, { cols: "12" }, {
+                                              default: withCtx(() => [
+                                                createVNode(VTextarea, {
+                                                  modelValue: form.value.message,
+                                                  "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                  label: "Your message",
+                                                  variant: "outlined",
+                                                  rules: [(v) => !!v || "Message is required"],
+                                                  "hide-details": "auto",
+                                                  rows: "5",
+                                                  class: "mb-4"
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VBtn, {
+                                          type: "submit",
+                                          color: "primary",
+                                          size: "large",
+                                          loading: loading.value,
+                                          class: "mt-4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Send Message ")
+                                          ]),
+                                          _: 1
+                                        }, 8, ["loading"])
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VFooter, { class: "py-4" }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VContainer, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<div class="text-center" data-v-ddba1113${_scopeId3}><p class="text-body-2 text-medium-emphasis" data-v-ddba1113${_scopeId3}> © ${ssrInterpolate((/* @__PURE__ */ new Date()).getFullYear())} DevUnity. All rights reserved. </p></div>`);
+                      } else {
+                        return [
+                          createVNode("div", { class: "text-center" }, [
+                            createVNode("p", { class: "text-body-2 text-medium-emphasis" }, " © " + toDisplayString((/* @__PURE__ */ new Date()).getFullYear()) + " DevUnity. All rights reserved. ", 1)
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VContainer, null, {
+                      default: withCtx(() => [
+                        createVNode("div", { class: "text-center" }, [
+                          createVNode("p", { class: "text-body-2 text-medium-emphasis" }, " © " + toDisplayString((/* @__PURE__ */ new Date()).getFullYear()) + " DevUnity. All rights reserved. ", 1)
+                        ])
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Snackbar, {
+              modelValue: snackbar.value.show,
+              "onUpdate:modelValue": ($event) => snackbar.value.show = $event,
+              color: snackbar.value.color,
+              text: snackbar.value.text,
+              timeout: snackbar.value.timeout
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VAppBar, {
+                app: "",
+                flat: "",
+                elevation: "2",
+                color: "surface"
+              }, {
+                default: withCtx(() => [
+                  createVNode(VContainer, { class: "d-flex align-center py-0 my-0" }, {
+                    default: withCtx(() => [
+                      createVNode(_component_NuxtLink, {
+                        to: "/",
+                        class: "text-decoration-none"
+                      }, {
+                        default: withCtx(() => [
+                          createVNode("div", { class: "d-flex align-center" }, [
+                            createVNode("img", {
+                              src: _imports_0,
+                              alt: "DevUnity title",
+                              width: "150"
+                            })
+                          ])
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VSpacer),
+                      createVNode(VBtn, {
+                        color: "primary",
+                        to: "/",
+                        class: "ml-4"
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode("Back to Home")
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }),
+              createVNode(VMain, null, {
+                default: withCtx(() => [
+                  createVNode(VContainer, { class: "py-12" }, {
+                    default: withCtx(() => [
+                      createVNode(VRow, { justify: "center" }, {
+                        default: withCtx(() => [
+                          createVNode(VCol, {
+                            cols: "12",
+                            md: "10",
+                            lg: "8"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                default: withCtx(() => [
+                                  createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Contact Us"),
+                                  createVNode("p", { class: "text-subtitle-1 mb-6" }, " We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will get back to you as soon as possible. "),
+                                  createVNode(VForm, {
+                                    onSubmit: withModifiers(submitForm, ["prevent"]),
+                                    class: "mb-8"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VRow, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VCol, {
+                                            cols: "12",
+                                            md: "6"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VTextField, {
+                                                modelValue: form.value.name,
+                                                "onUpdate:modelValue": ($event) => form.value.name = $event,
+                                                label: "Your name",
+                                                variant: "outlined",
+                                                rules: [(v) => !!v || "Name is required"],
+                                                "hide-details": "auto",
+                                                class: "mb-4"
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VCol, {
+                                            cols: "12",
+                                            md: "6"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VTextField, {
+                                                modelValue: form.value.email,
+                                                "onUpdate:modelValue": ($event) => form.value.email = $event,
+                                                label: "Your email",
+                                                variant: "outlined",
+                                                type: "email",
+                                                rules: [
+                                                  (v) => !!v || "Email is required",
+                                                  (v) => /.+@.+\..+/.test(v) || "Invalid email"
+                                                ],
+                                                "hide-details": "auto",
+                                                class: "mb-4"
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VCol, { cols: "12" }, {
+                                            default: withCtx(() => [
+                                              createVNode(VSelect, {
+                                                modelValue: form.value.subject,
+                                                "onUpdate:modelValue": ($event) => form.value.subject = $event,
+                                                label: "Subject",
+                                                variant: "outlined",
+                                                items: subjects,
+                                                "hide-details": "auto",
+                                                class: "mb-4"
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VCol, { cols: "12" }, {
+                                            default: withCtx(() => [
+                                              createVNode(VTextarea, {
+                                                modelValue: form.value.message,
+                                                "onUpdate:modelValue": ($event) => form.value.message = $event,
+                                                label: "Your message",
+                                                variant: "outlined",
+                                                rules: [(v) => !!v || "Message is required"],
+                                                "hide-details": "auto",
+                                                rows: "5",
+                                                class: "mb-4"
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"])
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VBtn, {
+                                        type: "submit",
+                                        color: "primary",
+                                        size: "large",
+                                        loading: loading.value,
+                                        class: "mt-4"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Send Message ")
+                                        ]),
+                                        _: 1
+                                      }, 8, ["loading"])
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }),
+              createVNode(VFooter, { class: "py-4" }, {
+                default: withCtx(() => [
+                  createVNode(VContainer, null, {
+                    default: withCtx(() => [
+                      createVNode("div", { class: "text-center" }, [
+                        createVNode("p", { class: "text-body-2 text-medium-emphasis" }, " © " + toDisplayString((/* @__PURE__ */ new Date()).getFullYear()) + " DevUnity. All rights reserved. ", 1)
+                      ])
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }),
+              createVNode(Snackbar, {
+                modelValue: snackbar.value.show,
+                "onUpdate:modelValue": ($event) => snackbar.value.show = $event,
+                color: snackbar.value.color,
+                text: snackbar.value.text,
+                timeout: snackbar.value.timeout
+              }, null, 8, ["modelValue", "onUpdate:modelValue", "color", "text", "timeout"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
 
-const e=Te.setup;Te.setup=(s,c)=>{const o=useSSRContext();return (o.modules||(o.modules=new Set)).add("pages/contact.vue"),e?e(s,c):void 0};const m=s$1(Te,[["__scopeId","data-v-ddba1113"]]);
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/contact.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const contact = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-ddba1113"]]);
 
-export { m as default };;globalThis.__timing__.logEnd('Load chunks/build/contact.vue');
+export { contact as default };
+//# sourceMappingURL=contact.vue.mjs.map

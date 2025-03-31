@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/newsletter/stats');import { d as defineEventHandler, m as getRequestHeader, p as pool } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, m as getRequestHeader, p as pool } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -59,4 +58,5 @@ const stats = defineEventHandler(async (event) => {
   }
 });
 
-export { stats as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/newsletter/stats');
+export { stats as default };
+//# sourceMappingURL=stats.mjs.map

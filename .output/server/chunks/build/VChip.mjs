@@ -1,12 +1,666 @@
-globalThis.__timing__.logStart('Load chunks/build/VChip');import { shallowRef, computed, createVNode, toRef, mergeProps, withDirectives, vShow, Fragment, toDisplayString, resolveDirective } from 'vue';
-import { f as y, y as y$1, h as y$2, a2 as $, b7 as H, A as i, bf as A, o, bg as s, L, be as U, k as r, a7 as _, n as o$1, ap as A$1, aV as F, t as _$1, O, aK as V, M, a$ as C, bc as B$1, aI as v, v as b, aE as _$2, aF as l, w as v$1, z as h$1, bh as g$1, C as C$1, b8 as D, bi as C$2, aJ as C$3, am as c, H as P, e as $$1, bj as f, bk as b$1, B as g$2, bb as z, D as u$1, aN as u$2, G as l$1, ao as ie } from './server.mjs';
+import { shallowRef, computed, createVNode, toRef, mergeProps, withDirectives, vShow, Fragment, toDisplayString, resolveDirective } from 'vue';
+import { k as genericComponent, p as propsFactory, w as useRtl, a2 as useDisplay, b7 as useGroup, I as useResizeObserver, bf as useGoTo, s as useRender, bg as VFadeTransition, g as VIcon, be as makeGroupProps, y as makeTagProps, a7 as makeDisplayProps, A as makeComponentProps, ap as IconValue, aV as focusableChildren, D as provideTheme, O as provideDefaults, aK as makeVariantProps, K as makeThemeProps, a$ as deepEqual, bc as Ripple, aI as useLocale, F as useBorder, aE as useVariant, aF as useDensity, G as useElevation, H as useRounded, bh as useSize, l as useProxiedModel, b8 as useGroupItem, bi as useLink, aJ as genOverlays, am as VExpandXTransition, Q as VDefaultsProvider, i as VAvatar, bj as makeSizeProps, bk as makeRouterProps, L as makeRoundedProps, bb as makeGroupItemProps, M as makeElevationProps, aN as makeDensityProps, N as makeBorderProps, ao as EventProp } from './server.mjs';
 
-function h(e){let{selectedElement:t,containerElement:n,isRtl:i,isHorizontal:o}=e;const r=u(o,n),s=d(o,i,n),l=u(o,t),c=a(o,t),f=l*.4;return s>c?c-f:s+r<c+l?c-r+l+f:s}function g(e,t){return t?.[e?"scrollWidth":"scrollHeight"]||0}function k(e,t){return t?.[e?"clientWidth":"clientHeight"]||0}function d(e,t,n){if(!n)return 0;const{scrollLeft:i,offsetWidth:o,scrollWidth:r}=n;return e?t?r-o+i:i:n.scrollTop}function u(e,t){return t?.[e?"offsetWidth":"offsetHeight"]||0}function a(e,t){return t?.[e?"offsetLeft":"offsetTop"]||0}
+function calculateUpdatedTarget(_ref) {
+  let {
+    selectedElement,
+    containerElement,
+    isRtl,
+    isHorizontal
+  } = _ref;
+  const containerSize = getOffsetSize(isHorizontal, containerElement);
+  const scrollPosition = getScrollPosition(isHorizontal, isRtl, containerElement);
+  const childrenSize = getOffsetSize(isHorizontal, selectedElement);
+  const childrenStartPosition = getOffsetPosition(isHorizontal, selectedElement);
+  const additionalOffset = childrenSize * 0.4;
+  if (scrollPosition > childrenStartPosition) {
+    return childrenStartPosition - additionalOffset;
+  } else if (scrollPosition + containerSize < childrenStartPosition + childrenSize) {
+    return childrenStartPosition - containerSize + childrenSize + additionalOffset;
+  }
+  return scrollPosition;
+}
+function getScrollSize(isHorizontal, element) {
+  const key = isHorizontal ? "scrollWidth" : "scrollHeight";
+  return (element == null ? void 0 : element[key]) || 0;
+}
+function getClientSize(isHorizontal, element) {
+  const key = isHorizontal ? "clientWidth" : "clientHeight";
+  return (element == null ? void 0 : element[key]) || 0;
+}
+function getScrollPosition(isHorizontal, rtl, element) {
+  if (!element) {
+    return 0;
+  }
+  const {
+    scrollLeft,
+    offsetWidth,
+    scrollWidth
+  } = element;
+  if (isHorizontal) {
+    return rtl ? scrollWidth - offsetWidth + scrollLeft : scrollLeft;
+  }
+  return element.scrollTop;
+}
+function getOffsetSize(isHorizontal, element) {
+  const key = isHorizontal ? "offsetWidth" : "offsetHeight";
+  return (element == null ? void 0 : element[key]) || 0;
+}
+function getOffsetPosition(isHorizontal, element) {
+  const key = isHorizontal ? "offsetLeft" : "offsetTop";
+  return (element == null ? void 0 : element[key]) || 0;
+}
 
-const ee=Symbol.for("vuetify:v-slide-group"),te=y$1({centerActive:Boolean,direction:{type:String,default:"horizontal"},symbol:{type:null,default:ee},nextIcon:{type:A$1,default:"$next"},prevIcon:{type:A$1,default:"$prev"},showArrows:{type:[Boolean,String],validator:l=>typeof l=="boolean"||["always","desktop","mobile"].includes(l)},...o$1(),..._({mobile:null}),...r(),...U({selectedClass:"v-slide-group-item--active"})},"VSlideGroup"),Se=y()({name:"VSlideGroup",props:te(),emits:{"update:modelValue":l=>true},setup(l,I){let{slots:h$1}=I;const{isRtl:f}=y$2(),{displayClasses:V,mobile:y}=$(l),r=H(l,l.symbol),v=shallowRef(false),i$1=shallowRef(0),E=shallowRef(0);shallowRef(0);const u=computed(()=>l.direction==="horizontal"),{resizeRef:a}=i(),{resizeRef:n}=i();A(),computed(()=>({container:a.el,duration:200,easing:"easeOutQuart"})),computed(()=>r.selected.value.length?r.items.value.findIndex(e=>e.id===r.selected.value[0]):-1),computed(()=>r.selected.value.length?r.items.value.findIndex(e=>e.id===r.selected.value[r.selected.value.length-1]):-1);const m=shallowRef(false);function M(e,t){h({containerElement:a.el,isHorizontal:u.value,isRtl:f.value,selectedElement:e});}function T(e){const{scrollTop:t,scrollLeft:o}=e.target;i$1.value=u.value?o:t;}function G(e){if(m.value=true,!(!v.value||!n.el)){for(const t of e.composedPath())for(const o of n.el.children)if(o===t){M(o);return}}}function P(e){m.value=false;}let b=false;function D(e){!b&&!m.value&&!(e.relatedTarget&&n.el?.contains(e.relatedTarget))&&d(),b=false;}function A$1(){b=true;}function O(e){if(!n.el)return;function t(o){e.preventDefault(),d(o);}u.value?e.key==="ArrowRight"?t(f.value?"prev":"next"):e.key==="ArrowLeft"&&t(f.value?"next":"prev"):e.key==="ArrowDown"?t("next"):e.key==="ArrowUp"&&t("prev"),e.key==="Home"?t("first"):e.key==="End"&&t("last");}function g$1(e,t){if(!e)return;let o=e;do o=o?.[t==="next"?"nextElementSibling":"previousElementSibling"];while(o?.hasAttribute("disabled"));return o}function d(e){if(!n.el)return;let t;if(!e)t=F(n.el)[0];else if(e==="next"){if(t=g$1(n.el.querySelector(":focus"),e),!t)return d("first")}else if(e==="prev"){if(t=g$1(n.el.querySelector(":focus"),e),!t)return d("last")}else e==="first"?(t=n.el.firstElementChild,t?.hasAttribute("disabled")&&(t=g$1(t,"next"))):e==="last"&&(t=n.el.lastElementChild,t?.hasAttribute("disabled")&&(t=g$1(t,"prev")));t&&t.focus({preventScroll:true});}function x(e){const t=u.value&&f.value?-1:1,o=(e==="prev"?-t:t)*E.value;if(i$1.value+o,u.value&&f.value&&a.el){const{scrollWidth:le,offsetWidth:oe}=a.el;}}const S=computed(()=>({next:r.next,prev:r.prev,select:r.select,isSelected:r.isSelected})),w=computed(()=>{switch(l.showArrows){case "always":return  true;case "desktop":return !y.value;case  true:return v.value||Math.abs(i$1.value)>0;case "mobile":return y.value||v.value||Math.abs(i$1.value)>0;default:return !y.value&&(v.value||Math.abs(i$1.value)>0)}}),k$1=computed(()=>Math.abs(i$1.value)>1),z=computed(()=>{if(!a.value)return  false;const e=g(u.value,a.el),t=k(u.value,a.el);return e-t-Math.abs(i$1.value)>1});return o(()=>createVNode(l.tag,{class:["v-slide-group",{"v-slide-group--vertical":!u.value,"v-slide-group--has-affixes":w.value,"v-slide-group--is-overflowing":v.value},V.value,l.class],style:l.style,tabindex:m.value||r.selected.value.length?-1:0,onFocus:D},{default:()=>[w.value&&createVNode("div",{key:"prev",class:["v-slide-group__prev",{"v-slide-group__prev--disabled":!k$1.value}],onMousedown:A$1,onClick:()=>k$1.value&&x("prev")},[h$1.prev?.(S.value)??createVNode(s,null,{default:()=>[createVNode(L,{icon:f.value?l.nextIcon:l.prevIcon},null)]})]),createVNode("div",{key:"container",ref:a,class:"v-slide-group__container",onScroll:T},[createVNode("div",{ref:n,class:"v-slide-group__content",onFocusin:G,onFocusout:P,onKeydown:O},[h$1.default?.(S.value)])]),w.value&&createVNode("div",{key:"next",class:["v-slide-group__next",{"v-slide-group__next--disabled":!z.value}],onMousedown:A$1,onClick:()=>z.value&&x("next")},[h$1.next?.(S.value)??createVNode(s,null,{default:()=>[createVNode(L,{icon:f.value?l.prevIcon:l.nextIcon},null)]})])]})),{selected:r.selected,scrollTo:x,scrollOffset:i$1,focus:d,hasPrev:k$1,hasNext:z}}});
+const VSlideGroupSymbol = Symbol.for("vuetify:v-slide-group");
+const makeVSlideGroupProps = propsFactory({
+  centerActive: Boolean,
+  direction: {
+    type: String,
+    default: "horizontal"
+  },
+  symbol: {
+    type: null,
+    default: VSlideGroupSymbol
+  },
+  nextIcon: {
+    type: IconValue,
+    default: "$next"
+  },
+  prevIcon: {
+    type: IconValue,
+    default: "$prev"
+  },
+  showArrows: {
+    type: [Boolean, String],
+    validator: (v) => typeof v === "boolean" || ["always", "desktop", "mobile"].includes(v)
+  },
+  ...makeComponentProps(),
+  ...makeDisplayProps({
+    mobile: null
+  }),
+  ...makeTagProps(),
+  ...makeGroupProps({
+    selectedClass: "v-slide-group-item--active"
+  })
+}, "VSlideGroup");
+const VSlideGroup = genericComponent()({
+  name: "VSlideGroup",
+  props: makeVSlideGroupProps(),
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      isRtl
+    } = useRtl();
+    const {
+      displayClasses,
+      mobile
+    } = useDisplay(props);
+    const group = useGroup(props, props.symbol);
+    const isOverflowing = shallowRef(false);
+    const scrollOffset = shallowRef(0);
+    const containerSize = shallowRef(0);
+    shallowRef(0);
+    const isHorizontal = computed(() => props.direction === "horizontal");
+    const {
+      resizeRef: containerRef
+    } = useResizeObserver();
+    const {
+      resizeRef: contentRef
+    } = useResizeObserver();
+    useGoTo();
+    computed(() => {
+      return {
+        container: containerRef.el,
+        duration: 200,
+        easing: "easeOutQuart"
+      };
+    });
+    computed(() => {
+      if (!group.selected.value.length) return -1;
+      return group.items.value.findIndex((item) => item.id === group.selected.value[0]);
+    });
+    computed(() => {
+      if (!group.selected.value.length) return -1;
+      return group.items.value.findIndex((item) => item.id === group.selected.value[group.selected.value.length - 1]);
+    });
+    const isFocused = shallowRef(false);
+    function scrollToChildren(children, center) {
+      {
+        calculateUpdatedTarget({
+          containerElement: containerRef.el,
+          isHorizontal: isHorizontal.value,
+          isRtl: isRtl.value,
+          selectedElement: children
+        });
+      }
+    }
+    function onScroll(e) {
+      const {
+        scrollTop,
+        scrollLeft
+      } = e.target;
+      scrollOffset.value = isHorizontal.value ? scrollLeft : scrollTop;
+    }
+    function onFocusin(e) {
+      isFocused.value = true;
+      if (!isOverflowing.value || !contentRef.el) return;
+      for (const el of e.composedPath()) {
+        for (const item of contentRef.el.children) {
+          if (item === el) {
+            scrollToChildren(item);
+            return;
+          }
+        }
+      }
+    }
+    function onFocusout(e) {
+      isFocused.value = false;
+    }
+    let ignoreFocusEvent = false;
+    function onFocus(e) {
+      var _a;
+      if (!ignoreFocusEvent && !isFocused.value && !(e.relatedTarget && ((_a = contentRef.el) == null ? void 0 : _a.contains(e.relatedTarget)))) focus();
+      ignoreFocusEvent = false;
+    }
+    function onFocusAffixes() {
+      ignoreFocusEvent = true;
+    }
+    function onKeydown(e) {
+      if (!contentRef.el) return;
+      function toFocus(location) {
+        e.preventDefault();
+        focus(location);
+      }
+      if (isHorizontal.value) {
+        if (e.key === "ArrowRight") {
+          toFocus(isRtl.value ? "prev" : "next");
+        } else if (e.key === "ArrowLeft") {
+          toFocus(isRtl.value ? "next" : "prev");
+        }
+      } else {
+        if (e.key === "ArrowDown") {
+          toFocus("next");
+        } else if (e.key === "ArrowUp") {
+          toFocus("prev");
+        }
+      }
+      if (e.key === "Home") {
+        toFocus("first");
+      } else if (e.key === "End") {
+        toFocus("last");
+      }
+    }
+    function getSiblingElement(el, location) {
+      if (!el) return void 0;
+      let sibling = el;
+      do {
+        sibling = sibling == null ? void 0 : sibling[location === "next" ? "nextElementSibling" : "previousElementSibling"];
+      } while (sibling == null ? void 0 : sibling.hasAttribute("disabled"));
+      return sibling;
+    }
+    function focus(location) {
+      if (!contentRef.el) return;
+      let el;
+      if (!location) {
+        const focusable = focusableChildren(contentRef.el);
+        el = focusable[0];
+      } else if (location === "next") {
+        el = getSiblingElement(contentRef.el.querySelector(":focus"), location);
+        if (!el) return focus("first");
+      } else if (location === "prev") {
+        el = getSiblingElement(contentRef.el.querySelector(":focus"), location);
+        if (!el) return focus("last");
+      } else if (location === "first") {
+        el = contentRef.el.firstElementChild;
+        if (el == null ? void 0 : el.hasAttribute("disabled")) el = getSiblingElement(el, "next");
+      } else if (location === "last") {
+        el = contentRef.el.lastElementChild;
+        if (el == null ? void 0 : el.hasAttribute("disabled")) el = getSiblingElement(el, "prev");
+      }
+      if (el) {
+        el.focus({
+          preventScroll: true
+        });
+      }
+    }
+    function scrollTo(location) {
+      const direction = isHorizontal.value && isRtl.value ? -1 : 1;
+      const offsetStep = (location === "prev" ? -direction : direction) * containerSize.value;
+      scrollOffset.value + offsetStep;
+      if (isHorizontal.value && isRtl.value && containerRef.el) {
+        const {
+          scrollWidth,
+          offsetWidth: containerWidth
+        } = containerRef.el;
+      }
+    }
+    const slotProps = computed(() => ({
+      next: group.next,
+      prev: group.prev,
+      select: group.select,
+      isSelected: group.isSelected
+    }));
+    const hasAffixes = computed(() => {
+      switch (props.showArrows) {
+        // Always show arrows on desktop & mobile
+        case "always":
+          return true;
+        // Always show arrows on desktop
+        case "desktop":
+          return !mobile.value;
+        // Show arrows on mobile when overflowing.
+        // This matches the default 2.2 behavior
+        case true:
+          return isOverflowing.value || Math.abs(scrollOffset.value) > 0;
+        // Always show on mobile
+        case "mobile":
+          return mobile.value || isOverflowing.value || Math.abs(scrollOffset.value) > 0;
+        // https://material.io/components/tabs#scrollable-tabs
+        // Always show arrows when
+        // overflowed on desktop
+        default:
+          return !mobile.value && (isOverflowing.value || Math.abs(scrollOffset.value) > 0);
+      }
+    });
+    const hasPrev = computed(() => {
+      return Math.abs(scrollOffset.value) > 1;
+    });
+    const hasNext = computed(() => {
+      if (!containerRef.value) return false;
+      const scrollSize = getScrollSize(isHorizontal.value, containerRef.el);
+      const clientSize = getClientSize(isHorizontal.value, containerRef.el);
+      const scrollSizeMax = scrollSize - clientSize;
+      return scrollSizeMax - Math.abs(scrollOffset.value) > 1;
+    });
+    useRender(() => createVNode(props.tag, {
+      "class": ["v-slide-group", {
+        "v-slide-group--vertical": !isHorizontal.value,
+        "v-slide-group--has-affixes": hasAffixes.value,
+        "v-slide-group--is-overflowing": isOverflowing.value
+      }, displayClasses.value, props.class],
+      "style": props.style,
+      "tabindex": isFocused.value || group.selected.value.length ? -1 : 0,
+      "onFocus": onFocus
+    }, {
+      default: () => {
+        var _a, _b, _c;
+        return [hasAffixes.value && createVNode("div", {
+          "key": "prev",
+          "class": ["v-slide-group__prev", {
+            "v-slide-group__prev--disabled": !hasPrev.value
+          }],
+          "onMousedown": onFocusAffixes,
+          "onClick": () => hasPrev.value && scrollTo("prev")
+        }, [((_a = slots.prev) == null ? void 0 : _a.call(slots, slotProps.value)) ?? createVNode(VFadeTransition, null, {
+          default: () => [createVNode(VIcon, {
+            "icon": isRtl.value ? props.nextIcon : props.prevIcon
+          }, null)]
+        })]), createVNode("div", {
+          "key": "container",
+          "ref": containerRef,
+          "class": "v-slide-group__container",
+          "onScroll": onScroll
+        }, [createVNode("div", {
+          "ref": contentRef,
+          "class": "v-slide-group__content",
+          "onFocusin": onFocusin,
+          "onFocusout": onFocusout,
+          "onKeydown": onKeydown
+        }, [(_b = slots.default) == null ? void 0 : _b.call(slots, slotProps.value)])]), hasAffixes.value && createVNode("div", {
+          "key": "next",
+          "class": ["v-slide-group__next", {
+            "v-slide-group__next--disabled": !hasNext.value
+          }],
+          "onMousedown": onFocusAffixes,
+          "onClick": () => hasNext.value && scrollTo("next")
+        }, [((_c = slots.next) == null ? void 0 : _c.call(slots, slotProps.value)) ?? createVNode(VFadeTransition, null, {
+          default: () => [createVNode(VIcon, {
+            "icon": isRtl.value ? props.prevIcon : props.nextIcon
+          }, null)]
+        })])];
+      }
+    }));
+    return {
+      selected: group.selected,
+      scrollTo,
+      scrollOffset,
+      focus,
+      hasPrev,
+      hasNext
+    };
+  }
+});
 
-const x=Symbol.for("vuetify:v-chip-group"),B=y$1({column:Boolean,filter:Boolean,valueComparator:{type:Function,default:C},...te(),...o$1(),...U({selectedClass:"v-chip--selected"}),...r(),...M(),...V({variant:"tonal"})},"VChipGroup"),K=y()({name:"VChipGroup",props:B(),emits:{"update:modelValue":e=>true},setup(e,t){let{slots:m}=t;const{themeClasses:l}=_$1(e),{isSelected:i,select:p,next:a,prev:s,selected:u}=H(e,x);return O({VChip:{color:toRef(e,"color"),disabled:toRef(e,"disabled"),filter:toRef(e,"filter"),variant:toRef(e,"variant")}}),o(()=>{const n=Se.filterProps(e);return createVNode(Se,mergeProps(n,{class:["v-chip-group",{"v-chip-group--column":e.column},l.value,e.class],style:e.style}),{default:()=>[m.default?.({isSelected:i,select:p,next:a,prev:s,selected:u.value})]})}),{}}});
+const VChipGroupSymbol = Symbol.for("vuetify:v-chip-group");
+const makeVChipGroupProps = propsFactory({
+  column: Boolean,
+  filter: Boolean,
+  valueComparator: {
+    type: Function,
+    default: deepEqual
+  },
+  ...makeVSlideGroupProps(),
+  ...makeComponentProps(),
+  ...makeGroupProps({
+    selectedClass: "v-chip--selected"
+  }),
+  ...makeTagProps(),
+  ...makeThemeProps(),
+  ...makeVariantProps({
+    variant: "tonal"
+  })
+}, "VChipGroup");
+const VChipGroup = genericComponent()({
+  name: "VChipGroup",
+  props: makeVChipGroupProps(),
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      isSelected,
+      select,
+      next,
+      prev,
+      selected
+    } = useGroup(props, VChipGroupSymbol);
+    provideDefaults({
+      VChip: {
+        color: toRef(props, "color"),
+        disabled: toRef(props, "disabled"),
+        filter: toRef(props, "filter"),
+        variant: toRef(props, "variant")
+      }
+    });
+    useRender(() => {
+      const slideGroupProps = VSlideGroup.filterProps(props);
+      return createVNode(VSlideGroup, mergeProps(slideGroupProps, {
+        "class": ["v-chip-group", {
+          "v-chip-group--column": props.column
+        }, themeClasses.value, props.class],
+        "style": props.style
+      }), {
+        default: () => {
+          var _a;
+          return [(_a = slots.default) == null ? void 0 : _a.call(slots, {
+            isSelected,
+            select,
+            next,
+            prev,
+            selected: selected.value
+          })];
+        }
+      });
+    });
+    return {};
+  }
+});
 
-const ge=y$1({activeClass:String,appendAvatar:String,appendIcon:A$1,closable:Boolean,closeIcon:{type:A$1,default:"$delete"},closeLabel:{type:String,default:"$vuetify.close"},draggable:Boolean,filter:Boolean,filterIcon:{type:A$1,default:"$complete"},label:Boolean,link:{type:Boolean,default:void 0},pill:Boolean,prependAvatar:String,prependIcon:A$1,ripple:{type:[Boolean,Object],default:true},text:{type:[String,Number,Boolean],default:void 0},modelValue:{type:Boolean,default:true},onClick:ie(),onClickOnce:ie(),...l$1(),...o$1(),...u$2(),...u$1(),...z(),...g$2(),...b$1(),...f(),...r({tag:"span"}),...M(),...V({variant:"tonal"})},"VChip"),je=y()({name:"VChip",directives:{Ripple:B$1},props:ge(),emits:{"click:close":e=>true,"update:modelValue":e=>true,"group:selected":e=>true,click:e=>true},setup(e,V){let{attrs:P$1,emit:u,slots:l$1}=V;const{t:A}=v(),{borderClasses:S}=b(e),{colorClasses:B,colorStyles:_,variantClasses:D$1}=_$2(e),{densityClasses:x$1}=l(e),{elevationClasses:L$1}=v$1(e),{roundedClasses:z}=h$1(e),{sizeClasses:E}=g$1(e),{themeClasses:T}=_$1(e),v$2=C$1(e,"modelValue"),n=D(e,x,false),i=C$2(e,P$1),w=computed(()=>e.link!==false&&i.isLink.value),o=computed(()=>!e.disabled&&e.link!==false&&(!!n||e.link||i.isClickable.value)),R=computed(()=>({"aria-label":A(e.closeLabel),onClick(t){t.preventDefault(),t.stopPropagation(),v$2.value=false,u("click:close",t);}}));function m(t){u("click",t),o.value&&(i.navigate?.(t),n?.toggle());}function $(t){(t.key==="Enter"||t.key===" ")&&(t.preventDefault(),m(t));}return ()=>{const t=i.isLink.value?"a":e.tag,p=!!(e.appendIcon||e.appendAvatar),F=!!(p||l$1.append),G=!!(l$1.close||e.closable),f=!!(l$1.filter||e.filter)&&n,k=!!(e.prependIcon||e.prependAvatar),M=!!(k||l$1.prepend),y=!n||n.isSelected.value;return v$2.value&&withDirectives(createVNode(t,mergeProps({class:["v-chip",{"v-chip--disabled":e.disabled,"v-chip--label":e.label,"v-chip--link":o.value,"v-chip--filter":f,"v-chip--pill":e.pill,[`${e.activeClass}`]:e.activeClass&&i.isActive?.value},T.value,S.value,y?B.value:void 0,x$1.value,L$1.value,z.value,E.value,D$1.value,n?.selectedClass.value,e.class],style:[y?_.value:void 0,e.style],disabled:e.disabled||void 0,draggable:e.draggable,tabindex:o.value?0:void 0,onClick:m,onKeydown:o.value&&!w.value&&$},i.linkProps),{default:()=>[C$3(o.value,"v-chip"),f&&createVNode(c,{key:"filter"},{default:()=>[withDirectives(createVNode("div",{class:"v-chip__filter"},[l$1.filter?createVNode(P,{key:"filter-defaults",disabled:!e.filterIcon,defaults:{VIcon:{icon:e.filterIcon}}},l$1.filter):createVNode(L,{key:"filter-icon",icon:e.filterIcon},null)]),[[vShow,n.isSelected.value]])]}),M&&createVNode("div",{key:"prepend",class:"v-chip__prepend"},[l$1.prepend?createVNode(P,{key:"prepend-defaults",disabled:!k,defaults:{VAvatar:{image:e.prependAvatar,start:true},VIcon:{icon:e.prependIcon,start:true}}},l$1.prepend):createVNode(Fragment,null,[e.prependIcon&&createVNode(L,{key:"prepend-icon",icon:e.prependIcon,start:true},null),e.prependAvatar&&createVNode($$1,{key:"prepend-avatar",image:e.prependAvatar,start:true},null)])]),createVNode("div",{class:"v-chip__content","data-no-activator":""},[l$1.default?.({isSelected:n?.isSelected.value,selectedClass:n?.selectedClass.value,select:n?.select,toggle:n?.toggle,value:n?.value.value,disabled:e.disabled})??toDisplayString(e.text)]),F&&createVNode("div",{key:"append",class:"v-chip__append"},[l$1.append?createVNode(P,{key:"append-defaults",disabled:!p,defaults:{VAvatar:{end:true,image:e.appendAvatar},VIcon:{end:true,icon:e.appendIcon}}},l$1.append):createVNode(Fragment,null,[e.appendIcon&&createVNode(L,{key:"append-icon",end:true,icon:e.appendIcon},null),e.appendAvatar&&createVNode($$1,{key:"append-avatar",end:true,image:e.appendAvatar},null)])]),G&&createVNode("button",mergeProps({key:"close",class:"v-chip__close",type:"button","data-testid":"close-chip"},R.value),[l$1.close?createVNode(P,{key:"close-defaults",defaults:{VIcon:{icon:e.closeIcon,size:"x-small"}}},l$1.close):createVNode(L,{key:"close-icon",icon:e.closeIcon,size:"x-small"},null)])]}),[[resolveDirective("ripple"),o.value&&e.ripple,null]])}}});
+const makeVChipProps = propsFactory({
+  activeClass: String,
+  appendAvatar: String,
+  appendIcon: IconValue,
+  closable: Boolean,
+  closeIcon: {
+    type: IconValue,
+    default: "$delete"
+  },
+  closeLabel: {
+    type: String,
+    default: "$vuetify.close"
+  },
+  draggable: Boolean,
+  filter: Boolean,
+  filterIcon: {
+    type: IconValue,
+    default: "$complete"
+  },
+  label: Boolean,
+  link: {
+    type: Boolean,
+    default: void 0
+  },
+  pill: Boolean,
+  prependAvatar: String,
+  prependIcon: IconValue,
+  ripple: {
+    type: [Boolean, Object],
+    default: true
+  },
+  text: {
+    type: [String, Number, Boolean],
+    default: void 0
+  },
+  modelValue: {
+    type: Boolean,
+    default: true
+  },
+  onClick: EventProp(),
+  onClickOnce: EventProp(),
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...makeElevationProps(),
+  ...makeGroupItemProps(),
+  ...makeRoundedProps(),
+  ...makeRouterProps(),
+  ...makeSizeProps(),
+  ...makeTagProps({
+    tag: "span"
+  }),
+  ...makeThemeProps(),
+  ...makeVariantProps({
+    variant: "tonal"
+  })
+}, "VChip");
+const VChip = genericComponent()({
+  name: "VChip",
+  directives: {
+    Ripple
+  },
+  props: makeVChipProps(),
+  emits: {
+    "click:close": (e) => true,
+    "update:modelValue": (value) => true,
+    "group:selected": (val) => true,
+    click: (e) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      emit,
+      slots
+    } = _ref;
+    const {
+      t
+    } = useLocale();
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      colorClasses,
+      colorStyles,
+      variantClasses
+    } = useVariant(props);
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const {
+      sizeClasses
+    } = useSize(props);
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const isActive = useProxiedModel(props, "modelValue");
+    const group = useGroupItem(props, VChipGroupSymbol, false);
+    const link = useLink(props, attrs);
+    const isLink = computed(() => props.link !== false && link.isLink.value);
+    const isClickable = computed(() => !props.disabled && props.link !== false && (!!group || props.link || link.isClickable.value));
+    const closeProps = computed(() => ({
+      "aria-label": t(props.closeLabel),
+      onClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        isActive.value = false;
+        emit("click:close", e);
+      }
+    }));
+    function onClick(e) {
+      var _a;
+      emit("click", e);
+      if (!isClickable.value) return;
+      (_a = link.navigate) == null ? void 0 : _a.call(link, e);
+      group == null ? void 0 : group.toggle();
+    }
+    function onKeyDown(e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onClick(e);
+      }
+    }
+    return () => {
+      var _a;
+      const Tag = link.isLink.value ? "a" : props.tag;
+      const hasAppendMedia = !!(props.appendIcon || props.appendAvatar);
+      const hasAppend = !!(hasAppendMedia || slots.append);
+      const hasClose = !!(slots.close || props.closable);
+      const hasFilter = !!(slots.filter || props.filter) && group;
+      const hasPrependMedia = !!(props.prependIcon || props.prependAvatar);
+      const hasPrepend = !!(hasPrependMedia || slots.prepend);
+      const hasColor = !group || group.isSelected.value;
+      return isActive.value && withDirectives(createVNode(Tag, mergeProps({
+        "class": ["v-chip", {
+          "v-chip--disabled": props.disabled,
+          "v-chip--label": props.label,
+          "v-chip--link": isClickable.value,
+          "v-chip--filter": hasFilter,
+          "v-chip--pill": props.pill,
+          [`${props.activeClass}`]: props.activeClass && ((_a = link.isActive) == null ? void 0 : _a.value)
+        }, themeClasses.value, borderClasses.value, hasColor ? colorClasses.value : void 0, densityClasses.value, elevationClasses.value, roundedClasses.value, sizeClasses.value, variantClasses.value, group == null ? void 0 : group.selectedClass.value, props.class],
+        "style": [hasColor ? colorStyles.value : void 0, props.style],
+        "disabled": props.disabled || void 0,
+        "draggable": props.draggable,
+        "tabindex": isClickable.value ? 0 : void 0,
+        "onClick": onClick,
+        "onKeydown": isClickable.value && !isLink.value && onKeyDown
+      }, link.linkProps), {
+        default: () => {
+          var _a2;
+          return [genOverlays(isClickable.value, "v-chip"), hasFilter && createVNode(VExpandXTransition, {
+            "key": "filter"
+          }, {
+            default: () => [withDirectives(createVNode("div", {
+              "class": "v-chip__filter"
+            }, [!slots.filter ? createVNode(VIcon, {
+              "key": "filter-icon",
+              "icon": props.filterIcon
+            }, null) : createVNode(VDefaultsProvider, {
+              "key": "filter-defaults",
+              "disabled": !props.filterIcon,
+              "defaults": {
+                VIcon: {
+                  icon: props.filterIcon
+                }
+              }
+            }, slots.filter)]), [[vShow, group.isSelected.value]])]
+          }), hasPrepend && createVNode("div", {
+            "key": "prepend",
+            "class": "v-chip__prepend"
+          }, [!slots.prepend ? createVNode(Fragment, null, [props.prependIcon && createVNode(VIcon, {
+            "key": "prepend-icon",
+            "icon": props.prependIcon,
+            "start": true
+          }, null), props.prependAvatar && createVNode(VAvatar, {
+            "key": "prepend-avatar",
+            "image": props.prependAvatar,
+            "start": true
+          }, null)]) : createVNode(VDefaultsProvider, {
+            "key": "prepend-defaults",
+            "disabled": !hasPrependMedia,
+            "defaults": {
+              VAvatar: {
+                image: props.prependAvatar,
+                start: true
+              },
+              VIcon: {
+                icon: props.prependIcon,
+                start: true
+              }
+            }
+          }, slots.prepend)]), createVNode("div", {
+            "class": "v-chip__content",
+            "data-no-activator": ""
+          }, [((_a2 = slots.default) == null ? void 0 : _a2.call(slots, {
+            isSelected: group == null ? void 0 : group.isSelected.value,
+            selectedClass: group == null ? void 0 : group.selectedClass.value,
+            select: group == null ? void 0 : group.select,
+            toggle: group == null ? void 0 : group.toggle,
+            value: group == null ? void 0 : group.value.value,
+            disabled: props.disabled
+          })) ?? toDisplayString(props.text)]), hasAppend && createVNode("div", {
+            "key": "append",
+            "class": "v-chip__append"
+          }, [!slots.append ? createVNode(Fragment, null, [props.appendIcon && createVNode(VIcon, {
+            "key": "append-icon",
+            "end": true,
+            "icon": props.appendIcon
+          }, null), props.appendAvatar && createVNode(VAvatar, {
+            "key": "append-avatar",
+            "end": true,
+            "image": props.appendAvatar
+          }, null)]) : createVNode(VDefaultsProvider, {
+            "key": "append-defaults",
+            "disabled": !hasAppendMedia,
+            "defaults": {
+              VAvatar: {
+                end: true,
+                image: props.appendAvatar
+              },
+              VIcon: {
+                end: true,
+                icon: props.appendIcon
+              }
+            }
+          }, slots.append)]), hasClose && createVNode("button", mergeProps({
+            "key": "close",
+            "class": "v-chip__close",
+            "type": "button",
+            "data-testid": "close-chip"
+          }, closeProps.value), [!slots.close ? createVNode(VIcon, {
+            "key": "close-icon",
+            "icon": props.closeIcon,
+            "size": "x-small"
+          }, null) : createVNode(VDefaultsProvider, {
+            "key": "close-defaults",
+            "defaults": {
+              VIcon: {
+                icon: props.closeIcon,
+                size: "x-small"
+              }
+            }
+          }, slots.close)])];
+        }
+      }), [[resolveDirective("ripple"), isClickable.value && props.ripple, null]]);
+    };
+  }
+});
 
-export { K, Se as S, je as j, te as t };;globalThis.__timing__.logEnd('Load chunks/build/VChip');
+export { VChip as V, VChipGroup as a, VSlideGroup as b, makeVSlideGroupProps as m };
+//# sourceMappingURL=VChip.mjs.map

@@ -1,6 +1,37 @@
-globalThis.__timing__.logStart('Load chunks/build/VContainer');import { createVNode } from 'vue';
-import { f as y, y as y$1, h as y$2, j as x$1, o, k as r, l as f, n as o$1 } from './server.mjs';
+import { createVNode } from 'vue';
+import { k as genericComponent, p as propsFactory, w as useRtl, x as useDimension, s as useRender, y as makeTagProps, z as makeDimensionProps, A as makeComponentProps } from './server.mjs';
 
-const d=y$1({fluid:{type:Boolean,default:false},...o$1(),...f(),...r()},"VContainer"),x=y()({name:"VContainer",props:d(),setup(o$1,e){let{slots:t}=e;const{rtlClasses:r}=y$2(),{dimensionStyles:n}=x$1(o$1);return o(()=>createVNode(o$1.tag,{class:["v-container",{"v-container--fluid":o$1.fluid},r.value,o$1.class],style:[n.value,o$1.style]},t)),{}}});
+const makeVContainerProps = propsFactory({
+  fluid: {
+    type: Boolean,
+    default: false
+  },
+  ...makeComponentProps(),
+  ...makeDimensionProps(),
+  ...makeTagProps()
+}, "VContainer");
+const VContainer = genericComponent()({
+  name: "VContainer",
+  props: makeVContainerProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      rtlClasses
+    } = useRtl();
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    useRender(() => createVNode(props.tag, {
+      "class": ["v-container", {
+        "v-container--fluid": props.fluid
+      }, rtlClasses.value, props.class],
+      "style": [dimensionStyles.value, props.style]
+    }, slots));
+    return {};
+  }
+});
 
-export { x };;globalThis.__timing__.logEnd('Load chunks/build/VContainer');
+export { VContainer as V };
+//# sourceMappingURL=VContainer.mjs.map

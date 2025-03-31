@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/cookies');import { d as defineEventHandler, r as readBody, c as createError, p as pool, l as getQuery } from '../../_/nitro.mjs';
+import { d as defineEventHandler, r as readBody, c as createError, p as pool, l as getQuery } from '../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -114,4 +113,5 @@ const cookies = defineEventHandler(async (event) => {
   });
 });
 
-export { cookies as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/cookies');
+export { cookies as default };
+//# sourceMappingURL=cookies.mjs.map

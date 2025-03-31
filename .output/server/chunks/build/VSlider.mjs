@@ -1,12 +1,720 @@
-globalThis.__timing__.logStart('Load chunks/build/VSlider');import { computed, toRef, shallowRef, ref, provide, nextTick, inject, createVNode, withDirectives, resolveDirective, vShow, mergeProps, Fragment } from 'vue';
-import { y, bD as J, h as y$1, bB as z, D as u, B as g, Z as Z$1, f as y$2, bc as B, w as v, ai as f, bE as Y, o, X, bF as a, n as o$1, z as h, u as x, C, af as F, at as O$1, ad as v$1, av as ve$1, ac as P } from './server.mjs';
+import { computed, toRef, shallowRef, ref, provide, nextTick, inject, createVNode, withDirectives, resolveDirective, vShow, mergeProps, Fragment } from 'vue';
+import { p as propsFactory, bD as getDecimals, w as useRtl, bB as createRange, M as makeElevationProps, L as makeRoundedProps, j as clamp, k as genericComponent, bc as Ripple, G as useElevation, ai as useTextColor, bE as keyValues, s as useRender, J as convertToUnit, bF as VScaleTransition, A as makeComponentProps, H as useRounded, E as useBackgroundColor, l as useProxiedModel, af as useFocus, at as makeVInputProps, ad as makeFocusProps, av as VInput, ac as VLabel } from './server.mjs';
 
-const de=Symbol.for("vuetify:v-slider");function ve(o,e,s){const a=s==="vertical",l=e.getBoundingClientRect(),c="touches"in o?o.touches[0]:o;return a?c.clientY-(l.top+l.height/2):c.clientX-(l.left+l.width/2)}function me(o,e){return "touches"in o&&o.touches.length?o.touches[0][e]:"changedTouches"in o&&o.changedTouches.length?o.changedTouches[0][e]:o[e]}const ke=y({disabled:{type:Boolean,default:null},error:Boolean,readonly:{type:Boolean,default:null},max:{type:[Number,String],default:100},min:{type:[Number,String],default:0},step:{type:[Number,String],default:0},thumbColor:String,thumbLabel:{type:[Boolean,String],default:void 0,validator:o=>typeof o=="boolean"||o==="always"},thumbSize:{type:[Number,String],default:20},showTicks:{type:[Boolean,String],default:false,validator:o=>typeof o=="boolean"||o==="always"},ticks:{type:[Array,Object]},tickSize:{type:[Number,String],default:2},color:String,trackColor:String,trackFillColor:String,trackSize:{type:[Number,String],default:4},direction:{type:String,default:"horizontal",validator:o=>["vertical","horizontal"].includes(o)},reverse:Boolean,...g(),...u({elevation:2}),ripple:{type:Boolean,default:true}},"Slider"),ye=o=>{const e=computed(()=>parseFloat(o.min)),s=computed(()=>parseFloat(o.max)),a=computed(()=>Number(o.step)>0?parseFloat(o.step):0),l=computed(()=>Math.max(J(a.value),J(e.value)));function c(d){if(d=parseFloat(d),a.value<=0)return d;const L=Z$1(d,e.value,s.value),m=e.value%a.value,p=Math.round((L-m)/a.value)*a.value+m;return parseFloat(Math.min(p,s.value).toFixed(l.value))}return {min:e,max:s,step:a,decimals:l,roundValue:c}},Le=o=>{let{props:e,steps:s,onSliderStart:a,onSliderMove:l,onSliderEnd:c,getActiveThumb:d}=o;const{isRtl:L}=y$1(),m=toRef(e,"reverse"),p=computed(()=>e.direction==="vertical"),F=computed(()=>p.value!==m.value),{min:u,max:h,step:T,decimals:X,roundValue:E}=s,Y=computed(()=>parseInt(e.thumbSize,10)),U=computed(()=>parseInt(e.tickSize,10)),$=computed(()=>parseInt(e.trackSize,10)),C=computed(()=>(h.value-u.value)/T.value),q=toRef(e,"disabled"),G=computed(()=>e.error||e.disabled?void 0:e.thumbColor??e.color),H=computed(()=>e.error||e.disabled?void 0:e.trackColor??e.color),J=computed(()=>e.error||e.disabled?void 0:e.trackFillColor??e.color),M=shallowRef(false),f=shallowRef(0),R=ref(),v=ref();function S(t){const n=R.value?.$el;if(!n)return;const y=e.direction==="vertical",Z=y?"top":"left",_=y?"height":"width",ee=y?"clientY":"clientX",{[Z]:te,[_]:oe}=n.getBoundingClientRect(),ne=me(t,ee);let z=Math.min(Math.max((ne-te-f.value)/oe,0),1)||0;return (y?F.value:F.value!==L.value)&&(z=1-z),E(u.value+z*(h.value-u.value))}const w=t=>{const n=S(t);n!=null&&c({value:n}),M.value=false,f.value=0;},x=t=>{const n=S(t);v.value=d(t),v.value&&(M.value=true,v.value.contains(t.target)?f.value=ve(t,v.value,e.direction):(f.value=0,n!=null&&l({value:n})),n!=null&&a({value:n}),nextTick(()=>v.value?.focus()));},b={passive:true,capture:true};function g(t){const n=S(t);n!=null&&l({value:n});}function B(t){t.stopPropagation(),t.preventDefault(),w(t),(void 0).removeEventListener("mousemove",g,b),(void 0).removeEventListener("mouseup",B);}function N(t){w(t),(void 0).removeEventListener("touchmove",g,b),t.target?.removeEventListener("touchend",N);}function K(t){x(t),(void 0).addEventListener("touchmove",g,b),t.target?.addEventListener("touchend",N,{passive:false});}function Q(t){t.button===0&&(t.preventDefault(),x(t),(void 0).addEventListener("mousemove",g,b),(void 0).addEventListener("mouseup",B,{passive:false}));}const k=t=>{const n=(t-u.value)/(h.value-u.value)*100;return Z$1(isNaN(n)?0:n,0,100)},P=toRef(e,"showTicks"),O=computed(()=>P.value?e.ticks?Array.isArray(e.ticks)?e.ticks.map(t=>({value:t,position:k(t),label:t.toString()})):Object.keys(e.ticks).map(t=>({value:parseFloat(t),position:k(parseFloat(t)),label:e.ticks[t]})):C.value!==1/0?z(C.value+1).map(t=>{const n=u.value+t*T.value;return {value:n,position:k(n)}}):[]:[]),W=computed(()=>O.value.some(t=>{let{label:n}=t;return !!n})),A={activeThumbRef:v,color:toRef(e,"color"),decimals:X,disabled:q,direction:toRef(e,"direction"),elevation:toRef(e,"elevation"),hasLabels:W,isReversed:m,indexFromEnd:F,min:u,max:h,mousePressed:M,numTicks:C,onSliderMousedown:Q,onSliderTouchstart:K,parsedTicks:O,parseMouseMove:S,position:k,readonly:toRef(e,"readonly"),rounded:toRef(e,"rounded"),roundValue:E,showTicks:P,startOffset:f,step:T,thumbSize:Y,thumbColor:G,thumbLabel:toRef(e,"thumbLabel"),ticks:toRef(e,"ticks"),tickSize:U,trackColor:H,trackContainerRef:R,trackFillColor:J,trackSize:$,vertical:p};return provide(de,A),A};
+const VSliderSymbol = Symbol.for("vuetify:v-slider");
+function getOffset(e, el, direction) {
+  const vertical = direction === "vertical";
+  const rect = el.getBoundingClientRect();
+  const touch = "touches" in e ? e.touches[0] : e;
+  return vertical ? touch.clientY - (rect.top + rect.height / 2) : touch.clientX - (rect.left + rect.width / 2);
+}
+function getPosition(e, position) {
+  if ("touches" in e && e.touches.length) return e.touches[0][position];
+  else if ("changedTouches" in e && e.changedTouches.length) return e.changedTouches[0][position];
+  else return e[position];
+}
+const makeSliderProps = propsFactory({
+  disabled: {
+    type: Boolean,
+    default: null
+  },
+  error: Boolean,
+  readonly: {
+    type: Boolean,
+    default: null
+  },
+  max: {
+    type: [Number, String],
+    default: 100
+  },
+  min: {
+    type: [Number, String],
+    default: 0
+  },
+  step: {
+    type: [Number, String],
+    default: 0
+  },
+  thumbColor: String,
+  thumbLabel: {
+    type: [Boolean, String],
+    default: void 0,
+    validator: (v) => typeof v === "boolean" || v === "always"
+  },
+  thumbSize: {
+    type: [Number, String],
+    default: 20
+  },
+  showTicks: {
+    type: [Boolean, String],
+    default: false,
+    validator: (v) => typeof v === "boolean" || v === "always"
+  },
+  ticks: {
+    type: [Array, Object]
+  },
+  tickSize: {
+    type: [Number, String],
+    default: 2
+  },
+  color: String,
+  trackColor: String,
+  trackFillColor: String,
+  trackSize: {
+    type: [Number, String],
+    default: 4
+  },
+  direction: {
+    type: String,
+    default: "horizontal",
+    validator: (v) => ["vertical", "horizontal"].includes(v)
+  },
+  reverse: Boolean,
+  ...makeRoundedProps(),
+  ...makeElevationProps({
+    elevation: 2
+  }),
+  ripple: {
+    type: Boolean,
+    default: true
+  }
+}, "Slider");
+const useSteps = (props) => {
+  const min = computed(() => parseFloat(props.min));
+  const max = computed(() => parseFloat(props.max));
+  const step = computed(() => Number(props.step) > 0 ? parseFloat(props.step) : 0);
+  const decimals = computed(() => Math.max(getDecimals(step.value), getDecimals(min.value)));
+  function roundValue(value) {
+    value = parseFloat(value);
+    if (step.value <= 0) return value;
+    const clamped = clamp(value, min.value, max.value);
+    const offset = min.value % step.value;
+    const newValue = Math.round((clamped - offset) / step.value) * step.value + offset;
+    return parseFloat(Math.min(newValue, max.value).toFixed(decimals.value));
+  }
+  return {
+    min,
+    max,
+    step,
+    decimals,
+    roundValue
+  };
+};
+const useSlider = (_ref) => {
+  let {
+    props,
+    steps,
+    onSliderStart,
+    onSliderMove,
+    onSliderEnd,
+    getActiveThumb
+  } = _ref;
+  const {
+    isRtl
+  } = useRtl();
+  const isReversed = toRef(props, "reverse");
+  const vertical = computed(() => props.direction === "vertical");
+  const indexFromEnd = computed(() => vertical.value !== isReversed.value);
+  const {
+    min,
+    max,
+    step,
+    decimals,
+    roundValue
+  } = steps;
+  const thumbSize = computed(() => parseInt(props.thumbSize, 10));
+  const tickSize = computed(() => parseInt(props.tickSize, 10));
+  const trackSize = computed(() => parseInt(props.trackSize, 10));
+  const numTicks = computed(() => (max.value - min.value) / step.value);
+  const disabled = toRef(props, "disabled");
+  const thumbColor = computed(() => props.error || props.disabled ? void 0 : props.thumbColor ?? props.color);
+  const trackColor = computed(() => props.error || props.disabled ? void 0 : props.trackColor ?? props.color);
+  const trackFillColor = computed(() => props.error || props.disabled ? void 0 : props.trackFillColor ?? props.color);
+  const mousePressed = shallowRef(false);
+  const startOffset = shallowRef(0);
+  const trackContainerRef = ref();
+  const activeThumbRef = ref();
+  function parseMouseMove(e) {
+    var _a;
+    const el = (_a = trackContainerRef.value) == null ? void 0 : _a.$el;
+    if (!el) return;
+    const vertical2 = props.direction === "vertical";
+    const start = vertical2 ? "top" : "left";
+    const length = vertical2 ? "height" : "width";
+    const position2 = vertical2 ? "clientY" : "clientX";
+    const {
+      [start]: trackStart,
+      [length]: trackLength
+    } = el.getBoundingClientRect();
+    const clickOffset = getPosition(e, position2);
+    let clickPos = Math.min(Math.max((clickOffset - trackStart - startOffset.value) / trackLength, 0), 1) || 0;
+    if (vertical2 ? indexFromEnd.value : indexFromEnd.value !== isRtl.value) clickPos = 1 - clickPos;
+    return roundValue(min.value + clickPos * (max.value - min.value));
+  }
+  const handleStop = (e) => {
+    const value = parseMouseMove(e);
+    if (value != null) {
+      onSliderEnd({
+        value
+      });
+    }
+    mousePressed.value = false;
+    startOffset.value = 0;
+  };
+  const handleStart = (e) => {
+    const value = parseMouseMove(e);
+    activeThumbRef.value = getActiveThumb(e);
+    if (!activeThumbRef.value) return;
+    mousePressed.value = true;
+    if (activeThumbRef.value.contains(e.target)) {
+      startOffset.value = getOffset(e, activeThumbRef.value, props.direction);
+    } else {
+      startOffset.value = 0;
+      if (value != null) {
+        onSliderMove({
+          value
+        });
+      }
+    }
+    if (value != null) {
+      onSliderStart({
+        value
+      });
+    }
+    nextTick(() => {
+      var _a;
+      return (_a = activeThumbRef.value) == null ? void 0 : _a.focus();
+    });
+  };
+  const moveListenerOptions = {
+    passive: true,
+    capture: true
+  };
+  function onMouseMove(e) {
+    const value = parseMouseMove(e);
+    if (value != null) {
+      onSliderMove({
+        value
+      });
+    }
+  }
+  function onSliderMouseUp(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    handleStop(e);
+    (void 0).removeEventListener("mousemove", onMouseMove, moveListenerOptions);
+    (void 0).removeEventListener("mouseup", onSliderMouseUp);
+  }
+  function onSliderTouchend(e) {
+    var _a;
+    handleStop(e);
+    (void 0).removeEventListener("touchmove", onMouseMove, moveListenerOptions);
+    (_a = e.target) == null ? void 0 : _a.removeEventListener("touchend", onSliderTouchend);
+  }
+  function onSliderTouchstart(e) {
+    var _a;
+    handleStart(e);
+    (void 0).addEventListener("touchmove", onMouseMove, moveListenerOptions);
+    (_a = e.target) == null ? void 0 : _a.addEventListener("touchend", onSliderTouchend, {
+      passive: false
+    });
+  }
+  function onSliderMousedown(e) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    handleStart(e);
+    (void 0).addEventListener("mousemove", onMouseMove, moveListenerOptions);
+    (void 0).addEventListener("mouseup", onSliderMouseUp, {
+      passive: false
+    });
+  }
+  const position = (val) => {
+    const percentage = (val - min.value) / (max.value - min.value) * 100;
+    return clamp(isNaN(percentage) ? 0 : percentage, 0, 100);
+  };
+  const showTicks = toRef(props, "showTicks");
+  const parsedTicks = computed(() => {
+    if (!showTicks.value) return [];
+    if (!props.ticks) {
+      return numTicks.value !== Infinity ? createRange(numTicks.value + 1).map((t) => {
+        const value = min.value + t * step.value;
+        return {
+          value,
+          position: position(value)
+        };
+      }) : [];
+    }
+    if (Array.isArray(props.ticks)) return props.ticks.map((t) => ({
+      value: t,
+      position: position(t),
+      label: t.toString()
+    }));
+    return Object.keys(props.ticks).map((key) => ({
+      value: parseFloat(key),
+      position: position(parseFloat(key)),
+      label: props.ticks[key]
+    }));
+  });
+  const hasLabels = computed(() => parsedTicks.value.some((_ref2) => {
+    let {
+      label
+    } = _ref2;
+    return !!label;
+  }));
+  const data = {
+    activeThumbRef,
+    color: toRef(props, "color"),
+    decimals,
+    disabled,
+    direction: toRef(props, "direction"),
+    elevation: toRef(props, "elevation"),
+    hasLabels,
+    isReversed,
+    indexFromEnd,
+    min,
+    max,
+    mousePressed,
+    numTicks,
+    onSliderMousedown,
+    onSliderTouchstart,
+    parsedTicks,
+    parseMouseMove,
+    position,
+    readonly: toRef(props, "readonly"),
+    rounded: toRef(props, "rounded"),
+    roundValue,
+    showTicks,
+    startOffset,
+    step,
+    thumbSize,
+    thumbColor,
+    thumbLabel: toRef(props, "thumbLabel"),
+    ticks: toRef(props, "ticks"),
+    tickSize,
+    trackColor,
+    trackContainerRef,
+    trackFillColor,
+    trackSize,
+    vertical
+  };
+  provide(VSliderSymbol, data);
+  return data;
+};
 
-const ae=y({focused:Boolean,max:{type:Number,required:true},min:{type:Number,required:true},modelValue:{type:Number,required:true},position:{type:Number,required:true},ripple:{type:[Boolean,Object],default:true},name:String,...o$1()},"VSliderThumb"),we=y$2()({name:"VSliderThumb",directives:{Ripple:B},props:ae(),emits:{"update:modelValue":e=>true},setup(e,g){let{slots:T,emit:K}=g;const m=inject(de),{isRtl:d,rtlClasses:N}=y$1();if(!m)throw new Error("[Vuetify] v-slider-thumb must be used inside v-slider or v-range-slider");const{thumbColor:P,step:a$1,disabled:c,thumbSize:R,thumbLabel:v$1,direction:q,isReversed:D,vertical:E,readonly:f$1,elevation:F,mousePressed:j,decimals:z,indexFromEnd:b}=m,B=computed(()=>c.value?void 0:F.value),{elevationClasses:M}=v(B),{textColorClasses:y,textColorStyles:h}=f(P),{pageup:L,pagedown:p,end:V,home:x,left:o$1,right:u,down:n,up:r}=Y,O=[L,p,V,x,o$1,u,n,r],U=computed(()=>a$1.value?[1,2,3]:[1,5,10]);function A(t,l){if(!O.includes(t.key))return;t.preventDefault();const s=a$1.value||.1,w=(e.max-e.min)/s;if([o$1,u,n,r].includes(t.key)){const H=(E.value?[d.value?o$1:u,D.value?n:r]:b.value!==d.value?[o$1,r]:[u,r]).includes(t.key)?1:-1,I=t.shiftKey?2:t.ctrlKey?1:0;l=l+H*s*U.value[I];}else if(t.key===x)l=e.min;else if(t.key===V)l=e.max;else {const S=t.key===p?1:-1;l=l-S*s*(w>100?w/10:10);}return Math.max(e.min,Math.min(e.max,l))}function G(t){const l=A(t,e.modelValue);l!=null&&K("update:modelValue",l);}return o(()=>{const t=X(b.value?100-e.position:e.position,"%");return createVNode("div",{class:["v-slider-thumb",{"v-slider-thumb--focused":e.focused,"v-slider-thumb--pressed":e.focused&&j.value},e.class,N.value],style:[{"--v-slider-thumb-position":t,"--v-slider-thumb-size":X(R.value)},e.style],role:"slider",tabindex:c.value?-1:0,"aria-label":e.name,"aria-valuemin":e.min,"aria-valuemax":e.max,"aria-valuenow":e.modelValue,"aria-readonly":!!f$1.value,"aria-orientation":q.value,onKeydown:f$1.value?void 0:G},[createVNode("div",{class:["v-slider-thumb__surface",y.value,M.value],style:{...h.value}},null),withDirectives(createVNode("div",{class:["v-slider-thumb__ripple",y.value],style:h.value},null),[[resolveDirective("ripple"),e.ripple,null,{circle:true,center:true}]]),createVNode(a,{origin:"bottom center"},{default:()=>[withDirectives(createVNode("div",{class:"v-slider-thumb__label-container"},[createVNode("div",{class:["v-slider-thumb__label"]},[createVNode("div",null,[T["thumb-label"]?.({modelValue:e.modelValue})??e.modelValue.toFixed(a$1.value?z.value:1)])])]),[[vShow,v$1.value&&e.focused||v$1.value==="always"]])]})])}),{}}});
+const makeVSliderThumbProps = propsFactory({
+  focused: Boolean,
+  max: {
+    type: Number,
+    required: true
+  },
+  min: {
+    type: Number,
+    required: true
+  },
+  modelValue: {
+    type: Number,
+    required: true
+  },
+  position: {
+    type: Number,
+    required: true
+  },
+  ripple: {
+    type: [Boolean, Object],
+    default: true
+  },
+  name: String,
+  ...makeComponentProps()
+}, "VSliderThumb");
+const VSliderThumb = genericComponent()({
+  name: "VSliderThumb",
+  directives: {
+    Ripple
+  },
+  props: makeVSliderThumbProps(),
+  emits: {
+    "update:modelValue": (v) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots,
+      emit
+    } = _ref;
+    const slider = inject(VSliderSymbol);
+    const {
+      isRtl,
+      rtlClasses
+    } = useRtl();
+    if (!slider) throw new Error("[Vuetify] v-slider-thumb must be used inside v-slider or v-range-slider");
+    const {
+      thumbColor,
+      step,
+      disabled,
+      thumbSize,
+      thumbLabel,
+      direction,
+      isReversed,
+      vertical,
+      readonly,
+      elevation,
+      mousePressed,
+      decimals,
+      indexFromEnd
+    } = slider;
+    const elevationProps = computed(() => !disabled.value ? elevation.value : void 0);
+    const {
+      elevationClasses
+    } = useElevation(elevationProps);
+    const {
+      textColorClasses,
+      textColorStyles
+    } = useTextColor(thumbColor);
+    const {
+      pageup,
+      pagedown,
+      end,
+      home,
+      left,
+      right,
+      down,
+      up
+    } = keyValues;
+    const relevantKeys = [pageup, pagedown, end, home, left, right, down, up];
+    const multipliers = computed(() => {
+      if (step.value) return [1, 2, 3];
+      else return [1, 5, 10];
+    });
+    function parseKeydown(e, value) {
+      if (!relevantKeys.includes(e.key)) return;
+      e.preventDefault();
+      const _step = step.value || 0.1;
+      const steps = (props.max - props.min) / _step;
+      if ([left, right, down, up].includes(e.key)) {
+        const increase = vertical.value ? [isRtl.value ? left : right, isReversed.value ? down : up] : indexFromEnd.value !== isRtl.value ? [left, up] : [right, up];
+        const direction2 = increase.includes(e.key) ? 1 : -1;
+        const multiplier = e.shiftKey ? 2 : e.ctrlKey ? 1 : 0;
+        value = value + direction2 * _step * multipliers.value[multiplier];
+      } else if (e.key === home) {
+        value = props.min;
+      } else if (e.key === end) {
+        value = props.max;
+      } else {
+        const direction2 = e.key === pagedown ? 1 : -1;
+        value = value - direction2 * _step * (steps > 100 ? steps / 10 : 10);
+      }
+      return Math.max(props.min, Math.min(props.max, value));
+    }
+    function onKeydown(e) {
+      const newValue = parseKeydown(e, props.modelValue);
+      newValue != null && emit("update:modelValue", newValue);
+    }
+    useRender(() => {
+      const positionPercentage = convertToUnit(indexFromEnd.value ? 100 - props.position : props.position, "%");
+      return createVNode("div", {
+        "class": ["v-slider-thumb", {
+          "v-slider-thumb--focused": props.focused,
+          "v-slider-thumb--pressed": props.focused && mousePressed.value
+        }, props.class, rtlClasses.value],
+        "style": [{
+          "--v-slider-thumb-position": positionPercentage,
+          "--v-slider-thumb-size": convertToUnit(thumbSize.value)
+        }, props.style],
+        "role": "slider",
+        "tabindex": disabled.value ? -1 : 0,
+        "aria-label": props.name,
+        "aria-valuemin": props.min,
+        "aria-valuemax": props.max,
+        "aria-valuenow": props.modelValue,
+        "aria-readonly": !!readonly.value,
+        "aria-orientation": direction.value,
+        "onKeydown": !readonly.value ? onKeydown : void 0
+      }, [createVNode("div", {
+        "class": ["v-slider-thumb__surface", textColorClasses.value, elevationClasses.value],
+        "style": {
+          ...textColorStyles.value
+        }
+      }, null), withDirectives(createVNode("div", {
+        "class": ["v-slider-thumb__ripple", textColorClasses.value],
+        "style": textColorStyles.value
+      }, null), [[resolveDirective("ripple"), props.ripple, null, {
+        circle: true,
+        center: true
+      }]]), createVNode(VScaleTransition, {
+        "origin": "bottom center"
+      }, {
+        default: () => {
+          var _a;
+          return [withDirectives(createVNode("div", {
+            "class": "v-slider-thumb__label-container"
+          }, [createVNode("div", {
+            "class": ["v-slider-thumb__label"]
+          }, [createVNode("div", null, [((_a = slots["thumb-label"]) == null ? void 0 : _a.call(slots, {
+            modelValue: props.modelValue
+          })) ?? props.modelValue.toFixed(step.value ? decimals.value : 1)])])]), [[vShow, thumbLabel.value && props.focused || thumbLabel.value === "always"]])];
+        }
+      })]);
+    });
+    return {};
+  }
+});
 
-const A=y({start:{type:Number,required:true},stop:{type:Number,required:true},...o$1()},"VSliderTrack"),Z=y$2()({name:"VSliderTrack",props:A(),emits:{},setup(r,y){let{slots:c}=y;const u=inject(de);if(!u)throw new Error("[Vuetify] v-slider-track must be inside v-slider or v-range-slider");const{color:_,parsedTicks:n,rounded:C,showTicks:s,tickSize:b,trackColor:f,trackFillColor:v,trackSize:S,vertical:o$1,min:d,max:k,indexFromEnd:g}=u,{roundedClasses:T}=h(C),{backgroundColorClasses:V,backgroundColorStyles:h$1}=x(v),{backgroundColorClasses:w,backgroundColorStyles:F}=x(f),i=computed(()=>`inset-${o$1.value?"block":"inline"}-${g.value?"end":"start"}`),m=computed(()=>o$1.value?"height":"width"),z=computed(()=>({[i.value]:"0%",[m.value]:"100%"})),x$1=computed(()=>r.stop-r.start),N=computed(()=>({[i.value]:X(r.start,"%"),[m.value]:X(x$1.value,"%")})),q=computed(()=>s.value?(o$1.value?n.value.slice().reverse():n.value).map((e,D)=>{const E=e.value!==d.value&&e.value!==k.value?X(e.position,"%"):void 0;return createVNode("div",{key:e.value,class:["v-slider-track__tick",{"v-slider-track__tick--filled":e.position>=r.start&&e.position<=r.stop,"v-slider-track__tick--first":e.value===d.value,"v-slider-track__tick--last":e.value===k.value}],style:{[i.value]:E}},[(e.label||c["tick-label"])&&createVNode("div",{class:"v-slider-track__tick-label"},[c["tick-label"]?.({tick:e,index:D})??e.label])])}):[]);return o(()=>createVNode("div",{class:["v-slider-track",T.value,r.class],style:[{"--v-slider-track-size":X(S.value),"--v-slider-tick-size":X(b.value)},r.style]},[createVNode("div",{class:["v-slider-track__background",w.value,{"v-slider-track__background--opacity":!!_.value||!v.value}],style:{...z.value,...F.value}},null),createVNode("div",{class:["v-slider-track__fill",V.value],style:{...N.value,...h$1.value}},null),s.value&&createVNode("div",{class:["v-slider-track__ticks",{"v-slider-track__ticks--always-show":s.value==="always"}]},[q.value])])),{}}});
+const makeVSliderTrackProps = propsFactory({
+  start: {
+    type: Number,
+    required: true
+  },
+  stop: {
+    type: Number,
+    required: true
+  },
+  ...makeComponentProps()
+}, "VSliderTrack");
+const VSliderTrack = genericComponent()({
+  name: "VSliderTrack",
+  props: makeVSliderTrackProps(),
+  emits: {},
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const slider = inject(VSliderSymbol);
+    if (!slider) throw new Error("[Vuetify] v-slider-track must be inside v-slider or v-range-slider");
+    const {
+      color,
+      parsedTicks,
+      rounded,
+      showTicks,
+      tickSize,
+      trackColor,
+      trackFillColor,
+      trackSize,
+      vertical,
+      min,
+      max,
+      indexFromEnd
+    } = slider;
+    const {
+      roundedClasses
+    } = useRounded(rounded);
+    const {
+      backgroundColorClasses: trackFillColorClasses,
+      backgroundColorStyles: trackFillColorStyles
+    } = useBackgroundColor(trackFillColor);
+    const {
+      backgroundColorClasses: trackColorClasses,
+      backgroundColorStyles: trackColorStyles
+    } = useBackgroundColor(trackColor);
+    const startDir = computed(() => `inset-${vertical.value ? "block" : "inline"}-${indexFromEnd.value ? "end" : "start"}`);
+    const endDir = computed(() => vertical.value ? "height" : "width");
+    const backgroundStyles = computed(() => {
+      return {
+        [startDir.value]: "0%",
+        [endDir.value]: "100%"
+      };
+    });
+    const trackFillWidth = computed(() => props.stop - props.start);
+    const trackFillStyles = computed(() => {
+      return {
+        [startDir.value]: convertToUnit(props.start, "%"),
+        [endDir.value]: convertToUnit(trackFillWidth.value, "%")
+      };
+    });
+    const computedTicks = computed(() => {
+      if (!showTicks.value) return [];
+      const ticks = vertical.value ? parsedTicks.value.slice().reverse() : parsedTicks.value;
+      return ticks.map((tick, index) => {
+        var _a;
+        const directionValue = tick.value !== min.value && tick.value !== max.value ? convertToUnit(tick.position, "%") : void 0;
+        return createVNode("div", {
+          "key": tick.value,
+          "class": ["v-slider-track__tick", {
+            "v-slider-track__tick--filled": tick.position >= props.start && tick.position <= props.stop,
+            "v-slider-track__tick--first": tick.value === min.value,
+            "v-slider-track__tick--last": tick.value === max.value
+          }],
+          "style": {
+            [startDir.value]: directionValue
+          }
+        }, [(tick.label || slots["tick-label"]) && createVNode("div", {
+          "class": "v-slider-track__tick-label"
+        }, [((_a = slots["tick-label"]) == null ? void 0 : _a.call(slots, {
+          tick,
+          index
+        })) ?? tick.label])]);
+      });
+    });
+    useRender(() => {
+      return createVNode("div", {
+        "class": ["v-slider-track", roundedClasses.value, props.class],
+        "style": [{
+          "--v-slider-track-size": convertToUnit(trackSize.value),
+          "--v-slider-tick-size": convertToUnit(tickSize.value)
+        }, props.style]
+      }, [createVNode("div", {
+        "class": ["v-slider-track__background", trackColorClasses.value, {
+          "v-slider-track__background--opacity": !!color.value || !trackFillColor.value
+        }],
+        "style": {
+          ...backgroundStyles.value,
+          ...trackColorStyles.value
+        }
+      }, null), createVNode("div", {
+        "class": ["v-slider-track__fill", trackFillColorClasses.value],
+        "style": {
+          ...trackFillStyles.value,
+          ...trackFillColorStyles.value
+        }
+      }, null), showTicks.value && createVNode("div", {
+        "class": ["v-slider-track__ticks", {
+          "v-slider-track__ticks--always-show": showTicks.value === "always"
+        }]
+      }, [computedTicks.value])]);
+    });
+    return {};
+  }
+});
 
-const O=y({...v$1(),...ke(),...O$1(),modelValue:{type:[Number,String],default:0}},"VSlider"),oe=y$2()({name:"VSlider",props:O(),emits:{"update:focused":e=>true,"update:modelValue":e=>true,start:e=>true,end:e=>true},setup(e,p){let{slots:l,emit:i}=p;const s=ref(),{rtlClasses:V}=y$1(),n=ye(e),u=C(e,"modelValue",void 0,a=>n.roundValue(a??n.min.value)),{min:S,max:h,mousePressed:k,roundValue:m,onSliderMousedown:P$1,onSliderTouchstart:y,trackContainerRef:g,position:x,hasLabels:F$1,readonly:v}=Le({props:e,steps:n,onSliderStart:()=>{i("start",u.value);},onSliderEnd:a=>{let{value:d}=a;const t=m(d);u.value=t,i("end",t);},onSliderMove:a=>{let{value:d}=a;return u.value=m(d)},getActiveThumb:()=>s.value?.$el}),{isFocused:o$1,focus:T,blur:C$1}=F(e),c=computed(()=>x(u.value));return o(()=>{const a=ve$1.filterProps(e),d=!!(e.label||l.label||l.prepend);return createVNode(ve$1,mergeProps({class:["v-slider",{"v-slider--has-labels":!!l["tick-label"]||F$1.value,"v-slider--focused":o$1.value,"v-slider--pressed":k.value,"v-slider--disabled":e.disabled},V.value,e.class],style:e.style},a,{focused:o$1.value}),{...l,prepend:d?t=>createVNode(Fragment,null,[l.label?.(t)??(e.label?createVNode(P,{id:t.id.value,class:"v-slider__label",text:e.label},null):void 0),l.prepend?.(t)]):void 0,default:t=>{let{id:f,messagesId:M}=t;return createVNode("div",{class:"v-slider__container",onMousedown:v.value?void 0:P$1,onTouchstartPassive:v.value?void 0:y},[createVNode("input",{id:f.value,name:e.name||f.value,disabled:!!e.disabled,readonly:!!e.readonly,tabindex:"-1",value:u.value},null),createVNode(Z,{ref:g,start:0,stop:c.value},{"tick-label":l["tick-label"]}),createVNode(we,{ref:s,"aria-describedby":M.value,focused:o$1.value,min:S.value,max:h.value,modelValue:u.value,"onUpdate:modelValue":R=>u.value=R,position:c.value,elevation:e.elevation,onFocus:T,onBlur:C$1,ripple:e.ripple,name:e.name},{"thumb-label":l["thumb-label"]})])}})}),{}}});
+const makeVSliderProps = propsFactory({
+  ...makeFocusProps(),
+  ...makeSliderProps(),
+  ...makeVInputProps(),
+  modelValue: {
+    type: [Number, String],
+    default: 0
+  }
+}, "VSlider");
+const VSlider = genericComponent()({
+  name: "VSlider",
+  props: makeVSliderProps(),
+  emits: {
+    "update:focused": (value) => true,
+    "update:modelValue": (v) => true,
+    start: (value) => true,
+    end: (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots,
+      emit
+    } = _ref;
+    const thumbContainerRef = ref();
+    const {
+      rtlClasses
+    } = useRtl();
+    const steps = useSteps(props);
+    const model = useProxiedModel(props, "modelValue", void 0, (value) => {
+      return steps.roundValue(value == null ? steps.min.value : value);
+    });
+    const {
+      min,
+      max,
+      mousePressed,
+      roundValue,
+      onSliderMousedown,
+      onSliderTouchstart,
+      trackContainerRef,
+      position,
+      hasLabels,
+      readonly
+    } = useSlider({
+      props,
+      steps,
+      onSliderStart: () => {
+        emit("start", model.value);
+      },
+      onSliderEnd: (_ref2) => {
+        let {
+          value
+        } = _ref2;
+        const roundedValue = roundValue(value);
+        model.value = roundedValue;
+        emit("end", roundedValue);
+      },
+      onSliderMove: (_ref3) => {
+        let {
+          value
+        } = _ref3;
+        return model.value = roundValue(value);
+      },
+      getActiveThumb: () => {
+        var _a;
+        return (_a = thumbContainerRef.value) == null ? void 0 : _a.$el;
+      }
+    });
+    const {
+      isFocused,
+      focus,
+      blur
+    } = useFocus(props);
+    const trackStop = computed(() => position(model.value));
+    useRender(() => {
+      const inputProps = VInput.filterProps(props);
+      const hasPrepend = !!(props.label || slots.label || slots.prepend);
+      return createVNode(VInput, mergeProps({
+        "class": ["v-slider", {
+          "v-slider--has-labels": !!slots["tick-label"] || hasLabels.value,
+          "v-slider--focused": isFocused.value,
+          "v-slider--pressed": mousePressed.value,
+          "v-slider--disabled": props.disabled
+        }, rtlClasses.value, props.class],
+        "style": props.style
+      }, inputProps, {
+        "focused": isFocused.value
+      }), {
+        ...slots,
+        prepend: hasPrepend ? (slotProps) => {
+          var _a, _b;
+          return createVNode(Fragment, null, [((_a = slots.label) == null ? void 0 : _a.call(slots, slotProps)) ?? (props.label ? createVNode(VLabel, {
+            "id": slotProps.id.value,
+            "class": "v-slider__label",
+            "text": props.label
+          }, null) : void 0), (_b = slots.prepend) == null ? void 0 : _b.call(slots, slotProps)]);
+        } : void 0,
+        default: (_ref4) => {
+          let {
+            id,
+            messagesId
+          } = _ref4;
+          return createVNode("div", {
+            "class": "v-slider__container",
+            "onMousedown": !readonly.value ? onSliderMousedown : void 0,
+            "onTouchstartPassive": !readonly.value ? onSliderTouchstart : void 0
+          }, [createVNode("input", {
+            "id": id.value,
+            "name": props.name || id.value,
+            "disabled": !!props.disabled,
+            "readonly": !!props.readonly,
+            "tabindex": "-1",
+            "value": model.value
+          }, null), createVNode(VSliderTrack, {
+            "ref": trackContainerRef,
+            "start": 0,
+            "stop": trackStop.value
+          }, {
+            "tick-label": slots["tick-label"]
+          }), createVNode(VSliderThumb, {
+            "ref": thumbContainerRef,
+            "aria-describedby": messagesId.value,
+            "focused": isFocused.value,
+            "min": min.value,
+            "max": max.value,
+            "modelValue": model.value,
+            "onUpdate:modelValue": (v) => model.value = v,
+            "position": trackStop.value,
+            "elevation": props.elevation,
+            "onFocus": focus,
+            "onBlur": blur,
+            "ripple": props.ripple,
+            "name": props.name
+          }, {
+            "thumb-label": slots["thumb-label"]
+          })]);
+        }
+      });
+    });
+    return {};
+  }
+});
 
-export { oe as o };;globalThis.__timing__.logEnd('Load chunks/build/VSlider');
+export { VSlider as V };
+//# sourceMappingURL=VSlider.mjs.map

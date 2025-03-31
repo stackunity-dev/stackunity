@@ -1,12 +1,562 @@
-globalThis.__timing__.logStart('Load chunks/build/VTextField');import { computed, createVNode, withDirectives, vShow, ref, toRef, watch, mergeProps, Fragment, resolveDirective, cloneVNode, nextTick } from 'vue';
-import { f as y, y as y$1, o, a9 as O, aa as T, n as o$1, ab as e, ac as P, ad as v, t as _, ae as g$1, af as F, ag as v$1, z as h, h as y$2, ah as o$2, u as x$1, ai as f$1, aj as y$3, ak as p, X, al as f$2, am as c, H as P$1, M, B as g$2, an as u, ao as ie, ap as A, aq as e$1, ar as s, C, as as d, at as O$1, au as W, av as ve, aw as se } from './server.mjs';
+import { computed, createVNode, withDirectives, vShow, ref, toRef, watch, mergeProps, Fragment, resolveDirective, cloneVNode, nextTick } from 'vue';
+import { k as genericComponent, p as propsFactory, s as useRender, a9 as MaybeTransition, aa as makeTransitionProps, A as makeComponentProps, ab as VSlideYTransition, ac as VLabel, ad as makeFocusProps, D as provideTheme, ae as useLoader, af as useFocus, ag as useInputIcon, H as useRounded, w as useRtl, ah as getUid, E as useBackgroundColor, ai as useTextColor, aj as nullifyTransforms, ak as animate, J as convertToUnit, al as LoaderSlot, am as VExpandXTransition, Q as VDefaultsProvider, K as makeThemeProps, L as makeRoundedProps, an as makeLoaderProps, ao as EventProp, ap as IconValue, aq as standardEasing, ar as Intersect, l as useProxiedModel, as as forwardRefs, at as makeVInputProps, au as filterInputAttrs, av as VInput, aw as callEvent } from './server.mjs';
 
-const x=y$1({active:Boolean,disabled:Boolean,max:[Number,String],value:{type:[Number,String],default:0},...o$1(),...T({transition:{component:e}})},"VCounter"),N=y()({name:"VCounter",functional:true,props:x(),setup(e,r){let{slots:t}=r;const a=computed(()=>e.max?`${e.value} / ${e.max}`:String(e.value));return o(()=>createVNode(O,{transition:e.transition},{default:()=>[withDirectives(createVNode("div",{class:["v-counter",{"text-error":e.max&&!e.disabled&&parseFloat(e.value)>parseFloat(e.max)},e.class],style:e.style},[t.default?t.default({counter:a.value,max:e.max,value:e.value}):a.value]),[[vShow,e.active]])]})),{}}});
+const makeVCounterProps = propsFactory({
+  active: Boolean,
+  disabled: Boolean,
+  max: [Number, String],
+  value: {
+    type: [Number, String],
+    default: 0
+  },
+  ...makeComponentProps(),
+  ...makeTransitionProps({
+    transition: {
+      component: VSlideYTransition
+    }
+  })
+}, "VCounter");
+const VCounter = genericComponent()({
+  name: "VCounter",
+  functional: true,
+  props: makeVCounterProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const counter = computed(() => {
+      return props.max ? `${props.value} / ${props.max}` : String(props.value);
+    });
+    useRender(() => createVNode(MaybeTransition, {
+      "transition": props.transition
+    }, {
+      default: () => [withDirectives(createVNode("div", {
+        "class": ["v-counter", {
+          "text-error": props.max && !props.disabled && parseFloat(props.value) > parseFloat(props.max)
+        }, props.class],
+        "style": props.style
+      }, [slots.default ? slots.default({
+        counter: counter.value,
+        max: props.max,
+        value: props.value
+      }) : counter.value]), [[vShow, props.active]])]
+    }));
+    return {};
+  }
+});
 
-const f=y$1({floating:Boolean,...o$1()},"VFieldLabel"),g=y()({name:"VFieldLabel",props:f(),setup(e,o$1){let{slots:l}=o$1;return o(()=>createVNode(P,{class:["v-field-label",{"v-field-label--floating":e.floating},e.class],style:e.style,"aria-hidden":e.floating||void 0},l)),{}}});
+const makeVFieldLabelProps = propsFactory({
+  floating: Boolean,
+  ...makeComponentProps()
+}, "VFieldLabel");
+const VFieldLabel = genericComponent()({
+  name: "VFieldLabel",
+  props: makeVFieldLabelProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    useRender(() => createVNode(VLabel, {
+      "class": ["v-field-label", {
+        "v-field-label--floating": props.floating
+      }, props.class],
+      "style": props.style,
+      "aria-hidden": props.floating || void 0
+    }, slots));
+    return {};
+  }
+});
 
-const Fe$1=["underlined","outlined","filled","solo","solo-inverted","solo-filled","plain"],xe=y$1({appendInnerIcon:A,bgColor:String,clearable:Boolean,clearIcon:{type:A,default:"$clear"},active:Boolean,centerAffix:{type:Boolean,default:void 0},color:String,baseColor:String,dirty:Boolean,disabled:{type:Boolean,default:null},error:Boolean,flat:Boolean,label:String,persistentClear:Boolean,prependInnerIcon:A,reverse:Boolean,singleLine:Boolean,variant:{type:String,default:"filled",validator:e=>Fe$1.includes(e)},"onClick:clear":ie(),"onClick:appendInner":ie(),"onClick:prependInner":ie(),...o$1(),...u(),...g$2(),...M()},"VField"),Je=y()({name:"VField",inheritAttrs:false,props:{id:String,...v(),...xe()},emits:{"update:focused":e=>true,"update:modelValue":e=>true},setup(e,R){let{attrs:$,emit:Be,slots:n}=R;const{themeClasses:w}=_(e),{loaderClasses:A}=g$1(e),{focusClasses:T,isFocused:I,focus:u,blur:v}=F(e),{InputIcon:p$1}=v$1(e),{roundedClasses:D}=h(e),{rtlClasses:E}=y$2(),f=computed(()=>e.dirty||e.active),k=computed(()=>!!(e.label||n.label)),m=computed(()=>!e.singleLine&&k.value),U=o$2(),i=computed(()=>e.id||`input-${U}`),M=computed(()=>`${i.value}-messages`),P=ref(),g$2=ref(),F$1=ref(),x=computed(()=>["plain","underlined"].includes(e.variant)),{backgroundColorClasses:O,backgroundColorStyles:W}=x$1(toRef(e,"bgColor")),{textColorClasses:B,textColorStyles:V}=f$1(computed(()=>e.error||e.disabled?void 0:f.value&&I.value?e.color:e.baseColor));watch(f,s=>{if(m.value){const a=P.value.$el,r=g$2.value.$el;requestAnimationFrame(()=>{const d=y$3(a),t=r.getBoundingClientRect(),y=t.x-d.x,N=t.y-d.y-(d.height/2-t.height/2),S=t.width/.75,X$1=Math.abs(S-d.width)>1?{maxWidth:X(S)}:void 0,j=getComputedStyle(a),L=getComputedStyle(r),z=parseFloat(j.transitionDuration)*1e3||150,G=parseFloat(L.getPropertyValue("--v-field-label-scale")),H=L.getPropertyValue("color");a.style.visibility="visible",r.style.visibility="hidden",p(a,{transform:`translate(${y}px, ${N}px) scale(${G})`,color:H,...X$1},{duration:z,easing:e$1,direction:s?"normal":"reverse"}).finished.then(()=>{a.style.removeProperty("visibility"),r.style.removeProperty("visibility");});});}},{flush:"post"});const c$1=computed(()=>({isActive:f,isFocused:I,controlRef:F$1,blur:v,focus:u}));function q(s){s.target!==(void 0).activeElement&&s.preventDefault();}return o(()=>{const s=e.variant==="outlined",a=!!(n["prepend-inner"]||e.prependInnerIcon),r=!!(e.clearable||n.clear)&&!e.disabled,d=!!(n["append-inner"]||e.appendInnerIcon||r),t=()=>n.label?n.label({...c$1.value,label:e.label,props:{for:i.value}}):e.label;return createVNode("div",mergeProps({class:["v-field",{"v-field--active":f.value,"v-field--appended":d,"v-field--center-affix":e.centerAffix??!x.value,"v-field--disabled":e.disabled,"v-field--dirty":e.dirty,"v-field--error":e.error,"v-field--flat":e.flat,"v-field--has-background":!!e.bgColor,"v-field--persistent-clear":e.persistentClear,"v-field--prepended":a,"v-field--reverse":e.reverse,"v-field--single-line":e.singleLine,"v-field--no-label":!t(),[`v-field--variant-${e.variant}`]:true},w.value,O.value,T.value,A.value,D.value,E.value,e.class],style:[W.value,e.style],onClick:q},$),[createVNode("div",{class:"v-field__overlay"},null),createVNode(f$2,{name:"v-field",active:!!e.loading,color:e.error?"error":typeof e.loading=="string"?e.loading:e.color},{default:n.loader}),a&&createVNode("div",{key:"prepend",class:"v-field__prepend-inner"},[e.prependInnerIcon&&createVNode(p$1,{key:"prepend-icon",name:"prependInner"},null),n["prepend-inner"]?.(c$1.value)]),createVNode("div",{class:"v-field__field","data-no-activator":""},[["filled","solo","solo-inverted","solo-filled"].includes(e.variant)&&m.value&&createVNode(g,{key:"floating-label",ref:g$2,class:[B.value],floating:true,for:i.value,style:V.value},{default:()=>[t()]}),k.value&&createVNode(g,{key:"label",ref:P,for:i.value},{default:()=>[t()]}),n.default?.({...c$1.value,props:{id:i.value,class:"v-field__input","aria-describedby":M.value},focus:u,blur:v})]),r&&createVNode(c,{key:"clear"},{default:()=>[withDirectives(createVNode("div",{class:"v-field__clearable",onMousedown:y=>{y.preventDefault(),y.stopPropagation();}},[createVNode(P$1,{defaults:{VIcon:{icon:e.clearIcon}}},{default:()=>[n.clear?n.clear({...c$1.value,props:{onFocus:u,onBlur:v,onClick:e["onClick:clear"]}}):createVNode(p$1,{name:"clear",onFocus:u,onBlur:v},null)]})]),[[vShow,e.dirty]])]}),d&&createVNode("div",{key:"append",class:"v-field__append-inner"},[n["append-inner"]?.(c$1.value),e.appendInnerIcon&&createVNode(p$1,{key:"append-icon",name:"appendInner"},null)]),createVNode("div",{class:["v-field__outline",B.value],style:V.value},[s&&createVNode(Fragment,null,[createVNode("div",{class:"v-field__outline__start"},null),m.value&&createVNode("div",{class:"v-field__outline__notch"},[createVNode(g,{ref:g$2,floating:true,for:i.value},{default:()=>[t()]})]),createVNode("div",{class:"v-field__outline__end"},null)]),x.value&&m.value&&createVNode(g,{ref:g$2,floating:true,for:i.value},{default:()=>[t()]})])])}),{controlRef:F$1}}});
+const allowedVariants = ["underlined", "outlined", "filled", "solo", "solo-inverted", "solo-filled", "plain"];
+const makeVFieldProps = propsFactory({
+  appendInnerIcon: IconValue,
+  bgColor: String,
+  clearable: Boolean,
+  clearIcon: {
+    type: IconValue,
+    default: "$clear"
+  },
+  active: Boolean,
+  centerAffix: {
+    type: Boolean,
+    default: void 0
+  },
+  color: String,
+  baseColor: String,
+  dirty: Boolean,
+  disabled: {
+    type: Boolean,
+    default: null
+  },
+  error: Boolean,
+  flat: Boolean,
+  label: String,
+  persistentClear: Boolean,
+  prependInnerIcon: IconValue,
+  reverse: Boolean,
+  singleLine: Boolean,
+  variant: {
+    type: String,
+    default: "filled",
+    validator: (v) => allowedVariants.includes(v)
+  },
+  "onClick:clear": EventProp(),
+  "onClick:appendInner": EventProp(),
+  "onClick:prependInner": EventProp(),
+  ...makeComponentProps(),
+  ...makeLoaderProps(),
+  ...makeRoundedProps(),
+  ...makeThemeProps()
+}, "VField");
+const VField = genericComponent()({
+  name: "VField",
+  inheritAttrs: false,
+  props: {
+    id: String,
+    ...makeFocusProps(),
+    ...makeVFieldProps()
+  },
+  emits: {
+    "update:focused": (focused) => true,
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      emit,
+      slots
+    } = _ref;
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      loaderClasses
+    } = useLoader(props);
+    const {
+      focusClasses,
+      isFocused,
+      focus,
+      blur
+    } = useFocus(props);
+    const {
+      InputIcon
+    } = useInputIcon(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const {
+      rtlClasses
+    } = useRtl();
+    const isActive = computed(() => props.dirty || props.active);
+    const hasLabel = computed(() => !!(props.label || slots.label));
+    const hasFloatingLabel = computed(() => !props.singleLine && hasLabel.value);
+    const uid = getUid();
+    const id = computed(() => props.id || `input-${uid}`);
+    const messagesId = computed(() => `${id.value}-messages`);
+    const labelRef = ref();
+    const floatingLabelRef = ref();
+    const controlRef = ref();
+    const isPlainOrUnderlined = computed(() => ["plain", "underlined"].includes(props.variant));
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(toRef(props, "bgColor"));
+    const {
+      textColorClasses,
+      textColorStyles
+    } = useTextColor(computed(() => {
+      return props.error || props.disabled ? void 0 : isActive.value && isFocused.value ? props.color : props.baseColor;
+    }));
+    watch(isActive, (val) => {
+      if (hasFloatingLabel.value) {
+        const el = labelRef.value.$el;
+        const targetEl = floatingLabelRef.value.$el;
+        requestAnimationFrame(() => {
+          const rect = nullifyTransforms(el);
+          const targetRect = targetEl.getBoundingClientRect();
+          const x = targetRect.x - rect.x;
+          const y = targetRect.y - rect.y - (rect.height / 2 - targetRect.height / 2);
+          const targetWidth = targetRect.width / 0.75;
+          const width = Math.abs(targetWidth - rect.width) > 1 ? {
+            maxWidth: convertToUnit(targetWidth)
+          } : void 0;
+          const style = getComputedStyle(el);
+          const targetStyle = getComputedStyle(targetEl);
+          const duration = parseFloat(style.transitionDuration) * 1e3 || 150;
+          const scale = parseFloat(targetStyle.getPropertyValue("--v-field-label-scale"));
+          const color = targetStyle.getPropertyValue("color");
+          el.style.visibility = "visible";
+          targetEl.style.visibility = "hidden";
+          animate(el, {
+            transform: `translate(${x}px, ${y}px) scale(${scale})`,
+            color,
+            ...width
+          }, {
+            duration,
+            easing: standardEasing,
+            direction: val ? "normal" : "reverse"
+          }).finished.then(() => {
+            el.style.removeProperty("visibility");
+            targetEl.style.removeProperty("visibility");
+          });
+        });
+      }
+    }, {
+      flush: "post"
+    });
+    const slotProps = computed(() => ({
+      isActive,
+      isFocused,
+      controlRef,
+      blur,
+      focus
+    }));
+    function onClick(e) {
+      if (e.target !== (void 0).activeElement) {
+        e.preventDefault();
+      }
+    }
+    useRender(() => {
+      var _a, _b, _c;
+      const isOutlined = props.variant === "outlined";
+      const hasPrepend = !!(slots["prepend-inner"] || props.prependInnerIcon);
+      const hasClear = !!(props.clearable || slots.clear) && !props.disabled;
+      const hasAppend = !!(slots["append-inner"] || props.appendInnerIcon || hasClear);
+      const label = () => slots.label ? slots.label({
+        ...slotProps.value,
+        label: props.label,
+        props: {
+          for: id.value
+        }
+      }) : props.label;
+      return createVNode("div", mergeProps({
+        "class": ["v-field", {
+          "v-field--active": isActive.value,
+          "v-field--appended": hasAppend,
+          "v-field--center-affix": props.centerAffix ?? !isPlainOrUnderlined.value,
+          "v-field--disabled": props.disabled,
+          "v-field--dirty": props.dirty,
+          "v-field--error": props.error,
+          "v-field--flat": props.flat,
+          "v-field--has-background": !!props.bgColor,
+          "v-field--persistent-clear": props.persistentClear,
+          "v-field--prepended": hasPrepend,
+          "v-field--reverse": props.reverse,
+          "v-field--single-line": props.singleLine,
+          "v-field--no-label": !label(),
+          [`v-field--variant-${props.variant}`]: true
+        }, themeClasses.value, backgroundColorClasses.value, focusClasses.value, loaderClasses.value, roundedClasses.value, rtlClasses.value, props.class],
+        "style": [backgroundColorStyles.value, props.style],
+        "onClick": onClick
+      }, attrs), [createVNode("div", {
+        "class": "v-field__overlay"
+      }, null), createVNode(LoaderSlot, {
+        "name": "v-field",
+        "active": !!props.loading,
+        "color": props.error ? "error" : typeof props.loading === "string" ? props.loading : props.color
+      }, {
+        default: slots.loader
+      }), hasPrepend && createVNode("div", {
+        "key": "prepend",
+        "class": "v-field__prepend-inner"
+      }, [props.prependInnerIcon && createVNode(InputIcon, {
+        "key": "prepend-icon",
+        "name": "prependInner"
+      }, null), (_a = slots["prepend-inner"]) == null ? void 0 : _a.call(slots, slotProps.value)]), createVNode("div", {
+        "class": "v-field__field",
+        "data-no-activator": ""
+      }, [["filled", "solo", "solo-inverted", "solo-filled"].includes(props.variant) && hasFloatingLabel.value && createVNode(VFieldLabel, {
+        "key": "floating-label",
+        "ref": floatingLabelRef,
+        "class": [textColorClasses.value],
+        "floating": true,
+        "for": id.value,
+        "style": textColorStyles.value
+      }, {
+        default: () => [label()]
+      }), hasLabel.value && createVNode(VFieldLabel, {
+        "key": "label",
+        "ref": labelRef,
+        "for": id.value
+      }, {
+        default: () => [label()]
+      }), (_b = slots.default) == null ? void 0 : _b.call(slots, {
+        ...slotProps.value,
+        props: {
+          id: id.value,
+          class: "v-field__input",
+          "aria-describedby": messagesId.value
+        },
+        focus,
+        blur
+      })]), hasClear && createVNode(VExpandXTransition, {
+        "key": "clear"
+      }, {
+        default: () => [withDirectives(createVNode("div", {
+          "class": "v-field__clearable",
+          "onMousedown": (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }, [createVNode(VDefaultsProvider, {
+          "defaults": {
+            VIcon: {
+              icon: props.clearIcon
+            }
+          }
+        }, {
+          default: () => [slots.clear ? slots.clear({
+            ...slotProps.value,
+            props: {
+              onFocus: focus,
+              onBlur: blur,
+              onClick: props["onClick:clear"]
+            }
+          }) : createVNode(InputIcon, {
+            "name": "clear",
+            "onFocus": focus,
+            "onBlur": blur
+          }, null)]
+        })]), [[vShow, props.dirty]])]
+      }), hasAppend && createVNode("div", {
+        "key": "append",
+        "class": "v-field__append-inner"
+      }, [(_c = slots["append-inner"]) == null ? void 0 : _c.call(slots, slotProps.value), props.appendInnerIcon && createVNode(InputIcon, {
+        "key": "append-icon",
+        "name": "appendInner"
+      }, null)]), createVNode("div", {
+        "class": ["v-field__outline", textColorClasses.value],
+        "style": textColorStyles.value
+      }, [isOutlined && createVNode(Fragment, null, [createVNode("div", {
+        "class": "v-field__outline__start"
+      }, null), hasFloatingLabel.value && createVNode("div", {
+        "class": "v-field__outline__notch"
+      }, [createVNode(VFieldLabel, {
+        "ref": floatingLabelRef,
+        "floating": true,
+        "for": id.value
+      }, {
+        default: () => [label()]
+      })]), createVNode("div", {
+        "class": "v-field__outline__end"
+      }, null)]), isPlainOrUnderlined.value && hasFloatingLabel.value && createVNode(VFieldLabel, {
+        "ref": floatingLabelRef,
+        "floating": true,
+        "for": id.value
+      }, {
+        default: () => [label()]
+      })])]);
+    });
+    return {
+      controlRef
+    };
+  }
+});
 
-const re=["color","file","time","date","datetime-local","week","month"],ae=y$1({autofocus:Boolean,counter:[Boolean,Number,String],counterValue:[Number,Function],prefix:String,placeholder:String,persistentPlaceholder:Boolean,persistentCounter:Boolean,suffix:String,role:String,type:{type:String,default:"text"},modelModifiers:Object,...O$1(),...xe()},"VTextField"),Fe=y()({name:"VTextField",directives:{Intersect:s},inheritAttrs:false,props:ae(),emits:{"click:control":e=>true,"mousedown:control":e=>true,"update:focused":e=>true,"update:modelValue":e=>true},setup(e,b){let{attrs:f,emit:V,slots:o$1}=b;const i=C(e,"modelValue"),{isFocused:u,focus:S,blur:w}=F(e),A=computed(()=>typeof e.counterValue=="function"?e.counterValue(i.value):typeof e.counterValue=="number"?e.counterValue:(i.value??"").toString().length),D=computed(()=>{if(f.maxlength)return f.maxlength;if(!(!e.counter||typeof e.counter!="number"&&typeof e.counter!="string"))return e.counter}),y=computed(()=>["plain","underlined"].includes(e.variant));function R(t,l){!e.autofocus||!t||l[0].target?.focus?.();}const g=ref(),C$1=ref(),r=ref(),T=computed(()=>re.includes(e.type)||e.persistentPlaceholder||u.value||e.active);function c(){r.value!==(void 0).activeElement&&r.value?.focus(),u.value||S();}function B(t){V("mousedown:control",t),t.target!==r.value&&(c(),t.preventDefault());}function M(t){c(),V("click:control",t);}function N$1(t){t.stopPropagation(),c(),nextTick(()=>{i.value=null,se(e["onClick:clear"],t);});}function E(t){const l=t.target;if(i.value=l.value,e.modelModifiers?.trim&&["text","search","password","tel","url"].includes(e.type)){const s=[l.selectionStart,l.selectionEnd];nextTick(()=>{l.selectionStart=s[0],l.selectionEnd=s[1];});}}return o(()=>{const t=!!(o$1.counter||e.counter!==false&&e.counter!=null),l=!!(t||o$1.details),[s,O]=W(f),{modelValue:ce,...U}=ve.filterProps(e),j=Je.filterProps(e);return createVNode(ve,mergeProps({ref:g,modelValue:i.value,"onUpdate:modelValue":a=>i.value=a,class:["v-text-field",{"v-text-field--prefixed":e.prefix,"v-text-field--suffixed":e.suffix,"v-input--plain-underlined":y.value},e.class],style:e.style},s,U,{centerAffix:!y.value,focused:u.value}),{...o$1,default:a=>{let{id:z,isDisabled:h,isDirty:k,isReadonly:q,isValid:G}=a;return createVNode(Je,mergeProps({ref:C$1,onMousedown:B,onClick:M,"onClick:clear":N$1,"onClick:prependInner":e["onClick:prependInner"],"onClick:appendInner":e["onClick:appendInner"],role:e.role},j,{id:z.value,active:T.value||k.value,dirty:k.value||e.dirty,disabled:h.value,focused:u.value,error:G.value===false}),{...o$1,default:H=>{let{props:{class:P,...J}}=H;const F=withDirectives(createVNode("input",mergeProps({ref:r,value:i.value,onInput:E,autofocus:e.autofocus,readonly:q.value,disabled:h.value,name:e.name,placeholder:e.placeholder,size:1,type:e.type,onFocus:c,onBlur:w},J,O),null),[[resolveDirective("intersect"),{handler:R},null,{once:true}]]);return createVNode(Fragment,null,[e.prefix&&createVNode("span",{class:"v-text-field__prefix"},[createVNode("span",{class:"v-text-field__prefix__text"},[e.prefix])]),o$1.default?createVNode("div",{class:P,"data-no-activator":""},[o$1.default(),F]):cloneVNode(F,{class:P}),e.suffix&&createVNode("span",{class:"v-text-field__suffix"},[createVNode("span",{class:"v-text-field__suffix__text"},[e.suffix])])])}})},details:l?a=>createVNode(Fragment,null,[o$1.details?.(a),t&&createVNode(Fragment,null,[createVNode("span",null,null),createVNode(N,{active:e.persistentCounter||u.value,value:A.value,max:D.value,disabled:e.disabled},o$1.counter)])]):void 0})}),d({},g,C$1,r)}});
+const activeTypes = ["color", "file", "time", "date", "datetime-local", "week", "month"];
+const makeVTextFieldProps = propsFactory({
+  autofocus: Boolean,
+  counter: [Boolean, Number, String],
+  counterValue: [Number, Function],
+  prefix: String,
+  placeholder: String,
+  persistentPlaceholder: Boolean,
+  persistentCounter: Boolean,
+  suffix: String,
+  role: String,
+  type: {
+    type: String,
+    default: "text"
+  },
+  modelModifiers: Object,
+  ...makeVInputProps(),
+  ...makeVFieldProps()
+}, "VTextField");
+const VTextField = genericComponent()({
+  name: "VTextField",
+  directives: {
+    Intersect
+  },
+  inheritAttrs: false,
+  props: makeVTextFieldProps(),
+  emits: {
+    "click:control": (e) => true,
+    "mousedown:control": (e) => true,
+    "update:focused": (focused) => true,
+    "update:modelValue": (val) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      emit,
+      slots
+    } = _ref;
+    const model = useProxiedModel(props, "modelValue");
+    const {
+      isFocused,
+      focus,
+      blur
+    } = useFocus(props);
+    const counterValue = computed(() => {
+      return typeof props.counterValue === "function" ? props.counterValue(model.value) : typeof props.counterValue === "number" ? props.counterValue : (model.value ?? "").toString().length;
+    });
+    const max = computed(() => {
+      if (attrs.maxlength) return attrs.maxlength;
+      if (!props.counter || typeof props.counter !== "number" && typeof props.counter !== "string") return void 0;
+      return props.counter;
+    });
+    const isPlainOrUnderlined = computed(() => ["plain", "underlined"].includes(props.variant));
+    function onIntersect(isIntersecting, entries) {
+      var _a, _b;
+      if (!props.autofocus || !isIntersecting) return;
+      (_b = (_a = entries[0].target) == null ? void 0 : _a.focus) == null ? void 0 : _b.call(_a);
+    }
+    const vInputRef = ref();
+    const vFieldRef = ref();
+    const inputRef = ref();
+    const isActive = computed(() => activeTypes.includes(props.type) || props.persistentPlaceholder || isFocused.value || props.active);
+    function onFocus() {
+      var _a;
+      if (inputRef.value !== (void 0).activeElement) {
+        (_a = inputRef.value) == null ? void 0 : _a.focus();
+      }
+      if (!isFocused.value) focus();
+    }
+    function onControlMousedown(e) {
+      emit("mousedown:control", e);
+      if (e.target === inputRef.value) return;
+      onFocus();
+      e.preventDefault();
+    }
+    function onControlClick(e) {
+      onFocus();
+      emit("click:control", e);
+    }
+    function onClear(e) {
+      e.stopPropagation();
+      onFocus();
+      nextTick(() => {
+        model.value = null;
+        callEvent(props["onClick:clear"], e);
+      });
+    }
+    function onInput(e) {
+      var _a;
+      const el = e.target;
+      model.value = el.value;
+      if (((_a = props.modelModifiers) == null ? void 0 : _a.trim) && ["text", "search", "password", "tel", "url"].includes(props.type)) {
+        const caretPosition = [el.selectionStart, el.selectionEnd];
+        nextTick(() => {
+          el.selectionStart = caretPosition[0];
+          el.selectionEnd = caretPosition[1];
+        });
+      }
+    }
+    useRender(() => {
+      const hasCounter = !!(slots.counter || props.counter !== false && props.counter != null);
+      const hasDetails = !!(hasCounter || slots.details);
+      const [rootAttrs, inputAttrs] = filterInputAttrs(attrs);
+      const {
+        modelValue: _,
+        ...inputProps
+      } = VInput.filterProps(props);
+      const fieldProps = VField.filterProps(props);
+      return createVNode(VInput, mergeProps({
+        "ref": vInputRef,
+        "modelValue": model.value,
+        "onUpdate:modelValue": ($event) => model.value = $event,
+        "class": ["v-text-field", {
+          "v-text-field--prefixed": props.prefix,
+          "v-text-field--suffixed": props.suffix,
+          "v-input--plain-underlined": isPlainOrUnderlined.value
+        }, props.class],
+        "style": props.style
+      }, rootAttrs, inputProps, {
+        "centerAffix": !isPlainOrUnderlined.value,
+        "focused": isFocused.value
+      }), {
+        ...slots,
+        default: (_ref2) => {
+          let {
+            id,
+            isDisabled,
+            isDirty,
+            isReadonly,
+            isValid
+          } = _ref2;
+          return createVNode(VField, mergeProps({
+            "ref": vFieldRef,
+            "onMousedown": onControlMousedown,
+            "onClick": onControlClick,
+            "onClick:clear": onClear,
+            "onClick:prependInner": props["onClick:prependInner"],
+            "onClick:appendInner": props["onClick:appendInner"],
+            "role": props.role
+          }, fieldProps, {
+            "id": id.value,
+            "active": isActive.value || isDirty.value,
+            "dirty": isDirty.value || props.dirty,
+            "disabled": isDisabled.value,
+            "focused": isFocused.value,
+            "error": isValid.value === false
+          }), {
+            ...slots,
+            default: (_ref3) => {
+              let {
+                props: {
+                  class: fieldClass,
+                  ...slotProps
+                }
+              } = _ref3;
+              const inputNode = withDirectives(createVNode("input", mergeProps({
+                "ref": inputRef,
+                "value": model.value,
+                "onInput": onInput,
+                "autofocus": props.autofocus,
+                "readonly": isReadonly.value,
+                "disabled": isDisabled.value,
+                "name": props.name,
+                "placeholder": props.placeholder,
+                "size": 1,
+                "type": props.type,
+                "onFocus": onFocus,
+                "onBlur": blur
+              }, slotProps, inputAttrs), null), [[resolveDirective("intersect"), {
+                handler: onIntersect
+              }, null, {
+                once: true
+              }]]);
+              return createVNode(Fragment, null, [props.prefix && createVNode("span", {
+                "class": "v-text-field__prefix"
+              }, [createVNode("span", {
+                "class": "v-text-field__prefix__text"
+              }, [props.prefix])]), slots.default ? createVNode("div", {
+                "class": fieldClass,
+                "data-no-activator": ""
+              }, [slots.default(), inputNode]) : cloneVNode(inputNode, {
+                class: fieldClass
+              }), props.suffix && createVNode("span", {
+                "class": "v-text-field__suffix"
+              }, [createVNode("span", {
+                "class": "v-text-field__suffix__text"
+              }, [props.suffix])])]);
+            }
+          });
+        },
+        details: hasDetails ? (slotProps) => {
+          var _a;
+          return createVNode(Fragment, null, [(_a = slots.details) == null ? void 0 : _a.call(slots, slotProps), hasCounter && createVNode(Fragment, null, [createVNode("span", null, null), createVNode(VCounter, {
+            "active": props.persistentCounter || isFocused.value,
+            "value": counterValue.value,
+            "max": max.value,
+            "disabled": props.disabled
+          }, slots.counter)])]);
+        } : void 0
+      });
+    });
+    return forwardRefs({}, vInputRef, vFieldRef, inputRef);
+  }
+});
 
-export { Fe as F, Je as J, N, ae as a, xe as x };;globalThis.__timing__.logEnd('Load chunks/build/VTextField');
+export { VTextField as V, VField as a, VCounter as b, makeVFieldProps as c, makeVTextFieldProps as m };
+//# sourceMappingURL=VTextField.mjs.map

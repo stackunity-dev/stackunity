@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/proxy/ipapi');import { d as defineEventHandler, c as createError } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, c as createError } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -61,4 +60,5 @@ const ipapi = defineEventHandler(async (event) => {
   }
 });
 
-export { ipapi as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/proxy/ipapi');
+export { ipapi as default };
+//# sourceMappingURL=ipapi.mjs.map

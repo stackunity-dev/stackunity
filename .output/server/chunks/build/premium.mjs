@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/build/premium');import { c3 as O, N as k, $ } from './server.mjs';
+import { c3 as defineNuxtRouteMiddleware, S as useUserStore, n as navigateTo } from './server.mjs';
 import 'vue';
 import '../_/nitro.mjs';
 import 'node:http';
@@ -8,7 +8,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -34,6 +33,23 @@ import 'vue-router';
 import 'deep-pick-omit';
 import 'vue/server-renderer';
 
-const w=O(e=>{const r=k(),s=["/sql-generator","/seo-audit","/robots"],t=e.path.toLowerCase(),i=s.some(m=>{const o=m.toLowerCase();return t===o||t.startsWith(`${o}/`)});if((e.meta.requiresPremium||i)&&!r.user.isPremium)return console.log(`Access denied to premium route: ${e.path}`),$("/subscription")});
+const premium = defineNuxtRouteMiddleware((to) => {
+  const userStore = useUserStore();
+  const premiumRoutes = [
+    "/sql-generator",
+    "/seo-audit",
+    "/robots"
+  ];
+  const normalizedPath = to.path.toLowerCase();
+  const isRestrictedRoute = premiumRoutes.some((route) => {
+    const normalizedRoute = route.toLowerCase();
+    return normalizedPath === normalizedRoute || normalizedPath.startsWith(`${normalizedRoute}/`);
+  });
+  if ((to.meta.requiresPremium || isRestrictedRoute) && !userStore.user.isPremium) {
+    console.log(`Access denied to premium route: ${to.path}`);
+    return navigateTo("/subscription");
+  }
+});
 
-export { w as default };;globalThis.__timing__.logEnd('Load chunks/build/premium');
+export { premium as default };
+//# sourceMappingURL=premium.mjs.map
