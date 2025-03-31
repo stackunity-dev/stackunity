@@ -13,6 +13,10 @@ export default defineNuxtConfig({
     externals: {
       inline: ['@pinia-plugin-persistedstate/nuxt'],
       external: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor']
+    },
+    server: {
+      port: 8080,
+      host: '0.0.0.0'
     }
   },
   typescript: {
