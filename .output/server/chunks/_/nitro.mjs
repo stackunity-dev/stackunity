@@ -4281,7 +4281,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "fff183b5-8259-4d15-bc49-c0bb4683c292",
+    "buildId": "28d579ff-6d81-4234-b202-62b4d08f2ffe",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -4728,7 +4728,7 @@ const pool = mysql.createPool({
   port: parseInt(process.env.DB_PORT || "25060"),
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE
+  database: process.env.DB_NAME
 });
 
 const db = /*#__PURE__*/Object.freeze({
