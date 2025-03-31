@@ -31,7 +31,6 @@ import 'jsonwebtoken';
 import 'mysql2/promise';
 import 'pinia';
 import 'vue-router';
-import 'pinia-plugin-persistedstate';
 import './VCheckboxBtn.mjs';
 import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';

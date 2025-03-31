@@ -29,7 +29,6 @@ import 'unhead/utils';
 import 'devalue';
 import 'unhead/plugins';
 import 'pinia';
-import 'pinia-plugin-persistedstate';
 import './VCheckboxBtn.mjs';
 
 const _sfc_main = /* @__PURE__ */ defineComponent({

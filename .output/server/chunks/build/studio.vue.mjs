@@ -41,7 +41,6 @@ import 'node:url';
 import 'jsonwebtoken';
 import 'mysql2/promise';
 import 'pinia';
-import 'pinia-plugin-persistedstate';
 import './VTable.mjs';
 import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';

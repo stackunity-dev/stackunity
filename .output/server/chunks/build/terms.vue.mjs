@@ -24,7 +24,6 @@ import 'devalue';
 import 'unhead/plugins';
 import 'pinia';
 import 'vue-router';
-import 'pinia-plugin-persistedstate';
 
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "terms",

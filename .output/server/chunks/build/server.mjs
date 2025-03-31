@@ -1,8 +1,7 @@
-import { shallowReactive, reactive, effectScope, getCurrentScope, hasInjectionContext, getCurrentInstance as getCurrentInstance$1, toRef, inject as inject$1, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw, ref, watch, onScopeDispose, capitalize, computed, watchEffect, toRefs, isVNode, Comment, Fragment, unref, warn, provide, h, defineComponent as defineComponent$1, createVNode, mergeProps, defineAsyncComponent, Suspense, nextTick, useSSRContext, resolveDynamicComponent, readonly, TransitionGroup, Transition, Teleport, withDirectives, vShow, resolveDirective, camelize, Text, toDisplayString, markRaw, withCtx, createTextVNode, createBlock, openBlock, renderList, createCommentVNode, onErrorCaptured, onServerPrefetch, createApp } from 'vue';
-import { E as createHooks, F as getContext, e as createError$1, G as toRouteMatcher, H as createRouter, I as defu, J as hasProtocol, K as joinURL, L as withQuery, M as sanitizeStatusCode, N as isScriptProtocol, O as executeAsync, d as destr, P as klona, q as getRequestHeader, Q as isEqual$1, i as setCookie, l as getCookie, m as deleteCookie } from '../_/nitro.mjs';
+import { shallowReactive, reactive, effectScope, getCurrentScope, hasInjectionContext, getCurrentInstance as getCurrentInstance$1, toRef, inject as inject$1, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw, watch, onScopeDispose, capitalize, computed, watchEffect, toRefs, isVNode, Comment, Fragment, unref, ref, warn, provide, h, defineComponent as defineComponent$1, createVNode, mergeProps, defineAsyncComponent, Suspense, nextTick, useSSRContext, resolveDynamicComponent, readonly, TransitionGroup, Transition, Teleport, withDirectives, vShow, resolveDirective, camelize, Text, toDisplayString, markRaw, withCtx, createTextVNode, createBlock, openBlock, renderList, createCommentVNode, onErrorCaptured, onServerPrefetch, createApp } from 'vue';
+import { E as createHooks, F as getContext, e as createError$1, G as toRouteMatcher, H as createRouter, I as defu, J as hasProtocol, K as joinURL, L as withQuery, M as sanitizeStatusCode, N as isScriptProtocol, O as executeAsync } from '../_/nitro.mjs';
 import { shouldHydrate, defineStore, createPinia, setActivePinia } from 'pinia';
 import { START_LOCATION, createMemoryHistory, createRouter as createRouter$1, useRoute as useRoute$2, RouterView, useRouter as useRouter$2 } from 'vue-router';
-import { createPersistedState } from 'pinia-plugin-persistedstate';
 import { ssrRenderComponent, ssrRenderList, ssrInterpolate, ssrRenderAttrs, ssrRenderSuspense, ssrRenderVNode } from 'vue/server-renderer';
 
 const appLayoutTransition = false;
@@ -1934,184 +1933,6 @@ const plugin = defineNuxtPlugin({
 
 const components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4 = defineNuxtPlugin({
   name: "nuxt:global-components"
-});
-
-function parse(str, options) {
-  if (typeof str !== "string") {
-    throw new TypeError("argument str must be a string");
-  }
-  const obj = {};
-  const opt = options || {};
-  const dec = opt.decode || decode;
-  let index = 0;
-  while (index < str.length) {
-    const eqIdx = str.indexOf("=", index);
-    if (eqIdx === -1) {
-      break;
-    }
-    let endIdx = str.indexOf(";", index);
-    if (endIdx === -1) {
-      endIdx = str.length;
-    } else if (endIdx < eqIdx) {
-      index = str.lastIndexOf(";", eqIdx - 1) + 1;
-      continue;
-    }
-    const key = str.slice(index, eqIdx).trim();
-    if (opt?.filter && !opt?.filter(key)) {
-      index = endIdx + 1;
-      continue;
-    }
-    if (void 0 === obj[key]) {
-      let val = str.slice(eqIdx + 1, endIdx).trim();
-      if (val.codePointAt(0) === 34) {
-        val = val.slice(1, -1);
-      }
-      obj[key] = tryDecode(val, dec);
-    }
-    index = endIdx + 1;
-  }
-  return obj;
-}
-function decode(str) {
-  return str.includes("%") ? decodeURIComponent(str) : str;
-}
-function tryDecode(str, decode2) {
-  try {
-    return decode2(str);
-  } catch {
-    return str;
-  }
-}
-
-function useRequestEvent(nuxtApp = useNuxtApp()) {
-  var _a;
-  return (_a = nuxtApp.ssrContext) == null ? void 0 : _a.event;
-}
-
-const CookieDefaults = {
-  path: "/",
-  watch: true,
-  decode: (val) => destr(decodeURIComponent(val)),
-  encode: (val) => encodeURIComponent(typeof val === "string" ? val : JSON.stringify(val))
-};
-function useCookie(name, _opts) {
-  var _a;
-  const opts = { ...CookieDefaults, ..._opts };
-  opts.filter ?? (opts.filter = (key) => key === name);
-  const cookies = readRawCookies(opts) || {};
-  let delay;
-  if (opts.maxAge !== void 0) {
-    delay = opts.maxAge * 1e3;
-  } else if (opts.expires) {
-    delay = opts.expires.getTime() - Date.now();
-  }
-  const hasExpired = delay !== void 0 && delay <= 0;
-  const cookieValue = klona(hasExpired ? void 0 : cookies[name] ?? ((_a = opts.default) == null ? void 0 : _a.call(opts)));
-  const cookie = ref(cookieValue);
-  {
-    const nuxtApp = useNuxtApp();
-    const writeFinalCookieValue = () => {
-      if (opts.readonly || isEqual$1(cookie.value, cookies[name])) {
-        return;
-      }
-      nuxtApp._cookies || (nuxtApp._cookies = {});
-      if (name in nuxtApp._cookies) {
-        if (isEqual$1(cookie.value, nuxtApp._cookies[name])) {
-          return;
-        }
-      }
-      nuxtApp._cookies[name] = cookie.value;
-      writeServerCookie(useRequestEvent(nuxtApp), name, cookie.value, opts);
-    };
-    const unhook = nuxtApp.hooks.hookOnce("app:rendered", writeFinalCookieValue);
-    nuxtApp.hooks.hookOnce("app:error", () => {
-      unhook();
-      return writeFinalCookieValue();
-    });
-  }
-  return cookie;
-}
-function readRawCookies(opts = {}) {
-  {
-    return parse(getRequestHeader(useRequestEvent(), "cookie") || "", opts);
-  }
-}
-function writeServerCookie(event, name, value, opts = {}) {
-  if (event) {
-    if (value !== null && value !== void 0) {
-      return setCookie(event, name, value, opts);
-    }
-    if (getCookie(event, name) !== void 0) {
-      return deleteCookie(event, name, opts);
-    }
-  }
-}
-
-function usePersistedstateCookies(cookieOptions) {
-  return {
-    getItem: (key) => (cookieOptions == null ? void 0 : cookieOptions.readonly) ? useCookie(key, {
-      ...cookieOptions,
-      encode: encodeURIComponent,
-      decode: decodeURIComponent,
-      readonly: true
-    }).value : useCookie(key, {
-      ...cookieOptions,
-      encode: encodeURIComponent,
-      decode: decodeURIComponent,
-      readonly: false
-    }).value,
-    setItem: (key, value) => {
-      if (cookieOptions == null ? void 0 : cookieOptions.readonly)
-        throw new Error("Cannot set a readonly cookie.");
-      useCookie(key, {
-        ...cookieOptions,
-        encode: encodeURIComponent,
-        decode: decodeURIComponent,
-        readonly: false
-      }).value = value;
-    }
-  };
-}
-function usePersistedstateLocalStorage() {
-  return {
-    getItem: (key) => {
-      return !useNuxtApp().ssrContext ? localStorage.getItem(key) : null;
-    },
-    setItem: (key, value) => {
-      if (!useNuxtApp().ssrContext)
-        localStorage.setItem(key, value);
-    }
-  };
-}
-function usePersistedstateSessionStorage() {
-  return {
-    getItem: (key) => {
-      return !useNuxtApp().ssrContext ? sessionStorage.getItem(key) : null;
-    },
-    setItem: (key, value) => {
-      if (!useNuxtApp().ssrContext)
-        sessionStorage.setItem(key, value);
-    }
-  };
-}
-const persistedState = {
-  localStorage: usePersistedstateLocalStorage(),
-  sessionStorage: usePersistedstateSessionStorage(),
-  cookies: usePersistedstateCookies(),
-  cookiesWithOptions: usePersistedstateCookies
-};
-
-const plugin_VW0S5L6gti_L2lJP5Fh8KfD6_3GK52P9spdjsc0v3y4 = defineNuxtPlugin((nuxtApp) => {
-  const {
-    cookieOptions,
-    debug,
-    storage
-  } = useRuntimeConfig().public.persistedState;
-  const pinia = nuxtApp.$pinia;
-  pinia.use(createPersistedState({
-    storage: storage === "cookies" ? persistedState.cookiesWithOptions(cookieOptions) : persistedState[storage],
-    debug
-  }));
 });
 
 const api_interceptor_KJ3xV5LQhnHOmIh1GhG1saeCVICF0Z93fKmu6zZ933I = defineNuxtPlugin((nuxtApp) => {
@@ -5204,7 +5025,6 @@ const plugins = [
   revive_payload_server_MVtmlZaQpj6ApFmshWfUWl5PehCebzaBf2NuRMiIbms,
   plugin,
   components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4,
-  plugin_VW0S5L6gti_L2lJP5Fh8KfD6_3GK52P9spdjsc0v3y4,
   api_interceptor_KJ3xV5LQhnHOmIh1GhG1saeCVICF0Z93fKmu6zZ933I,
   auth_ydS_uAQ5qS4E2Ez9vBX0d0JPoo00WYZNOgh9_nraCUo,
   token_MOIRrJgASguRDmgQS2H1GowZgD6w5hmJ0qSy7_YgFIQ,
