@@ -1,7 +1,8 @@
-import { c as defineEventHandler, r as readBody, e as createError } from '../../_/nitro.mjs';
+import chromium from '@sparticuz/chromium';
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
-import puppeteer from 'puppeteer';
+import { c as defineEventHandler, r as readBody, e as createError } from '../../_/nitro.mjs';
+import puppeteer from 'puppeteer-core';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -101,15 +102,10 @@ const seoAudit = defineEventHandler(async (event) => {
     }
   }
   const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-accelerated-2d-canvas",
-      "--disable-gpu",
-      "--window-size=1920x1080"
-    ]
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: true
   });
   try {
     const page = await browser.newPage();
@@ -459,7 +455,7 @@ const seoAudit = defineEventHandler(async (event) => {
           "x-content-type-options",
           "x-frame-options",
           "x-xss-protection"
-        ].includes(name.toLowerCase())).map(([name, value]) => ({ name, value }));
+        ].includes(name.toLowerCase())).map(([name, value]) => ({ name, value: String(value) }));
       }
       const robotsMeta = result.metaTags.filter((tag) => tag.name.toLowerCase() === "robots");
       if (robotsMeta.length > 0) {

@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-// @ts-ignore
-import axios from 'axios';
-import { XMLParser } from 'fast-xml-parser';
-import { createError, defineEventHandler, readBody } from 'h3';
-import puppeteer from 'puppeteer';
-=======
 import chromium from '@sparticuz/chromium';
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { createError, defineEventHandler, readBody } from 'h3';
 import puppeteer from 'puppeteer-core';
->>>>>>> 5e77a051909c5ffbdda0017a57f60e2978ce5df4
 
 export interface SEOAuditResult {
   url: string;
@@ -232,16 +224,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const browser = await puppeteer.launch({
-<<<<<<< HEAD
-    headless: true
-  });
-=======
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
     headless: true
   } as any);
->>>>>>> 5e77a051909c5ffbdda0017a57f60e2978ce5df4
 
   try {
     const page = await browser.newPage();
@@ -522,18 +509,6 @@ export default defineEventHandler(async (event) => {
       });
       result.externalLinks = links.filter(link => !result.internalLinks.includes(link));
 
-<<<<<<< HEAD
-      const performanceEntries = await page.evaluate(() => performance.getEntriesByType('navigation'));
-      const paintEntries = await page.evaluate(() => performance.getEntriesByType('paint'));
-      const navEntry = performanceEntries[0] as any;
-
-      result.coreWebVitals = {
-        FCP: paintEntries.find(entry => entry.name === 'first-contentful-paint')?.startTime || 0,
-        LCP: navEntry?.domContentLoadedEventEnd || 0,
-        TTFB: navEntry?.responseStart || 0,
-        domLoad: navEntry?.domContentLoadedEventEnd || 0
-      };
-=======
       result.coreWebVitals = await page.evaluate(() => {
         const performanceEntries = performance.getEntriesByType('navigation');
         const paintEntries = performance.getEntriesByType('paint');
@@ -549,7 +524,6 @@ export default defineEventHandler(async (event) => {
           domLoad: navEntry?.domContentLoadedEventEnd || 0
         };
       });
->>>>>>> 5e77a051909c5ffbdda0017a57f60e2978ce5df4
 
       result.headingStructure = await page.evaluate(() => {
         const headings: any = {};

@@ -2,7 +2,7 @@ import { p as premiumFeatures } from './PremiumFeature.vue.mjs';
 import { ref, shallowRef, computed, watch, nextTick, createVNode, mergeProps, Fragment, createTextVNode, toRef, defineComponent, withCtx, unref, createBlock, createCommentVNode, openBlock, renderList, toDisplayString, createSlots, useSSRContext, Transition, withDirectives, vShow, watchEffect, resolveDynamicComponent, withModifiers } from 'vue';
 import { ssrRenderComponent, ssrRenderList, ssrInterpolate, ssrRenderClass, ssrRenderStyle, ssrRenderAttrs, ssrRenderVNode } from 'vue/server-renderer';
 import { S as Snackbar } from './snackbar.vue.mjs';
-import { k as genericComponent, p as propsFactory, aI as useLocale, l as useProxiedModel, aZ as useItems, ai as useTextColor, b0 as wrapInArray, a_ as useForm, s as useRender, g as VIcon, bm as noop, T as VList, U as VListItem, i as VAvatar, b2 as ensureValidVNode, Q as VDefaultsProvider, as as forwardRefs, aa as makeTransitionProps, az as omit, b3 as checkPrintable, b4 as matchesSelector, a$ as deepEqual, ah as getUid, bn as getPropertyFromItem, S as useUserStore, V as VApp, f as VCard, h as VDivider, Y as VCardText, bo as VBtnToggle, e as VBtn, bp as VSwitch, P as VImg, $ as VCardTitle, bq as VCardSubtitle, a0 as VCardActions, bl as VProgressCircular, br as VDialog, _ as _export_sfc, au as filterInputAttrs, av as VInput, aA as VSelectionControl, ac as VLabel, bs as VSelectionControlGroup, ap as IconValue, at as makeVInputProps, bt as makeSelectionControlGroupProps, aB as makeVSelectionControlProps, W as VListItemTitle, bu as createLayout, x as useDimension, bv as makeLayoutProps, z as makeDimensionProps, A as makeComponentProps, b5 as makeVBtnProps, bw as VListSubheader, E as useBackgroundColor, H as useRounded, bx as useTheme, aG as useLocation, by as pickWithRest, a9 as MaybeTransition, K as makeThemeProps, y as makeTagProps, L as makeRoundedProps, aM as makeLocationProps, d as VSpacer, ao as EventProp, bz as useDate, bA as getWeek, bB as createRange, J as convertToUnit, bC as templateRef, aD as createSimpleFunctional, bg as VFadeTransition } from './server.mjs';
+import { k as genericComponent, p as propsFactory, aI as useLocale, l as useProxiedModel, aZ as useItems, ai as useTextColor, b0 as wrapInArray, a_ as useForm, s as useRender, g as VIcon, bm as noop, T as VList, U as VListItem, i as VAvatar, b2 as ensureValidVNode, Q as VDefaultsProvider, as as forwardRefs, aa as makeTransitionProps, az as omit, b3 as checkPrintable, b4 as matchesSelector, a$ as deepEqual, ah as getUid, bn as getPropertyFromItem, S as useUserStore, V as VApp, f as VCard, h as VDivider, Y as VCardText, bo as VBtnToggle, e as VBtn, bp as VSwitch, P as VImg, $ as VCardTitle, bq as VCardSubtitle, a0 as VCardActions, bl as VProgressCircular, br as VDialog, _ as _export_sfc, au as filterInputAttrs, av as VInput, aA as VSelectionControl, ac as VLabel, bs as VSelectionControlGroup, ap as IconValue, at as makeVInputProps, bt as makeSelectionControlGroupProps, aB as makeVSelectionControlProps, W as VListItemTitle, bu as createLayout, x as useDimension, bv as makeLayoutProps, z as makeDimensionProps, A as makeComponentProps, bw as VListSubheader, E as useBackgroundColor, H as useRounded, bx as useTheme, aG as useLocation, by as pickWithRest, a9 as MaybeTransition, K as makeThemeProps, y as makeTagProps, L as makeRoundedProps, aM as makeLocationProps, d as VSpacer, ao as EventProp, bz as useDate, bA as getWeek, bB as createRange, J as convertToUnit, bC as templateRef, aD as createSimpleFunctional, bg as VFadeTransition } from './server.mjs';
 import { V as VMain } from './VMain.mjs';
 import { V as VChip, a as VChipGroup } from './VChip.mjs';
 import { V as VTabs, a as VTab } from './VTabs.mjs';
@@ -21,6 +21,7 @@ import { V as VSheet, m as makeVSheetProps } from './VSheet.mjs';
 import { V as VForm } from './VForm.mjs';
 import { V as VCheckbox } from './VCheckbox.mjs';
 import { V as VAppBar } from './VAppBar.mjs';
+import { V as VAppBarNavIcon } from './VAppBarNavIcon.mjs';
 import { a as makeVToolbarTitleProps, b as VToolbarTitle } from './VToolbar.mjs';
 import { V as VNavigationDrawer } from './VNavigationDrawer.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, RadialLinearScale, Title, Tooltip, Legend } from 'chart.js';
@@ -21242,26 +21243,6 @@ const VLayout = genericComponent()({
       getLayoutItem,
       items
     };
-  }
-});
-
-const makeVAppBarNavIconProps = propsFactory({
-  ...makeVBtnProps({
-    icon: "$menu",
-    variant: "text"
-  })
-}, "VAppBarNavIcon");
-const VAppBarNavIcon = genericComponent()({
-  name: "VAppBarNavIcon",
-  props: makeVAppBarNavIconProps(),
-  setup(props, _ref) {
-    let {
-      slots
-    } = _ref;
-    useRender(() => createVNode(VBtn, mergeProps(props, {
-      "class": ["v-app-bar-nav-icon"]
-    }), slots));
-    return {};
   }
 });
 

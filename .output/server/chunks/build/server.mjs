@@ -952,79 +952,45 @@ const plugin$1 = defineNuxtPlugin({
   }
 });
 
-const _TokenManager = class _TokenManager {
-  /**
-   * Stocke le token d'accès dans localStorage
-   */
+class TokenManager {
   static storeToken(token) {
-    if (!token) {
-      this.removeToken();
-      return;
-    }
-    try {
-      localStorage.setItem(this.TOKEN_KEY, token);
-    } catch (error) {
-      console.error("Erreur lors du stockage du token:", error);
-    }
+    localStorage.setItem("auth_token", token);
   }
-  /**
-   * Récupère le token d'accès depuis localStorage
-   */
   static retrieveToken() {
+    return localStorage.getItem("auth_token");
+  }
+  static removeToken() {
+    localStorage.removeItem("auth_token");
+  }
+  static async refreshAccessToken() {
     try {
-      return localStorage.getItem(this.TOKEN_KEY);
+      const response = await fetch("/api/auth/refresh", {
+        method: "POST",
+        credentials: "include"
+      });
+      if (!response.ok) {
+        throw new Error("Erreur lors du rafraîchissement du token");
+      }
+      const data = await response.json();
+      if (data.accessToken) {
+        this.storeToken(data.accessToken);
+        return data.accessToken;
+      }
+      return null;
     } catch (error) {
-      console.error("Erreur lors de la récupération du token:", error);
+      console.error("Erreur lors du rafraîchissement du token:", error);
       return null;
     }
   }
-  /**
-   * Supprime le token d'accès
-   */
-  static removeToken() {
-    try {
-      localStorage.removeItem(this.TOKEN_KEY);
-    } catch (error) {
-      console.error("Erreur lors de la suppression du token:", error);
-    }
-  }
-  /**
-   * Crée un en-tête d'autorisation avec le token
-   */
-  static getAuthHeader() {
-    const token = this.retrieveToken();
-    return { Authorization: `Bearer ${token || ""}` };
-  }
-};
-_TokenManager.TOKEN_KEY = "access_token";
-let TokenManager = _TokenManager;
+}
 
 const useUserStore = defineStore("user", {
   state: () => ({
-    user: {
-      id: 0,
-      username: "",
-      email: "",
-      isAdmin: false,
-      isPremium: false,
-      company: "",
-      website: "",
-      bio: ""
-    },
-    token: "",
+    user: null,
+    token: null,
     systemData: {
-      cpu: {
-        usage: 0,
-        cores: [],
-        speed: 0
-      },
-      memory: {
-        total: 0,
-        used: 0,
-        free: 0,
-        swapUsed: 0,
-        swapTotal: 0
-      },
+      cpu: { usage: 0, cores: [], speed: 0 },
+      memory: { total: 0, used: 0, free: 0, swapUsed: 0, swapTotal: 0 },
       disks: []
     },
     personalSnippets: [],
@@ -1037,17 +1003,13 @@ const useUserStore = defineStore("user", {
     authError: "",
     seoData: null,
     seoError: "",
-    isSeoLoading: false
+    isSeoLoading: false,
+    isPremium: false,
+    isAdmin: false
   }),
-  persist: false,
   getters: {
-    isUserAuthenticated() {
-      return this.isAuthenticated && !!this.token;
-    },
-    getAuthHeader() {
-      const token = TokenManager.retrieveToken();
-      return { Authorization: `Bearer ${token || ""}` };
-    }
+    isUserAuthenticated: (state) => state.isAuthenticated && !!state.token,
+    getAuthHeader: () => ({ Authorization: `Bearer ${TokenManager.retrieveToken() || ""}` })
   },
   actions: {
     initializeStore() {
@@ -1488,6 +1450,7 @@ const useUserStore = defineStore("user", {
       }
     },
     async getMonitoringData() {
+      var _a, _b, _c, _d, _e, _f, _g, _h;
       try {
         const response = await fetch("/api/monitoring/system", {
           headers: this.getAuthHeader
@@ -1497,11 +1460,29 @@ const useUserStore = defineStore("user", {
         }
         const data = await response.json();
         if (data.success && data.data) {
-          this.systemData = data.data;
+          this.systemData = {
+            cpu: {
+              usage: ((_a = data.data.cpu) == null ? void 0 : _a.usage) || 0,
+              cores: ((_b = data.data.cpu) == null ? void 0 : _b.cores) || [],
+              speed: ((_c = data.data.cpu) == null ? void 0 : _c.speed) || 0
+            },
+            memory: {
+              total: ((_d = data.data.memory) == null ? void 0 : _d.total) || 0,
+              used: ((_e = data.data.memory) == null ? void 0 : _e.used) || 0,
+              free: ((_f = data.data.memory) == null ? void 0 : _f.free) || 0,
+              swapUsed: ((_g = data.data.memory) == null ? void 0 : _g.swapUsed) || 0,
+              swapTotal: ((_h = data.data.memory) == null ? void 0 : _h.swapTotal) || 0
+            },
+            disks: data.data.disks || []
+          };
         }
       } catch (error) {
         console.error("Erreur lors de la récupération des données système:", error);
-        throw error;
+        this.systemData = {
+          cpu: { usage: 0, cores: [], speed: 0 },
+          memory: { total: 0, used: 0, free: 0, swapUsed: 0, swapTotal: 0 },
+          disks: []
+        };
       }
     },
     async auditSEO(url) {
@@ -1530,14 +1511,18 @@ const useUserStore = defineStore("user", {
           })
         });
         if (!response.ok) {
-          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`Erreur ${response.status}: ${errorData.message || response.statusText}`);
         }
         const data = await response.json();
+        if (!data) {
+          throw new Error("Aucune donnée reçue de l'API");
+        }
         this.seoData = data;
         console.log("Données d'audit SEO reçues:", data);
         return data;
       } catch (err) {
-        this.seoError = err instanceof Error ? err.message : "An error occurred";
+        this.seoError = err instanceof Error ? err.message : "Une erreur est survenue";
         console.error("Erreur lors de l'audit SEO:", err);
         throw err;
       } finally {
@@ -1790,6 +1775,9 @@ const useUserStore = defineStore("user", {
         };
       }
     }
+  },
+  persist: {
+    enabled: true
   }
 });
 
