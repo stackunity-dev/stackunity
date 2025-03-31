@@ -5,7 +5,6 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     preset: 'node',
-    compressPublicAssets: true,
     output: {
       dir: '.output',
       serverDir: '.output/server',
@@ -14,27 +13,14 @@ export default defineNuxtConfig({
     externals: {
       inline: ['pinia-plugin-persistedstate'],
       external: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor']
-    },
-    sourceMap: false,
-    logLevel: 'info',
-    minify: false,
-    timing: true,
-    experimental: {
-      asyncContext: true,
     }
   },
   typescript: {
     shim: false
   },
-  compatibilityDate: '2024-11-01',
   devtools: { enabled: false },
   build: {
-    transpile: ['vuetify'],
-  },
-  experimental: {
-    payloadExtraction: true,
-    renderJsonPayloads: true,
-    treeshakeClientOnly: true,
+    transpile: ['vuetify']
   },
   modules: [
     '@pinia/nuxt',
@@ -54,37 +40,10 @@ export default defineNuxtConfig({
     }
   },
   vite: {
-    build: {
-      target: 'esnext',
-      minify: 'esbuild',
-      sourcemap: false,
-      chunkSizeWarningLimit: 1000,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            vue: ['vue', 'vue-router'],
-            vuetify: ['vuetify'],
-          },
-        },
-        external: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor']
-      },
-    },
-    optimizeDeps: {
-      include: [],
-      exclude: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor']
-    },
-    define: {
-      'process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD': 'true',
-      'process.env.ROLLUP_NO_VALIDATE': 'true',
-      '__ROLLUP_NO_VALIDATE__': 'true'
-    },
     vue: {
       template: {
         transformAssetUrls,
       },
-    },
-    server: {
-      hmr: true
     },
     ssr: {
       noExternal: ['pinia-plugin-persistedstate'],

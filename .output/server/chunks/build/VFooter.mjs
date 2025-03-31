@@ -1,6 +1,76 @@
-globalThis.__timing__.logStart('Load chunks/build/VFooter');import { ref, toRef, shallowRef, computed, createVNode, watchEffect } from 'vue';
-import { f as y, y as y$1, t as _, u as x, v as b, w as v, z as h, A as i, r, o, X, M, k as r$1, B as g, g as yt, D as u, n as o$1, G as l, m as mt } from './server.mjs';
+import { ref, toRef, shallowRef, computed, createVNode, watchEffect } from 'vue';
+import { k as genericComponent, p as propsFactory, D as provideTheme, E as useBackgroundColor, F as useBorder, G as useElevation, H as useRounded, I as useResizeObserver, m as useToggleScope, s as useRender, J as convertToUnit, K as makeThemeProps, y as makeTagProps, L as makeRoundedProps, v as makeLayoutItemProps, M as makeElevationProps, A as makeComponentProps, N as makeBorderProps, q as useLayoutItem } from './server.mjs';
 
-const j=y$1({app:Boolean,color:String,height:{type:[Number,String],default:"auto"},...l(),...o$1(),...u(),...yt(),...g(),...r$1({tag:"footer"}),...M()},"VFooter"),te=y()({name:"VFooter",props:j(),setup(e,m){let{slots:s}=m;const t=ref(),{themeClasses:l}=_(e),{backgroundColorClasses:u,backgroundColorStyles:i$1}=x(toRef(e,"color")),{borderClasses:n}=b(e),{elevationClasses:c}=v(e),{roundedClasses:f}=h(e),d=shallowRef(32),{resizeRef:h$1}=i(),r$1=computed(()=>e.height==="auto"?d.value:parseInt(e.height,10));return r(()=>e.app,()=>{const g=mt({id:e.name,order:computed(()=>parseInt(e.order,10)),position:computed(()=>"bottom"),layoutSize:r$1,elementSize:computed(()=>e.height==="auto"?void 0:r$1.value),active:computed(()=>e.app),absolute:toRef(e,"absolute")});watchEffect(()=>{t.value=g.layoutItemStyles.value;});}),o(()=>createVNode(e.tag,{ref:h$1,class:["v-footer",l.value,u.value,n.value,c.value,f.value,e.class],style:[i$1.value,e.app?t.value:{height:X(e.height)},e.style]},s)),{}}});
+const makeVFooterProps = propsFactory({
+  app: Boolean,
+  color: String,
+  height: {
+    type: [Number, String],
+    default: "auto"
+  },
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeElevationProps(),
+  ...makeLayoutItemProps(),
+  ...makeRoundedProps(),
+  ...makeTagProps({
+    tag: "footer"
+  }),
+  ...makeThemeProps()
+}, "VFooter");
+const VFooter = genericComponent()({
+  name: "VFooter",
+  props: makeVFooterProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const layoutItemStyles = ref();
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(toRef(props, "color"));
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const autoHeight = shallowRef(32);
+    const {
+      resizeRef
+    } = useResizeObserver();
+    const height = computed(() => props.height === "auto" ? autoHeight.value : parseInt(props.height, 10));
+    useToggleScope(() => props.app, () => {
+      const layout = useLayoutItem({
+        id: props.name,
+        order: computed(() => parseInt(props.order, 10)),
+        position: computed(() => "bottom"),
+        layoutSize: height,
+        elementSize: computed(() => props.height === "auto" ? void 0 : height.value),
+        active: computed(() => props.app),
+        absolute: toRef(props, "absolute")
+      });
+      watchEffect(() => {
+        layoutItemStyles.value = layout.layoutItemStyles.value;
+      });
+    });
+    useRender(() => createVNode(props.tag, {
+      "ref": resizeRef,
+      "class": ["v-footer", themeClasses.value, backgroundColorClasses.value, borderClasses.value, elevationClasses.value, roundedClasses.value, props.class],
+      "style": [backgroundColorStyles.value, props.app ? layoutItemStyles.value : {
+        height: convertToUnit(props.height)
+      }, props.style]
+    }, slots));
+    return {};
+  }
+});
 
-export { te as t };;globalThis.__timing__.logEnd('Load chunks/build/VFooter');
+export { VFooter as V };
+//# sourceMappingURL=VFooter.mjs.map

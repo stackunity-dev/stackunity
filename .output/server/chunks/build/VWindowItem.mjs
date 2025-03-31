@@ -1,10 +1,395 @@
-globalThis.__timing__.logStart('Load chunks/build/VWindowItem');import { ref, computed, shallowRef, watch, provide, createVNode, withDirectives, resolveDirective, inject, nextTick, vShow } from 'vue';
-import { b6 as j, f as y, y as y$1, t as _, h as y$2, aI as v$1, b7 as H$1, b as We, o, M, k as r, n as o$1, b8 as D, i as i$1, b9 as i$2, ba as m$1, bb as z, X as X$2, a9 as O } from './server.mjs';
+import { ref, computed, shallowRef, watch, provide, createVNode, withDirectives, resolveDirective, inject, nextTick, vShow } from 'vue';
+import { b6 as keys, k as genericComponent, p as propsFactory, D as provideTheme, w as useRtl, aI as useLocale, b7 as useGroup, e as VBtn, s as useRender, K as makeThemeProps, y as makeTagProps, A as makeComponentProps, b8 as useGroupItem, o as useSsrBoot, b9 as useLazy, ba as makeLazyProps, bb as makeGroupItemProps, J as convertToUnit, a9 as MaybeTransition } from './server.mjs';
 
-const i=t=>{const{touchstartX:o,touchendX:n,touchstartY:c,touchendY:e}=t,u=.5,s=16;t.offsetX=n-o,t.offsetY=e-c,Math.abs(t.offsetY)<u*Math.abs(t.offsetX)&&(t.left&&n<o-s&&t.left(t),t.right&&n>o+s&&t.right(t)),Math.abs(t.offsetX)<u*Math.abs(t.offsetY)&&(t.up&&e<c-s&&t.up(t),t.down&&e>c+s&&t.down(t));};function f(t,o){const n=t.changedTouches[0];o.touchstartX=n.clientX,o.touchstartY=n.clientY,o.start?.({originalEvent:t,...o});}function l(t,o){const n=t.changedTouches[0];o.touchendX=n.clientX,o.touchendY=n.clientY,o.end?.({originalEvent:t,...o}),i(o);}function a(t,o){const n=t.changedTouches[0];o.touchmoveX=n.clientX,o.touchmoveY=n.clientY,o.move?.({originalEvent:t,...o});}function m(){let t=arguments.length>0&&arguments[0]!==void 0?arguments[0]:{};const o={touchstartX:0,touchstartY:0,touchendX:0,touchendY:0,touchmoveX:0,touchmoveY:0,offsetX:0,offsetY:0,left:t.left,right:t.right,up:t.up,down:t.down,start:t.start,move:t.move,end:t.end};return {touchstart:n=>f(n,o),touchend:n=>l(n,o),touchmove:n=>a(n,o)}}function v(t,o){const n=o.value,c=n?.parent?t.parentElement:t,e=n?.options??{passive:true},u=o.instance?.$.uid;if(!c||!u)return;const s=m(o.value);c._touchHandlers=c._touchHandlers??Object.create(null),c._touchHandlers[u]=s,j(s).forEach(h=>{c.addEventListener(h,s[h],e);});}function X$1(t,o){const n=o.value?.parent?t.parentElement:t,c=o.instance?.$.uid;if(!n?._touchHandlers||!c)return;const e=n._touchHandlers[c];j(e).forEach(u=>{n.removeEventListener(u,e[u]);}),delete n._touchHandlers[c];}const g={mounted:v,unmounted:X$1};
+const handleGesture = (wrapper) => {
+  const {
+    touchstartX,
+    touchendX,
+    touchstartY,
+    touchendY
+  } = wrapper;
+  const dirRatio = 0.5;
+  const minDistance = 16;
+  wrapper.offsetX = touchendX - touchstartX;
+  wrapper.offsetY = touchendY - touchstartY;
+  if (Math.abs(wrapper.offsetY) < dirRatio * Math.abs(wrapper.offsetX)) {
+    wrapper.left && touchendX < touchstartX - minDistance && wrapper.left(wrapper);
+    wrapper.right && touchendX > touchstartX + minDistance && wrapper.right(wrapper);
+  }
+  if (Math.abs(wrapper.offsetX) < dirRatio * Math.abs(wrapper.offsetY)) {
+    wrapper.up && touchendY < touchstartY - minDistance && wrapper.up(wrapper);
+    wrapper.down && touchendY > touchstartY + minDistance && wrapper.down(wrapper);
+  }
+};
+function touchstart(event, wrapper) {
+  var _a;
+  const touch = event.changedTouches[0];
+  wrapper.touchstartX = touch.clientX;
+  wrapper.touchstartY = touch.clientY;
+  (_a = wrapper.start) == null ? void 0 : _a.call(wrapper, {
+    originalEvent: event,
+    ...wrapper
+  });
+}
+function touchend(event, wrapper) {
+  var _a;
+  const touch = event.changedTouches[0];
+  wrapper.touchendX = touch.clientX;
+  wrapper.touchendY = touch.clientY;
+  (_a = wrapper.end) == null ? void 0 : _a.call(wrapper, {
+    originalEvent: event,
+    ...wrapper
+  });
+  handleGesture(wrapper);
+}
+function touchmove(event, wrapper) {
+  var _a;
+  const touch = event.changedTouches[0];
+  wrapper.touchmoveX = touch.clientX;
+  wrapper.touchmoveY = touch.clientY;
+  (_a = wrapper.move) == null ? void 0 : _a.call(wrapper, {
+    originalEvent: event,
+    ...wrapper
+  });
+}
+function createHandlers() {
+  let value = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+  const wrapper = {
+    touchstartX: 0,
+    touchstartY: 0,
+    touchendX: 0,
+    touchendY: 0,
+    touchmoveX: 0,
+    touchmoveY: 0,
+    offsetX: 0,
+    offsetY: 0,
+    left: value.left,
+    right: value.right,
+    up: value.up,
+    down: value.down,
+    start: value.start,
+    move: value.move,
+    end: value.end
+  };
+  return {
+    touchstart: (e) => touchstart(e, wrapper),
+    touchend: (e) => touchend(e, wrapper),
+    touchmove: (e) => touchmove(e, wrapper)
+  };
+}
+function mounted(el, binding) {
+  var _a;
+  const value = binding.value;
+  const target = (value == null ? void 0 : value.parent) ? el.parentElement : el;
+  const options = (value == null ? void 0 : value.options) ?? {
+    passive: true
+  };
+  const uid = (_a = binding.instance) == null ? void 0 : _a.$.uid;
+  if (!target || !uid) return;
+  const handlers = createHandlers(binding.value);
+  target._touchHandlers = target._touchHandlers ?? /* @__PURE__ */ Object.create(null);
+  target._touchHandlers[uid] = handlers;
+  keys(handlers).forEach((eventName) => {
+    target.addEventListener(eventName, handlers[eventName], options);
+  });
+}
+function unmounted(el, binding) {
+  var _a, _b;
+  const target = ((_a = binding.value) == null ? void 0 : _a.parent) ? el.parentElement : el;
+  const uid = (_b = binding.instance) == null ? void 0 : _b.$.uid;
+  if (!(target == null ? void 0 : target._touchHandlers) || !uid) return;
+  const handlers = target._touchHandlers[uid];
+  keys(handlers).forEach((eventName) => {
+    target.removeEventListener(eventName, handlers[eventName]);
+  });
+  delete target._touchHandlers[uid];
+}
+const Touch = {
+  mounted,
+  unmounted
+};
 
-const H=Symbol.for("vuetify:v-window"),N=Symbol.for("vuetify:v-window-group"),q=y$1({continuous:Boolean,nextIcon:{type:[Boolean,String,Function,Object],default:"$next"},prevIcon:{type:[Boolean,String,Function,Object],default:"$prev"},reverse:Boolean,showArrows:{type:[Boolean,String],validator:e=>typeof e=="boolean"||e==="hover"},touch:{type:[Object,Boolean],default:void 0},direction:{type:String,default:"horizontal"},modelValue:null,disabled:Boolean,selectedClass:{type:String,default:"v-window-item--active"},mandatory:{type:[Boolean,String],default:"force"},...o$1(),...r(),...M()},"VWindow"),ie=y()({name:"VWindow",directives:{Touch:g},props:q(),emits:{"update:modelValue":e=>true},setup(e,S){let{slots:a}=S;const{themeClasses:I}=_(e),{isRtl:c}=y$2(),{t:d}=v$1(),o$1=H$1(e,N),m=ref(),u=computed(()=>c.value?!e.reverse:e.reverse),i=shallowRef(false),R=computed(()=>{const t=e.direction==="vertical"?"y":"x",r=(u.value?!i.value:i.value)?"-reverse":"";return `v-window-${t}${r}-transition`}),_$1=shallowRef(0),f=ref(void 0),v=computed(()=>o$1.items.value.findIndex(t=>o$1.selected.value.includes(t.id)));watch(v,(t,n)=>{const r=o$1.items.value.length,g=r-1;r<=2?i.value=t<n:t===g&&n===0?i.value=true:t===0&&n===g?i.value=false:i.value=t<n;}),provide(H,{transition:R,isReversed:i,transitionCount:_$1,transitionHeight:f,rootRef:m});const w=computed(()=>e.continuous||v.value!==0),h=computed(()=>e.continuous||v.value!==o$1.items.value.length-1);function p(){w.value&&o$1.prev();}function y(){h.value&&o$1.next();}const $=computed(()=>{const t=[],n={icon:c.value?e.nextIcon:e.prevIcon,class:`v-window__${u.value?"right":"left"}`,onClick:o$1.prev,"aria-label":d("$vuetify.carousel.prev")};t.push(w.value?a.prev?a.prev({props:n}):createVNode(We,n,null):createVNode("div",null,null));const r={icon:c.value?e.prevIcon:e.nextIcon,class:`v-window__${u.value?"left":"right"}`,onClick:o$1.next,"aria-label":d("$vuetify.carousel.next")};return t.push(h.value?a.next?a.next({props:r}):createVNode(We,r,null):createVNode("div",null,null)),t}),k=computed(()=>e.touch===false?e.touch:{...{left:()=>{u.value?p():y();},right:()=>{u.value?y():p();},start:n=>{let{originalEvent:r}=n;r.stopPropagation();}},...e.touch===true?{}:e.touch});return o(()=>withDirectives(createVNode(e.tag,{ref:m,class:["v-window",{"v-window--show-arrows-on-hover":e.showArrows==="hover"},I.value,e.class],style:e.style},{default:()=>[createVNode("div",{class:"v-window__container",style:{height:f.value}},[a.default?.({group:o$1}),e.showArrows!==false&&createVNode("div",{class:"v-window__controls"},[$.value])]),a.additional?.({group:o$1})]}),[[resolveDirective("touch"),k.value]])),{group:o$1}}});
+const VWindowSymbol = Symbol.for("vuetify:v-window");
+const VWindowGroupSymbol = Symbol.for("vuetify:v-window-group");
+const makeVWindowProps = propsFactory({
+  continuous: Boolean,
+  nextIcon: {
+    type: [Boolean, String, Function, Object],
+    default: "$next"
+  },
+  prevIcon: {
+    type: [Boolean, String, Function, Object],
+    default: "$prev"
+  },
+  reverse: Boolean,
+  showArrows: {
+    type: [Boolean, String],
+    validator: (v) => typeof v === "boolean" || v === "hover"
+  },
+  touch: {
+    type: [Object, Boolean],
+    default: void 0
+  },
+  direction: {
+    type: String,
+    default: "horizontal"
+  },
+  modelValue: null,
+  disabled: Boolean,
+  selectedClass: {
+    type: String,
+    default: "v-window-item--active"
+  },
+  // TODO: mandatory should probably not be exposed but do this for now
+  mandatory: {
+    type: [Boolean, String],
+    default: "force"
+  },
+  ...makeComponentProps(),
+  ...makeTagProps(),
+  ...makeThemeProps()
+}, "VWindow");
+const VWindow = genericComponent()({
+  name: "VWindow",
+  directives: {
+    Touch
+  },
+  props: makeVWindowProps(),
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      isRtl
+    } = useRtl();
+    const {
+      t
+    } = useLocale();
+    const group = useGroup(props, VWindowGroupSymbol);
+    const rootRef = ref();
+    const isRtlReverse = computed(() => isRtl.value ? !props.reverse : props.reverse);
+    const isReversed = shallowRef(false);
+    const transition = computed(() => {
+      const axis = props.direction === "vertical" ? "y" : "x";
+      const reverse = isRtlReverse.value ? !isReversed.value : isReversed.value;
+      const direction = reverse ? "-reverse" : "";
+      return `v-window-${axis}${direction}-transition`;
+    });
+    const transitionCount = shallowRef(0);
+    const transitionHeight = ref(void 0);
+    const activeIndex = computed(() => {
+      return group.items.value.findIndex((item) => group.selected.value.includes(item.id));
+    });
+    watch(activeIndex, (newVal, oldVal) => {
+      const itemsLength = group.items.value.length;
+      const lastIndex = itemsLength - 1;
+      if (itemsLength <= 2) {
+        isReversed.value = newVal < oldVal;
+      } else if (newVal === lastIndex && oldVal === 0) {
+        isReversed.value = true;
+      } else if (newVal === 0 && oldVal === lastIndex) {
+        isReversed.value = false;
+      } else {
+        isReversed.value = newVal < oldVal;
+      }
+    });
+    provide(VWindowSymbol, {
+      transition,
+      isReversed,
+      transitionCount,
+      transitionHeight,
+      rootRef
+    });
+    const canMoveBack = computed(() => props.continuous || activeIndex.value !== 0);
+    const canMoveForward = computed(() => props.continuous || activeIndex.value !== group.items.value.length - 1);
+    function prev() {
+      canMoveBack.value && group.prev();
+    }
+    function next() {
+      canMoveForward.value && group.next();
+    }
+    const arrows = computed(() => {
+      const arrows2 = [];
+      const prevProps = {
+        icon: isRtl.value ? props.nextIcon : props.prevIcon,
+        class: `v-window__${isRtlReverse.value ? "right" : "left"}`,
+        onClick: group.prev,
+        "aria-label": t("$vuetify.carousel.prev")
+      };
+      arrows2.push(canMoveBack.value ? slots.prev ? slots.prev({
+        props: prevProps
+      }) : createVNode(VBtn, prevProps, null) : createVNode("div", null, null));
+      const nextProps = {
+        icon: isRtl.value ? props.prevIcon : props.nextIcon,
+        class: `v-window__${isRtlReverse.value ? "left" : "right"}`,
+        onClick: group.next,
+        "aria-label": t("$vuetify.carousel.next")
+      };
+      arrows2.push(canMoveForward.value ? slots.next ? slots.next({
+        props: nextProps
+      }) : createVNode(VBtn, nextProps, null) : createVNode("div", null, null));
+      return arrows2;
+    });
+    const touchOptions = computed(() => {
+      if (props.touch === false) return props.touch;
+      const options = {
+        left: () => {
+          isRtlReverse.value ? prev() : next();
+        },
+        right: () => {
+          isRtlReverse.value ? next() : prev();
+        },
+        start: (_ref2) => {
+          let {
+            originalEvent
+          } = _ref2;
+          originalEvent.stopPropagation();
+        }
+      };
+      return {
+        ...options,
+        ...props.touch === true ? {} : props.touch
+      };
+    });
+    useRender(() => withDirectives(createVNode(props.tag, {
+      "ref": rootRef,
+      "class": ["v-window", {
+        "v-window--show-arrows-on-hover": props.showArrows === "hover"
+      }, themeClasses.value, props.class],
+      "style": props.style
+    }, {
+      default: () => {
+        var _a, _b;
+        return [createVNode("div", {
+          "class": "v-window__container",
+          "style": {
+            height: transitionHeight.value
+          }
+        }, [(_a = slots.default) == null ? void 0 : _a.call(slots, {
+          group
+        }), props.showArrows !== false && createVNode("div", {
+          "class": "v-window__controls"
+        }, [arrows.value])]), (_b = slots.additional) == null ? void 0 : _b.call(slots, {
+          group
+        })];
+      }
+    }), [[resolveDirective("touch"), touchOptions.value]]));
+    return {
+      group
+    };
+  }
+});
 
-const x=y$1({reverseTransition:{type:[Boolean,String],default:void 0},transition:{type:[Boolean,String],default:void 0},...o$1(),...z(),...m$1()},"VWindowItem"),X=y()({name:"VWindowItem",directives:{Touch:g},props:x(),emits:{"group:selected":t=>true},setup(t,d){let{slots:c}=d;const e=inject(H),o$1=D(t,N),{isBooted:a}=i$1();if(!e||!o$1)throw new Error("[Vuetify] VWindowItem must be used inside VWindow");const n=shallowRef(false),s=computed(()=>a.value&&(e.isReversed.value?t.reverseTransition!==false:t.transition!==false));function r(){!n.value||!e||(n.value=false,e.transitionCount.value>0&&(e.transitionCount.value-=1,e.transitionCount.value===0&&(e.transitionHeight.value=void 0)));}function l(){n.value||!e||(n.value=true,e.transitionCount.value===0&&(e.transitionHeight.value=X$2(e.rootRef.value?.clientHeight)),e.transitionCount.value+=1);}function u(){r();}function p(i){n.value&&nextTick(()=>{!s.value||!n.value||!e||(e.transitionHeight.value=X$2(i.clientHeight));});}const w=computed(()=>{const i=e.isReversed.value?t.reverseTransition:t.transition;return s.value?{name:typeof i!="string"?e.transition.value:i,onBeforeEnter:l,onAfterEnter:r,onEnterCancelled:u,onBeforeLeave:l,onAfterLeave:r,onLeaveCancelled:u,onEnter:p}:false}),{hasContent:T}=i$2(t,o$1.isSelected);return o(()=>createVNode(O,{transition:w.value,disabled:!a.value},{default:()=>[withDirectives(createVNode("div",{class:["v-window-item",o$1.selectedClass.value,t.class],style:t.style},[T.value&&c.default?.()]),[[vShow,o$1.isSelected.value]])]})),{groupItem:o$1}}});
+const makeVWindowItemProps = propsFactory({
+  reverseTransition: {
+    type: [Boolean, String],
+    default: void 0
+  },
+  transition: {
+    type: [Boolean, String],
+    default: void 0
+  },
+  ...makeComponentProps(),
+  ...makeGroupItemProps(),
+  ...makeLazyProps()
+}, "VWindowItem");
+const VWindowItem = genericComponent()({
+  name: "VWindowItem",
+  directives: {
+    Touch
+  },
+  props: makeVWindowItemProps(),
+  emits: {
+    "group:selected": (val) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const window = inject(VWindowSymbol);
+    const groupItem = useGroupItem(props, VWindowGroupSymbol);
+    const {
+      isBooted
+    } = useSsrBoot();
+    if (!window || !groupItem) throw new Error("[Vuetify] VWindowItem must be used inside VWindow");
+    const isTransitioning = shallowRef(false);
+    const hasTransition = computed(() => isBooted.value && (window.isReversed.value ? props.reverseTransition !== false : props.transition !== false));
+    function onAfterTransition() {
+      if (!isTransitioning.value || !window) {
+        return;
+      }
+      isTransitioning.value = false;
+      if (window.transitionCount.value > 0) {
+        window.transitionCount.value -= 1;
+        if (window.transitionCount.value === 0) {
+          window.transitionHeight.value = void 0;
+        }
+      }
+    }
+    function onBeforeTransition() {
+      var _a;
+      if (isTransitioning.value || !window) {
+        return;
+      }
+      isTransitioning.value = true;
+      if (window.transitionCount.value === 0) {
+        window.transitionHeight.value = convertToUnit((_a = window.rootRef.value) == null ? void 0 : _a.clientHeight);
+      }
+      window.transitionCount.value += 1;
+    }
+    function onTransitionCancelled() {
+      onAfterTransition();
+    }
+    function onEnterTransition(el) {
+      if (!isTransitioning.value) {
+        return;
+      }
+      nextTick(() => {
+        if (!hasTransition.value || !isTransitioning.value || !window) {
+          return;
+        }
+        window.transitionHeight.value = convertToUnit(el.clientHeight);
+      });
+    }
+    const transition = computed(() => {
+      const name = window.isReversed.value ? props.reverseTransition : props.transition;
+      return !hasTransition.value ? false : {
+        name: typeof name !== "string" ? window.transition.value : name,
+        onBeforeEnter: onBeforeTransition,
+        onAfterEnter: onAfterTransition,
+        onEnterCancelled: onTransitionCancelled,
+        onBeforeLeave: onBeforeTransition,
+        onAfterLeave: onAfterTransition,
+        onLeaveCancelled: onTransitionCancelled,
+        onEnter: onEnterTransition
+      };
+    });
+    const {
+      hasContent
+    } = useLazy(props, groupItem.isSelected);
+    useRender(() => createVNode(MaybeTransition, {
+      "transition": transition.value,
+      "disabled": !isBooted.value
+    }, {
+      default: () => {
+        var _a;
+        return [withDirectives(createVNode("div", {
+          "class": ["v-window-item", groupItem.selectedClass.value, props.class],
+          "style": props.style
+        }, [hasContent.value && ((_a = slots.default) == null ? void 0 : _a.call(slots))]), [[vShow, groupItem.isSelected.value]])];
+      }
+    }));
+    return {
+      groupItem
+    };
+  }
+});
 
-export { X, ie as i, q, x };;globalThis.__timing__.logEnd('Load chunks/build/VWindowItem');
+export { VWindow as V, VWindowItem as a, makeVWindowItemProps as b, makeVWindowProps as m };
+//# sourceMappingURL=VWindowItem.mjs.map

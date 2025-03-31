@@ -1,5 +1,5 @@
-globalThis.__timing__.logStart('Load chunks/build/landing.vue');import { useSSRContext } from 'vue';
-import { s } from './server.mjs';
+import { useSSRContext } from 'vue';
+import { _ as _export_sfc } from './server.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -8,7 +8,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -34,6 +33,16 @@ import 'vue-router';
 import 'deep-pick-omit';
 import 'vue/server-renderer';
 
-const t={};function _(e,n,s,d){}const o=t.setup;t.setup=(e,n)=>{const s=useSSRContext();return (s.modules||(s.modules=new Set)).add("layouts/landing.vue"),o?o(e,n):void 0};const f=s(t,[["ssrRender",_]]);
+const _sfc_main = {};
+function _sfc_ssrRender(_ctx, _push, _parent, _attrs) {
+}
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("layouts/landing.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const landing = /* @__PURE__ */ _export_sfc(_sfc_main, [["ssrRender", _sfc_ssrRender]]);
 
-export { f as default };;globalThis.__timing__.logEnd('Load chunks/build/landing.vue');
+export { landing as default };
+//# sourceMappingURL=landing.vue.mjs.map

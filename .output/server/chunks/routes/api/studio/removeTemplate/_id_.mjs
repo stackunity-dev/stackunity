@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/studio/removeTemplate/_id_');import { d as defineEventHandler, c as createError, p as pool } from '../../../../_/nitro.mjs';
+import { d as defineEventHandler, c as createError, p as pool } from '../../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -56,4 +55,5 @@ const _id_ = defineEventHandler(async (event) => {
   }
 });
 
-export { _id_ as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/studio/removeTemplate/_id_');
+export { _id_ as default };
+//# sourceMappingURL=_id_.mjs.map

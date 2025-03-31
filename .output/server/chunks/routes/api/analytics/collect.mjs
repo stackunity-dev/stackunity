@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/analytics/collect');import { d as defineEventHandler, c as createError, r as readBody, p as pool } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, c as createError, r as readBody, p as pool } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -85,4 +84,5 @@ const collect = defineEventHandler(async (event) => {
   }
 });
 
-export { collect as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/analytics/collect');
+export { collect as default };
+//# sourceMappingURL=collect.mjs.map

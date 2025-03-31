@@ -1,6 +1,86 @@
-globalThis.__timing__.logStart('Load chunks/build/VTooltip');import { computed, ref, mergeProps, createVNode } from 'vue';
-import { f as y, y as y$1, C, a4 as t, ah as o, as as d, o as o$1, aQ as it, az as M, aR as Re } from './server.mjs';
+import { computed, ref, mergeProps, createVNode } from 'vue';
+import { k as genericComponent, p as propsFactory, l as useProxiedModel, a4 as useScopeId, ah as getUid, s as useRender, aQ as VOverlay, as as forwardRefs, az as omit, aR as makeVOverlayProps } from './server.mjs';
 
-const I=y$1({id:String,text:String,...M(Re({closeOnBack:false,location:"end",locationStrategy:"connected",eager:true,minWidth:0,offset:10,openOnClick:false,openOnHover:true,origin:"auto",scrim:false,scrollStrategy:"reposition",transition:false}),["absolute","persistent"])},"VTooltip"),q=y()({name:"VTooltip",props:I(),emits:{"update:modelValue":t=>true},setup(t$1,m){let{slots:n}=m;const r=C(t$1,"modelValue"),{scopeId:d$1}=t(),f=o(),a=computed(()=>t$1.id||`v-tooltip-${f}`),l=ref(),v=computed(()=>t$1.location.split(" ").length>1?t$1.location:t$1.location+" center"),g=computed(()=>t$1.origin==="auto"||t$1.origin==="overlap"||t$1.origin.split(" ").length>1||t$1.location.split(" ").length>1?t$1.origin:t$1.origin+" center"),p=computed(()=>t$1.transition?t$1.transition:r.value?"scale-transition":"fade-transition"),V=computed(()=>mergeProps({"aria-describedby":a.value},t$1.activatorProps));return o$1(()=>{const P=it.filterProps(t$1);return createVNode(it,mergeProps({ref:l,class:["v-tooltip",t$1.class],style:t$1.style,id:a.value},P,{modelValue:r.value,"onUpdate:modelValue":e=>r.value=e,transition:p.value,absolute:true,location:v.value,origin:g.value,persistent:true,role:"tooltip",activatorProps:V.value,_disableGlobalStack:true},d$1),{activator:n.activator,default:function(){for(var e=arguments.length,s=new Array(e),i=0;i<e;i++)s[i]=arguments[i];return n.default?.(...s)??t$1.text}})}),d({},l)}});
+const makeVTooltipProps = propsFactory({
+  id: String,
+  text: String,
+  ...omit(makeVOverlayProps({
+    closeOnBack: false,
+    location: "end",
+    locationStrategy: "connected",
+    eager: true,
+    minWidth: 0,
+    offset: 10,
+    openOnClick: false,
+    openOnHover: true,
+    origin: "auto",
+    scrim: false,
+    scrollStrategy: "reposition",
+    transition: false
+  }), ["absolute", "persistent"])
+}, "VTooltip");
+const VTooltip = genericComponent()({
+  name: "VTooltip",
+  props: makeVTooltipProps(),
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const isActive = useProxiedModel(props, "modelValue");
+    const {
+      scopeId
+    } = useScopeId();
+    const uid = getUid();
+    const id = computed(() => props.id || `v-tooltip-${uid}`);
+    const overlay = ref();
+    const location = computed(() => {
+      return props.location.split(" ").length > 1 ? props.location : props.location + " center";
+    });
+    const origin = computed(() => {
+      return props.origin === "auto" || props.origin === "overlap" || props.origin.split(" ").length > 1 || props.location.split(" ").length > 1 ? props.origin : props.origin + " center";
+    });
+    const transition = computed(() => {
+      if (props.transition) return props.transition;
+      return isActive.value ? "scale-transition" : "fade-transition";
+    });
+    const activatorProps = computed(() => mergeProps({
+      "aria-describedby": id.value
+    }, props.activatorProps));
+    useRender(() => {
+      const overlayProps = VOverlay.filterProps(props);
+      return createVNode(VOverlay, mergeProps({
+        "ref": overlay,
+        "class": ["v-tooltip", props.class],
+        "style": props.style,
+        "id": id.value
+      }, overlayProps, {
+        "modelValue": isActive.value,
+        "onUpdate:modelValue": ($event) => isActive.value = $event,
+        "transition": transition.value,
+        "absolute": true,
+        "location": location.value,
+        "origin": origin.value,
+        "persistent": true,
+        "role": "tooltip",
+        "activatorProps": activatorProps.value,
+        "_disableGlobalStack": true
+      }, scopeId), {
+        activator: slots.activator,
+        default: function() {
+          var _a;
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+          return ((_a = slots.default) == null ? void 0 : _a.call(slots, ...args)) ?? props.text;
+        }
+      });
+    });
+    return forwardRefs({}, overlay);
+  }
+});
 
-export { q };;globalThis.__timing__.logEnd('Load chunks/build/VTooltip');
+export { VTooltip as V };
+//# sourceMappingURL=VTooltip.mjs.map

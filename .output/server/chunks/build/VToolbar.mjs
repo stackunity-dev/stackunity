@@ -1,8 +1,184 @@
-globalThis.__timing__.logStart('Load chunks/build/VToolbar');import { createVNode, toRef, shallowRef, computed } from 'vue';
-import { f as y, y as y$1, o, k as r, n as o$1, u as x, v as b$1, w as v, z as h, t as _, h as y$2, O, H as P, J as he, X, K as l, M, B as g, D as u, G as l$1 } from './server.mjs';
+import { createVNode, toRef, shallowRef, computed } from 'vue';
+import { k as genericComponent, p as propsFactory, s as useRender, y as makeTagProps, A as makeComponentProps, E as useBackgroundColor, F as useBorder, G as useElevation, H as useRounded, D as provideTheme, w as useRtl, O as provideDefaults, P as VImg, Q as VDefaultsProvider, J as convertToUnit, R as VExpandTransition, K as makeThemeProps, L as makeRoundedProps, M as makeElevationProps, N as makeBorderProps } from './server.mjs';
 
-const c=y$1({text:String,...o$1(),...r()},"VToolbarTitle"),b=y()({name:"VToolbarTitle",props:c(),setup(t,r){let{slots:e}=r;return o(()=>{const l=!!(e.default||e.text||t.text);return createVNode(t.tag,{class:["v-toolbar-title",t.class],style:t.style},{default:()=>[l&&createVNode("div",{class:"v-toolbar-title__placeholder"},[e.text?e.text():t.text,e.default?.()])]})}),{}}});
+const makeVToolbarTitleProps = propsFactory({
+  text: String,
+  ...makeComponentProps(),
+  ...makeTagProps()
+}, "VToolbarTitle");
+const VToolbarTitle = genericComponent()({
+  name: "VToolbarTitle",
+  props: makeVToolbarTitleProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    useRender(() => {
+      const hasText = !!(slots.default || slots.text || props.text);
+      return createVNode(props.tag, {
+        "class": ["v-toolbar-title", props.class],
+        "style": props.style
+      }, {
+        default: () => {
+          var _a;
+          return [hasText && createVNode("div", {
+            "class": "v-toolbar-title__placeholder"
+          }, [slots.text ? slots.text() : props.text, (_a = slots.default) == null ? void 0 : _a.call(slots)])];
+        }
+      });
+    });
+    return {};
+  }
+});
 
-const z=[null,"prominent","default","comfortable","compact"],A=y$1({absolute:Boolean,collapse:Boolean,color:String,density:{type:String,default:"default",validator:e=>z.includes(e)},extended:Boolean,extensionHeight:{type:[Number,String],default:48},flat:Boolean,floating:Boolean,height:{type:[Number,String],default:64},image:String,title:String,...l$1(),...o$1(),...u(),...g(),...r({tag:"header"}),...M()},"VToolbar"),se=y()({name:"VToolbar",props:A(),setup(e,d){let{slots:t}=d;const{backgroundColorClasses:u,backgroundColorStyles:c}=x(toRef(e,"color")),{borderClasses:f}=b$1(e),{elevationClasses:g}=v(e),{roundedClasses:v$1}=h(e),{themeClasses:b$2}=_(e),{rtlClasses:h$1}=y$2(),l$1=shallowRef(!!(e.extended||t.extension?.())),n=computed(()=>parseInt(Number(e.height)+(e.density==="prominent"?Number(e.height):0)-(e.density==="comfortable"?8:0)-(e.density==="compact"?16:0),10)),i=computed(()=>l$1.value?parseInt(Number(e.extensionHeight)+(e.density==="prominent"?Number(e.extensionHeight):0)-(e.density==="comfortable"?4:0)-(e.density==="compact"?8:0),10):0);return O({VBtn:{variant:"text"}}),o(()=>{const y=!!(e.title||t.title),x=!!(t.image||e.image),s=t.extension?.();return l$1.value=!!(e.extended||s),createVNode(e.tag,{class:["v-toolbar",{"v-toolbar--absolute":e.absolute,"v-toolbar--collapse":e.collapse,"v-toolbar--flat":e.flat,"v-toolbar--floating":e.floating,[`v-toolbar--density-${e.density}`]:true},u.value,f.value,g.value,v$1.value,b$2.value,h$1.value,e.class],style:[c.value,e.style]},{default:()=>[x&&createVNode("div",{key:"image",class:"v-toolbar__image"},[t.image?createVNode(P,{key:"image-defaults",disabled:!e.image,defaults:{VImg:{cover:true,src:e.image}}},t.image):createVNode(he,{key:"image-img",cover:true,src:e.image},null)]),createVNode(P,{defaults:{VTabs:{height:X(n.value)}}},{default:()=>[createVNode("div",{class:"v-toolbar__content",style:{height:X(n.value)}},[t.prepend&&createVNode("div",{class:"v-toolbar__prepend"},[t.prepend?.()]),y&&createVNode(b,{key:"title",text:e.title},{text:t.title}),t.default?.(),t.append&&createVNode("div",{class:"v-toolbar__append"},[t.append?.()])])]}),createVNode(P,{defaults:{VTabs:{height:X(i.value)}}},{default:()=>[createVNode(l,null,{default:()=>[l$1.value&&createVNode("div",{class:"v-toolbar__extension",style:{height:X(i.value)}},[s])]})]})]})}),{contentHeight:n,extensionHeight:i}}});
+const allowedDensities = [null, "prominent", "default", "comfortable", "compact"];
+const makeVToolbarProps = propsFactory({
+  absolute: Boolean,
+  collapse: Boolean,
+  color: String,
+  density: {
+    type: String,
+    default: "default",
+    validator: (v) => allowedDensities.includes(v)
+  },
+  extended: Boolean,
+  extensionHeight: {
+    type: [Number, String],
+    default: 48
+  },
+  flat: Boolean,
+  floating: Boolean,
+  height: {
+    type: [Number, String],
+    default: 64
+  },
+  image: String,
+  title: String,
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeElevationProps(),
+  ...makeRoundedProps(),
+  ...makeTagProps({
+    tag: "header"
+  }),
+  ...makeThemeProps()
+}, "VToolbar");
+const VToolbar = genericComponent()({
+  name: "VToolbar",
+  props: makeVToolbarProps(),
+  setup(props, _ref) {
+    var _a;
+    let {
+      slots
+    } = _ref;
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(toRef(props, "color"));
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      rtlClasses
+    } = useRtl();
+    const isExtended = shallowRef(!!(props.extended || ((_a = slots.extension) == null ? void 0 : _a.call(slots))));
+    const contentHeight = computed(() => parseInt(Number(props.height) + (props.density === "prominent" ? Number(props.height) : 0) - (props.density === "comfortable" ? 8 : 0) - (props.density === "compact" ? 16 : 0), 10));
+    const extensionHeight = computed(() => isExtended.value ? parseInt(Number(props.extensionHeight) + (props.density === "prominent" ? Number(props.extensionHeight) : 0) - (props.density === "comfortable" ? 4 : 0) - (props.density === "compact" ? 8 : 0), 10) : 0);
+    provideDefaults({
+      VBtn: {
+        variant: "text"
+      }
+    });
+    useRender(() => {
+      var _a2;
+      const hasTitle = !!(props.title || slots.title);
+      const hasImage = !!(slots.image || props.image);
+      const extension = (_a2 = slots.extension) == null ? void 0 : _a2.call(slots);
+      isExtended.value = !!(props.extended || extension);
+      return createVNode(props.tag, {
+        "class": ["v-toolbar", {
+          "v-toolbar--absolute": props.absolute,
+          "v-toolbar--collapse": props.collapse,
+          "v-toolbar--flat": props.flat,
+          "v-toolbar--floating": props.floating,
+          [`v-toolbar--density-${props.density}`]: true
+        }, backgroundColorClasses.value, borderClasses.value, elevationClasses.value, roundedClasses.value, themeClasses.value, rtlClasses.value, props.class],
+        "style": [backgroundColorStyles.value, props.style]
+      }, {
+        default: () => [hasImage && createVNode("div", {
+          "key": "image",
+          "class": "v-toolbar__image"
+        }, [!slots.image ? createVNode(VImg, {
+          "key": "image-img",
+          "cover": true,
+          "src": props.image
+        }, null) : createVNode(VDefaultsProvider, {
+          "key": "image-defaults",
+          "disabled": !props.image,
+          "defaults": {
+            VImg: {
+              cover: true,
+              src: props.image
+            }
+          }
+        }, slots.image)]), createVNode(VDefaultsProvider, {
+          "defaults": {
+            VTabs: {
+              height: convertToUnit(contentHeight.value)
+            }
+          }
+        }, {
+          default: () => {
+            var _a3, _b, _c;
+            return [createVNode("div", {
+              "class": "v-toolbar__content",
+              "style": {
+                height: convertToUnit(contentHeight.value)
+              }
+            }, [slots.prepend && createVNode("div", {
+              "class": "v-toolbar__prepend"
+            }, [(_a3 = slots.prepend) == null ? void 0 : _a3.call(slots)]), hasTitle && createVNode(VToolbarTitle, {
+              "key": "title",
+              "text": props.title
+            }, {
+              text: slots.title
+            }), (_b = slots.default) == null ? void 0 : _b.call(slots), slots.append && createVNode("div", {
+              "class": "v-toolbar__append"
+            }, [(_c = slots.append) == null ? void 0 : _c.call(slots)])])];
+          }
+        }), createVNode(VDefaultsProvider, {
+          "defaults": {
+            VTabs: {
+              height: convertToUnit(extensionHeight.value)
+            }
+          }
+        }, {
+          default: () => [createVNode(VExpandTransition, null, {
+            default: () => [isExtended.value && createVNode("div", {
+              "class": "v-toolbar__extension",
+              "style": {
+                height: convertToUnit(extensionHeight.value)
+              }
+            }, [extension])]
+          })]
+        })]
+      });
+    });
+    return {
+      contentHeight,
+      extensionHeight
+    };
+  }
+});
 
-export { A, b, c, se as s };;globalThis.__timing__.logEnd('Load chunks/build/VToolbar');
+export { VToolbar as V, makeVToolbarTitleProps as a, VToolbarTitle as b, makeVToolbarProps as m };
+//# sourceMappingURL=VToolbar.mjs.map

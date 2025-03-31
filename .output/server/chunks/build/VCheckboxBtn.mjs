@@ -1,6 +1,57 @@
-globalThis.__timing__.logStart('Load chunks/build/VCheckboxBtn');import { computed, createVNode, mergeProps } from 'vue';
-import { f as y, y as y$1, C, o, az as M, aA as Ve, aB as ee, ap as A } from './server.mjs';
+import { computed, createVNode, mergeProps } from 'vue';
+import { k as genericComponent, p as propsFactory, l as useProxiedModel, s as useRender, az as omit, aA as VSelectionControl, aB as makeVSelectionControlProps, ap as IconValue } from './server.mjs';
 
-const p=y$1({indeterminate:Boolean,indeterminateIcon:{type:A,default:"$checkboxIndeterminate"},...ee({falseIcon:"$checkboxOff",trueIcon:"$checkboxOn"})},"VCheckboxBtn"),F=y()({name:"VCheckboxBtn",props:p(),emits:{"update:modelValue":e=>true,"update:indeterminate":e=>true},setup(e,l){let{slots:m}=l;const o$1=C(e,"indeterminate"),t=C(e,"modelValue");function u(n){o$1.value&&(o$1.value=false);}const i=computed(()=>o$1.value?e.indeterminateIcon:e.falseIcon),d=computed(()=>o$1.value?e.indeterminateIcon:e.trueIcon);return o(()=>{const n=M(Ve.filterProps(e),["modelValue"]);return createVNode(Ve,mergeProps(n,{modelValue:t.value,"onUpdate:modelValue":[s=>t.value=s,u],class:["v-checkbox-btn",e.class],style:e.style,type:"checkbox",falseIcon:i.value,trueIcon:d.value,"aria-checked":o$1.value?"mixed":void 0}),m)}),{}}});
+const makeVCheckboxBtnProps = propsFactory({
+  indeterminate: Boolean,
+  indeterminateIcon: {
+    type: IconValue,
+    default: "$checkboxIndeterminate"
+  },
+  ...makeVSelectionControlProps({
+    falseIcon: "$checkboxOff",
+    trueIcon: "$checkboxOn"
+  })
+}, "VCheckboxBtn");
+const VCheckboxBtn = genericComponent()({
+  name: "VCheckboxBtn",
+  props: makeVCheckboxBtnProps(),
+  emits: {
+    "update:modelValue": (value) => true,
+    "update:indeterminate": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const indeterminate = useProxiedModel(props, "indeterminate");
+    const model = useProxiedModel(props, "modelValue");
+    function onChange(v) {
+      if (indeterminate.value) {
+        indeterminate.value = false;
+      }
+    }
+    const falseIcon = computed(() => {
+      return indeterminate.value ? props.indeterminateIcon : props.falseIcon;
+    });
+    const trueIcon = computed(() => {
+      return indeterminate.value ? props.indeterminateIcon : props.trueIcon;
+    });
+    useRender(() => {
+      const controlProps = omit(VSelectionControl.filterProps(props), ["modelValue"]);
+      return createVNode(VSelectionControl, mergeProps(controlProps, {
+        "modelValue": model.value,
+        "onUpdate:modelValue": [($event) => model.value = $event, onChange],
+        "class": ["v-checkbox-btn", props.class],
+        "style": props.style,
+        "type": "checkbox",
+        "falseIcon": falseIcon.value,
+        "trueIcon": trueIcon.value,
+        "aria-checked": indeterminate.value ? "mixed" : void 0
+      }), slots);
+    });
+    return {};
+  }
+});
 
-export { F, p };;globalThis.__timing__.logEnd('Load chunks/build/VCheckboxBtn');
+export { VCheckboxBtn as V, makeVCheckboxBtnProps as m };
+//# sourceMappingURL=VCheckboxBtn.mjs.map

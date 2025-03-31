@@ -1,11 +1,10 @@
-globalThis.__timing__.logStart('Load chunks/_/nitro');import http from 'node:http';
+import http from 'node:http';
 import https from 'node:https';
 import { EventEmitter as EventEmitter$1 } from 'node:events';
 import { Buffer as Buffer$1 } from 'node:buffer';
 import { promises, existsSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { createHash } from 'node:crypto';
-import { AsyncLocalStorage } from 'node:async_hooks';
 import jwt from 'jsonwebtoken';
 import * as sqlstring from 'sqlstring';
 import * as net from 'net';
@@ -4300,7 +4299,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "7496c8f6-9506-4b31-aad9-b2c143ea03de",
+    "buildId": "242a7a55-0688-40e3-af3e-2464ac0dd57f",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -4495,11 +4494,6 @@ function executeAsync(function_) {
   }
   return [awaitable, restore];
 }
-
-const nitroAsyncContext = getContext("nitro-app", {
-  asyncContext: true,
-  AsyncLocalStorage: AsyncLocalStorage 
-});
 
 const config = useRuntimeConfig();
 const _routeRulesMatcher = toRouteMatcher(
@@ -4739,40 +4733,8 @@ async function errorHandler(error, event) {
   // H3 will handle fallback
 }
 
-function defineNitroPlugin(def) {
-  return def;
-}
-
-const globalTiming = globalThis.__timing__ || {
-  start: () => 0,
-  end: () => 0,
-  metrics: []
-};
-const timingMiddleware = eventHandler((event) => {
-  const start = globalTiming.start();
-  const _end = event.node.res.end;
-  event.node.res.end = function(chunk, encoding, cb) {
-    const metrics = [
-      ["Generate", globalTiming.end(start)],
-      ...globalTiming.metrics
-    ];
-    const serverTiming = metrics.map((m) => `-;dur=${m[1]};desc="${encodeURIComponent(m[0])}"`).join(", ");
-    if (!event.node.res.headersSent) {
-      event.node.res.setHeader("Server-Timing", serverTiming);
-    }
-    _end.call(event.node.res, chunk, encoding, cb);
-    return this;
-  }.bind(event.node.res);
-});
-const _VTZvoCVLeQRgLN0dVdMUBuW6hMZmtjpf7UAM40AAb0 = defineNitroPlugin((nitro) => {
-  nitro.h3App.stack.unshift({
-    route: "/",
-    handler: timingMiddleware
-  });
-});
-
 const plugins = [
-  _VTZvoCVLeQRgLN0dVdMUBuW6hMZmtjpf7UAM40AAb0
+  
 ];
 
 function getDefaultExportFromCjs (x) {
@@ -18108,13 +18070,6 @@ function createNitroApp() {
     }
   }
   h3App.use(config.app.baseURL, router.handler);
-  {
-    const _handler = h3App.handler;
-    h3App.handler = (event) => {
-      const ctx = { event };
-      return nitroAsyncContext.callAsync(ctx, () => _handler(event));
-    };
-  }
   const app = {
     hooks,
     h3App,
@@ -18180,4 +18135,5 @@ function defineRenderHandler(render) {
   });
 }
 
-export { ACCESS_TOKEN_SECRET as A, getRouteRules as B, createHooks as C, getContext as D, toRouteMatcher as E, createRouter$1 as F, defu as G, hasProtocol as H, joinURL as I, withQuery as J, sanitizeStatusCode as K, isScriptProtocol as L, executeAsync as M, destr as N, klona as O, isEqual as P, parseQuery as Q, REFRESH_TOKEN_SECRET as R, withTrailingSlash as S, withoutTrailingSlash as T, toNodeListener as a, ACCESS_TOKEN_EXPIRY as b, createError$1 as c, defineEventHandler as d, REFRESH_TOKEN_EXPIRY as e, REFRESH_TOKEN_COOKIE_NAME as f, getHeaders as g, REFRESH_TOKEN_COOKIE_OPTIONS as h, getCookie as i, deleteCookie as j, getRequestHeaders as k, getQuery as l, getRequestHeader as m, setHeader as n, getRouterParam as o, pool as p, getHeader as q, readBody as r, setCookie as s, trapUnhandledNodeErrors as t, useNitroApp as u, joinRelativeURL as v, useRuntimeConfig as w, getResponseStatusText as x, getResponseStatus as y, defineRenderHandler as z };;globalThis.__timing__.logEnd('Load chunks/_/nitro');
+export { ACCESS_TOKEN_SECRET as A, getRouteRules as B, createHooks as C, getContext as D, toRouteMatcher as E, createRouter$1 as F, defu as G, hasProtocol as H, joinURL as I, withQuery as J, sanitizeStatusCode as K, isScriptProtocol as L, executeAsync as M, destr as N, klona as O, isEqual as P, parseQuery as Q, REFRESH_TOKEN_SECRET as R, withTrailingSlash as S, withoutTrailingSlash as T, toNodeListener as a, ACCESS_TOKEN_EXPIRY as b, createError$1 as c, defineEventHandler as d, REFRESH_TOKEN_EXPIRY as e, REFRESH_TOKEN_COOKIE_NAME as f, getHeaders as g, REFRESH_TOKEN_COOKIE_OPTIONS as h, getCookie as i, deleteCookie as j, getRequestHeaders as k, getQuery as l, getRequestHeader as m, setHeader as n, getRouterParam as o, pool as p, getHeader as q, readBody as r, setCookie as s, trapUnhandledNodeErrors as t, useNitroApp as u, joinRelativeURL as v, useRuntimeConfig as w, getResponseStatusText as x, getResponseStatus as y, defineRenderHandler as z };
+//# sourceMappingURL=nitro.mjs.map

@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/auth/updateUser');import { d as defineEventHandler, r as readBody, p as pool } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, r as readBody, p as pool } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -51,4 +50,5 @@ const updateUser = defineEventHandler(async (event) => {
   }
 });
 
-export { updateUser as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/auth/updateUser');
+export { updateUser as default };
+//# sourceMappingURL=updateUser.mjs.map

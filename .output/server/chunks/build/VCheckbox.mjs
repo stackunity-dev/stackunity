@@ -1,7 +1,72 @@
-globalThis.__timing__.logStart('Load chunks/build/VCheckbox');import { computed, createVNode, mergeProps } from 'vue';
-import { F as F$1, p } from './VCheckboxBtn.mjs';
-import { f as y, y as y$1, C, af as F, ah as o, o as o$1, au as W, av as ve, az as M, at as O } from './server.mjs';
+import { computed, createVNode, mergeProps } from 'vue';
+import { V as VCheckboxBtn, m as makeVCheckboxBtnProps } from './VCheckboxBtn.mjs';
+import { k as genericComponent, p as propsFactory, l as useProxiedModel, af as useFocus, ah as getUid, s as useRender, au as filterInputAttrs, av as VInput, az as omit, at as makeVInputProps } from './server.mjs';
 
-const q=y$1({...O(),...M(p(),["inline"])},"VCheckbox"),T=y()({name:"VCheckbox",inheritAttrs:false,props:q(),emits:{"update:modelValue":e=>true,"update:focused":e=>true},setup(e,i){let{attrs:m,slots:r}=i;const o$2=C(e,"modelValue"),{isFocused:d,focus:c,blur:n}=F(e),p=o(),f=computed(()=>e.id||`checkbox-${p}`);return o$1(()=>{const[V,b]=W(m),v=ve.filterProps(e),k=F$1.filterProps(e);return createVNode(ve,mergeProps({class:["v-checkbox",e.class]},V,v,{modelValue:o$2.value,"onUpdate:modelValue":t=>o$2.value=t,id:f.value,focused:d.value,style:e.style}),{...r,default:t=>{let{id:x,messagesId:h,isDisabled:P,isReadonly:C,isValid:y}=t;return createVNode(F$1,mergeProps(k,{id:x.value,"aria-describedby":h.value,disabled:P.value,readonly:C.value},b,{error:y.value===false,modelValue:o$2.value,"onUpdate:modelValue":g=>o$2.value=g,onFocus:c,onBlur:n}),r)}})}),{}}});
+const makeVCheckboxProps = propsFactory({
+  ...makeVInputProps(),
+  ...omit(makeVCheckboxBtnProps(), ["inline"])
+}, "VCheckbox");
+const VCheckbox = genericComponent()({
+  name: "VCheckbox",
+  inheritAttrs: false,
+  props: makeVCheckboxProps(),
+  emits: {
+    "update:modelValue": (value) => true,
+    "update:focused": (focused) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots
+    } = _ref;
+    const model = useProxiedModel(props, "modelValue");
+    const {
+      isFocused,
+      focus,
+      blur
+    } = useFocus(props);
+    const uid = getUid();
+    const id = computed(() => props.id || `checkbox-${uid}`);
+    useRender(() => {
+      const [rootAttrs, controlAttrs] = filterInputAttrs(attrs);
+      const inputProps = VInput.filterProps(props);
+      const checkboxProps = VCheckboxBtn.filterProps(props);
+      return createVNode(VInput, mergeProps({
+        "class": ["v-checkbox", props.class]
+      }, rootAttrs, inputProps, {
+        "modelValue": model.value,
+        "onUpdate:modelValue": ($event) => model.value = $event,
+        "id": id.value,
+        "focused": isFocused.value,
+        "style": props.style
+      }), {
+        ...slots,
+        default: (_ref2) => {
+          let {
+            id: id2,
+            messagesId,
+            isDisabled,
+            isReadonly,
+            isValid
+          } = _ref2;
+          return createVNode(VCheckboxBtn, mergeProps(checkboxProps, {
+            "id": id2.value,
+            "aria-describedby": messagesId.value,
+            "disabled": isDisabled.value,
+            "readonly": isReadonly.value
+          }, controlAttrs, {
+            "error": isValid.value === false,
+            "modelValue": model.value,
+            "onUpdate:modelValue": ($event) => model.value = $event,
+            "onFocus": focus,
+            "onBlur": blur
+          }), slots);
+        }
+      });
+    });
+    return {};
+  }
+});
 
-export { T };;globalThis.__timing__.logEnd('Load chunks/build/VCheckbox');
+export { VCheckbox as V };
+//# sourceMappingURL=VCheckbox.mjs.map

@@ -1,13 +1,13 @@
-globalThis.__timing__.logStart('Load chunks/build/responsive.vue');import { defineComponent, ref, computed, watch, withCtx, createTextVNode, createVNode, withKeys, createBlock, createCommentVNode, openBlock, toDisplayString, Fragment, renderList, useSSRContext } from 'vue';
+import { defineComponent, ref, computed, watch, withCtx, createTextVNode, createVNode, withKeys, createBlock, createCommentVNode, openBlock, toDisplayString, Fragment, renderList, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderList, ssrInterpolate, ssrRenderClass, ssrRenderAttr, ssrRenderStyle } from 'vue/server-renderer';
-import { N as k, x, q as qe, bp as ye, b as We, U as C, L, bo as C$1, c, a1 as Be, s } from './server.mjs';
-import { m } from './v3.mjs';
-import { _ } from './VMain.mjs';
-import { F as Fe } from './VTextField.mjs';
-import { a as at } from './VSelect.mjs';
-import { K, j as je } from './VChip.mjs';
-import { o as oe, a as at$1 } from './VTabs.mjs';
-import { i as ie, X } from './VWindowItem.mjs';
+import { S as useUserStore, V as VApp, f as VCard, bp as VSwitch, e as VBtn, Y as VCardText, g as VIcon, bo as VBtnToggle, d as VSpacer, a1 as VSnackbar, _ as _export_sfc } from './server.mjs';
+import { u as useHead } from './v3.mjs';
+import { V as VMain } from './VMain.mjs';
+import { V as VTextField } from './VTextField.mjs';
+import { V as VSelect } from './VSelect.mjs';
+import { a as VChipGroup, V as VChip } from './VChip.mjs';
+import { V as VTabs, a as VTab } from './VTabs.mjs';
+import { V as VWindow, a as VWindowItem } from './VWindowItem.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -16,7 +16,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -48,8 +47,1966 @@ import 'devalue';
 import 'unhead/plugins';
 import './VCheckboxBtn.mjs';
 
-const ya=defineComponent({__name:"responsive",__ssrInlineRender:true,setup(Ke){m({title:"Responsive Viewer",meta:[{name:"description",content:"View your websites on different devices"},{name:"keywords",content:"responsive, viewer, responsive viewer, responsive design, responsive design viewer, responsive design preview, responsive design preview tool, responsive design preview tool, responsive design preview tool, responsive design preview tool"},{name:"author",content:"DevUnity"},{name:"robots",content:"index, follow"},{name:"viewport",content:"width=device-width, initial-scale=1.0"},{name:"og:title",content:"Responsive Viewer"},{name:"og:description",content:"View your websites on different devices"}]}),k();const $=ref(""),v=ref(""),w=ref("mobile"),J=ref({}),D=ref(0),Z=ref(false),le=ref(""),de=ref("success"),F=ref(false),x$1=ref("portrait"),be=ref(false);ref(false),ref(false);const ce=ref([]),k$1=ref(["iphone"]),T=ref(false),B=ref(5);let ue=null;const me=[{title:"5 seconds",value:5},{title:"10 seconds",value:10},{title:"30 seconds",value:30},{title:"1 minute",value:60}],U=[{id:"iphone",name:"iPhone",icon:"mdi-cellphone",width:375,height:667},{id:"android",name:"Android",icon:"mdi-android",width:360,height:640},{id:"ipad",name:"iPad",icon:"mdi-apple",width:768,height:1024},{id:"tablet",name:"Tablet",icon:"mdi-tablet",width:600,height:960},{id:"laptop",name:"Laptop",icon:"mdi-laptop",width:1024,height:768},{id:"desktop",name:"Desktop",icon:"mdi-monitor",width:1280,height:800},{id:"tv",name:"TV",icon:"mdi-television",width:1920,height:1080}],te=computed(()=>{if(!$.value)return  false;try{return new URL($.value),!0}catch{return  false}}),I=E=>U.find(P=>P.id===E)||U[0],j=E=>{const P=I(E);return x$1.value==="landscape"?`${P.height}×${P.width}`:`${P.width}×${P.height}`},N=E=>{const P=I(E);return x$1.value==="landscape"?{width:`${P.height}px`,height:`${P.width}px`}:{width:`${P.width}px`,height:`${P.height}px`}},q=()=>{if(!te.value){le.value="Please enter a valid URL",de.value="error",Z.value=true;return}!$.value.startsWith("http://")&&!$.value.startsWith("https://")&&($.value="https://"+$.value),F.value=false,v.value=$.value,D.value++,ce.value.includes($.value)||(ce.value.unshift($.value),ce.value.length>10&&ce.value.pop()),$e();},Ee=()=>{v.value?(D.value++,F.value=false):(le.value="No URL to refresh",de.value="warning",Z.value=true);},ee=()=>{v.value&&(D.value++,F.value=false);},Ve=E=>{v.value&&(D.value++,F.value=false);},$e=()=>{ue&&(clearInterval(ue),ue=null),T.value&&v.value&&(ue=(void 0).setInterval(()=>{Ee();},B.value*1e3));};return watch([T,B],()=>{$e();}),watch(k$1,E=>{E.length>1&&(k$1.value=[E[E.length-1]]);}),watch(x$1,E=>{E==="landscape"&&k$1.value.length>1&&(k$1.value=[k$1.value[0]]);}),(E,P,Fe$1,Pe)=>{P(ssrRenderComponent(x,Pe,{default:withCtx((Ne,he,ze,_e)=>{if(he)he(ssrRenderComponent(_,{class:"d-flex flex-column align-center justify-center"},{default:withCtx((s,u,K$1,V)=>{if(u)u(ssrRenderComponent(qe,{width:"100%","max-width":"800px",class:"ma-12 pa-4",elevation:"3"},{default:withCtx((o,g,h,R)=>{if(g)g(ssrRenderComponent(Fe,{modelValue:$.value,"onUpdate:modelValue":n=>$.value=n,label:"Enter a URL",density:"comfortable","prepend-inner-icon":"mdi-web",variant:"outlined",placeholder:"https://example.com",clearable:"",onKeyup:q},null,h,R)),g(`<div class="d-flex flex-wrap justify-space-between align-center mt-2" data-v-9252cc7a${R}><div class="d-flex align-center" data-v-9252cc7a${R}>`),g(ssrRenderComponent(ye,{modelValue:T.value,"onUpdate:modelValue":n=>T.value=n,color:"primary","hide-details":"",label:"Auto-refresh",class:"mr-4"},null,h,R)),T.value?g(ssrRenderComponent(at,{modelValue:B.value,"onUpdate:modelValue":n=>B.value=n,items:me,label:"Interval",density:"compact",variant:"outlined","hide-details":"",style:{width:"120px"}},null,h,R)):g("<!---->"),g("</div>"),g(ssrRenderComponent(We,{color:"primary",onClick:q,disabled:!te.value,"prepend-icon":"mdi-eye"},{default:withCtx((n,b,Q,W)=>{if(b)b(" View ");else return [createTextVNode(" View ")]}),_:1},h,R)),g("</div>");else return [createVNode(Fe,{modelValue:$.value,"onUpdate:modelValue":n=>$.value=n,label:"Enter a URL",density:"comfortable","prepend-inner-icon":"mdi-web",variant:"outlined",placeholder:"https://example.com",clearable:"",onKeyup:withKeys(q,["enter"])},null,8,["modelValue","onUpdate:modelValue"]),createVNode("div",{class:"d-flex flex-wrap justify-space-between align-center mt-2"},[createVNode("div",{class:"d-flex align-center"},[createVNode(ye,{modelValue:T.value,"onUpdate:modelValue":n=>T.value=n,color:"primary","hide-details":"",label:"Auto-refresh",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),T.value?(openBlock(),createBlock(at,{key:0,modelValue:B.value,"onUpdate:modelValue":n=>B.value=n,items:me,label:"Interval",density:"compact",variant:"outlined","hide-details":"",style:{width:"120px"}},null,8,["modelValue","onUpdate:modelValue"])):createCommentVNode("",true)]),createVNode(We,{color:"primary",onClick:q,disabled:!te.value,"prepend-icon":"mdi-eye"},{default:withCtx(()=>[createTextVNode(" View ")]),_:1},8,["disabled"])])]}),_:1},K$1,V)),u(ssrRenderComponent(qe,{width:"100%",class:"mb-4",elevation:"1"},{default:withCtx((o,g,h,R)=>{if(g)g(ssrRenderComponent(C,{class:"d-flex flex-wrap justify-space-between align-center py-2"},{default:withCtx((n,b,Q,W)=>{if(b)b(`<div class="d-flex align-center" data-v-9252cc7a${W}>`),b(ssrRenderComponent(K,{modelValue:k$1.value,"onUpdate:modelValue":t=>k$1.value=t,multiple:"",column:"",class:"mr-4",max:1},{default:withCtx((t,S,y,X)=>{if(S)S("<!--[-->"),ssrRenderList(U,p=>{S(ssrRenderComponent(je,{key:p.id,value:p.id,filter:""},{default:withCtx((A,z,Y,re)=>{if(z)z(ssrRenderComponent(L,{start:""},{default:withCtx((We,je,He,Me)=>{if(je)je(`${ssrInterpolate(p.icon)}`);else return [createTextVNode(toDisplayString(p.icon),1)]}),_:2},Y,re)),z(` ${ssrInterpolate(p.name)}`);else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode(toDisplayString(p.icon),1)]),_:2},1024),createTextVNode(" "+toDisplayString(p.name),1)]}),_:2},y,X));}),S("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(U,p=>createVNode(je,{key:p.id,value:p.id,filter:""},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode(toDisplayString(p.icon),1)]),_:2},1024),createTextVNode(" "+toDisplayString(p.name),1)]),_:2},1032,["value"])),64))]}),_:1},Q,W)),b(`</div><div class="d-flex align-center" data-v-9252cc7a${W}>`),b(ssrRenderComponent(C$1,{modelValue:x$1.value,"onUpdate:modelValue":t=>x$1.value=t,color:"primary",density:"comfortable"},{default:withCtx((t,S,y,X)=>{if(S)S(ssrRenderComponent(We,{value:"portrait","prepend-icon":"mdi-phone-portrait"},{default:withCtx((p,A,z,Y)=>{if(A)A("Portrait");else return [createTextVNode("Portrait")]}),_:1},y,X)),S(ssrRenderComponent(We,{value:"landscape","prepend-icon":"mdi-phone-landscape"},{default:withCtx((p,A,z,Y)=>{if(A)A("Landscape");else return [createTextVNode("Landscape")]}),_:1},y,X));else return [createVNode(We,{value:"portrait","prepend-icon":"mdi-phone-portrait"},{default:withCtx(()=>[createTextVNode("Portrait")]),_:1}),createVNode(We,{value:"landscape","prepend-icon":"mdi-phone-landscape"},{default:withCtx(()=>[createTextVNode("Landscape")]),_:1})]}),_:1},Q,W)),b("</div>");else return [createVNode("div",{class:"d-flex align-center"},[createVNode(K,{modelValue:k$1.value,"onUpdate:modelValue":t=>k$1.value=t,multiple:"",column:"",class:"mr-4",max:1},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,t=>createVNode(je,{key:t.id,value:t.id,filter:""},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode(toDisplayString(t.icon),1)]),_:2},1024),createTextVNode(" "+toDisplayString(t.name),1)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"])]),createVNode("div",{class:"d-flex align-center"},[createVNode(C$1,{modelValue:x$1.value,"onUpdate:modelValue":t=>x$1.value=t,color:"primary",density:"comfortable"},{default:withCtx(()=>[createVNode(We,{value:"portrait","prepend-icon":"mdi-phone-portrait"},{default:withCtx(()=>[createTextVNode("Portrait")]),_:1}),createVNode(We,{value:"landscape","prepend-icon":"mdi-phone-landscape"},{default:withCtx(()=>[createTextVNode("Landscape")]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"])])]}),_:1},h,R));else return [createVNode(C,{class:"d-flex flex-wrap justify-space-between align-center py-2"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode(K,{modelValue:k$1.value,"onUpdate:modelValue":n=>k$1.value=n,multiple:"",column:"",class:"mr-4",max:1},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,n=>createVNode(je,{key:n.id,value:n.id,filter:""},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode(toDisplayString(n.icon),1)]),_:2},1024),createTextVNode(" "+toDisplayString(n.name),1)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"])]),createVNode("div",{class:"d-flex align-center"},[createVNode(C$1,{modelValue:x$1.value,"onUpdate:modelValue":n=>x$1.value=n,color:"primary",density:"comfortable"},{default:withCtx(()=>[createVNode(We,{value:"portrait","prepend-icon":"mdi-phone-portrait"},{default:withCtx(()=>[createTextVNode("Portrait")]),_:1}),createVNode(We,{value:"landscape","prepend-icon":"mdi-phone-landscape"},{default:withCtx(()=>[createTextVNode("Landscape")]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"])])]),_:1})]}),_:1},K$1,V)),be.value?(u(`<div class="d-flex flex-wrap justify-center gap-4 w-100" data-v-9252cc7a${V}><!--[-->`),ssrRenderList(k$1.value,o=>{u(`<div class="device-container" data-v-9252cc7a${V}><div class="${ssrRenderClass([{landscape:x$1.value==="landscape"},"iframe-container"])}" data-v-9252cc7a${V}><div class="iframe-header d-flex align-center px-2" data-v-9252cc7a${V}>`),u(ssrRenderComponent(L,{size:"small",class:"mr-2"},{default:withCtx((g,h,R,n)=>{if(h)h(`${ssrInterpolate(I(o).icon)}`);else return [createTextVNode(toDisplayString(I(o).icon),1)]}),_:2},K$1,V)),u(`<span class="text-caption" data-v-9252cc7a${V}>${ssrInterpolate(j(o))}</span>`),u(ssrRenderComponent(c,null,null,K$1,V)),u(ssrRenderComponent(We,{density:"compact",icon:"mdi-refresh",size:"small",variant:"text",onClick:g=>Ve()},null,K$1,V)),u("</div>"),v.value?(u(`<div class="iframe-wrapper" data-v-9252cc7a${V}><iframe${ssrRenderAttr("src",v.value)} class="overflow-scroll shadow rounded-b-lg" sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes" style="${ssrRenderStyle(N(o))}" data-v-9252cc7a${V}></iframe>`),F.value?(u(`<div class="iframe-error" data-v-9252cc7a${V}>`),u(ssrRenderComponent(L,{color:"error",size:"large",class:"mb-2"},{default:withCtx((g,h,R,n)=>{if(h)h("mdi-alert-circle");else return [createTextVNode("mdi-alert-circle")]}),_:2},K$1,V)),u(`<p data-v-9252cc7a${V}>This site cannot be displayed in an iframe because it has set &#39;X-Frame-Options&#39; to &#39;sameorigin&#39;. </p>`),u(ssrRenderComponent(We,{color:"primary",size:"small",href:v.value,target:"_blank",class:"mt-2"},{default:withCtx((g,h,R,n)=>{if(h)h(" Open in a new tab ");else return [createTextVNode(" Open in a new tab ")]}),_:2},K$1,V)),u("</div>")):u("<!---->"),u("</div>")):(u(`<div class="iframe-placeholder d-flex flex-column align-center justify-center" data-v-9252cc7a${V}>`),u(ssrRenderComponent(L,{size:"large",color:"grey-lighten-1"},{default:withCtx((g,h,R,n)=>{if(h)h("mdi-web-off");else return [createTextVNode("mdi-web-off")]}),_:2},K$1,V)),u(`<p class="text-grey-darken-1 mt-2" data-v-9252cc7a${V}>Enter a URL to preview the site</p></div>`)),u("</div></div>");}),u("<!--]--></div>")):u(ssrRenderComponent(qe,{width:"100%",class:"overflow-hidden",elevation:"3"},{default:withCtx((o,g,h,R)=>{if(g)g(ssrRenderComponent(oe,{modelValue:w.value,"onUpdate:modelValue":n=>w.value=n,density:"comfortable","align-tabs":"center","bg-color":"primary","slider-color":"secondary",color:"white"},{default:withCtx((n,b,Q,W)=>{if(b)b("<!--[-->"),ssrRenderList(U,t=>{b(ssrRenderComponent(at$1,{key:t.id,value:t.id},{default:withCtx((S,y,X,p)=>{if(y)y(ssrRenderComponent(L,{icon:t.icon,class:"mr-2"},null,X,p)),y(` ${ssrInterpolate(t.name)} <span class="text-caption ml-1" data-v-9252cc7a${p}>(${ssrInterpolate(j(t.id))})</span>`);else return [createVNode(L,{icon:t.icon,class:"mr-2"},null,8,["icon"]),createTextVNode(" "+toDisplayString(t.name)+" ",1),createVNode("span",{class:"text-caption ml-1"},"("+toDisplayString(j(t.id))+")",1)]}),_:2},Q,W));}),b("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(U,t=>createVNode(at$1,{key:t.id,value:t.id},{default:withCtx(()=>[createVNode(L,{icon:t.icon,class:"mr-2"},null,8,["icon"]),createTextVNode(" "+toDisplayString(t.name)+" ",1),createVNode("span",{class:"text-caption ml-1"},"("+toDisplayString(j(t.id))+")",1)]),_:2},1032,["value"])),64))]}),_:1},h,R)),g(ssrRenderComponent(ie,{modelValue:w.value,"onUpdate:modelValue":n=>w.value=n,class:"pa-4"},{default:withCtx((n,b,Q,W)=>{if(b)b("<!--[-->"),ssrRenderList(U,t=>{b(ssrRenderComponent(X,{key:t.id,value:t.id,class:"d-flex justify-center"},{default:withCtx((S,y,X,p)=>{if(y)y(`<div class="${ssrRenderClass([{landscape:x$1.value==="landscape"},"iframe-container"])}" data-v-9252cc7a${p}><div class="iframe-header d-flex align-center px-2" data-v-9252cc7a${p}>`),y(ssrRenderComponent(L,{size:"small",class:"mr-2"},{default:withCtx((A,z,Y,re)=>{if(z)z(`${ssrInterpolate(t.icon)}`);else return [createTextVNode(toDisplayString(t.icon),1)]}),_:2},X,p)),y(`<span class="text-caption" data-v-9252cc7a${p}>${ssrInterpolate(j(t.id))}</span>`),y(ssrRenderComponent(c,null,null,X,p)),y(ssrRenderComponent(We,{density:"compact",icon:"mdi-refresh",size:"small",variant:"text",onClick:ee},null,X,p)),y("</div>"),v.value?(y(`<div class="iframe-wrapper" data-v-9252cc7a${p}>`),w.value===t.id?y(`<iframe${ssrRenderAttr("src",v.value)} class="overflow-scroll shadow rounded-b-lg" sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes" style="${ssrRenderStyle(N(t.id))}" data-v-9252cc7a${p}></iframe>`):y("<!---->"),F.value?(y(`<div class="iframe-error" data-v-9252cc7a${p}>`),y(ssrRenderComponent(L,{color:"error",size:"large",class:"mb-2"},{default:withCtx((A,z,Y,re)=>{if(z)z("mdi-alert-circle");else return [createTextVNode("mdi-alert-circle")]}),_:2},X,p)),y(`<p data-v-9252cc7a${p}>This site cannot be displayed in an iframe because it has set &#39;X-Frame-Options&#39; to &#39;sameorigin&#39;. </p>`),y(ssrRenderComponent(We,{color:"primary",size:"small",href:v.value,target:"_blank",class:"mt-2"},{default:withCtx((A,z,Y,re)=>{if(z)z(" Open in a new tab ");else return [createTextVNode(" Open in a new tab ")]}),_:2},X,p)),y("</div>")):y("<!---->"),y("</div>")):(y(`<div class="iframe-placeholder d-flex flex-column align-center justify-center" data-v-9252cc7a${p}>`),y(ssrRenderComponent(L,{size:"large",color:"grey-lighten-1"},{default:withCtx((A,z,Y,re)=>{if(z)z("mdi-web-off");else return [createTextVNode("mdi-web-off")]}),_:2},X,p)),y(`<p class="text-grey-darken-1 mt-2" data-v-9252cc7a${p}>Enter a URL to preview the site</p></div>`)),y("</div>");else return [createVNode("div",{class:["iframe-container",{landscape:x$1.value==="landscape"}]},[createVNode("div",{class:"iframe-header d-flex align-center px-2"},[createVNode(L,{size:"small",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.icon),1)]),_:2},1024),createVNode("span",{class:"text-caption"},toDisplayString(j(t.id)),1),createVNode(c),createVNode(We,{density:"compact",icon:"mdi-refresh",size:"small",variant:"text",onClick:ee})]),v.value?(openBlock(),createBlock("div",{key:0,class:"iframe-wrapper"},[w.value===t.id?(openBlock(),createBlock("iframe",{src:v.value,class:"overflow-scroll shadow rounded-b-lg",sandbox:"allow-forms allow-same-origin allow-scripts",scrolling:"yes",style:N(t.id),ref_for:true,ref:A=>{A&&(J.value[t.id]=A);},key:`${t.id}-${D.value}`},null,12,["src"])):createCommentVNode("",true),F.value?(openBlock(),createBlock("div",{key:1,class:"iframe-error"},[createVNode(L,{color:"error",size:"large",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createVNode("p",null,"This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),createVNode(We,{color:"primary",size:"small",href:v.value,target:"_blank",class:"mt-2"},{default:withCtx(()=>[createTextVNode(" Open in a new tab ")]),_:1},8,["href"])])):createCommentVNode("",true)])):(openBlock(),createBlock("div",{key:1,class:"iframe-placeholder d-flex flex-column align-center justify-center"},[createVNode(L,{size:"large",color:"grey-lighten-1"},{default:withCtx(()=>[createTextVNode("mdi-web-off")]),_:1}),createVNode("p",{class:"text-grey-darken-1 mt-2"},"Enter a URL to preview the site")]))],2)]}),_:2},Q,W));}),b("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(U,t=>createVNode(X,{key:t.id,value:t.id,class:"d-flex justify-center"},{default:withCtx(()=>[createVNode("div",{class:["iframe-container",{landscape:x$1.value==="landscape"}]},[createVNode("div",{class:"iframe-header d-flex align-center px-2"},[createVNode(L,{size:"small",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.icon),1)]),_:2},1024),createVNode("span",{class:"text-caption"},toDisplayString(j(t.id)),1),createVNode(c),createVNode(We,{density:"compact",icon:"mdi-refresh",size:"small",variant:"text",onClick:ee})]),v.value?(openBlock(),createBlock("div",{key:0,class:"iframe-wrapper"},[w.value===t.id?(openBlock(),createBlock("iframe",{src:v.value,class:"overflow-scroll shadow rounded-b-lg",sandbox:"allow-forms allow-same-origin allow-scripts",scrolling:"yes",style:N(t.id),ref_for:true,ref:S=>{S&&(J.value[t.id]=S);},key:`${t.id}-${D.value}`},null,12,["src"])):createCommentVNode("",true),F.value?(openBlock(),createBlock("div",{key:1,class:"iframe-error"},[createVNode(L,{color:"error",size:"large",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createVNode("p",null,"This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),createVNode(We,{color:"primary",size:"small",href:v.value,target:"_blank",class:"mt-2"},{default:withCtx(()=>[createTextVNode(" Open in a new tab ")]),_:1},8,["href"])])):createCommentVNode("",true)])):(openBlock(),createBlock("div",{key:1,class:"iframe-placeholder d-flex flex-column align-center justify-center"},[createVNode(L,{size:"large",color:"grey-lighten-1"},{default:withCtx(()=>[createTextVNode("mdi-web-off")]),_:1}),createVNode("p",{class:"text-grey-darken-1 mt-2"},"Enter a URL to preview the site")]))],2)]),_:2},1032,["value"])),64))]}),_:1},h,R));else return [createVNode(oe,{modelValue:w.value,"onUpdate:modelValue":n=>w.value=n,density:"comfortable","align-tabs":"center","bg-color":"primary","slider-color":"secondary",color:"white"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,n=>createVNode(at$1,{key:n.id,value:n.id},{default:withCtx(()=>[createVNode(L,{icon:n.icon,class:"mr-2"},null,8,["icon"]),createTextVNode(" "+toDisplayString(n.name)+" ",1),createVNode("span",{class:"text-caption ml-1"},"("+toDisplayString(j(n.id))+")",1)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(ie,{modelValue:w.value,"onUpdate:modelValue":n=>w.value=n,class:"pa-4"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,n=>createVNode(X,{key:n.id,value:n.id,class:"d-flex justify-center"},{default:withCtx(()=>[createVNode("div",{class:["iframe-container",{landscape:x$1.value==="landscape"}]},[createVNode("div",{class:"iframe-header d-flex align-center px-2"},[createVNode(L,{size:"small",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(n.icon),1)]),_:2},1024),createVNode("span",{class:"text-caption"},toDisplayString(j(n.id)),1),createVNode(c),createVNode(We,{density:"compact",icon:"mdi-refresh",size:"small",variant:"text",onClick:ee})]),v.value?(openBlock(),createBlock("div",{key:0,class:"iframe-wrapper"},[w.value===n.id?(openBlock(),createBlock("iframe",{src:v.value,class:"overflow-scroll shadow rounded-b-lg",sandbox:"allow-forms allow-same-origin allow-scripts",scrolling:"yes",style:N(n.id),ref_for:true,ref:b=>{b&&(J.value[n.id]=b);},key:`${n.id}-${D.value}`},null,12,["src"])):createCommentVNode("",true),F.value?(openBlock(),createBlock("div",{key:1,class:"iframe-error"},[createVNode(L,{color:"error",size:"large",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createVNode("p",null,"This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),createVNode(We,{color:"primary",size:"small",href:v.value,target:"_blank",class:"mt-2"},{default:withCtx(()=>[createTextVNode(" Open in a new tab ")]),_:1},8,["href"])])):createCommentVNode("",true)])):(openBlock(),createBlock("div",{key:1,class:"iframe-placeholder d-flex flex-column align-center justify-center"},[createVNode(L,{size:"large",color:"grey-lighten-1"},{default:withCtx(()=>[createTextVNode("mdi-web-off")]),_:1}),createVNode("p",{class:"text-grey-darken-1 mt-2"},"Enter a URL to preview the site")]))],2)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"])]}),_:1},K$1,V));else return [createVNode(qe,{width:"100%","max-width":"800px",class:"ma-12 pa-4",elevation:"3"},{default:withCtx(()=>[createVNode(Fe,{modelValue:$.value,"onUpdate:modelValue":o=>$.value=o,label:"Enter a URL",density:"comfortable","prepend-inner-icon":"mdi-web",variant:"outlined",placeholder:"https://example.com",clearable:"",onKeyup:withKeys(q,["enter"])},null,8,["modelValue","onUpdate:modelValue"]),createVNode("div",{class:"d-flex flex-wrap justify-space-between align-center mt-2"},[createVNode("div",{class:"d-flex align-center"},[createVNode(ye,{modelValue:T.value,"onUpdate:modelValue":o=>T.value=o,color:"primary","hide-details":"",label:"Auto-refresh",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),T.value?(openBlock(),createBlock(at,{key:0,modelValue:B.value,"onUpdate:modelValue":o=>B.value=o,items:me,label:"Interval",density:"compact",variant:"outlined","hide-details":"",style:{width:"120px"}},null,8,["modelValue","onUpdate:modelValue"])):createCommentVNode("",true)]),createVNode(We,{color:"primary",onClick:q,disabled:!te.value,"prepend-icon":"mdi-eye"},{default:withCtx(()=>[createTextVNode(" View ")]),_:1},8,["disabled"])])]),_:1}),createVNode(qe,{width:"100%",class:"mb-4",elevation:"1"},{default:withCtx(()=>[createVNode(C,{class:"d-flex flex-wrap justify-space-between align-center py-2"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode(K,{modelValue:k$1.value,"onUpdate:modelValue":o=>k$1.value=o,multiple:"",column:"",class:"mr-4",max:1},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,o=>createVNode(je,{key:o.id,value:o.id,filter:""},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode(toDisplayString(o.icon),1)]),_:2},1024),createTextVNode(" "+toDisplayString(o.name),1)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"])]),createVNode("div",{class:"d-flex align-center"},[createVNode(C$1,{modelValue:x$1.value,"onUpdate:modelValue":o=>x$1.value=o,color:"primary",density:"comfortable"},{default:withCtx(()=>[createVNode(We,{value:"portrait","prepend-icon":"mdi-phone-portrait"},{default:withCtx(()=>[createTextVNode("Portrait")]),_:1}),createVNode(We,{value:"landscape","prepend-icon":"mdi-phone-landscape"},{default:withCtx(()=>[createTextVNode("Landscape")]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"])])]),_:1})]),_:1}),be.value?(openBlock(),createBlock("div",{key:0,class:"d-flex flex-wrap justify-center gap-4 w-100"},[(openBlock(true),createBlock(Fragment,null,renderList(k$1.value,o=>(openBlock(),createBlock("div",{key:o,class:"device-container"},[createVNode("div",{class:["iframe-container",{landscape:x$1.value==="landscape"}]},[createVNode("div",{class:"iframe-header d-flex align-center px-2"},[createVNode(L,{size:"small",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(I(o).icon),1)]),_:2},1024),createVNode("span",{class:"text-caption"},toDisplayString(j(o)),1),createVNode(c),createVNode(We,{density:"compact",icon:"mdi-refresh",size:"small",variant:"text",onClick:g=>Ve()},null,8,["onClick"])]),v.value?(openBlock(),createBlock("div",{key:0,class:"iframe-wrapper"},[(openBlock(),createBlock("iframe",{src:v.value,class:"overflow-scroll shadow rounded-b-lg",sandbox:"allow-forms allow-same-origin allow-scripts",scrolling:"yes",style:N(o),ref_for:true,ref:g=>{g&&(J.value[o]=g);},key:`${o}-${D.value}`},null,12,["src"])),F.value?(openBlock(),createBlock("div",{key:0,class:"iframe-error"},[createVNode(L,{color:"error",size:"large",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createVNode("p",null,"This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),createVNode(We,{color:"primary",size:"small",href:v.value,target:"_blank",class:"mt-2"},{default:withCtx(()=>[createTextVNode(" Open in a new tab ")]),_:1},8,["href"])])):createCommentVNode("",true)])):(openBlock(),createBlock("div",{key:1,class:"iframe-placeholder d-flex flex-column align-center justify-center"},[createVNode(L,{size:"large",color:"grey-lighten-1"},{default:withCtx(()=>[createTextVNode("mdi-web-off")]),_:1}),createVNode("p",{class:"text-grey-darken-1 mt-2"},"Enter a URL to preview the site")]))],2)]))),128))])):(openBlock(),createBlock(qe,{key:1,width:"100%",class:"overflow-hidden",elevation:"3"},{default:withCtx(()=>[createVNode(oe,{modelValue:w.value,"onUpdate:modelValue":o=>w.value=o,density:"comfortable","align-tabs":"center","bg-color":"primary","slider-color":"secondary",color:"white"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,o=>createVNode(at$1,{key:o.id,value:o.id},{default:withCtx(()=>[createVNode(L,{icon:o.icon,class:"mr-2"},null,8,["icon"]),createTextVNode(" "+toDisplayString(o.name)+" ",1),createVNode("span",{class:"text-caption ml-1"},"("+toDisplayString(j(o.id))+")",1)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(ie,{modelValue:w.value,"onUpdate:modelValue":o=>w.value=o,class:"pa-4"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,o=>createVNode(X,{key:o.id,value:o.id,class:"d-flex justify-center"},{default:withCtx(()=>[createVNode("div",{class:["iframe-container",{landscape:x$1.value==="landscape"}]},[createVNode("div",{class:"iframe-header d-flex align-center px-2"},[createVNode(L,{size:"small",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(o.icon),1)]),_:2},1024),createVNode("span",{class:"text-caption"},toDisplayString(j(o.id)),1),createVNode(c),createVNode(We,{density:"compact",icon:"mdi-refresh",size:"small",variant:"text",onClick:ee})]),v.value?(openBlock(),createBlock("div",{key:0,class:"iframe-wrapper"},[w.value===o.id?(openBlock(),createBlock("iframe",{src:v.value,class:"overflow-scroll shadow rounded-b-lg",sandbox:"allow-forms allow-same-origin allow-scripts",scrolling:"yes",style:N(o.id),ref_for:true,ref:g=>{g&&(J.value[o.id]=g);},key:`${o.id}-${D.value}`},null,12,["src"])):createCommentVNode("",true),F.value?(openBlock(),createBlock("div",{key:1,class:"iframe-error"},[createVNode(L,{color:"error",size:"large",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createVNode("p",null,"This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),createVNode(We,{color:"primary",size:"small",href:v.value,target:"_blank",class:"mt-2"},{default:withCtx(()=>[createTextVNode(" Open in a new tab ")]),_:1},8,["href"])])):createCommentVNode("",true)])):(openBlock(),createBlock("div",{key:1,class:"iframe-placeholder d-flex flex-column align-center justify-center"},[createVNode(L,{size:"large",color:"grey-lighten-1"},{default:withCtx(()=>[createTextVNode("mdi-web-off")]),_:1}),createVNode("p",{class:"text-grey-darken-1 mt-2"},"Enter a URL to preview the site")]))],2)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"])]),_:1}))]}),_:1},ze,_e)),he(ssrRenderComponent(Be,{modelValue:Z.value,"onUpdate:modelValue":s=>Z.value=s,color:de.value},{default:withCtx((s,u,K,V)=>{if(u)u(`${ssrInterpolate(le.value)}`);else return [createTextVNode(toDisplayString(le.value),1)]}),_:1},ze,_e));else return [createVNode(_,{class:"d-flex flex-column align-center justify-center"},{default:withCtx(()=>[createVNode(qe,{width:"100%","max-width":"800px",class:"ma-12 pa-4",elevation:"3"},{default:withCtx(()=>[createVNode(Fe,{modelValue:$.value,"onUpdate:modelValue":s=>$.value=s,label:"Enter a URL",density:"comfortable","prepend-inner-icon":"mdi-web",variant:"outlined",placeholder:"https://example.com",clearable:"",onKeyup:withKeys(q,["enter"])},null,8,["modelValue","onUpdate:modelValue"]),createVNode("div",{class:"d-flex flex-wrap justify-space-between align-center mt-2"},[createVNode("div",{class:"d-flex align-center"},[createVNode(ye,{modelValue:T.value,"onUpdate:modelValue":s=>T.value=s,color:"primary","hide-details":"",label:"Auto-refresh",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),T.value?(openBlock(),createBlock(at,{key:0,modelValue:B.value,"onUpdate:modelValue":s=>B.value=s,items:me,label:"Interval",density:"compact",variant:"outlined","hide-details":"",style:{width:"120px"}},null,8,["modelValue","onUpdate:modelValue"])):createCommentVNode("",true)]),createVNode(We,{color:"primary",onClick:q,disabled:!te.value,"prepend-icon":"mdi-eye"},{default:withCtx(()=>[createTextVNode(" View ")]),_:1},8,["disabled"])])]),_:1}),createVNode(qe,{width:"100%",class:"mb-4",elevation:"1"},{default:withCtx(()=>[createVNode(C,{class:"d-flex flex-wrap justify-space-between align-center py-2"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode(K,{modelValue:k$1.value,"onUpdate:modelValue":s=>k$1.value=s,multiple:"",column:"",class:"mr-4",max:1},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,s=>createVNode(je,{key:s.id,value:s.id,filter:""},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode(toDisplayString(s.icon),1)]),_:2},1024),createTextVNode(" "+toDisplayString(s.name),1)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"])]),createVNode("div",{class:"d-flex align-center"},[createVNode(C$1,{modelValue:x$1.value,"onUpdate:modelValue":s=>x$1.value=s,color:"primary",density:"comfortable"},{default:withCtx(()=>[createVNode(We,{value:"portrait","prepend-icon":"mdi-phone-portrait"},{default:withCtx(()=>[createTextVNode("Portrait")]),_:1}),createVNode(We,{value:"landscape","prepend-icon":"mdi-phone-landscape"},{default:withCtx(()=>[createTextVNode("Landscape")]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"])])]),_:1})]),_:1}),be.value?(openBlock(),createBlock("div",{key:0,class:"d-flex flex-wrap justify-center gap-4 w-100"},[(openBlock(true),createBlock(Fragment,null,renderList(k$1.value,s=>(openBlock(),createBlock("div",{key:s,class:"device-container"},[createVNode("div",{class:["iframe-container",{landscape:x$1.value==="landscape"}]},[createVNode("div",{class:"iframe-header d-flex align-center px-2"},[createVNode(L,{size:"small",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(I(s).icon),1)]),_:2},1024),createVNode("span",{class:"text-caption"},toDisplayString(j(s)),1),createVNode(c),createVNode(We,{density:"compact",icon:"mdi-refresh",size:"small",variant:"text",onClick:u=>Ve()},null,8,["onClick"])]),v.value?(openBlock(),createBlock("div",{key:0,class:"iframe-wrapper"},[(openBlock(),createBlock("iframe",{src:v.value,class:"overflow-scroll shadow rounded-b-lg",sandbox:"allow-forms allow-same-origin allow-scripts",scrolling:"yes",style:N(s),ref_for:true,ref:u=>{u&&(J.value[s]=u);},key:`${s}-${D.value}`},null,12,["src"])),F.value?(openBlock(),createBlock("div",{key:0,class:"iframe-error"},[createVNode(L,{color:"error",size:"large",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createVNode("p",null,"This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),createVNode(We,{color:"primary",size:"small",href:v.value,target:"_blank",class:"mt-2"},{default:withCtx(()=>[createTextVNode(" Open in a new tab ")]),_:1},8,["href"])])):createCommentVNode("",true)])):(openBlock(),createBlock("div",{key:1,class:"iframe-placeholder d-flex flex-column align-center justify-center"},[createVNode(L,{size:"large",color:"grey-lighten-1"},{default:withCtx(()=>[createTextVNode("mdi-web-off")]),_:1}),createVNode("p",{class:"text-grey-darken-1 mt-2"},"Enter a URL to preview the site")]))],2)]))),128))])):(openBlock(),createBlock(qe,{key:1,width:"100%",class:"overflow-hidden",elevation:"3"},{default:withCtx(()=>[createVNode(oe,{modelValue:w.value,"onUpdate:modelValue":s=>w.value=s,density:"comfortable","align-tabs":"center","bg-color":"primary","slider-color":"secondary",color:"white"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,s=>createVNode(at$1,{key:s.id,value:s.id},{default:withCtx(()=>[createVNode(L,{icon:s.icon,class:"mr-2"},null,8,["icon"]),createTextVNode(" "+toDisplayString(s.name)+" ",1),createVNode("span",{class:"text-caption ml-1"},"("+toDisplayString(j(s.id))+")",1)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(ie,{modelValue:w.value,"onUpdate:modelValue":s=>w.value=s,class:"pa-4"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(U,s=>createVNode(X,{key:s.id,value:s.id,class:"d-flex justify-center"},{default:withCtx(()=>[createVNode("div",{class:["iframe-container",{landscape:x$1.value==="landscape"}]},[createVNode("div",{class:"iframe-header d-flex align-center px-2"},[createVNode(L,{size:"small",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(s.icon),1)]),_:2},1024),createVNode("span",{class:"text-caption"},toDisplayString(j(s.id)),1),createVNode(c),createVNode(We,{density:"compact",icon:"mdi-refresh",size:"small",variant:"text",onClick:ee})]),v.value?(openBlock(),createBlock("div",{key:0,class:"iframe-wrapper"},[w.value===s.id?(openBlock(),createBlock("iframe",{src:v.value,class:"overflow-scroll shadow rounded-b-lg",sandbox:"allow-forms allow-same-origin allow-scripts",scrolling:"yes",style:N(s.id),ref_for:true,ref:u=>{u&&(J.value[s.id]=u);},key:`${s.id}-${D.value}`},null,12,["src"])):createCommentVNode("",true),F.value?(openBlock(),createBlock("div",{key:1,class:"iframe-error"},[createVNode(L,{color:"error",size:"large",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createVNode("p",null,"This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),createVNode(We,{color:"primary",size:"small",href:v.value,target:"_blank",class:"mt-2"},{default:withCtx(()=>[createTextVNode(" Open in a new tab ")]),_:1},8,["href"])])):createCommentVNode("",true)])):(openBlock(),createBlock("div",{key:1,class:"iframe-placeholder d-flex flex-column align-center justify-center"},[createVNode(L,{size:"large",color:"grey-lighten-1"},{default:withCtx(()=>[createTextVNode("mdi-web-off")]),_:1}),createVNode("p",{class:"text-grey-darken-1 mt-2"},"Enter a URL to preview the site")]))],2)]),_:2},1032,["value"])),64))]),_:1},8,["modelValue","onUpdate:modelValue"])]),_:1}))]),_:1}),createVNode(Be,{modelValue:Z.value,"onUpdate:modelValue":s=>Z.value=s,color:de.value},{default:withCtx(()=>[createTextVNode(toDisplayString(le.value),1)]),_:1},8,["modelValue","onUpdate:modelValue","color"])]}),_:1},Fe$1));}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "responsive",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useHead({
+      title: "Responsive Viewer",
+      meta: [
+        { name: "description", content: "View your websites on different devices" },
+        { name: "keywords", content: "responsive, viewer, responsive viewer, responsive design, responsive design viewer, responsive design preview, responsive design preview tool, responsive design preview tool, responsive design preview tool, responsive design preview tool" },
+        { name: "author", content: "DevUnity" },
+        { name: "robots", content: "index, follow" },
+        { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+        { name: "og:title", content: "Responsive Viewer" },
+        { name: "og:description", content: "View your websites on different devices" }
+      ]
+    });
+    useUserStore();
+    const url = ref("");
+    const displayUrl = ref("");
+    const tab = ref("mobile");
+    const iframeRefs = ref({});
+    const iframeKey = ref(0);
+    const snackbar = ref(false);
+    const snackbarText = ref("");
+    const snackbarColor = ref("success");
+    const xFrameError = ref(false);
+    const orientation = ref("portrait");
+    const sideBySideMode = ref(false);
+    ref(false);
+    ref(false);
+    const urlHistory = ref([]);
+    const selectedDevices = ref(["iphone"]);
+    const autoRefresh = ref(false);
+    const refreshInterval = ref(5);
+    let refreshTimer = null;
+    const refreshIntervals = [
+      { title: "5 seconds", value: 5 },
+      { title: "10 seconds", value: 10 },
+      { title: "30 seconds", value: 30 },
+      { title: "1 minute", value: 60 }
+    ];
+    const devices = [
+      { id: "iphone", name: "iPhone", icon: "mdi-cellphone", width: 375, height: 667 },
+      { id: "android", name: "Android", icon: "mdi-android", width: 360, height: 640 },
+      { id: "ipad", name: "iPad", icon: "mdi-apple", width: 768, height: 1024 },
+      { id: "tablet", name: "Tablet", icon: "mdi-tablet", width: 600, height: 960 },
+      { id: "laptop", name: "Laptop", icon: "mdi-laptop", width: 1024, height: 768 },
+      { id: "desktop", name: "Desktop", icon: "mdi-monitor", width: 1280, height: 800 },
+      { id: "tv", name: "TV", icon: "mdi-television", width: 1920, height: 1080 }
+    ];
+    const isValidUrl = computed(() => {
+      if (!url.value) return false;
+      try {
+        new URL(url.value);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    });
+    const getDeviceById = (id) => {
+      return devices.find((device) => device.id === id) || devices[0];
+    };
+    const getDeviceDimensions = (deviceId) => {
+      const device = getDeviceById(deviceId);
+      if (orientation.value === "landscape") {
+        return `${device.height}×${device.width}`;
+      }
+      return `${device.width}×${device.height}`;
+    };
+    const getIframeStyle = (deviceId) => {
+      const device = getDeviceById(deviceId);
+      if (orientation.value === "landscape") {
+        return {
+          width: `${device.height}px`,
+          height: `${device.width}px`
+        };
+      }
+      return {
+        width: `${device.width}px`,
+        height: `${device.height}px`
+      };
+    };
+    const loadUrl = () => {
+      if (!isValidUrl.value) {
+        snackbarText.value = "Please enter a valid URL";
+        snackbarColor.value = "error";
+        snackbar.value = true;
+        return;
+      }
+      if (!url.value.startsWith("http://") && !url.value.startsWith("https://")) {
+        url.value = "https://" + url.value;
+      }
+      xFrameError.value = false;
+      displayUrl.value = url.value;
+      iframeKey.value++;
+      if (!urlHistory.value.includes(url.value)) {
+        urlHistory.value.unshift(url.value);
+        if (urlHistory.value.length > 10) {
+          urlHistory.value.pop();
+        }
+      }
+      setupAutoRefresh();
+    };
+    const refreshIframe = () => {
+      if (displayUrl.value) {
+        iframeKey.value++;
+        xFrameError.value = false;
+      } else {
+        snackbarText.value = "No URL to refresh";
+        snackbarColor.value = "warning";
+        snackbar.value = true;
+      }
+    };
+    const refreshCurrentIframe = () => {
+      if (displayUrl.value) {
+        iframeKey.value++;
+        xFrameError.value = false;
+      }
+    };
+    const refreshSpecificIframe = (deviceId) => {
+      if (displayUrl.value) {
+        iframeKey.value++;
+        xFrameError.value = false;
+      }
+    };
+    const setupAutoRefresh = () => {
+      if (refreshTimer) {
+        clearInterval(refreshTimer);
+        refreshTimer = null;
+      }
+      if (autoRefresh.value && displayUrl.value) {
+        refreshTimer = (void 0).setInterval(() => {
+          refreshIframe();
+        }, refreshInterval.value * 1e3);
+      }
+    };
+    watch([autoRefresh, refreshInterval], () => {
+      setupAutoRefresh();
+    });
+    watch(selectedDevices, (newValue) => {
+      if (newValue.length > 1) {
+        selectedDevices.value = [newValue[newValue.length - 1]];
+      }
+    });
+    watch(orientation, (newOrientation) => {
+      if (newOrientation === "landscape" && selectedDevices.value.length > 1) {
+        selectedDevices.value = [selectedDevices.value[0]];
+      }
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(VApp, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VMain, { class: "d-flex flex-column align-center justify-center" }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VCard, {
+                    width: "100%",
+                    "max-width": "800px",
+                    class: "ma-12 pa-4",
+                    elevation: "3"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VTextField, {
+                          modelValue: url.value,
+                          "onUpdate:modelValue": ($event) => url.value = $event,
+                          label: "Enter a URL",
+                          density: "comfortable",
+                          "prepend-inner-icon": "mdi-web",
+                          variant: "outlined",
+                          placeholder: "https://example.com",
+                          clearable: "",
+                          onKeyup: loadUrl
+                        }, null, _parent4, _scopeId3));
+                        _push4(`<div class="d-flex flex-wrap justify-space-between align-center mt-2" data-v-9252cc7a${_scopeId3}><div class="d-flex align-center" data-v-9252cc7a${_scopeId3}>`);
+                        _push4(ssrRenderComponent(VSwitch, {
+                          modelValue: autoRefresh.value,
+                          "onUpdate:modelValue": ($event) => autoRefresh.value = $event,
+                          color: "primary",
+                          "hide-details": "",
+                          label: "Auto-refresh",
+                          class: "mr-4"
+                        }, null, _parent4, _scopeId3));
+                        if (autoRefresh.value) {
+                          _push4(ssrRenderComponent(VSelect, {
+                            modelValue: refreshInterval.value,
+                            "onUpdate:modelValue": ($event) => refreshInterval.value = $event,
+                            items: refreshIntervals,
+                            label: "Interval",
+                            density: "compact",
+                            variant: "outlined",
+                            "hide-details": "",
+                            style: { "width": "120px" }
+                          }, null, _parent4, _scopeId3));
+                        } else {
+                          _push4(`<!---->`);
+                        }
+                        _push4(`</div>`);
+                        _push4(ssrRenderComponent(VBtn, {
+                          color: "primary",
+                          onClick: loadUrl,
+                          disabled: !isValidUrl.value,
+                          "prepend-icon": "mdi-eye"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(` View `);
+                            } else {
+                              return [
+                                createTextVNode(" View ")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(`</div>`);
+                      } else {
+                        return [
+                          createVNode(VTextField, {
+                            modelValue: url.value,
+                            "onUpdate:modelValue": ($event) => url.value = $event,
+                            label: "Enter a URL",
+                            density: "comfortable",
+                            "prepend-inner-icon": "mdi-web",
+                            variant: "outlined",
+                            placeholder: "https://example.com",
+                            clearable: "",
+                            onKeyup: withKeys(loadUrl, ["enter"])
+                          }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                          createVNode("div", { class: "d-flex flex-wrap justify-space-between align-center mt-2" }, [
+                            createVNode("div", { class: "d-flex align-center" }, [
+                              createVNode(VSwitch, {
+                                modelValue: autoRefresh.value,
+                                "onUpdate:modelValue": ($event) => autoRefresh.value = $event,
+                                color: "primary",
+                                "hide-details": "",
+                                label: "Auto-refresh",
+                                class: "mr-4"
+                              }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                              autoRefresh.value ? (openBlock(), createBlock(VSelect, {
+                                key: 0,
+                                modelValue: refreshInterval.value,
+                                "onUpdate:modelValue": ($event) => refreshInterval.value = $event,
+                                items: refreshIntervals,
+                                label: "Interval",
+                                density: "compact",
+                                variant: "outlined",
+                                "hide-details": "",
+                                style: { "width": "120px" }
+                              }, null, 8, ["modelValue", "onUpdate:modelValue"])) : createCommentVNode("", true)
+                            ]),
+                            createVNode(VBtn, {
+                              color: "primary",
+                              onClick: loadUrl,
+                              disabled: !isValidUrl.value,
+                              "prepend-icon": "mdi-eye"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" View ")
+                              ]),
+                              _: 1
+                            }, 8, ["disabled"])
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VCard, {
+                    width: "100%",
+                    class: "mb-4",
+                    elevation: "1"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VCardText, { class: "d-flex flex-wrap justify-space-between align-center py-2" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<div class="d-flex align-center" data-v-9252cc7a${_scopeId4}>`);
+                              _push5(ssrRenderComponent(VChipGroup, {
+                                modelValue: selectedDevices.value,
+                                "onUpdate:modelValue": ($event) => selectedDevices.value = $event,
+                                multiple: "",
+                                column: "",
+                                class: "mr-4",
+                                max: 1
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<!--[-->`);
+                                    ssrRenderList(devices, (device) => {
+                                      _push6(ssrRenderComponent(VChip, {
+                                        key: device.id,
+                                        value: device.id,
+                                        filter: ""
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VIcon, { start: "" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(`${ssrInterpolate(device.icon)}`);
+                                                } else {
+                                                  return [
+                                                    createTextVNode(toDisplayString(device.icon), 1)
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent7, _scopeId6));
+                                            _push7(` ${ssrInterpolate(device.name)}`);
+                                          } else {
+                                            return [
+                                              createVNode(VIcon, { start: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(device.icon), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createTextVNode(" " + toDisplayString(device.name), 1)
+                                            ];
+                                          }
+                                        }),
+                                        _: 2
+                                      }, _parent6, _scopeId5));
+                                    });
+                                    _push6(`<!--]-->`);
+                                  } else {
+                                    return [
+                                      (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                                        return createVNode(VChip, {
+                                          key: device.id,
+                                          value: device.id,
+                                          filter: ""
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VIcon, { start: "" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(device.icon), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createTextVNode(" " + toDisplayString(device.name), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1032, ["value"]);
+                                      }), 64))
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(`</div><div class="d-flex align-center" data-v-9252cc7a${_scopeId4}>`);
+                              _push5(ssrRenderComponent(VBtnToggle, {
+                                modelValue: orientation.value,
+                                "onUpdate:modelValue": ($event) => orientation.value = $event,
+                                color: "primary",
+                                density: "comfortable"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VBtn, {
+                                      value: "portrait",
+                                      "prepend-icon": "mdi-phone-portrait"
+                                    }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`Portrait`);
+                                        } else {
+                                          return [
+                                            createTextVNode("Portrait")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                    _push6(ssrRenderComponent(VBtn, {
+                                      value: "landscape",
+                                      "prepend-icon": "mdi-phone-landscape"
+                                    }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`Landscape`);
+                                        } else {
+                                          return [
+                                            createTextVNode("Landscape")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VBtn, {
+                                        value: "portrait",
+                                        "prepend-icon": "mdi-phone-portrait"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("Portrait")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VBtn, {
+                                        value: "landscape",
+                                        "prepend-icon": "mdi-phone-landscape"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("Landscape")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(`</div>`);
+                            } else {
+                              return [
+                                createVNode("div", { class: "d-flex align-center" }, [
+                                  createVNode(VChipGroup, {
+                                    modelValue: selectedDevices.value,
+                                    "onUpdate:modelValue": ($event) => selectedDevices.value = $event,
+                                    multiple: "",
+                                    column: "",
+                                    class: "mr-4",
+                                    max: 1
+                                  }, {
+                                    default: withCtx(() => [
+                                      (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                                        return createVNode(VChip, {
+                                          key: device.id,
+                                          value: device.id,
+                                          filter: ""
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VIcon, { start: "" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(device.icon), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createTextVNode(" " + toDisplayString(device.name), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1032, ["value"]);
+                                      }), 64))
+                                    ]),
+                                    _: 1
+                                  }, 8, ["modelValue", "onUpdate:modelValue"])
+                                ]),
+                                createVNode("div", { class: "d-flex align-center" }, [
+                                  createVNode(VBtnToggle, {
+                                    modelValue: orientation.value,
+                                    "onUpdate:modelValue": ($event) => orientation.value = $event,
+                                    color: "primary",
+                                    density: "comfortable"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VBtn, {
+                                        value: "portrait",
+                                        "prepend-icon": "mdi-phone-portrait"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("Portrait")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VBtn, {
+                                        value: "landscape",
+                                        "prepend-icon": "mdi-phone-landscape"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("Landscape")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  }, 8, ["modelValue", "onUpdate:modelValue"])
+                                ])
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VCardText, { class: "d-flex flex-wrap justify-space-between align-center py-2" }, {
+                            default: withCtx(() => [
+                              createVNode("div", { class: "d-flex align-center" }, [
+                                createVNode(VChipGroup, {
+                                  modelValue: selectedDevices.value,
+                                  "onUpdate:modelValue": ($event) => selectedDevices.value = $event,
+                                  multiple: "",
+                                  column: "",
+                                  class: "mr-4",
+                                  max: 1
+                                }, {
+                                  default: withCtx(() => [
+                                    (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                                      return createVNode(VChip, {
+                                        key: device.id,
+                                        value: device.id,
+                                        filter: ""
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VIcon, { start: "" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(toDisplayString(device.icon), 1)
+                                            ]),
+                                            _: 2
+                                          }, 1024),
+                                          createTextVNode(" " + toDisplayString(device.name), 1)
+                                        ]),
+                                        _: 2
+                                      }, 1032, ["value"]);
+                                    }), 64))
+                                  ]),
+                                  _: 1
+                                }, 8, ["modelValue", "onUpdate:modelValue"])
+                              ]),
+                              createVNode("div", { class: "d-flex align-center" }, [
+                                createVNode(VBtnToggle, {
+                                  modelValue: orientation.value,
+                                  "onUpdate:modelValue": ($event) => orientation.value = $event,
+                                  color: "primary",
+                                  density: "comfortable"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VBtn, {
+                                      value: "portrait",
+                                      "prepend-icon": "mdi-phone-portrait"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("Portrait")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VBtn, {
+                                      value: "landscape",
+                                      "prepend-icon": "mdi-phone-landscape"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("Landscape")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }, 8, ["modelValue", "onUpdate:modelValue"])
+                              ])
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  if (sideBySideMode.value) {
+                    _push3(`<div class="d-flex flex-wrap justify-center gap-4 w-100" data-v-9252cc7a${_scopeId2}><!--[-->`);
+                    ssrRenderList(selectedDevices.value, (deviceId) => {
+                      _push3(`<div class="device-container" data-v-9252cc7a${_scopeId2}><div class="${ssrRenderClass([{ "landscape": orientation.value === "landscape" }, "iframe-container"])}" data-v-9252cc7a${_scopeId2}><div class="iframe-header d-flex align-center px-2" data-v-9252cc7a${_scopeId2}>`);
+                      _push3(ssrRenderComponent(VIcon, {
+                        size: "small",
+                        class: "mr-2"
+                      }, {
+                        default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                          if (_push4) {
+                            _push4(`${ssrInterpolate(getDeviceById(deviceId).icon)}`);
+                          } else {
+                            return [
+                              createTextVNode(toDisplayString(getDeviceById(deviceId).icon), 1)
+                            ];
+                          }
+                        }),
+                        _: 2
+                      }, _parent3, _scopeId2));
+                      _push3(`<span class="text-caption" data-v-9252cc7a${_scopeId2}>${ssrInterpolate(getDeviceDimensions(deviceId))}</span>`);
+                      _push3(ssrRenderComponent(VSpacer, null, null, _parent3, _scopeId2));
+                      _push3(ssrRenderComponent(VBtn, {
+                        density: "compact",
+                        icon: "mdi-refresh",
+                        size: "small",
+                        variant: "text",
+                        onClick: ($event) => refreshSpecificIframe()
+                      }, null, _parent3, _scopeId2));
+                      _push3(`</div>`);
+                      if (displayUrl.value) {
+                        _push3(`<div class="iframe-wrapper" data-v-9252cc7a${_scopeId2}><iframe${ssrRenderAttr("src", displayUrl.value)} class="overflow-scroll shadow rounded-b-lg" sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes" style="${ssrRenderStyle(getIframeStyle(deviceId))}" data-v-9252cc7a${_scopeId2}></iframe>`);
+                        if (xFrameError.value) {
+                          _push3(`<div class="iframe-error" data-v-9252cc7a${_scopeId2}>`);
+                          _push3(ssrRenderComponent(VIcon, {
+                            color: "error",
+                            size: "large",
+                            class: "mb-2"
+                          }, {
+                            default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                              if (_push4) {
+                                _push4(`mdi-alert-circle`);
+                              } else {
+                                return [
+                                  createTextVNode("mdi-alert-circle")
+                                ];
+                              }
+                            }),
+                            _: 2
+                          }, _parent3, _scopeId2));
+                          _push3(`<p data-v-9252cc7a${_scopeId2}>This site cannot be displayed in an iframe because it has set &#39;X-Frame-Options&#39; to &#39;sameorigin&#39;. </p>`);
+                          _push3(ssrRenderComponent(VBtn, {
+                            color: "primary",
+                            size: "small",
+                            href: displayUrl.value,
+                            target: "_blank",
+                            class: "mt-2"
+                          }, {
+                            default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                              if (_push4) {
+                                _push4(` Open in a new tab `);
+                              } else {
+                                return [
+                                  createTextVNode(" Open in a new tab ")
+                                ];
+                              }
+                            }),
+                            _: 2
+                          }, _parent3, _scopeId2));
+                          _push3(`</div>`);
+                        } else {
+                          _push3(`<!---->`);
+                        }
+                        _push3(`</div>`);
+                      } else {
+                        _push3(`<div class="iframe-placeholder d-flex flex-column align-center justify-center" data-v-9252cc7a${_scopeId2}>`);
+                        _push3(ssrRenderComponent(VIcon, {
+                          size: "large",
+                          color: "grey-lighten-1"
+                        }, {
+                          default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                            if (_push4) {
+                              _push4(`mdi-web-off`);
+                            } else {
+                              return [
+                                createTextVNode("mdi-web-off")
+                              ];
+                            }
+                          }),
+                          _: 2
+                        }, _parent3, _scopeId2));
+                        _push3(`<p class="text-grey-darken-1 mt-2" data-v-9252cc7a${_scopeId2}>Enter a URL to preview the site</p></div>`);
+                      }
+                      _push3(`</div></div>`);
+                    });
+                    _push3(`<!--]--></div>`);
+                  } else {
+                    _push3(ssrRenderComponent(VCard, {
+                      width: "100%",
+                      class: "overflow-hidden",
+                      elevation: "3"
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(ssrRenderComponent(VTabs, {
+                            modelValue: tab.value,
+                            "onUpdate:modelValue": ($event) => tab.value = $event,
+                            density: "comfortable",
+                            "align-tabs": "center",
+                            "bg-color": "primary",
+                            "slider-color": "secondary",
+                            color: "white"
+                          }, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(`<!--[-->`);
+                                ssrRenderList(devices, (device) => {
+                                  _push5(ssrRenderComponent(VTab, {
+                                    key: device.id,
+                                    value: device.id
+                                  }, {
+                                    default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                      if (_push6) {
+                                        _push6(ssrRenderComponent(VIcon, {
+                                          icon: device.icon,
+                                          class: "mr-2"
+                                        }, null, _parent6, _scopeId5));
+                                        _push6(` ${ssrInterpolate(device.name)} <span class="text-caption ml-1" data-v-9252cc7a${_scopeId5}>(${ssrInterpolate(getDeviceDimensions(device.id))})</span>`);
+                                      } else {
+                                        return [
+                                          createVNode(VIcon, {
+                                            icon: device.icon,
+                                            class: "mr-2"
+                                          }, null, 8, ["icon"]),
+                                          createTextVNode(" " + toDisplayString(device.name) + " ", 1),
+                                          createVNode("span", { class: "text-caption ml-1" }, "(" + toDisplayString(getDeviceDimensions(device.id)) + ")", 1)
+                                        ];
+                                      }
+                                    }),
+                                    _: 2
+                                  }, _parent5, _scopeId4));
+                                });
+                                _push5(`<!--]-->`);
+                              } else {
+                                return [
+                                  (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                                    return createVNode(VTab, {
+                                      key: device.id,
+                                      value: device.id
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VIcon, {
+                                          icon: device.icon,
+                                          class: "mr-2"
+                                        }, null, 8, ["icon"]),
+                                        createTextVNode(" " + toDisplayString(device.name) + " ", 1),
+                                        createVNode("span", { class: "text-caption ml-1" }, "(" + toDisplayString(getDeviceDimensions(device.id)) + ")", 1)
+                                      ]),
+                                      _: 2
+                                    }, 1032, ["value"]);
+                                  }), 64))
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                          _push4(ssrRenderComponent(VWindow, {
+                            modelValue: tab.value,
+                            "onUpdate:modelValue": ($event) => tab.value = $event,
+                            class: "pa-4"
+                          }, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(`<!--[-->`);
+                                ssrRenderList(devices, (device) => {
+                                  _push5(ssrRenderComponent(VWindowItem, {
+                                    key: device.id,
+                                    value: device.id,
+                                    class: "d-flex justify-center"
+                                  }, {
+                                    default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                      if (_push6) {
+                                        _push6(`<div class="${ssrRenderClass([{ "landscape": orientation.value === "landscape" }, "iframe-container"])}" data-v-9252cc7a${_scopeId5}><div class="iframe-header d-flex align-center px-2" data-v-9252cc7a${_scopeId5}>`);
+                                        _push6(ssrRenderComponent(VIcon, {
+                                          size: "small",
+                                          class: "mr-2"
+                                        }, {
+                                          default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                            if (_push7) {
+                                              _push7(`${ssrInterpolate(device.icon)}`);
+                                            } else {
+                                              return [
+                                                createTextVNode(toDisplayString(device.icon), 1)
+                                              ];
+                                            }
+                                          }),
+                                          _: 2
+                                        }, _parent6, _scopeId5));
+                                        _push6(`<span class="text-caption" data-v-9252cc7a${_scopeId5}>${ssrInterpolate(getDeviceDimensions(device.id))}</span>`);
+                                        _push6(ssrRenderComponent(VSpacer, null, null, _parent6, _scopeId5));
+                                        _push6(ssrRenderComponent(VBtn, {
+                                          density: "compact",
+                                          icon: "mdi-refresh",
+                                          size: "small",
+                                          variant: "text",
+                                          onClick: refreshCurrentIframe
+                                        }, null, _parent6, _scopeId5));
+                                        _push6(`</div>`);
+                                        if (displayUrl.value) {
+                                          _push6(`<div class="iframe-wrapper" data-v-9252cc7a${_scopeId5}>`);
+                                          if (tab.value === device.id) {
+                                            _push6(`<iframe${ssrRenderAttr("src", displayUrl.value)} class="overflow-scroll shadow rounded-b-lg" sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes" style="${ssrRenderStyle(getIframeStyle(device.id))}" data-v-9252cc7a${_scopeId5}></iframe>`);
+                                          } else {
+                                            _push6(`<!---->`);
+                                          }
+                                          if (xFrameError.value) {
+                                            _push6(`<div class="iframe-error" data-v-9252cc7a${_scopeId5}>`);
+                                            _push6(ssrRenderComponent(VIcon, {
+                                              color: "error",
+                                              size: "large",
+                                              class: "mb-2"
+                                            }, {
+                                              default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                                if (_push7) {
+                                                  _push7(`mdi-alert-circle`);
+                                                } else {
+                                                  return [
+                                                    createTextVNode("mdi-alert-circle")
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent6, _scopeId5));
+                                            _push6(`<p data-v-9252cc7a${_scopeId5}>This site cannot be displayed in an iframe because it has set &#39;X-Frame-Options&#39; to &#39;sameorigin&#39;. </p>`);
+                                            _push6(ssrRenderComponent(VBtn, {
+                                              color: "primary",
+                                              size: "small",
+                                              href: displayUrl.value,
+                                              target: "_blank",
+                                              class: "mt-2"
+                                            }, {
+                                              default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                                if (_push7) {
+                                                  _push7(` Open in a new tab `);
+                                                } else {
+                                                  return [
+                                                    createTextVNode(" Open in a new tab ")
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent6, _scopeId5));
+                                            _push6(`</div>`);
+                                          } else {
+                                            _push6(`<!---->`);
+                                          }
+                                          _push6(`</div>`);
+                                        } else {
+                                          _push6(`<div class="iframe-placeholder d-flex flex-column align-center justify-center" data-v-9252cc7a${_scopeId5}>`);
+                                          _push6(ssrRenderComponent(VIcon, {
+                                            size: "large",
+                                            color: "grey-lighten-1"
+                                          }, {
+                                            default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                              if (_push7) {
+                                                _push7(`mdi-web-off`);
+                                              } else {
+                                                return [
+                                                  createTextVNode("mdi-web-off")
+                                                ];
+                                              }
+                                            }),
+                                            _: 2
+                                          }, _parent6, _scopeId5));
+                                          _push6(`<p class="text-grey-darken-1 mt-2" data-v-9252cc7a${_scopeId5}>Enter a URL to preview the site</p></div>`);
+                                        }
+                                        _push6(`</div>`);
+                                      } else {
+                                        return [
+                                          createVNode("div", {
+                                            class: ["iframe-container", { "landscape": orientation.value === "landscape" }]
+                                          }, [
+                                            createVNode("div", { class: "iframe-header d-flex align-center px-2" }, [
+                                              createVNode(VIcon, {
+                                                size: "small",
+                                                class: "mr-2"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(device.icon), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode("span", { class: "text-caption" }, toDisplayString(getDeviceDimensions(device.id)), 1),
+                                              createVNode(VSpacer),
+                                              createVNode(VBtn, {
+                                                density: "compact",
+                                                icon: "mdi-refresh",
+                                                size: "small",
+                                                variant: "text",
+                                                onClick: refreshCurrentIframe
+                                              })
+                                            ]),
+                                            displayUrl.value ? (openBlock(), createBlock("div", {
+                                              key: 0,
+                                              class: "iframe-wrapper"
+                                            }, [
+                                              tab.value === device.id ? (openBlock(), createBlock("iframe", {
+                                                src: displayUrl.value,
+                                                class: "overflow-scroll shadow rounded-b-lg",
+                                                sandbox: "allow-forms allow-same-origin allow-scripts",
+                                                scrolling: "yes",
+                                                style: getIframeStyle(device.id),
+                                                ref_for: true,
+                                                ref: (el) => {
+                                                  if (el) iframeRefs.value[device.id] = el;
+                                                },
+                                                key: `${device.id}-${iframeKey.value}`
+                                              }, null, 12, ["src"])) : createCommentVNode("", true),
+                                              xFrameError.value ? (openBlock(), createBlock("div", {
+                                                key: 1,
+                                                class: "iframe-error"
+                                              }, [
+                                                createVNode(VIcon, {
+                                                  color: "error",
+                                                  size: "large",
+                                                  class: "mb-2"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("mdi-alert-circle")
+                                                  ]),
+                                                  _: 1
+                                                }),
+                                                createVNode("p", null, "This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),
+                                                createVNode(VBtn, {
+                                                  color: "primary",
+                                                  size: "small",
+                                                  href: displayUrl.value,
+                                                  target: "_blank",
+                                                  class: "mt-2"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" Open in a new tab ")
+                                                  ]),
+                                                  _: 1
+                                                }, 8, ["href"])
+                                              ])) : createCommentVNode("", true)
+                                            ])) : (openBlock(), createBlock("div", {
+                                              key: 1,
+                                              class: "iframe-placeholder d-flex flex-column align-center justify-center"
+                                            }, [
+                                              createVNode(VIcon, {
+                                                size: "large",
+                                                color: "grey-lighten-1"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-web-off")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode("p", { class: "text-grey-darken-1 mt-2" }, "Enter a URL to preview the site")
+                                            ]))
+                                          ], 2)
+                                        ];
+                                      }
+                                    }),
+                                    _: 2
+                                  }, _parent5, _scopeId4));
+                                });
+                                _push5(`<!--]-->`);
+                              } else {
+                                return [
+                                  (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                                    return createVNode(VWindowItem, {
+                                      key: device.id,
+                                      value: device.id,
+                                      class: "d-flex justify-center"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode("div", {
+                                          class: ["iframe-container", { "landscape": orientation.value === "landscape" }]
+                                        }, [
+                                          createVNode("div", { class: "iframe-header d-flex align-center px-2" }, [
+                                            createVNode(VIcon, {
+                                              size: "small",
+                                              class: "mr-2"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(device.icon), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode("span", { class: "text-caption" }, toDisplayString(getDeviceDimensions(device.id)), 1),
+                                            createVNode(VSpacer),
+                                            createVNode(VBtn, {
+                                              density: "compact",
+                                              icon: "mdi-refresh",
+                                              size: "small",
+                                              variant: "text",
+                                              onClick: refreshCurrentIframe
+                                            })
+                                          ]),
+                                          displayUrl.value ? (openBlock(), createBlock("div", {
+                                            key: 0,
+                                            class: "iframe-wrapper"
+                                          }, [
+                                            tab.value === device.id ? (openBlock(), createBlock("iframe", {
+                                              src: displayUrl.value,
+                                              class: "overflow-scroll shadow rounded-b-lg",
+                                              sandbox: "allow-forms allow-same-origin allow-scripts",
+                                              scrolling: "yes",
+                                              style: getIframeStyle(device.id),
+                                              ref_for: true,
+                                              ref: (el) => {
+                                                if (el) iframeRefs.value[device.id] = el;
+                                              },
+                                              key: `${device.id}-${iframeKey.value}`
+                                            }, null, 12, ["src"])) : createCommentVNode("", true),
+                                            xFrameError.value ? (openBlock(), createBlock("div", {
+                                              key: 1,
+                                              class: "iframe-error"
+                                            }, [
+                                              createVNode(VIcon, {
+                                                color: "error",
+                                                size: "large",
+                                                class: "mb-2"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-alert-circle")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode("p", null, "This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),
+                                              createVNode(VBtn, {
+                                                color: "primary",
+                                                size: "small",
+                                                href: displayUrl.value,
+                                                target: "_blank",
+                                                class: "mt-2"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" Open in a new tab ")
+                                                ]),
+                                                _: 1
+                                              }, 8, ["href"])
+                                            ])) : createCommentVNode("", true)
+                                          ])) : (openBlock(), createBlock("div", {
+                                            key: 1,
+                                            class: "iframe-placeholder d-flex flex-column align-center justify-center"
+                                          }, [
+                                            createVNode(VIcon, {
+                                              size: "large",
+                                              color: "grey-lighten-1"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("mdi-web-off")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode("p", { class: "text-grey-darken-1 mt-2" }, "Enter a URL to preview the site")
+                                          ]))
+                                        ], 2)
+                                      ]),
+                                      _: 2
+                                    }, 1032, ["value"]);
+                                  }), 64))
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                        } else {
+                          return [
+                            createVNode(VTabs, {
+                              modelValue: tab.value,
+                              "onUpdate:modelValue": ($event) => tab.value = $event,
+                              density: "comfortable",
+                              "align-tabs": "center",
+                              "bg-color": "primary",
+                              "slider-color": "secondary",
+                              color: "white"
+                            }, {
+                              default: withCtx(() => [
+                                (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                                  return createVNode(VTab, {
+                                    key: device.id,
+                                    value: device.id
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, {
+                                        icon: device.icon,
+                                        class: "mr-2"
+                                      }, null, 8, ["icon"]),
+                                      createTextVNode(" " + toDisplayString(device.name) + " ", 1),
+                                      createVNode("span", { class: "text-caption ml-1" }, "(" + toDisplayString(getDeviceDimensions(device.id)) + ")", 1)
+                                    ]),
+                                    _: 2
+                                  }, 1032, ["value"]);
+                                }), 64))
+                              ]),
+                              _: 1
+                            }, 8, ["modelValue", "onUpdate:modelValue"]),
+                            createVNode(VWindow, {
+                              modelValue: tab.value,
+                              "onUpdate:modelValue": ($event) => tab.value = $event,
+                              class: "pa-4"
+                            }, {
+                              default: withCtx(() => [
+                                (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                                  return createVNode(VWindowItem, {
+                                    key: device.id,
+                                    value: device.id,
+                                    class: "d-flex justify-center"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode("div", {
+                                        class: ["iframe-container", { "landscape": orientation.value === "landscape" }]
+                                      }, [
+                                        createVNode("div", { class: "iframe-header d-flex align-center px-2" }, [
+                                          createVNode(VIcon, {
+                                            size: "small",
+                                            class: "mr-2"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(toDisplayString(device.icon), 1)
+                                            ]),
+                                            _: 2
+                                          }, 1024),
+                                          createVNode("span", { class: "text-caption" }, toDisplayString(getDeviceDimensions(device.id)), 1),
+                                          createVNode(VSpacer),
+                                          createVNode(VBtn, {
+                                            density: "compact",
+                                            icon: "mdi-refresh",
+                                            size: "small",
+                                            variant: "text",
+                                            onClick: refreshCurrentIframe
+                                          })
+                                        ]),
+                                        displayUrl.value ? (openBlock(), createBlock("div", {
+                                          key: 0,
+                                          class: "iframe-wrapper"
+                                        }, [
+                                          tab.value === device.id ? (openBlock(), createBlock("iframe", {
+                                            src: displayUrl.value,
+                                            class: "overflow-scroll shadow rounded-b-lg",
+                                            sandbox: "allow-forms allow-same-origin allow-scripts",
+                                            scrolling: "yes",
+                                            style: getIframeStyle(device.id),
+                                            ref_for: true,
+                                            ref: (el) => {
+                                              if (el) iframeRefs.value[device.id] = el;
+                                            },
+                                            key: `${device.id}-${iframeKey.value}`
+                                          }, null, 12, ["src"])) : createCommentVNode("", true),
+                                          xFrameError.value ? (openBlock(), createBlock("div", {
+                                            key: 1,
+                                            class: "iframe-error"
+                                          }, [
+                                            createVNode(VIcon, {
+                                              color: "error",
+                                              size: "large",
+                                              class: "mb-2"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("mdi-alert-circle")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode("p", null, "This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),
+                                            createVNode(VBtn, {
+                                              color: "primary",
+                                              size: "small",
+                                              href: displayUrl.value,
+                                              target: "_blank",
+                                              class: "mt-2"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Open in a new tab ")
+                                              ]),
+                                              _: 1
+                                            }, 8, ["href"])
+                                          ])) : createCommentVNode("", true)
+                                        ])) : (openBlock(), createBlock("div", {
+                                          key: 1,
+                                          class: "iframe-placeholder d-flex flex-column align-center justify-center"
+                                        }, [
+                                          createVNode(VIcon, {
+                                            size: "large",
+                                            color: "grey-lighten-1"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode("mdi-web-off")
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode("p", { class: "text-grey-darken-1 mt-2" }, "Enter a URL to preview the site")
+                                        ]))
+                                      ], 2)
+                                    ]),
+                                    _: 2
+                                  }, 1032, ["value"]);
+                                }), 64))
+                              ]),
+                              _: 1
+                            }, 8, ["modelValue", "onUpdate:modelValue"])
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  }
+                } else {
+                  return [
+                    createVNode(VCard, {
+                      width: "100%",
+                      "max-width": "800px",
+                      class: "ma-12 pa-4",
+                      elevation: "3"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VTextField, {
+                          modelValue: url.value,
+                          "onUpdate:modelValue": ($event) => url.value = $event,
+                          label: "Enter a URL",
+                          density: "comfortable",
+                          "prepend-inner-icon": "mdi-web",
+                          variant: "outlined",
+                          placeholder: "https://example.com",
+                          clearable: "",
+                          onKeyup: withKeys(loadUrl, ["enter"])
+                        }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                        createVNode("div", { class: "d-flex flex-wrap justify-space-between align-center mt-2" }, [
+                          createVNode("div", { class: "d-flex align-center" }, [
+                            createVNode(VSwitch, {
+                              modelValue: autoRefresh.value,
+                              "onUpdate:modelValue": ($event) => autoRefresh.value = $event,
+                              color: "primary",
+                              "hide-details": "",
+                              label: "Auto-refresh",
+                              class: "mr-4"
+                            }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                            autoRefresh.value ? (openBlock(), createBlock(VSelect, {
+                              key: 0,
+                              modelValue: refreshInterval.value,
+                              "onUpdate:modelValue": ($event) => refreshInterval.value = $event,
+                              items: refreshIntervals,
+                              label: "Interval",
+                              density: "compact",
+                              variant: "outlined",
+                              "hide-details": "",
+                              style: { "width": "120px" }
+                            }, null, 8, ["modelValue", "onUpdate:modelValue"])) : createCommentVNode("", true)
+                          ]),
+                          createVNode(VBtn, {
+                            color: "primary",
+                            onClick: loadUrl,
+                            disabled: !isValidUrl.value,
+                            "prepend-icon": "mdi-eye"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" View ")
+                            ]),
+                            _: 1
+                          }, 8, ["disabled"])
+                        ])
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VCard, {
+                      width: "100%",
+                      class: "mb-4",
+                      elevation: "1"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VCardText, { class: "d-flex flex-wrap justify-space-between align-center py-2" }, {
+                          default: withCtx(() => [
+                            createVNode("div", { class: "d-flex align-center" }, [
+                              createVNode(VChipGroup, {
+                                modelValue: selectedDevices.value,
+                                "onUpdate:modelValue": ($event) => selectedDevices.value = $event,
+                                multiple: "",
+                                column: "",
+                                class: "mr-4",
+                                max: 1
+                              }, {
+                                default: withCtx(() => [
+                                  (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                                    return createVNode(VChip, {
+                                      key: device.id,
+                                      value: device.id,
+                                      filter: ""
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VIcon, { start: "" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(toDisplayString(device.icon), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1024),
+                                        createTextVNode(" " + toDisplayString(device.name), 1)
+                                      ]),
+                                      _: 2
+                                    }, 1032, ["value"]);
+                                  }), 64))
+                                ]),
+                                _: 1
+                              }, 8, ["modelValue", "onUpdate:modelValue"])
+                            ]),
+                            createVNode("div", { class: "d-flex align-center" }, [
+                              createVNode(VBtnToggle, {
+                                modelValue: orientation.value,
+                                "onUpdate:modelValue": ($event) => orientation.value = $event,
+                                color: "primary",
+                                density: "comfortable"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VBtn, {
+                                    value: "portrait",
+                                    "prepend-icon": "mdi-phone-portrait"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("Portrait")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VBtn, {
+                                    value: "landscape",
+                                    "prepend-icon": "mdi-phone-landscape"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("Landscape")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }, 8, ["modelValue", "onUpdate:modelValue"])
+                            ])
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    }),
+                    sideBySideMode.value ? (openBlock(), createBlock("div", {
+                      key: 0,
+                      class: "d-flex flex-wrap justify-center gap-4 w-100"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(selectedDevices.value, (deviceId) => {
+                        return openBlock(), createBlock("div", {
+                          key: deviceId,
+                          class: "device-container"
+                        }, [
+                          createVNode("div", {
+                            class: ["iframe-container", { "landscape": orientation.value === "landscape" }]
+                          }, [
+                            createVNode("div", { class: "iframe-header d-flex align-center px-2" }, [
+                              createVNode(VIcon, {
+                                size: "small",
+                                class: "mr-2"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(getDeviceById(deviceId).icon), 1)
+                                ]),
+                                _: 2
+                              }, 1024),
+                              createVNode("span", { class: "text-caption" }, toDisplayString(getDeviceDimensions(deviceId)), 1),
+                              createVNode(VSpacer),
+                              createVNode(VBtn, {
+                                density: "compact",
+                                icon: "mdi-refresh",
+                                size: "small",
+                                variant: "text",
+                                onClick: ($event) => refreshSpecificIframe()
+                              }, null, 8, ["onClick"])
+                            ]),
+                            displayUrl.value ? (openBlock(), createBlock("div", {
+                              key: 0,
+                              class: "iframe-wrapper"
+                            }, [
+                              (openBlock(), createBlock("iframe", {
+                                src: displayUrl.value,
+                                class: "overflow-scroll shadow rounded-b-lg",
+                                sandbox: "allow-forms allow-same-origin allow-scripts",
+                                scrolling: "yes",
+                                style: getIframeStyle(deviceId),
+                                ref_for: true,
+                                ref: (el) => {
+                                  if (el) iframeRefs.value[deviceId] = el;
+                                },
+                                key: `${deviceId}-${iframeKey.value}`
+                              }, null, 12, ["src"])),
+                              xFrameError.value ? (openBlock(), createBlock("div", {
+                                key: 0,
+                                class: "iframe-error"
+                              }, [
+                                createVNode(VIcon, {
+                                  color: "error",
+                                  size: "large",
+                                  class: "mb-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-alert-circle")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode("p", null, "This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),
+                                createVNode(VBtn, {
+                                  color: "primary",
+                                  size: "small",
+                                  href: displayUrl.value,
+                                  target: "_blank",
+                                  class: "mt-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Open in a new tab ")
+                                  ]),
+                                  _: 1
+                                }, 8, ["href"])
+                              ])) : createCommentVNode("", true)
+                            ])) : (openBlock(), createBlock("div", {
+                              key: 1,
+                              class: "iframe-placeholder d-flex flex-column align-center justify-center"
+                            }, [
+                              createVNode(VIcon, {
+                                size: "large",
+                                color: "grey-lighten-1"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-web-off")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode("p", { class: "text-grey-darken-1 mt-2" }, "Enter a URL to preview the site")
+                            ]))
+                          ], 2)
+                        ]);
+                      }), 128))
+                    ])) : (openBlock(), createBlock(VCard, {
+                      key: 1,
+                      width: "100%",
+                      class: "overflow-hidden",
+                      elevation: "3"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VTabs, {
+                          modelValue: tab.value,
+                          "onUpdate:modelValue": ($event) => tab.value = $event,
+                          density: "comfortable",
+                          "align-tabs": "center",
+                          "bg-color": "primary",
+                          "slider-color": "secondary",
+                          color: "white"
+                        }, {
+                          default: withCtx(() => [
+                            (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                              return createVNode(VTab, {
+                                key: device.id,
+                                value: device.id
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, {
+                                    icon: device.icon,
+                                    class: "mr-2"
+                                  }, null, 8, ["icon"]),
+                                  createTextVNode(" " + toDisplayString(device.name) + " ", 1),
+                                  createVNode("span", { class: "text-caption ml-1" }, "(" + toDisplayString(getDeviceDimensions(device.id)) + ")", 1)
+                                ]),
+                                _: 2
+                              }, 1032, ["value"]);
+                            }), 64))
+                          ]),
+                          _: 1
+                        }, 8, ["modelValue", "onUpdate:modelValue"]),
+                        createVNode(VWindow, {
+                          modelValue: tab.value,
+                          "onUpdate:modelValue": ($event) => tab.value = $event,
+                          class: "pa-4"
+                        }, {
+                          default: withCtx(() => [
+                            (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                              return createVNode(VWindowItem, {
+                                key: device.id,
+                                value: device.id,
+                                class: "d-flex justify-center"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode("div", {
+                                    class: ["iframe-container", { "landscape": orientation.value === "landscape" }]
+                                  }, [
+                                    createVNode("div", { class: "iframe-header d-flex align-center px-2" }, [
+                                      createVNode(VIcon, {
+                                        size: "small",
+                                        class: "mr-2"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(toDisplayString(device.icon), 1)
+                                        ]),
+                                        _: 2
+                                      }, 1024),
+                                      createVNode("span", { class: "text-caption" }, toDisplayString(getDeviceDimensions(device.id)), 1),
+                                      createVNode(VSpacer),
+                                      createVNode(VBtn, {
+                                        density: "compact",
+                                        icon: "mdi-refresh",
+                                        size: "small",
+                                        variant: "text",
+                                        onClick: refreshCurrentIframe
+                                      })
+                                    ]),
+                                    displayUrl.value ? (openBlock(), createBlock("div", {
+                                      key: 0,
+                                      class: "iframe-wrapper"
+                                    }, [
+                                      tab.value === device.id ? (openBlock(), createBlock("iframe", {
+                                        src: displayUrl.value,
+                                        class: "overflow-scroll shadow rounded-b-lg",
+                                        sandbox: "allow-forms allow-same-origin allow-scripts",
+                                        scrolling: "yes",
+                                        style: getIframeStyle(device.id),
+                                        ref_for: true,
+                                        ref: (el) => {
+                                          if (el) iframeRefs.value[device.id] = el;
+                                        },
+                                        key: `${device.id}-${iframeKey.value}`
+                                      }, null, 12, ["src"])) : createCommentVNode("", true),
+                                      xFrameError.value ? (openBlock(), createBlock("div", {
+                                        key: 1,
+                                        class: "iframe-error"
+                                      }, [
+                                        createVNode(VIcon, {
+                                          color: "error",
+                                          size: "large",
+                                          class: "mb-2"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-alert-circle")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode("p", null, "This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),
+                                        createVNode(VBtn, {
+                                          color: "primary",
+                                          size: "small",
+                                          href: displayUrl.value,
+                                          target: "_blank",
+                                          class: "mt-2"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Open in a new tab ")
+                                          ]),
+                                          _: 1
+                                        }, 8, ["href"])
+                                      ])) : createCommentVNode("", true)
+                                    ])) : (openBlock(), createBlock("div", {
+                                      key: 1,
+                                      class: "iframe-placeholder d-flex flex-column align-center justify-center"
+                                    }, [
+                                      createVNode(VIcon, {
+                                        size: "large",
+                                        color: "grey-lighten-1"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-web-off")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode("p", { class: "text-grey-darken-1 mt-2" }, "Enter a URL to preview the site")
+                                    ]))
+                                  ], 2)
+                                ]),
+                                _: 2
+                              }, 1032, ["value"]);
+                            }), 64))
+                          ]),
+                          _: 1
+                        }, 8, ["modelValue", "onUpdate:modelValue"])
+                      ]),
+                      _: 1
+                    }))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VSnackbar, {
+              modelValue: snackbar.value,
+              "onUpdate:modelValue": ($event) => snackbar.value = $event,
+              color: snackbarColor.value
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`${ssrInterpolate(snackbarText.value)}`);
+                } else {
+                  return [
+                    createTextVNode(toDisplayString(snackbarText.value), 1)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VMain, { class: "d-flex flex-column align-center justify-center" }, {
+                default: withCtx(() => [
+                  createVNode(VCard, {
+                    width: "100%",
+                    "max-width": "800px",
+                    class: "ma-12 pa-4",
+                    elevation: "3"
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VTextField, {
+                        modelValue: url.value,
+                        "onUpdate:modelValue": ($event) => url.value = $event,
+                        label: "Enter a URL",
+                        density: "comfortable",
+                        "prepend-inner-icon": "mdi-web",
+                        variant: "outlined",
+                        placeholder: "https://example.com",
+                        clearable: "",
+                        onKeyup: withKeys(loadUrl, ["enter"])
+                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode("div", { class: "d-flex flex-wrap justify-space-between align-center mt-2" }, [
+                        createVNode("div", { class: "d-flex align-center" }, [
+                          createVNode(VSwitch, {
+                            modelValue: autoRefresh.value,
+                            "onUpdate:modelValue": ($event) => autoRefresh.value = $event,
+                            color: "primary",
+                            "hide-details": "",
+                            label: "Auto-refresh",
+                            class: "mr-4"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                          autoRefresh.value ? (openBlock(), createBlock(VSelect, {
+                            key: 0,
+                            modelValue: refreshInterval.value,
+                            "onUpdate:modelValue": ($event) => refreshInterval.value = $event,
+                            items: refreshIntervals,
+                            label: "Interval",
+                            density: "compact",
+                            variant: "outlined",
+                            "hide-details": "",
+                            style: { "width": "120px" }
+                          }, null, 8, ["modelValue", "onUpdate:modelValue"])) : createCommentVNode("", true)
+                        ]),
+                        createVNode(VBtn, {
+                          color: "primary",
+                          onClick: loadUrl,
+                          disabled: !isValidUrl.value,
+                          "prepend-icon": "mdi-eye"
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode(" View ")
+                          ]),
+                          _: 1
+                        }, 8, ["disabled"])
+                      ])
+                    ]),
+                    _: 1
+                  }),
+                  createVNode(VCard, {
+                    width: "100%",
+                    class: "mb-4",
+                    elevation: "1"
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VCardText, { class: "d-flex flex-wrap justify-space-between align-center py-2" }, {
+                        default: withCtx(() => [
+                          createVNode("div", { class: "d-flex align-center" }, [
+                            createVNode(VChipGroup, {
+                              modelValue: selectedDevices.value,
+                              "onUpdate:modelValue": ($event) => selectedDevices.value = $event,
+                              multiple: "",
+                              column: "",
+                              class: "mr-4",
+                              max: 1
+                            }, {
+                              default: withCtx(() => [
+                                (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                                  return createVNode(VChip, {
+                                    key: device.id,
+                                    value: device.id,
+                                    filter: ""
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(toDisplayString(device.icon), 1)
+                                        ]),
+                                        _: 2
+                                      }, 1024),
+                                      createTextVNode(" " + toDisplayString(device.name), 1)
+                                    ]),
+                                    _: 2
+                                  }, 1032, ["value"]);
+                                }), 64))
+                              ]),
+                              _: 1
+                            }, 8, ["modelValue", "onUpdate:modelValue"])
+                          ]),
+                          createVNode("div", { class: "d-flex align-center" }, [
+                            createVNode(VBtnToggle, {
+                              modelValue: orientation.value,
+                              "onUpdate:modelValue": ($event) => orientation.value = $event,
+                              color: "primary",
+                              density: "comfortable"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VBtn, {
+                                  value: "portrait",
+                                  "prepend-icon": "mdi-phone-portrait"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("Portrait")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VBtn, {
+                                  value: "landscape",
+                                  "prepend-icon": "mdi-phone-landscape"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("Landscape")
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            }, 8, ["modelValue", "onUpdate:modelValue"])
+                          ])
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  }),
+                  sideBySideMode.value ? (openBlock(), createBlock("div", {
+                    key: 0,
+                    class: "d-flex flex-wrap justify-center gap-4 w-100"
+                  }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(selectedDevices.value, (deviceId) => {
+                      return openBlock(), createBlock("div", {
+                        key: deviceId,
+                        class: "device-container"
+                      }, [
+                        createVNode("div", {
+                          class: ["iframe-container", { "landscape": orientation.value === "landscape" }]
+                        }, [
+                          createVNode("div", { class: "iframe-header d-flex align-center px-2" }, [
+                            createVNode(VIcon, {
+                              size: "small",
+                              class: "mr-2"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(toDisplayString(getDeviceById(deviceId).icon), 1)
+                              ]),
+                              _: 2
+                            }, 1024),
+                            createVNode("span", { class: "text-caption" }, toDisplayString(getDeviceDimensions(deviceId)), 1),
+                            createVNode(VSpacer),
+                            createVNode(VBtn, {
+                              density: "compact",
+                              icon: "mdi-refresh",
+                              size: "small",
+                              variant: "text",
+                              onClick: ($event) => refreshSpecificIframe()
+                            }, null, 8, ["onClick"])
+                          ]),
+                          displayUrl.value ? (openBlock(), createBlock("div", {
+                            key: 0,
+                            class: "iframe-wrapper"
+                          }, [
+                            (openBlock(), createBlock("iframe", {
+                              src: displayUrl.value,
+                              class: "overflow-scroll shadow rounded-b-lg",
+                              sandbox: "allow-forms allow-same-origin allow-scripts",
+                              scrolling: "yes",
+                              style: getIframeStyle(deviceId),
+                              ref_for: true,
+                              ref: (el) => {
+                                if (el) iframeRefs.value[deviceId] = el;
+                              },
+                              key: `${deviceId}-${iframeKey.value}`
+                            }, null, 12, ["src"])),
+                            xFrameError.value ? (openBlock(), createBlock("div", {
+                              key: 0,
+                              class: "iframe-error"
+                            }, [
+                              createVNode(VIcon, {
+                                color: "error",
+                                size: "large",
+                                class: "mb-2"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-alert-circle")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode("p", null, "This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),
+                              createVNode(VBtn, {
+                                color: "primary",
+                                size: "small",
+                                href: displayUrl.value,
+                                target: "_blank",
+                                class: "mt-2"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(" Open in a new tab ")
+                                ]),
+                                _: 1
+                              }, 8, ["href"])
+                            ])) : createCommentVNode("", true)
+                          ])) : (openBlock(), createBlock("div", {
+                            key: 1,
+                            class: "iframe-placeholder d-flex flex-column align-center justify-center"
+                          }, [
+                            createVNode(VIcon, {
+                              size: "large",
+                              color: "grey-lighten-1"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode("mdi-web-off")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode("p", { class: "text-grey-darken-1 mt-2" }, "Enter a URL to preview the site")
+                          ]))
+                        ], 2)
+                      ]);
+                    }), 128))
+                  ])) : (openBlock(), createBlock(VCard, {
+                    key: 1,
+                    width: "100%",
+                    class: "overflow-hidden",
+                    elevation: "3"
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VTabs, {
+                        modelValue: tab.value,
+                        "onUpdate:modelValue": ($event) => tab.value = $event,
+                        density: "comfortable",
+                        "align-tabs": "center",
+                        "bg-color": "primary",
+                        "slider-color": "secondary",
+                        color: "white"
+                      }, {
+                        default: withCtx(() => [
+                          (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                            return createVNode(VTab, {
+                              key: device.id,
+                              value: device.id
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, {
+                                  icon: device.icon,
+                                  class: "mr-2"
+                                }, null, 8, ["icon"]),
+                                createTextVNode(" " + toDisplayString(device.name) + " ", 1),
+                                createVNode("span", { class: "text-caption ml-1" }, "(" + toDisplayString(getDeviceDimensions(device.id)) + ")", 1)
+                              ]),
+                              _: 2
+                            }, 1032, ["value"]);
+                          }), 64))
+                        ]),
+                        _: 1
+                      }, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode(VWindow, {
+                        modelValue: tab.value,
+                        "onUpdate:modelValue": ($event) => tab.value = $event,
+                        class: "pa-4"
+                      }, {
+                        default: withCtx(() => [
+                          (openBlock(), createBlock(Fragment, null, renderList(devices, (device) => {
+                            return createVNode(VWindowItem, {
+                              key: device.id,
+                              value: device.id,
+                              class: "d-flex justify-center"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode("div", {
+                                  class: ["iframe-container", { "landscape": orientation.value === "landscape" }]
+                                }, [
+                                  createVNode("div", { class: "iframe-header d-flex align-center px-2" }, [
+                                    createVNode(VIcon, {
+                                      size: "small",
+                                      class: "mr-2"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(toDisplayString(device.icon), 1)
+                                      ]),
+                                      _: 2
+                                    }, 1024),
+                                    createVNode("span", { class: "text-caption" }, toDisplayString(getDeviceDimensions(device.id)), 1),
+                                    createVNode(VSpacer),
+                                    createVNode(VBtn, {
+                                      density: "compact",
+                                      icon: "mdi-refresh",
+                                      size: "small",
+                                      variant: "text",
+                                      onClick: refreshCurrentIframe
+                                    })
+                                  ]),
+                                  displayUrl.value ? (openBlock(), createBlock("div", {
+                                    key: 0,
+                                    class: "iframe-wrapper"
+                                  }, [
+                                    tab.value === device.id ? (openBlock(), createBlock("iframe", {
+                                      src: displayUrl.value,
+                                      class: "overflow-scroll shadow rounded-b-lg",
+                                      sandbox: "allow-forms allow-same-origin allow-scripts",
+                                      scrolling: "yes",
+                                      style: getIframeStyle(device.id),
+                                      ref_for: true,
+                                      ref: (el) => {
+                                        if (el) iframeRefs.value[device.id] = el;
+                                      },
+                                      key: `${device.id}-${iframeKey.value}`
+                                    }, null, 12, ["src"])) : createCommentVNode("", true),
+                                    xFrameError.value ? (openBlock(), createBlock("div", {
+                                      key: 1,
+                                      class: "iframe-error"
+                                    }, [
+                                      createVNode(VIcon, {
+                                        color: "error",
+                                        size: "large",
+                                        class: "mb-2"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-alert-circle")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode("p", null, "This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'. "),
+                                      createVNode(VBtn, {
+                                        color: "primary",
+                                        size: "small",
+                                        href: displayUrl.value,
+                                        target: "_blank",
+                                        class: "mt-2"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Open in a new tab ")
+                                        ]),
+                                        _: 1
+                                      }, 8, ["href"])
+                                    ])) : createCommentVNode("", true)
+                                  ])) : (openBlock(), createBlock("div", {
+                                    key: 1,
+                                    class: "iframe-placeholder d-flex flex-column align-center justify-center"
+                                  }, [
+                                    createVNode(VIcon, {
+                                      size: "large",
+                                      color: "grey-lighten-1"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-web-off")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode("p", { class: "text-grey-darken-1 mt-2" }, "Enter a URL to preview the site")
+                                  ]))
+                                ], 2)
+                              ]),
+                              _: 2
+                            }, 1032, ["value"]);
+                          }), 64))
+                        ]),
+                        _: 1
+                      }, 8, ["modelValue", "onUpdate:modelValue"])
+                    ]),
+                    _: 1
+                  }))
+                ]),
+                _: 1
+              }),
+              createVNode(VSnackbar, {
+                modelValue: snackbar.value,
+                "onUpdate:modelValue": ($event) => snackbar.value = $event,
+                color: snackbarColor.value
+              }, {
+                default: withCtx(() => [
+                  createTextVNode(toDisplayString(snackbarText.value), 1)
+                ]),
+                _: 1
+              }, 8, ["modelValue", "onUpdate:modelValue", "color"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
 
-const o=ya.setup;ya.setup=(t,r)=>{const s=useSSRContext();return (s.modules||(s.modules=new Set)).add("pages/responsive.vue"),o?o(t,r):void 0};const a=s(ya,[["__scopeId","data-v-9252cc7a"]]);
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/responsive.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const responsive = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-9252cc7a"]]);
 
-export { a as default };;globalThis.__timing__.logEnd('Load chunks/build/responsive.vue');
+export { responsive as default };
+//# sourceMappingURL=responsive.vue.mjs.map

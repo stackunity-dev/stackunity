@@ -1,5 +1,6 @@
-globalThis.__timing__.logStart('Load chunks/build/virtual_public');import { p as publicAssetsURL } from '../routes/renderer.mjs';
+import { p as publicAssetsURL } from '../routes/renderer.mjs';
 
-const s=publicAssetsURL("/logo/devunity-title.png");
+const _imports_0 = publicAssetsURL("/logo/devunity-title.png");
 
-export { s };;globalThis.__timing__.logEnd('Load chunks/build/virtual_public');
+export { _imports_0 as _ };
+//# sourceMappingURL=virtual_public.mjs.map

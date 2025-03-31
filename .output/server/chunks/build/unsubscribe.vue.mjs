@@ -1,10 +1,10 @@
-globalThis.__timing__.logStart('Load chunks/build/unsubscribe.vue');import { defineComponent, ref, withCtx, createTextVNode, createVNode, withModifiers, toDisplayString, useSSRContext } from 'vue';
+import { defineComponent, ref, withCtx, createTextVNode, createVNode, withModifiers, toDisplayString, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrInterpolate } from 'vue/server-renderer';
-import { N as k, x, q as qe, V as j, L, U as C, b as We, a1 as Be, $ } from './server.mjs';
-import { m } from './v3.mjs';
-import { _ } from './VMain.mjs';
-import { N } from './VForm.mjs';
-import { F as Fe } from './VTextField.mjs';
+import { S as useUserStore, V as VApp, f as VCard, Z as VCardItem, g as VIcon, Y as VCardText, e as VBtn, a1 as VSnackbar, n as navigateTo } from './server.mjs';
+import { u as useHead } from './v3.mjs';
+import { V as VMain } from './VMain.mjs';
+import { V as VForm } from './VForm.mjs';
+import { V as VTextField } from './VTextField.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -13,7 +13,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -44,8 +43,583 @@ import 'unhead/utils';
 import 'devalue';
 import 'unhead/plugins';
 
-const Ve=defineComponent({__name:"unsubscribe",__ssrInlineRender:true,setup(I){m({title:"Unsubscribe - DevUnity",meta:[{name:"description",content:"Unsubscribe from the newsletter"},{name:"author",content:"DevUnity"},{name:"robots",content:"noindex, nofollow"},{name:"viewport",content:"width=device-width, initial-scale=1.0"},{name:"og:title",content:"Unsubscribe - DevUnity"},{name:"og:description",content:"Unsubscribe from the newsletter"},{name:"og:image",content:"/logo/devunity-title.png"}]});const B=k();ref(false);const o=ref(""),a=ref({show:false,text:"",color:"success"}),s=async()=>{await B.unsubscribe(o.value),a.value.show=true,a.value.text="Vous avez été désinscrit de la newsletter",a.value.color="success",$("/login");},V=()=>{$("/login");};return (ee,H,E,G)=>{H(ssrRenderComponent(x,G,{default:withCtx((te,T,J,K)=>{if(T)T(ssrRenderComponent(_,{class:"d-flex align-center justify-center",style:{"min-height":"100vh"}},{default:withCtx((c,A,D,F)=>{if(A)A(ssrRenderComponent(qe,{"max-width":"550",class:"mx-auto rounded-xl elevation-5"},{default:withCtx((d,x,z,S)=>{if(x)x(ssrRenderComponent(j,{class:"bg-primary text-center pa-6 rounded-t-xl"},{default:withCtx((p,u,U,v)=>{if(u)u(ssrRenderComponent(L,{size:"48",color:"white",class:"mb-2"},{default:withCtx((b,m,C,w)=>{if(m)m("mdi-email-remove");else return [createTextVNode("mdi-email-remove")]}),_:1},U,v)),u(`<h1 class="text-h4 text-white font-weight-bold"${v}>Se désabonner de la newsletter</h1>`);else return [createVNode(L,{size:"48",color:"white",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-email-remove")]),_:1}),createVNode("h1",{class:"text-h4 text-white font-weight-bold"},"Se désabonner de la newsletter")]}),_:1},z,S)),x(ssrRenderComponent(C,{class:"pa-6"},{default:withCtx((p,u,U,v)=>{if(u)u(`<p class="text-body-1 mb-6 text-center text-medium-emphasis"${v}> Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. </p>`),u(ssrRenderComponent(N,{onSubmit:s},{default:withCtx((b,m,C,w)=>{if(m)m(ssrRenderComponent(Fe,{modelValue:o.value,"onUpdate:modelValue":r=>o.value=r,label:"Adresse e-mail","prepend-inner-icon":"mdi-email-outline",variant:"outlined",rules:[r=>!!r||"L'email est requis",r=>/.+@.+\..+/.test(r)||"Veuillez entrer une adresse email valide"],required:"",class:"mb-6"},null,C,w)),m(`<div class="d-flex align-center justify-center ga-4"${w}>`),m(ssrRenderComponent(We,{"prepend-icon":"mdi-arrow-left",variant:"tonal",color:"primary",onClick:V},{default:withCtx((r,y,O,P)=>{if(y)y(" Annuler ");else return [createTextVNode(" Annuler ")]}),_:1},C,w)),m(ssrRenderComponent(We,{"prepend-icon":"mdi-email-remove-outline",variant:"tonal",color:"error",type:"submit",onClick:s},{default:withCtx((r,y,O,P)=>{if(y)y(" Se désabonner ");else return [createTextVNode(" Se désabonner ")]}),_:1},C,w)),m("</div>");else return [createVNode(Fe,{modelValue:o.value,"onUpdate:modelValue":r=>o.value=r,label:"Adresse e-mail","prepend-inner-icon":"mdi-email-outline",variant:"outlined",rules:[r=>!!r||"L'email est requis",r=>/.+@.+\..+/.test(r)||"Veuillez entrer une adresse email valide"],required:"",class:"mb-6"},null,8,["modelValue","onUpdate:modelValue","rules"]),createVNode("div",{class:"d-flex align-center justify-center ga-4"},[createVNode(We,{"prepend-icon":"mdi-arrow-left",variant:"tonal",color:"primary",onClick:V},{default:withCtx(()=>[createTextVNode(" Annuler ")]),_:1}),createVNode(We,{"prepend-icon":"mdi-email-remove-outline",variant:"tonal",color:"error",type:"submit",onClick:s},{default:withCtx(()=>[createTextVNode(" Se désabonner ")]),_:1})])]}),_:1},U,v));else return [createVNode("p",{class:"text-body-1 mb-6 text-center text-medium-emphasis"}," Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. "),createVNode(N,{onSubmit:withModifiers(s,["prevent"])},{default:withCtx(()=>[createVNode(Fe,{modelValue:o.value,"onUpdate:modelValue":b=>o.value=b,label:"Adresse e-mail","prepend-inner-icon":"mdi-email-outline",variant:"outlined",rules:[b=>!!b||"L'email est requis",b=>/.+@.+\..+/.test(b)||"Veuillez entrer une adresse email valide"],required:"",class:"mb-6"},null,8,["modelValue","onUpdate:modelValue","rules"]),createVNode("div",{class:"d-flex align-center justify-center ga-4"},[createVNode(We,{"prepend-icon":"mdi-arrow-left",variant:"tonal",color:"primary",onClick:V},{default:withCtx(()=>[createTextVNode(" Annuler ")]),_:1}),createVNode(We,{"prepend-icon":"mdi-email-remove-outline",variant:"tonal",color:"error",type:"submit",onClick:s},{default:withCtx(()=>[createTextVNode(" Se désabonner ")]),_:1})])]),_:1})]}),_:1},z,S)),x(ssrRenderComponent(C,{class:"text-center pt-0 pb-4"},{default:withCtx((p,u,U,v)=>{if(u)u(`<p class="text-caption text-medium-emphasis"${v}> Si vous avez des questions, n&#39;hésitez pas à nous contacter à <a href="mailto:support@example.com" class="text-primary"${v}>devunity@support.com</a></p>`);else return [createVNode("p",{class:"text-caption text-medium-emphasis"},[createTextVNode(" Si vous avez des questions, n'hésitez pas à nous contacter à "),createVNode("a",{href:"mailto:support@example.com",class:"text-primary"},"devunity@support.com")])]}),_:1},z,S));else return [createVNode(j,{class:"bg-primary text-center pa-6 rounded-t-xl"},{default:withCtx(()=>[createVNode(L,{size:"48",color:"white",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-email-remove")]),_:1}),createVNode("h1",{class:"text-h4 text-white font-weight-bold"},"Se désabonner de la newsletter")]),_:1}),createVNode(C,{class:"pa-6"},{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-6 text-center text-medium-emphasis"}," Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. "),createVNode(N,{onSubmit:withModifiers(s,["prevent"])},{default:withCtx(()=>[createVNode(Fe,{modelValue:o.value,"onUpdate:modelValue":p=>o.value=p,label:"Adresse e-mail","prepend-inner-icon":"mdi-email-outline",variant:"outlined",rules:[p=>!!p||"L'email est requis",p=>/.+@.+\..+/.test(p)||"Veuillez entrer une adresse email valide"],required:"",class:"mb-6"},null,8,["modelValue","onUpdate:modelValue","rules"]),createVNode("div",{class:"d-flex align-center justify-center ga-4"},[createVNode(We,{"prepend-icon":"mdi-arrow-left",variant:"tonal",color:"primary",onClick:V},{default:withCtx(()=>[createTextVNode(" Annuler ")]),_:1}),createVNode(We,{"prepend-icon":"mdi-email-remove-outline",variant:"tonal",color:"error",type:"submit",onClick:s},{default:withCtx(()=>[createTextVNode(" Se désabonner ")]),_:1})])]),_:1})]),_:1}),createVNode(C,{class:"text-center pt-0 pb-4"},{default:withCtx(()=>[createVNode("p",{class:"text-caption text-medium-emphasis"},[createTextVNode(" Si vous avez des questions, n'hésitez pas à nous contacter à "),createVNode("a",{href:"mailto:support@example.com",class:"text-primary"},"devunity@support.com")])]),_:1})]}),_:1},D,F)),A(ssrRenderComponent(Be,{modelValue:a.value.show,"onUpdate:modelValue":d=>a.value.show=d,color:a.value.color,timeout:"3000",location:"top right"},{default:withCtx((d,x,z,S)=>{if(x)x(`${ssrInterpolate(a.value.text)}`);else return [createTextVNode(toDisplayString(a.value.text),1)]}),_:1},D,F));else return [createVNode(qe,{"max-width":"550",class:"mx-auto rounded-xl elevation-5"},{default:withCtx(()=>[createVNode(j,{class:"bg-primary text-center pa-6 rounded-t-xl"},{default:withCtx(()=>[createVNode(L,{size:"48",color:"white",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-email-remove")]),_:1}),createVNode("h1",{class:"text-h4 text-white font-weight-bold"},"Se désabonner de la newsletter")]),_:1}),createVNode(C,{class:"pa-6"},{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-6 text-center text-medium-emphasis"}," Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. "),createVNode(N,{onSubmit:withModifiers(s,["prevent"])},{default:withCtx(()=>[createVNode(Fe,{modelValue:o.value,"onUpdate:modelValue":d=>o.value=d,label:"Adresse e-mail","prepend-inner-icon":"mdi-email-outline",variant:"outlined",rules:[d=>!!d||"L'email est requis",d=>/.+@.+\..+/.test(d)||"Veuillez entrer une adresse email valide"],required:"",class:"mb-6"},null,8,["modelValue","onUpdate:modelValue","rules"]),createVNode("div",{class:"d-flex align-center justify-center ga-4"},[createVNode(We,{"prepend-icon":"mdi-arrow-left",variant:"tonal",color:"primary",onClick:V},{default:withCtx(()=>[createTextVNode(" Annuler ")]),_:1}),createVNode(We,{"prepend-icon":"mdi-email-remove-outline",variant:"tonal",color:"error",type:"submit",onClick:s},{default:withCtx(()=>[createTextVNode(" Se désabonner ")]),_:1})])]),_:1})]),_:1}),createVNode(C,{class:"text-center pt-0 pb-4"},{default:withCtx(()=>[createVNode("p",{class:"text-caption text-medium-emphasis"},[createTextVNode(" Si vous avez des questions, n'hésitez pas à nous contacter à "),createVNode("a",{href:"mailto:support@example.com",class:"text-primary"},"devunity@support.com")])]),_:1})]),_:1}),createVNode(Be,{modelValue:a.value.show,"onUpdate:modelValue":d=>a.value.show=d,color:a.value.color,timeout:"3000",location:"top right"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.value.text),1)]),_:1},8,["modelValue","onUpdate:modelValue","color"])]}),_:1},J,K));else return [createVNode(_,{class:"d-flex align-center justify-center",style:{"min-height":"100vh"}},{default:withCtx(()=>[createVNode(qe,{"max-width":"550",class:"mx-auto rounded-xl elevation-5"},{default:withCtx(()=>[createVNode(j,{class:"bg-primary text-center pa-6 rounded-t-xl"},{default:withCtx(()=>[createVNode(L,{size:"48",color:"white",class:"mb-2"},{default:withCtx(()=>[createTextVNode("mdi-email-remove")]),_:1}),createVNode("h1",{class:"text-h4 text-white font-weight-bold"},"Se désabonner de la newsletter")]),_:1}),createVNode(C,{class:"pa-6"},{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-6 text-center text-medium-emphasis"}," Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. "),createVNode(N,{onSubmit:withModifiers(s,["prevent"])},{default:withCtx(()=>[createVNode(Fe,{modelValue:o.value,"onUpdate:modelValue":c=>o.value=c,label:"Adresse e-mail","prepend-inner-icon":"mdi-email-outline",variant:"outlined",rules:[c=>!!c||"L'email est requis",c=>/.+@.+\..+/.test(c)||"Veuillez entrer une adresse email valide"],required:"",class:"mb-6"},null,8,["modelValue","onUpdate:modelValue","rules"]),createVNode("div",{class:"d-flex align-center justify-center ga-4"},[createVNode(We,{"prepend-icon":"mdi-arrow-left",variant:"tonal",color:"primary",onClick:V},{default:withCtx(()=>[createTextVNode(" Annuler ")]),_:1}),createVNode(We,{"prepend-icon":"mdi-email-remove-outline",variant:"tonal",color:"error",type:"submit",onClick:s},{default:withCtx(()=>[createTextVNode(" Se désabonner ")]),_:1})])]),_:1})]),_:1}),createVNode(C,{class:"text-center pt-0 pb-4"},{default:withCtx(()=>[createVNode("p",{class:"text-caption text-medium-emphasis"},[createTextVNode(" Si vous avez des questions, n'hésitez pas à nous contacter à "),createVNode("a",{href:"mailto:support@example.com",class:"text-primary"},"devunity@support.com")])]),_:1})]),_:1}),createVNode(Be,{modelValue:a.value.show,"onUpdate:modelValue":c=>a.value.show=c,color:a.value.color,timeout:"3000",location:"top right"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.value.text),1)]),_:1},8,["modelValue","onUpdate:modelValue","color"])]),_:1})]}),_:1},E));}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "unsubscribe",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useHead({
+      title: "Unsubscribe - DevUnity",
+      meta: [
+        { name: "description", content: "Unsubscribe from the newsletter" },
+        { name: "author", content: "DevUnity" },
+        { name: "robots", content: "noindex, nofollow" },
+        { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+        { name: "og:title", content: "Unsubscribe - DevUnity" },
+        { name: "og:description", content: "Unsubscribe from the newsletter" },
+        { name: "og:image", content: "/logo/devunity-title.png" }
+      ]
+    });
+    const userStore = useUserStore();
+    ref(false);
+    const email = ref("");
+    const snackbar = ref({
+      show: false,
+      text: "",
+      color: "success"
+    });
+    const unsubscribe = async () => {
+      await userStore.unsubscribe(email.value);
+      snackbar.value.show = true;
+      snackbar.value.text = "Vous avez été désinscrit de la newsletter";
+      snackbar.value.color = "success";
+      navigateTo("/login");
+    };
+    const goToLogin = () => {
+      navigateTo("/login");
+    };
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(VApp, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VMain, {
+              class: "d-flex align-center justify-center",
+              style: { "min-height": "100vh" }
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VCard, {
+                    "max-width": "550",
+                    class: "mx-auto rounded-xl elevation-5"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VCardItem, { class: "bg-primary text-center pa-6 rounded-t-xl" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VIcon, {
+                                size: "48",
+                                color: "white",
+                                class: "mb-2"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`mdi-email-remove`);
+                                  } else {
+                                    return [
+                                      createTextVNode("mdi-email-remove")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(`<h1 class="text-h4 text-white font-weight-bold"${_scopeId4}>Se désabonner de la newsletter</h1>`);
+                            } else {
+                              return [
+                                createVNode(VIcon, {
+                                  size: "48",
+                                  color: "white",
+                                  class: "mb-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-email-remove")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode("h1", { class: "text-h4 text-white font-weight-bold" }, "Se désabonner de la newsletter")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCardText, { class: "pa-6" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<p class="text-body-1 mb-6 text-center text-medium-emphasis"${_scopeId4}> Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. </p>`);
+                              _push5(ssrRenderComponent(VForm, { onSubmit: unsubscribe }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VTextField, {
+                                      modelValue: email.value,
+                                      "onUpdate:modelValue": ($event) => email.value = $event,
+                                      label: "Adresse e-mail",
+                                      "prepend-inner-icon": "mdi-email-outline",
+                                      variant: "outlined",
+                                      rules: [(v) => !!v || "L'email est requis", (v) => /.+@.+\..+/.test(v) || "Veuillez entrer une adresse email valide"],
+                                      required: "",
+                                      class: "mb-6"
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(`<div class="d-flex align-center justify-center ga-4"${_scopeId5}>`);
+                                    _push6(ssrRenderComponent(VBtn, {
+                                      "prepend-icon": "mdi-arrow-left",
+                                      variant: "tonal",
+                                      color: "primary",
+                                      onClick: goToLogin
+                                    }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(` Annuler `);
+                                        } else {
+                                          return [
+                                            createTextVNode(" Annuler ")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                    _push6(ssrRenderComponent(VBtn, {
+                                      "prepend-icon": "mdi-email-remove-outline",
+                                      variant: "tonal",
+                                      color: "error",
+                                      type: "submit",
+                                      onClick: unsubscribe
+                                    }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(` Se désabonner `);
+                                        } else {
+                                          return [
+                                            createTextVNode(" Se désabonner ")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                    _push6(`</div>`);
+                                  } else {
+                                    return [
+                                      createVNode(VTextField, {
+                                        modelValue: email.value,
+                                        "onUpdate:modelValue": ($event) => email.value = $event,
+                                        label: "Adresse e-mail",
+                                        "prepend-inner-icon": "mdi-email-outline",
+                                        variant: "outlined",
+                                        rules: [(v) => !!v || "L'email est requis", (v) => /.+@.+\..+/.test(v) || "Veuillez entrer une adresse email valide"],
+                                        required: "",
+                                        class: "mb-6"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"]),
+                                      createVNode("div", { class: "d-flex align-center justify-center ga-4" }, [
+                                        createVNode(VBtn, {
+                                          "prepend-icon": "mdi-arrow-left",
+                                          variant: "tonal",
+                                          color: "primary",
+                                          onClick: goToLogin
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Annuler ")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VBtn, {
+                                          "prepend-icon": "mdi-email-remove-outline",
+                                          variant: "tonal",
+                                          color: "error",
+                                          type: "submit",
+                                          onClick: unsubscribe
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Se désabonner ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ])
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode("p", { class: "text-body-1 mb-6 text-center text-medium-emphasis" }, " Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. "),
+                                createVNode(VForm, {
+                                  onSubmit: withModifiers(unsubscribe, ["prevent"])
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VTextField, {
+                                      modelValue: email.value,
+                                      "onUpdate:modelValue": ($event) => email.value = $event,
+                                      label: "Adresse e-mail",
+                                      "prepend-inner-icon": "mdi-email-outline",
+                                      variant: "outlined",
+                                      rules: [(v) => !!v || "L'email est requis", (v) => /.+@.+\..+/.test(v) || "Veuillez entrer une adresse email valide"],
+                                      required: "",
+                                      class: "mb-6"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"]),
+                                    createVNode("div", { class: "d-flex align-center justify-center ga-4" }, [
+                                      createVNode(VBtn, {
+                                        "prepend-icon": "mdi-arrow-left",
+                                        variant: "tonal",
+                                        color: "primary",
+                                        onClick: goToLogin
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Annuler ")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VBtn, {
+                                        "prepend-icon": "mdi-email-remove-outline",
+                                        variant: "tonal",
+                                        color: "error",
+                                        type: "submit",
+                                        onClick: unsubscribe
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Se désabonner ")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ])
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCardText, { class: "text-center pt-0 pb-4" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<p class="text-caption text-medium-emphasis"${_scopeId4}> Si vous avez des questions, n&#39;hésitez pas à nous contacter à <a href="mailto:support@example.com" class="text-primary"${_scopeId4}>devunity@support.com</a></p>`);
+                            } else {
+                              return [
+                                createVNode("p", { class: "text-caption text-medium-emphasis" }, [
+                                  createTextVNode(" Si vous avez des questions, n'hésitez pas à nous contacter à "),
+                                  createVNode("a", {
+                                    href: "mailto:support@example.com",
+                                    class: "text-primary"
+                                  }, "devunity@support.com")
+                                ])
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VCardItem, { class: "bg-primary text-center pa-6 rounded-t-xl" }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, {
+                                size: "48",
+                                color: "white",
+                                class: "mb-2"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-email-remove")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode("h1", { class: "text-h4 text-white font-weight-bold" }, "Se désabonner de la newsletter")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCardText, { class: "pa-6" }, {
+                            default: withCtx(() => [
+                              createVNode("p", { class: "text-body-1 mb-6 text-center text-medium-emphasis" }, " Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. "),
+                              createVNode(VForm, {
+                                onSubmit: withModifiers(unsubscribe, ["prevent"])
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VTextField, {
+                                    modelValue: email.value,
+                                    "onUpdate:modelValue": ($event) => email.value = $event,
+                                    label: "Adresse e-mail",
+                                    "prepend-inner-icon": "mdi-email-outline",
+                                    variant: "outlined",
+                                    rules: [(v) => !!v || "L'email est requis", (v) => /.+@.+\..+/.test(v) || "Veuillez entrer une adresse email valide"],
+                                    required: "",
+                                    class: "mb-6"
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"]),
+                                  createVNode("div", { class: "d-flex align-center justify-center ga-4" }, [
+                                    createVNode(VBtn, {
+                                      "prepend-icon": "mdi-arrow-left",
+                                      variant: "tonal",
+                                      color: "primary",
+                                      onClick: goToLogin
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Annuler ")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VBtn, {
+                                      "prepend-icon": "mdi-email-remove-outline",
+                                      variant: "tonal",
+                                      color: "error",
+                                      type: "submit",
+                                      onClick: unsubscribe
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Se désabonner ")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ])
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCardText, { class: "text-center pt-0 pb-4" }, {
+                            default: withCtx(() => [
+                              createVNode("p", { class: "text-caption text-medium-emphasis" }, [
+                                createTextVNode(" Si vous avez des questions, n'hésitez pas à nous contacter à "),
+                                createVNode("a", {
+                                  href: "mailto:support@example.com",
+                                  class: "text-primary"
+                                }, "devunity@support.com")
+                              ])
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VSnackbar, {
+                    modelValue: snackbar.value.show,
+                    "onUpdate:modelValue": ($event) => snackbar.value.show = $event,
+                    color: snackbar.value.color,
+                    timeout: "3000",
+                    location: "top right"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`${ssrInterpolate(snackbar.value.text)}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(snackbar.value.text), 1)
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VCard, {
+                      "max-width": "550",
+                      class: "mx-auto rounded-xl elevation-5"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VCardItem, { class: "bg-primary text-center pa-6 rounded-t-xl" }, {
+                          default: withCtx(() => [
+                            createVNode(VIcon, {
+                              size: "48",
+                              color: "white",
+                              class: "mb-2"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode("mdi-email-remove")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode("h1", { class: "text-h4 text-white font-weight-bold" }, "Se désabonner de la newsletter")
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCardText, { class: "pa-6" }, {
+                          default: withCtx(() => [
+                            createVNode("p", { class: "text-body-1 mb-6 text-center text-medium-emphasis" }, " Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. "),
+                            createVNode(VForm, {
+                              onSubmit: withModifiers(unsubscribe, ["prevent"])
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VTextField, {
+                                  modelValue: email.value,
+                                  "onUpdate:modelValue": ($event) => email.value = $event,
+                                  label: "Adresse e-mail",
+                                  "prepend-inner-icon": "mdi-email-outline",
+                                  variant: "outlined",
+                                  rules: [(v) => !!v || "L'email est requis", (v) => /.+@.+\..+/.test(v) || "Veuillez entrer une adresse email valide"],
+                                  required: "",
+                                  class: "mb-6"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"]),
+                                createVNode("div", { class: "d-flex align-center justify-center ga-4" }, [
+                                  createVNode(VBtn, {
+                                    "prepend-icon": "mdi-arrow-left",
+                                    variant: "tonal",
+                                    color: "primary",
+                                    onClick: goToLogin
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Annuler ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VBtn, {
+                                    "prepend-icon": "mdi-email-remove-outline",
+                                    variant: "tonal",
+                                    color: "error",
+                                    type: "submit",
+                                    onClick: unsubscribe
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Se désabonner ")
+                                    ]),
+                                    _: 1
+                                  })
+                                ])
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCardText, { class: "text-center pt-0 pb-4" }, {
+                          default: withCtx(() => [
+                            createVNode("p", { class: "text-caption text-medium-emphasis" }, [
+                              createTextVNode(" Si vous avez des questions, n'hésitez pas à nous contacter à "),
+                              createVNode("a", {
+                                href: "mailto:support@example.com",
+                                class: "text-primary"
+                              }, "devunity@support.com")
+                            ])
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VSnackbar, {
+                      modelValue: snackbar.value.show,
+                      "onUpdate:modelValue": ($event) => snackbar.value.show = $event,
+                      color: snackbar.value.color,
+                      timeout: "3000",
+                      location: "top right"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(snackbar.value.text), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["modelValue", "onUpdate:modelValue", "color"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VMain, {
+                class: "d-flex align-center justify-center",
+                style: { "min-height": "100vh" }
+              }, {
+                default: withCtx(() => [
+                  createVNode(VCard, {
+                    "max-width": "550",
+                    class: "mx-auto rounded-xl elevation-5"
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VCardItem, { class: "bg-primary text-center pa-6 rounded-t-xl" }, {
+                        default: withCtx(() => [
+                          createVNode(VIcon, {
+                            size: "48",
+                            color: "white",
+                            class: "mb-2"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode("mdi-email-remove")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode("h1", { class: "text-h4 text-white font-weight-bold" }, "Se désabonner de la newsletter")
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCardText, { class: "pa-6" }, {
+                        default: withCtx(() => [
+                          createVNode("p", { class: "text-body-1 mb-6 text-center text-medium-emphasis" }, " Nous sommes désolés de vous voir partir. Veuillez confirmer votre adresse e-mail pour vous désabonner de notre newsletter. "),
+                          createVNode(VForm, {
+                            onSubmit: withModifiers(unsubscribe, ["prevent"])
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VTextField, {
+                                modelValue: email.value,
+                                "onUpdate:modelValue": ($event) => email.value = $event,
+                                label: "Adresse e-mail",
+                                "prepend-inner-icon": "mdi-email-outline",
+                                variant: "outlined",
+                                rules: [(v) => !!v || "L'email est requis", (v) => /.+@.+\..+/.test(v) || "Veuillez entrer une adresse email valide"],
+                                required: "",
+                                class: "mb-6"
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "rules"]),
+                              createVNode("div", { class: "d-flex align-center justify-center ga-4" }, [
+                                createVNode(VBtn, {
+                                  "prepend-icon": "mdi-arrow-left",
+                                  variant: "tonal",
+                                  color: "primary",
+                                  onClick: goToLogin
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Annuler ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VBtn, {
+                                  "prepend-icon": "mdi-email-remove-outline",
+                                  variant: "tonal",
+                                  color: "error",
+                                  type: "submit",
+                                  onClick: unsubscribe
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Se désabonner ")
+                                  ]),
+                                  _: 1
+                                })
+                              ])
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCardText, { class: "text-center pt-0 pb-4" }, {
+                        default: withCtx(() => [
+                          createVNode("p", { class: "text-caption text-medium-emphasis" }, [
+                            createTextVNode(" Si vous avez des questions, n'hésitez pas à nous contacter à "),
+                            createVNode("a", {
+                              href: "mailto:support@example.com",
+                              class: "text-primary"
+                            }, "devunity@support.com")
+                          ])
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  }),
+                  createVNode(VSnackbar, {
+                    modelValue: snackbar.value.show,
+                    "onUpdate:modelValue": ($event) => snackbar.value.show = $event,
+                    color: snackbar.value.color,
+                    timeout: "3000",
+                    location: "top right"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(snackbar.value.text), 1)
+                    ]),
+                    _: 1
+                  }, 8, ["modelValue", "onUpdate:modelValue", "color"])
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
 
-const s=Ve.setup;Ve.setup=(o,u)=>{const e=useSSRContext();return (e.modules||(e.modules=new Set)).add("pages/unsubscribe.vue"),s?s(o,u):void 0};
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/unsubscribe.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
 
-export { Ve as default };;globalThis.__timing__.logEnd('Load chunks/build/unsubscribe.vue');
+export { _sfc_main as default };
+//# sourceMappingURL=unsubscribe.vue.mjs.map

@@ -1,18 +1,18 @@
-globalThis.__timing__.logStart('Load chunks/build/snippetsView.vue');import { s } from './client-only.mjs';
+import { _ as __nuxt_component_0 } from './client-only.mjs';
 import { defineComponent, defineAsyncComponent, ref, watch, nextTick, computed, withCtx, createTextVNode, createVNode, unref, toDisplayString, mergeProps, createBlock, createCommentVNode, openBlock, resolveDynamicComponent, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrInterpolate } from 'vue/server-renderer';
-import He from 'highlight.js';
-import { f } from './snackbar.vue.mjs';
-import { N as k, bP as N, x, c, b as We, L, Q as Ke, R as ot, P, q as qe, Y as r, bq as y, U as C, bl as re, bg as s$1, br as U, a0 as f$1, $, s as s$2 } from './server.mjs';
-import { m } from './v3.mjs';
-import { Z } from './VAppBar.mjs';
-import { b } from './VToolbar.mjs';
-import { q } from './VTooltip.mjs';
-import { a as at, i as ie } from './VSelect.mjs';
-import { _ } from './VMain.mjs';
-import { j as je } from './VChip.mjs';
-import { x as x$1 } from './VContainer.mjs';
-import { x as x$2, A } from './VCol.mjs';
+import hljs from 'highlight.js';
+import { S as Snackbar } from './snackbar.vue.mjs';
+import { S as useUserStore, bP as useRoute, V as VApp, d as VSpacer, e as VBtn, g as VIcon, T as VList, U as VListItem, h as VDivider, f as VCard, $ as VCardTitle, bq as VCardSubtitle, Y as VCardText, bl as VProgressCircular, bg as VFadeTransition, br as VDialog, a0 as VCardActions, n as navigateTo, _ as _export_sfc } from './server.mjs';
+import { u as useHead } from './v3.mjs';
+import { V as VAppBar } from './VAppBar.mjs';
+import { b as VToolbarTitle } from './VToolbar.mjs';
+import { V as VTooltip } from './VTooltip.mjs';
+import { V as VSelect, a as VMenu } from './VSelect.mjs';
+import { V as VMain } from './VMain.mjs';
+import { V as VChip } from './VChip.mjs';
+import { V as VContainer } from './VContainer.mjs';
+import { V as VRow, a as VCol } from './VCol.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -21,7 +21,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -54,10 +53,1513 @@ import 'unhead/plugins';
 import './VTextField.mjs';
 import './VCheckboxBtn.mjs';
 
-const Tl=defineComponent({__name:"snippetsView",__ssrInlineRender:true,setup(Ge){const L$1=k(),pe=defineAsyncComponent(()=>import('monaco-editor-vue3')),$$1=ref(false),K=ref(""),O=ref("success"),S=ref(false),de=ref(null);m({title:"Snippet - DevUnity",meta:[{name:"description",content:"View and edit your snippets"},{name:"keywords",content:"snippet, code snippet, code, snippets, edit, view"},{name:"author",content:"DevUnity"},{name:"robots",content:"index, follow"},{name:"viewport",content:"width=device-width, initial-scale=1.0"},{name:"og:title",content:"Snippet - DevUnity"},{name:"og:description",content:"View and edit your snippets"},{name:"og:image",content:"/logo/devunity-title.png"}],link:[{rel:"canonical",href:"https://devunity.com/snippets"}]});const Q=N(),_e=Number(Q.query.id),T=Q.query.type&&(Q.query.type==="world"||Q.query.type==="personal")?Q.query.type:"world",h=ref("// Your code here"),x$3=ref("javascript"),ye=ref({automaticLayout:true,fontSize:14,lineHeight:24,minimap:{enabled:true},scrollBeyondLastLine:false,roundedSelection:true,padding:{top:16}}),c$1=ref(false),De=ref(Date.now()),se=ref(["html","css","javascript","typescript","vue"]),ge=ref(false),i=ref(null),ze=()=>{de.value;};watch([h,x$3],()=>{nextTick(ze);});function ce(){c$1.value=!c$1.value,De.value=Date.now();}computed(()=>h.value?He.highlight(h.value,{language:x$3.value,ignoreIllegals:true}).value:"");const W=async()=>{try{await L$1.updateSnippet(_e,h.value,T),K.value="Snippet mis à jour avec succès",O.value="success",$$1.value=!0,c$1.value=!1;}catch(P){console.error(P.message,P.stack),K.value="Erreur lors de la mise à jour du snippet",O.value="error",$$1.value=true;}},X=()=>{S.value=true;},Z$1=async()=>{try{await L$1.deleteSnippet(_e,T),S.value=!1,K.value="Snippet supprimé avec succès",O.value="success",$$1.value=!0,setTimeout(()=>{$("/snippets");},1e3);}catch(P){console.error(P.message,P.stack),K.value="Erreur lors de la suppression du snippet",O.value="error",$$1.value=true;}};return (P$1,Ue,Te,Be)=>{const F=s;Ue(ssrRenderComponent(x,Be,{default:withCtx((Je,I,te,ae)=>{if(I)I(ssrRenderComponent(Z,{flat:"",color:"primary",elevation:"2"},{default:withCtx((y,g,D,z)=>{if(g)g(ssrRenderComponent(b,{class:"text-h5 font-weight-bold"},{default:withCtx((k,r,f,m)=>{if(r)r(" Code Snippet Editor ");else return [createTextVNode(" Code Snippet Editor ")]}),_:1},D,z)),g(ssrRenderComponent(c,null,null,D,z)),g(ssrRenderComponent(We,{icon:"",class:"mr-2",to:"/snippets"},{default:withCtx((k,r,f,m)=>{if(r)r(ssrRenderComponent(L,null,{default:withCtx((E,o,C,v)=>{if(o)o("mdi-arrow-left");else return [createTextVNode("mdi-arrow-left")]}),_:1},f,m)),r(ssrRenderComponent(q,{activator:"parent",location:"bottom"},{default:withCtx((E,o,C,v)=>{if(o)o("Back to Snippets");else return [createTextVNode("Back to Snippets")]}),_:1},f,m));else return [createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-arrow-left")]),_:1}),createVNode(q,{activator:"parent",location:"bottom"},{default:withCtx(()=>[createTextVNode("Back to Snippets")]),_:1})]}),_:1},D,z)),g(ssrRenderComponent(at,{modelValue:x$3.value,"onUpdate:modelValue":k=>x$3.value=k,items:se.value,label:"Language",style:{"max-width":"200px"},variant:"outlined",density:"comfortable",class:"mx-4","hide-details":""},null,D,z)),unref(T)==="personal"?g(ssrRenderComponent(We,{color:c$1.value?"success":"white",variant:c$1.value?"flat":"outlined",onClick:ce,class:"mx-2",disabled:!i.value},{default:withCtx((k,r,f,m)=>{if(r)r(ssrRenderComponent(L,{icon:c$1.value?"mdi-check":"mdi-pencil",start:""},null,f,m)),r(` ${ssrInterpolate(c$1.value?"Save":"Edit")}`);else return [createVNode(L,{icon:c$1.value?"mdi-check":"mdi-pencil",start:""},null,8,["icon"]),createTextVNode(" "+toDisplayString(c$1.value?"Save":"Edit"),1)]}),_:1},D,z)):g("<!---->"),unref(T)==="personal"?g(ssrRenderComponent(ie,null,{activator:withCtx(({props:k},r,f,m)=>{if(r)r(ssrRenderComponent(We,mergeProps(k,{icon:"mdi-dots-vertical",variant:"text",disabled:!i.value}),null,f,m));else return [createVNode(We,mergeProps(k,{icon:"mdi-dots-vertical",variant:"text",disabled:!i.value}),null,16,["disabled"])]}),default:withCtx((k,r,f,m)=>{if(r)r(ssrRenderComponent(Ke,null,{default:withCtx((E,o,C,v)=>{if(o)o(ssrRenderComponent(ot,{"prepend-icon":"mdi-content-save",onClick:W},{default:withCtx((j,d,A,q)=>{if(d)d(" Save ");else return [createTextVNode(" Save ")]}),_:1},C,v)),o(ssrRenderComponent(P,null,null,C,v)),o(ssrRenderComponent(ot,{"prepend-icon":"mdi-delete",onClick:X,color:"error"},{default:withCtx((j,d,A,q)=>{if(d)d(" Delete ");else return [createTextVNode(" Delete ")]}),_:1},C,v));else return [createVNode(ot,{"prepend-icon":"mdi-content-save",onClick:W},{default:withCtx(()=>[createTextVNode(" Save ")]),_:1}),createVNode(P),createVNode(ot,{"prepend-icon":"mdi-delete",onClick:X,color:"error"},{default:withCtx(()=>[createTextVNode(" Delete ")]),_:1})]}),_:1},f,m));else return [createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,{"prepend-icon":"mdi-content-save",onClick:W},{default:withCtx(()=>[createTextVNode(" Save ")]),_:1}),createVNode(P),createVNode(ot,{"prepend-icon":"mdi-delete",onClick:X,color:"error"},{default:withCtx(()=>[createTextVNode(" Delete ")]),_:1})]),_:1})]}),_:1},D,z)):g("<!---->");else return [createVNode(b,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(" Code Snippet Editor ")]),_:1}),createVNode(c),createVNode(We,{icon:"",class:"mr-2",to:"/snippets"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-arrow-left")]),_:1}),createVNode(q,{activator:"parent",location:"bottom"},{default:withCtx(()=>[createTextVNode("Back to Snippets")]),_:1})]),_:1}),createVNode(at,{modelValue:x$3.value,"onUpdate:modelValue":k=>x$3.value=k,items:se.value,label:"Language",style:{"max-width":"200px"},variant:"outlined",density:"comfortable",class:"mx-4","hide-details":""},null,8,["modelValue","onUpdate:modelValue","items"]),unref(T)==="personal"?(openBlock(),createBlock(We,{key:0,color:c$1.value?"success":"white",variant:c$1.value?"flat":"outlined",onClick:ce,class:"mx-2",disabled:!i.value},{default:withCtx(()=>[createVNode(L,{icon:c$1.value?"mdi-check":"mdi-pencil",start:""},null,8,["icon"]),createTextVNode(" "+toDisplayString(c$1.value?"Save":"Edit"),1)]),_:1},8,["color","variant","disabled"])):createCommentVNode("",true),unref(T)==="personal"?(openBlock(),createBlock(ie,{key:1},{activator:withCtx(({props:k})=>[createVNode(We,mergeProps(k,{icon:"mdi-dots-vertical",variant:"text",disabled:!i.value}),null,16,["disabled"])]),default:withCtx(()=>[createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,{"prepend-icon":"mdi-content-save",onClick:W},{default:withCtx(()=>[createTextVNode(" Save ")]),_:1}),createVNode(P),createVNode(ot,{"prepend-icon":"mdi-delete",onClick:X,color:"error"},{default:withCtx(()=>[createTextVNode(" Delete ")]),_:1})]),_:1})]),_:1})):createCommentVNode("",true)]}),_:1},te,ae)),I(ssrRenderComponent(_,null,{default:withCtx((y$1,g,D,z)=>{if(g)i.value?g(ssrRenderComponent(qe,{class:"rounded-lg pa-4 ma-4"},{default:withCtx((k,r$1,f,m)=>{if(r$1)r$1(ssrRenderComponent(r,{class:"text-h5 font-weight-bold"},{default:withCtx((E,o,C,v)=>{if(o)o(`${ssrInterpolate(i.value.title)}`);else return [createTextVNode(toDisplayString(i.value.title),1)]}),_:1},f,m)),r$1(ssrRenderComponent(y,{class:"pt-2"},{default:withCtx((E,o,C,v)=>{if(o)o(ssrRenderComponent(je,{size:"small",color:"primary",variant:"flat",class:"mr-2"},{default:withCtx((j,d,A,q)=>{if(d)d(`${ssrInterpolate(i.value.framework)}`);else return [createTextVNode(toDisplayString(i.value.framework),1)]}),_:1},C,v)),o(ssrRenderComponent(je,{size:"small",variant:"outlined",class:"mr-2"},{default:withCtx((j,d,A,q)=>{if(d)d(ssrRenderComponent(L,{start:"",size:"small"},{default:withCtx((Ee,ee,Le,$e)=>{if(ee)ee("mdi-calendar");else return [createTextVNode("mdi-calendar")]}),_:1},A,q)),d(` ${ssrInterpolate(unref(L$1).formatDate(i.value.snippet_date||""))}`);else return [createVNode(L,{start:"",size:"small"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createTextVNode(" "+toDisplayString(unref(L$1).formatDate(i.value.snippet_date||"")),1)]}),_:1},C,v));else return [createVNode(je,{size:"small",color:"primary",variant:"flat",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.framework),1)]),_:1}),createVNode(je,{size:"small",variant:"outlined",class:"mr-2"},{default:withCtx(()=>[createVNode(L,{start:"",size:"small"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createTextVNode(" "+toDisplayString(unref(L$1).formatDate(i.value.snippet_date||"")),1)]),_:1})]}),_:1},f,m)),r$1(ssrRenderComponent(P,{class:"my-4"},null,f,m)),r$1(ssrRenderComponent(C,null,{default:withCtx((E,o,C,v)=>{if(o)o(`${ssrInterpolate(i.value.description)}`);else return [createTextVNode(toDisplayString(i.value.description),1)]}),_:1},f,m));else return [createVNode(r,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.title),1)]),_:1}),createVNode(y,{class:"pt-2"},{default:withCtx(()=>[createVNode(je,{size:"small",color:"primary",variant:"flat",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.framework),1)]),_:1}),createVNode(je,{size:"small",variant:"outlined",class:"mr-2"},{default:withCtx(()=>[createVNode(L,{start:"",size:"small"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createTextVNode(" "+toDisplayString(unref(L$1).formatDate(i.value.snippet_date||"")),1)]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode(C,null,{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.description),1)]),_:1})]}),_:1},D,z)):g("<!---->"),g(ssrRenderComponent(F,null,{},D,z));else return [i.value?(openBlock(),createBlock(qe,{key:0,class:"rounded-lg pa-4 ma-4"},{default:withCtx(()=>[createVNode(r,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.title),1)]),_:1}),createVNode(y,{class:"pt-2"},{default:withCtx(()=>[createVNode(je,{size:"small",color:"primary",variant:"flat",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.framework),1)]),_:1}),createVNode(je,{size:"small",variant:"outlined",class:"mr-2"},{default:withCtx(()=>[createVNode(L,{start:"",size:"small"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createTextVNode(" "+toDisplayString(unref(L$1).formatDate(i.value.snippet_date||"")),1)]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode(C,null,{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.description),1)]),_:1})]),_:1})):createCommentVNode("",true),createVNode(F,null,{default:withCtx(()=>[createVNode(x$1,{fluid:"",class:"pa-4 fill-height"},{default:withCtx(()=>[ge.value?(openBlock(),createBlock(x$2,{key:0,class:"fill-height",align:"center",justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",class:"text-center"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary",size:"64"}),createVNode("div",{class:"mt-4 text-h6"},"Loading snippet...")]),_:1})]),_:1})):i.value?(openBlock(),createBlock(x$2,{key:2,"no-gutters":"",class:"fill-height"},{default:withCtx(()=>[createVNode(A,null,{default:withCtx(()=>[createVNode(qe,{class:"fill-height",elevation:"3"},{default:withCtx(()=>[createVNode(s$1,null,{default:withCtx(()=>[c$1.value&&unref(T)==="personal"?(openBlock(),createBlock(F,{key:0},{default:withCtx(()=>[(openBlock(),createBlock(resolveDynamicComponent(unref(pe)),{value:h.value,"onUpdate:value":k=>h.value=k,key:c$1.value,language:x$3.value,theme:"vs-dark",options:ye.value,class:"fill-height editor-container"},null,40,["value","onUpdate:value","language","options"]))]),_:1})):(openBlock(),createBlock(F,{key:1},{default:withCtx(()=>[createVNode("div",{class:"code-viewer"},[createVNode("div",{class:"code-header pa-4"},[createVNode(je,{color:"primary",size:"small",variant:"flat",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(x$3.value),1)]),_:1}),createVNode(je,{size:"small",variant:"outlined"},{default:withCtx(()=>[createTextVNode(toDisplayString(h.value.split(`
-`).length)+" lines ",1)]),_:1})]),createVNode(P),createVNode("div",{class:"pa-6 code-content"},[createVNode("pre",null,[createVNode("code",{ref_key:"codeBlock",ref:de,class:x$3.value},toDisplayString(h.value),3)])])])]),_:1}))]),_:1})]),_:1})]),_:1})]),_:1})):(openBlock(),createBlock(x$2,{key:1,class:"fill-height",align:"center",justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",class:"text-center"},{default:withCtx(()=>[createVNode(L,{color:"error",size:"64"},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createVNode("div",{class:"mt-4 text-h6"},"Snippet not found"),createVNode(We,{color:"primary",class:"mt-4",to:"/snippets"},{default:withCtx(()=>[createTextVNode(" Back to snippets ")]),_:1})]),_:1})]),_:1}))]),_:1})]),_:1})]}),_:1},te,ae)),I(ssrRenderComponent(f,{modelValue:$$1.value,"onUpdate:modelValue":y=>$$1.value=y,text:K.value,color:O.value,timeout:2e3},null,te,ae)),I(ssrRenderComponent(U,{modelValue:S.value,"onUpdate:modelValue":y=>S.value=y,"max-width":"400"},{default:withCtx((y,g,D,z)=>{if(g)g(ssrRenderComponent(qe,null,{default:withCtx((k,r$1,f,m)=>{if(r$1)r$1(ssrRenderComponent(r,{class:"bg-error text-white"},{default:withCtx((E,o,C,v)=>{if(o)o(ssrRenderComponent(L,{start:""},{default:withCtx((j,d,A,q)=>{if(d)d("mdi-alert-circle");else return [createTextVNode("mdi-alert-circle")]}),_:1},C,v)),o(" Delete Confirmation ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createTextVNode(" Delete Confirmation ")]}),_:1},f,m)),r$1(ssrRenderComponent(C,{class:"pt-4"},{default:withCtx((E,o,C,v)=>{if(o)o(`<p data-v-1698d373${v}>Are you sure you want to delete this snippet? This action cannot be undone.</p>`);else return [createVNode("p",null,"Are you sure you want to delete this snippet? This action cannot be undone.")]}),_:1},f,m)),r$1(ssrRenderComponent(f$1,null,{default:withCtx((E,o,C,v)=>{if(o)o(ssrRenderComponent(c,null,null,C,v)),o(ssrRenderComponent(We,{variant:"text",onClick:j=>S.value=false},{default:withCtx((j,d,A,q)=>{if(d)d("Cancel");else return [createTextVNode("Cancel")]}),_:1},C,v)),o(ssrRenderComponent(We,{color:"error",onClick:Z$1},{default:withCtx((j,d,A,q)=>{if(d)d(ssrRenderComponent(L,{start:""},{default:withCtx((Ee,ee,Le,$e)=>{if(ee)ee("mdi-delete");else return [createTextVNode("mdi-delete")]}),_:1},A,q)),d(" Delete ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Delete ")]}),_:1},C,v));else return [createVNode(c),createVNode(We,{variant:"text",onClick:j=>S.value=false},{default:withCtx(()=>[createTextVNode("Cancel")]),_:1},8,["onClick"]),createVNode(We,{color:"error",onClick:Z$1},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Delete ")]),_:1})]}),_:1},f,m));else return [createVNode(r,{class:"bg-error text-white"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createTextVNode(" Delete Confirmation ")]),_:1}),createVNode(C,{class:"pt-4"},{default:withCtx(()=>[createVNode("p",null,"Are you sure you want to delete this snippet? This action cannot be undone.")]),_:1}),createVNode(f$1,null,{default:withCtx(()=>[createVNode(c),createVNode(We,{variant:"text",onClick:E=>S.value=false},{default:withCtx(()=>[createTextVNode("Cancel")]),_:1},8,["onClick"]),createVNode(We,{color:"error",onClick:Z$1},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Delete ")]),_:1})]),_:1})]}),_:1},D,z));else return [createVNode(qe,null,{default:withCtx(()=>[createVNode(r,{class:"bg-error text-white"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createTextVNode(" Delete Confirmation ")]),_:1}),createVNode(C,{class:"pt-4"},{default:withCtx(()=>[createVNode("p",null,"Are you sure you want to delete this snippet? This action cannot be undone.")]),_:1}),createVNode(f$1,null,{default:withCtx(()=>[createVNode(c),createVNode(We,{variant:"text",onClick:k=>S.value=false},{default:withCtx(()=>[createTextVNode("Cancel")]),_:1},8,["onClick"]),createVNode(We,{color:"error",onClick:Z$1},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Delete ")]),_:1})]),_:1})]),_:1})]}),_:1},te,ae));else return [createVNode(Z,{flat:"",color:"primary",elevation:"2"},{default:withCtx(()=>[createVNode(b,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(" Code Snippet Editor ")]),_:1}),createVNode(c),createVNode(We,{icon:"",class:"mr-2",to:"/snippets"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-arrow-left")]),_:1}),createVNode(q,{activator:"parent",location:"bottom"},{default:withCtx(()=>[createTextVNode("Back to Snippets")]),_:1})]),_:1}),createVNode(at,{modelValue:x$3.value,"onUpdate:modelValue":y=>x$3.value=y,items:se.value,label:"Language",style:{"max-width":"200px"},variant:"outlined",density:"comfortable",class:"mx-4","hide-details":""},null,8,["modelValue","onUpdate:modelValue","items"]),unref(T)==="personal"?(openBlock(),createBlock(We,{key:0,color:c$1.value?"success":"white",variant:c$1.value?"flat":"outlined",onClick:ce,class:"mx-2",disabled:!i.value},{default:withCtx(()=>[createVNode(L,{icon:c$1.value?"mdi-check":"mdi-pencil",start:""},null,8,["icon"]),createTextVNode(" "+toDisplayString(c$1.value?"Save":"Edit"),1)]),_:1},8,["color","variant","disabled"])):createCommentVNode("",true),unref(T)==="personal"?(openBlock(),createBlock(ie,{key:1},{activator:withCtx(({props:y})=>[createVNode(We,mergeProps(y,{icon:"mdi-dots-vertical",variant:"text",disabled:!i.value}),null,16,["disabled"])]),default:withCtx(()=>[createVNode(Ke,null,{default:withCtx(()=>[createVNode(ot,{"prepend-icon":"mdi-content-save",onClick:W},{default:withCtx(()=>[createTextVNode(" Save ")]),_:1}),createVNode(P),createVNode(ot,{"prepend-icon":"mdi-delete",onClick:X,color:"error"},{default:withCtx(()=>[createTextVNode(" Delete ")]),_:1})]),_:1})]),_:1})):createCommentVNode("",true)]),_:1}),createVNode(_,null,{default:withCtx(()=>[i.value?(openBlock(),createBlock(qe,{key:0,class:"rounded-lg pa-4 ma-4"},{default:withCtx(()=>[createVNode(r,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.title),1)]),_:1}),createVNode(y,{class:"pt-2"},{default:withCtx(()=>[createVNode(je,{size:"small",color:"primary",variant:"flat",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.framework),1)]),_:1}),createVNode(je,{size:"small",variant:"outlined",class:"mr-2"},{default:withCtx(()=>[createVNode(L,{start:"",size:"small"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createTextVNode(" "+toDisplayString(unref(L$1).formatDate(i.value.snippet_date||"")),1)]),_:1})]),_:1}),createVNode(P,{class:"my-4"}),createVNode(C,null,{default:withCtx(()=>[createTextVNode(toDisplayString(i.value.description),1)]),_:1})]),_:1})):createCommentVNode("",true),createVNode(F,null,{default:withCtx(()=>[createVNode(x$1,{fluid:"",class:"pa-4 fill-height"},{default:withCtx(()=>[ge.value?(openBlock(),createBlock(x$2,{key:0,class:"fill-height",align:"center",justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",class:"text-center"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary",size:"64"}),createVNode("div",{class:"mt-4 text-h6"},"Loading snippet...")]),_:1})]),_:1})):i.value?(openBlock(),createBlock(x$2,{key:2,"no-gutters":"",class:"fill-height"},{default:withCtx(()=>[createVNode(A,null,{default:withCtx(()=>[createVNode(qe,{class:"fill-height",elevation:"3"},{default:withCtx(()=>[createVNode(s$1,null,{default:withCtx(()=>[c$1.value&&unref(T)==="personal"?(openBlock(),createBlock(F,{key:0},{default:withCtx(()=>[(openBlock(),createBlock(resolveDynamicComponent(unref(pe)),{value:h.value,"onUpdate:value":y=>h.value=y,key:c$1.value,language:x$3.value,theme:"vs-dark",options:ye.value,class:"fill-height editor-container"},null,40,["value","onUpdate:value","language","options"]))]),_:1})):(openBlock(),createBlock(F,{key:1},{default:withCtx(()=>[createVNode("div",{class:"code-viewer"},[createVNode("div",{class:"code-header pa-4"},[createVNode(je,{color:"primary",size:"small",variant:"flat",class:"mr-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(x$3.value),1)]),_:1}),createVNode(je,{size:"small",variant:"outlined"},{default:withCtx(()=>[createTextVNode(toDisplayString(h.value.split(`
-`).length)+" lines ",1)]),_:1})]),createVNode(P),createVNode("div",{class:"pa-6 code-content"},[createVNode("pre",null,[createVNode("code",{ref_key:"codeBlock",ref:de,class:x$3.value},toDisplayString(h.value),3)])])])]),_:1}))]),_:1})]),_:1})]),_:1})]),_:1})):(openBlock(),createBlock(x$2,{key:1,class:"fill-height",align:"center",justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",class:"text-center"},{default:withCtx(()=>[createVNode(L,{color:"error",size:"64"},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createVNode("div",{class:"mt-4 text-h6"},"Snippet not found"),createVNode(We,{color:"primary",class:"mt-4",to:"/snippets"},{default:withCtx(()=>[createTextVNode(" Back to snippets ")]),_:1})]),_:1})]),_:1}))]),_:1})]),_:1})]),_:1}),createVNode(f,{modelValue:$$1.value,"onUpdate:modelValue":y=>$$1.value=y,text:K.value,color:O.value,timeout:2e3},null,8,["modelValue","onUpdate:modelValue","text","color"]),createVNode(U,{modelValue:S.value,"onUpdate:modelValue":y=>S.value=y,"max-width":"400"},{default:withCtx(()=>[createVNode(qe,null,{default:withCtx(()=>[createVNode(r,{class:"bg-error text-white"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createTextVNode(" Delete Confirmation ")]),_:1}),createVNode(C,{class:"pt-4"},{default:withCtx(()=>[createVNode("p",null,"Are you sure you want to delete this snippet? This action cannot be undone.")]),_:1}),createVNode(f$1,null,{default:withCtx(()=>[createVNode(c),createVNode(We,{variant:"text",onClick:y=>S.value=false},{default:withCtx(()=>[createTextVNode("Cancel")]),_:1},8,["onClick"]),createVNode(We,{color:"error",onClick:Z$1},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Delete ")]),_:1})]),_:1})]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"])]}),_:1},Te));}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "snippetsView",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const userStore = useUserStore();
+    const MonacoEditor = defineAsyncComponent(() => import('monaco-editor-vue3'));
+    const snackbar = ref(false);
+    const snackbarText = ref("");
+    const snackbarColor = ref("success");
+    const deleteDialog = ref(false);
+    const codeBlock = ref(null);
+    useHead({
+      title: "Snippet - DevUnity",
+      meta: [
+        { name: "description", content: "View and edit your snippets" },
+        { name: "keywords", content: "snippet, code snippet, code, snippets, edit, view" },
+        { name: "author", content: "DevUnity" },
+        { name: "robots", content: "index, follow" },
+        { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+        { name: "og:title", content: "Snippet - DevUnity" },
+        { name: "og:description", content: "View and edit your snippets" },
+        { name: "og:image", content: "/logo/devunity-title.png" }
+      ],
+      link: [
+        { rel: "canonical", href: "https://devunity.com/snippets" }
+      ]
+    });
+    const route = useRoute();
+    const snippetId = Number(route.query.id);
+    const snippetType = route.query.type && (route.query.type === "world" || route.query.type === "personal") ? route.query.type : "world";
+    const code = ref(`// Your code here`);
+    const selectedLanguage = ref("javascript");
+    const editorOptions = ref({
+      automaticLayout: true,
+      fontSize: 14,
+      lineHeight: 24,
+      minimap: { enabled: true },
+      scrollBeyondLastLine: false,
+      roundedSelection: true,
+      padding: { top: 16 }
+    });
+    const editMode = ref(false);
+    const monacoKey = ref(Date.now());
+    const languages = ref(["html", "css", "javascript", "typescript", "vue"]);
+    const isLoading = ref(false);
+    const snippetData = ref(null);
+    const applyHighlight = () => {
+      if (codeBlock.value && false) ;
+    };
+    watch([code, selectedLanguage], () => {
+      nextTick(applyHighlight);
+    });
+    function toggleEdit() {
+      editMode.value = !editMode.value;
+      monacoKey.value = Date.now();
+    }
+    computed(() => {
+      if (!code.value) return "";
+      const highlighted = hljs.highlight(code.value, {
+        language: selectedLanguage.value,
+        ignoreIllegals: true
+      });
+      return highlighted.value;
+    });
+    const updateSnippet = async () => {
+      try {
+        await userStore.updateSnippet(snippetId, code.value, snippetType);
+        snackbarText.value = "Snippet mis à jour avec succès";
+        snackbarColor.value = "success";
+        snackbar.value = true;
+        editMode.value = false;
+      } catch (err) {
+        console.error(err.message, err.stack);
+        snackbarText.value = "Erreur lors de la mise à jour du snippet";
+        snackbarColor.value = "error";
+        snackbar.value = true;
+      }
+    };
+    const deleteSnippet = () => {
+      deleteDialog.value = true;
+    };
+    const confirmDeleteSnippet = async () => {
+      try {
+        await userStore.deleteSnippet(snippetId, snippetType);
+        deleteDialog.value = false;
+        snackbarText.value = "Snippet supprimé avec succès";
+        snackbarColor.value = "success";
+        snackbar.value = true;
+        setTimeout(() => {
+          navigateTo("/snippets");
+        }, 1e3);
+      } catch (err) {
+        console.error(err.message, err.stack);
+        snackbarText.value = "Erreur lors de la suppression du snippet";
+        snackbarColor.value = "error";
+        snackbar.value = true;
+      }
+    };
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_client_only = __nuxt_component_0;
+      _push(ssrRenderComponent(VApp, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VAppBar, {
+              flat: "",
+              color: "primary",
+              elevation: "2"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VToolbarTitle, { class: "text-h5 font-weight-bold" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(` Code Snippet Editor `);
+                      } else {
+                        return [
+                          createTextVNode(" Code Snippet Editor ")
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VSpacer, null, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VBtn, {
+                    icon: "",
+                    class: "mr-2",
+                    to: "/snippets"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VIcon, null, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`mdi-arrow-left`);
+                            } else {
+                              return [
+                                createTextVNode("mdi-arrow-left")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VTooltip, {
+                          activator: "parent",
+                          location: "bottom"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`Back to Snippets`);
+                            } else {
+                              return [
+                                createTextVNode("Back to Snippets")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VIcon, null, {
+                            default: withCtx(() => [
+                              createTextVNode("mdi-arrow-left")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VTooltip, {
+                            activator: "parent",
+                            location: "bottom"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode("Back to Snippets")
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VSelect, {
+                    modelValue: selectedLanguage.value,
+                    "onUpdate:modelValue": ($event) => selectedLanguage.value = $event,
+                    items: languages.value,
+                    label: "Language",
+                    style: { "max-width": "200px" },
+                    variant: "outlined",
+                    density: "comfortable",
+                    class: "mx-4",
+                    "hide-details": ""
+                  }, null, _parent3, _scopeId2));
+                  if (unref(snippetType) === "personal") {
+                    _push3(ssrRenderComponent(VBtn, {
+                      color: editMode.value ? "success" : "white",
+                      variant: editMode.value ? "flat" : "outlined",
+                      onClick: toggleEdit,
+                      class: "mx-2",
+                      disabled: !snippetData.value
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(ssrRenderComponent(VIcon, {
+                            icon: editMode.value ? "mdi-check" : "mdi-pencil",
+                            start: ""
+                          }, null, _parent4, _scopeId3));
+                          _push4(` ${ssrInterpolate(editMode.value ? "Save" : "Edit")}`);
+                        } else {
+                          return [
+                            createVNode(VIcon, {
+                              icon: editMode.value ? "mdi-check" : "mdi-pencil",
+                              start: ""
+                            }, null, 8, ["icon"]),
+                            createTextVNode(" " + toDisplayString(editMode.value ? "Save" : "Edit"), 1)
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  if (unref(snippetType) === "personal") {
+                    _push3(ssrRenderComponent(VMenu, null, {
+                      activator: withCtx(({ props }, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(ssrRenderComponent(VBtn, mergeProps(props, {
+                            icon: "mdi-dots-vertical",
+                            variant: "text",
+                            disabled: !snippetData.value
+                          }), null, _parent4, _scopeId3));
+                        } else {
+                          return [
+                            createVNode(VBtn, mergeProps(props, {
+                              icon: "mdi-dots-vertical",
+                              variant: "text",
+                              disabled: !snippetData.value
+                            }), null, 16, ["disabled"])
+                          ];
+                        }
+                      }),
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(ssrRenderComponent(VList, null, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(ssrRenderComponent(VListItem, {
+                                  "prepend-icon": "mdi-content-save",
+                                  onClick: updateSnippet
+                                }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(` Save `);
+                                    } else {
+                                      return [
+                                        createTextVNode(" Save ")
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(ssrRenderComponent(VDivider, null, null, _parent5, _scopeId4));
+                                _push5(ssrRenderComponent(VListItem, {
+                                  "prepend-icon": "mdi-delete",
+                                  onClick: deleteSnippet,
+                                  color: "error"
+                                }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(` Delete `);
+                                    } else {
+                                      return [
+                                        createTextVNode(" Delete ")
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                              } else {
+                                return [
+                                  createVNode(VListItem, {
+                                    "prepend-icon": "mdi-content-save",
+                                    onClick: updateSnippet
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Save ")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VDivider),
+                                  createVNode(VListItem, {
+                                    "prepend-icon": "mdi-delete",
+                                    onClick: deleteSnippet,
+                                    color: "error"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Delete ")
+                                    ]),
+                                    _: 1
+                                  })
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                        } else {
+                          return [
+                            createVNode(VList, null, {
+                              default: withCtx(() => [
+                                createVNode(VListItem, {
+                                  "prepend-icon": "mdi-content-save",
+                                  onClick: updateSnippet
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Save ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VDivider),
+                                createVNode(VListItem, {
+                                  "prepend-icon": "mdi-delete",
+                                  onClick: deleteSnippet,
+                                  color: "error"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Delete ")
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                } else {
+                  return [
+                    createVNode(VToolbarTitle, { class: "text-h5 font-weight-bold" }, {
+                      default: withCtx(() => [
+                        createTextVNode(" Code Snippet Editor ")
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VSpacer),
+                    createVNode(VBtn, {
+                      icon: "",
+                      class: "mr-2",
+                      to: "/snippets"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VIcon, null, {
+                          default: withCtx(() => [
+                            createTextVNode("mdi-arrow-left")
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VTooltip, {
+                          activator: "parent",
+                          location: "bottom"
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode("Back to Snippets")
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VSelect, {
+                      modelValue: selectedLanguage.value,
+                      "onUpdate:modelValue": ($event) => selectedLanguage.value = $event,
+                      items: languages.value,
+                      label: "Language",
+                      style: { "max-width": "200px" },
+                      variant: "outlined",
+                      density: "comfortable",
+                      class: "mx-4",
+                      "hide-details": ""
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "items"]),
+                    unref(snippetType) === "personal" ? (openBlock(), createBlock(VBtn, {
+                      key: 0,
+                      color: editMode.value ? "success" : "white",
+                      variant: editMode.value ? "flat" : "outlined",
+                      onClick: toggleEdit,
+                      class: "mx-2",
+                      disabled: !snippetData.value
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VIcon, {
+                          icon: editMode.value ? "mdi-check" : "mdi-pencil",
+                          start: ""
+                        }, null, 8, ["icon"]),
+                        createTextVNode(" " + toDisplayString(editMode.value ? "Save" : "Edit"), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["color", "variant", "disabled"])) : createCommentVNode("", true),
+                    unref(snippetType) === "personal" ? (openBlock(), createBlock(VMenu, { key: 1 }, {
+                      activator: withCtx(({ props }) => [
+                        createVNode(VBtn, mergeProps(props, {
+                          icon: "mdi-dots-vertical",
+                          variant: "text",
+                          disabled: !snippetData.value
+                        }), null, 16, ["disabled"])
+                      ]),
+                      default: withCtx(() => [
+                        createVNode(VList, null, {
+                          default: withCtx(() => [
+                            createVNode(VListItem, {
+                              "prepend-icon": "mdi-content-save",
+                              onClick: updateSnippet
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" Save ")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VDivider),
+                            createVNode(VListItem, {
+                              "prepend-icon": "mdi-delete",
+                              onClick: deleteSnippet,
+                              color: "error"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" Delete ")
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })) : createCommentVNode("", true)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VMain, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (snippetData.value) {
+                    _push3(ssrRenderComponent(VCard, { class: "rounded-lg pa-4 ma-4" }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(ssrRenderComponent(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(`${ssrInterpolate(snippetData.value.title)}`);
+                              } else {
+                                return [
+                                  createTextVNode(toDisplayString(snippetData.value.title), 1)
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                          _push4(ssrRenderComponent(VCardSubtitle, { class: "pt-2" }, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(ssrRenderComponent(VChip, {
+                                  size: "small",
+                                  color: "primary",
+                                  variant: "flat",
+                                  class: "mr-2"
+                                }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(`${ssrInterpolate(snippetData.value.framework)}`);
+                                    } else {
+                                      return [
+                                        createTextVNode(toDisplayString(snippetData.value.framework), 1)
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(ssrRenderComponent(VChip, {
+                                  size: "small",
+                                  variant: "outlined",
+                                  class: "mr-2"
+                                }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VIcon, {
+                                        start: "",
+                                        size: "small"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(`mdi-calendar`);
+                                          } else {
+                                            return [
+                                              createTextVNode("mdi-calendar")
+                                            ];
+                                          }
+                                        }),
+                                        _: 1
+                                      }, _parent6, _scopeId5));
+                                      _push6(` ${ssrInterpolate(unref(userStore).formatDate(snippetData.value.snippet_date || ""))}`);
+                                    } else {
+                                      return [
+                                        createVNode(VIcon, {
+                                          start: "",
+                                          size: "small"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("mdi-calendar")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(" " + toDisplayString(unref(userStore).formatDate(snippetData.value.snippet_date || "")), 1)
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                              } else {
+                                return [
+                                  createVNode(VChip, {
+                                    size: "small",
+                                    color: "primary",
+                                    variant: "flat",
+                                    class: "mr-2"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(toDisplayString(snippetData.value.framework), 1)
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VChip, {
+                                    size: "small",
+                                    variant: "outlined",
+                                    class: "mr-2"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, {
+                                        start: "",
+                                        size: "small"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-calendar")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" " + toDisplayString(unref(userStore).formatDate(snippetData.value.snippet_date || "")), 1)
+                                    ]),
+                                    _: 1
+                                  })
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                          _push4(ssrRenderComponent(VDivider, { class: "my-4" }, null, _parent4, _scopeId3));
+                          _push4(ssrRenderComponent(VCardText, null, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(`${ssrInterpolate(snippetData.value.description)}`);
+                              } else {
+                                return [
+                                  createTextVNode(toDisplayString(snippetData.value.description), 1)
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                        } else {
+                          return [
+                            createVNode(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                              default: withCtx(() => [
+                                createTextVNode(toDisplayString(snippetData.value.title), 1)
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VCardSubtitle, { class: "pt-2" }, {
+                              default: withCtx(() => [
+                                createVNode(VChip, {
+                                  size: "small",
+                                  color: "primary",
+                                  variant: "flat",
+                                  class: "mr-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(snippetData.value.framework), 1)
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VChip, {
+                                  size: "small",
+                                  variant: "outlined",
+                                  class: "mr-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, {
+                                      start: "",
+                                      size: "small"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-calendar")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" " + toDisplayString(unref(userStore).formatDate(snippetData.value.snippet_date || "")), 1)
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VDivider, { class: "my-4" }),
+                            createVNode(VCardText, null, {
+                              default: withCtx(() => [
+                                createTextVNode(toDisplayString(snippetData.value.description), 1)
+                              ]),
+                              _: 1
+                            })
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  _push3(ssrRenderComponent(_component_client_only, null, {}, _parent3, _scopeId2));
+                } else {
+                  return [
+                    snippetData.value ? (openBlock(), createBlock(VCard, {
+                      key: 0,
+                      class: "rounded-lg pa-4 ma-4"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                          default: withCtx(() => [
+                            createTextVNode(toDisplayString(snippetData.value.title), 1)
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCardSubtitle, { class: "pt-2" }, {
+                          default: withCtx(() => [
+                            createVNode(VChip, {
+                              size: "small",
+                              color: "primary",
+                              variant: "flat",
+                              class: "mr-2"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(toDisplayString(snippetData.value.framework), 1)
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VChip, {
+                              size: "small",
+                              variant: "outlined",
+                              class: "mr-2"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, {
+                                  start: "",
+                                  size: "small"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-calendar")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" " + toDisplayString(unref(userStore).formatDate(snippetData.value.snippet_date || "")), 1)
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VDivider, { class: "my-4" }),
+                        createVNode(VCardText, null, {
+                          default: withCtx(() => [
+                            createTextVNode(toDisplayString(snippetData.value.description), 1)
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })) : createCommentVNode("", true),
+                    createVNode(_component_client_only, null, {
+                      default: withCtx(() => [
+                        createVNode(VContainer, {
+                          fluid: "",
+                          class: "pa-4 fill-height"
+                        }, {
+                          default: withCtx(() => [
+                            isLoading.value ? (openBlock(), createBlock(VRow, {
+                              key: 0,
+                              class: "fill-height",
+                              align: "center",
+                              justify: "center"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  class: "text-center"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VProgressCircular, {
+                                      indeterminate: "",
+                                      color: "primary",
+                                      size: "64"
+                                    }),
+                                    createVNode("div", { class: "mt-4 text-h6" }, "Loading snippet...")
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })) : !snippetData.value ? (openBlock(), createBlock(VRow, {
+                              key: 1,
+                              class: "fill-height",
+                              align: "center",
+                              justify: "center"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  class: "text-center"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, {
+                                      color: "error",
+                                      size: "64"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-alert-circle")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode("div", { class: "mt-4 text-h6" }, "Snippet not found"),
+                                    createVNode(VBtn, {
+                                      color: "primary",
+                                      class: "mt-4",
+                                      to: "/snippets"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Back to snippets ")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })) : (openBlock(), createBlock(VRow, {
+                              key: 2,
+                              "no-gutters": "",
+                              class: "fill-height"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VCol, null, {
+                                  default: withCtx(() => [
+                                    createVNode(VCard, {
+                                      class: "fill-height",
+                                      elevation: "3"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VFadeTransition, null, {
+                                          default: withCtx(() => [
+                                            editMode.value && unref(snippetType) === "personal" ? (openBlock(), createBlock(_component_client_only, { key: 0 }, {
+                                              default: withCtx(() => [
+                                                (openBlock(), createBlock(resolveDynamicComponent(unref(MonacoEditor)), {
+                                                  value: code.value,
+                                                  "onUpdate:value": ($event) => code.value = $event,
+                                                  key: editMode.value,
+                                                  language: selectedLanguage.value,
+                                                  theme: "vs-dark",
+                                                  options: editorOptions.value,
+                                                  class: "fill-height editor-container"
+                                                }, null, 40, ["value", "onUpdate:value", "language", "options"]))
+                                              ]),
+                                              _: 1
+                                            })) : (openBlock(), createBlock(_component_client_only, { key: 1 }, {
+                                              default: withCtx(() => [
+                                                createVNode("div", { class: "code-viewer" }, [
+                                                  createVNode("div", { class: "code-header pa-4" }, [
+                                                    createVNode(VChip, {
+                                                      color: "primary",
+                                                      size: "small",
+                                                      variant: "flat",
+                                                      class: "mr-2"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(selectedLanguage.value), 1)
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode(VChip, {
+                                                      size: "small",
+                                                      variant: "outlined"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(code.value.split("\n").length) + " lines ", 1)
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  createVNode(VDivider),
+                                                  createVNode("div", { class: "pa-6 code-content" }, [
+                                                    createVNode("pre", null, [
+                                                      createVNode("code", {
+                                                        ref_key: "codeBlock",
+                                                        ref: codeBlock,
+                                                        class: selectedLanguage.value
+                                                      }, toDisplayString(code.value), 3)
+                                                    ])
+                                                  ])
+                                                ])
+                                              ]),
+                                              _: 1
+                                            }))
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            }))
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Snackbar, {
+              modelValue: snackbar.value,
+              "onUpdate:modelValue": ($event) => snackbar.value = $event,
+              text: snackbarText.value,
+              color: snackbarColor.value,
+              timeout: 2e3
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VDialog, {
+              modelValue: deleteDialog.value,
+              "onUpdate:modelValue": ($event) => deleteDialog.value = $event,
+              "max-width": "400"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VCard, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VCardTitle, { class: "bg-error text-white" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VIcon, { start: "" }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`mdi-alert-circle`);
+                                  } else {
+                                    return [
+                                      createTextVNode("mdi-alert-circle")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(` Delete Confirmation `);
+                            } else {
+                              return [
+                                createVNode(VIcon, { start: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-alert-circle")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Delete Confirmation ")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCardText, { class: "pt-4" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<p data-v-1698d373${_scopeId4}>Are you sure you want to delete this snippet? This action cannot be undone.</p>`);
+                            } else {
+                              return [
+                                createVNode("p", null, "Are you sure you want to delete this snippet? This action cannot be undone.")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCardActions, null, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VSpacer, null, null, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                variant: "text",
+                                onClick: ($event) => deleteDialog.value = false
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`Cancel`);
+                                  } else {
+                                    return [
+                                      createTextVNode("Cancel")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                color: "error",
+                                onClick: confirmDeleteSnippet
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VIcon, { start: "" }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-delete`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-delete")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                    _push6(` Delete `);
+                                  } else {
+                                    return [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-delete")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Delete ")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VSpacer),
+                                createVNode(VBtn, {
+                                  variant: "text",
+                                  onClick: ($event) => deleteDialog.value = false
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("Cancel")
+                                  ]),
+                                  _: 1
+                                }, 8, ["onClick"]),
+                                createVNode(VBtn, {
+                                  color: "error",
+                                  onClick: confirmDeleteSnippet
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, { start: "" }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-delete")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" Delete ")
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VCardTitle, { class: "bg-error text-white" }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, { start: "" }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-alert-circle")
+                                ]),
+                                _: 1
+                              }),
+                              createTextVNode(" Delete Confirmation ")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCardText, { class: "pt-4" }, {
+                            default: withCtx(() => [
+                              createVNode("p", null, "Are you sure you want to delete this snippet? This action cannot be undone.")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCardActions, null, {
+                            default: withCtx(() => [
+                              createVNode(VSpacer),
+                              createVNode(VBtn, {
+                                variant: "text",
+                                onClick: ($event) => deleteDialog.value = false
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode("Cancel")
+                                ]),
+                                _: 1
+                              }, 8, ["onClick"]),
+                              createVNode(VBtn, {
+                                color: "error",
+                                onClick: confirmDeleteSnippet
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, { start: "" }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-delete")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" Delete ")
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VCard, null, {
+                      default: withCtx(() => [
+                        createVNode(VCardTitle, { class: "bg-error text-white" }, {
+                          default: withCtx(() => [
+                            createVNode(VIcon, { start: "" }, {
+                              default: withCtx(() => [
+                                createTextVNode("mdi-alert-circle")
+                              ]),
+                              _: 1
+                            }),
+                            createTextVNode(" Delete Confirmation ")
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCardText, { class: "pt-4" }, {
+                          default: withCtx(() => [
+                            createVNode("p", null, "Are you sure you want to delete this snippet? This action cannot be undone.")
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCardActions, null, {
+                          default: withCtx(() => [
+                            createVNode(VSpacer),
+                            createVNode(VBtn, {
+                              variant: "text",
+                              onClick: ($event) => deleteDialog.value = false
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode("Cancel")
+                              ]),
+                              _: 1
+                            }, 8, ["onClick"]),
+                            createVNode(VBtn, {
+                              color: "error",
+                              onClick: confirmDeleteSnippet
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, { start: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-delete")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Delete ")
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VAppBar, {
+                flat: "",
+                color: "primary",
+                elevation: "2"
+              }, {
+                default: withCtx(() => [
+                  createVNode(VToolbarTitle, { class: "text-h5 font-weight-bold" }, {
+                    default: withCtx(() => [
+                      createTextVNode(" Code Snippet Editor ")
+                    ]),
+                    _: 1
+                  }),
+                  createVNode(VSpacer),
+                  createVNode(VBtn, {
+                    icon: "",
+                    class: "mr-2",
+                    to: "/snippets"
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VIcon, null, {
+                        default: withCtx(() => [
+                          createTextVNode("mdi-arrow-left")
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VTooltip, {
+                        activator: "parent",
+                        location: "bottom"
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode("Back to Snippets")
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  }),
+                  createVNode(VSelect, {
+                    modelValue: selectedLanguage.value,
+                    "onUpdate:modelValue": ($event) => selectedLanguage.value = $event,
+                    items: languages.value,
+                    label: "Language",
+                    style: { "max-width": "200px" },
+                    variant: "outlined",
+                    density: "comfortable",
+                    class: "mx-4",
+                    "hide-details": ""
+                  }, null, 8, ["modelValue", "onUpdate:modelValue", "items"]),
+                  unref(snippetType) === "personal" ? (openBlock(), createBlock(VBtn, {
+                    key: 0,
+                    color: editMode.value ? "success" : "white",
+                    variant: editMode.value ? "flat" : "outlined",
+                    onClick: toggleEdit,
+                    class: "mx-2",
+                    disabled: !snippetData.value
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VIcon, {
+                        icon: editMode.value ? "mdi-check" : "mdi-pencil",
+                        start: ""
+                      }, null, 8, ["icon"]),
+                      createTextVNode(" " + toDisplayString(editMode.value ? "Save" : "Edit"), 1)
+                    ]),
+                    _: 1
+                  }, 8, ["color", "variant", "disabled"])) : createCommentVNode("", true),
+                  unref(snippetType) === "personal" ? (openBlock(), createBlock(VMenu, { key: 1 }, {
+                    activator: withCtx(({ props }) => [
+                      createVNode(VBtn, mergeProps(props, {
+                        icon: "mdi-dots-vertical",
+                        variant: "text",
+                        disabled: !snippetData.value
+                      }), null, 16, ["disabled"])
+                    ]),
+                    default: withCtx(() => [
+                      createVNode(VList, null, {
+                        default: withCtx(() => [
+                          createVNode(VListItem, {
+                            "prepend-icon": "mdi-content-save",
+                            onClick: updateSnippet
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Save ")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VDivider),
+                          createVNode(VListItem, {
+                            "prepend-icon": "mdi-delete",
+                            onClick: deleteSnippet,
+                            color: "error"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Delete ")
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })) : createCommentVNode("", true)
+                ]),
+                _: 1
+              }),
+              createVNode(VMain, null, {
+                default: withCtx(() => [
+                  snippetData.value ? (openBlock(), createBlock(VCard, {
+                    key: 0,
+                    class: "rounded-lg pa-4 ma-4"
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                        default: withCtx(() => [
+                          createTextVNode(toDisplayString(snippetData.value.title), 1)
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCardSubtitle, { class: "pt-2" }, {
+                        default: withCtx(() => [
+                          createVNode(VChip, {
+                            size: "small",
+                            color: "primary",
+                            variant: "flat",
+                            class: "mr-2"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(toDisplayString(snippetData.value.framework), 1)
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VChip, {
+                            size: "small",
+                            variant: "outlined",
+                            class: "mr-2"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, {
+                                start: "",
+                                size: "small"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-calendar")
+                                ]),
+                                _: 1
+                              }),
+                              createTextVNode(" " + toDisplayString(unref(userStore).formatDate(snippetData.value.snippet_date || "")), 1)
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VDivider, { class: "my-4" }),
+                      createVNode(VCardText, null, {
+                        default: withCtx(() => [
+                          createTextVNode(toDisplayString(snippetData.value.description), 1)
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })) : createCommentVNode("", true),
+                  createVNode(_component_client_only, null, {
+                    default: withCtx(() => [
+                      createVNode(VContainer, {
+                        fluid: "",
+                        class: "pa-4 fill-height"
+                      }, {
+                        default: withCtx(() => [
+                          isLoading.value ? (openBlock(), createBlock(VRow, {
+                            key: 0,
+                            class: "fill-height",
+                            align: "center",
+                            justify: "center"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                class: "text-center"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VProgressCircular, {
+                                    indeterminate: "",
+                                    color: "primary",
+                                    size: "64"
+                                  }),
+                                  createVNode("div", { class: "mt-4 text-h6" }, "Loading snippet...")
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })) : !snippetData.value ? (openBlock(), createBlock(VRow, {
+                            key: 1,
+                            class: "fill-height",
+                            align: "center",
+                            justify: "center"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                class: "text-center"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, {
+                                    color: "error",
+                                    size: "64"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-alert-circle")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode("div", { class: "mt-4 text-h6" }, "Snippet not found"),
+                                  createVNode(VBtn, {
+                                    color: "primary",
+                                    class: "mt-4",
+                                    to: "/snippets"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Back to snippets ")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })) : (openBlock(), createBlock(VRow, {
+                            key: 2,
+                            "no-gutters": "",
+                            class: "fill-height"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VCol, null, {
+                                default: withCtx(() => [
+                                  createVNode(VCard, {
+                                    class: "fill-height",
+                                    elevation: "3"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VFadeTransition, null, {
+                                        default: withCtx(() => [
+                                          editMode.value && unref(snippetType) === "personal" ? (openBlock(), createBlock(_component_client_only, { key: 0 }, {
+                                            default: withCtx(() => [
+                                              (openBlock(), createBlock(resolveDynamicComponent(unref(MonacoEditor)), {
+                                                value: code.value,
+                                                "onUpdate:value": ($event) => code.value = $event,
+                                                key: editMode.value,
+                                                language: selectedLanguage.value,
+                                                theme: "vs-dark",
+                                                options: editorOptions.value,
+                                                class: "fill-height editor-container"
+                                              }, null, 40, ["value", "onUpdate:value", "language", "options"]))
+                                            ]),
+                                            _: 1
+                                          })) : (openBlock(), createBlock(_component_client_only, { key: 1 }, {
+                                            default: withCtx(() => [
+                                              createVNode("div", { class: "code-viewer" }, [
+                                                createVNode("div", { class: "code-header pa-4" }, [
+                                                  createVNode(VChip, {
+                                                    color: "primary",
+                                                    size: "small",
+                                                    variant: "flat",
+                                                    class: "mr-2"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(selectedLanguage.value), 1)
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode(VChip, {
+                                                    size: "small",
+                                                    variant: "outlined"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(code.value.split("\n").length) + " lines ", 1)
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                createVNode(VDivider),
+                                                createVNode("div", { class: "pa-6 code-content" }, [
+                                                  createVNode("pre", null, [
+                                                    createVNode("code", {
+                                                      ref_key: "codeBlock",
+                                                      ref: codeBlock,
+                                                      class: selectedLanguage.value
+                                                    }, toDisplayString(code.value), 3)
+                                                  ])
+                                                ])
+                                              ])
+                                            ]),
+                                            _: 1
+                                          }))
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }))
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }),
+              createVNode(Snackbar, {
+                modelValue: snackbar.value,
+                "onUpdate:modelValue": ($event) => snackbar.value = $event,
+                text: snackbarText.value,
+                color: snackbarColor.value,
+                timeout: 2e3
+              }, null, 8, ["modelValue", "onUpdate:modelValue", "text", "color"]),
+              createVNode(VDialog, {
+                modelValue: deleteDialog.value,
+                "onUpdate:modelValue": ($event) => deleteDialog.value = $event,
+                "max-width": "400"
+              }, {
+                default: withCtx(() => [
+                  createVNode(VCard, null, {
+                    default: withCtx(() => [
+                      createVNode(VCardTitle, { class: "bg-error text-white" }, {
+                        default: withCtx(() => [
+                          createVNode(VIcon, { start: "" }, {
+                            default: withCtx(() => [
+                              createTextVNode("mdi-alert-circle")
+                            ]),
+                            _: 1
+                          }),
+                          createTextVNode(" Delete Confirmation ")
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCardText, { class: "pt-4" }, {
+                        default: withCtx(() => [
+                          createVNode("p", null, "Are you sure you want to delete this snippet? This action cannot be undone.")
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCardActions, null, {
+                        default: withCtx(() => [
+                          createVNode(VSpacer),
+                          createVNode(VBtn, {
+                            variant: "text",
+                            onClick: ($event) => deleteDialog.value = false
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode("Cancel")
+                            ]),
+                            _: 1
+                          }, 8, ["onClick"]),
+                          createVNode(VBtn, {
+                            color: "error",
+                            onClick: confirmDeleteSnippet
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, { start: "" }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-delete")
+                                ]),
+                                _: 1
+                              }),
+                              createTextVNode(" Delete ")
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }, 8, ["modelValue", "onUpdate:modelValue"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
 
-const t=Tl.setup;Tl.setup=(o,p)=>{const s=useSSRContext();return (s.modules||(s.modules=new Set)).add("pages/snippetsView.vue"),t?t(o,p):void 0};const u=s$2(Tl,[["__scopeId","data-v-1698d373"]]);
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/snippetsView.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const snippetsView = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-1698d373"]]);
 
-export { u as default };;globalThis.__timing__.logEnd('Load chunks/build/snippetsView.vue');
+export { snippetsView as default };
+//# sourceMappingURL=snippetsView.vue.mjs.map

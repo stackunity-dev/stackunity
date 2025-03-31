@@ -1,14 +1,14 @@
-globalThis.__timing__.logStart('Load chunks/build/privacy.vue');import { z } from './nuxt-link.mjs';
+import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { defineComponent, withCtx, createVNode, createTextVNode, toDisplayString, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderAttr, ssrInterpolate } from 'vue/server-renderer';
-import { s } from './virtual_public.mjs';
-import { m } from './v3.mjs';
-import { x, c, b as We, q as qe, s as s$1 } from './server.mjs';
-import { Z } from './VAppBar.mjs';
-import { x as x$1 } from './VContainer.mjs';
-import { _ } from './VMain.mjs';
-import { x as x$2, A } from './VCol.mjs';
-import { t as te } from './VFooter.mjs';
+import { _ as _imports_0 } from './virtual_public.mjs';
+import { u as useHead } from './v3.mjs';
+import { V as VApp, d as VSpacer, e as VBtn, f as VCard, _ as _export_sfc } from './server.mjs';
+import { V as VAppBar } from './VAppBar.mjs';
+import { V as VContainer } from './VContainer.mjs';
+import { V as VMain } from './VMain.mjs';
+import { V as VRow, a as VCol } from './VCol.mjs';
+import { V as VFooter } from './VFooter.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -17,7 +17,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -49,8 +48,845 @@ import 'vue-router';
 import 'deep-pick-omit';
 import './VToolbar.mjs';
 
-const ft=defineComponent({__name:"privacy",__ssrInlineRender:true,setup(G){return m({title:"Privacy Policy - DevUnity",meta:[{name:"description",content:"Learn how DevUnity collects, uses, and protects your personal data when you use our platform."},{name:"keywords",content:"DevUnity, privacy, policy, data protection, personal data"},{name:"author",content:"DevUnity"},{name:"robots",content:"index, follow"},{name:"viewport",content:"width=device-width, initial-scale=1.0"},{name:"og:title",content:"Privacy Policy - DevUnity"},{name:"og:description",content:"Learn how DevUnity collects, uses, and protects your personal data when you use our platform."}]}),(J,H,F,V)=>{const i=z;H(ssrRenderComponent(x,V,{default:withCtx((K,w,C,D)=>{if(w)w(ssrRenderComponent(Z,{app:"",flat:"",elevation:"2",color:"surface"},{default:withCtx(($,c$1,y,p)=>{if(c$1)c$1(ssrRenderComponent(x$1,{class:"d-flex align-center py-0 my-0"},{default:withCtx((k,l,d,u)=>{if(l)l(ssrRenderComponent(i,{to:"/",class:"text-decoration-none"},{default:withCtx((U,m,P,b)=>{if(m)m(`<div class="d-flex align-center" data-v-a031c454${b}><img${ssrRenderAttr("src",s)} alt="DevUnity title" width="150" data-v-a031c454${b}></div>`);else return [createVNode("div",{class:"d-flex align-center"},[createVNode("img",{src:s,alt:"DevUnity title",width:"150"})])]}),_:1},d,u)),l(ssrRenderComponent(c,null,null,d,u)),l(ssrRenderComponent(We,{color:"primary",to:"/",class:"ml-4"},{default:withCtx((U,m,P,b)=>{if(m)m("Back to Home");else return [createTextVNode("Back to Home")]}),_:1},d,u));else return [createVNode(i,{to:"/",class:"text-decoration-none"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode("img",{src:s,alt:"DevUnity title",width:"150"})])]),_:1}),createVNode(c),createVNode(We,{color:"primary",to:"/",class:"ml-4"},{default:withCtx(()=>[createTextVNode("Back to Home")]),_:1})]}),_:1},y,p));else return [createVNode(x$1,{class:"d-flex align-center py-0 my-0"},{default:withCtx(()=>[createVNode(i,{to:"/",class:"text-decoration-none"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode("img",{src:s,alt:"DevUnity title",width:"150"})])]),_:1}),createVNode(c),createVNode(We,{color:"primary",to:"/",class:"ml-4"},{default:withCtx(()=>[createTextVNode("Back to Home")]),_:1})]),_:1})]}),_:1},C,D)),w(ssrRenderComponent(_,null,{default:withCtx(($,c,y,p)=>{if(c)c(ssrRenderComponent(x$1,{class:"py-12"},{default:withCtx((k,l,d,u)=>{if(l)l(ssrRenderComponent(x$2,{justify:"center"},{default:withCtx((U,m,P,b)=>{if(m)m(ssrRenderComponent(A,{cols:"12",md:"10",lg:"8"},{default:withCtx((O,S,j,R)=>{if(S)S(ssrRenderComponent(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx((Q,v,_,a)=>{if(v)v(`<h1 class="text-h3 font-weight-bold mb-6" data-v-a031c454${a}>Privacy Policy</h1><p class="text-body-1 mb-6 font-italic" data-v-a031c454${a}> Last updated: ${ssrInterpolate(new Date().toLocaleDateString())}</p><p class="text-subtitle-1 mb-6" data-v-a031c454${a}> At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. </p><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${a}>Information We Collect</h2><p class="text-body-1 mb-4" data-v-a031c454${a}> We collect the following types of information: </p><ul class="mb-6" data-v-a031c454${a}><li class="mb-2" data-v-a031c454${a}><strong data-v-a031c454${a}>Identification Information</strong>: when you create an account, we collect your name, email address, password, and optionally, your profile picture. </li><li class="mb-2" data-v-a031c454${a}><strong data-v-a031c454${a}>Usage Information</strong>: we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. </li><li class="mb-2" data-v-a031c454${a}><strong data-v-a031c454${a}>User Content</strong>: any content you create, upload, or share on our platform. </li></ul><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${a}>How We Use Your Information</h2><p class="text-body-1 mb-4" data-v-a031c454${a}> We use your information to: </p><ul class="mb-6" data-v-a031c454${a}><li class="mb-2" data-v-a031c454${a}>Provide, maintain, and improve our services</li><li class="mb-2" data-v-a031c454${a}>Personalize your experience on our platform</li><li class="mb-2" data-v-a031c454${a}>Communicate with you about our services</li><li class="mb-2" data-v-a031c454${a}>Protect the security of our platform and our users</li><li class="mb-2" data-v-a031c454${a}>Comply with legal obligations</li></ul><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${a}>Information Sharing</h2><p class="text-body-1 mb-6" data-v-a031c454${a}> We do not sell your personal data to third parties. We may share your information with: </p><ul class="mb-6" data-v-a031c454${a}><li class="mb-2" data-v-a031c454${a}>Service providers who help us operate our platform</li><li class="mb-2" data-v-a031c454${a}>Business partners, with your consent</li><li class="mb-2" data-v-a031c454${a}>Legal authorities, if necessary to comply with the law</li></ul><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${a}>Data Security</h2><p class="text-body-1 mb-6" data-v-a031c454${a}> We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. </p><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${a}>Your Rights</h2><p class="text-body-1 mb-4" data-v-a031c454${a}> Depending on your place of residence, you may have certain rights regarding your personal data, including: </p><ul class="mb-6" data-v-a031c454${a}><li class="mb-2" data-v-a031c454${a}>The right to access your data</li><li class="mb-2" data-v-a031c454${a}>The right to rectify your data</li><li class="mb-2" data-v-a031c454${a}>The right to delete your data</li><li class="mb-2" data-v-a031c454${a}>The right to restrict the processing of your data</li><li class="mb-2" data-v-a031c454${a}>The right to data portability</li><li class="mb-2" data-v-a031c454${a}>The right to object to the processing of your data</li></ul><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${a}>Cookies and Similar Technologies</h2><p class="text-body-1 mb-6" data-v-a031c454${a}> We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our `),v(ssrRenderComponent(i,{to:"/cookies",class:"text-decoration-underline"},{default:withCtx((X,z,Z,tt)=>{if(z)z("Cookie Policy");else return [createTextVNode("Cookie Policy")]}),_:1},_,a)),v(`. </p><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${a}>Changes to This Policy</h2><p class="text-body-1 mb-6" data-v-a031c454${a}> We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. </p><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${a}>Contact Us</h2><p class="text-body-1 mb-6" data-v-a031c454${a}> If you have any questions about this privacy policy or our data protection practices, please don&#39;t hesitate to contact us at <a href="mailto:privacy@devunity.com" class="text-decoration-underline" data-v-a031c454${a}>privacy@devunity.com</a>. </p>`);else return [createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Privacy Policy"),createVNode("p",{class:"text-body-1 mb-6 font-italic"}," Last updated: "+toDisplayString(new Date().toLocaleDateString()),1),createVNode("p",{class:"text-subtitle-1 mb-6"}," At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information We Collect"),createVNode("p",{class:"text-body-1 mb-4"}," We collect the following types of information: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Identification Information"),createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Usage Information"),createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"User Content"),createTextVNode(": any content you create, upload, or share on our platform. ")])]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"How We Use Your Information"),createVNode("p",{class:"text-body-1 mb-4"}," We use your information to: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Provide, maintain, and improve our services"),createVNode("li",{class:"mb-2"},"Personalize your experience on our platform"),createVNode("li",{class:"mb-2"},"Communicate with you about our services"),createVNode("li",{class:"mb-2"},"Protect the security of our platform and our users"),createVNode("li",{class:"mb-2"},"Comply with legal obligations")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information Sharing"),createVNode("p",{class:"text-body-1 mb-6"}," We do not sell your personal data to third parties. We may share your information with: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Service providers who help us operate our platform"),createVNode("li",{class:"mb-2"},"Business partners, with your consent"),createVNode("li",{class:"mb-2"},"Legal authorities, if necessary to comply with the law")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Data Security"),createVNode("p",{class:"text-body-1 mb-6"}," We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Your Rights"),createVNode("p",{class:"text-body-1 mb-4"}," Depending on your place of residence, you may have certain rights regarding your personal data, including: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"The right to access your data"),createVNode("li",{class:"mb-2"},"The right to rectify your data"),createVNode("li",{class:"mb-2"},"The right to delete your data"),createVNode("li",{class:"mb-2"},"The right to restrict the processing of your data"),createVNode("li",{class:"mb-2"},"The right to data portability"),createVNode("li",{class:"mb-2"},"The right to object to the processing of your data")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Cookies and Similar Technologies"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),createVNode(i,{to:"/cookies",class:"text-decoration-underline"},{default:withCtx(()=>[createTextVNode("Cookie Policy")]),_:1}),createTextVNode(". ")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Changes to This Policy"),createVNode("p",{class:"text-body-1 mb-6"}," We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Contact Us"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),createVNode("a",{href:"mailto:privacy@devunity.com",class:"text-decoration-underline"},"privacy@devunity.com"),createTextVNode(". ")])]}),_:1},j,R));else return [createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Privacy Policy"),createVNode("p",{class:"text-body-1 mb-6 font-italic"}," Last updated: "+toDisplayString(new Date().toLocaleDateString()),1),createVNode("p",{class:"text-subtitle-1 mb-6"}," At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information We Collect"),createVNode("p",{class:"text-body-1 mb-4"}," We collect the following types of information: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Identification Information"),createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Usage Information"),createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"User Content"),createTextVNode(": any content you create, upload, or share on our platform. ")])]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"How We Use Your Information"),createVNode("p",{class:"text-body-1 mb-4"}," We use your information to: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Provide, maintain, and improve our services"),createVNode("li",{class:"mb-2"},"Personalize your experience on our platform"),createVNode("li",{class:"mb-2"},"Communicate with you about our services"),createVNode("li",{class:"mb-2"},"Protect the security of our platform and our users"),createVNode("li",{class:"mb-2"},"Comply with legal obligations")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information Sharing"),createVNode("p",{class:"text-body-1 mb-6"}," We do not sell your personal data to third parties. We may share your information with: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Service providers who help us operate our platform"),createVNode("li",{class:"mb-2"},"Business partners, with your consent"),createVNode("li",{class:"mb-2"},"Legal authorities, if necessary to comply with the law")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Data Security"),createVNode("p",{class:"text-body-1 mb-6"}," We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Your Rights"),createVNode("p",{class:"text-body-1 mb-4"}," Depending on your place of residence, you may have certain rights regarding your personal data, including: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"The right to access your data"),createVNode("li",{class:"mb-2"},"The right to rectify your data"),createVNode("li",{class:"mb-2"},"The right to delete your data"),createVNode("li",{class:"mb-2"},"The right to restrict the processing of your data"),createVNode("li",{class:"mb-2"},"The right to data portability"),createVNode("li",{class:"mb-2"},"The right to object to the processing of your data")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Cookies and Similar Technologies"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),createVNode(i,{to:"/cookies",class:"text-decoration-underline"},{default:withCtx(()=>[createTextVNode("Cookie Policy")]),_:1}),createTextVNode(". ")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Changes to This Policy"),createVNode("p",{class:"text-body-1 mb-6"}," We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Contact Us"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),createVNode("a",{href:"mailto:privacy@devunity.com",class:"text-decoration-underline"},"privacy@devunity.com"),createTextVNode(". ")])]),_:1})]}),_:1},P,b));else return [createVNode(A,{cols:"12",md:"10",lg:"8"},{default:withCtx(()=>[createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Privacy Policy"),createVNode("p",{class:"text-body-1 mb-6 font-italic"}," Last updated: "+toDisplayString(new Date().toLocaleDateString()),1),createVNode("p",{class:"text-subtitle-1 mb-6"}," At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information We Collect"),createVNode("p",{class:"text-body-1 mb-4"}," We collect the following types of information: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Identification Information"),createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Usage Information"),createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"User Content"),createTextVNode(": any content you create, upload, or share on our platform. ")])]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"How We Use Your Information"),createVNode("p",{class:"text-body-1 mb-4"}," We use your information to: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Provide, maintain, and improve our services"),createVNode("li",{class:"mb-2"},"Personalize your experience on our platform"),createVNode("li",{class:"mb-2"},"Communicate with you about our services"),createVNode("li",{class:"mb-2"},"Protect the security of our platform and our users"),createVNode("li",{class:"mb-2"},"Comply with legal obligations")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information Sharing"),createVNode("p",{class:"text-body-1 mb-6"}," We do not sell your personal data to third parties. We may share your information with: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Service providers who help us operate our platform"),createVNode("li",{class:"mb-2"},"Business partners, with your consent"),createVNode("li",{class:"mb-2"},"Legal authorities, if necessary to comply with the law")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Data Security"),createVNode("p",{class:"text-body-1 mb-6"}," We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Your Rights"),createVNode("p",{class:"text-body-1 mb-4"}," Depending on your place of residence, you may have certain rights regarding your personal data, including: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"The right to access your data"),createVNode("li",{class:"mb-2"},"The right to rectify your data"),createVNode("li",{class:"mb-2"},"The right to delete your data"),createVNode("li",{class:"mb-2"},"The right to restrict the processing of your data"),createVNode("li",{class:"mb-2"},"The right to data portability"),createVNode("li",{class:"mb-2"},"The right to object to the processing of your data")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Cookies and Similar Technologies"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),createVNode(i,{to:"/cookies",class:"text-decoration-underline"},{default:withCtx(()=>[createTextVNode("Cookie Policy")]),_:1}),createTextVNode(". ")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Changes to This Policy"),createVNode("p",{class:"text-body-1 mb-6"}," We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Contact Us"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),createVNode("a",{href:"mailto:privacy@devunity.com",class:"text-decoration-underline"},"privacy@devunity.com"),createTextVNode(". ")])]),_:1})]),_:1})]}),_:1},d,u));else return [createVNode(x$2,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"10",lg:"8"},{default:withCtx(()=>[createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Privacy Policy"),createVNode("p",{class:"text-body-1 mb-6 font-italic"}," Last updated: "+toDisplayString(new Date().toLocaleDateString()),1),createVNode("p",{class:"text-subtitle-1 mb-6"}," At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information We Collect"),createVNode("p",{class:"text-body-1 mb-4"}," We collect the following types of information: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Identification Information"),createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Usage Information"),createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"User Content"),createTextVNode(": any content you create, upload, or share on our platform. ")])]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"How We Use Your Information"),createVNode("p",{class:"text-body-1 mb-4"}," We use your information to: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Provide, maintain, and improve our services"),createVNode("li",{class:"mb-2"},"Personalize your experience on our platform"),createVNode("li",{class:"mb-2"},"Communicate with you about our services"),createVNode("li",{class:"mb-2"},"Protect the security of our platform and our users"),createVNode("li",{class:"mb-2"},"Comply with legal obligations")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information Sharing"),createVNode("p",{class:"text-body-1 mb-6"}," We do not sell your personal data to third parties. We may share your information with: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Service providers who help us operate our platform"),createVNode("li",{class:"mb-2"},"Business partners, with your consent"),createVNode("li",{class:"mb-2"},"Legal authorities, if necessary to comply with the law")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Data Security"),createVNode("p",{class:"text-body-1 mb-6"}," We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Your Rights"),createVNode("p",{class:"text-body-1 mb-4"}," Depending on your place of residence, you may have certain rights regarding your personal data, including: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"The right to access your data"),createVNode("li",{class:"mb-2"},"The right to rectify your data"),createVNode("li",{class:"mb-2"},"The right to delete your data"),createVNode("li",{class:"mb-2"},"The right to restrict the processing of your data"),createVNode("li",{class:"mb-2"},"The right to data portability"),createVNode("li",{class:"mb-2"},"The right to object to the processing of your data")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Cookies and Similar Technologies"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),createVNode(i,{to:"/cookies",class:"text-decoration-underline"},{default:withCtx(()=>[createTextVNode("Cookie Policy")]),_:1}),createTextVNode(". ")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Changes to This Policy"),createVNode("p",{class:"text-body-1 mb-6"}," We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Contact Us"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),createVNode("a",{href:"mailto:privacy@devunity.com",class:"text-decoration-underline"},"privacy@devunity.com"),createTextVNode(". ")])]),_:1})]),_:1})]),_:1})]}),_:1},y,p));else return [createVNode(x$1,{class:"py-12"},{default:withCtx(()=>[createVNode(x$2,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"10",lg:"8"},{default:withCtx(()=>[createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Privacy Policy"),createVNode("p",{class:"text-body-1 mb-6 font-italic"}," Last updated: "+toDisplayString(new Date().toLocaleDateString()),1),createVNode("p",{class:"text-subtitle-1 mb-6"}," At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information We Collect"),createVNode("p",{class:"text-body-1 mb-4"}," We collect the following types of information: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Identification Information"),createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Usage Information"),createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"User Content"),createTextVNode(": any content you create, upload, or share on our platform. ")])]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"How We Use Your Information"),createVNode("p",{class:"text-body-1 mb-4"}," We use your information to: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Provide, maintain, and improve our services"),createVNode("li",{class:"mb-2"},"Personalize your experience on our platform"),createVNode("li",{class:"mb-2"},"Communicate with you about our services"),createVNode("li",{class:"mb-2"},"Protect the security of our platform and our users"),createVNode("li",{class:"mb-2"},"Comply with legal obligations")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information Sharing"),createVNode("p",{class:"text-body-1 mb-6"}," We do not sell your personal data to third parties. We may share your information with: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Service providers who help us operate our platform"),createVNode("li",{class:"mb-2"},"Business partners, with your consent"),createVNode("li",{class:"mb-2"},"Legal authorities, if necessary to comply with the law")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Data Security"),createVNode("p",{class:"text-body-1 mb-6"}," We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Your Rights"),createVNode("p",{class:"text-body-1 mb-4"}," Depending on your place of residence, you may have certain rights regarding your personal data, including: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"The right to access your data"),createVNode("li",{class:"mb-2"},"The right to rectify your data"),createVNode("li",{class:"mb-2"},"The right to delete your data"),createVNode("li",{class:"mb-2"},"The right to restrict the processing of your data"),createVNode("li",{class:"mb-2"},"The right to data portability"),createVNode("li",{class:"mb-2"},"The right to object to the processing of your data")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Cookies and Similar Technologies"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),createVNode(i,{to:"/cookies",class:"text-decoration-underline"},{default:withCtx(()=>[createTextVNode("Cookie Policy")]),_:1}),createTextVNode(". ")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Changes to This Policy"),createVNode("p",{class:"text-body-1 mb-6"}," We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Contact Us"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),createVNode("a",{href:"mailto:privacy@devunity.com",class:"text-decoration-underline"},"privacy@devunity.com"),createTextVNode(". ")])]),_:1})]),_:1})]),_:1})]),_:1})]}),_:1},C,D)),w(ssrRenderComponent(te,{class:"py-4"},{default:withCtx(($,c,y,p)=>{if(c)c(ssrRenderComponent(x$1,null,{default:withCtx((k,l,d,u)=>{if(l)l(`<div class="text-center" data-v-a031c454${u}><p class="text-body-2 text-medium-emphasis" data-v-a031c454${u}> © ${ssrInterpolate(new Date().getFullYear())} DevUnity. All rights reserved. </p></div>`);else return [createVNode("div",{class:"text-center"},[createVNode("p",{class:"text-body-2 text-medium-emphasis"}," © "+toDisplayString(new Date().getFullYear())+" DevUnity. All rights reserved. ",1)])]}),_:1},y,p));else return [createVNode(x$1,null,{default:withCtx(()=>[createVNode("div",{class:"text-center"},[createVNode("p",{class:"text-body-2 text-medium-emphasis"}," © "+toDisplayString(new Date().getFullYear())+" DevUnity. All rights reserved. ",1)])]),_:1})]}),_:1},C,D));else return [createVNode(Z,{app:"",flat:"",elevation:"2",color:"surface"},{default:withCtx(()=>[createVNode(x$1,{class:"d-flex align-center py-0 my-0"},{default:withCtx(()=>[createVNode(i,{to:"/",class:"text-decoration-none"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode("img",{src:s,alt:"DevUnity title",width:"150"})])]),_:1}),createVNode(c),createVNode(We,{color:"primary",to:"/",class:"ml-4"},{default:withCtx(()=>[createTextVNode("Back to Home")]),_:1})]),_:1})]),_:1}),createVNode(_,null,{default:withCtx(()=>[createVNode(x$1,{class:"py-12"},{default:withCtx(()=>[createVNode(x$2,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"10",lg:"8"},{default:withCtx(()=>[createVNode(qe,{class:"pa-8 mb-8 rounded-xl"},{default:withCtx(()=>[createVNode("h1",{class:"text-h3 font-weight-bold mb-6"},"Privacy Policy"),createVNode("p",{class:"text-body-1 mb-6 font-italic"}," Last updated: "+toDisplayString(new Date().toLocaleDateString()),1),createVNode("p",{class:"text-subtitle-1 mb-6"}," At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information We Collect"),createVNode("p",{class:"text-body-1 mb-4"}," We collect the following types of information: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Identification Information"),createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"Usage Information"),createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")]),createVNode("li",{class:"mb-2"},[createVNode("strong",null,"User Content"),createTextVNode(": any content you create, upload, or share on our platform. ")])]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"How We Use Your Information"),createVNode("p",{class:"text-body-1 mb-4"}," We use your information to: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Provide, maintain, and improve our services"),createVNode("li",{class:"mb-2"},"Personalize your experience on our platform"),createVNode("li",{class:"mb-2"},"Communicate with you about our services"),createVNode("li",{class:"mb-2"},"Protect the security of our platform and our users"),createVNode("li",{class:"mb-2"},"Comply with legal obligations")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Information Sharing"),createVNode("p",{class:"text-body-1 mb-6"}," We do not sell your personal data to third parties. We may share your information with: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"Service providers who help us operate our platform"),createVNode("li",{class:"mb-2"},"Business partners, with your consent"),createVNode("li",{class:"mb-2"},"Legal authorities, if necessary to comply with the law")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Data Security"),createVNode("p",{class:"text-body-1 mb-6"}," We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Your Rights"),createVNode("p",{class:"text-body-1 mb-4"}," Depending on your place of residence, you may have certain rights regarding your personal data, including: "),createVNode("ul",{class:"mb-6"},[createVNode("li",{class:"mb-2"},"The right to access your data"),createVNode("li",{class:"mb-2"},"The right to rectify your data"),createVNode("li",{class:"mb-2"},"The right to delete your data"),createVNode("li",{class:"mb-2"},"The right to restrict the processing of your data"),createVNode("li",{class:"mb-2"},"The right to data portability"),createVNode("li",{class:"mb-2"},"The right to object to the processing of your data")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Cookies and Similar Technologies"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),createVNode(i,{to:"/cookies",class:"text-decoration-underline"},{default:withCtx(()=>[createTextVNode("Cookie Policy")]),_:1}),createTextVNode(". ")]),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Changes to This Policy"),createVNode("p",{class:"text-body-1 mb-6"}," We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),createVNode("h2",{class:"text-h4 font-weight-bold mb-4"},"Contact Us"),createVNode("p",{class:"text-body-1 mb-6"},[createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),createVNode("a",{href:"mailto:privacy@devunity.com",class:"text-decoration-underline"},"privacy@devunity.com"),createTextVNode(". ")])]),_:1})]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(te,{class:"py-4"},{default:withCtx(()=>[createVNode(x$1,null,{default:withCtx(()=>[createVNode("div",{class:"text-center"},[createVNode("p",{class:"text-body-2 text-medium-emphasis"}," © "+toDisplayString(new Date().getFullYear())+" DevUnity. All rights reserved. ",1)])]),_:1})]),_:1})]}),_:1},F));}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "privacy",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useHead({
+      title: "Privacy Policy - DevUnity",
+      meta: [
+        { name: "description", content: "Learn how DevUnity collects, uses, and protects your personal data when you use our platform." },
+        { name: "keywords", content: "DevUnity, privacy, policy, data protection, personal data" },
+        { name: "author", content: "DevUnity" },
+        { name: "robots", content: "index, follow" },
+        { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+        { name: "og:title", content: "Privacy Policy - DevUnity" },
+        { name: "og:description", content: "Learn how DevUnity collects, uses, and protects your personal data when you use our platform." }
+      ]
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_NuxtLink = __nuxt_component_0;
+      _push(ssrRenderComponent(VApp, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VAppBar, {
+              app: "",
+              flat: "",
+              elevation: "2",
+              color: "surface"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VContainer, { class: "d-flex align-center py-0 my-0" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(_component_NuxtLink, {
+                          to: "/",
+                          class: "text-decoration-none"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<div class="d-flex align-center" data-v-a031c454${_scopeId4}><img${ssrRenderAttr("src", _imports_0)} alt="DevUnity title" width="150" data-v-a031c454${_scopeId4}></div>`);
+                            } else {
+                              return [
+                                createVNode("div", { class: "d-flex align-center" }, [
+                                  createVNode("img", {
+                                    src: _imports_0,
+                                    alt: "DevUnity title",
+                                    width: "150"
+                                  })
+                                ])
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VSpacer, null, null, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VBtn, {
+                          color: "primary",
+                          to: "/",
+                          class: "ml-4"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`Back to Home`);
+                            } else {
+                              return [
+                                createTextVNode("Back to Home")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(_component_NuxtLink, {
+                            to: "/",
+                            class: "text-decoration-none"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode("div", { class: "d-flex align-center" }, [
+                                createVNode("img", {
+                                  src: _imports_0,
+                                  alt: "DevUnity title",
+                                  width: "150"
+                                })
+                              ])
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VSpacer),
+                          createVNode(VBtn, {
+                            color: "primary",
+                            to: "/",
+                            class: "ml-4"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode("Back to Home")
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VContainer, { class: "d-flex align-center py-0 my-0" }, {
+                      default: withCtx(() => [
+                        createVNode(_component_NuxtLink, {
+                          to: "/",
+                          class: "text-decoration-none"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode("div", { class: "d-flex align-center" }, [
+                              createVNode("img", {
+                                src: _imports_0,
+                                alt: "DevUnity title",
+                                width: "150"
+                              })
+                            ])
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VSpacer),
+                        createVNode(VBtn, {
+                          color: "primary",
+                          to: "/",
+                          class: "ml-4"
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode("Back to Home")
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VMain, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VContainer, { class: "py-12" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VRow, { justify: "center" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VCol, {
+                                cols: "12",
+                                md: "10",
+                                lg: "8"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`<h1 class="text-h3 font-weight-bold mb-6" data-v-a031c454${_scopeId6}>Privacy Policy</h1><p class="text-body-1 mb-6 font-italic" data-v-a031c454${_scopeId6}> Last updated: ${ssrInterpolate((/* @__PURE__ */ new Date()).toLocaleDateString())}</p><p class="text-subtitle-1 mb-6" data-v-a031c454${_scopeId6}> At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. </p><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${_scopeId6}>Information We Collect</h2><p class="text-body-1 mb-4" data-v-a031c454${_scopeId6}> We collect the following types of information: </p><ul class="mb-6" data-v-a031c454${_scopeId6}><li class="mb-2" data-v-a031c454${_scopeId6}><strong data-v-a031c454${_scopeId6}>Identification Information</strong>: when you create an account, we collect your name, email address, password, and optionally, your profile picture. </li><li class="mb-2" data-v-a031c454${_scopeId6}><strong data-v-a031c454${_scopeId6}>Usage Information</strong>: we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. </li><li class="mb-2" data-v-a031c454${_scopeId6}><strong data-v-a031c454${_scopeId6}>User Content</strong>: any content you create, upload, or share on our platform. </li></ul><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${_scopeId6}>How We Use Your Information</h2><p class="text-body-1 mb-4" data-v-a031c454${_scopeId6}> We use your information to: </p><ul class="mb-6" data-v-a031c454${_scopeId6}><li class="mb-2" data-v-a031c454${_scopeId6}>Provide, maintain, and improve our services</li><li class="mb-2" data-v-a031c454${_scopeId6}>Personalize your experience on our platform</li><li class="mb-2" data-v-a031c454${_scopeId6}>Communicate with you about our services</li><li class="mb-2" data-v-a031c454${_scopeId6}>Protect the security of our platform and our users</li><li class="mb-2" data-v-a031c454${_scopeId6}>Comply with legal obligations</li></ul><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${_scopeId6}>Information Sharing</h2><p class="text-body-1 mb-6" data-v-a031c454${_scopeId6}> We do not sell your personal data to third parties. We may share your information with: </p><ul class="mb-6" data-v-a031c454${_scopeId6}><li class="mb-2" data-v-a031c454${_scopeId6}>Service providers who help us operate our platform</li><li class="mb-2" data-v-a031c454${_scopeId6}>Business partners, with your consent</li><li class="mb-2" data-v-a031c454${_scopeId6}>Legal authorities, if necessary to comply with the law</li></ul><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${_scopeId6}>Data Security</h2><p class="text-body-1 mb-6" data-v-a031c454${_scopeId6}> We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. </p><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${_scopeId6}>Your Rights</h2><p class="text-body-1 mb-4" data-v-a031c454${_scopeId6}> Depending on your place of residence, you may have certain rights regarding your personal data, including: </p><ul class="mb-6" data-v-a031c454${_scopeId6}><li class="mb-2" data-v-a031c454${_scopeId6}>The right to access your data</li><li class="mb-2" data-v-a031c454${_scopeId6}>The right to rectify your data</li><li class="mb-2" data-v-a031c454${_scopeId6}>The right to delete your data</li><li class="mb-2" data-v-a031c454${_scopeId6}>The right to restrict the processing of your data</li><li class="mb-2" data-v-a031c454${_scopeId6}>The right to data portability</li><li class="mb-2" data-v-a031c454${_scopeId6}>The right to object to the processing of your data</li></ul><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${_scopeId6}>Cookies and Similar Technologies</h2><p class="text-body-1 mb-6" data-v-a031c454${_scopeId6}> We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our `);
+                                          _push7(ssrRenderComponent(_component_NuxtLink, {
+                                            to: "/cookies",
+                                            class: "text-decoration-underline"
+                                          }, {
+                                            default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                              if (_push8) {
+                                                _push8(`Cookie Policy`);
+                                              } else {
+                                                return [
+                                                  createTextVNode("Cookie Policy")
+                                                ];
+                                              }
+                                            }),
+                                            _: 1
+                                          }, _parent7, _scopeId6));
+                                          _push7(`. </p><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${_scopeId6}>Changes to This Policy</h2><p class="text-body-1 mb-6" data-v-a031c454${_scopeId6}> We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. </p><h2 class="text-h4 font-weight-bold mb-4" data-v-a031c454${_scopeId6}>Contact Us</h2><p class="text-body-1 mb-6" data-v-a031c454${_scopeId6}> If you have any questions about this privacy policy or our data protection practices, please don&#39;t hesitate to contact us at <a href="mailto:privacy@devunity.com" class="text-decoration-underline" data-v-a031c454${_scopeId6}>privacy@devunity.com</a>. </p>`);
+                                        } else {
+                                          return [
+                                            createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Privacy Policy"),
+                                            createVNode("p", { class: "text-body-1 mb-6 font-italic" }, " Last updated: " + toDisplayString((/* @__PURE__ */ new Date()).toLocaleDateString()), 1),
+                                            createVNode("p", { class: "text-subtitle-1 mb-6" }, " At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),
+                                            createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information We Collect"),
+                                            createVNode("p", { class: "text-body-1 mb-4" }, " We collect the following types of information: "),
+                                            createVNode("ul", { class: "mb-6" }, [
+                                              createVNode("li", { class: "mb-2" }, [
+                                                createVNode("strong", null, "Identification Information"),
+                                                createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")
+                                              ]),
+                                              createVNode("li", { class: "mb-2" }, [
+                                                createVNode("strong", null, "Usage Information"),
+                                                createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")
+                                              ]),
+                                              createVNode("li", { class: "mb-2" }, [
+                                                createVNode("strong", null, "User Content"),
+                                                createTextVNode(": any content you create, upload, or share on our platform. ")
+                                              ])
+                                            ]),
+                                            createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "How We Use Your Information"),
+                                            createVNode("p", { class: "text-body-1 mb-4" }, " We use your information to: "),
+                                            createVNode("ul", { class: "mb-6" }, [
+                                              createVNode("li", { class: "mb-2" }, "Provide, maintain, and improve our services"),
+                                              createVNode("li", { class: "mb-2" }, "Personalize your experience on our platform"),
+                                              createVNode("li", { class: "mb-2" }, "Communicate with you about our services"),
+                                              createVNode("li", { class: "mb-2" }, "Protect the security of our platform and our users"),
+                                              createVNode("li", { class: "mb-2" }, "Comply with legal obligations")
+                                            ]),
+                                            createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information Sharing"),
+                                            createVNode("p", { class: "text-body-1 mb-6" }, " We do not sell your personal data to third parties. We may share your information with: "),
+                                            createVNode("ul", { class: "mb-6" }, [
+                                              createVNode("li", { class: "mb-2" }, "Service providers who help us operate our platform"),
+                                              createVNode("li", { class: "mb-2" }, "Business partners, with your consent"),
+                                              createVNode("li", { class: "mb-2" }, "Legal authorities, if necessary to comply with the law")
+                                            ]),
+                                            createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Data Security"),
+                                            createVNode("p", { class: "text-body-1 mb-6" }, " We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),
+                                            createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Your Rights"),
+                                            createVNode("p", { class: "text-body-1 mb-4" }, " Depending on your place of residence, you may have certain rights regarding your personal data, including: "),
+                                            createVNode("ul", { class: "mb-6" }, [
+                                              createVNode("li", { class: "mb-2" }, "The right to access your data"),
+                                              createVNode("li", { class: "mb-2" }, "The right to rectify your data"),
+                                              createVNode("li", { class: "mb-2" }, "The right to delete your data"),
+                                              createVNode("li", { class: "mb-2" }, "The right to restrict the processing of your data"),
+                                              createVNode("li", { class: "mb-2" }, "The right to data portability"),
+                                              createVNode("li", { class: "mb-2" }, "The right to object to the processing of your data")
+                                            ]),
+                                            createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Cookies and Similar Technologies"),
+                                            createVNode("p", { class: "text-body-1 mb-6" }, [
+                                              createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),
+                                              createVNode(_component_NuxtLink, {
+                                                to: "/cookies",
+                                                class: "text-decoration-underline"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("Cookie Policy")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createTextVNode(". ")
+                                            ]),
+                                            createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Changes to This Policy"),
+                                            createVNode("p", { class: "text-body-1 mb-6" }, " We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),
+                                            createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Contact Us"),
+                                            createVNode("p", { class: "text-body-1 mb-6" }, [
+                                              createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),
+                                              createVNode("a", {
+                                                href: "mailto:privacy@devunity.com",
+                                                class: "text-decoration-underline"
+                                              }, "privacy@devunity.com"),
+                                              createTextVNode(". ")
+                                            ])
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                        default: withCtx(() => [
+                                          createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Privacy Policy"),
+                                          createVNode("p", { class: "text-body-1 mb-6 font-italic" }, " Last updated: " + toDisplayString((/* @__PURE__ */ new Date()).toLocaleDateString()), 1),
+                                          createVNode("p", { class: "text-subtitle-1 mb-6" }, " At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),
+                                          createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information We Collect"),
+                                          createVNode("p", { class: "text-body-1 mb-4" }, " We collect the following types of information: "),
+                                          createVNode("ul", { class: "mb-6" }, [
+                                            createVNode("li", { class: "mb-2" }, [
+                                              createVNode("strong", null, "Identification Information"),
+                                              createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")
+                                            ]),
+                                            createVNode("li", { class: "mb-2" }, [
+                                              createVNode("strong", null, "Usage Information"),
+                                              createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")
+                                            ]),
+                                            createVNode("li", { class: "mb-2" }, [
+                                              createVNode("strong", null, "User Content"),
+                                              createTextVNode(": any content you create, upload, or share on our platform. ")
+                                            ])
+                                          ]),
+                                          createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "How We Use Your Information"),
+                                          createVNode("p", { class: "text-body-1 mb-4" }, " We use your information to: "),
+                                          createVNode("ul", { class: "mb-6" }, [
+                                            createVNode("li", { class: "mb-2" }, "Provide, maintain, and improve our services"),
+                                            createVNode("li", { class: "mb-2" }, "Personalize your experience on our platform"),
+                                            createVNode("li", { class: "mb-2" }, "Communicate with you about our services"),
+                                            createVNode("li", { class: "mb-2" }, "Protect the security of our platform and our users"),
+                                            createVNode("li", { class: "mb-2" }, "Comply with legal obligations")
+                                          ]),
+                                          createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information Sharing"),
+                                          createVNode("p", { class: "text-body-1 mb-6" }, " We do not sell your personal data to third parties. We may share your information with: "),
+                                          createVNode("ul", { class: "mb-6" }, [
+                                            createVNode("li", { class: "mb-2" }, "Service providers who help us operate our platform"),
+                                            createVNode("li", { class: "mb-2" }, "Business partners, with your consent"),
+                                            createVNode("li", { class: "mb-2" }, "Legal authorities, if necessary to comply with the law")
+                                          ]),
+                                          createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Data Security"),
+                                          createVNode("p", { class: "text-body-1 mb-6" }, " We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),
+                                          createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Your Rights"),
+                                          createVNode("p", { class: "text-body-1 mb-4" }, " Depending on your place of residence, you may have certain rights regarding your personal data, including: "),
+                                          createVNode("ul", { class: "mb-6" }, [
+                                            createVNode("li", { class: "mb-2" }, "The right to access your data"),
+                                            createVNode("li", { class: "mb-2" }, "The right to rectify your data"),
+                                            createVNode("li", { class: "mb-2" }, "The right to delete your data"),
+                                            createVNode("li", { class: "mb-2" }, "The right to restrict the processing of your data"),
+                                            createVNode("li", { class: "mb-2" }, "The right to data portability"),
+                                            createVNode("li", { class: "mb-2" }, "The right to object to the processing of your data")
+                                          ]),
+                                          createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Cookies and Similar Technologies"),
+                                          createVNode("p", { class: "text-body-1 mb-6" }, [
+                                            createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),
+                                            createVNode(_component_NuxtLink, {
+                                              to: "/cookies",
+                                              class: "text-decoration-underline"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("Cookie Policy")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createTextVNode(". ")
+                                          ]),
+                                          createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Changes to This Policy"),
+                                          createVNode("p", { class: "text-body-1 mb-6" }, " We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),
+                                          createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Contact Us"),
+                                          createVNode("p", { class: "text-body-1 mb-6" }, [
+                                            createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),
+                                            createVNode("a", {
+                                              href: "mailto:privacy@devunity.com",
+                                              class: "text-decoration-underline"
+                                            }, "privacy@devunity.com"),
+                                            createTextVNode(". ")
+                                          ])
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  md: "10",
+                                  lg: "8"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                      default: withCtx(() => [
+                                        createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Privacy Policy"),
+                                        createVNode("p", { class: "text-body-1 mb-6 font-italic" }, " Last updated: " + toDisplayString((/* @__PURE__ */ new Date()).toLocaleDateString()), 1),
+                                        createVNode("p", { class: "text-subtitle-1 mb-6" }, " At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),
+                                        createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information We Collect"),
+                                        createVNode("p", { class: "text-body-1 mb-4" }, " We collect the following types of information: "),
+                                        createVNode("ul", { class: "mb-6" }, [
+                                          createVNode("li", { class: "mb-2" }, [
+                                            createVNode("strong", null, "Identification Information"),
+                                            createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")
+                                          ]),
+                                          createVNode("li", { class: "mb-2" }, [
+                                            createVNode("strong", null, "Usage Information"),
+                                            createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")
+                                          ]),
+                                          createVNode("li", { class: "mb-2" }, [
+                                            createVNode("strong", null, "User Content"),
+                                            createTextVNode(": any content you create, upload, or share on our platform. ")
+                                          ])
+                                        ]),
+                                        createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "How We Use Your Information"),
+                                        createVNode("p", { class: "text-body-1 mb-4" }, " We use your information to: "),
+                                        createVNode("ul", { class: "mb-6" }, [
+                                          createVNode("li", { class: "mb-2" }, "Provide, maintain, and improve our services"),
+                                          createVNode("li", { class: "mb-2" }, "Personalize your experience on our platform"),
+                                          createVNode("li", { class: "mb-2" }, "Communicate with you about our services"),
+                                          createVNode("li", { class: "mb-2" }, "Protect the security of our platform and our users"),
+                                          createVNode("li", { class: "mb-2" }, "Comply with legal obligations")
+                                        ]),
+                                        createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information Sharing"),
+                                        createVNode("p", { class: "text-body-1 mb-6" }, " We do not sell your personal data to third parties. We may share your information with: "),
+                                        createVNode("ul", { class: "mb-6" }, [
+                                          createVNode("li", { class: "mb-2" }, "Service providers who help us operate our platform"),
+                                          createVNode("li", { class: "mb-2" }, "Business partners, with your consent"),
+                                          createVNode("li", { class: "mb-2" }, "Legal authorities, if necessary to comply with the law")
+                                        ]),
+                                        createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Data Security"),
+                                        createVNode("p", { class: "text-body-1 mb-6" }, " We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),
+                                        createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Your Rights"),
+                                        createVNode("p", { class: "text-body-1 mb-4" }, " Depending on your place of residence, you may have certain rights regarding your personal data, including: "),
+                                        createVNode("ul", { class: "mb-6" }, [
+                                          createVNode("li", { class: "mb-2" }, "The right to access your data"),
+                                          createVNode("li", { class: "mb-2" }, "The right to rectify your data"),
+                                          createVNode("li", { class: "mb-2" }, "The right to delete your data"),
+                                          createVNode("li", { class: "mb-2" }, "The right to restrict the processing of your data"),
+                                          createVNode("li", { class: "mb-2" }, "The right to data portability"),
+                                          createVNode("li", { class: "mb-2" }, "The right to object to the processing of your data")
+                                        ]),
+                                        createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Cookies and Similar Technologies"),
+                                        createVNode("p", { class: "text-body-1 mb-6" }, [
+                                          createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),
+                                          createVNode(_component_NuxtLink, {
+                                            to: "/cookies",
+                                            class: "text-decoration-underline"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode("Cookie Policy")
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createTextVNode(". ")
+                                        ]),
+                                        createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Changes to This Policy"),
+                                        createVNode("p", { class: "text-body-1 mb-6" }, " We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),
+                                        createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Contact Us"),
+                                        createVNode("p", { class: "text-body-1 mb-6" }, [
+                                          createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),
+                                          createVNode("a", {
+                                            href: "mailto:privacy@devunity.com",
+                                            class: "text-decoration-underline"
+                                          }, "privacy@devunity.com"),
+                                          createTextVNode(". ")
+                                        ])
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VRow, { justify: "center" }, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                md: "10",
+                                lg: "8"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                    default: withCtx(() => [
+                                      createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Privacy Policy"),
+                                      createVNode("p", { class: "text-body-1 mb-6 font-italic" }, " Last updated: " + toDisplayString((/* @__PURE__ */ new Date()).toLocaleDateString()), 1),
+                                      createVNode("p", { class: "text-subtitle-1 mb-6" }, " At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),
+                                      createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information We Collect"),
+                                      createVNode("p", { class: "text-body-1 mb-4" }, " We collect the following types of information: "),
+                                      createVNode("ul", { class: "mb-6" }, [
+                                        createVNode("li", { class: "mb-2" }, [
+                                          createVNode("strong", null, "Identification Information"),
+                                          createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")
+                                        ]),
+                                        createVNode("li", { class: "mb-2" }, [
+                                          createVNode("strong", null, "Usage Information"),
+                                          createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")
+                                        ]),
+                                        createVNode("li", { class: "mb-2" }, [
+                                          createVNode("strong", null, "User Content"),
+                                          createTextVNode(": any content you create, upload, or share on our platform. ")
+                                        ])
+                                      ]),
+                                      createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "How We Use Your Information"),
+                                      createVNode("p", { class: "text-body-1 mb-4" }, " We use your information to: "),
+                                      createVNode("ul", { class: "mb-6" }, [
+                                        createVNode("li", { class: "mb-2" }, "Provide, maintain, and improve our services"),
+                                        createVNode("li", { class: "mb-2" }, "Personalize your experience on our platform"),
+                                        createVNode("li", { class: "mb-2" }, "Communicate with you about our services"),
+                                        createVNode("li", { class: "mb-2" }, "Protect the security of our platform and our users"),
+                                        createVNode("li", { class: "mb-2" }, "Comply with legal obligations")
+                                      ]),
+                                      createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information Sharing"),
+                                      createVNode("p", { class: "text-body-1 mb-6" }, " We do not sell your personal data to third parties. We may share your information with: "),
+                                      createVNode("ul", { class: "mb-6" }, [
+                                        createVNode("li", { class: "mb-2" }, "Service providers who help us operate our platform"),
+                                        createVNode("li", { class: "mb-2" }, "Business partners, with your consent"),
+                                        createVNode("li", { class: "mb-2" }, "Legal authorities, if necessary to comply with the law")
+                                      ]),
+                                      createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Data Security"),
+                                      createVNode("p", { class: "text-body-1 mb-6" }, " We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),
+                                      createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Your Rights"),
+                                      createVNode("p", { class: "text-body-1 mb-4" }, " Depending on your place of residence, you may have certain rights regarding your personal data, including: "),
+                                      createVNode("ul", { class: "mb-6" }, [
+                                        createVNode("li", { class: "mb-2" }, "The right to access your data"),
+                                        createVNode("li", { class: "mb-2" }, "The right to rectify your data"),
+                                        createVNode("li", { class: "mb-2" }, "The right to delete your data"),
+                                        createVNode("li", { class: "mb-2" }, "The right to restrict the processing of your data"),
+                                        createVNode("li", { class: "mb-2" }, "The right to data portability"),
+                                        createVNode("li", { class: "mb-2" }, "The right to object to the processing of your data")
+                                      ]),
+                                      createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Cookies and Similar Technologies"),
+                                      createVNode("p", { class: "text-body-1 mb-6" }, [
+                                        createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),
+                                        createVNode(_component_NuxtLink, {
+                                          to: "/cookies",
+                                          class: "text-decoration-underline"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode("Cookie Policy")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createTextVNode(". ")
+                                      ]),
+                                      createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Changes to This Policy"),
+                                      createVNode("p", { class: "text-body-1 mb-6" }, " We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),
+                                      createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Contact Us"),
+                                      createVNode("p", { class: "text-body-1 mb-6" }, [
+                                        createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),
+                                        createVNode("a", {
+                                          href: "mailto:privacy@devunity.com",
+                                          class: "text-decoration-underline"
+                                        }, "privacy@devunity.com"),
+                                        createTextVNode(". ")
+                                      ])
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VContainer, { class: "py-12" }, {
+                      default: withCtx(() => [
+                        createVNode(VRow, { justify: "center" }, {
+                          default: withCtx(() => [
+                            createVNode(VCol, {
+                              cols: "12",
+                              md: "10",
+                              lg: "8"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                  default: withCtx(() => [
+                                    createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Privacy Policy"),
+                                    createVNode("p", { class: "text-body-1 mb-6 font-italic" }, " Last updated: " + toDisplayString((/* @__PURE__ */ new Date()).toLocaleDateString()), 1),
+                                    createVNode("p", { class: "text-subtitle-1 mb-6" }, " At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),
+                                    createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information We Collect"),
+                                    createVNode("p", { class: "text-body-1 mb-4" }, " We collect the following types of information: "),
+                                    createVNode("ul", { class: "mb-6" }, [
+                                      createVNode("li", { class: "mb-2" }, [
+                                        createVNode("strong", null, "Identification Information"),
+                                        createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")
+                                      ]),
+                                      createVNode("li", { class: "mb-2" }, [
+                                        createVNode("strong", null, "Usage Information"),
+                                        createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")
+                                      ]),
+                                      createVNode("li", { class: "mb-2" }, [
+                                        createVNode("strong", null, "User Content"),
+                                        createTextVNode(": any content you create, upload, or share on our platform. ")
+                                      ])
+                                    ]),
+                                    createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "How We Use Your Information"),
+                                    createVNode("p", { class: "text-body-1 mb-4" }, " We use your information to: "),
+                                    createVNode("ul", { class: "mb-6" }, [
+                                      createVNode("li", { class: "mb-2" }, "Provide, maintain, and improve our services"),
+                                      createVNode("li", { class: "mb-2" }, "Personalize your experience on our platform"),
+                                      createVNode("li", { class: "mb-2" }, "Communicate with you about our services"),
+                                      createVNode("li", { class: "mb-2" }, "Protect the security of our platform and our users"),
+                                      createVNode("li", { class: "mb-2" }, "Comply with legal obligations")
+                                    ]),
+                                    createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information Sharing"),
+                                    createVNode("p", { class: "text-body-1 mb-6" }, " We do not sell your personal data to third parties. We may share your information with: "),
+                                    createVNode("ul", { class: "mb-6" }, [
+                                      createVNode("li", { class: "mb-2" }, "Service providers who help us operate our platform"),
+                                      createVNode("li", { class: "mb-2" }, "Business partners, with your consent"),
+                                      createVNode("li", { class: "mb-2" }, "Legal authorities, if necessary to comply with the law")
+                                    ]),
+                                    createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Data Security"),
+                                    createVNode("p", { class: "text-body-1 mb-6" }, " We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),
+                                    createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Your Rights"),
+                                    createVNode("p", { class: "text-body-1 mb-4" }, " Depending on your place of residence, you may have certain rights regarding your personal data, including: "),
+                                    createVNode("ul", { class: "mb-6" }, [
+                                      createVNode("li", { class: "mb-2" }, "The right to access your data"),
+                                      createVNode("li", { class: "mb-2" }, "The right to rectify your data"),
+                                      createVNode("li", { class: "mb-2" }, "The right to delete your data"),
+                                      createVNode("li", { class: "mb-2" }, "The right to restrict the processing of your data"),
+                                      createVNode("li", { class: "mb-2" }, "The right to data portability"),
+                                      createVNode("li", { class: "mb-2" }, "The right to object to the processing of your data")
+                                    ]),
+                                    createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Cookies and Similar Technologies"),
+                                    createVNode("p", { class: "text-body-1 mb-6" }, [
+                                      createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),
+                                      createVNode(_component_NuxtLink, {
+                                        to: "/cookies",
+                                        class: "text-decoration-underline"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("Cookie Policy")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(". ")
+                                    ]),
+                                    createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Changes to This Policy"),
+                                    createVNode("p", { class: "text-body-1 mb-6" }, " We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),
+                                    createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Contact Us"),
+                                    createVNode("p", { class: "text-body-1 mb-6" }, [
+                                      createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),
+                                      createVNode("a", {
+                                        href: "mailto:privacy@devunity.com",
+                                        class: "text-decoration-underline"
+                                      }, "privacy@devunity.com"),
+                                      createTextVNode(". ")
+                                    ])
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VFooter, { class: "py-4" }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VContainer, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<div class="text-center" data-v-a031c454${_scopeId3}><p class="text-body-2 text-medium-emphasis" data-v-a031c454${_scopeId3}> © ${ssrInterpolate((/* @__PURE__ */ new Date()).getFullYear())} DevUnity. All rights reserved. </p></div>`);
+                      } else {
+                        return [
+                          createVNode("div", { class: "text-center" }, [
+                            createVNode("p", { class: "text-body-2 text-medium-emphasis" }, " © " + toDisplayString((/* @__PURE__ */ new Date()).getFullYear()) + " DevUnity. All rights reserved. ", 1)
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VContainer, null, {
+                      default: withCtx(() => [
+                        createVNode("div", { class: "text-center" }, [
+                          createVNode("p", { class: "text-body-2 text-medium-emphasis" }, " © " + toDisplayString((/* @__PURE__ */ new Date()).getFullYear()) + " DevUnity. All rights reserved. ", 1)
+                        ])
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VAppBar, {
+                app: "",
+                flat: "",
+                elevation: "2",
+                color: "surface"
+              }, {
+                default: withCtx(() => [
+                  createVNode(VContainer, { class: "d-flex align-center py-0 my-0" }, {
+                    default: withCtx(() => [
+                      createVNode(_component_NuxtLink, {
+                        to: "/",
+                        class: "text-decoration-none"
+                      }, {
+                        default: withCtx(() => [
+                          createVNode("div", { class: "d-flex align-center" }, [
+                            createVNode("img", {
+                              src: _imports_0,
+                              alt: "DevUnity title",
+                              width: "150"
+                            })
+                          ])
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VSpacer),
+                      createVNode(VBtn, {
+                        color: "primary",
+                        to: "/",
+                        class: "ml-4"
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode("Back to Home")
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }),
+              createVNode(VMain, null, {
+                default: withCtx(() => [
+                  createVNode(VContainer, { class: "py-12" }, {
+                    default: withCtx(() => [
+                      createVNode(VRow, { justify: "center" }, {
+                        default: withCtx(() => [
+                          createVNode(VCol, {
+                            cols: "12",
+                            md: "10",
+                            lg: "8"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VCard, { class: "pa-8 mb-8 rounded-xl" }, {
+                                default: withCtx(() => [
+                                  createVNode("h1", { class: "text-h3 font-weight-bold mb-6" }, "Privacy Policy"),
+                                  createVNode("p", { class: "text-body-1 mb-6 font-italic" }, " Last updated: " + toDisplayString((/* @__PURE__ */ new Date()).toLocaleDateString()), 1),
+                                  createVNode("p", { class: "text-subtitle-1 mb-6" }, " At DevUnity, we place great importance on protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform. "),
+                                  createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information We Collect"),
+                                  createVNode("p", { class: "text-body-1 mb-4" }, " We collect the following types of information: "),
+                                  createVNode("ul", { class: "mb-6" }, [
+                                    createVNode("li", { class: "mb-2" }, [
+                                      createVNode("strong", null, "Identification Information"),
+                                      createTextVNode(": when you create an account, we collect your name, email address, password, and optionally, your profile picture. ")
+                                    ]),
+                                    createVNode("li", { class: "mb-2" }, [
+                                      createVNode("strong", null, "Usage Information"),
+                                      createTextVNode(": we collect data about how you interact with our platform, including the pages you visit, the features you use, and the time spent on the platform. ")
+                                    ]),
+                                    createVNode("li", { class: "mb-2" }, [
+                                      createVNode("strong", null, "User Content"),
+                                      createTextVNode(": any content you create, upload, or share on our platform. ")
+                                    ])
+                                  ]),
+                                  createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "How We Use Your Information"),
+                                  createVNode("p", { class: "text-body-1 mb-4" }, " We use your information to: "),
+                                  createVNode("ul", { class: "mb-6" }, [
+                                    createVNode("li", { class: "mb-2" }, "Provide, maintain, and improve our services"),
+                                    createVNode("li", { class: "mb-2" }, "Personalize your experience on our platform"),
+                                    createVNode("li", { class: "mb-2" }, "Communicate with you about our services"),
+                                    createVNode("li", { class: "mb-2" }, "Protect the security of our platform and our users"),
+                                    createVNode("li", { class: "mb-2" }, "Comply with legal obligations")
+                                  ]),
+                                  createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Information Sharing"),
+                                  createVNode("p", { class: "text-body-1 mb-6" }, " We do not sell your personal data to third parties. We may share your information with: "),
+                                  createVNode("ul", { class: "mb-6" }, [
+                                    createVNode("li", { class: "mb-2" }, "Service providers who help us operate our platform"),
+                                    createVNode("li", { class: "mb-2" }, "Business partners, with your consent"),
+                                    createVNode("li", { class: "mb-2" }, "Legal authorities, if necessary to comply with the law")
+                                  ]),
+                                  createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Data Security"),
+                                  createVNode("p", { class: "text-body-1 mb-6" }, " We take the security of your data very seriously. We have implemented appropriate technical and organizational measures to protect your information against unauthorized access, use, or disclosure. "),
+                                  createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Your Rights"),
+                                  createVNode("p", { class: "text-body-1 mb-4" }, " Depending on your place of residence, you may have certain rights regarding your personal data, including: "),
+                                  createVNode("ul", { class: "mb-6" }, [
+                                    createVNode("li", { class: "mb-2" }, "The right to access your data"),
+                                    createVNode("li", { class: "mb-2" }, "The right to rectify your data"),
+                                    createVNode("li", { class: "mb-2" }, "The right to delete your data"),
+                                    createVNode("li", { class: "mb-2" }, "The right to restrict the processing of your data"),
+                                    createVNode("li", { class: "mb-2" }, "The right to data portability"),
+                                    createVNode("li", { class: "mb-2" }, "The right to object to the processing of your data")
+                                  ]),
+                                  createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Cookies and Similar Technologies"),
+                                  createVNode("p", { class: "text-body-1 mb-6" }, [
+                                    createTextVNode(" We use cookies and other similar technologies to improve your experience on our platform, understand how you use our services, and personalize our offerings. You can manage your cookie preferences in your browser settings. For more information, see our "),
+                                    createVNode(_component_NuxtLink, {
+                                      to: "/cookies",
+                                      class: "text-decoration-underline"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("Cookie Policy")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(". ")
+                                  ]),
+                                  createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Changes to This Policy"),
+                                  createVNode("p", { class: "text-body-1 mb-6" }, " We may update this privacy policy from time to time. The most recent version will always be available on our website, and we will notify you of any significant changes. "),
+                                  createVNode("h2", { class: "text-h4 font-weight-bold mb-4" }, "Contact Us"),
+                                  createVNode("p", { class: "text-body-1 mb-6" }, [
+                                    createTextVNode(" If you have any questions about this privacy policy or our data protection practices, please don't hesitate to contact us at "),
+                                    createVNode("a", {
+                                      href: "mailto:privacy@devunity.com",
+                                      class: "text-decoration-underline"
+                                    }, "privacy@devunity.com"),
+                                    createTextVNode(". ")
+                                  ])
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }),
+              createVNode(VFooter, { class: "py-4" }, {
+                default: withCtx(() => [
+                  createVNode(VContainer, null, {
+                    default: withCtx(() => [
+                      createVNode("div", { class: "text-center" }, [
+                        createVNode("p", { class: "text-body-2 text-medium-emphasis" }, " © " + toDisplayString((/* @__PURE__ */ new Date()).getFullYear()) + " DevUnity. All rights reserved. ", 1)
+                      ])
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
 
-const o=ft.setup;ft.setup=(s,r)=>{const e=useSSRContext();return (e.modules||(e.modules=new Set)).add("pages/privacy.vue"),o?o(s,r):void 0};const d=s$1(ft,[["__scopeId","data-v-a031c454"]]);
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/privacy.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const privacy = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-a031c454"]]);
 
-export { d as default };;globalThis.__timing__.logEnd('Load chunks/build/privacy.vue');
+export { privacy as default };
+//# sourceMappingURL=privacy.vue.mjs.map

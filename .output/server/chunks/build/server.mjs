@@ -1,103 +1,2018 @@
-globalThis.__timing__.logStart('Load chunks/build/server');import { shallowReactive, reactive, effectScope, getCurrentScope, hasInjectionContext, getCurrentInstance, toRef, inject, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw, ref, watch, onScopeDispose, capitalize, computed, toRefs, watchEffect, isVNode, Comment, Fragment, unref, warn, provide, h as h$d, defineComponent, createVNode, mergeProps, defineAsyncComponent, Suspense, nextTick, useSSRContext, resolveDynamicComponent, readonly, TransitionGroup, Transition, Teleport, withDirectives, vShow, resolveDirective, camelize, Text, toDisplayString, markRaw, withCtx, createTextVNode, createBlock, openBlock, renderList, createCommentVNode, onErrorCaptured, onServerPrefetch, createApp } from 'vue';
-import { C as createHooks, D as getContext, c as createError, E as toRouteMatcher, F as createRouter, G as defu, H as hasProtocol, I as joinURL, J as withQuery, K as sanitizeStatusCode, L as isScriptProtocol, M as executeAsync, N as destr, O as klona, m as getRequestHeader, P as isEqual, s as setCookie, i as getCookie, j as deleteCookie } from '../_/nitro.mjs';
+import { shallowReactive, reactive, effectScope, getCurrentScope, hasInjectionContext, getCurrentInstance as getCurrentInstance$1, toRef, inject as inject$1, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw, ref, watch, onScopeDispose, capitalize, computed, watchEffect, toRefs, isVNode, Comment, Fragment, unref, warn, provide, h, defineComponent as defineComponent$1, createVNode, mergeProps, defineAsyncComponent, Suspense, nextTick, useSSRContext, resolveDynamicComponent, readonly, TransitionGroup, Transition, Teleport, withDirectives, vShow, resolveDirective, camelize, Text, toDisplayString, markRaw, withCtx, createTextVNode, createBlock, openBlock, renderList, createCommentVNode, onErrorCaptured, onServerPrefetch, createApp } from 'vue';
+import { C as createHooks, D as getContext, c as createError$1, E as toRouteMatcher, F as createRouter, G as defu, H as hasProtocol, I as joinURL, J as withQuery, K as sanitizeStatusCode, L as isScriptProtocol, M as executeAsync, N as destr, O as klona, m as getRequestHeader, P as isEqual$1, s as setCookie, i as getCookie, j as deleteCookie } from '../_/nitro.mjs';
 import { shouldHydrate, defineStore, createPinia, setActivePinia } from 'pinia';
-import { START_LOCATION, createMemoryHistory, createRouter as createRouter$1, useRoute, RouterView, useRouter } from 'vue-router';
+import { START_LOCATION, createMemoryHistory, createRouter as createRouter$1, useRoute as useRoute$2, RouterView, useRouter as useRouter$2 } from 'vue-router';
 import { deepPickUnsafe, deepOmitUnsafe } from 'deep-pick-omit';
 import { ssrRenderComponent, ssrRenderList, ssrInterpolate, ssrRenderAttrs, ssrRenderSuspense, ssrRenderVNode } from 'vue/server-renderer';
 
-const n$5=false,t$k=false,a$q={componentName:"NuxtLink"},o$f="nuxt-app";
+const appLayoutTransition = false;
+const appPageTransition = false;
+const nuxtLinkDefaults = { "componentName": "NuxtLink" };
+const appId = "nuxt-app";
 
-function y$f(e=o$f){return getContext(e,{asyncContext:false})}const H$6="__nuxt_plugin";function D$5(e){let n=0;const t={_id:e.id||o$f||"nuxt-app",_scope:effectScope(),provide:void 0,globalName:"nuxt",versions:{get nuxt(){return "3.16.1"},get vue(){return t.vueApp.version}},payload:shallowReactive({...e.ssrContext?.payload||{},data:shallowReactive({}),state:reactive({}),once:new Set,_errors:shallowReactive({})}),static:{data:{}},runWithContext(r){return t._scope.active&&!getCurrentScope()?t._scope.run(()=>x$b(t,r)):x$b(t,r)},isHydrating:false,deferHydration(){if(!t.isHydrating)return ()=>{};n++;let r=false;return ()=>{if(!r&&(r=true,n--,n===0))return t.isHydrating=false,t.callHook("app:suspense:resolve")}},_asyncDataPromises:{},_asyncData:shallowReactive({}),_payloadRevivers:{},...e};t.payload.serverRendered=true,t.ssrContext&&(t.payload.path=t.ssrContext.url,t.ssrContext.nuxt=t,t.ssrContext.payload=t.payload,t.ssrContext.config={public:t.ssrContext.runtimeConfig.public,app:t.ssrContext.runtimeConfig.app}),t.hooks=createHooks(),t.hook=t.hooks.hook;{const r=async function(s,a){for(const l of s)await t.runWithContext(()=>l(...a));};t.hooks.callHook=(s,...a)=>t.hooks.callHookWith(r,s,...a);}t.callHook=t.hooks.callHook,t.provide=(r,s)=>{const a="$"+r;p$8(t,a,s),p$8(t.vueApp.config.globalProperties,a,s);},p$8(t.vueApp,"$nuxt",t),p$8(t.vueApp.config.globalProperties,"$nuxt",t);const i=e.ssrContext.runtimeConfig;return t.provide("config",i),t}function b$g(e,n){n.hooks&&e.hooks.addHooks(n.hooks);}async function A$7(e,n){if(typeof n=="function"){const{provide:t}=await e.runWithContext(()=>n(e))||{};if(t&&typeof t=="object")for(const i in t)e.provide(i,t[i]);}}async function U$6(e,n){const t=[],i=[],r=[],s=[];let a=0;async function l(o){const d=o.dependsOn?.filter(u=>n.some(c=>c._name===u)&&!t.includes(u))??[];if(d.length>0)i.push([new Set(d),o]);else {const u=A$7(e,o).then(async()=>{o._name&&(t.push(o._name),await Promise.all(i.map(async([c,C])=>{c.has(o._name)&&(c.delete(o._name),c.size===0&&(a++,await l(C)));})));});o.parallel?r.push(u.catch(c=>s.push(c))):await u;}}for(const o of n)e.ssrContext?.islandContext&&o.env?.islands===false||b$g(e,o);for(const o of n)e.ssrContext?.islandContext&&o.env?.islands===false||await l(o);if(await Promise.all(r),a)for(let o=0;o<a;o++)await Promise.all(r);if(s.length)throw s[0]}function N$a(e){if(typeof e=="function")return e;const n=e._name||e.name;return delete e.name,Object.assign(e.setup||(()=>{}),e,{[H$6]:true,_name:n})}const z$4=N$a;function x$b(e,n,t){const i=()=>n(),r=y$f(e._id);return e.vueApp.runWithContext(()=>r.callAsync(e,i))}function I$5(e){let n;return hasInjectionContext()&&(n=getCurrentInstance()?.appContext.app.$nuxt),n||=y$f(e).tryUse(),n||null}function W$8(e){const n=I$5(e);if(!n)throw new Error("[nuxt] instance unavailable");return n}function E$9(e){return W$8().$config}function p$8(e,n,t){Object.defineProperty(e,n,{get:()=>t});}
+function getNuxtAppCtx(id = appId) {
+  return getContext(id, {
+    asyncContext: false
+  });
+}
+const NuxtPluginIndicator = "__nuxt_plugin";
+function createNuxtApp(options) {
+  var _a;
+  let hydratingCount = 0;
+  const nuxtApp = {
+    _id: options.id || appId || "nuxt-app",
+    _scope: effectScope(),
+    provide: void 0,
+    globalName: "nuxt",
+    versions: {
+      get nuxt() {
+        return "3.16.1";
+      },
+      get vue() {
+        return nuxtApp.vueApp.version;
+      }
+    },
+    payload: shallowReactive({
+      ...((_a = options.ssrContext) == null ? void 0 : _a.payload) || {},
+      data: shallowReactive({}),
+      state: reactive({}),
+      once: /* @__PURE__ */ new Set(),
+      _errors: shallowReactive({})
+    }),
+    static: {
+      data: {}
+    },
+    runWithContext(fn) {
+      if (nuxtApp._scope.active && !getCurrentScope()) {
+        return nuxtApp._scope.run(() => callWithNuxt(nuxtApp, fn));
+      }
+      return callWithNuxt(nuxtApp, fn);
+    },
+    isHydrating: false,
+    deferHydration() {
+      if (!nuxtApp.isHydrating) {
+        return () => {
+        };
+      }
+      hydratingCount++;
+      let called = false;
+      return () => {
+        if (called) {
+          return;
+        }
+        called = true;
+        hydratingCount--;
+        if (hydratingCount === 0) {
+          nuxtApp.isHydrating = false;
+          return nuxtApp.callHook("app:suspense:resolve");
+        }
+      };
+    },
+    _asyncDataPromises: {},
+    _asyncData: shallowReactive({}),
+    _payloadRevivers: {},
+    ...options
+  };
+  {
+    nuxtApp.payload.serverRendered = true;
+  }
+  if (nuxtApp.ssrContext) {
+    nuxtApp.payload.path = nuxtApp.ssrContext.url;
+    nuxtApp.ssrContext.nuxt = nuxtApp;
+    nuxtApp.ssrContext.payload = nuxtApp.payload;
+    nuxtApp.ssrContext.config = {
+      public: nuxtApp.ssrContext.runtimeConfig.public,
+      app: nuxtApp.ssrContext.runtimeConfig.app
+    };
+  }
+  nuxtApp.hooks = createHooks();
+  nuxtApp.hook = nuxtApp.hooks.hook;
+  {
+    const contextCaller = async function(hooks, args) {
+      for (const hook of hooks) {
+        await nuxtApp.runWithContext(() => hook(...args));
+      }
+    };
+    nuxtApp.hooks.callHook = (name, ...args) => nuxtApp.hooks.callHookWith(contextCaller, name, ...args);
+  }
+  nuxtApp.callHook = nuxtApp.hooks.callHook;
+  nuxtApp.provide = (name, value) => {
+    const $name = "$" + name;
+    defineGetter(nuxtApp, $name, value);
+    defineGetter(nuxtApp.vueApp.config.globalProperties, $name, value);
+  };
+  defineGetter(nuxtApp.vueApp, "$nuxt", nuxtApp);
+  defineGetter(nuxtApp.vueApp.config.globalProperties, "$nuxt", nuxtApp);
+  const runtimeConfig = options.ssrContext.runtimeConfig;
+  nuxtApp.provide("config", runtimeConfig);
+  return nuxtApp;
+}
+function registerPluginHooks(nuxtApp, plugin) {
+  if (plugin.hooks) {
+    nuxtApp.hooks.addHooks(plugin.hooks);
+  }
+}
+async function applyPlugin(nuxtApp, plugin) {
+  if (typeof plugin === "function") {
+    const { provide } = await nuxtApp.runWithContext(() => plugin(nuxtApp)) || {};
+    if (provide && typeof provide === "object") {
+      for (const key in provide) {
+        nuxtApp.provide(key, provide[key]);
+      }
+    }
+  }
+}
+async function applyPlugins(nuxtApp, plugins) {
+  var _a, _b, _c, _d;
+  const resolvedPlugins = [];
+  const unresolvedPlugins = [];
+  const parallels = [];
+  const errors = [];
+  let promiseDepth = 0;
+  async function executePlugin(plugin) {
+    var _a2;
+    const unresolvedPluginsForThisPlugin = ((_a2 = plugin.dependsOn) == null ? void 0 : _a2.filter((name) => plugins.some((p) => p._name === name) && !resolvedPlugins.includes(name))) ?? [];
+    if (unresolvedPluginsForThisPlugin.length > 0) {
+      unresolvedPlugins.push([new Set(unresolvedPluginsForThisPlugin), plugin]);
+    } else {
+      const promise = applyPlugin(nuxtApp, plugin).then(async () => {
+        if (plugin._name) {
+          resolvedPlugins.push(plugin._name);
+          await Promise.all(unresolvedPlugins.map(async ([dependsOn, unexecutedPlugin]) => {
+            if (dependsOn.has(plugin._name)) {
+              dependsOn.delete(plugin._name);
+              if (dependsOn.size === 0) {
+                promiseDepth++;
+                await executePlugin(unexecutedPlugin);
+              }
+            }
+          }));
+        }
+      });
+      if (plugin.parallel) {
+        parallels.push(promise.catch((e) => errors.push(e)));
+      } else {
+        await promise;
+      }
+    }
+  }
+  for (const plugin of plugins) {
+    if (((_a = nuxtApp.ssrContext) == null ? void 0 : _a.islandContext) && ((_b = plugin.env) == null ? void 0 : _b.islands) === false) {
+      continue;
+    }
+    registerPluginHooks(nuxtApp, plugin);
+  }
+  for (const plugin of plugins) {
+    if (((_c = nuxtApp.ssrContext) == null ? void 0 : _c.islandContext) && ((_d = plugin.env) == null ? void 0 : _d.islands) === false) {
+      continue;
+    }
+    await executePlugin(plugin);
+  }
+  await Promise.all(parallels);
+  if (promiseDepth) {
+    for (let i = 0; i < promiseDepth; i++) {
+      await Promise.all(parallels);
+    }
+  }
+  if (errors.length) {
+    throw errors[0];
+  }
+}
+// @__NO_SIDE_EFFECTS__
+function defineNuxtPlugin(plugin) {
+  if (typeof plugin === "function") {
+    return plugin;
+  }
+  const _name = plugin._name || plugin.name;
+  delete plugin.name;
+  return Object.assign(plugin.setup || (() => {
+  }), plugin, { [NuxtPluginIndicator]: true, _name });
+}
+const definePayloadPlugin = defineNuxtPlugin;
+function callWithNuxt(nuxt, setup, args) {
+  const fn = () => setup();
+  const nuxtAppCtx = getNuxtAppCtx(nuxt._id);
+  {
+    return nuxt.vueApp.runWithContext(() => nuxtAppCtx.callAsync(nuxt, fn));
+  }
+}
+function tryUseNuxtApp(id) {
+  var _a;
+  let nuxtAppInstance;
+  if (hasInjectionContext()) {
+    nuxtAppInstance = (_a = getCurrentInstance$1()) == null ? void 0 : _a.appContext.app.$nuxt;
+  }
+  nuxtAppInstance || (nuxtAppInstance = getNuxtAppCtx(id).tryUse());
+  return nuxtAppInstance || null;
+}
+function useNuxtApp(id) {
+  const nuxtAppInstance = tryUseNuxtApp(id);
+  if (!nuxtAppInstance) {
+    {
+      throw new Error("[nuxt] instance unavailable");
+    }
+  }
+  return nuxtAppInstance;
+}
+// @__NO_SIDE_EFFECTS__
+function useRuntimeConfig(_event) {
+  return useNuxtApp().$config;
+}
+function defineGetter(obj, key, val) {
+  Object.defineProperty(obj, key, { get: () => val });
+}
 
-const e$c="__nuxt_error",a$p=()=>toRef(W$8().payload,"error"),l$f=r=>{const t=u$h(r);try{const f=W$8(),n=a$p();n.value||=t;}catch{throw t}return t},x$a=r=>!!r&&typeof r=="object"&&e$c in r,u$h=r=>{const t=createError(r);return Object.defineProperty(t,e$c,{value:true,configurable:false,writable:false}),t};
+const NUXT_ERROR_SIGNATURE = "__nuxt_error";
+const useError = () => toRef(useNuxtApp().payload, "error");
+const showError = (error) => {
+  const nuxtError = createError(error);
+  try {
+    const nuxtApp = useNuxtApp();
+    const error2 = useError();
+    if (false) ;
+    error2.value || (error2.value = nuxtError);
+  } catch {
+    throw nuxtError;
+  }
+  return nuxtError;
+};
+const isNuxtError = (error) => !!error && typeof error === "object" && NUXT_ERROR_SIGNATURE in error;
+const createError = (error) => {
+  const nuxtError = createError$1(error);
+  Object.defineProperty(nuxtError, NUXT_ERROR_SIGNATURE, {
+    value: true,
+    configurable: false,
+    writable: false
+  });
+  return nuxtError;
+};
 
-function m$b(o,e){W$8().ssrContext._payloadReducers[o]=e;}
+function definePayloadReducer(name, reduce) {
+  {
+    useNuxtApp().ssrContext._payloadReducers[name] = reduce;
+  }
+}
 
-const l$e=z$4(()=>{m$b("skipHydrate",o=>!shouldHydrate(o)&&1);});
+const payloadPlugin = definePayloadPlugin(() => {
+  definePayloadReducer(
+    "skipHydrate",
+    // We need to return something truthy to be treated as a match
+    (data) => !shouldHydrate(data) && 1
+  );
+});
 
-const t$j=N$a({name:"nuxt:head",enforce:"pre",setup(e){const a=e.ssrContext.head;e.vueApp.use(a);}});
+const unhead_k2P3m_ZDyjlr2mMYnoDPwavjsDN8hBlk9cFai0bbopU = defineNuxtPlugin({
+  name: "nuxt:head",
+  enforce: "pre",
+  setup(nuxtApp) {
+    const head = nuxtApp.ssrContext.head;
+    nuxtApp.vueApp.use(head);
+  }
+});
 
-const c$h=/(:\w+)\([^)]+\)/g,a$o=/(:\w+)[?+*]/g,E$8=/:\w+/g,R$7=(t,n)=>n.path.replace(c$h,"$1").replace(a$o,"$1").replace(E$8,e=>t.params[e.slice(1)]?.toString()||""),s$f=(t,n)=>{const e=t.route.matched.find(r=>r.components?.default===t.Component.type),o=n??e?.meta.key??(e&&R$7(t.route,e));return typeof o=="function"?o(t.route):o};function _$d(t){return Array.isArray(t)?t:[t]}
+const ROUTE_KEY_PARENTHESES_RE$1 = /(:\w+)\([^)]+\)/g;
+const ROUTE_KEY_SYMBOLS_RE$1 = /(:\w+)[?+*]/g;
+const ROUTE_KEY_NORMAL_RE$1 = /:\w+/g;
+const interpolatePath = (route, match) => {
+  return match.path.replace(ROUTE_KEY_PARENTHESES_RE$1, "$1").replace(ROUTE_KEY_SYMBOLS_RE$1, "$1").replace(ROUTE_KEY_NORMAL_RE$1, (r) => {
+    var _a;
+    return ((_a = route.params[r.slice(1)]) == null ? void 0 : _a.toString()) || "";
+  });
+};
+const generateRouteKey$1 = (routeProps, override) => {
+  const matchedRoute = routeProps.route.matched.find((m) => {
+    var _a;
+    return ((_a = m.components) == null ? void 0 : _a.default) === routeProps.Component.type;
+  });
+  const source = override ?? (matchedRoute == null ? void 0 : matchedRoute.meta.key) ?? (matchedRoute && interpolatePath(routeProps.route, matchedRoute));
+  return typeof source === "function" ? source(routeProps.route) : source;
+};
+function toArray(value) {
+  return Array.isArray(value) ? value : [value];
+}
 
-async function a$n(t){const e=typeof t=="string"?t:t.path;{W$8().ssrContext._preloadManifest=true;const o=toRouteMatcher(createRouter({routes:E$9().nitro.routeRules}));return defu({},...o.matchAll(e).reverse())}}
+async function getRouteRules(arg) {
+  const path = typeof arg === "string" ? arg : arg.path;
+  {
+    useNuxtApp().ssrContext._preloadManifest = true;
+    const _routeRulesMatcher = toRouteMatcher(
+      createRouter({ routes: useRuntimeConfig().nitro.routeRules })
+    );
+    return defu({}, ..._routeRulesMatcher.matchAll(path).reverse());
+  }
+}
 
-const o$e=Symbol("layout-meta"),t$i=Symbol("route");
+const LayoutMetaSymbol = Symbol("layout-meta");
+const PageRouteSymbol = Symbol("route");
 
-const d$d=()=>W$8()?.$router,N$9=()=>hasInjectionContext()?inject(t$i,W$8()._route):W$8()._route;function O$9(e){return e}const L$6=()=>{try{if(W$8()._processingMiddleware)return !0}catch{return  false}return  false},E$7=/"/g,$$8=(e,r)=>{e||="/";const t=typeof e=="string"?e:"path"in e?_$c(e):d$d().resolve(e).href,u=hasProtocol(t,{acceptRelative:true}),n=r?.external||u;if(n){if(!r?.external)throw new Error("Navigating to an external URL is not allowed by default. Use `navigateTo(url, { external: true })`.");const{protocol:o}=new URL(t,"http://localhost");if(o&&isScriptProtocol(o))throw new Error(`Cannot navigate to a URL with '${o}' protocol.`)}const c=L$6(),i=d$d(),a=W$8();if(a.ssrContext){const o=typeof e=="string"||n?t:i.resolve(e).fullPath||"/",f=n?t:joinURL(E$9().app.baseURL,o),h=async function(l){await a.callHook("app:redirected");const p=f.replace(E$7,"%22"),m=b$f(f,u);return a.ssrContext._renderResponse={statusCode:sanitizeStatusCode(r?.redirectCode||302,302),body:`<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${p}"></head></html>`,headers:{location:m}},l};return !n&&c?(i.afterEach(l=>l.fullPath===o?h(false):void 0),e):h(c?false:void 0)}return n?(a._scope.stop(),r?.replace?(void 0).replace(t):(void 0).href=t,c?a.isHydrating?new Promise(()=>{}):false:Promise.resolve()):r?.replace?i.replace(e):i.push(e)};function _$c(e){return withQuery(e.path||"",e.query||{})+(e.hash||"")}function b$f(e,r=false){const t=new URL(e,"http://localhost");return r?e.startsWith("//")?t.toString().replace(t.protocol,""):t.toString():t.pathname+t.search+t.hash}
+const useRouter$1 = () => {
+  var _a;
+  return (_a = useNuxtApp()) == null ? void 0 : _a.$router;
+};
+const useRoute$1 = () => {
+  if (hasInjectionContext()) {
+    return inject$1(PageRouteSymbol, useNuxtApp()._route);
+  }
+  return useNuxtApp()._route;
+};
+// @__NO_SIDE_EFFECTS__
+function defineNuxtRouteMiddleware(middleware) {
+  return middleware;
+}
+const isProcessingMiddleware = () => {
+  try {
+    if (useNuxtApp()._processingMiddleware) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+};
+const URL_QUOTE_RE = /"/g;
+const navigateTo = (to, options) => {
+  to || (to = "/");
+  const toPath = typeof to === "string" ? to : "path" in to ? resolveRouteObject(to) : useRouter$1().resolve(to).href;
+  const isExternalHost = hasProtocol(toPath, { acceptRelative: true });
+  const isExternal = (options == null ? void 0 : options.external) || isExternalHost;
+  if (isExternal) {
+    if (!(options == null ? void 0 : options.external)) {
+      throw new Error("Navigating to an external URL is not allowed by default. Use `navigateTo(url, { external: true })`.");
+    }
+    const { protocol } = new URL(toPath, "http://localhost");
+    if (protocol && isScriptProtocol(protocol)) {
+      throw new Error(`Cannot navigate to a URL with '${protocol}' protocol.`);
+    }
+  }
+  const inMiddleware = isProcessingMiddleware();
+  const router = useRouter$1();
+  const nuxtApp = useNuxtApp();
+  {
+    if (nuxtApp.ssrContext) {
+      const fullPath = typeof to === "string" || isExternal ? toPath : router.resolve(to).fullPath || "/";
+      const location2 = isExternal ? toPath : joinURL(useRuntimeConfig().app.baseURL, fullPath);
+      const redirect = async function(response) {
+        await nuxtApp.callHook("app:redirected");
+        const encodedLoc = location2.replace(URL_QUOTE_RE, "%22");
+        const encodedHeader = encodeURL(location2, isExternalHost);
+        nuxtApp.ssrContext._renderResponse = {
+          statusCode: sanitizeStatusCode((options == null ? void 0 : options.redirectCode) || 302, 302),
+          body: `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${encodedLoc}"></head></html>`,
+          headers: { location: encodedHeader }
+        };
+        return response;
+      };
+      if (!isExternal && inMiddleware) {
+        router.afterEach((final) => final.fullPath === fullPath ? redirect(false) : void 0);
+        return to;
+      }
+      return redirect(!inMiddleware ? void 0 : (
+        /* abort route navigation */
+        false
+      ));
+    }
+  }
+  if (isExternal) {
+    nuxtApp._scope.stop();
+    if (options == null ? void 0 : options.replace) {
+      (void 0).replace(toPath);
+    } else {
+      (void 0).href = toPath;
+    }
+    if (inMiddleware) {
+      if (!nuxtApp.isHydrating) {
+        return false;
+      }
+      return new Promise(() => {
+      });
+    }
+    return Promise.resolve();
+  }
+  return (options == null ? void 0 : options.replace) ? router.replace(to) : router.push(to);
+};
+function resolveRouteObject(to) {
+  return withQuery(to.path || "", to.query || {}) + (to.hash || "");
+}
+function encodeURL(location2, isExternalHost = false) {
+  const url = new URL(location2, "http://localhost");
+  if (!isExternalHost) {
+    return url.pathname + url.search + url.hash;
+  }
+  if (location2.startsWith("//")) {
+    return url.toString().replace(url.protocol, "");
+  }
+  return url.toString();
+}
 
-const t$h={layout:"default"};
+const __nuxt_page_meta$k = {
+  layout: "default"
+};
 
-const t$g={layout:"empty"};
+const __nuxt_page_meta$j = {
+  layout: "empty"
+};
 
-const t$f={layout:"empty"};
+const __nuxt_page_meta$i = {
+  layout: "empty"
+};
 
-const e$b={layout:"dashboard",requiresPremium:true};
+const __nuxt_page_meta$h = {
+  layout: "dashboard",
+  requiresPremium: true
+};
 
-const t$e={layout:"empty"};
+const __nuxt_page_meta$g = {
+  layout: "empty"
+};
 
-const a$m={layout:"dashboard",requiresPremium:false};
+const __nuxt_page_meta$f = {
+  layout: "dashboard",
+  requiresPremium: false
+};
 
-const t$d={layout:"default"};
+const __nuxt_page_meta$e = {
+  layout: "default"
+};
 
-const t$c={layout:"default"};
+const __nuxt_page_meta$d = {
+  layout: "default"
+};
 
-const t$b={layout:"default"};
+const __nuxt_page_meta$c = {
+  layout: "default"
+};
 
-const t$a={layout:"empty"};
+const __nuxt_page_meta$b = {
+  layout: "empty"
+};
 
-const a$l={layout:"dashboard"};
+const __nuxt_page_meta$a = {
+  layout: "dashboard"
+};
 
-const a$k={layout:"dashboard"};
+const __nuxt_page_meta$9 = {
+  layout: "dashboard"
+};
 
-const a$j={layout:"dashboard"};
+const __nuxt_page_meta$8 = {
+  layout: "dashboard"
+};
 
-const e$a={layout:"dashboard",requiresPremium:true};
+const __nuxt_page_meta$7 = {
+  layout: "dashboard",
+  requiresPremium: true
+};
 
-const a$i={layout:"dashboard"};
+const __nuxt_page_meta$6 = {
+  layout: "dashboard"
+};
 
-const t$9={layout:"empty"};
+const __nuxt_page_meta$5 = {
+  layout: "empty"
+};
 
-const a$h={layout:"dashboard"};
+const __nuxt_page_meta$4 = {
+  layout: "dashboard"
+};
 
-const a$g={layout:"dashboard"};
+const __nuxt_page_meta$3 = {
+  layout: "dashboard"
+};
 
-const e$9={layout:"dashboard",ssr:false,requiresPremium:true};
+const __nuxt_page_meta$2 = {
+  layout: "dashboard",
+  ssr: false,
+  requiresPremium: true
+};
 
-const a$f={layout:"dashboard"};
+const __nuxt_page_meta$1 = {
+  layout: "dashboard"
+};
 
-const a$e={layout:"dashboard"};
+const __nuxt_page_meta = {
+  layout: "dashboard"
+};
 
-function N$8(y,k){}const O$8=[{name:"about",path:"/about",meta:t$h||{},component:()=>import('./about.vue.mjs')},{name:"index",path:"/",meta:t$g||{},component:()=>import('./index.vue.mjs')},{name:"login",path:"/login",meta:t$f||{},component:()=>import('./login.vue.mjs')},{name:"terms",path:"/terms",component:()=>import('./terms.vue.mjs')},{name:"robots",path:"/robots",meta:e$b||{},component:()=>import('./robots.vue.mjs')},{name:"signup",path:"/signup",meta:t$e||{},component:()=>import('./signup.vue.mjs')},{name:"studio",path:"/studio",meta:a$m||{},component:()=>import('./studio.vue.mjs')},{name:"contact",path:"/contact",meta:t$d||{},component:()=>import('./contact.vue.mjs')},{name:"cookies",path:"/cookies",meta:t$c||{},component:()=>import('./cookies.vue.mjs')},{name:"privacy",path:"/privacy",meta:t$b||{},component:()=>import('./privacy.vue.mjs')},{name:"checkout",path:"/checkout",meta:t$a||{},component:()=>import('./checkout.vue.mjs')},{name:"settings",path:"/settings",meta:a$l||{},component:()=>import('./settings.vue.mjs')},{name:"snippets",path:"/snippets",meta:a$k||{},component:()=>import('./snippets.vue.mjs')},{name:"dashboard",path:"/dashboard",meta:a$j||{},component:()=>import('./dashboard.vue.mjs')},{name:"seo-audit",path:"/seo-audit",meta:e$a||{},component:()=>import('./seo-audit.vue.mjs')},{name:"responsive",path:"/responsive",meta:a$i||{},component:()=>import('./responsive.vue.mjs')},{name:"unsubscribe",path:"/unsubscribe",meta:t$9||{},component:()=>import('./unsubscribe.vue.mjs')},{name:"snippetsView",path:"/snippetsView",meta:a$h||{},component:()=>import('./snippetsView.vue.mjs')},{name:"subscription",path:"/subscription",component:()=>import('./subscription.vue.mjs')},{name:"accessibility",path:"/accessibility",meta:a$g||{},component:()=>import('./accessibility.vue.mjs')},{name:"sql-generator",path:"/sql-generator",meta:e$9||{},component:()=>import('./sql-generator.vue.mjs')},{name:"admin-analytics",path:"/admin/analytics",meta:a$f||{},component:()=>import('./analytics.vue.mjs')},{name:"admin-newsletter-admin",path:"/admin/newsletter-admin",meta:a$e||{},component:()=>import('./newsletter-admin.vue.mjs')}];
+function handleHotUpdate(_router, _generateRoutes) {
+}
+const _routes = [
+  {
+    name: "about",
+    path: "/about",
+    meta: __nuxt_page_meta$k || {},
+    component: () => import('./about.vue.mjs')
+  },
+  {
+    name: "index",
+    path: "/",
+    meta: __nuxt_page_meta$j || {},
+    component: () => import('./index.vue.mjs')
+  },
+  {
+    name: "login",
+    path: "/login",
+    meta: __nuxt_page_meta$i || {},
+    component: () => import('./login.vue.mjs')
+  },
+  {
+    name: "terms",
+    path: "/terms",
+    component: () => import('./terms.vue.mjs')
+  },
+  {
+    name: "robots",
+    path: "/robots",
+    meta: __nuxt_page_meta$h || {},
+    component: () => import('./robots.vue.mjs')
+  },
+  {
+    name: "signup",
+    path: "/signup",
+    meta: __nuxt_page_meta$g || {},
+    component: () => import('./signup.vue.mjs')
+  },
+  {
+    name: "studio",
+    path: "/studio",
+    meta: __nuxt_page_meta$f || {},
+    component: () => import('./studio.vue.mjs')
+  },
+  {
+    name: "contact",
+    path: "/contact",
+    meta: __nuxt_page_meta$e || {},
+    component: () => import('./contact.vue.mjs')
+  },
+  {
+    name: "cookies",
+    path: "/cookies",
+    meta: __nuxt_page_meta$d || {},
+    component: () => import('./cookies.vue.mjs')
+  },
+  {
+    name: "privacy",
+    path: "/privacy",
+    meta: __nuxt_page_meta$c || {},
+    component: () => import('./privacy.vue.mjs')
+  },
+  {
+    name: "checkout",
+    path: "/checkout",
+    meta: __nuxt_page_meta$b || {},
+    component: () => import('./checkout.vue.mjs')
+  },
+  {
+    name: "settings",
+    path: "/settings",
+    meta: __nuxt_page_meta$a || {},
+    component: () => import('./settings.vue.mjs')
+  },
+  {
+    name: "snippets",
+    path: "/snippets",
+    meta: __nuxt_page_meta$9 || {},
+    component: () => import('./snippets.vue.mjs')
+  },
+  {
+    name: "dashboard",
+    path: "/dashboard",
+    meta: __nuxt_page_meta$8 || {},
+    component: () => import('./dashboard.vue.mjs')
+  },
+  {
+    name: "seo-audit",
+    path: "/seo-audit",
+    meta: __nuxt_page_meta$7 || {},
+    component: () => import('./seo-audit.vue.mjs')
+  },
+  {
+    name: "responsive",
+    path: "/responsive",
+    meta: __nuxt_page_meta$6 || {},
+    component: () => import('./responsive.vue.mjs')
+  },
+  {
+    name: "unsubscribe",
+    path: "/unsubscribe",
+    meta: __nuxt_page_meta$5 || {},
+    component: () => import('./unsubscribe.vue.mjs')
+  },
+  {
+    name: "snippetsView",
+    path: "/snippetsView",
+    meta: __nuxt_page_meta$4 || {},
+    component: () => import('./snippetsView.vue.mjs')
+  },
+  {
+    name: "subscription",
+    path: "/subscription",
+    component: () => import('./subscription.vue.mjs')
+  },
+  {
+    name: "accessibility",
+    path: "/accessibility",
+    meta: __nuxt_page_meta$3 || {},
+    component: () => import('./accessibility.vue.mjs')
+  },
+  {
+    name: "sql-generator",
+    path: "/sql-generator",
+    meta: __nuxt_page_meta$2 || {},
+    component: () => import('./sql-generator.vue.mjs')
+  },
+  {
+    name: "admin-analytics",
+    path: "/admin/analytics",
+    meta: __nuxt_page_meta$1 || {},
+    component: () => import('./analytics.vue.mjs')
+  },
+  {
+    name: "admin-newsletter-admin",
+    path: "/admin/newsletter-admin",
+    meta: __nuxt_page_meta || {},
+    component: () => import('./newsletter-admin.vue.mjs')
+  }
+];
 
-const f$e=(n,e)=>({default:()=>e.default?.()}),c$g=/(:\w+)\([^)]+\)/g,p$7=/(:\w+)[?+*]/g,i$i=/:\w+/g;function a$d(n){const e=n?.meta.key??n.path.replace(c$g,"$1").replace(p$7,"$1").replace(i$i,t=>n.params[t.slice(1)]?.toString()||"");return typeof e=="function"?e(n):e}function _$b(n,e){return n===e||e===START_LOCATION?false:a$d(n)!==a$d(e)?true:!n.matched.every((r,o)=>r.components&&r.components.default===e.matched[o]?.components?.default)}
+const _wrapInTransition = (props, children) => {
+  return { default: () => {
+    var _a;
+    return (_a = children.default) == null ? void 0 : _a.call(children);
+  } };
+};
+const ROUTE_KEY_PARENTHESES_RE = /(:\w+)\([^)]+\)/g;
+const ROUTE_KEY_SYMBOLS_RE = /(:\w+)[?+*]/g;
+const ROUTE_KEY_NORMAL_RE = /:\w+/g;
+function generateRouteKey(route) {
+  const source = (route == null ? void 0 : route.meta.key) ?? route.path.replace(ROUTE_KEY_PARENTHESES_RE, "$1").replace(ROUTE_KEY_SYMBOLS_RE, "$1").replace(ROUTE_KEY_NORMAL_RE, (r) => {
+    var _a;
+    return ((_a = route.params[r.slice(1)]) == null ? void 0 : _a.toString()) || "";
+  });
+  return typeof source === "function" ? source(route) : source;
+}
+function isChangingPage(to, from) {
+  if (to === from || from === START_LOCATION) {
+    return false;
+  }
+  if (generateRouteKey(to) !== generateRouteKey(from)) {
+    return true;
+  }
+  const areComponentsSame = to.matched.every(
+    (comp, index) => {
+      var _a, _b;
+      return comp.components && comp.components.default === ((_b = (_a = from.matched[index]) == null ? void 0 : _a.components) == null ? void 0 : _b.default);
+    }
+  );
+  if (areComponentsSame) {
+    return false;
+  }
+  return true;
+}
 
-const P$9={scrollBehavior(e,o,n){const l=W$8(),r=d$d().options?.scrollBehaviorType??"auto";let t=n||void 0;const p=typeof e.meta.scrollToTop=="function"?e.meta.scrollToTop(e,o):e.meta.scrollToTop;if(!t&&o&&e&&p!==false&&_$b(e,o)&&(t={left:0,top:0}),e.path===o.path)return o.hash&&!e.hash?{left:0,top:0}:e.hash?{el:e.hash,top:i$h(e.hash),behavior:r}:false;const s=a=>!!(a.meta.pageTransition??t$k),h=s(o)&&s(e)?"page:transition:finish":"page:finish";return new Promise(a=>{l.hooks.hookOnce(h,async()=>{await new Promise(c=>setTimeout(c,0)),e.hash&&(t={el:e.hash,top:i$h(e.hash),behavior:r}),a(t);});})}};function i$h(e){try{const o=(void 0).querySelector(e);if(o)return (Number.parseFloat(getComputedStyle(o).scrollMarginTop)||0)+(Number.parseFloat(getComputedStyle((void 0).documentElement).scrollPaddingTop)||0)}catch{}return 0}
+const routerOptions0 = {
+  scrollBehavior(to, from, savedPosition) {
+    var _a;
+    const nuxtApp = useNuxtApp();
+    const behavior = ((_a = useRouter$1().options) == null ? void 0 : _a.scrollBehaviorType) ?? "auto";
+    let position = savedPosition || void 0;
+    const routeAllowsScrollToTop = typeof to.meta.scrollToTop === "function" ? to.meta.scrollToTop(to, from) : to.meta.scrollToTop;
+    if (!position && from && to && routeAllowsScrollToTop !== false && isChangingPage(to, from)) {
+      position = { left: 0, top: 0 };
+    }
+    if (to.path === from.path) {
+      if (from.hash && !to.hash) {
+        return { left: 0, top: 0 };
+      }
+      if (to.hash) {
+        return { el: to.hash, top: _getHashElementScrollMarginTop(to.hash), behavior };
+      }
+      return false;
+    }
+    const hasTransition = (route) => !!(route.meta.pageTransition ?? appPageTransition);
+    const hookToWait = hasTransition(from) && hasTransition(to) ? "page:transition:finish" : "page:finish";
+    return new Promise((resolve) => {
+      nuxtApp.hooks.hookOnce(hookToWait, async () => {
+        await new Promise((resolve2) => setTimeout(resolve2, 0));
+        if (to.hash) {
+          position = { el: to.hash, top: _getHashElementScrollMarginTop(to.hash), behavior };
+        }
+        resolve(position);
+      });
+    });
+  }
+};
+function _getHashElementScrollMarginTop(selector) {
+  try {
+    const elem = (void 0).querySelector(selector);
+    if (elem) {
+      return (Number.parseFloat(getComputedStyle(elem).scrollMarginTop) || 0) + (Number.parseFloat(getComputedStyle((void 0).documentElement).scrollPaddingTop) || 0);
+    }
+  } catch {
+  }
+  return 0;
+}
 
-const t$8={hashMode:false,scrollBehaviorType:"auto"},e$8={...t$8,...P$9};
+const configRouterOptions = {
+  hashMode: false,
+  scrollBehaviorType: "auto"
+};
+const routerOptions = {
+  ...configRouterOptions,
+  ...routerOptions0
+};
 
-const _$a=O$9(async e=>{let r,s;if(!e.meta?.validate)return;const o=W$8(),a=d$d(),t=([r,s]=executeAsync(()=>Promise.resolve(e.meta.validate(e))),r=await r,s(),r);if(t===true)return;const u=u$h({statusCode:t&&t.statusCode||404,statusMessage:t&&t.statusMessage||`Page Not Found: ${e.fullPath}`,data:{path:e.fullPath}}),n=a.beforeResolve(i=>{if(n(),i===e){const f=a.afterEach(async()=>{f(),await o.runWithContext(()=>l$f(u));});return  false}});});
+const validate = defineNuxtRouteMiddleware(async (to) => {
+  var _a;
+  let __temp, __restore;
+  if (!((_a = to.meta) == null ? void 0 : _a.validate)) {
+    return;
+  }
+  const nuxtApp = useNuxtApp();
+  const router = useRouter$1();
+  const result = ([__temp, __restore] = executeAsync(() => Promise.resolve(to.meta.validate(to))), __temp = await __temp, __restore(), __temp);
+  if (result === true) {
+    return;
+  }
+  const error = createError({
+    statusCode: result && result.statusCode || 404,
+    statusMessage: result && result.statusMessage || `Page Not Found: ${to.fullPath}`,
+    data: {
+      path: to.fullPath
+    }
+  });
+  const unsub = router.beforeResolve((final) => {
+    unsub();
+    if (final === to) {
+      const unsub2 = router.afterEach(async () => {
+        unsub2();
+        await nuxtApp.runWithContext(() => showError(error));
+      });
+      return false;
+    }
+  });
+});
 
-const u$g=O$9(async r=>{});
+const manifest_45route_45rule = defineNuxtRouteMiddleware(async (to) => {
+  {
+    return;
+  }
+});
 
-const t$7=[_$a,u$g],i$g={premium:()=>import('./premium.mjs')};
+const globalMiddleware = [
+  validate,
+  manifest_45route_45rule
+];
+const namedMiddleware = {
+  premium: () => import('./premium.mjs')
+};
 
-const te$3=N$a({name:"nuxt:router",enforce:"pre",async setup(t){let a,d,R=E$9().app.baseURL;const p=e$8.history?.(R)??createMemoryHistory(R),B=e$8.routes?([a,d]=executeAsync(()=>e$8.routes(O$8)),a=await a,d(),a??O$8):O$8;let C;const r=createRouter$1({...e$8,scrollBehavior:(e,n,i)=>{if(n===START_LOCATION){C=i;return}if(e$8.scrollBehavior){if(r.options.scrollBehavior=e$8.scrollBehavior,"scrollRestoration"in(void 0).history){const o=r.beforeEach(()=>{o(),(void 0).history.scrollRestoration="manual";});}return e$8.scrollBehavior(e,START_LOCATION,C||i)}},history:p,routes:B});N$8(r,e$8.routes?e$8.routes:e=>e),t.vueApp.use(r);const _=shallowRef(r.currentRoute.value);r.afterEach((e,n)=>{_.value=n;}),Object.defineProperty(t.vueApp.config.globalProperties,"previousRoute",{get:()=>_.value});const h=t.ssrContext.url,w=shallowRef(r.currentRoute.value),y=()=>{w.value=r.currentRoute.value;};t.hook("page:finish",y),r.afterEach((e,n)=>{e.matched[0]?.components?.default===n.matched[0]?.components?.default&&y();});const E={};for(const e in w.value)Object.defineProperty(E,e,{get:()=>w.value[e],enumerable:true});t._route=shallowReactive(E),t._middleware||={global:[],named:{}},a$p(),t.ssrContext?.islandContext||r.afterEach(async(e,n,i)=>{delete t._processingMiddleware,i&&await t.callHook("page:loading:end"),i?.type!==4&&e.redirectedFrom&&e.fullPath!==h&&await t.runWithContext(()=>$$8(e.fullPath||"/"));});try{[a,d]=executeAsync(()=>r.push(h)),await a,d(),[a,d]=executeAsync(()=>r.isReady()),await a,d();}catch(e){[a,d]=executeAsync(()=>t.runWithContext(()=>l$f(e))),await a,d();}const g=r.currentRoute.value;if(y(),t.ssrContext?.islandContext)return {provide:{router:r}};const M=t.payload.state._layout;return r.beforeEach(async(e,n)=>{if(await t.callHook("page:loading:start"),e.meta=reactive(e.meta),t.isHydrating&&M&&!isReadonly(e.meta.layout)&&(e.meta.layout=M),t._processingMiddleware=true,!t.ssrContext?.islandContext){const i=new Set([...t$7,...t._middleware.global]);for(const o of e.matched){const l=o.meta.middleware;if(l)for(const c of _$d(l))i.add(c);}{const o=await t.runWithContext(()=>a$n({path:e.path}));if(o.appMiddleware)for(const l in o.appMiddleware)o.appMiddleware[l]?i.add(l):i.delete(l);}for(const o of i){const l=typeof o=="string"?t._middleware.named[o]||await i$g[o]?.().then(u=>u.default||u):o;if(!l)throw new Error(`Unknown route middleware: '${o}'.`);const c=await t.runWithContext(()=>l(e,n));if(c===false||c instanceof Error){const u=c||createError({statusCode:404,statusMessage:`Page Not Found: ${h}`});return await t.runWithContext(()=>l$f(u)),false}if(c!==true&&(c||c===false))return c}}}),r.onError(async()=>{delete t._processingMiddleware,await t.callHook("page:loading:end");}),r.afterEach(async(e,n)=>{e.matched.length===0&&await t.runWithContext(()=>l$f(createError({statusCode:404,fatal:false,statusMessage:`Page not found: ${e.fullPath}`,data:{path:e.fullPath}})));}),t.hooks.hookOnce("app:created",async()=>{try{"name"in g&&(g.name=void 0),await r.replace({...g,force:!0}),r.options.scrollBehavior=e$8.scrollBehavior;}catch(e){await t.runWithContext(()=>l$f(e));}}),{provide:{router:r}}}});
+const plugin$1 = defineNuxtPlugin({
+  name: "nuxt:router",
+  enforce: "pre",
+  async setup(nuxtApp) {
+    var _a, _b, _c, _d;
+    let __temp, __restore;
+    let routerBase = useRuntimeConfig().app.baseURL;
+    const history = ((_b = (_a = routerOptions).history) == null ? void 0 : _b.call(_a, routerBase)) ?? createMemoryHistory(routerBase);
+    const routes = routerOptions.routes ? ([__temp, __restore] = executeAsync(() => routerOptions.routes(_routes)), __temp = await __temp, __restore(), __temp) ?? _routes : _routes;
+    let startPosition;
+    const router = createRouter$1({
+      ...routerOptions,
+      scrollBehavior: (to, from, savedPosition) => {
+        if (from === START_LOCATION) {
+          startPosition = savedPosition;
+          return;
+        }
+        if (routerOptions.scrollBehavior) {
+          router.options.scrollBehavior = routerOptions.scrollBehavior;
+          if ("scrollRestoration" in (void 0).history) {
+            const unsub = router.beforeEach(() => {
+              unsub();
+              (void 0).history.scrollRestoration = "manual";
+            });
+          }
+          return routerOptions.scrollBehavior(to, START_LOCATION, startPosition || savedPosition);
+        }
+      },
+      history,
+      routes
+    });
+    handleHotUpdate(router, routerOptions.routes ? routerOptions.routes : (routes2) => routes2);
+    nuxtApp.vueApp.use(router);
+    const previousRoute = shallowRef(router.currentRoute.value);
+    router.afterEach((_to, from) => {
+      previousRoute.value = from;
+    });
+    Object.defineProperty(nuxtApp.vueApp.config.globalProperties, "previousRoute", {
+      get: () => previousRoute.value
+    });
+    const initialURL = nuxtApp.ssrContext.url;
+    const _route = shallowRef(router.currentRoute.value);
+    const syncCurrentRoute = () => {
+      _route.value = router.currentRoute.value;
+    };
+    nuxtApp.hook("page:finish", syncCurrentRoute);
+    router.afterEach((to, from) => {
+      var _a2, _b2, _c2, _d2;
+      if (((_b2 = (_a2 = to.matched[0]) == null ? void 0 : _a2.components) == null ? void 0 : _b2.default) === ((_d2 = (_c2 = from.matched[0]) == null ? void 0 : _c2.components) == null ? void 0 : _d2.default)) {
+        syncCurrentRoute();
+      }
+    });
+    const route = {};
+    for (const key in _route.value) {
+      Object.defineProperty(route, key, {
+        get: () => _route.value[key],
+        enumerable: true
+      });
+    }
+    nuxtApp._route = shallowReactive(route);
+    nuxtApp._middleware || (nuxtApp._middleware = {
+      global: [],
+      named: {}
+    });
+    useError();
+    if (!((_c = nuxtApp.ssrContext) == null ? void 0 : _c.islandContext)) {
+      router.afterEach(async (to, _from, failure) => {
+        delete nuxtApp._processingMiddleware;
+        if (failure) {
+          await nuxtApp.callHook("page:loading:end");
+        }
+        if ((failure == null ? void 0 : failure.type) === 4) {
+          return;
+        }
+        if (to.redirectedFrom && to.fullPath !== initialURL) {
+          await nuxtApp.runWithContext(() => navigateTo(to.fullPath || "/"));
+        }
+      });
+    }
+    try {
+      if (true) {
+        ;
+        [__temp, __restore] = executeAsync(() => router.push(initialURL)), await __temp, __restore();
+        ;
+      }
+      ;
+      [__temp, __restore] = executeAsync(() => router.isReady()), await __temp, __restore();
+      ;
+    } catch (error2) {
+      [__temp, __restore] = executeAsync(() => nuxtApp.runWithContext(() => showError(error2))), await __temp, __restore();
+    }
+    const resolvedInitialRoute = router.currentRoute.value;
+    syncCurrentRoute();
+    if ((_d = nuxtApp.ssrContext) == null ? void 0 : _d.islandContext) {
+      return { provide: { router } };
+    }
+    const initialLayout = nuxtApp.payload.state._layout;
+    router.beforeEach(async (to, from) => {
+      var _a2, _b2, _c2;
+      await nuxtApp.callHook("page:loading:start");
+      to.meta = reactive(to.meta);
+      if (nuxtApp.isHydrating && initialLayout && !isReadonly(to.meta.layout)) {
+        to.meta.layout = initialLayout;
+      }
+      nuxtApp._processingMiddleware = true;
+      if (!((_a2 = nuxtApp.ssrContext) == null ? void 0 : _a2.islandContext)) {
+        const middlewareEntries = /* @__PURE__ */ new Set([...globalMiddleware, ...nuxtApp._middleware.global]);
+        for (const component of to.matched) {
+          const componentMiddleware = component.meta.middleware;
+          if (!componentMiddleware) {
+            continue;
+          }
+          for (const entry of toArray(componentMiddleware)) {
+            middlewareEntries.add(entry);
+          }
+        }
+        {
+          const routeRules = await nuxtApp.runWithContext(() => getRouteRules({ path: to.path }));
+          if (routeRules.appMiddleware) {
+            for (const key in routeRules.appMiddleware) {
+              if (routeRules.appMiddleware[key]) {
+                middlewareEntries.add(key);
+              } else {
+                middlewareEntries.delete(key);
+              }
+            }
+          }
+        }
+        for (const entry of middlewareEntries) {
+          const middleware = typeof entry === "string" ? nuxtApp._middleware.named[entry] || await ((_c2 = (_b2 = namedMiddleware)[entry]) == null ? void 0 : _c2.call(_b2).then((r) => r.default || r)) : entry;
+          if (!middleware) {
+            throw new Error(`Unknown route middleware: '${entry}'.`);
+          }
+          const result = await nuxtApp.runWithContext(() => middleware(to, from));
+          {
+            if (result === false || result instanceof Error) {
+              const error2 = result || createError$1({
+                statusCode: 404,
+                statusMessage: `Page Not Found: ${initialURL}`
+              });
+              await nuxtApp.runWithContext(() => showError(error2));
+              return false;
+            }
+          }
+          if (result === true) {
+            continue;
+          }
+          if (result || result === false) {
+            return result;
+          }
+        }
+      }
+    });
+    router.onError(async () => {
+      delete nuxtApp._processingMiddleware;
+      await nuxtApp.callHook("page:loading:end");
+    });
+    router.afterEach(async (to, _from) => {
+      if (to.matched.length === 0) {
+        await nuxtApp.runWithContext(() => showError(createError$1({
+          statusCode: 404,
+          fatal: false,
+          statusMessage: `Page not found: ${to.fullPath}`,
+          data: {
+            path: to.fullPath
+          }
+        })));
+      }
+    });
+    nuxtApp.hooks.hookOnce("app:created", async () => {
+      try {
+        if ("name" in resolvedInitialRoute) {
+          resolvedInitialRoute.name = void 0;
+        }
+        await router.replace({
+          ...resolvedInitialRoute,
+          force: true
+        });
+        router.options.scrollBehavior = routerOptions.scrollBehavior;
+      } catch (error2) {
+        await nuxtApp.runWithContext(() => showError(error2));
+      }
+    });
+    return { provide: { router } };
+  }
+});
 
-let o$d = class o{static TOKEN_KEY="access_token";static storeToken(r){if(!r){this.removeToken();return}try{localStorage.setItem(this.TOKEN_KEY,r);}catch(e){console.error("Erreur lors du stockage du token:",e);}}static retrieveToken(){try{return localStorage.getItem(this.TOKEN_KEY)}catch(r){return console.error("Erreur lors de la récupération du token:",r),null}}static removeToken(){try{localStorage.removeItem(this.TOKEN_KEY);}catch(r){console.error("Erreur lors de la suppression du token:",r);}}static getAuthHeader(){return {Authorization:`Bearer ${this.retrieveToken()||""}`}}};
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => __defNormalProp(obj, key + "" , value);
+class TokenManager {
+  /**
+   * Stocke le token d'accès dans localStorage
+   */
+  static storeToken(token) {
+    if (!token) {
+      this.removeToken();
+      return;
+    }
+    try {
+      localStorage.setItem(this.TOKEN_KEY, token);
+    } catch (error) {
+      console.error("Erreur lors du stockage du token:", error);
+    }
+  }
+  /**
+   * Récupère le token d'accès depuis localStorage
+   */
+  static retrieveToken() {
+    try {
+      return localStorage.getItem(this.TOKEN_KEY);
+    } catch (error) {
+      console.error("Erreur lors de la récupération du token:", error);
+      return null;
+    }
+  }
+  /**
+   * Supprime le token d'accès
+   */
+  static removeToken() {
+    try {
+      localStorage.removeItem(this.TOKEN_KEY);
+    } catch (error) {
+      console.error("Erreur lors de la suppression du token:", error);
+    }
+  }
+  /**
+   * Crée un en-tête d'autorisation avec le token
+   */
+  static getAuthHeader() {
+    const token = this.retrieveToken();
+    return { Authorization: `Bearer ${token || ""}` };
+  }
+}
+__publicField(TokenManager, "TOKEN_KEY", "access_token");
 
-const k$9=defineStore("user",{state:()=>({user:{id:0,username:"",email:"",isAdmin:false,isPremium:false,company:"",website:"",bio:""},token:"",systemData:{cpu:{usage:0,cores:[],speed:0},memory:{total:0,used:0,free:0,swapUsed:0,swapTotal:0},disks:[]},personalSnippets:[],worldSnippets:[],favoritesSnippets:[],sqlSchemas:[],studioComponents:[],emailHistory:[],isAuthenticated:false,authError:"",seoData:null,seoError:"",isSeoLoading:false}),persist:false,getters:{isUserAuthenticated(){return this.isAuthenticated&&!!this.token},getAuthHeader(){return {Authorization:`Bearer ${o$d.retrieveToken()||""}`}}},actions:{initializeStore(){if(!W$8().ssrContext){this.restoreUserData();const e=o$d.retrieveToken();e?(this.token=e,this.isAuthenticated=true,this.loadData().then(t=>{t.success||(console.error("Erreur lors du chargement des données:",t.error),this.logout());}).catch(t=>{console.error("Erreur lors du chargement des données:",t),this.logout();})):this.logout();}},async logout(){try{return await fetch("/api/auth/logout",{method:"POST",credentials:"include"}),this.user=null,this.isAuthenticated=!1,this.token=null,this.authError="",o$d.removeToken(),{success:!0}}catch(r){return console.error("Erreur lors de la déconnexion:",r),{success:false,error:"Erreur lors de la déconnexion"}}},formatDate(r){const e=new Date(r),t={year:"numeric",month:"2-digit",day:"2-digit"};return e.toLocaleDateString("fr-FR",t)},setToken(r){if(!r){console.error("Tentative de définir un token vide");return}this.token=r,this.isAuthenticated=true,o$d.storeToken(r);},persistUserData(){try{const r={user:{id:this.user?.id||0,username:this.user?.username||"",email:this.user?.email||"",isAdmin:this.user?.isAdmin||!1,isPremium:this.user?.isPremium||!1},isAuthenticated:this.isAuthenticated};localStorage.setItem("user_data",JSON.stringify(r));}catch(r){console.warn("Impossible de persister les données utilisateur:",r);}},restoreUserData(){try{const r=localStorage.getItem("user_data");if(r){const e=JSON.parse(r);this.user={id:e.user.id||0,username:e.user.username||"",email:e.user.email||"",isAdmin:e.user.isAdmin||!1,isPremium:e.user.isPremium||!1,company:e.user.company||"",website:e.user.website||"",bio:e.user.bio||""},this.isAuthenticated=e.isAuthenticated||!1;}}catch(r){console.warn("Impossible de restaurer les données utilisateur:",r);}},async login(r,e){try{const t=await fetch("/api/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:r,password:e}),credentials:"include"});if(!t.ok)throw new Error("Identifiants invalides");const s=await t.json();if(!s.success||!s.accessToken||!s.user)throw console.error("Format de réponse invalide:",s),new Error("Format de réponse invalide");return this.setToken(s.accessToken),this.user={id:s.user.id||0,username:s.user.username||"",email:s.user.email||"",isAdmin:!!s.user.isAdmin,isPremium:!!s.user.isPremium,company:s.user.company||"",website:s.user.website||"",bio:s.user.bio||""},this.isAuthenticated=!0,this.authError="",{success:!0,user:this.user}}catch(t){return this.authError="Identifiants invalides",console.error("Erreur de connexion:",t),{success:false,error:this.authError}}},async updateUser(r,e,t,s,o){try{const a=await fetch("/api/auth/updateUser",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:JSON.stringify({email:r,username:e,company:t,website:s,bio:o})});if(!a.ok)throw new Error("Erreur lors de la mise à jour de l'utilisateur");const n=await a.json();this.user=n.user;}catch(a){throw console.error("Erreur lors de la mise à jour de l'utilisateur:",a),a}},async resetPassword(r){try{const e=await fetch("/api/auth/resetPassword",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:JSON.stringify({newPassword:r})});if(!e.ok)throw new Error("Erreur lors de la réinitialisation du mot de passe");return e.json()}catch(e){throw console.error("Erreur lors de la réinitialisation du mot de passe:",e),e}},async signUp(r,e,t){try{const s=await fetch("/api/auth/signup",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:r,email:e,password:t}),credentials:"include"});if(!s.ok)throw new Error("Erreur lors de l'inscription");const o=await s.json();if(!o.success)throw new Error(o.error||"Erreur lors de l'inscription");const a=o.accessToken;if(!a)throw new Error("Token d'authentification manquant dans la réponse");return this.setToken(a),this.user={id:o.user.id||0,username:o.user.username,email:o.user.email,isAdmin:o.user.isAdmin||!1,isPremium:o.user.isPremium||!1,company:o.user.company||"",website:o.user.website||"",bio:o.user.bio||""},this.isAuthenticated=!0,this.authError="",this.persistUserData(),{success:!0,user:this.user}}catch(s){throw this.authError=s instanceof Error?s.message:"Erreur lors de l'inscription",s}},async deleteAccount(){try{const r=await fetch("/api/auth/deleteAccount",{method:"DELETE",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`}});if(!r.ok)throw new Error("Erreur lors de la suppression du compte");return r.json()}catch(r){throw console.error("Erreur lors de la suppression du compte:",r),r}},async saveSQLSchema(r,e){try{const t={database_name:r,tables:e.map(o=>({name:o.name,columns:o.columns.map(a=>({name:a.name,type:a.type,primaryKey:a.primaryKey,foreignKey:a.foreignKey,notNull:a.notNull,unique:a.unique,autoIncrement:a.autoIncrement,referencedTable:a.referencedTable,referencedColumn:a.referencedColumn}))}))},s=await $fetch("/api/sql/saveSQLSchema",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:t});if(s.success)this.sqlSchemas.push({...t,id:s.id});else throw new Error(s.error||"Erreur lors de la sauvegarde");return s}catch(t){throw console.error("Erreur lors de la sauvegarde du schéma:",t),t}},async loadData(){try{const r=await fetch("/api/user/loadData",{headers:this.getAuthHeader});if(!r.ok)throw new Error("Erreur lors du chargement des données");const e=await r.json();if(console.log("Réponse de loadData:",e),!e||!e.data||!e.data.userData||!Array.isArray(e.data.userData)||e.data.userData.length===0)throw console.error("Données utilisateur invalides:",e),new Error("Format de données utilisateur invalide");const t=e.data.userData[0];return this.user={id:t?.id||0,username:t?.username||"",email:t?.email||"",isAdmin:!!t?.isAdmin,isPremium:!!t?.isPremium,company:t?.company||"",website:t?.website||"",bio:t?.bio||""},console.log("Données utilisateur chargées:",this.user),console.log("Statut premium:",this.user.isPremium?"PREMIUM":"NON PREMIUM"),Array.isArray(e.data.studioComponents)?(this.studioComponents=e.data.studioComponents,console.log(`${this.studioComponents.length} composants studio chargés`)):(this.studioComponents=[],console.log("Aucun composant studio trouvé")),console.log("Chargement des données terminé avec succès"),{success:!0,user:this.user}}catch(r){return console.error("Erreur lors du chargement des données:",r),{success:false,error:r instanceof Error?r.message:"Erreur inconnue"}}},async loadSnippets(){try{const r=await $fetch("/api/snippets/loadSnippets",{headers:{Authorization:`Bearer ${this.token}`}});return console.log("Résultat du chargement des snippets:",r),r.success&&(this.personalSnippets=r.data.personalSnippets,this.worldSnippets=r.data.worldSnippets,this.favoritesSnippets=r.data.favoritesSnippets,this.markFavoriteSnippets()),r}catch(r){return console.error("Erreur lors du chargement des snippets:",r.message,r.stack),null}},markFavoriteSnippets(){const r=this.favoritesSnippets.map(e=>e.snippet_id);this.worldSnippets.forEach(e=>{e.isFavorite=r.includes(e.id);});},async loadSQLSchemas(){try{const r=await $fetch("/api/sql/loadSQLSchemas",{headers:{Authorization:`Bearer ${this.token}`}});console.log(r.schemas),this.sqlSchemas=r.schemas;}catch(r){throw console.error("Erreur lors du chargement des schémas:",r),r}},async uploadImage(r){const e=new FormData;e.append("file",r);const s=await(await fetch("/api/upload",{method:"POST",headers:{Authorization:`Bearer ${this.token}`},body:e})).json();if(s.success)return s.url;throw new Error(s.error||"Erreur lors de l'upload de l'image")},async addSnippets(r,e,t,s,o,a){try{const n=this.user?.username||"",c=new Date().toISOString().slice(0,10),u=await this.uploadImage(s),d=await $fetch("/api/snippets/addSnippets",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:{username:n,date:c,title:r,description:e,framework:t,img:u,publishWorld:o,publishPersonal:a}});console.table(d.data);}catch(n){console.error(n.message,n.stack);}},async updateSnippet(r,e,t){try{const s=await $fetch("/api/snippets/updateSnippet",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:{id:r,code:e,type:t}});console.table(s),await this.loadData();}catch(s){console.error(s.message,s.stack);}},async deleteSnippet(r,e){try{const t=await $fetch("/api/snippets/deleteSnippet",{method:"DELETE",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:{id:r,type:e}});console.table(t),await this.loadData();}catch(t){console.error(t.message,t.stack);}},async deleteSQLSchema(r){try{const e=await $fetch(`/api/sql/${r}`,{method:"DELETE",headers:{Authorization:`Bearer ${this.token}`}});if(e.success)this.sqlSchemas=this.sqlSchemas.filter(t=>t.id!==r);else throw new Error(e.error||"Erreur lors de la suppression");return e}catch(e){throw console.error("Erreur lors de la suppression du schéma:",e),e}},async getMonitoringData(){try{const r=await fetch("/api/monitoring/system",{headers:this.getAuthHeader});if(!r.ok)throw new Error("Erreur lors de la récupération des données système");const e=await r.json();e.success&&e.data&&(this.systemData=e.data);}catch(r){throw console.error("Erreur lors de la récupération des données système:",r),r}},async auditSEO(r){try{this.isSeoLoading=!0,this.seoError="",this.seoData=null;const e=o$d.retrieveToken();console.log("Token disponible pour auditSEO:",!!e);const t={"Content-Type":"application/json"};e&&(t.Authorization=`Bearer ${e}`);const s=await fetch("/api/seo-audit",{method:"POST",headers:t,body:JSON.stringify({url:r,options:{maxDepth:2,sameDomainOnly:!0,timeout:3e4}})});if(!s.ok)throw new Error(`Erreur ${s.status}: ${s.statusText}`);const o=await s.json();return this.seoData=o,console.log("Données d'audit SEO reçues:",o),o}catch(e){throw this.seoError=e instanceof Error?e.message:"An error occurred",console.error("Erreur lors de l'audit SEO:",e),e}finally{this.isSeoLoading=false;}},async saveTemplate(r,e,t){try{return await fetch("/api/studio/saveTemplate",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:JSON.stringify({templateName:r,templateData:e,componentType:t})})}catch(s){console.error(s.message,s.stack);}},async removeTemplate(r){try{return await fetch(`/api/studio/removeTemplate/${r}`,{method:"DELETE",headers:{Authorization:`Bearer ${this.token}`},body:JSON.stringify({templateId:r})})}catch(e){console.error(e.message,e.stack);}},async sendEmail(r){try{return !r.subject||!r.html||!r.text?(console.error("Données manquantes pour l'envoi d'email:",r),null):await fetch("/api/newsletter/send",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:JSON.stringify(r)})}catch(e){return console.error("Erreur lors de l'envoi d'email:",e.message,e.stack),null}},async addNewsletter(r){try{return await fetch("/api/newsletter/createNewsletter",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:JSON.stringify({name:r})})}catch(e){return console.error("Erreur lors de la création de la newsletter:",e.message,e.stack),null}},async subscribeToNewsletter(r){try{return await fetch("/api/newsletter/subscribe",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:JSON.stringify({email:r})})}catch(e){return console.error("Erreur lors de l'inscription à la newsletter:",e.message,e.stack),null}},async getEmailHistory(){try{return await fetch("/api/newsletter/history",{headers:{Authorization:`Bearer ${this.token}`}})}catch(r){return console.error("Erreur lors de la récupération de l'historique des emails:",r.message,r.stack),null}},async unsubscribe(r){try{return await fetch("/api/newsletter/unsubscribe",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:r})})}catch(e){return console.error("Erreur lors de la désinscription:",e.message,e.stack),null}},async addFavorite(r,e){try{return await fetch("/api/snippets/addFavorite",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:JSON.stringify({snippetId:r,type:e})})}catch(t){return console.error("Erreur lors de l'ajout du favori:",t.message,t.stack),null}},async removeFavorite(r){try{return await fetch("/api/snippets/removeFavorite",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:JSON.stringify({snippetId:r})})}catch(e){return console.error("Erreur lors de la suppression du favori:",e.message,e.stack),null}},async fetchSEOData(r){this.isSeoLoading=true,this.seoError="";try{const e=await $fetch("/api/seo-audit",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token}`},body:JSON.stringify({url:r,options:{maxDepth:1,sameDomainOnly:!0,timeout:3e4}})});if(!e)throw new Error("Failed to fetch SEO data");return this.seoData=e,this.seoData}catch(e){throw this.seoError=e instanceof Error?e.message:"An error occurred",e}finally{this.isSeoLoading=false;}},async forgotPassword(r){try{return await $fetch("/api/auth/forgot-password",{method:"POST",body:{email:r}})}catch(e){throw new Error(e.data?.message||"Erreur lors de la réinitialisation du mot de passe")}},async updatePremiumStatus(r){try{const e=await fetch("/api/users/update-premium",{method:"POST",headers:{"Content-Type":"application/json",...this.getAuthHeader},body:JSON.stringify({isPremium:r}),credentials:"include"});if(!e.ok)throw new Error("Erreur lors de la mise à jour du statut premium");const t=await e.json();if(t.success)return this.user&&(this.user.isPremium=r),this.persistUserData(),{success:!0};throw new Error(t.error||"Erreur lors de la mise à jour du statut premium")}catch(e){return console.error("Erreur lors de la mise à jour du statut premium:",e),{success:false,error:e instanceof Error?e.message:"Erreur inconnue"}}},async checkout(r,e="FR"){const t="eur";try{const s=await $fetch("/api/payment/create-intent",{method:"POST",body:{currency:t,customer_name:r,country_code:e}});if(s&&typeof s=="object"&&"success"in s&&s.success&&"clientSecret"in s){const o="taxDetails"in s?s.taxDetails:void 0;return {success:!0,clientSecret:s.clientSecret,taxDetails:o}}return {success:!1,error:s&&typeof s=="object"&&"error"in s?s.error:"Invalid server response"}}catch(s){return console.error("Payment error:",s),{success:false,error:s instanceof Error?s.message:"Unknown payment error"}}}}});
+const useUserStore = defineStore("user", {
+  state: () => ({
+    user: {
+      id: 0,
+      username: "",
+      email: "",
+      isAdmin: false,
+      isPremium: false,
+      company: "",
+      website: "",
+      bio: ""
+    },
+    token: "",
+    systemData: {
+      cpu: {
+        usage: 0,
+        cores: [],
+        speed: 0
+      },
+      memory: {
+        total: 0,
+        used: 0,
+        free: 0,
+        swapUsed: 0,
+        swapTotal: 0
+      },
+      disks: []
+    },
+    personalSnippets: [],
+    worldSnippets: [],
+    favoritesSnippets: [],
+    sqlSchemas: [],
+    studioComponents: [],
+    emailHistory: [],
+    isAuthenticated: false,
+    authError: "",
+    seoData: null,
+    seoError: "",
+    isSeoLoading: false
+  }),
+  persist: false,
+  getters: {
+    isUserAuthenticated() {
+      return this.isAuthenticated && !!this.token;
+    },
+    getAuthHeader() {
+      const token = TokenManager.retrieveToken();
+      return { Authorization: `Bearer ${token || ""}` };
+    }
+  },
+  actions: {
+    initializeStore() {
+      const nuxtApp = useNuxtApp();
+      if (!nuxtApp.ssrContext) {
+        this.restoreUserData();
+        const token = TokenManager.retrieveToken();
+        if (token) {
+          this.token = token;
+          this.isAuthenticated = true;
+          this.loadData().then((result) => {
+            if (!result.success) {
+              console.error("Erreur lors du chargement des données:", result.error);
+              this.logout();
+            }
+          }).catch((err) => {
+            console.error("Erreur lors du chargement des données:", err);
+            this.logout();
+          });
+        } else {
+          this.logout();
+        }
+      }
+    },
+    async logout() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+          // Important pour envoyer le cookie HttpOnly
+        });
+        this.user = null;
+        this.isAuthenticated = false;
+        this.token = null;
+        this.authError = "";
+        TokenManager.removeToken();
+        return { success: true };
+      } catch (error) {
+        console.error("Erreur lors de la déconnexion:", error);
+        return { success: false, error: "Erreur lors de la déconnexion" };
+      }
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+      return date.toLocaleDateString("fr-FR", options);
+    },
+    setToken(newToken) {
+      if (!newToken) {
+        console.error("Tentative de définir un token vide");
+        return;
+      }
+      this.token = newToken;
+      this.isAuthenticated = true;
+      TokenManager.storeToken(newToken);
+    },
+    persistUserData() {
+      var _a, _b, _c, _d, _e;
+      try {
+        const userData = {
+          user: {
+            id: ((_a = this.user) == null ? void 0 : _a.id) || 0,
+            username: ((_b = this.user) == null ? void 0 : _b.username) || "",
+            email: ((_c = this.user) == null ? void 0 : _c.email) || "",
+            isAdmin: ((_d = this.user) == null ? void 0 : _d.isAdmin) || false,
+            isPremium: ((_e = this.user) == null ? void 0 : _e.isPremium) || false
+          },
+          isAuthenticated: this.isAuthenticated
+        };
+        localStorage.setItem("user_data", JSON.stringify(userData));
+      } catch (error) {
+        console.warn("Impossible de persister les données utilisateur:", error);
+      }
+    },
+    restoreUserData() {
+      try {
+        const storedData = localStorage.getItem("user_data");
+        if (storedData) {
+          const userData = JSON.parse(storedData);
+          this.user = {
+            id: userData.user.id || 0,
+            username: userData.user.username || "",
+            email: userData.user.email || "",
+            isAdmin: userData.user.isAdmin || false,
+            isPremium: userData.user.isPremium || false,
+            company: userData.user.company || "",
+            website: userData.user.website || "",
+            bio: userData.user.bio || ""
+          };
+          this.isAuthenticated = userData.isAuthenticated || false;
+        }
+      } catch (error) {
+        console.warn("Impossible de restaurer les données utilisateur:", error);
+      }
+    },
+    async login(email, password) {
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password }),
+          credentials: "include"
+          // Important pour recevoir le cookie HttpOnly
+        });
+        if (!response.ok) {
+          throw new Error("Identifiants invalides");
+        }
+        const data = await response.json();
+        if (!data.success || !data.accessToken || !data.user) {
+          console.error("Format de réponse invalide:", data);
+          throw new Error("Format de réponse invalide");
+        }
+        this.setToken(data.accessToken);
+        this.user = {
+          id: data.user.id || 0,
+          username: data.user.username || "",
+          email: data.user.email || "",
+          isAdmin: Boolean(data.user.isAdmin),
+          isPremium: Boolean(data.user.isPremium),
+          company: data.user.company || "",
+          website: data.user.website || "",
+          bio: data.user.bio || ""
+        };
+        this.isAuthenticated = true;
+        this.authError = "";
+        return { success: true, user: this.user };
+      } catch (error) {
+        this.authError = "Identifiants invalides";
+        console.error("Erreur de connexion:", error);
+        return { success: false, error: this.authError };
+      }
+    },
+    async updateUser(email, username, company, website, bio) {
+      try {
+        const response = await fetch("/api/auth/updateUser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ email, username, company, website, bio })
+        });
+        if (!response.ok) {
+          throw new Error("Erreur lors de la mise à jour de l'utilisateur");
+        }
+        const data = await response.json();
+        this.user = data.user;
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour de l'utilisateur:", error);
+        throw error;
+      }
+    },
+    async resetPassword(newPassword) {
+      try {
+        const response = await fetch("/api/auth/resetPassword", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ newPassword })
+        });
+        if (!response.ok) {
+          throw new Error("Erreur lors de la réinitialisation du mot de passe");
+        }
+        return response.json();
+      } catch (error) {
+        console.error("Erreur lors de la réinitialisation du mot de passe:", error);
+        throw error;
+      }
+    },
+    async signUp(username, email, password) {
+      try {
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username, email, password }),
+          credentials: "include"
+          // Important pour recevoir les cookies HttpOnly
+        });
+        if (!response.ok) {
+          throw new Error("Erreur lors de l'inscription");
+        }
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.error || "Erreur lors de l'inscription");
+        }
+        const authToken = data.accessToken;
+        if (!authToken) {
+          throw new Error("Token d'authentification manquant dans la réponse");
+        }
+        this.setToken(authToken);
+        this.user = {
+          id: data.user.id || 0,
+          username: data.user.username,
+          email: data.user.email,
+          isAdmin: data.user.isAdmin || false,
+          isPremium: data.user.isPremium || false,
+          company: data.user.company || "",
+          website: data.user.website || "",
+          bio: data.user.bio || ""
+        };
+        this.isAuthenticated = true;
+        this.authError = "";
+        this.persistUserData();
+        return { success: true, user: this.user };
+      } catch (error) {
+        this.authError = error instanceof Error ? error.message : "Erreur lors de l'inscription";
+        throw error;
+      }
+    },
+    async deleteAccount() {
+      try {
+        const response = await fetch("/api/auth/deleteAccount", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error("Erreur lors de la suppression du compte");
+        }
+        return response.json();
+      } catch (error) {
+        console.error("Erreur lors de la suppression du compte:", error);
+        throw error;
+      }
+    },
+    async saveSQLSchema(databaseName, tables) {
+      try {
+        const schemaData = {
+          database_name: databaseName,
+          tables: tables.map((table) => ({
+            name: table.name,
+            columns: table.columns.map((col) => ({
+              name: col.name,
+              type: col.type,
+              primaryKey: col.primaryKey,
+              foreignKey: col.foreignKey,
+              notNull: col.notNull,
+              unique: col.unique,
+              autoIncrement: col.autoIncrement,
+              referencedTable: col.referencedTable,
+              referencedColumn: col.referencedColumn
+            }))
+          }))
+        };
+        const response = await $fetch("/api/sql/saveSQLSchema", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.token}`
+          },
+          body: schemaData
+        });
+        if (response.success) {
+          this.sqlSchemas.push({
+            ...schemaData,
+            id: response.id
+          });
+        } else {
+          throw new Error(response.error || "Erreur lors de la sauvegarde");
+        }
+        return response;
+      } catch (err) {
+        console.error("Erreur lors de la sauvegarde du schéma:", err);
+        throw err;
+      }
+    },
+    async loadData() {
+      try {
+        const response = await fetch("/api/user/loadData", {
+          headers: this.getAuthHeader
+        });
+        if (!response.ok) {
+          throw new Error("Erreur lors du chargement des données");
+        }
+        const data = await response.json();
+        console.log("Réponse de loadData:", data);
+        if (!data || !data.data || !data.data.userData || !Array.isArray(data.data.userData) || data.data.userData.length === 0) {
+          console.error("Données utilisateur invalides:", data);
+          throw new Error("Format de données utilisateur invalide");
+        }
+        const userData = data.data.userData[0];
+        this.user = {
+          id: (userData == null ? void 0 : userData.id) || 0,
+          username: (userData == null ? void 0 : userData.username) || "",
+          email: (userData == null ? void 0 : userData.email) || "",
+          isAdmin: Boolean(userData == null ? void 0 : userData.isAdmin),
+          isPremium: Boolean(userData == null ? void 0 : userData.isPremium),
+          company: (userData == null ? void 0 : userData.company) || "",
+          website: (userData == null ? void 0 : userData.website) || "",
+          bio: (userData == null ? void 0 : userData.bio) || ""
+        };
+        console.log("Données utilisateur chargées:", this.user);
+        console.log("Statut premium:", this.user.isPremium ? "PREMIUM" : "NON PREMIUM");
+        if (Array.isArray(data.data.studioComponents)) {
+          this.studioComponents = data.data.studioComponents;
+          console.log(`${this.studioComponents.length} composants studio chargés`);
+        } else {
+          this.studioComponents = [];
+          console.log("Aucun composant studio trouvé");
+        }
+        console.log("Chargement des données terminé avec succès");
+        return { success: true, user: this.user };
+      } catch (error) {
+        console.error("Erreur lors du chargement des données:", error);
+        return { success: false, error: error instanceof Error ? error.message : "Erreur inconnue" };
+      }
+    },
+    async loadSnippets() {
+      try {
+        const response = await $fetch("/api/snippets/loadSnippets", {
+          headers: {
+            "Authorization": `Bearer ${this.token}`
+          }
+        });
+        console.log("Résultat du chargement des snippets:", response);
+        if (response.success) {
+          this.personalSnippets = response.data.personalSnippets;
+          this.worldSnippets = response.data.worldSnippets;
+          this.favoritesSnippets = response.data.favoritesSnippets;
+          this.markFavoriteSnippets();
+        }
+        return response;
+      } catch (err) {
+        console.error("Erreur lors du chargement des snippets:", err.message, err.stack);
+        return null;
+      }
+    },
+    markFavoriteSnippets() {
+      const favoriteIds = this.favoritesSnippets.map((fav) => fav.snippet_id);
+      this.worldSnippets.forEach((snippet) => {
+        snippet.isFavorite = favoriteIds.includes(snippet.id);
+      });
+    },
+    async loadSQLSchemas() {
+      try {
+        const response = await $fetch("/api/sql/loadSQLSchemas", {
+          headers: { Authorization: `Bearer ${this.token}` }
+        });
+        console.log(response.schemas);
+        this.sqlSchemas = response.schemas;
+      } catch (err) {
+        console.error("Erreur lors du chargement des schémas:", err);
+        throw err;
+      }
+    },
+    async uploadImage(file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        },
+        body: formData
+      });
+      const data = await response.json();
+      if (data.success) {
+        return data.url;
+      }
+      throw new Error(data.error || "Erreur lors de l'upload de l'image");
+    },
+    async addSnippets(title, description, framework, file, publishWorld, publishPersonal) {
+      var _a;
+      try {
+        const username = ((_a = this.user) == null ? void 0 : _a.username) || "";
+        const date = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+        const imageUrl = await this.uploadImage(file);
+        const response = await $fetch("/api/snippets/addSnippets", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.token}`
+          },
+          body: { username, date, title, description, framework, img: imageUrl, publishWorld, publishPersonal }
+        });
+        console.table(response.data);
+      } catch (err) {
+        console.error(err.message, err.stack);
+      }
+    },
+    async updateSnippet(id, code, type) {
+      try {
+        const response = await $fetch("/api/snippets/updateSnippet", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.token}`
+          },
+          body: { id, code, type }
+        });
+        console.table(response);
+        await this.loadData();
+      } catch (err) {
+        console.error(err.message, err.stack);
+      }
+    },
+    async deleteSnippet(id, type) {
+      try {
+        const response = await $fetch("/api/snippets/deleteSnippet", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.token}`
+          },
+          body: { id, type }
+        });
+        console.table(response);
+        await this.loadData();
+      } catch (err) {
+        console.error(err.message, err.stack);
+      }
+    },
+    async deleteSQLSchema(databaseId) {
+      try {
+        const response = await $fetch(`/api/sql/${databaseId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          }
+        });
+        if (response.success) {
+          this.sqlSchemas = this.sqlSchemas.filter((schema) => schema.id !== databaseId);
+        } else {
+          throw new Error(response.error || "Erreur lors de la suppression");
+        }
+        return response;
+      } catch (err) {
+        console.error("Erreur lors de la suppression du schéma:", err);
+        throw err;
+      }
+    },
+    async getMonitoringData() {
+      try {
+        const response = await fetch("/api/monitoring/system", {
+          headers: this.getAuthHeader
+        });
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des données système");
+        }
+        const data = await response.json();
+        if (data.success && data.data) {
+          this.systemData = data.data;
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données système:", error);
+        throw error;
+      }
+    },
+    async auditSEO(url) {
+      try {
+        this.isSeoLoading = true;
+        this.seoError = "";
+        this.seoData = null;
+        const token = TokenManager.retrieveToken();
+        console.log("Token disponible pour auditSEO:", !!token);
+        const headers = {
+          "Content-Type": "application/json"
+        };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+        const response = await fetch("/api/seo-audit", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            url,
+            options: {
+              maxDepth: 2,
+              sameDomainOnly: true,
+              timeout: 3e4
+            }
+          })
+        });
+        if (!response.ok) {
+          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        }
+        const data = await response.json();
+        this.seoData = data;
+        console.log("Données d'audit SEO reçues:", data);
+        return data;
+      } catch (err) {
+        this.seoError = err instanceof Error ? err.message : "An error occurred";
+        console.error("Erreur lors de l'audit SEO:", err);
+        throw err;
+      } finally {
+        this.isSeoLoading = false;
+      }
+    },
+    async saveTemplate(templateName, templateData, componentType) {
+      try {
+        const response = await fetch("/api/studio/saveTemplate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ templateName, templateData, componentType })
+        });
+        return response;
+      } catch (err) {
+        console.error(err.message, err.stack);
+      }
+    },
+    async removeTemplate(templateId) {
+      try {
+        const response = await fetch(`/api/studio/removeTemplate/${templateId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ templateId })
+        });
+        return response;
+      } catch (err) {
+        console.error(err.message, err.stack);
+      }
+    },
+    async sendEmail(emailData) {
+      try {
+        if (!emailData.subject || !emailData.html || !emailData.text) {
+          console.error("Données manquantes pour l'envoi d'email:", emailData);
+          return null;
+        }
+        const response = await fetch("/api/newsletter/send", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify(emailData)
+        });
+        return response;
+      } catch (err) {
+        console.error("Erreur lors de l'envoi d'email:", err.message, err.stack);
+        return null;
+      }
+    },
+    async addNewsletter(newsletterName) {
+      try {
+        const response = await fetch("/api/newsletter/createNewsletter", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ name: newsletterName })
+        });
+        return response;
+      } catch (err) {
+        console.error("Erreur lors de la création de la newsletter:", err.message, err.stack);
+        return null;
+      }
+    },
+    async subscribeToNewsletter(email) {
+      try {
+        const response = await fetch("/api/newsletter/subscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ email })
+        });
+        return response;
+      } catch (err) {
+        console.error("Erreur lors de l'inscription à la newsletter:", err.message, err.stack);
+        return null;
+      }
+    },
+    async getEmailHistory() {
+      try {
+        const response = await fetch("/api/newsletter/history", {
+          headers: {
+            "Authorization": `Bearer ${this.token}`
+          }
+        });
+        return response;
+      } catch (err) {
+        console.error("Erreur lors de la récupération de l'historique des emails:", err.message, err.stack);
+        return null;
+      }
+    },
+    async unsubscribe(email) {
+      try {
+        const response = await fetch("/api/newsletter/unsubscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email })
+        });
+        return response;
+      } catch (err) {
+        console.error("Erreur lors de la désinscription:", err.message, err.stack);
+        return null;
+      }
+    },
+    async addFavorite(snippetId, type) {
+      try {
+        const response = await fetch("/api/snippets/addFavorite", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ snippetId, type })
+        });
+        return response;
+      } catch (err) {
+        console.error("Erreur lors de l'ajout du favori:", err.message, err.stack);
+        return null;
+      }
+    },
+    async removeFavorite(snippetId) {
+      try {
+        const response = await fetch("/api/snippets/removeFavorite", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ snippetId })
+        });
+        return response;
+      } catch (err) {
+        console.error("Erreur lors de la suppression du favori:", err.message, err.stack);
+        return null;
+      }
+    },
+    async fetchSEOData(url) {
+      this.isSeoLoading = true;
+      this.seoError = "";
+      try {
+        const response = await $fetch("/api/seo-audit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({
+            url,
+            options: {
+              maxDepth: 1,
+              sameDomainOnly: true,
+              timeout: 3e4
+            }
+          })
+        });
+        if (!response) {
+          throw new Error("Failed to fetch SEO data");
+        }
+        this.seoData = response;
+        return this.seoData;
+      } catch (err) {
+        this.seoError = err instanceof Error ? err.message : "An error occurred";
+        throw err;
+      } finally {
+        this.isSeoLoading = false;
+      }
+    },
+    async forgotPassword(email) {
+      var _a;
+      try {
+        const response = await $fetch("/api/auth/forgot-password", {
+          method: "POST",
+          body: { email }
+        });
+        return response;
+      } catch (error) {
+        throw new Error(((_a = error.data) == null ? void 0 : _a.message) || "Erreur lors de la réinitialisation du mot de passe");
+      }
+    },
+    async updatePremiumStatus(isPremium) {
+      try {
+        const response = await fetch("/api/users/update-premium", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...this.getAuthHeader
+          },
+          body: JSON.stringify({ isPremium }),
+          credentials: "include"
+        });
+        if (!response.ok) {
+          throw new Error("Erreur lors de la mise à jour du statut premium");
+        }
+        const data = await response.json();
+        if (data.success) {
+          if (this.user) {
+            this.user.isPremium = isPremium;
+          }
+          this.persistUserData();
+          return { success: true };
+        } else {
+          throw new Error(data.error || "Erreur lors de la mise à jour du statut premium");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour du statut premium:", error);
+        return { success: false, error: error instanceof Error ? error.message : "Erreur inconnue" };
+      }
+    },
+    async checkout(cardholderName, countryCode = "FR") {
+      const currency = "eur";
+      try {
+        const response = await $fetch("/api/payment/create-intent", {
+          method: "POST",
+          body: {
+            currency,
+            customer_name: cardholderName,
+            country_code: countryCode
+          }
+        });
+        if (response && typeof response === "object" && "success" in response) {
+          if (response.success && "clientSecret" in response) {
+            const taxDetails = "taxDetails" in response ? response.taxDetails : void 0;
+            return {
+              success: true,
+              clientSecret: response.clientSecret,
+              taxDetails
+            };
+          }
+        }
+        return {
+          success: false,
+          error: response && typeof response === "object" && "error" in response ? response.error : "Invalid server response"
+        };
+      } catch (error) {
+        console.error("Payment error:", error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown payment error"
+        };
+      }
+    }
+  }
+});
 
-const o$c=defineStore("cookie",{state:()=>({showBanner:false,consentGiven:false,preferences:{essential:true,functional:false,analytics:false,marketing:false}}),persist:true,getters:{hasGivenConsent:e=>e.consentGiven,acceptedCategories:e=>{const r=["essential"];return e.preferences.functional&&r.push("functional"),e.preferences.analytics&&r.push("analytics"),e.preferences.marketing&&r.push("marketing"),r},hasCookieInBrowser:()=>false,isMarketingEnabled:e=>e.preferences.marketing},actions:{initializeCookies(){},initCookieConsent(){},acceptAllCookies(){this.preferences.functional=true,this.preferences.analytics=true,this.preferences.marketing=true,this.updatePreferences(this.preferences),this.showBanner=false;},rejectNonEssentialCookies(){this.preferences.functional=false,this.preferences.analytics=false,this.preferences.marketing=false,this.updatePreferences(this.preferences),this.showBanner=false;},updatePreferences(e){this.preferences.analytics,this.preferences={...this.preferences,...e},this.consentGiven=true,this.saveCookiePreferences(),this.applyPreferences();},saveCookiePreferences(){},resetConsent(){},applyPreferences(){},setEssentialCookies(){},setAnalyticsCookies(){},setMarketingCookies(){},calculateConversionRate(){return 0},setCookie(e,r,n=30,t={}){},getCookie(e){return null},async sendCookieDataToServer(e,r){},debugCookieState(){}}});
+const useCookieStore = defineStore("cookie", {
+  state: () => ({
+    showBanner: false,
+    consentGiven: false,
+    preferences: {
+      essential: true,
+      functional: false,
+      analytics: false,
+      marketing: false
+    }
+  }),
+  persist: true,
+  getters: {
+    hasGivenConsent: (state) => state.consentGiven,
+    acceptedCategories: (state) => {
+      const accepted = ["essential"];
+      if (state.preferences.functional) accepted.push("functional");
+      if (state.preferences.analytics) accepted.push("analytics");
+      if (state.preferences.marketing) accepted.push("marketing");
+      return accepted;
+    },
+    hasCookieInBrowser: () => {
+      return false;
+    },
+    isMarketingEnabled: (state) => state.preferences.marketing
+  },
+  actions: {
+    initializeCookies() {
+      return;
+    },
+    initCookieConsent() {
+      return;
+    },
+    acceptAllCookies() {
+      this.preferences.functional = true;
+      this.preferences.analytics = true;
+      this.preferences.marketing = true;
+      this.updatePreferences(this.preferences);
+      this.showBanner = false;
+    },
+    rejectNonEssentialCookies() {
+      this.preferences.functional = false;
+      this.preferences.analytics = false;
+      this.preferences.marketing = false;
+      this.updatePreferences(this.preferences);
+      this.showBanner = false;
+    },
+    updatePreferences(preferences) {
+      this.preferences.analytics;
+      this.preferences = { ...this.preferences, ...preferences };
+      this.consentGiven = true;
+      this.saveCookiePreferences();
+      this.applyPreferences();
+    },
+    saveCookiePreferences() {
+      return;
+    },
+    resetConsent() {
+      return;
+    },
+    applyPreferences() {
+      return;
+    },
+    setEssentialCookies() {
+      return;
+    },
+    setAnalyticsCookies() {
+      return;
+    },
+    setMarketingCookies() {
+      return;
+    },
+    calculateConversionRate() {
+      return 0;
+    },
+    setCookie(name, value, expiryDays = 30, options = {}) {
+      return;
+    },
+    getCookie(name) {
+      return null;
+    },
+    async sendCookieDataToServer(type, data) {
+      return;
+    },
+    debugCookieState() {
+      return;
+    }
+  }
+});
 
-const r$c=N$a({name:"cookies-plugin",enforce:"pre",setup(e){e.$pinia?o$c().initializeCookies():console.warn("Pinia n'est pas encore initialisé. Les cookies seront initialisés ultérieurement.");}});
+const cookies_sisHiBOjzAv5IPvFgVIiOxXz4TLhr96GevWdTx4s_U4 = defineNuxtPlugin({
+  name: "cookies-plugin",
+  enforce: "pre",
+  setup(nuxtApp) {
+    if (nuxtApp.$pinia) {
+      const cookieStore = useCookieStore();
+      cookieStore.initializeCookies();
+    } else {
+      console.warn("Pinia n'est pas encore initialisé. Les cookies seront initialisés ultérieurement.");
+    }
+  }
+});
 
-const n$4=[["NuxtError",e=>x$a(e)&&e.toJSON()],["EmptyShallowRef",e=>isRef(e)&&isShallow(e)&&!e.value&&(typeof e.value=="bigint"?"0n":JSON.stringify(e.value)||"_")],["EmptyRef",e=>isRef(e)&&!e.value&&(typeof e.value=="bigint"?"0n":JSON.stringify(e.value)||"_")],["ShallowRef",e=>isRef(e)&&isShallow(e)&&e.value],["ShallowReactive",e=>isReactive(e)&&isShallow(e)&&toRaw(e)],["Ref",e=>isRef(e)&&e.value],["Reactive",e=>isReactive(e)&&toRaw(e)]],c$f=N$a({name:"nuxt:revive-payload:server",setup(){for(const[e,f]of n$4)m$b(e,f);}});
+const reducers = [
+  ["NuxtError", (data) => isNuxtError(data) && data.toJSON()],
+  ["EmptyShallowRef", (data) => isRef(data) && isShallow(data) && !data.value && (typeof data.value === "bigint" ? "0n" : JSON.stringify(data.value) || "_")],
+  ["EmptyRef", (data) => isRef(data) && !data.value && (typeof data.value === "bigint" ? "0n" : JSON.stringify(data.value) || "_")],
+  ["ShallowRef", (data) => isRef(data) && isShallow(data) && data.value],
+  ["ShallowReactive", (data) => isReactive(data) && isShallow(data) && toRaw(data)],
+  ["Ref", (data) => isRef(data) && data.value],
+  ["Reactive", (data) => isReactive(data) && toRaw(data)]
+];
+const revive_payload_server_MVtmlZaQpj6ApFmshWfUWl5PehCebzaBf2NuRMiIbms = defineNuxtPlugin({
+  name: "nuxt:revive-payload:server",
+  setup() {
+    for (const [reducer, fn] of reducers) {
+      definePayloadReducer(reducer, fn);
+    }
+  }
+});
 
-const c$e=N$a({name:"pinia",setup(t){const i=createPinia();return t.vueApp.use(i),setActivePinia(i),t.payload.pinia=toRaw(i.state.value),{provide:{pinia:i}}}});
+const plugin = defineNuxtPlugin({
+  name: "pinia",
+  setup(nuxtApp) {
+    const pinia = createPinia();
+    nuxtApp.vueApp.use(pinia);
+    setActivePinia(pinia);
+    {
+      nuxtApp.payload.pinia = toRaw(pinia.state.value);
+    }
+    return {
+      provide: {
+        pinia
+      }
+    };
+  }
+});
 
-const t$6=N$a({name:"nuxt:global-components"});
+const components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4 = defineNuxtPlugin({
+  name: "nuxt:global-components"
+});
 
-function l$d(i,{storage:c,serializer:p,key:n,debug:t,pick:r,omit:a,beforeHydrate:s,afterHydrate:e},o,f=true){try{f&&s?.(o);const d=c.getItem(n);if(d){const u=p.deserialize(d),h=r?deepPickUnsafe(u,r):u,y=a?deepOmitUnsafe(h,a):h;i.$patch(y);}f&&e?.(o);}catch(d){t&&console.error("[pinia-plugin-persistedstate]",d);}}function m$a(i,{storage:c,serializer:p,key:n,debug:t,pick:r,omit:a}){try{const s=r?deepPickUnsafe(i,r):i,e=a?deepOmitUnsafe(s,a):s,o=p.serialize(e);c.setItem(n,o);}catch(s){t&&console.error("[pinia-plugin-persistedstate]",s);}}function _$9(i,c,p){const{pinia:n,store:t,options:{persist:r=p}}=i;if(!r)return;if(!(t.$id in n.state.value)){const e=n._s.get(t.$id.replace("__hot:",""));e&&Promise.resolve().then(()=>e.$persist());return}const s=(Array.isArray(r)?r:r===true?[{}]:[r]).map(c);t.$hydrate=({runHooks:e=true}={})=>{s.forEach(o=>{l$d(t,o,i,e);});},t.$persist=()=>{s.forEach(e=>{m$a(t.$state,e);});},s.forEach(e=>{l$d(t,e,i),t.$subscribe((o,f)=>m$a(f,e),{detached:true});});}
+function hydrateStore(store, {
+  storage,
+  serializer,
+  key,
+  debug,
+  pick,
+  omit,
+  beforeHydrate,
+  afterHydrate
+}, context, runHooks = true) {
+  try {
+    if (runHooks)
+      beforeHydrate == null ? void 0 : beforeHydrate(context);
+    const fromStorage = storage.getItem(key);
+    if (fromStorage) {
+      const deserialized = serializer.deserialize(fromStorage);
+      const picked = pick ? deepPickUnsafe(deserialized, pick) : deserialized;
+      const omitted = omit ? deepOmitUnsafe(picked, omit) : picked;
+      store.$patch(omitted);
+    }
+    if (runHooks)
+      afterHydrate == null ? void 0 : afterHydrate(context);
+  } catch (error) {
+    if (debug)
+      console.error("[pinia-plugin-persistedstate]", error);
+  }
+}
+function persistState(state, {
+  storage,
+  serializer,
+  key,
+  debug,
+  pick,
+  omit
+}) {
+  try {
+    const picked = pick ? deepPickUnsafe(state, pick) : state;
+    const omitted = omit ? deepOmitUnsafe(picked, omit) : picked;
+    const toStorage = serializer.serialize(omitted);
+    storage.setItem(key, toStorage);
+  } catch (error) {
+    if (debug)
+      console.error("[pinia-plugin-persistedstate]", error);
+  }
+}
+function createPersistence(context, optionsParser, auto) {
+  const { pinia, store, options: { persist = auto } } = context;
+  if (!persist)
+    return;
+  if (!(store.$id in pinia.state.value)) {
+    const originalStore = pinia._s.get(store.$id.replace("__hot:", ""));
+    if (originalStore)
+      Promise.resolve().then(() => originalStore.$persist());
+    return;
+  }
+  const persistenceOptions = Array.isArray(persist) ? persist : persist === true ? [{}] : [persist];
+  const persistences = persistenceOptions.map(optionsParser);
+  store.$hydrate = ({ runHooks = true } = {}) => {
+    persistences.forEach((p) => {
+      hydrateStore(store, p, context, runHooks);
+    });
+  };
+  store.$persist = () => {
+    persistences.forEach((p) => {
+      persistState(store.$state, p);
+    });
+  };
+  persistences.forEach((p) => {
+    hydrateStore(store, p, context);
+    store.$subscribe(
+      (_mutation, state) => persistState(state, p),
+      { detached: true }
+    );
+  });
+}
 
 function parse(str, options) {
   if (typeof str !== "string") {
@@ -146,303 +2061,11854 @@ function tryDecode(str, decode2) {
   }
 }
 
-function o$b(t=W$8()){return t.ssrContext?.event}
-
-const v$g={path:"/",watch:true,decode:o=>destr(decodeURIComponent(o)),encode:o=>encodeURIComponent(typeof o=="string"?o:JSON.stringify(o))};function U$5(o,r){const e={...v$g,...r};e.filter??=i=>i===o;const t=y$e(e)||{};let n;e.maxAge!==void 0?n=e.maxAge*1e3:e.expires&&(n=e.expires.getTime()-Date.now());const p=n!==void 0&&n<=0,k=klona(p?void 0:t[o]??e.default?.()),s=ref(k);{const i=W$8(),c=()=>{e.readonly||isEqual(s.value,t[o])||(i._cookies||={},!(o in i._cookies&&isEqual(s.value,i._cookies[o]))&&(i._cookies[o]=s.value,A$6(o$b(i),o,s.value,e)));},d=i.hooks.hookOnce("app:rendered",c);i.hooks.hookOnce("app:error",()=>(d(),c()));}return s}function y$e(o={}){return parse(getRequestHeader(o$b(),"cookie")||"",o)}function A$6(o,r,e,t={}){if(o){if(e!=null)return setCookie(o,r,e,t);if(getCookie(o,r)!==void 0)return deleteCookie(o,r,t)}}
-
-function r$b(e){return {getItem:t=>U$5(t,{...e??E$9().public.piniaPluginPersistedstate.cookieOptions??{},decode:decodeURIComponent,readonly:true}).value,setItem:(t,i)=>U$5(t,{...e??E$9().public.piniaPluginPersistedstate.cookieOptions??{},encode:encodeURIComponent}).value=i}}function u$f(){return {getItem:e=>null,setItem:(e,t)=>null}}function l$c(){return {getItem:e=>null,setItem:(e,t)=>null}}const k$8={cookies:r$b,localStorage:u$f,sessionStorage:l$c};
-
-function f$d(o){const i=E$9().public.piniaPluginPersistedstate;_$9(o,e=>({key:i.key?i.key.replace(/%id/g,e.key??o.store.$id):e.key??o.store.$id,debug:e.debug??i.debug??false,serializer:e.serializer??{serialize:r=>JSON.stringify(r),deserialize:r=>destr(r)},storage:e.storage??(i.storage?i.storage==="cookies"?k$8.cookies(i.cookieOptions):k$8[i.storage]():k$8.cookies()),beforeHydrate:e.beforeHydrate,afterHydrate:e.afterHydrate,pick:e.pick,omit:e.omit}),i.auto??false);}const H$5=N$a({name:"pinia-plugin-persistedstate",setup({$pinia:o}){o.use(f$d);}});
-
-const s$e=N$a(o=>{k$9();});
-
-const d$c=N$a(async m=>{k$9(),d$d();});
-
-const k$7=N$a(async n=>{const e=k$9(),o=async()=>{try{const r=await fetch("/api/auth/refresh",{method:"GET",credentials:"include"});if(r.ok){const t=await r.json();if(t.success&&t.accessToken)return e.setToken(t.accessToken),t.user&&(e.user=t.user,e.isAuthenticated=!0),!0}return !1}catch(r){return console.warn("Erreur lors du rafraîchissement du token:",r),false}};return e.initializeStore(),n.hook("app:error",async r=>{if(r?.statusCode===401&&e.isAuthenticated)if(console.log("Erreur 401 détectée, tentative de rafraîchissement du token"),await o()){console.log("Token rafraîchi avec succès, redirection vers la page courante");const a=(void 0).location.pathname;$$8(a);}else console.log("Échec du rafraîchissement, déconnexion"),e.logout(),$$8("/login");}),{provide:{refreshToken:o}}});
-
-function r$a(s,o){let e;function t(){e=effectScope(),e.run(()=>o.length?o(()=>{e?.stop(),t();}):o());}watch(s,p=>{p&&!e?t():p||(e?.stop(),e=void 0);},{immediate:true}),onScopeDispose(()=>{e?.stop();});}
-
-function g$d(e,t,n){const r=t.length-1;if(r<0)return e===void 0?n:e;for(let o=0;o<r;o++){if(e==null)return n;e=e[t[o]];}return e==null||e[t[r]]===void 0?n:e[t[r]]}function C$d(e,t){if(e===t)return  true;if(e instanceof Date&&t instanceof Date&&e.getTime()!==t.getTime()||e!==Object(e)||t!==Object(t))return  false;const n=Object.keys(e);return n.length!==Object.keys(t).length?false:n.every(r=>C$d(e[r],t[r]))}function b$e(e,t,n){return e==null||!t||typeof t!="string"?n:e[t]!==void 0?e[t]:(t=t.replace(/\[(\w+)\]/g,".$1"),t=t.replace(/^\./,""),g$d(e,t.split("."),n))}function K$6(e,t,n){if(t===true)return e===void 0?n:e;if(t==null||typeof t=="boolean")return n;if(e!==Object(e)){if(typeof t!="function")return n;const o=t(e,n);return typeof o>"u"?n:o}if(typeof t=="string")return b$e(e,t,n);if(Array.isArray(t))return g$d(e,t,n);if(typeof t!="function")return n;const r=t(e,n);return typeof r>"u"?n:r}function z$3(e){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:0;return Array.from({length:e},(n,r)=>t+r)}function X$3(e){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:"px";if(e==null||e==="")return;const n=Number(e);return isNaN(n)?String(e):isFinite(n)?`${n}${t}`:void 0}function G$2(e){return e!==null&&typeof e=="object"&&!Array.isArray(e)}function a$c(e){let t;return e!==null&&typeof e=="object"&&((t=Object.getPrototypeOf(e))===Object.prototype||t===null)}function T$8(e){if(e&&"$el"in e){const t=e.$el;return t?.nodeType===Node.TEXT_NODE?t.nextElementSibling:t}return e}const V$7=Object.freeze({enter:13,tab:9,delete:46,esc:27,space:32,up:38,down:40,left:37,right:39,end:35,home:36,del:46,backspace:8,insert:45,pageup:33,pagedown:34,shift:16}),Y$6=Object.freeze({enter:"Enter",tab:"Tab",delete:"Delete",esc:"Escape",space:"Space",up:"ArrowUp",down:"ArrowDown",left:"ArrowLeft",right:"ArrowRight",end:"End",home:"Home",del:"Delete",backspace:"Backspace",insert:"Insert",pageup:"PageUp",pagedown:"PageDown",shift:"Shift"});function j$5(e){return Object.keys(e)}function L$5(e,t){return t.every(n=>e.hasOwnProperty(n))}function k$6(e,t){const n={};for(const r of t)Object.prototype.hasOwnProperty.call(e,r)&&(n[r]=e[r]);return n}function l$b(e,t,n){const r=Object.create(null),o=Object.create(null);for(const i in e)t.some(u=>u instanceof RegExp?u.test(i):u===i)?r[i]=e[i]:o[i]=e[i];return [r,o]}function M$9(e,t){const n={...e};return t.forEach(r=>delete n[r]),n}const m$9=/^on[^a-z]/,U$4=e=>m$9.test(e),$$7=["onAfterscriptexecute","onAnimationcancel","onAnimationend","onAnimationiteration","onAnimationstart","onAuxclick","onBeforeinput","onBeforescriptexecute","onChange","onClick","onCompositionend","onCompositionstart","onCompositionupdate","onContextmenu","onCopy","onCut","onDblclick","onFocusin","onFocusout","onFullscreenchange","onFullscreenerror","onGesturechange","onGestureend","onGesturestart","onGotpointercapture","onInput","onKeydown","onKeypress","onKeyup","onLostpointercapture","onMousedown","onMousemove","onMouseout","onMouseover","onMouseup","onMousewheel","onPaste","onPointercancel","onPointerdown","onPointerenter","onPointerleave","onPointermove","onPointerout","onPointerover","onPointerup","onReset","onSelect","onSubmit","onTouchcancel","onTouchend","onTouchmove","onTouchstart","onTransitioncancel","onTransitionend","onTransitionrun","onTransitionstart","onWheel"];function W$7(e){const[t,n]=l$b(e,[m$9]),r=M$9(t,$$7),[o,i]=l$b(n,["class","style","id",/^data-/]);return Object.assign(o,t),Object.assign(i,r),[o,i]}function q$6(e){return e==null?[]:Array.isArray(e)?e:[e]}function H$4(e,t){let n=0;const r=function(){for(var o=arguments.length,i=new Array(o),u=0;u<o;u++)i[u]=arguments[u];clearTimeout(n),n=setTimeout(()=>e(...i),unref(t));};return r.clear=()=>{clearTimeout(n);},r.immediate=e,r}function Z$3(e){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:0,n=arguments.length>2&&arguments[2]!==void 0?arguments[2]:1;return Math.max(t,Math.min(n,e))}function J$3(e){const t=e.toString().trim();return t.includes(".")?t.length-t.indexOf(".")-1:0}function Q$2(e,t){let n=arguments.length>2&&arguments[2]!==void 0?arguments[2]:"0";return e+n.repeat(Math.max(0,t-e.length))}function _$8(e,t){return (arguments.length>2&&arguments[2]!==void 0?arguments[2]:"0").repeat(Math.max(0,t-e.length))+e}function ee$3(e){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:1;const n=[];let r=0;for(;r<e.length;)n.push(e.substr(r,t)),r+=t;return n}function te$2(e){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:1e3;if(e<t)return `${e} B`;const n=t===1024?["Ki","Mi","Gi"]:["k","M","G"];let r=-1;for(;Math.abs(e)>=t&&r<n.length-1;)e/=t,++r;return `${e.toFixed(1)} ${n[r]}B`}function R$6(){let e=arguments.length>0&&arguments[0]!==void 0?arguments[0]:{},t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:{},n=arguments.length>2?arguments[2]:void 0;const r={};for(const o in e)r[o]=e[o];for(const o in t){const i=e[o],u=t[o];if(a$c(i)&&a$c(u)){r[o]=R$6(i,u,n);continue}if(n&&Array.isArray(i)&&Array.isArray(u)){r[o]=n(i,u);continue}r[o]=u;}return r}function S$9(e){return e.map(t=>t.type===Fragment?S$9(t.children):t).flat()}function c$d(){let e=arguments.length>0&&arguments[0]!==void 0?arguments[0]:"";if(c$d.cache.has(e))return c$d.cache.get(e);const t=e.replace(/[^a-z]/gi,"-").replace(/\B([A-Z])/g,"-$1").toLowerCase();return c$d.cache.set(e,t),t}c$d.cache=new Map;function s$d(e,t){if(!t||typeof t!="object")return [];if(Array.isArray(t))return t.map(n=>s$d(e,n)).flat(1);if(t.suspense)return s$d(e,t.ssContent);if(Array.isArray(t.children))return t.children.map(n=>s$d(e,n)).flat(1);if(t.component){if(Object.getOwnPropertySymbols(t.component.provides).includes(e))return [t.component];if(t.component.subTree)return s$d(e,t.component.subTree).flat(1)}return []}function ne$1(e){return "touches"in e?{clientX:e.touches[0].clientX,clientY:e.touches[0].clientY}:{clientX:e.clientX,clientY:e.clientY}}function re$2(e){const t=reactive({}),n=computed(e);return watchEffect(()=>{for(const r in n.value)t[r]=n.value[r];},{flush:"sync"}),toRefs(t)}function oe$1(e,t){return e.includes(t)}const ie$1=()=>[Function,Array];function ue$1(e,t){return t="on"+capitalize(t),!!(e[t]||e[`${t}Once`]||e[`${t}Capture`]||e[`${t}OnceCapture`]||e[`${t}CaptureOnce`])}function se$1(e){for(var t=arguments.length,n=new Array(t>1?t-1:0),r=1;r<t;r++)n[r-1]=arguments[r];if(Array.isArray(e))for(const o of e)o(...n);else typeof e=="function"&&e(...n);}function F$6(e){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:true;const n=["button","[href]",'input:not([type="hidden"])',"select","textarea","[tabindex]"].map(r=>`${r}${t?':not([tabindex="-1"])':""}:not([disabled])`).join(", ");return [...e.querySelectorAll(n)]}function B$4(e,t,n){let r,o=e.indexOf((void 0).activeElement);const i=t==="next"?1:-1;do o+=i,r=e[o];while((!r||r.offsetParent==null||!(n?.(r)??true))&&o<e.length&&o>=0);return r}function D$4(e,t){const n=F$6(e);if(!t)(e===(void 0).activeElement||!e.contains((void 0).activeElement))&&n[0]?.focus();else if(t==="first")n[0]?.focus();else if(t==="last")n.at(-1)?.focus();else if(typeof t=="number")n[t]?.focus();else {const r=B$4(n,t);r?r.focus():D$4(e,t==="next"?"first":"last");}}function ce$1(e){return e==null||typeof e=="string"&&e.trim()===""}function ae$1(){}function le$2(e,t){return null}function N$7(e){return e.some(t=>isVNode(t)?t.type===Comment?false:t.type!==Fragment||N$7(t.children):true)?e:null}function fe$1(e,t){return t(),()=>{}}function ge$2(e,t){const n=e.clientX,r=e.clientY,o=t.getBoundingClientRect(),i=o.left,u=o.top,d=o.right,p=o.bottom;return n>=i&&n<=d&&r>=u&&r<=p}function me$1(){const e=shallowRef(),t=n=>{e.value=n;};return Object.defineProperty(t,"value",{enumerable:true,get:()=>e.value,set:n=>e.value=n}),Object.defineProperty(t,"el",{enumerable:true,get:()=>T$8(e.value)}),t}function de(e){const t=e.key.length===1,n=!e.ctrlKey&&!e.metaKey&&!e.altKey;return t&&n}function pe(e){return typeof e=="string"||typeof e=="number"||typeof e=="boolean"||typeof e=="bigint"}
-
-function a$b(e,t){const r=getCurrentInstance();if(!r)throw new Error(`[Vuetify] ${e} must be called from inside a setup function`);return r}function g$c(){let e=arguments.length>0&&arguments[0]!==void 0?arguments[0]:"composables";const t=a$b(e).type;return c$d(t?.aliasName||t?.name)}let s$c=0,n$3=new WeakMap;function o$a(){const e=a$b("getUid");if(n$3.has(e))return n$3.get(e);{const t=s$c++;return n$3.set(e,t),t}}o$a.reset=()=>{s$c=0,n$3=new WeakMap;};
-
-function C$c(n,e,v){let l=arguments.length>3&&arguments[3]!==void 0?arguments[3]:t=>t,i=arguments.length>4&&arguments[4]!==void 0?arguments[4]:t=>t;const a=a$b("useProxiedModel"),o=ref(n[e]!==void 0?n[e]:v),u=c$d(e),r=u!==e?computed(()=>(n[e],!!((a.vnode.props?.hasOwnProperty(e)||a.vnode.props?.hasOwnProperty(u))&&(a.vnode.props?.hasOwnProperty(`onUpdate:${e}`)||a.vnode.props?.hasOwnProperty(`onUpdate:${u}`))))):computed(()=>(n[e],!!(a.vnode.props?.hasOwnProperty(e)&&a.vnode.props?.hasOwnProperty(`onUpdate:${e}`))));r$a(()=>!r.value,()=>{watch(()=>n[e],t=>{o.value=t;});});const m=computed({get(){const t=n[e];return l(r.value?t:o.value)},set(t){const s=i(t),c=toRaw(r.value?n[e]:o.value);c===s||l(c)===t||(o.value=s,a?.emit(`update:${e}`,s));}});return Object.defineProperty(m,"externalValue",{get:()=>r.value?n[e]:o.value}),m}
-
-const e$7={badge:"Badge",open:"Open",close:"Close",dismiss:"Dismiss",confirmEdit:{ok:"OK",cancel:"Cancel"},dataIterator:{noResultsText:"No matching records found",loadingText:"Loading items..."},dataTable:{itemsPerPageText:"Rows per page:",ariaLabel:{sortDescending:"Sorted descending.",sortAscending:"Sorted ascending.",sortNone:"Not sorted.",activateNone:"Activate to remove sorting.",activateDescending:"Activate to sort descending.",activateAscending:"Activate to sort ascending."},sortBy:"Sort by"},dataFooter:{itemsPerPageText:"Items per page:",itemsPerPageAll:"All",nextPage:"Next page",prevPage:"Previous page",firstPage:"First page",lastPage:"Last page",pageText:"{0}-{1} of {2}"},dateRangeInput:{divider:"to"},datePicker:{itemsSelected:"{0} selected",range:{title:"Select dates",header:"Enter dates"},title:"Select date",header:"Enter date",input:{placeholder:"Enter date"}},noDataText:"No data available",carousel:{prev:"Previous visual",next:"Next visual",ariaLabel:{delimiter:"Carousel slide {0} of {1}"}},calendar:{moreEvents:"{0} more",today:"Today"},input:{clear:"Clear {0}",prependAction:"{0} prepended action",appendAction:"{0} appended action",otp:"Please enter OTP character {0}"},fileInput:{counter:"{0} files",counterSize:"{0} files ({1} in total)"},fileUpload:{title:"Drag and drop files here",divider:"or",browse:"Browse Files"},timePicker:{am:"AM",pm:"PM",title:"Select Time"},pagination:{ariaLabel:{root:"Pagination Navigation",next:"Next page",previous:"Previous page",page:"Go to page {0}",currentPage:"Page {0}, Current page",first:"First page",last:"Last page"}},stepper:{next:"Next",prev:"Previous"},rating:{ariaLabel:{item:"Rating {0} of {1}"}},loading:"Loading...",infiniteScroll:{loadMore:"Load more",empty:"No more"}};
-
-function s$b(r){warn(`Vuetify: ${r}`);}function t$5(r){warn(`Vuetify error: ${r}`);}function u$e(r,o){o=Array.isArray(o)?o.slice(0,-1).map(f=>`'${f}'`).join(", ")+` or '${o.at(-1)}'`:`'${o}'`,warn(`[Vuetify UPGRADE] '${r}' is deprecated, use ${o} instead.`);}
-
-const v$f="$vuetify.",b$d=(n,t)=>n.replace(/\{(\d+)\}/g,(r,e)=>String(t[Number(e)])),g$b=(n,t,r)=>function(e){for(var a=arguments.length,o=new Array(a>1?a-1:0),u=1;u<a;u++)o[u-1]=arguments[u];if(!e.startsWith(v$f))return b$d(e,o);const f=e.replace(v$f,""),d=n.value&&r.value[n.value],P=t.value&&r.value[t.value];let l=b$e(d,f,null);return l||(s$b(`Translation key "${e}" not found in "${n.value}", trying fallback locale`),l=b$e(P,f,null)),l||(t$5(`Translation key "${e}" not found in fallback`),l=e),typeof l!="string"&&(t$5(`Translation key "${e}" has a non-string value`),l=e),b$d(l,o)};function h$c(n,t){return (r,e)=>new Intl.NumberFormat([n.value,t.value],e).format(r)}function c$c(n,t,r){const e=C$c(n,t,n[t]??r.value);return e.value=n[t]??r.value,watch(r,a=>{n[t]==null&&(e.value=r.value);}),e}function F$5(n){return t=>{const r=c$c(t,"locale",n.current),e=c$c(t,"fallback",n.fallback),a=c$c(t,"messages",n.messages);return {name:"vuetify",current:r,fallback:e,messages:a,t:g$b(r,e,a),n:h$c(r,e),provide:F$5({current:r,fallback:e,messages:a})}}}function R$5(n){const t=shallowRef(n?.locale??"en"),r=shallowRef(n?.fallback??"en"),e=ref({en:e$7,...n?.messages});return {name:"vuetify",current:t,fallback:r,messages:e,t:g$b(t,r,e),n:h$c(t,r),provide:F$5({current:t,fallback:r,messages:e})}}
-
-const r$9=Symbol.for("vuetify:locale");function o$9(e){return e.name!=null}function h$b(e){const l=e?.adapter&&o$9(e?.adapter)?e?.adapter:R$5(e),a=i$f(l,e);return {...l,...a}}function v$e(){const e=inject(r$9);if(!e)throw new Error("[Vuetify] Could not find injected locale instance");return e}function u$d(){return {af:false,ar:true,bg:false,ca:false,ckb:false,cs:false,de:false,el:false,en:false,es:false,et:false,fa:true,fi:false,fr:false,hr:false,hu:false,he:true,id:false,it:false,ja:false,km:false,ko:false,lv:false,lt:false,nl:false,no:false,pl:false,pt:false,ro:false,ru:false,sk:false,sl:false,srCyrl:false,srLatn:false,sv:false,th:false,tr:false,az:false,uk:false,vi:false,zhHans:false,zhHant:false}}function i$f(e,l){const a=ref(l?.rtl??u$d()),s=computed(()=>a.value[e.current.value]??false);return {isRtl:s,rtl:a,rtlClasses:computed(()=>`v-locale--is-${s.value?"rtl":"ltr"}`)}}function y$d(){const e=inject(r$9);if(!e)throw new Error("[Vuetify] Could not find injected rtl instance");return {isRtl:e.isRtl,rtlClasses:e.rtlClasses}}
-
-const g$a={"001":1,AD:1,AE:6,AF:6,AG:0,AI:1,AL:1,AM:1,AN:1,AR:1,AS:0,AT:1,AU:1,AX:1,AZ:1,BA:1,BD:0,BE:1,BG:1,BH:6,BM:1,BN:1,BR:0,BS:0,BT:0,BW:0,BY:1,BZ:0,CA:0,CH:1,CL:1,CM:1,CN:1,CO:0,CR:1,CY:1,CZ:1,DE:1,DJ:6,DK:1,DM:0,DO:0,DZ:6,EC:1,EE:1,EG:6,ES:1,ET:0,FI:1,FJ:1,FO:1,FR:1,GB:1,"GB-alt-variant":0,GE:1,GF:1,GP:1,GR:1,GT:0,GU:0,HK:0,HN:0,HR:1,HU:1,ID:0,IE:1,IL:0,IN:0,IQ:6,IR:6,IS:1,IT:1,JM:0,JO:6,JP:0,KE:0,KG:1,KH:0,KR:0,KW:6,KZ:1,LA:0,LB:1,LI:1,LK:1,LT:1,LU:1,LV:1,LY:6,MC:1,MD:1,ME:1,MH:0,MK:1,MM:0,MN:1,MO:0,MQ:1,MT:0,MV:5,MX:0,MY:1,MZ:0,NI:0,NL:1,NO:1,NP:0,NZ:1,OM:6,PA:0,PE:0,PH:0,PK:0,PL:1,PR:0,PT:0,PY:0,QA:6,RE:1,RO:1,RS:1,RU:1,SA:0,SD:6,SE:1,SG:0,SI:1,SK:1,SM:1,SV:0,SY:6,TH:0,TJ:1,TM:1,TR:1,TT:0,TW:0,UA:1,UM:0,US:0,UY:1,UZ:1,VA:1,VE:0,VI:0,VN:1,WS:0,XK:1,YE:0,ZA:0,ZW:0};function Y$5(n,e,t){const u=[];let r=[];const i=M$8(n),a=y$c(n),c=t??g$a[e.slice(-2).toUpperCase()]??0,m=(i.getDay()-c+7)%7,T=(a.getDay()-c+7)%7;for(let o=0;o<m;o++){const s=new Date(i);s.setDate(s.getDate()-(m-o)),r.push(s);}for(let o=1;o<=a.getDate();o++){const s=new Date(n.getFullYear(),n.getMonth(),o);r.push(s),r.length===7&&(u.push(r),r=[]);}for(let o=1;o<7-T;o++){const s=new Date(a);s.setDate(s.getDate()+o),r.push(s);}return r.length>0&&u.push(r),u}function F$4(n,e,t){const u=t??g$a[e.slice(-2).toUpperCase()]??0,r=new Date(n);for(;r.getDay()!==u;)r.setDate(r.getDate()-1);return r}function b$c(n,e){const t=new Date(n),u=((g$a[e.slice(-2).toUpperCase()]??0)+6)%7;for(;t.getDay()!==u;)t.setDate(t.getDate()+1);return t}function M$8(n){return new Date(n.getFullYear(),n.getMonth(),1)}function y$c(n){return new Date(n.getFullYear(),n.getMonth()+1,0)}function A$5(n){const e=n.split("-").map(Number);return new Date(e[0],e[1]-1,e[2])}const S$8=/^([12]\d{3}-([1-9]|0[1-9]|1[0-2])-([1-9]|0[1-9]|[12]\d|3[01]))$/;function w$a(n){if(n==null)return new Date;if(n instanceof Date)return n;if(typeof n=="string"){let e;if(S$8.test(n))return A$5(n);if(e=Date.parse(n),!isNaN(e))return new Date(e)}return null}const f$c=new Date(2e3,0,2);function p$6(n,e){const t=e??g$a[n.slice(-2).toUpperCase()]??0;return z$3(7).map(u=>{const r=new Date(f$c);return r.setDate(f$c.getDate()+t+u),new Intl.DateTimeFormat(n,{weekday:"narrow"}).format(r)})}function O$7(n,e,t,u){const r=w$a(n)??new Date,i=u?.[e];if(typeof i=="function")return i(r,e,t);let a={};switch(e){case "fullDate":a={year:"numeric",month:"long",day:"numeric"};break;case "fullDateWithWeekday":a={weekday:"long",year:"numeric",month:"long",day:"numeric"};break;case "normalDate":const c=r.getDate(),m=new Intl.DateTimeFormat(t,{month:"long"}).format(r);return `${c} ${m}`;case "normalDateWithWeekday":a={weekday:"short",day:"numeric",month:"short"};break;case "shortDate":a={month:"short",day:"numeric"};break;case "year":a={year:"numeric"};break;case "month":a={month:"long"};break;case "monthShort":a={month:"short"};break;case "monthAndYear":a={month:"long",year:"numeric"};break;case "monthAndDate":a={month:"long",day:"numeric"};break;case "weekday":a={weekday:"long"};break;case "weekdayShort":a={weekday:"short"};break;case "dayOfMonth":return new Intl.NumberFormat(t).format(r.getDate());case "hours12h":a={hour:"numeric",hour12:true};break;case "hours24h":a={hour:"numeric",hour12:false};break;case "minutes":a={minute:"numeric"};break;case "seconds":a={second:"numeric"};break;case "fullTime":a={hour:"numeric",minute:"numeric"};break;case "fullTime12h":a={hour:"numeric",minute:"numeric",hour12:true};break;case "fullTime24h":a={hour:"numeric",minute:"numeric",hour12:false};break;case "fullDateTime":a={year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"numeric"};break;case "fullDateTime12h":a={year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"numeric",hour12:true};break;case "fullDateTime24h":a={year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"numeric",hour12:false};break;case "keyboardDate":a={year:"numeric",month:"2-digit",day:"2-digit"};break;case "keyboardDateTime":return a={year:"numeric",month:"2-digit",day:"2-digit",hour:"numeric",minute:"numeric"},new Intl.DateTimeFormat(t,a).format(r).replace(/, /g," ");case "keyboardDateTime12h":return a={year:"numeric",month:"2-digit",day:"2-digit",hour:"numeric",minute:"numeric",hour12:true},new Intl.DateTimeFormat(t,a).format(r).replace(/, /g," ");case "keyboardDateTime24h":return a={year:"numeric",month:"2-digit",day:"2-digit",hour:"numeric",minute:"numeric",hour12:false},new Intl.DateTimeFormat(t,a).format(r).replace(/, /g," ");default:a=i??{timeZone:"UTC",timeZoneName:"short"};}return new Intl.DateTimeFormat(t,a).format(r)}function I$4(n,e){const t=n.toJsDate(e),u=t.getFullYear(),r=_$8(String(t.getMonth()+1),2,"0"),i=_$8(String(t.getDate()),2,"0");return `${u}-${r}-${i}`}function N$6(n){const[e,t,u]=n.split("-").map(Number);return new Date(e,t-1,u)}function W$6(n,e){const t=new Date(n);return t.setMinutes(t.getMinutes()+e),t}function E$6(n,e){const t=new Date(n);return t.setHours(t.getHours()+e),t}function H$3(n,e){const t=new Date(n);return t.setDate(t.getDate()+e),t}function B$3(n,e){const t=new Date(n);return t.setDate(t.getDate()+e*7),t}function R$4(n,e){const t=new Date(n);return t.setDate(1),t.setMonth(t.getMonth()+e),t}function C$b(n){return n.getFullYear()}function U$3(n){return n.getMonth()}function L$4(n){return n.getDate()}function G$1(n){return new Date(n.getFullYear(),n.getMonth()+1,1)}function K$5(n){return new Date(n.getFullYear(),n.getMonth()-1,1)}function P$8(n){return n.getHours()}function Z$2(n){return n.getMinutes()}function V$6(n){return new Date(n.getFullYear(),0,1)}function J$2(n){return new Date(n.getFullYear(),11,31)}function $$6(n,e){return h$a(n,e[0])&&Q$1(n,e[1])}function x$9(n){const e=new Date(n);return e instanceof Date&&!isNaN(e.getTime())}function h$a(n,e){return n.getTime()>e.getTime()}function q$5(n,e){return h$a(D$3(n),D$3(e))}function Q$1(n,e){return n.getTime()<e.getTime()}function d$b(n,e){return n.getTime()===e.getTime()}function X$2(n,e){return n.getDate()===e.getDate()&&n.getMonth()===e.getMonth()&&n.getFullYear()===e.getFullYear()}function j$4(n,e){return n.getMonth()===e.getMonth()&&n.getFullYear()===e.getFullYear()}function _$7(n,e){return n.getFullYear()===e.getFullYear()}function z$2(n,e,t){const u=new Date(n),r=new Date(e);switch(t){case "years":return u.getFullYear()-r.getFullYear();case "quarters":return Math.floor((u.getMonth()-r.getMonth()+(u.getFullYear()-r.getFullYear())*12)/4);case "months":return u.getMonth()-r.getMonth()+(u.getFullYear()-r.getFullYear())*12;case "weeks":return Math.floor((u.getTime()-r.getTime())/(1e3*60*60*24*7));case "days":return Math.floor((u.getTime()-r.getTime())/(1e3*60*60*24));case "hours":return Math.floor((u.getTime()-r.getTime())/(1e3*60*60));case "minutes":return Math.floor((u.getTime()-r.getTime())/(1e3*60));case "seconds":return Math.floor((u.getTime()-r.getTime())/1e3);default:return u.getTime()-r.getTime()}}function v$d(n,e){const t=new Date(n);return t.setHours(e),t}function ee$2(n,e){const t=new Date(n);return t.setMinutes(e),t}function te$1(n,e){const t=new Date(n);return t.setMonth(e),t}function ne(n,e){const t=new Date(n);return t.setDate(e),t}function re$1(n,e){const t=new Date(n);return t.setFullYear(e),t}function D$3(n){return new Date(n.getFullYear(),n.getMonth(),n.getDate(),0,0,0,0)}function ae(n){return new Date(n.getFullYear(),n.getMonth(),n.getDate(),23,59,59,999)}class oe{constructor(e){this.locale=e.locale,this.formats=e.formats;}date(e){return w$a(e)}toJsDate(e){return e}toISO(e){return I$4(this,e)}parseISO(e){return N$6(e)}addMinutes(e,t){return W$6(e,t)}addHours(e,t){return E$6(e,t)}addDays(e,t){return H$3(e,t)}addWeeks(e,t){return B$3(e,t)}addMonths(e,t){return R$4(e,t)}getWeekArray(e,t){return Y$5(e,this.locale,t?Number(t):void 0)}startOfWeek(e,t){return F$4(e,this.locale,t?Number(t):void 0)}endOfWeek(e){return b$c(e,this.locale)}startOfMonth(e){return M$8(e)}endOfMonth(e){return y$c(e)}format(e,t){return O$7(e,t,this.locale,this.formats)}isEqual(e,t){return d$b(e,t)}isValid(e){return x$9(e)}isWithinRange(e,t){return $$6(e,t)}isAfter(e,t){return h$a(e,t)}isAfterDay(e,t){return q$5(e,t)}isBefore(e,t){return !h$a(e,t)&&!d$b(e,t)}isSameDay(e,t){return X$2(e,t)}isSameMonth(e,t){return j$4(e,t)}isSameYear(e,t){return _$7(e,t)}setMinutes(e,t){return ee$2(e,t)}setHours(e,t){return v$d(e,t)}setMonth(e,t){return te$1(e,t)}setDate(e,t){return ne(e,t)}setYear(e,t){return re$1(e,t)}getDiff(e,t,u){return z$2(e,t,u)}getWeekdays(e){return p$6(this.locale,e?Number(e):void 0)}getYear(e){return C$b(e)}getMonth(e){return U$3(e)}getDate(e){return L$4(e)}getNextMonth(e){return G$1(e)}getPreviousMonth(e){return K$5(e)}getHours(e){return P$8(e)}getMinutes(e){return Z$2(e)}startOfDay(e){return D$3(e)}endOfDay(e){return ae(e)}startOfYear(e){return V$6(e)}endOfYear(e){return J$2(e)}}
-
-const h$9=Symbol.for("vuetify:date-options"),T$7=Symbol.for("vuetify:date-adapter");function b$b(t,r){const e=R$6({adapter:oe,locale:{af:"af-ZA",bg:"bg-BG",ca:"ca-ES",ckb:"",cs:"cs-CZ",de:"de-DE",el:"el-GR",en:"en-US",et:"et-EE",fa:"fa-IR",fi:"fi-FI",hr:"hr-HR",hu:"hu-HU",he:"he-IL",id:"id-ID",it:"it-IT",ja:"ja-JP",ko:"ko-KR",lv:"lv-LV",lt:"lt-LT",nl:"nl-NL",no:"no-NO",pl:"pl-PL",pt:"pt-PT",ro:"ro-RO",ru:"ru-RU",sk:"sk-SK",sl:"sl-SI",srCyrl:"sr-SP",srLatn:"sr-SP",sv:"sv-SE",th:"th-TH",tr:"tr-TR",az:"az-AZ",uk:"uk-UA",vi:"vi-VN",zhHans:"zh-CN",zhHant:"zh-TW"}},t);return {options:e,instance:c$b(e,r)}}function c$b(t,r){const e=reactive(typeof t.adapter=="function"?new t.adapter({locale:t.locale[r.current.value]??r.current.value,formats:t.formats}):t.adapter);return watch(r.current,a=>{e.locale=t.locale[a]??a??e.locale;}),e}function k$5(){const t=inject(h$9);if(!t)throw new Error("[Vuetify] Could not find injected date options");const r=v$e();return c$b(t,r)}function w$9(t,r){const e=t.toJsDate(r);let a=e.getFullYear(),o=new Date(a,0,1);if(e<o)a=a-1,o=new Date(a,0,1);else {const n=new Date(a+1,0,1);e>=n&&(a=a+1,o=n);}const i=Math.abs(e.getTime()-o.getTime()),l=Math.ceil(i/(1e3*60*60*24));return Math.floor(l/7)+1}
-
-function u$c(n){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:a$b("injectSelf");const{provides:e}=t;if(e&&n in e)return e[n]}
-
-const m$8=Symbol.for("vuetify:defaults");function x$8(n){return ref(n)}function y$b(){const n=inject(m$8);if(!n)throw new Error("[Vuetify] Could not find defaults instance");return n}function O$6(n,r){const l=y$b(),f=ref(n),u=computed(()=>{if(unref(r?.disabled))return l.value;const a=unref(r?.scoped),o=unref(r?.reset),t=unref(r?.root);if(f.value==null&&!(a||o||t))return l.value;let e=R$6(f.value,{prev:l.value});if(a)return e;if(o||t){const s=Number(o||1/0);for(let c=0;c<=s&&!(!e||!("prev"in e));c++)e=e.prev;return e&&typeof t=="string"&&t in e&&(e=R$6(R$6(e,{prev:e}),e[t])),e}return e.prev?R$6(e.prev,e):e});return provide(m$8,u),u}function E$5(n,r){return typeof n.props?.[r]<"u"||typeof n.props?.[c$d(r)]<"u"}function R$3(){let n=arguments.length>0&&arguments[0]!==void 0?arguments[0]:{},r=arguments.length>1?arguments[1]:void 0,l=arguments.length>2&&arguments[2]!==void 0?arguments[2]:y$b();const f=a$b("useDefaults");if(r=r??f.type.name??f.type.__name,!r)throw new Error("[Vuetify] Could not determine component name");const u=computed(()=>l.value?.[n._as??r]),p=new Proxy(n,{get(t,e){const s=Reflect.get(t,e);return e==="class"||e==="style"?[u.value?.[e],s].filter(c=>c!=null):typeof e=="string"&&!E$5(f.vnode,e)?u.value?.[e]!==void 0?u.value?.[e]:l.value?.global?.[e]!==void 0?l.value?.global?.[e]:s:s}}),a=shallowRef();watchEffect(()=>{if(u.value){const t=Object.entries(u.value).filter(e=>{let[s]=e;return s.startsWith(s[0].toUpperCase())});a.value=t.length?Object.fromEntries(t):void 0;}else a.value=void 0;});function o(){const t=u$c(m$8,f);provide(m$8,computed(()=>a.value?R$6(t?.value??{},a.value):t?.value));}return {props:p,provideSubDefaults:o}}
-
-const R$2=false,O$5=false,S$7=false;
-
-function y$a(i,c){return n=>Object.keys(i).reduce((t,e)=>{const f=typeof i[e]=="object"&&i[e]!=null&&!Array.isArray(i[e])?i[e]:{type:i[e]};return n&&e in n?t[e]={...f,default:n[e]}:t[e]=f,c&&!t[e].source&&(t[e].source=c),t},{})}
-
-const F$3=["sm","md","lg","xl","xxl"],R$1=Symbol.for("vuetify:display"),b$a={mobileBreakpoint:"lg",thresholds:{xs:0,sm:600,md:960,lg:1280,xl:1920,xxl:2560}},E$4=function(){let o=arguments.length>0&&arguments[0]!==void 0?arguments[0]:b$a;return R$6(b$a,o)};function v$c(o){return typeof o=="object"&&o.clientWidth||0}function y$9(o){return typeof o=="object"&&o.clientHeight||0}function w$8(o){const s="ssr";function e(u){return !!s.match(u)}const r=e(/android/i),c=e(/iphone|ipad|ipod/i),d=e(/cordova/i),t=e(/electron/i),l=e(/chrome/i),f=e(/edge/i),g=e(/firefox/i),n=e(/opera/i),i=e(/win/i),a=e(/mac/i),m=e(/linux/i);return {android:r,ios:c,cordova:d,electron:t,chrome:l,edge:f,firefox:g,opera:n,win:i,mac:a,linux:m,touch:O$5,ssr:s==="ssr"}}function I$3(o,s){const{thresholds:e,mobileBreakpoint:r}=E$4(o),c=shallowRef(y$9(s)),d=shallowRef(w$8()),t=reactive({}),l=shallowRef(v$c(s));function f(){c.value=y$9(),l.value=v$c();}function g(){f(),d.value=w$8();}return watchEffect(()=>{const n=l.value<e.sm,i=l.value<e.md&&!n,a=l.value<e.lg&&!(i||n),m=l.value<e.xl&&!(a||i||n),u=l.value<e.xxl&&!(m||a||i||n),p=l.value>=e.xxl,k=n?"xs":i?"sm":a?"md":m?"lg":u?"xl":"xxl",D=typeof r=="number"?r:e[r],B=l.value<D;t.xs=n,t.sm=i,t.md=a,t.lg=m,t.xl=u,t.xxl=p,t.smAndUp=!n,t.mdAndUp=!(n||i),t.lgAndUp=!(n||i||a),t.xlAndUp=!(n||i||a||m),t.smAndDown=!(a||m||u||p),t.mdAndDown=!(m||u||p),t.lgAndDown=!(u||p),t.xlAndDown=!p,t.name=k,t.height=c.value,t.width=l.value,t.mobile=B,t.mobileBreakpoint=r,t.platform=d.value,t.thresholds=e;}),{...toRefs(t),update:g,ssr:!!s}}const _$6=y$a({mobile:{type:Boolean,default:false},mobileBreakpoint:[Number,String]},"display");function $$5(){let o=arguments.length>0&&arguments[0]!==void 0?arguments[0]:{mobile:null},s=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c();const e=inject(R$1);if(!e)throw new Error("Could not find Vuetify display injection");const r=computed(()=>o.mobile?true:typeof o.mobileBreakpoint=="number"?e.width.value<o.mobileBreakpoint:o.mobileBreakpoint?e.width.value<e.thresholds.value[o.mobileBreakpoint]:o.mobile===null?e.mobile.value:false),c=computed(()=>s?{[`${s}--mobile`]:r.value}:{});return {...e,displayClasses:c,mobile:r}}
-
-const M$7=Symbol.for("vuetify:goto");function O$4(){return {container:void 0,duration:300,layout:false,offset:0,easing:"easeInOutCubic",patterns:{linear:e=>e,easeInQuad:e=>e**2,easeOutQuad:e=>e*(2-e),easeInOutQuad:e=>e<.5?2*e**2:-1+(4-2*e)*e,easeInCubic:e=>e**3,easeOutCubic:e=>--e**3+1,easeInOutCubic:e=>e<.5?4*e**3:(e-1)*(2*e-2)*(2*e-2)+1,easeInQuart:e=>e**4,easeOutQuart:e=>1- --e**4,easeInOutQuart:e=>e<.5?8*e**4:1-8*--e**4,easeInQuint:e=>e**5,easeOutQuint:e=>1+--e**5,easeInOutQuint:e=>e<.5?16*e**5:1+16*--e**5}}}function S$6(e){return v$b(e)??((void 0).scrollingElement||(void 0).body)}function v$b(e){return typeof e=="string"?(void 0).querySelector(e):T$8(e)}function y$8(e,r,s){if(typeof e=="number")return r&&s?-e:e;let n=v$b(e),o=0;for(;n;)o+=r?n.offsetLeft:n.offsetTop,n=n.offsetParent;return o}function j$3(e,r){return {rtl:r.isRtl,options:R$6(O$4(),e)}}async function b$9(e,r,s,n){const o=s?"scrollLeft":"scrollTop",t=R$6(n?.options??O$4(),r),i=n?.rtl.value,f=(typeof e=="number"?e:v$b(e))??0,a=t.container==="parent"&&f instanceof HTMLElement?f.parentElement:S$6(t.container),c=typeof t.easing=="function"?t.easing:t.patterns[t.easing];if(!c)throw new TypeError(`Easing function "${t.easing}" not found.`);let u;if(typeof f=="number")u=y$8(f,s,i);else if(u=y$8(f,s,i)-y$8(a,s,i),t.layout){const l=(void 0).getComputedStyle(f).getPropertyValue("--v-layout-top");l&&(u-=parseInt(l,10));}u+=t.offset,u=W$5(a,u,!!i,!!s);const p=a[o]??0;if(u===p)return Promise.resolve(u);const T=performance.now();return new Promise(g=>requestAnimationFrame(function l(I){const d=(I-T)/t.duration,h=Math.floor(p+(u-p)*c(Z$3(d,0,1)));if(a[o]=h,d>=1&&Math.abs(h-a[o])<10)return g(u);if(d>2)return s$b("Scroll target is not reachable"),g(a[o]);requestAnimationFrame(l);}))}function A$4(){let e=arguments.length>0&&arguments[0]!==void 0?arguments[0]:{};const r=inject(M$7),{isRtl:s}=y$d();if(!r)throw new Error("[Vuetify] Could not find injected goto instance");const n={...r,rtl:computed(()=>r.rtl.value||s.value)};async function o(t,i){return b$9(t,R$6(e,i),false,n)}return o.horizontal=async(t,i)=>b$9(t,R$6(e,i),true,n),o}function W$5(e,r,s,n){const{scrollWidth:o,scrollHeight:t}=e,[i,f]=e===(void 0).scrollingElement?[(void 0).innerWidth,(void 0).innerHeight]:[e.offsetWidth,e.offsetHeight];let a,c;return n?s?(a=-(o-i),c=0):(a=0,c=o-i):(a=0,c=t+-f),Math.max(Math.min(r,c),a)}
-
-const r$8={collapse:"mdi-chevron-up",complete:"mdi-check",cancel:"mdi-close-circle",close:"mdi-close",delete:"mdi-close-circle",clear:"mdi-close-circle",success:"mdi-check-circle",info:"mdi-information",warning:"mdi-alert-circle",error:"mdi-close-circle",prev:"mdi-chevron-left",next:"mdi-chevron-right",checkboxOn:"mdi-checkbox-marked",checkboxOff:"mdi-checkbox-blank-outline",checkboxIndeterminate:"mdi-minus-box",delimiter:"mdi-circle",sortAsc:"mdi-arrow-up",sortDesc:"mdi-arrow-down",expand:"mdi-chevron-down",menu:"mdi-menu",subgroup:"mdi-menu-down",dropdown:"mdi-menu-down",radioOn:"mdi-radiobox-marked",radioOff:"mdi-radiobox-blank",edit:"mdi-pencil",ratingEmpty:"mdi-star-outline",ratingFull:"mdi-star",ratingHalf:"mdi-star-half-full",loading:"mdi-cached",first:"mdi-page-first",last:"mdi-page-last",unfold:"mdi-unfold-more-horizontal",file:"mdi-paperclip",plus:"mdi-plus",minus:"mdi-minus",calendar:"mdi-calendar",treeviewCollapse:"mdi-menu-down",treeviewExpand:"mdi-menu-right",eyeDropper:"mdi-eyedropper",upload:"mdi-cloud-upload"},c$a={component:i=>h$d(M$6,{...i,class:"mdi"})};
-
-function g$9(e){if(e._setup=e._setup??e.setup,!e.name)return s$b("The component is missing an explicit name, unable to generate default prop value"),e;if(e._setup){e.props=y$a(e.props??{},e.name)();const r=Object.keys(e.props).filter(t=>t!=="class"&&t!=="style");e.filterProps=function(n){return k$6(n,r)},e.props._as=String,e.setup=function(n,u){const s=y$b();if(!s.value)return e._setup(n,u);const{props:f,provideSubDefaults:p}=R$3(n,n._as??e.name,s),a=e._setup(f,u);return p(),a};}return e}function y$7(){let e=arguments.length>0&&arguments[0]!==void 0?arguments[0]:true;return r=>(e?g$9:defineComponent)(r)}function h$8(e,r){return r.props=e,r}
-
-const A$3=[String,Function,Object,Array],C$a=Symbol.for("vuetify:icons"),i$e=y$a({icon:{type:A$3},tag:{type:String,required:true}},"icon"),l$a=y$7()({name:"VComponentIcon",props:i$e(),setup(n,e){let{slots:c}=e;return ()=>{const o=n.icon;return createVNode(n.tag,null,{default:()=>[n.icon?createVNode(o,null,null):c.default?.()]})}}}),u$b=g$9({name:"VSvgIcon",inheritAttrs:false,props:i$e(),setup(n,e){let{attrs:c}=e;return ()=>createVNode(n.tag,mergeProps(c,{style:null}),{default:()=>[createVNode("svg",{class:"v-icon__svg",xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",role:"img","aria-hidden":"true"},[Array.isArray(n.icon)?n.icon.map(o=>Array.isArray(o)?createVNode("path",{d:o[0],"fill-opacity":o[1]},null):createVNode("path",{d:o},null)):createVNode("path",{d:n.icon},null)])]})}});g$9({name:"VLigatureIcon",props:i$e(),setup(n){return ()=>createVNode(n.tag,null,{default:()=>[n.icon]})}});const M$6=g$9({name:"VClassIcon",props:i$e(),setup(n){return ()=>createVNode(n.tag,{class:n.icon},null)}});function Z$1(){return {svg:{component:u$b},class:{component:M$6}}}function W$4(n){const e=Z$1(),c=n?.defaultSet??"mdi";return c==="mdi"&&!e.mdi&&(e.mdi=c$a),R$6({defaultSet:c,sets:e,aliases:{...r$8,vuetify:["M8.2241 14.2009L12 21L22 3H14.4459L8.2241 14.2009Z",["M7.26303 12.4733L7.00113 12L2 3H12.5261C12.5261 3 12.5261 3 12.5261 3L7.26303 12.4733Z",.6]],"vuetify-outline":"svg:M7.26 12.47 12.53 3H2L7.26 12.47ZM14.45 3 8.22 14.2 12 21 22 3H14.45ZM18.6 5 12 16.88 10.51 14.2 15.62 5ZM7.26 8.35 5.4 5H9.13L7.26 8.35Z","vuetify-play":["m6.376 13.184-4.11-7.192C1.505 4.66 2.467 3 4.003 3h8.532l-.953 1.576-.006.01-.396.677c-.429.732-.214 1.507.194 2.015.404.503 1.092.878 1.869.806a3.72 3.72 0 0 1 1.005.022c.276.053.434.143.523.237.138.146.38.635-.25 2.09-.893 1.63-1.553 1.722-1.847 1.677-.213-.033-.468-.158-.756-.406a4.95 4.95 0 0 1-.8-.927c-.39-.564-1.04-.84-1.66-.846-.625-.006-1.316.27-1.693.921l-.478.826-.911 1.506Z",["M9.093 11.552c.046-.079.144-.15.32-.148a.53.53 0 0 1 .43.207c.285.414.636.847 1.046 1.2.405.35.914.662 1.516.754 1.334.205 2.502-.698 3.48-2.495l.014-.028.013-.03c.687-1.574.774-2.852-.005-3.675-.37-.391-.861-.586-1.333-.676a5.243 5.243 0 0 0-1.447-.044c-.173.016-.393-.073-.54-.257-.145-.18-.127-.316-.082-.392l.393-.672L14.287 3h5.71c1.536 0 2.499 1.659 1.737 2.992l-7.997 13.996c-.768 1.344-2.706 1.344-3.473 0l-3.037-5.314 1.377-2.278.004-.006.004-.007.481-.831Z",.6]]}},n)}const $$4=n=>{const e=inject(C$a);if(!e)throw new Error("Missing Vuetify Icons provide!");return {iconData:computed(()=>{const o=unref(n);if(!o)return {component:l$a};let t=o;if(typeof t=="string"&&(t=t.trim(),t.startsWith("$")&&(t=e.aliases?.[t.slice(1)])),t||s$b(`Could not find aliased icon "${o}"`),Array.isArray(t))return {component:u$b,icon:t};if(typeof t!="string")return {component:l$a,icon:t};const s=Object.keys(e.sets).find(f=>typeof t=="string"&&t.startsWith(`${f}:`)),m=s?t.slice(s.length+1):t;return {component:e.sets[s??e.defaultSet].component,icon:m}})}};
-
-const i$d=.2126729,r$7=.7151522,a$a=.072175,h$7=.55,p$5=.58,A$2=.57,u$a=.62,s$a=.03,T$6=1.45,x$7=5e-4,P$7=1.25,Y$4=1.25,v$a=.078,m$7=12.82051282051282,c$9=.06,S$5=.001;function W$3(e,C){const R=(e.r/255)**2.4,b=(e.g/255)**2.4,f=(e.b/255)**2.4,B=(C.r/255)**2.4,G=(C.g/255)**2.4,g=(C.b/255)**2.4;let o=R*i$d+b*r$7+f*a$a,n=B*i$d+G*r$7+g*a$a;if(o<=s$a&&(o+=(s$a-o)**T$6),n<=s$a&&(n+=(s$a-n)**T$6),Math.abs(n-o)<x$7)return 0;let l;if(n>o){const t=(n**h$7-o**p$5)*P$7;l=t<S$5?0:t<v$a?t-t*m$7*c$9:t-c$9;}else {const t=(n**u$a-o**A$2)*Y$4;l=t>-1e-3?0:t>-0.078?t-t*m$7*c$9:t+c$9;}return l*100}
-
-const t$4=.20689655172413793,s$9=r=>r>t$4**3?Math.cbrt(r):r/(3*t$4**2)+4/29,c$8=r=>r>t$4?r**3:3*t$4**2*(r-4/29);function e$6(r){const n=s$9,o=n(r[1]);return [116*o-16,500*(n(r[0]/.95047)-o),200*(o-n(r[2]/1.08883))]}function a$9(r){const n=c$8,o=(r[0]+16)/116;return [n(o+r[1]/500)*.95047,n(o),n(o-r[2]/200)*1.08883]}
-
-const m$6=[[3.2406,-1.5372,-0.4986],[-0.9689,1.8758,.0415],[.0557,-0.204,1.057]],i$c=r=>r<=.0031308?r*12.92:1.055*r**(1/2.4)-.055,b$8=[[.4124,.3576,.1805],[.2126,.7152,.0722],[.0193,.1192,.9505]],g$8=r=>r<=.04045?r/12.92:((r+.055)/1.055)**2.4;function l$9(r){const o=Array(3),a=i$c,n=m$6;for(let t=0;t<3;++t)o[t]=Math.round(Z$3(a(n[t][0]*r[0]+n[t][1]*r[1]+n[t][2]*r[2]))*255);return {r:o[0],g:o[1],b:o[2]}}function x$6(r){let{r:o,g:a,b:n}=r;const t=[0,0,0],c=g$8,e=b$8;o=c(o/255),a=c(a/255),n=c(n/255);for(let s=0;s<3;++s)t[s]=e[s][0]*o+e[s][1]*a+e[s][2]*n;return t}
-
-function V$5(t){return !!t&&/^(#|var\(--|(rgb|hsl)a?\()/.test(t)}function L$3(t){return V$5(t)&&!/^((rgb|hsl)a?\()?var\(--/.test(t)}const F$2=/^(?<fn>(?:rgb|hsl)a?)\((?<values>.+)\)/,R={rgb:(t,n,s,e)=>({r:t,g:n,b:s,a:e}),rgba:(t,n,s,e)=>({r:t,g:n,b:s,a:e}),hsl:(t,n,s,e)=>d$a({h:t,s:n,l:s,a:e}),hsla:(t,n,s,e)=>d$a({h:t,s:n,l:s,a:e}),hsv:(t,n,s,e)=>o$8({h:t,s:n,v:s,a:e}),hsva:(t,n,s,e)=>o$8({h:t,s:n,v:s,a:e})};function c$7(t){if(typeof t=="number")return (isNaN(t)||t<0||t>16777215)&&s$b(`'${t}' is not a valid hex color`),{r:(t&16711680)>>16,g:(t&65280)>>8,b:t&255};if(typeof t=="string"&&F$2.test(t)){const{groups:n}=t.match(F$2),{fn:s,values:e}=n,r=e.split(/,\s*/).map(i=>i.endsWith("%")&&["hsl","hsla","hsv","hsva"].includes(s)?parseFloat(i)/100:parseFloat(i));return R[s](...r)}else if(typeof t=="string"){let n=t.startsWith("#")?t.slice(1):t;[3,4].includes(n.length)?n=n.split("").map(e=>e+e).join(""):[6,8].includes(n.length)||s$b(`'${t}' is not a valid hex(a) color`);const s=parseInt(n,16);return (isNaN(s)||s<0||s>4294967295)&&s$b(`'${t}' is not a valid hex(a) color`),C$9(n)}else if(typeof t=="object"){if(L$5(t,["r","g","b"]))return t;if(L$5(t,["h","s","l"]))return o$8($$3(t));if(L$5(t,["h","s","v"]))return o$8(t)}throw new TypeError(`Invalid color: ${t==null?t:String(t)||t.constructor.name}
-Expected #hex, #hexa, rgb(), rgba(), hsl(), hsla(), object or number`)}function o$8(t){const{h:n,s,v:e,a:r}=t,i=f=>{const u=(f+n/60)%6;return e-e*s*Math.max(Math.min(u,4-u,1),0)},a=[i(5),i(3),i(1)].map(f=>Math.round(f*255));return {r:a[0],g:a[1],b:a[2],a:r}}function d$a(t){return o$8($$3(t))}function B$2(t){if(!t)return {h:0,s:1,v:1,a:1};const n=t.r/255,s=t.g/255,e=t.b/255,r=Math.max(n,s,e),i=Math.min(n,s,e);let a=0;r!==i&&(r===n?a=60*(0+(s-e)/(r-i)):r===s?a=60*(2+(e-n)/(r-i)):r===e&&(a=60*(4+(n-s)/(r-i)))),a<0&&(a=a+360);const f=r===0?0:(r-i)/r,u=[a,f,r];return {h:u[0],s:u[1],v:u[2],a:t.a}}function N$5(t){const{h:n,s,v:e,a:r}=t,i=e-e*s/2,a=i===1||i===0?0:(e-i)/Math.min(i,1-i);return {h:n,s:a,l:i,a:r}}function $$3(t){const{h:n,s,l:e,a:r}=t,i=e+s*Math.min(e,1-e),a=i===0?0:2-2*e/i;return {h:n,s:a,v:i,a:r}}function G(t){let{r:n,g:s,b:e,a:r}=t;return r===void 0?`rgb(${n}, ${s}, ${e})`:`rgba(${n}, ${s}, ${e}, ${r})`}function W$2(t){return G(o$8(t))}function h$6(t){const n=Math.round(t).toString(16);return ("00".substr(0,2-n.length)+n).toUpperCase()}function X$1(t){let{r:n,g:s,b:e,a:r}=t;return `#${[h$6(n),h$6(s),h$6(e),r!==void 0?h$6(Math.round(r*255)):""].join("")}`}function C$9(t){t=Y$3(t);let[n,s,e,r]=ee$3(t,2).map(i=>parseInt(i,16));return r=r===void 0?r:r/255,{r:n,g:s,b:e,a:r}}function E$3(t){const n=C$9(t);return B$2(n)}function I$2(t){return X$1(o$8(t))}function Y$3(t){return t.startsWith("#")&&(t=t.slice(1)),t=t.replace(/([^0-9a-f])/gi,"F"),(t.length===3||t.length===4)&&(t=t.split("").map(n=>n+n).join("")),t.length!==6&&(t=Q$2(Q$2(t,6),8,"F")),t}function T$5(t,n){const s=e$6(x$6(t));return s[0]=s[0]+n*10,l$9(a$9(s))}function A$1(t,n){const s=e$6(x$6(t));return s[0]=s[0]-n*10,l$9(a$9(s))}function v$9(t){const n=c$7(t);return x$6(n)[1]}function P$6(t,n){const s=v$9(t),e=v$9(n),r=Math.max(s,e),i=Math.min(s,e);return (r+.05)/(i+.05)}function U$2(t){const n=Math.abs(W$3(c$7(0),c$7(t)));return Math.abs(W$3(c$7(16777215),c$7(t)))>Math.min(n,50)?"#fff":"#000"}
-
-const b$7=Symbol.for("vuetify:theme"),M$5=y$a({theme:String},"theme");function $$2(){return {defaultTheme:"light",variations:{colors:[],lighten:0,darken:0},themes:{light:{dark:false,colors:{background:"#FFFFFF",surface:"#FFFFFF","surface-bright":"#FFFFFF","surface-light":"#EEEEEE","surface-variant":"#424242","on-surface-variant":"#EEEEEE",primary:"#1867C0","primary-darken-1":"#1F5592",secondary:"#48A9A6","secondary-darken-1":"#018786",error:"#B00020",info:"#2196F3",success:"#4CAF50",warning:"#FB8C00"},variables:{"border-color":"#000000","border-opacity":.12,"high-emphasis-opacity":.87,"medium-emphasis-opacity":.6,"disabled-opacity":.38,"idle-opacity":.04,"hover-opacity":.04,"focus-opacity":.12,"selected-opacity":.08,"activated-opacity":.12,"pressed-opacity":.12,"dragged-opacity":.08,"theme-kbd":"#212529","theme-on-kbd":"#FFFFFF","theme-code":"#F5F5F5","theme-on-code":"#000000"}},dark:{dark:true,colors:{background:"#121212",surface:"#212121","surface-bright":"#ccbfd6","surface-light":"#424242","surface-variant":"#a3a3a3","on-surface-variant":"#424242",primary:"#2196F3","primary-darken-1":"#277CC1",secondary:"#54B6B2","secondary-darken-1":"#48A9A6",error:"#CF6679",info:"#2196F3",success:"#4CAF50",warning:"#FB8C00"},variables:{"border-color":"#FFFFFF","border-opacity":.12,"high-emphasis-opacity":1,"medium-emphasis-opacity":.7,"disabled-opacity":.5,"idle-opacity":.1,"hover-opacity":.04,"focus-opacity":.12,"selected-opacity":.08,"activated-opacity":.12,"pressed-opacity":.16,"dragged-opacity":.08,"theme-kbd":"#212529","theme-on-kbd":"#FFFFFF","theme-code":"#343434","theme-on-code":"#CCCCCC"}}}}}function z$1(){let t=arguments.length>0&&arguments[0]!==void 0?arguments[0]:$$2();const o=$$2();if(!t)return {...o,isDisabled:true};const s={};for(const[n,a]of Object.entries(t.themes??{})){const r=a.dark||n==="dark"?o.themes?.dark:o.themes?.light;s[n]=R$6(r,a);}return R$6(o,{...t,themes:s})}function P$5(t){const o=z$1(t),s=ref(o.defaultTheme),n=ref(o.themes),a=computed(()=>{const i={};for(const[l,d]of Object.entries(n.value)){const u=i[l]={...d,colors:{...d.colors}};if(o.variations)for(const e of o.variations.colors){const m=u.colors[e];if(m)for(const p of ["lighten","darken"]){const w=p==="lighten"?T$5:A$1;for(const g of z$3(o.variations[p],1))u.colors[`${e}-${p}-${g}`]=X$1(w(c$7(m),g));}}for(const e of Object.keys(u.colors)){if(/^on-[a-z]/.test(e)||u.colors[`on-${e}`])continue;const m=`on-${e}`,p=c$7(u.colors[e]);u.colors[m]=U$2(p);}}return i}),r=computed(()=>a.value[s.value]),c=computed(()=>{const i=[];r.value?.dark&&h$5(i,":root",["color-scheme: dark"]),h$5(i,":root",C$8(r.value));for(const[e,m]of Object.entries(a.value))h$5(i,`.v-theme--${e}`,[`color-scheme: ${m.dark?"dark":"normal"}`,...C$8(m)]);const l=[],d=[],u=new Set(Object.values(a.value).flatMap(e=>Object.keys(e.colors)));for(const e of u)/^on-[a-z]/.test(e)?h$5(d,`.${e}`,[`color: rgb(var(--v-theme-${e})) !important`]):(h$5(l,`.bg-${e}`,[`--v-theme-overlay-multiplier: var(--v-theme-${e}-overlay-multiplier)`,`background-color: rgb(var(--v-theme-${e})) !important`,`color: rgb(var(--v-theme-on-${e})) !important`]),h$5(d,`.text-${e}`,[`color: rgb(var(--v-theme-${e})) !important`]),h$5(d,`.border-${e}`,[`--v-border-color: var(--v-theme-${e})`]));return i.push(...l,...d),i.map((e,m)=>m===0?e:`    ${e}`).join("")});function v(){return {style:[{textContent:c.value,id:"vuetify-theme-stylesheet",nonce:o.cspNonce||false}]}}function O(i){if(o.isDisabled)return;const l=i._context.provides.usehead;l&&(l.push?l.push(v):l.addHeadObjs(v()));}const T=computed(()=>o.isDisabled?void 0:`v-theme--${s.value}`);return {install:O,isDisabled:o.isDisabled,name:s,themes:n,current:r,computedThemes:a,themeClasses:T,styles:c,global:{name:s,current:r}}}function _$5(t){a$b("provideTheme");const o=inject(b$7,null);if(!o)throw new Error("Could not find Vuetify theme injection");const s=computed(()=>t.theme??o.name.value),n=computed(()=>o.themes.value[s.value]),a=computed(()=>o.isDisabled?void 0:`v-theme--${s.value}`),r={...o,name:s,current:n,themeClasses:a};return provide(b$7,r),r}function q$4(){a$b("useTheme");const t=inject(b$7,null);if(!t)throw new Error("Could not find Vuetify theme injection");return t}function h$5(t,o,s){t.push(`${o} {
-`,...s.map(n=>`  ${n};
-`),`}
-`);}function C$8(t){const o=t.dark?2:1,s=t.dark?1:2,n=[];for(const[a,r]of Object.entries(t.colors)){const c=c$7(r);n.push(`--v-theme-${a}: ${c.r},${c.g},${c.b}`),a.startsWith("on-")||n.push(`--v-theme-${a}-overlay-multiplier: ${v$9(r)>.18?o:s}`);}for(const[a,r]of Object.entries(t.variables)){const c=typeof r=="string"&&r.startsWith("#")?c$7(r):void 0,v=c?`${c.r}, ${c.g}, ${c.b}`:void 0;n.push(`--v-${a}: ${v??r}`);}return n}
-
-function V$4(){let s=arguments.length>0&&arguments[0]!==void 0?arguments[0]:{};const{blueprint:n,...i}=s,t=R$6(n,i),{aliases:c={},components:f={},directives:d={}}=t,p=x$8(t.defaults),u=I$3(t.display,t.ssr),l=P$5(t.theme),v=W$4(t.icons),m=h$b(t.locale),a=b$b(t.date,m),y=j$3(t.goTo,m);return {install:e=>{for(const o in d)e.directive(o,d[o]);for(const o in f)e.component(o,f[o]);for(const o in c)e.component(o,g$9({...c[o],name:o,aliasName:c[o].name}));l.install(e),e.provide(m$8,p),e.provide(R$1,u),e.provide(b$7,l),e.provide(C$a,v),e.provide(r$9,m),e.provide(h$9,a.options),e.provide(T$7,a.instance),e.provide(M$7,y),o$a.reset(),e.mixin({computed:{$vuetify(){return reactive({defaults:r$6.call(this,m$8),display:r$6.call(this,R$1),theme:r$6.call(this,b$7),icons:r$6.call(this,C$a),locale:r$6.call(this,r$9),date:r$6.call(this,T$7)})}}});},defaults:p,display:u,theme:l,icons:v,locale:m,date:a,goTo:y}}const q$3="3.7.19";V$4.version=q$3;function r$6(s){const n=this.$,i=n.parent?.provides??n.vnode.appContext?.provides;if(i&&s in i)return i[s]}
-
-const d$9=N$a(r=>{const e=V$4({theme:{defaultTheme:"dark",themes:{light:{colors:{background:"#ebedf9",surface:"#f9f9ff","surface-dim":"#d7d9e5","surface-bright":"#f9f9ff","on-surface":"#181c23",outline:"#717786","outline-variant":"#c1c6d7",primary:"#005bc0","on-primary":"#ffffff",secondary:"#00658b","on-secondary":"#ffffff",tertiary:"#6440d7","on-tertiary":"#ffffff",error:"#ba1a1a","on-error":"#ffffff","surface-light":"#e6e8f3"},dark:false,variables:{"overlay-background":"#161c28"}},dark:{colors:{background:"#1c2027",surface:"#10131b","surface-dim":"#10131b","surface-bright":"#363942","on-surface":"#e0e2ed",outline:"#8b90a0","outline-variant":"#414754",primary:"#adc7ff","on-primary":"#002e68",secondary:"#7dd0ff","on-secondary":"#00344a",tertiary:"#cbbeff","on-tertiary":"#340098",error:"#ffb4ab","on-error":"#690005","surface-light":"#363942"},dark:true,variables:{"overlay-background":"#161c28"}},landingPage:{dark:true,colors:{}}}},defaults:{VSlider:{color:"primary"},VTextField:{color:"primary"},VTextarea:{color:"primary"},VSwitch:{color:"primary"}}});r.vueApp.use(e);});
-
-const M$4=[l$e,t$j,te$3,r$c,c$f,c$e,t$6,H$5,s$e,d$c,k$7,d$9];
-
-const a$8={dashboard:defineAsyncComponent(()=>import('./dashboard.vue2.mjs').then(t=>t.default||t)),default:defineAsyncComponent(()=>import('./default.vue.mjs').then(t=>t.default||t)),empty:defineAsyncComponent(()=>import('./empty.vue.mjs').then(t=>t.default||t)),landing:defineAsyncComponent(()=>import('./landing.vue.mjs').then(t=>t.default||t))};
-
-const A=defineComponent({name:"LayoutLoader",inheritAttrs:false,props:{name:String,layoutProps:Object},setup(t,e){return ()=>h$d(a$8[t.name],t.layoutProps,e.slots)}}),_$4={name:{type:[String,Boolean,Object],default:null},fallback:{type:[String,Object],default:null}},q$2=defineComponent({name:"NuxtLayout",inheritAttrs:false,props:_$4,setup(t,e){const o=W$8(),n=inject(t$i),i=n===N$9()?useRoute():n,r=computed(()=>{let a=unref(t.name)??i.meta.layout??"default";return a&&!(a in a$8)&&t.fallback&&(a=unref(t.fallback)),a}),m=ref();e.expose({layoutRef:m});const y=o.deferHydration();return ()=>{const a=r.value&&r.value in a$8,p=i.meta.layoutTransition??n$5;return f$e(a&&p,{default:()=>h$d(Suspense,{suspensible:true,onResolve:()=>{nextTick(y);}},{default:()=>h$d(B$1,{layoutProps:mergeProps(e.attrs,{ref:m}),key:r.value||void 0,name:r.value,shouldProvide:!t.name,hasTransition:!!p},e.slots)})}).default()}}}),B$1=defineComponent({name:"NuxtLayoutProvider",inheritAttrs:false,props:{name:{type:[String,Boolean]},layoutProps:{type:Object},hasTransition:{type:Boolean},shouldProvide:{type:Boolean}},setup(t,e){const o=t.name;return t.shouldProvide&&provide(o$e,{isCurrent:n=>o===(n.meta.layout??"default")}),()=>!o||typeof o=="string"&&!(o in a$8)?e.slots.default?.():h$d(A,{key:o,layoutProps:t.layoutProps,name:o},e.slots)}});
-
-const y$6=(o="RouteProvider")=>defineComponent({name:o,props:{vnode:{type:Object,required:true},route:{type:Object,required:true},vnodeRef:Object,renderKey:String,trackRootNodes:Boolean},setup(e){const n=e.renderKey,u=e.route,t={};for(const r in e.route)Object.defineProperty(t,r,{get:()=>n===e.renderKey?e.route[r]:u[r],enumerable:true});return provide(t$i,shallowReactive(t)),()=>h$d(e.vnode,{ref:e.vnodeRef})}}),a$7=y$6();
-
-const w$7=defineComponent({name:"NuxtPage",inheritAttrs:false,props:{name:{type:String},transition:{type:[Boolean,Object],default:void 0},keepalive:{type:[Boolean,Object],default:void 0},route:{type:Object},pageKey:{type:[Function,String],default:null}},setup(e,{attrs:o,slots:n,expose:u}){const r=W$8(),d=ref(),p=inject(t$i,null);let l;u({pageRef:d}),inject(o$e,null);let f;const c=r.deferHydration();return e.pageKey&&watch(()=>e.pageKey,(t,a)=>{t!==a&&r.callHook("page:loading:start");}),()=>h$d(RouterView,{name:e.name,route:e.route,...o},{default:t=>{if(!t.Component){c();return}const a=s$f(t,e.pageKey);return !r.isHydrating&&!S$4(p,t.route,t.Component)&&l===a&&r.callHook("page:loading:end"),l=a,f=h$d(Suspense,{suspensible:true},{default:()=>h$d(a$7,{key:a||void 0,vnode:n.default?j$2(n.default,t):t.Component,route:t.route,renderKey:a||void 0,vnodeRef:d})}),f}})}});function S$4(e,o,n){return e?o.matched.findIndex(r=>r.components?.default===n?.type)<o.matched.length-1:false}function j$2(e,o){const n=e(o);return n.length===1?h$d(n[0]):h$d(Fragment,void 0,n)}
-
-const l$8=defineComponent({__name:"DataCollector",__ssrInlineRender:true,setup(_){ref(""),ref(Date.now()),ref(""),ref(0),ref(0),ref(0),ref(""),ref(""),ref(""),ref(0),ref(false),useRoute();const t=o$c();return watch(()=>t.preferences.analytics,r=>{}),(r,p,u,c)=>{}}});
-
-const s$8=(t,e)=>{const o=t.__vccOpts||t;for(const[r,c]of e)o[r]=c;return o};
-
-const e$5=l$8.setup;l$8.setup=(s,a)=>{const o=useSSRContext();return (o.modules||(o.modules=new Set)).add("components/analytics/DataCollector.vue"),e$5?e$5(s,a):void 0};const f$b=s$8(l$8,[["__scopeId","data-v-fa9e3cf9"]]);
-
-function h$4(e,t){return {x:e.x+t.x,y:e.y+t.y}}function d$8(e,t){return {x:e.x-t.x,y:e.y-t.y}}function g$7(e,t){if(e.side==="top"||e.side==="bottom"){const{side:n,align:i}=e,r=i==="left"?0:i==="center"?t.width/2:i==="right"?t.width:i,s=n==="top"?0:n==="bottom"?t.height:n;return h$4({x:r,y:s},t)}else if(e.side==="left"||e.side==="right"){const{side:n,align:i}=e,r=n==="left"?0:n==="right"?t.width:n,s=i==="top"?0:i==="center"?t.height/2:i==="bottom"?t.height:i;return h$4({x:r,y:s},t)}return h$4({x:t.width/2,y:t.height/2},t)}
-
-let n$2 = class n{constructor(e){let{x:h,y:i,width:r,height:o}=e;this.x=h,this.y=i,this.width=r,this.height=o;}get top(){return this.y}get bottom(){return this.y+this.height}get left(){return this.x}get right(){return this.x+this.width}};function s$7(t,e){return {x:{before:Math.max(0,e.left-t.left),after:Math.max(0,t.right-e.right)},y:{before:Math.max(0,e.top-t.top),after:Math.max(0,t.bottom-e.bottom)}}}function g$6(t){return Array.isArray(t)?new n$2({x:t[0],y:t[1],width:0,height:0}):t.getBoundingClientRect()}
-
-function i$b(t){for(;t;){if((void 0).getComputedStyle(t).position==="fixed")return  true;t=t.offsetParent;}return  false}
-
-const l$7=["top","bottom"],f$a=["start","end","left","right"];function s$6(t,e){let[i,n]=t.split(" ");return n||(n=oe$1(l$7,i)?"start":oe$1(f$a,i)?"top":"center"),{side:o$7(i,e),align:o$7(n,e)}}function o$7(t,e){return t==="start"?e?"right":"left":t==="end"?e?"left":"right":t}function u$9(t){return {side:{center:"center",top:"bottom",bottom:"top",left:"right",right:"left"}[t.side],align:t.align}}function c$6(t){return {side:t.side,align:{center:"center",top:"bottom",bottom:"top",left:"right",right:"left"}[t.align]}}function d$7(t){return {side:t.align,align:t.side}}function p$4(t){return oe$1(l$7,t.side)?"y":"x"}
-
-function i$a(t){let e=arguments.length>1&&arguments[1]!==void 0?arguments[1]:false;for(;t;){if(e?o$6(t):r$5(t))return t;t=t.parentElement;}return (void 0).scrollingElement}function l$6(t,e){const n=[];if(e&&t&&!e.contains(t))return n;for(;t&&(r$5(t)&&n.push(t),t!==e);)t=t.parentElement;return n}function r$5(t){if(!t||t.nodeType!==Node.ELEMENT_NODE)return  false;const e=(void 0).getComputedStyle(t);return e.overflowY==="scroll"||e.overflowY==="auto"&&t.scrollHeight>t.clientHeight}function o$6(t){if(!t||t.nodeType!==Node.ELEMENT_NODE)return  false;const e=(void 0).getComputedStyle(t);return ["scroll","auto"].includes(e.overflowY)}
-
-function y$5(n){const i=n.getBoundingClientRect(),o=getComputedStyle(n),t=o.transform;if(t){let e,r,s,f,m;if(t.startsWith("matrix3d("))e=t.slice(9,-1).split(/, /),r=Number(e[0]),s=Number(e[5]),f=Number(e[12]),m=Number(e[13]);else if(t.startsWith("matrix("))e=t.slice(7,-1).split(/, /),r=Number(e[0]),s=Number(e[3]),f=Number(e[4]),m=Number(e[5]);else return new n$2(i);const a=o.transformOrigin,c=i.x-f-(1-r)*parseFloat(a),d=i.y-m-(1-s)*parseFloat(a.slice(a.indexOf(" ")+1)),h=r?i.width/r:n.offsetWidth+1,l=s?i.height/s:n.offsetHeight+1;return new n$2({x:c,y:d,width:h,height:l})}else return new n$2(i)}function p$3(n,i,o){if(typeof n.animate>"u")return {finished:Promise.resolve()};let t;try{t=n.animate(i,o);}catch{return {finished:Promise.resolve()}}return typeof t.finished>"u"&&(t.finished=new Promise(e=>{t.onfinish=()=>{e(t);};})),t}
-
-const ce={static:se,connected:he$1},Ee=y$a({locationStrategy:{type:[String,Function],default:"static",validator:e=>typeof e=="function"||e in ce},location:{type:String,default:"bottom"},origin:{type:String,default:"auto"},offset:[Number,String,Array]},"VOverlay-location-strategies");function Fe(e,n){const u=ref({}),L=ref();return {contentStyles:u,updateLocation:L}}function se(){}function ue(e,n){const u=y$5(e);return n?u.x+=parseFloat(e.style.right||0):u.x-=parseFloat(e.style.left||0),u.y-=parseFloat(e.style.top||0),u}function he$1(e,n,u){(Array.isArray(e.target.value)||i$b(e.target.value))&&Object.assign(u.value,{position:"fixed",top:0,[e.isRtl.value?"right":"left"]:0});const{preferredAnchor:T,preferredOrigin:C}=re$2(()=>{const i=s$6(n.location,e.isRtl.value),t=n.origin==="overlap"?i:n.origin==="auto"?u$9(i):s$6(n.origin,e.isRtl.value);return i.side===t.side&&i.align===c$6(t).align?{preferredAnchor:d$7(i),preferredOrigin:d$7(t)}:{preferredAnchor:i,preferredOrigin:t}}),[F,I,$,q]=["minWidth","minHeight","maxWidth","maxHeight"].map(i=>computed(()=>{const t=parseFloat(n[i]);return isNaN(t)?1/0:t})),g=computed(()=>{if(Array.isArray(n.offset))return n.offset;if(typeof n.offset=="string"){const i=n.offset.split(" ").map(parseFloat);return i.length<2&&i.push(0),i}return typeof n.offset=="number"?[n.offset,0]:[0,0]});let S=false;const w=new ResizeObserver(()=>{S&&y();});watch([e.target,e.contentEl],(i,t)=>{let[h,x]=i,[c,f]=t;c&&!Array.isArray(c)&&w.unobserve(c),h&&!Array.isArray(h)&&w.observe(h),f&&w.unobserve(f),x&&w.observe(x);},{immediate:true}),onScopeDispose(()=>{w.disconnect();});function y(){if(S=false,requestAnimationFrame(()=>S=true),!e.target.value||!e.contentEl.value)return;const i=g$6(e.target.value),t=ue(e.contentEl.value,e.isRtl.value),h=l$6(e.contentEl.value),x=12;h.length||(h.push((void 0).documentElement),e.contentEl.value.style.top&&e.contentEl.value.style.left||(t.x-=parseFloat((void 0).documentElement.style.getPropertyValue("--v-body-scroll-x")||0),t.y-=parseFloat((void 0).documentElement.style.getPropertyValue("--v-body-scroll-y")||0)));const c=h.reduce((l,a)=>{const o=a.getBoundingClientRect(),r=new n$2({x:a===(void 0).documentElement?0:o.x,y:a===(void 0).documentElement?0:o.y,width:a.clientWidth,height:a.clientHeight});return l?new n$2({x:Math.max(l.left,r.left),y:Math.max(l.top,r.top),width:Math.min(l.right,r.right)-Math.max(l.left,r.left),height:Math.min(l.bottom,r.bottom)-Math.max(l.top,r.top)}):r},void 0);c.x+=x,c.y+=x,c.width-=x*2,c.height-=x*2;let f={anchor:T.value,origin:C.value};function N(l){const a=new n$2(t),o=g$7(l.anchor,i),r=g$7(l.origin,a);let{x:v,y:m}=d$8(o,r);switch(l.anchor.side){case "top":m-=g.value[0];break;case "bottom":m+=g.value[0];break;case "left":v-=g.value[0];break;case "right":v+=g.value[0];break}switch(l.anchor.align){case "top":m-=g.value[1];break;case "bottom":m+=g.value[1];break;case "left":v-=g.value[1];break;case "right":v+=g.value[1];break}return a.x+=v,a.y+=m,a.width=Math.min(a.width,$.value),a.height=Math.min(a.height,q.value),{overflows:s$7(a,c),x:v,y:m}}let d=0,A=0;const E={x:0,y:0},P={x:false,y:false};let Q=-1;for(;;){if(Q++>10){t$5("Infinite loop detected in connectedLocationStrategy");break}const{x:l,y:a,overflows:o}=N(f);d+=l,A+=a,t.x+=l,t.y+=a;{const r=p$4(f.anchor),v=o.x.before||o.x.after,m=o.y.before||o.y.after;let R=false;if(["x","y"].forEach(s=>{if(s==="x"&&v&&!P.x||s==="y"&&m&&!P.y){const b={anchor:{...f.anchor},origin:{...f.origin}},V=s==="x"?r==="y"?c$6:u$9:r==="y"?u$9:c$6;b.anchor=V(b.anchor),b.origin=V(b.origin);const{overflows:O}=N(b);(O[s].before<=o[s].before&&O[s].after<=o[s].after||O[s].before+O[s].after<(o[s].before+o[s].after)/2)&&(f=b,R=P[s]=true);}}),R)continue}o.x.before&&(d+=o.x.before,t.x+=o.x.before),o.x.after&&(d-=o.x.after,t.x-=o.x.after),o.y.before&&(A+=o.y.before,t.y+=o.y.before),o.y.after&&(A-=o.y.after,t.y-=o.y.after);{const r=s$7(t,c);E.x=c.width-r.x.before-r.x.after,E.y=c.height-r.y.before-r.y.after,d+=r.x.before,t.x+=r.x.before,A+=r.y.before,t.y+=r.y.before;}break}const Z=p$4(f.anchor);return Object.assign(u.value,{"--v-overlay-anchor-origin":`${f.anchor.side} ${f.anchor.align}`,transformOrigin:`${f.origin.side} ${f.origin.align}`,top:X$3(H$2(A)),left:e.isRtl.value?void 0:X$3(H$2(d)),right:e.isRtl.value?X$3(H$2(-d)):void 0,minWidth:X$3(Z==="y"?Math.min(F.value,i.width):F.value),maxWidth:X$3(K$4(Z$3(E.x,F.value===1/0?0:F.value,$.value))),maxHeight:X$3(K$4(Z$3(E.y,I.value===1/0?0:I.value,q.value)))}),{available:E,contentBox:t}}return watch(()=>[T.value,C.value,n.offset,n.minWidth,n.minHeight,n.maxWidth,n.maxHeight],()=>y()),nextTick(()=>{const i=y();if(!i)return;const{available:t,contentBox:h}=i;h.height>t.y&&requestAnimationFrame(()=>{y(),requestAnimationFrame(()=>{y();});});}),{updateLocation:y}}function H$2(e){return Math.round(e*devicePixelRatio)/devicePixelRatio}function K$4(e){return Math.ceil(e*devicePixelRatio)/devicePixelRatio}
-
-let n$1=true;const t$3=[];function f$9(e){!n$1||t$3.length?(t$3.push(e),r$4()):(n$1=false,e(),r$4());}let a$6=-1;function r$4(){cancelAnimationFrame(a$6),a$6=requestAnimationFrame(()=>{const e=t$3.shift();e&&e(),t$3.length?r$4():n$1=true;});}
-
-const E$2={none:null,close:S$3,block:g$5,reposition:k$4},w$6=y$a({scrollStrategy:{type:[String,Function],default:"block",validator:e=>typeof e=="function"||e in E$2}},"VOverlay-scroll-strategies");function S$3(e){function r(t){e.isActive.value=false;}m$5(e.targetEl.value??e.contentEl.value,r);}function g$5(e,r){const t=e.root.value?.offsetParent,l=[...new Set([...l$6(e.targetEl.value,r.contained?t:void 0),...l$6(e.contentEl.value,r.contained?t:void 0)])].filter(o=>!o.classList.contains("v-overlay-scroll-blocked")),c=(void 0).innerWidth-(void 0).documentElement.offsetWidth,n=(o=>r$5(o)&&o)(t||(void 0).documentElement);n&&e.root.value.classList.add("v-overlay--scroll-blocked"),l.forEach((o,s)=>{o.style.setProperty("--v-body-scroll-x",X$3(-o.scrollLeft)),o.style.setProperty("--v-body-scroll-y",X$3(-o.scrollTop)),o!==(void 0).documentElement&&o.style.setProperty("--v-scrollbar-offset",X$3(c)),o.classList.add("v-overlay-scroll-blocked");}),onScopeDispose(()=>{l.forEach((o,s)=>{const a=parseFloat(o.style.getPropertyValue("--v-body-scroll-x")),f=parseFloat(o.style.getPropertyValue("--v-body-scroll-y")),u=o.style.scrollBehavior;o.style.scrollBehavior="auto",o.style.removeProperty("--v-body-scroll-x"),o.style.removeProperty("--v-body-scroll-y"),o.style.removeProperty("--v-scrollbar-offset"),o.classList.remove("v-overlay-scroll-blocked"),o.scrollLeft=-a,o.scrollTop=-f,o.style.scrollBehavior=u;}),n&&e.root.value.classList.remove("v-overlay--scroll-blocked");});}function k$4(e,r,t){let l=false,c=-1,n=-1;function o(s){f$9(()=>{const a=performance.now();e.updateLocation.value?.(s),l=(performance.now()-a)/(1e3/60)>2;});}n=(typeof requestIdleCallback>"u"?s=>s():requestIdleCallback)(()=>{t.run(()=>{m$5(e.targetEl.value??e.contentEl.value,s=>{l?(cancelAnimationFrame(c),c=requestAnimationFrame(()=>{c=requestAnimationFrame(()=>{o(s);});})):o(s);});});}),onScopeDispose(()=>{typeof cancelIdleCallback<"u"&&cancelIdleCallback(n),cancelAnimationFrame(c);});}function m$5(e,r){const t=[void 0,...l$6(e)];t.forEach(l=>{l.addEventListener("scroll",r,{passive:true});}),onScopeDispose(()=>{t.forEach(l=>{l.removeEventListener("scroll",r);});});}
-
-const o$5=Symbol.for("vuetify:v-menu");
-
-const s$5=y$a({closeDelay:[Number,String],openDelay:[Number,String]},"delay");function i$9(n,l){let e=()=>{};function o(r){e?.();const u=Number(r?n.openDelay:n.closeDelay);return new Promise(y=>{e=fe$1(u,()=>{l?.(r),y(r);});})}function t(){return o(true)}function a(){return o(false)}return {clearDelay:e,runOpenDelay:t,runCloseDelay:a}}
-
-const J$1=y$a({target:[String,Object],activator:[String,Object],activatorProps:{type:Object,default:()=>({})},openOnClick:{type:Boolean,default:void 0},openOnHover:Boolean,openOnFocus:{type:Boolean,default:void 0},closeOnContentClick:Boolean,...s$5()},"VOverlay-activator");function K$3(t,m){let{isActive:n,isTop:a,contentEl:E}=m;const F=a$b("useActivator"),u=ref();let o=false,r=false,O=true;const i=computed(()=>t.openOnFocus||t.openOnFocus==null&&t.openOnHover),H=computed(()=>t.openOnClick||t.openOnClick==null&&!t.openOnHover&&!i.value),{runOpenDelay:c,runCloseDelay:s}=i$9(t,e=>{e===(t.openOnHover&&o||i.value&&r)&&!(t.openOnHover&&n.value&&!a.value)&&(n.value!==e&&(O=true),n.value=e);}),f=ref(),v={onClick:e=>{e.stopPropagation(),u.value=e.currentTarget||e.target,n.value||(f.value=[e.clientX,e.clientY]),n.value=!n.value;},onMouseenter:e=>{e.sourceCapabilities?.firesTouchEvents||(o=true,u.value=e.currentTarget||e.target,c());},onMouseleave:e=>{o=false,s();},onFocus:e=>{le$2(e.target)!==false&&(r=true,e.stopPropagation(),u.value=e.currentTarget||e.target,c());},onBlur:e=>{r=false,e.stopPropagation(),s();}},M=computed(()=>{const e={};return H.value&&(e.onClick=v.onClick),t.openOnHover&&(e.onMouseenter=v.onMouseenter,e.onMouseleave=v.onMouseleave),i.value&&(e.onFocus=v.onFocus,e.onBlur=v.onBlur),e}),T=computed(()=>{const e={};if(t.openOnHover&&(e.onMouseenter=()=>{o=true,c();},e.onMouseleave=()=>{o=false,s();}),i.value&&(e.onFocusin=()=>{r=true,c();},e.onFocusout=()=>{r=false,s();}),t.closeOnContentClick){const A=inject(o$5,null);e.onClick=()=>{n.value=false,A?.closeParents();};}return e}),h=computed(()=>{const e={};return t.openOnHover&&(e.onMouseenter=()=>{O&&(o=true,O=false,c());},e.onMouseleave=()=>{o=false,s();}),e});watch(a,e=>{e&&(t.openOnHover&&!o&&(!i.value||!r)||i.value&&!r&&(!t.openOnHover||!o))&&!E.value?.contains((void 0).activeElement)&&(n.value=false);}),watch(n,e=>{e||setTimeout(()=>{f.value=void 0;});},{flush:"post"});const g=me$1();watchEffect(()=>{g.value&&nextTick(()=>{u.value=g.el;});});const p=me$1(),d=computed(()=>t.target==="cursor"&&f.value?f.value:p.value?p.el:V$3(t.target,F)||u.value),b=computed(()=>Array.isArray(d.value)?void 0:d.value);return watch(()=>!!t.activator,e=>{},{flush:"post",immediate:true}),onScopeDispose(()=>{}),{activatorEl:u,activatorRef:g,target:d,targetEl:b,targetRef:p,activatorEvents:M,contentEvents:T,scrimEvents:h}}function V$3(t,m){if(!t)return;let n;if(t==="parent"){let a=m?.proxy?.$el?.parentNode;for(;a?.hasAttribute("data-no-activator");)a=a.parentNode;n=a;}else typeof t=="string"?n=(void 0).querySelector(t):"$el"in t?n=t.$el:n=t;return n}
-
-function n(e){return re$2(()=>{const t=[],o={};if(e.value.background)if(V$5(e.value.background)){if(o.backgroundColor=e.value.background,!e.value.text&&L$3(e.value.background)){const l=c$7(e.value.background);if(l.a==null||l.a===1){const u=U$2(l);o.color=u,o.caretColor=u;}}}else t.push(`bg-${e.value.background}`);return e.value.text&&(V$5(e.value.text)?(o.color=e.value.text,o.caretColor=e.value.text):t.push(`text-${e.value.text}`)),{colorClasses:t,colorStyles:o}})}function f$8(e,t){const o=computed(()=>({text:isRef(e)?e.value:t?e[t]:null})),{colorClasses:l,colorStyles:u}=n(o);return {textColorClasses:l,textColorStyles:u}}function x$5(e,t){const o=computed(()=>({background:isRef(e)?e.value:t?e[t]:null})),{colorClasses:l,colorStyles:u}=n(o);return {backgroundColorClasses:l,backgroundColorStyles:u}}
-
-const o$4=y$a({class:[String,Array,Object],style:{type:[String,Array,Object],default:null}},"component");
-
-const f$7=y$a({height:[Number,String],maxHeight:[Number,String],maxWidth:[Number,String],minHeight:[Number,String],minWidth:[Number,String],width:[Number,String]},"dimension");function x$4(t){return {dimensionStyles:computed(()=>{const i={},m=X$3(t.height),e=X$3(t.maxHeight),h=X$3(t.maxWidth),o=X$3(t.minHeight),r=X$3(t.minWidth),g=X$3(t.width);return m!=null&&(i.height=m),e!=null&&(i.maxHeight=e),h!=null&&(i.maxWidth=h),o!=null&&(i.minHeight=o),r!=null&&(i.minWidth=r),g!=null&&(i.width=g),i})}}
-
-function e$4(){return shallowRef(false)}
-
-const m$4=y$a({eager:Boolean},"lazy");function i$8(o,a){const e=shallowRef(false),t=computed(()=>e.value||o.eager||a.value);watch(a,()=>e.value=true);function r(){o.eager||(e.value=false);}return {isBooted:e,hasContent:t,onAfterLeave:r}}
-
-function L$2(){const e=a$b("useRoute");return computed(()=>e?.proxy?.$route)}function q$1(){return a$b("useRouter")?.proxy?.$router}function C$7(e,m){const u=resolveDynamicComponent("RouterLink"),o=computed(()=>!!(e.href||e.to)),n=computed(()=>o?.value||ue$1(m,"click")||ue$1(e,"click"));if(typeof u=="string"||!("useLink"in u)){const l=toRef(e,"href");return {isLink:o,isClickable:n,href:l,linkProps:reactive({href:l})}}const h=computed(()=>({...e,to:toRef(()=>e.to||"")})),R=u.useLink(h.value),t=computed(()=>e.to?R:void 0),i=L$2(),a=computed(()=>t.value?e.exact?i.value?t.value.isExactActive?.value&&C$d(t.value.route.value.query,i.value.query):t.value.isExactActive?.value??false:t.value.isActive?.value??false:false),c=computed(()=>e.to?t.value?.route.value.href:e.href);return {isLink:o,isClickable:n,isActive:a,route:t.value?.route,navigate:t.value?.navigate,href:c,linkProps:reactive({href:c,"aria-current":computed(()=>a.value?"page":void 0)})}}const b$6=y$a({href:String,replace:Boolean,to:[String,Object],exact:Boolean},"router");
-
-function t$2(){const e=a$b("useScopeId").vnode.scopeId;return {scopeId:e?{[e]:""}:void 0}}
-
-const d$6=Symbol.for("vuetify:stack"),t$1=reactive([]);function N$4(f,n,v){const e=a$b("useStack"),c=!v,i=inject(d$6,void 0),s=reactive({activeChildren:new Set});provide(d$6,s);const a=shallowRef(Number(n.value));r$a(f,()=>{const o=t$1.at(-1)?.[1];a.value=o?o+10:Number(n.value),c&&t$1.push([e.uid,a.value]),i?.activeChildren.add(e.uid),onScopeDispose(()=>{if(c){const S=toRaw(t$1).findIndex(k=>k[0]===e.uid);t$1.splice(S,1);}i?.activeChildren.delete(e.uid);});});const l=shallowRef(true);c&&watchEffect(()=>{const o=t$1.at(-1)?.[0]===e.uid;setTimeout(()=>l.value=o);});const m=computed(()=>!s.activeChildren.size);return {globalTop:readonly(l),localTop:m,stackStyles:computed(()=>({zIndex:a.value}))}}
-
-function p$2(t){return {teleportTarget:computed(()=>{t();})}}
-
-const T$4=y$a({transition:{type:[Boolean,String,Object],default:"fade-transition",validator:o=>o!==true}},"transition"),O$3=(o,e)=>{let{slots:i}=e;const{transition:t,disabled:r,group:n,...s}=o,{component:a=n?TransitionGroup:Transition,...p}=typeof t=="object"?t:{};return h$d(a,mergeProps(typeof t=="string"?{name:r?"":t}:p,typeof t=="string"?{}:Object.fromEntries(Object.entries({disabled:r,group:n}).filter(c=>{let[y,f]=c;return f!==void 0})),s),i)};
-
-function e$3(t){if(typeof t.getRootNode!="function"){for(;t.parentNode;)t=t.parentNode;return t!==void 0?null:void 0}const o=t.getRootNode();return o!==void 0&&o.getRootNode({composed:true})!==void 0?null:o}
-
-function r$3(){return  true}function i$7(t,o,e){if(!t||a$5(t,e)===false)return  false;const c=e$3(o);if(typeof ShadowRoot<"u"&&c instanceof ShadowRoot&&c.host===t.target)return  false;const s=(typeof e.value=="object"&&e.value.include||(()=>[]))();return s.push(o),!s.some(d=>d?.contains(t.target))}function a$5(t,o){return (typeof o.value=="object"&&o.value.closeConditional||r$3)(t)}function f$6(t,o,e){const c=typeof e.value=="function"?e.value:e.value.handler;t.shadowTarget=t.target,o._clickOutside.lastMousedownWasOutside&&i$7(t,o,e)&&setTimeout(()=>{a$5(t,e)&&c&&c(t);},0);}function u$8(t,o){const e=e$3(t);o(void 0),typeof ShadowRoot<"u"&&e instanceof ShadowRoot&&o(e);}const v$8={mounted(t,o){const e=s=>f$6(s,t,o),c=s=>{t._clickOutside.lastMousedownWasOutside=i$7(s,t,o);};u$8(t,s=>{s.addEventListener("click",e,true),s.addEventListener("mousedown",c,true);}),t._clickOutside||(t._clickOutside={lastMousedownWasOutside:false}),t._clickOutside[o.instance.$.uid]={onClick:e,onMousedown:c};},beforeUnmount(t,o){t._clickOutside&&(u$8(t,e=>{if(!e||!t._clickOutside?.[o.instance.$.uid])return;const{onClick:c,onMousedown:s}=t._clickOutside[o.instance.$.uid];e.removeEventListener("click",c,true),e.removeEventListener("mousedown",s,true);}),delete t._clickOutside[o.instance.$.uid]);}};
-
-function o$3(e){const n=a$b("useRender");n.render=e;}
-
-const e$2="cubic-bezier(0.4, 0, 0.2, 1)",c$5="cubic-bezier(0.0, 0, 0.2, 1)",i$6="cubic-bezier(0.4, 0, 1, 1)";
-
-function we(e){const{modelValue:y,color:u,...m}=e;return createVNode(Transition,{name:"fade-transition",appear:true},{default:()=>[e.modelValue&&createVNode("div",mergeProps({class:["v-overlay__scrim",e.color.backgroundColorClasses.value],style:e.color.backgroundColorStyles.value},m),null)]})}const Re=y$a({absolute:Boolean,attach:[Boolean,String,Object],closeOnBack:{type:Boolean,default:true},contained:Boolean,contentClass:null,contentProps:null,disabled:Boolean,opacity:[Number,String],noClickAnimation:Boolean,modelValue:Boolean,persistent:Boolean,scrim:{type:[Boolean,String],default:true},zIndex:{type:[Number,String],default:2e3},...J$1(),...o$4(),...f$7(),...m$4(),...Ee(),...w$6(),...M$5(),...T$4()},"VOverlay"),it=y$7()({name:"VOverlay",directives:{ClickOutside:v$8},inheritAttrs:false,props:{_disableGlobalStack:Boolean,...Re()},emits:{"click:outside":e=>true,"update:modelValue":e=>true,keydown:e=>true,afterEnter:()=>true,afterLeave:()=>true},setup(e,y){let{slots:u,attrs:m,emit:i}=y;const E=a$b("VOverlay"),g=ref(),s=ref(),n=ref(),k=C$c(e,"modelValue"),o=computed({get:()=>k.value,set:t=>{t&&e.disabled||(k.value=t);}}),{themeClasses:h}=_$5(e),{rtlClasses:A}=y$d(),{hasContent:B,onAfterLeave:O}=i$8(e,o),V=x$5(computed(()=>typeof e.scrim=="string"?e.scrim:null)),{globalTop:v,localTop:S,stackStyles:L}=N$4(o,toRef(e,"zIndex"),e._disableGlobalStack),{activatorEl:f,activatorRef:w,target:b,targetRef:R,activatorEvents:_,contentEvents:N,scrimEvents:x}=K$3(e,{isActive:o,isTop:S,contentEl:n}),{teleportTarget:d}=p$2(()=>{const t=e.attach||e.contained;if(t)return t;const r=f?.value?.getRootNode()||E.proxy?.$el?.getRootNode();return r instanceof ShadowRoot?r:false}),{dimensionStyles:I}=x$4(e),z=e$4(),{scopeId:D}=t$2();watch(()=>e.disabled,t=>{t&&(o.value=false);});const{contentStyles:M,updateLocation:F}=Fe();function G(t){i("click:outside",t),e.persistent?C():o.value=false;}function K(t){return o.value&&v.value&&(!e.scrim||t.target===s.value||t instanceof MouseEvent&&t.shadowTarget===s.value)}function j(t){t.key==="Escape"&&!v.value||i("keydown",t);}q$1(),r$a(()=>e.closeOnBack,()=>{});const p=ref();watch(()=>o.value&&(e.absolute||e.contained)&&d.value==null,t=>{if(t){const r=i$a(g.value);r&&r!==(void 0).scrollingElement&&(p.value=r.scrollTop);}});function C(){e.noClickAnimation||n.value&&p$3(n.value,[{transformOrigin:"center"},{transform:"scale(1.03)"},{transformOrigin:"center"}],{duration:150,easing:e$2});}function H(){i("afterEnter");}function U(){O(),i("afterLeave");}return o$3(()=>createVNode(Fragment,null,[u.activator?.({isActive:o.value,targetRef:R,props:mergeProps({ref:w},_.value,e.activatorProps)}),z.value&&B.value&&createVNode(Teleport,{disabled:!d.value,to:d.value},{default:()=>[createVNode("div",mergeProps({class:["v-overlay",{"v-overlay--absolute":e.absolute||e.contained,"v-overlay--active":o.value,"v-overlay--contained":e.contained},h.value,A.value,e.class],style:[L.value,{"--v-overlay-opacity":e.opacity,top:X$3(p.value)},e.style],ref:g,onKeydown:j},D,m),[createVNode(we,mergeProps({color:V,modelValue:o.value&&!!e.scrim,ref:s},x.value),null),createVNode(O$3,{appear:true,persisted:true,transition:e.transition,target:b.value,onAfterEnter:H,onAfterLeave:U},{default:()=>[withDirectives(createVNode("div",mergeProps({ref:n,class:["v-overlay__content",e.contentClass],style:[I.value,M.value]},N.value,e.contentProps),[u.default?.({isActive:o})]),[[vShow,o.value],[resolveDirective("click-outside"),{handler:G,closeConditional:K,include:()=>[f.value]}]])]})])]})])),{activatorEl:f,scrimEl:s,target:b,animateClick:C,contentEl:n,globalTop:v,localTop:S,updateLocation:F}}});
-
-const a$4=Symbol("Forwarded refs");function h$3(i,o){let f=i;for(;f;){const n=Reflect.getOwnPropertyDescriptor(f,o);if(n)return n;f=Object.getPrototypeOf(f);}}function d$5(i){for(var o=arguments.length,f=new Array(o>1?o-1:0),n=1;n<o;n++)f[n-1]=arguments[n];return i[a$4]=f,new Proxy(i,{get(s,t){if(Reflect.has(s,t))return Reflect.get(s,t);if(!(typeof t=="symbol"||t.startsWith("$")||t.startsWith("__"))){for(const r of f)if(r.value&&Reflect.has(r.value,t)){const e=Reflect.get(r.value,t);return typeof e=="function"?e.bind(r.value):e}}},has(s,t){if(Reflect.has(s,t))return  true;if(typeof t=="symbol"||t.startsWith("$")||t.startsWith("__"))return  false;for(const r of f)if(r.value&&Reflect.has(r.value,t))return  true;return  false},set(s,t,r){if(Reflect.has(s,t))return Reflect.set(s,t,r);if(typeof t=="symbol"||t.startsWith("$")||t.startsWith("__"))return  false;for(const e of f)if(e.value&&Reflect.has(e.value,t))return Reflect.set(e.value,t,r);return  false},getOwnPropertyDescriptor(s,t){const r=Reflect.getOwnPropertyDescriptor(s,t);if(r)return r;if(!(typeof t=="symbol"||t.startsWith("$")||t.startsWith("__"))){for(const e of f){if(!e.value)continue;const u=h$3(e.value,t)??("_"in e.value?h$3(e.value._?.setupState,t):void 0);if(u)return u}for(const e of f){const u=e.value&&e.value[a$4];if(!u)continue;const c=u.slice();for(;c.length;){const l=c.shift(),p=h$3(l.value,t);if(p)return p;const v=l.value&&l.value[a$4];v&&c.push(...v);}}}}})}
-
-const C$6=y$a({target:[Object,Array]},"v-dialog-transition"),Y$2=y$7()({name:"VDialogTransition",props:C$6(),setup(c,n){let{slots:e}=n;const i={onBeforeEnter(t){t.style.pointerEvents="none",t.style.visibility="hidden";},async onEnter(t,f){await new Promise(o=>requestAnimationFrame(o)),await new Promise(o=>requestAnimationFrame(o)),t.style.visibility="";const{x:r,y:s,sx:m,sy:p,speed:a}=x$3(c.target,t),g=p$3(t,[{transform:`translate(${r}px, ${s}px) scale(${m}, ${p})`,opacity:0},{}],{duration:225*a,easing:c$5});v$7(t)?.forEach(o=>{p$3(o,[{opacity:0},{opacity:0,offset:.33},{}],{duration:225*2*a,easing:e$2});}),g.finished.then(()=>f());},onAfterEnter(t){t.style.removeProperty("pointer-events");},onBeforeLeave(t){t.style.pointerEvents="none";},async onLeave(t,f){await new Promise(o=>requestAnimationFrame(o));const{x:r,y:s,sx:m,sy:p,speed:a}=x$3(c.target,t);p$3(t,[{},{transform:`translate(${r}px, ${s}px) scale(${m}, ${p})`,opacity:0}],{duration:125*a,easing:i$6}).finished.then(()=>f()),v$7(t)?.forEach(o=>{p$3(o,[{},{opacity:0,offset:.2},{opacity:0}],{duration:125*2*a,easing:e$2});});},onAfterLeave(t){t.style.removeProperty("pointer-events");}};return ()=>c.target?createVNode(Transition,mergeProps({name:"dialog-transition"},i,{css:false}),e):createVNode(Transition,{name:"dialog-transition"},e)}});function v$7(c){const n=c.querySelector(":scope > .v-card, :scope > .v-sheet, :scope > .v-list")?.children;return n&&[...n]}function x$3(c,n){const e=g$6(c),i=y$5(n),[t,f]=getComputedStyle(n).transformOrigin.split(" ").map($=>parseFloat($)),[r,s]=getComputedStyle(n).getPropertyValue("--v-overlay-anchor-origin").split(" ");let m=e.left+e.width/2;r==="left"||s==="left"?m-=e.width/2:(r==="right"||s==="right")&&(m+=e.width/2);let p=e.top+e.height/2;r==="top"||s==="top"?p-=e.height/2:(r==="bottom"||s==="bottom")&&(p+=e.height/2);const a=e.width/i.width,g=e.height/i.height,o=Math.max(1,a,g),w=a/o||0,E=g/o||0,h=i.width*i.height/((void 0).innerWidth*(void 0).innerHeight),P=h>.12?Math.min(1.5,(h-.12)*10+1):1;return {x:m-(t+i.left),y:p-(f+i.top),sx:w,sy:E,speed:P}}
-
-const m$3=y$a({defaults:Object,disabled:Boolean,reset:[Number,String],root:[Boolean,String],scoped:Boolean},"VDefaultsProvider"),P$4=y$7(false)({name:"VDefaultsProvider",props:m$3(),setup(e,o){let{slots:r}=o;const{defaults:t,disabled:s,reset:a,root:l,scoped:p}=toRefs(e);return O$6(t,{reset:a,root:l,scoped:p,disabled:s}),()=>r.default?.()}});
-
-const I$1=y$a({fullscreen:Boolean,retainFocus:{type:Boolean,default:true},scrollable:Boolean,...Re({origin:"center center",scrollStrategy:"block",transition:{component:Y$2},zIndex:2400})},"VDialog"),U$1=y$7()({name:"VDialog",props:I$1(),emits:{"update:modelValue":e=>true,afterEnter:()=>true,afterLeave:()=>true},setup(e,m){let{emit:i,slots:c}=m;const a=C$c(e,"modelValue"),{scopeId:d}=t$2(),t=ref();function v(){i("afterEnter"),t.value?.contentEl&&!t.value.contentEl.contains((void 0).activeElement)&&t.value.contentEl.focus({preventScroll:true});}function g(){i("afterLeave");}return watch(a,async l=>{l||(await nextTick(),t.value.activatorEl?.focus({preventScroll:true}));}),o$3(()=>{const l=it.filterProps(e),V=mergeProps({"aria-haspopup":"dialog"},e.activatorProps),h=mergeProps({tabindex:-1},e.contentProps);return createVNode(it,mergeProps({ref:t,class:["v-dialog",{"v-dialog--fullscreen":e.fullscreen,"v-dialog--scrollable":e.scrollable},e.class],style:e.style},l,{modelValue:a.value,"onUpdate:modelValue":o=>a.value=o,"aria-modal":"true",activatorProps:V,contentProps:h,height:e.fullscreen?void 0:e.height,width:e.fullscreen?void 0:e.width,maxHeight:e.fullscreen?void 0:e.maxHeight,maxWidth:e.fullscreen?void 0:e.maxWidth,role:"dialog",onAfterEnter:v,onAfterLeave:g},d),{activator:c.activator,default:function(){for(var o=arguments.length,u=new Array(o),r=0;r<o;r++)u[r]=arguments[r];return createVNode(P$4,{root:"VDialog"},{default:()=>[c.default?.(...u)]})}})}),d$5({},t)}});
-
-const f$5=y$7()({name:"VCardActions",props:o$4(),setup(t,e){let{slots:o}=e;return O$6({VBtn:{slim:true,variant:"text"}}),o$3(()=>createVNode("div",{class:["v-card-actions",t.class],style:t.style},[o.default?.()])),{}}});
-
-const r$2=y$a({tag:{type:String,default:"div"}},"tag");
-
-const c$4=y$a({opacity:[Number,String],...o$4(),...r$2()},"VCardSubtitle"),y$4=y$7()({name:"VCardSubtitle",props:c$4(),setup(t,r){let{slots:e}=r;return o$3(()=>createVNode(t.tag,{class:["v-card-subtitle",t.class],style:[{"--v-card-subtitle-opacity":t.opacity},t.style]},e)),{}}});
-
-function f$4(t){let n=arguments.length>1&&arguments[1]!==void 0?arguments[1]:"div",r=arguments.length>2?arguments[2]:void 0;return y$7()({name:r??capitalize(camelize(t.replace(/__/g,"-"))),props:{tag:{type:String,default:n},...o$4()},setup(e,a){let{slots:m}=a;return ()=>h$d(e.tag,{class:[t,e.class],style:e.style},m.default?.())}})}
-
-const r$1=f$4("v-card-title");
-
-const o$2=[null,"default","comfortable","compact"],u$7=y$a({density:{type:String,default:"default",validator:e=>o$2.includes(e)}},"density");function l$5(e){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c();return {densityClasses:computed(()=>`${t}--density-${e.density}`)}}
-
-const l$4=y$a({border:[Boolean,Number,String]},"border");function b$5(e){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c();return {borderClasses:computed(()=>{const r=isRef(e)?e.value:e.border,o=[];if(r===true||r==="")o.push(`${t}--border`);else if(typeof r=="string"||r===0)for(const s of String(r).split(" "))o.push(`border-${s}`);return o})}}
-
-const g$4=y$a({rounded:{type:[Boolean,Number,String],default:void 0},tile:Boolean},"rounded");function h$2(e){let u=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c();return {roundedClasses:computed(()=>{const n=isRef(e)?e.value:e.rounded,r=isRef(e)?e.value:e.tile,t=[];if(n===true||n==="")t.push(`${u}--rounded`);else if(typeof n=="string"||n===0)for(const d of String(n).split(" "))t.push(`rounded-${d}`);else (r||n===false)&&t.push("rounded-0");return t})}}
-
-const u$6=["x-small","small","default","large","x-large"],f$3=y$a({size:{type:[String,Number],default:"default"}},"size");function g$3(e){let r=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c();return re$2(()=>{let t,i;return oe$1(u$6,e.size)?t=`${r}--size-${e.size}`:e.size&&(i={width:X$3(e.size),height:X$3(e.size)}),{sizeClasses:t,sizeStyles:i}})}
-
-const f$2=["elevated","flat","tonal","outlined","text","plain"];function C$5(t,e){return createVNode(Fragment,null,[t&&createVNode("span",{key:"overlay",class:`${e}__overlay`},null),createVNode("span",{key:"underlay",class:`${e}__underlay`},null)])}const V$2=y$a({color:String,variant:{type:String,default:"elevated",validator:t=>f$2.includes(t)}},"variant");function _$3(t){let e=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c();const l=computed(()=>{const{variant:a}=unref(t);return `${e}--variant-${a}`}),{colorClasses:s,colorStyles:u}=n(computed(()=>{const{variant:a,color:i}=unref(t);return {[["elevated","flat"].includes(a)?"background":"text"]:i}}));return {colorClasses:s,colorStyles:u,variantClasses:l}}
-
-function v$6(e){return {aspectStyles:computed(()=>{const s=Number(e.aspectRatio);return s?{paddingBottom:String(1/s*100)+"%"}:void 0})}}const d$4=y$a({aspectRatio:[String,Number],contentClass:null,inline:Boolean,...o$4(),...f$7()},"VResponsive"),_$2=y$7()({name:"VResponsive",props:d$4(),setup(e,s){let{slots:t}=s;const{aspectStyles:o}=v$6(e),{dimensionStyles:i}=x$4(e);return o$3(()=>createVNode("div",{class:["v-responsive",{"v-responsive--inline":e.inline},e.class],style:[i.value,e.style]},[createVNode("div",{class:"v-responsive__sizer",style:o.value},null),t.additional?.(),t.default&&createVNode("div",{class:["v-responsive__content",e.contentClass]},[t.default()])])),{}}});
-
-function o$1(e,n){}function r(e,n){const t=e._observe?.[n.instance.$.uid];t&&(t.observer.unobserve(e),delete e._observe[n.instance.$.uid]);}const s$4={mounted:o$1,unmounted:r};
-
-const ie=y$a({absolute:Boolean,alt:String,cover:Boolean,color:String,draggable:{type:[Boolean,String],default:void 0},eager:Boolean,gradient:String,lazySrc:String,options:{type:Object,default:()=>({root:void 0,rootMargin:void 0,threshold:void 0})},sizes:String,src:{type:[String,Object],default:""},crossorigin:String,referrerpolicy:String,srcset:String,position:String,...d$4(),...o$4(),...g$4(),...T$4()},"VImg"),he=y$7()({name:"VImg",directives:{intersect:s$4},props:ie(),emits:{loadstart:e=>true,load:e=>true,error:e=>true},setup(e,W){let{emit:f,slots:o}=W;const{backgroundColorClasses:j,backgroundColorStyles:F}=x$5(toRef(e,"color")),{roundedClasses:U}=h$2(e),m=a$b("VImg"),_=shallowRef(""),l=ref(),a=shallowRef(e.eager?"loading":"idle"),u=shallowRef(),g=shallowRef(),i=computed(()=>e.src&&typeof e.src=="object"?{src:e.src.src,srcset:e.srcset||e.src.srcset,lazySrc:e.lazySrc||e.src.lazySrc,aspect:Number(e.aspectRatio||e.src.aspect||0)}:{src:e.src,srcset:e.srcset,lazySrc:e.lazySrc,aspect:Number(e.aspectRatio||0)}),s=computed(()=>i.value.aspect||u.value/g.value||0);watch(()=>e.src,()=>{h(a.value!=="idle");}),watch(s,(r,n)=>{!r&&n&&l.value&&c(l.value);});function h(r){if(!(e.eager&&r)){if(a.value="loading",i.value.lazySrc){const n=new Image;n.src=i.value.lazySrc,c(n,null);}i.value.src&&nextTick(()=>{f("loadstart",l.value?.currentSrc||i.value.src),setTimeout(()=>{if(!m.isUnmounted)if(l.value?.complete){if(l.value.naturalWidth||z(),a.value==="error")return;s.value||c(l.value,null),a.value==="loading"&&b();}else s.value||c(l.value),I();});});}}function b(){m.isUnmounted||(I(),c(l.value),a.value="loaded",f("load",l.value?.currentSrc||i.value.src));}function z(){m.isUnmounted||(a.value="error",f("error",l.value?.currentSrc||i.value.src));}function I(){const r=l.value;r&&(_.value=r.currentSrc||r.src);}let R=-1;function c(r){let n=arguments.length>1&&arguments[1]!==void 0?arguments[1]:100;const C=()=>{if(clearTimeout(R),m.isUnmounted)return;const{naturalHeight:w,naturalWidth:V}=r;w||V?(u.value=V,g.value=w):!r.complete&&a.value==="loading"&&n!=null?R=(void 0).setTimeout(C,n):(r.currentSrc.endsWith(".svg")||r.currentSrc.startsWith("data:image/svg+xml"))&&(u.value=1,g.value=1);};C();}const k=computed(()=>({"v-img__img--cover":e.cover,"v-img__img--contain":!e.cover})),x=()=>{if(!i.value.src||a.value==="idle")return null;const r=createVNode("img",{class:["v-img__img",k.value],style:{objectPosition:e.position},crossorigin:e.crossorigin,src:i.value.src,srcset:i.value.srcset,alt:e.alt,referrerpolicy:e.referrerpolicy,draggable:e.draggable,sizes:e.sizes,ref:l,onLoad:b,onError:z},null),n=o.sources?.();return createVNode(O$3,{transition:e.transition,appear:true},{default:()=>[withDirectives(n?createVNode("picture",{class:"v-img__picture"},[n,r]):r,[[vShow,a.value==="loaded"]])]})},H=()=>createVNode(O$3,{transition:e.transition},{default:()=>[i.value.lazySrc&&a.value!=="loaded"&&createVNode("img",{class:["v-img__img","v-img__img--preload",k.value],style:{objectPosition:e.position},crossorigin:e.crossorigin,src:i.value.lazySrc,alt:e.alt,referrerpolicy:e.referrerpolicy,draggable:e.draggable},null)]}),N=()=>o.placeholder?createVNode(O$3,{transition:e.transition,appear:true},{default:()=>[(a.value==="loading"||a.value==="error"&&!o.error)&&createVNode("div",{class:"v-img__placeholder"},[o.placeholder()])]}):null,q=()=>o.error?createVNode(O$3,{transition:e.transition,appear:true},{default:()=>[a.value==="error"&&createVNode("div",{class:"v-img__error"},[o.error()])]}):null,A=()=>e.gradient?createVNode("div",{class:"v-img__gradient",style:{backgroundImage:`linear-gradient(${e.gradient})`}},null):null,P=shallowRef(false);{const r=watch(s,n=>{n&&(requestAnimationFrame(()=>{requestAnimationFrame(()=>{P.value=true;});}),r());});}return o$3(()=>{const r=_$2.filterProps(e);return withDirectives(createVNode(_$2,mergeProps({class:["v-img",{"v-img--absolute":e.absolute,"v-img--booting":!P.value},j.value,U.value,e.class],style:[{width:X$3(e.width==="auto"?u.value:e.width)},F.value,e.style]},r,{aspectRatio:s.value,"aria-label":e.alt,role:e.alt?"img":void 0}),{additional:()=>createVNode(Fragment,null,[createVNode(x,null,null),createVNode(H,null,null),createVNode(A,null,null),createVNode(N,null,null),createVNode(q,null,null)]),default:o.default}),[[resolveDirective("intersect"),{handler:h,options:e.options},null,{once:true}]])}),{currentSrc:_,image:l,state:a,naturalWidth:u,naturalHeight:g}}});
-
-const w$5=y$a({color:String,disabled:Boolean,start:Boolean,end:Boolean,icon:A$3,...o$4(),...f$3(),...r$2({tag:"i"}),...M$5()},"VIcon"),L$1=y$7()({name:"VIcon",props:w$5(),setup(e,c){let{attrs:a,slots:m}=c;const l=ref(),{themeClasses:d}=q$4(),{iconData:r}=$$4(computed(()=>l.value||e.icon)),{sizeClasses:s}=g$3(e),{textColorClasses:u,textColorStyles:f}=f$8(toRef(e,"color"));return o$3(()=>{const t=m.default?.();t&&(l.value=S$9(t).filter(n=>n.type===Text&&n.children&&typeof n.children=="string")[0]?.children);const o=!!(a.onClick||a.onClickOnce);return createVNode(r.value.component,{tag:e.tag,icon:r.value.icon,class:["v-icon","notranslate",d.value,s.value,u.value,{"v-icon--clickable":o,"v-icon--disabled":e.disabled,"v-icon--start":e.start,"v-icon--end":e.end},e.class],style:[s.value?void 0:{fontSize:X$3(e.size),height:X$3(e.size),width:X$3(e.size)},f.value,e.style],role:o?"button":void 0,"aria-hidden":!o,tabindex:o?e.disabled?-1:0:void 0},{default:()=>[t]})}),{}}});
-
-const O$2=y$a({start:Boolean,end:Boolean,icon:A$3,image:String,text:String,...l$4(),...o$4(),...u$7(),...g$4(),...f$3(),...r$2(),...M$5(),...V$2({variant:"flat"})},"VAvatar"),$$1=y$7()({name:"VAvatar",props:O$2(),setup(e,o){let{slots:t}=o;const{themeClasses:r}=_$5(e),{borderClasses:m}=b$5(e),{colorClasses:s,colorStyles:n,variantClasses:i}=_$3(e),{densityClasses:l}=l$5(e),{roundedClasses:u}=h$2(e),{sizeClasses:c,sizeStyles:v}=g$3(e);return o$3(()=>createVNode(e.tag,{class:["v-avatar",{"v-avatar--start":e.start,"v-avatar--end":e.end},r.value,m.value,s.value,l.value,u.value,c.value,i.value,e.class],style:[n.value,v.value,e.style]},{default:()=>[t.default?createVNode(P$4,{key:"content-defaults",defaults:{VImg:{cover:true,src:e.image},VIcon:{icon:e.icon}}},{default:()=>[t.default()]}):e.image?createVNode(he,{key:"image",src:e.image,alt:"",cover:true},null):e.icon?createVNode(L$1,{key:"icon",icon:e.icon},null):e.text,C$5(false,"v-avatar")]})),{}}});
-
-const C$4=y$a({appendAvatar:String,appendIcon:A$3,prependAvatar:String,prependIcon:A$3,subtitle:{type:[String,Number,Boolean],default:void 0},title:{type:[String,Number,Boolean],default:void 0},...o$4(),...u$7()},"VCardItem"),j$1=y$7()({name:"VCardItem",props:C$4(),setup(e,c){let{slots:n}=c;return o$3(()=>{const a=!!(e.prependAvatar||e.prependIcon),s=!!(a||n.prepend),d=!!(e.appendAvatar||e.appendIcon),u=!!(d||n.append),y=!!(e.title!=null||n.title),f=!!(e.subtitle!=null||n.subtitle);return createVNode("div",{class:["v-card-item",e.class],style:e.style},[s&&createVNode("div",{key:"prepend",class:"v-card-item__prepend"},[n.prepend?createVNode(P$4,{key:"prepend-defaults",disabled:!a,defaults:{VAvatar:{density:e.density,image:e.prependAvatar},VIcon:{density:e.density,icon:e.prependIcon}}},n.prepend):createVNode(Fragment,null,[e.prependAvatar&&createVNode($$1,{key:"prepend-avatar",density:e.density,image:e.prependAvatar},null),e.prependIcon&&createVNode(L$1,{key:"prepend-icon",density:e.density,icon:e.prependIcon},null)])]),createVNode("div",{class:"v-card-item__content"},[y&&createVNode(r$1,{key:"title"},{default:()=>[n.title?.()??toDisplayString(e.title)]}),f&&createVNode(y$4,{key:"subtitle"},{default:()=>[n.subtitle?.()??toDisplayString(e.subtitle)]}),n.default?.()]),u&&createVNode("div",{key:"append",class:"v-card-item__append"},[n.append?createVNode(P$4,{key:"append-defaults",disabled:!d,defaults:{VAvatar:{density:e.density,image:e.appendAvatar},VIcon:{density:e.density,icon:e.appendIcon}}},n.append):createVNode(Fragment,null,[e.appendIcon&&createVNode(L$1,{key:"append-icon",density:e.density,icon:e.appendIcon},null),e.appendAvatar&&createVNode($$1,{key:"append-avatar",density:e.density,image:e.appendAvatar},null)])])])}),{}}});
-
-const i$5=y$a({opacity:[Number,String],...o$4(),...r$2()},"VCardText"),C$3=y$7()({name:"VCardText",props:i$5(),setup(t,r){let{slots:e}=r;return o$3(()=>createVNode(t.tag,{class:["v-card-text",t.class],style:[{"--v-card-text-opacity":t.opacity},t.style]},e)),{}}});
-
-const u$5=y$a({elevation:{type:[Number,String],validator(e){const t=parseInt(e);return !isNaN(t)&&t>=0&&t<=24}}},"elevation");function v$5(e){return {elevationClasses:computed(()=>{const o=isRef(e)?e.value:e.elevation,n=[];return o==null||n.push(`elevation-${o}`),n})}}
-
-function i$4(r,s){const e=ref(),t=shallowRef(false);return {intersectionRef:e,isIntersecting:t}}
-
-const i$3={center:"center",top:"bottom",bottom:"top",left:"right",right:"left"},v$4=y$a({location:String},"location");function x$2(o){let r=arguments.length>1&&arguments[1]!==void 0?arguments[1]:false,l=arguments.length>2?arguments[2]:void 0;const{isRtl:s}=y$d();return {locationStyles:computed(()=>{if(!o.location)return {};const{side:e,align:n}=s$6(o.location.split(" ").length>1?o.location:`${o.location} center`,s.value);function a(c){return l?l(c):0}const t={};return e!=="center"&&(r?t[i$3[e]]=`calc(100% - ${a(e)}px)`:t[e]=0),n!=="center"?r?t[i$3[n]]=`calc(100% - ${a(n)}px)`:t[n]=0:(e==="center"?t.top=t.left="50%":t[{top:"left",bottom:"left",left:"top",right:"top"}[e]]="50%",t.transform={top:"translateX(-50%)",bottom:"translateX(-50%)",left:"translateY(-50%)",right:"translateY(-50%)",center:"translate(-50%, -50%)"}[e]),t})}}
-
-const Y$1=y$a({absolute:Boolean,active:{type:Boolean,default:true},bgColor:String,bgOpacity:[Number,String],bufferValue:{type:[Number,String],default:0},bufferColor:String,bufferOpacity:[Number,String],clickable:Boolean,color:String,height:{type:[Number,String],default:4},indeterminate:Boolean,max:{type:[Number,String],default:100},modelValue:{type:[Number,String],default:0},opacity:[Number,String],reverse:Boolean,stream:Boolean,striped:Boolean,roundedBar:Boolean,...o$4(),...v$4({location:"top"}),...g$4(),...r$2(),...M$5()},"VProgressLinear"),ge$1=y$7()({name:"VProgressLinear",props:Y$1(),emits:{"update:modelValue":e=>true},setup(e,y){let{slots:m}=y;const n=C$c(e,"modelValue"),{isRtl:h,rtlClasses:k}=y$d(),{themeClasses:S}=_$5(e),{locationStyles:_}=x$2(e),{textColorClasses:B,textColorStyles:x}=f$8(e,"color"),{backgroundColorClasses:P,backgroundColorStyles:V}=x$5(computed(()=>e.bgColor||e.color)),{backgroundColorClasses:F,backgroundColorStyles:p}=x$5(computed(()=>e.bufferColor||e.bgColor||e.color)),{backgroundColorClasses:g,backgroundColorStyles:f}=x$5(e,"color"),{roundedClasses:N}=h$2(e),{intersectionRef:u,isIntersecting:R}=i$4(),s=computed(()=>parseFloat(e.max)),o=computed(()=>parseFloat(e.height)),v=computed(()=>Z$3(parseFloat(e.bufferValue)/s.value*100,0,100)),b=computed(()=>Z$3(parseFloat(n.value)/s.value*100,0,100)),i=computed(()=>h.value!==e.reverse),T=computed(()=>e.indeterminate?"fade-transition":"slide-x-transition");function w(l){if(!u.value)return;const{left:L,right:O,width:c}=u.value.getBoundingClientRect(),M=i.value?c-l.clientX+(O-c):l.clientX-L;n.value=Math.round(M/c*s.value);}return o$3(()=>createVNode(e.tag,{ref:u,class:["v-progress-linear",{"v-progress-linear--absolute":e.absolute,"v-progress-linear--active":e.active&&R.value,"v-progress-linear--reverse":i.value,"v-progress-linear--rounded":e.rounded,"v-progress-linear--rounded-bar":e.roundedBar,"v-progress-linear--striped":e.striped},N.value,S.value,k.value,e.class],style:[{bottom:e.location==="bottom"?0:void 0,top:e.location==="top"?0:void 0,height:e.active?X$3(o.value):0,"--v-progress-linear-height":X$3(o.value),...e.absolute?_.value:{}},e.style],role:"progressbar","aria-hidden":e.active?"false":"true","aria-valuemin":"0","aria-valuemax":e.max,"aria-valuenow":e.indeterminate?void 0:Math.min(parseFloat(n.value),s.value),onClick:e.clickable&&w},{default:()=>[e.stream&&createVNode("div",{key:"stream",class:["v-progress-linear__stream",B.value],style:{...x.value,[i.value?"left":"right"]:X$3(-o.value),borderTop:`${X$3(o.value/2)} dotted`,opacity:parseFloat(e.bufferOpacity),top:`calc(50% - ${X$3(o.value/4)})`,width:X$3(100-v.value,"%"),"--v-progress-linear-stream-to":X$3(o.value*(i.value?1:-1))}},null),createVNode("div",{class:["v-progress-linear__background",P.value],style:[V.value,{opacity:parseFloat(e.bgOpacity),width:e.stream?0:void 0}]},null),createVNode("div",{class:["v-progress-linear__buffer",F.value],style:[p.value,{opacity:parseFloat(e.bufferOpacity),width:X$3(v.value,"%")}]},null),createVNode(Transition,{name:T.value},{default:()=>[e.indeterminate?createVNode("div",{class:"v-progress-linear__indeterminate"},[["long","short"].map(l=>createVNode("div",{key:l,class:["v-progress-linear__indeterminate",l,g.value],style:f.value},null))]):createVNode("div",{class:["v-progress-linear__determinate",g.value],style:[f.value,{width:X$3(b.value,"%")}]},null)]}),m.default&&createVNode("div",{class:"v-progress-linear__content"},[m.default({value:b.value,buffer:v.value})])]})),{}}});
-
-const u$4=y$a({loading:[Boolean,String]},"loader");function g$2(e){let o=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c();return {loaderClasses:computed(()=>({[`${o}--loading`]:e.loading}))}}function f$1(e,o){let{slots:t}=o;return createVNode("div",{class:`${e.name}__loader`},[t.default?.({color:e.color,isActive:e.active})||createVNode(ge$1,{absolute:e.absolute,active:e.active,color:e.color,height:"2",indeterminate:true},null)])}
-
-const s$3=["static","relative","fixed","absolute","sticky"],m$2=y$a({position:{type:String,validator:t=>s$3.includes(t)}},"position");function c$3(t){let o=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c();return {positionClasses:computed(()=>t.position?`${o}--${t.position}`:void 0)}}
-
-const _$1=Symbol("rippleStop"),S$2=80;function w$4(e,t){e.style.transform=t,e.style.webkitTransform=t;}function E$1(e){return e.constructor.name==="TouchEvent"}function y$3(e){return e.constructor.name==="KeyboardEvent"}const H$1=function(e,t){let i=arguments.length>2&&arguments[2]!==void 0?arguments[2]:{},s=0,n=0;if(!y$3(e)){const p=t.getBoundingClientRect(),c=E$1(e)?e.touches[e.touches.length-1]:e;s=c.clientX-p.left,n=c.clientY-p.top;}let r=0,a=.3;t._ripple?.circle?(a=.15,r=t.clientWidth/2,r=i.center?r:r+Math.sqrt((s-r)**2+(n-r)**2)/4):r=Math.sqrt(t.clientWidth**2+t.clientHeight**2)/2;const d=`${(t.clientWidth-r*2)/2}px`,m=`${(t.clientHeight-r*2)/2}px`,f=i.center?d:`${s-r}px`,h=i.center?m:`${n-r}px`;return {radius:r,scale:a,x:f,y:h,centerX:d,centerY:m}},v$3={show(e,t){let i=arguments.length>2&&arguments[2]!==void 0?arguments[2]:{};if(!t?._ripple?.enabled)return;const s=(void 0).createElement("span"),n=(void 0).createElement("span");s.appendChild(n),s.className="v-ripple__container",i.class&&(s.className+=` ${i.class}`);const{radius:r,scale:a,x:d,y:m,centerX:f,centerY:h}=H$1(e,t,i),p=`${r*2}px`;n.className="v-ripple__animation",n.style.width=p,n.style.height=p,t.appendChild(s);const c=(void 0).getComputedStyle(t);c&&c.position==="static"&&(t.style.position="relative",t.dataset.previousPosition="static"),n.classList.add("v-ripple__animation--enter"),n.classList.add("v-ripple__animation--visible"),w$4(n,`translate(${d}, ${m}) scale3d(${a},${a},${a})`),n.dataset.activated=String(performance.now()),requestAnimationFrame(()=>{requestAnimationFrame(()=>{n.classList.remove("v-ripple__animation--enter"),n.classList.add("v-ripple__animation--in"),w$4(n,`translate(${f}, ${h}) scale3d(1,1,1)`);});});},hide(e){if(!e?._ripple?.enabled)return;const t=e.getElementsByClassName("v-ripple__animation");if(t.length===0)return;const i=t[t.length-1];if(i.dataset.isHiding)return;i.dataset.isHiding="true";const s=performance.now()-Number(i.dataset.activated),n=Math.max(250-s,0);setTimeout(()=>{i.classList.remove("v-ripple__animation--in"),i.classList.add("v-ripple__animation--out"),setTimeout(()=>{e.getElementsByClassName("v-ripple__animation").length===1&&e.dataset.previousPosition&&(e.style.position=e.dataset.previousPosition,delete e.dataset.previousPosition),i.parentNode?.parentNode===e&&e.removeChild(i.parentNode);},300);},n);}};function g$1(e){return typeof e>"u"||!!e}function l$3(e){const t={},i=e.currentTarget;if(!(!i?._ripple||i._ripple.touched||e[_$1])){if(e[_$1]=true,E$1(e))i._ripple.touched=true,i._ripple.isTouch=true;else if(i._ripple.isTouch)return;if(t.center=i._ripple.centered||y$3(e),i._ripple.class&&(t.class=i._ripple.class),E$1(e)){if(i._ripple.showTimerCommit)return;i._ripple.showTimerCommit=()=>{v$3.show(e,i,t);},i._ripple.showTimer=(void 0).setTimeout(()=>{i?._ripple?.showTimerCommit&&(i._ripple.showTimerCommit(),i._ripple.showTimerCommit=null);},S$2);}else v$3.show(e,i,t);}}function T$3(e){e[_$1]=true;}function o(e){const t=e.currentTarget;if(t?._ripple){if((void 0).clearTimeout(t._ripple.showTimer),e.type==="touchend"&&t._ripple.showTimerCommit){t._ripple.showTimerCommit(),t._ripple.showTimerCommit=null,t._ripple.showTimer=(void 0).setTimeout(()=>{o(e);});return}(void 0).setTimeout(()=>{t._ripple&&(t._ripple.touched=false);}),v$3.hide(t);}}function C$2(e){const t=e.currentTarget;t?._ripple&&(t._ripple.showTimerCommit&&(t._ripple.showTimerCommit=null),(void 0).clearTimeout(t._ripple.showTimer));}let u$3=false;function b$4(e){!u$3&&(e.keyCode===V$7.enter||e.keyCode===V$7.space)&&(u$3=true,l$3(e));}function $(e){u$3=false,o(e);}function k$3(e){u$3&&(u$3=false,o(e));}function x$1(e,t,i){const{value:s,modifiers:n}=t,r=g$1(s);if(r||v$3.hide(e),e._ripple=e._ripple??{},e._ripple.enabled=r,e._ripple.centered=n.center,e._ripple.circle=n.circle,G$2(s)&&s.class&&(e._ripple.class=s.class),r&&!i){if(n.stop){e.addEventListener("touchstart",T$3,{passive:true}),e.addEventListener("mousedown",T$3);return}e.addEventListener("touchstart",l$3,{passive:true}),e.addEventListener("touchend",o,{passive:true}),e.addEventListener("touchmove",C$2,{passive:true}),e.addEventListener("touchcancel",o),e.addEventListener("mousedown",l$3),e.addEventListener("mouseup",o),e.addEventListener("mouseleave",o),e.addEventListener("keydown",b$4),e.addEventListener("keyup",$),e.addEventListener("blur",k$3),e.addEventListener("dragstart",o,{passive:true});}else !r&&i&&N$3(e);}function N$3(e){e.removeEventListener("mousedown",l$3),e.removeEventListener("touchstart",l$3),e.removeEventListener("touchend",o),e.removeEventListener("touchmove",C$2),e.removeEventListener("touchcancel",o),e.removeEventListener("mouseup",o),e.removeEventListener("mouseleave",o),e.removeEventListener("keydown",b$4),e.removeEventListener("keyup",$),e.removeEventListener("dragstart",o),e.removeEventListener("blur",k$3);}function P$3(e,t){x$1(e,t,false);}function Y(e){delete e._ripple,N$3(e);}function q(e,t){if(t.value===t.oldValue)return;const i=g$1(t.oldValue);x$1(e,t,i);}const B={mounted:P$3,unmounted:Y,updated:q};
-
-const ge=y$a({appendAvatar:String,appendIcon:A$3,disabled:Boolean,flat:Boolean,hover:Boolean,image:String,link:{type:Boolean,default:void 0},prependAvatar:String,prependIcon:A$3,ripple:{type:[Boolean,Object],default:true},subtitle:{type:[String,Number,Boolean],default:void 0},text:{type:[String,Number,Boolean],default:void 0},title:{type:[String,Number,Boolean],default:void 0},...l$4(),...o$4(),...u$7(),...f$7(),...u$5(),...u$4(),...v$4(),...m$2(),...g$4(),...b$6(),...r$2(),...M$5(),...V$2({variant:"elevated"})},"VCard"),qe=y$7()({name:"VCard",directives:{Ripple:B},props:ge(),setup(e,r){let{attrs:d,slots:t}=r;const{themeClasses:s}=_$5(e),{borderClasses:m}=b$5(e),{colorClasses:u,colorStyles:c,variantClasses:v}=_$3(e),{densityClasses:f}=l$5(e),{dimensionStyles:g}=x$4(e),{elevationClasses:k}=v$5(e),{loaderClasses:b}=g$2(e),{locationStyles:p}=x$2(e),{positionClasses:C}=c$3(e),{roundedClasses:y}=h$2(e),i=C$7(e,d),P=computed(()=>e.link!==false&&i.isLink.value),o=computed(()=>!e.disabled&&e.link!==false&&(e.link||i.isClickable.value));return o$3(()=>{const h=P.value?"a":e.tag,I=!!(t.title||e.title!=null),V=!!(t.subtitle||e.subtitle!=null),S=I||V,x=!!(t.append||e.appendAvatar||e.appendIcon),A=!!(t.prepend||e.prependAvatar||e.prependIcon),B=!!(t.image||e.image),L=S||A||x,D=!!(t.text||e.text!=null);return withDirectives(createVNode(h,mergeProps({class:["v-card",{"v-card--disabled":e.disabled,"v-card--flat":e.flat,"v-card--hover":e.hover&&!(e.disabled||e.flat),"v-card--link":o.value},s.value,m.value,u.value,f.value,k.value,b.value,C.value,y.value,v.value,e.class],style:[c.value,g.value,p.value,e.style],onClick:o.value&&i.navigate,tabindex:e.disabled?-1:void 0},i.linkProps),{default:()=>[B&&createVNode("div",{key:"image",class:"v-card__image"},[t.image?createVNode(P$4,{key:"image-defaults",disabled:!e.image,defaults:{VImg:{cover:true,src:e.image}}},t.image):createVNode(he,{key:"image-img",cover:true,src:e.image},null)]),createVNode(f$1,{name:"v-card",active:!!e.loading,color:typeof e.loading=="boolean"?void 0:e.loading},{default:t.loader}),L&&createVNode(j$1,{key:"item",prependAvatar:e.prependAvatar,prependIcon:e.prependIcon,title:e.title,subtitle:e.subtitle,appendAvatar:e.appendAvatar,appendIcon:e.appendIcon},{default:t.item,prepend:t.prepend,title:t.title,subtitle:t.subtitle,append:t.append}),D&&createVNode(C$3,{key:"text"},{default:()=>[t.text?.()??e.text]}),t.default?.(),t.actions&&createVNode(f$5,null,{default:t.actions}),C$5(o.value,"v-card")]}),[[resolveDirective("ripple"),o.value&&e.ripple]])}),{}}});
-
-const b$3=y$a({disabled:Boolean,group:Boolean,hideOnLeave:Boolean,leaveAbsolute:Boolean,mode:String,origin:String},"transition");function T$2(i,n,o){return y$7()({name:i,props:b$3({mode:o,origin:n}),setup(e,s){let{slots:a}=s;const r={onBeforeEnter(t){e.origin&&(t.style.transformOrigin=e.origin);},onLeave(t){if(e.leaveAbsolute){const{offsetTop:l,offsetLeft:d,offsetWidth:f,offsetHeight:u}=t;t._transitionInitialStyles={position:t.style.position,top:t.style.top,left:t.style.left,width:t.style.width,height:t.style.height},t.style.position="absolute",t.style.top=`${l}px`,t.style.left=`${d}px`,t.style.width=`${f}px`,t.style.height=`${u}px`;}e.hideOnLeave&&t.style.setProperty("display","none","important");},onAfterLeave(t){if(e.leaveAbsolute&&t?._transitionInitialStyles){const{position:l,top:d,left:f,width:u,height:c}=t._transitionInitialStyles;delete t._transitionInitialStyles,t.style.position=l||"",t.style.top=d||"",t.style.left=f||"",t.style.width=u||"",t.style.height=c||"";}}};return ()=>{const t=e.group?TransitionGroup:Transition;return h$d(t,{name:e.disabled?"":i,css:!e.disabled,...e.group?void 0:{mode:e.mode},...e.disabled?{}:r},a.default)}}})}function w$3(i,n){let o=arguments.length>2&&arguments[2]!==void 0?arguments[2]:"in-out";return y$7()({name:i,props:{mode:{type:String,default:o},disabled:Boolean,group:Boolean},setup(e,s){let{slots:a}=s;const r=e.group?TransitionGroup:Transition;return ()=>h$d(r,{name:e.disabled?"":i,css:!e.disabled,...e.disabled?{}:n},a.default)}})}
-
-function d$3(){let i=arguments.length>0&&arguments[0]!==void 0?arguments[0]:"";const e=(arguments.length>1&&arguments[1]!==void 0?arguments[1]:false)?"width":"height",r=camelize(`offset-${e}`);return {onBeforeEnter(t){t._parent=t.parentNode,t._initialStyle={transition:t.style.transition,overflow:t.style.overflow,[e]:t.style[e]};},onEnter(t){const n=t._initialStyle;if(!n)return;t.style.setProperty("transition","none","important"),t.style.overflow="hidden";const a=`${t[r]}px`;t.style[e]="0",t.offsetHeight,t.style.transition=n.transition,i&&t._parent&&t._parent.classList.add(i),requestAnimationFrame(()=>{t.style[e]=a;});},onAfterEnter:o,onEnterCancelled:o,onLeave(t){t._initialStyle={transition:"",overflow:t.style.overflow,[e]:t.style[e]},t.style.overflow="hidden",t.style[e]=`${t[r]}px`,t.offsetHeight,requestAnimationFrame(()=>t.style[e]="0");},onAfterLeave:s,onLeaveCancelled:s};function s(t){i&&t._parent&&t._parent.classList.remove(i),o(t);}function o(t){if(!t._initialStyle)return;const n=t._initialStyle[e];t.style.overflow=t._initialStyle.overflow,n!=null&&(t.style[e]=n),delete t._initialStyle;}}
-
-T$2("fab-transition","center center","out-in");T$2("dialog-bottom-transition");T$2("dialog-top-transition");const s$2=T$2("fade-transition"),a$3=T$2("scale-transition");T$2("scroll-x-transition");T$2("scroll-x-reverse-transition");T$2("scroll-y-transition");T$2("scroll-y-reverse-transition");T$2("slide-x-transition");T$2("slide-x-reverse-transition");const e$1=T$2("slide-y-transition");T$2("slide-y-reverse-transition");const l$2=w$3("expand-transition",d$3()),c$2=w$3("expand-x-transition",d$3("",true));
-
-const e=Symbol.for("vuetify:list");function p$1(){const a=inject(e,{hasPrepend:shallowRef(false),updateHasPrepend:()=>null}),t={hasPrepend:shallowRef(false),updateHasPrepend:n=>{n&&(t.hasPrepend.value=n);}};return provide(e,t),a}function l$1(){return inject(e,null)}
-
-const l=s=>{const a={activate:i=>{let{id:r,value:e,activated:t}=i;return r=toRaw(r),s&&!e&&t.size===1&&t.has(r)||(e?t.add(r):t.delete(r)),t},in:(i,r,e)=>{let t=new Set;if(i!=null)for(const n of q$6(i))t=a.activate({id:n,value:true,activated:new Set(t),children:r,parents:e});return t},out:i=>Array.from(i)};return a},d$2=s=>{const a=l(s);return {activate:r=>{let{activated:e,id:t,...n}=r;t=toRaw(t);const c=e.has(t)?new Set([t]):new Set;return a.activate({...n,id:t,activated:c})},in:(r,e,t)=>{let n=new Set;if(r!=null){const c=q$6(r);c.length&&(n=a.in(c.slice(0,1),e,t));}return n},out:(r,e,t)=>a.out(r,e,t)}},y$2=s=>{const a=l(s);return {activate:r=>{let{id:e,activated:t,children:n,...c}=r;return e=toRaw(e),n.has(e)?t:a.activate({id:e,activated:t,children:n,...c})},in:a.in,out:a.out}},S$1=s=>{const a=d$2(s);return {activate:r=>{let{id:e,activated:t,children:n,...c}=r;return e=toRaw(e),n.has(e)?t:a.activate({id:e,activated:t,children:n,...c})},in:a.in,out:a.out}};
-
-const s$1={open:p=>{let{id:t,value:a,opened:n,parents:r}=p;if(a){const e=new Set;e.add(t);let l=r.get(t);for(;l!=null;)e.add(l),l=r.get(l);return e}else return n.delete(t),n},select:()=>null},d$1={open:p=>{let{id:t,value:a,opened:n,parents:r}=p;if(a){let e=r.get(t);for(n.add(t);e!=null&&e!==t;)n.add(e),e=r.get(e);return n}else n.delete(t);return n},select:()=>null},u$2={open:d$1.open,select:p=>{let{id:t,value:a,opened:n,parents:r}=p;if(!a)return n;const e=[];let l=r.get(t);for(;l!=null;)e.push(l),l=r.get(l);return new Set(e)}};
-
-const p=a=>{const s={select:o=>{let{id:n,value:t,selected:e}=o;if(n=toRaw(n),a&&!t){const r=Array.from(e.entries()).reduce((c,y)=>{let[g,i]=y;return i==="on"&&c.push(g),c},[]);if(r.length===1&&r[0]===n)return e}return e.set(n,t?"on":"off"),e},in:(o,n,t)=>{const e=new Map;for(const r of o||[])s.select({id:r,value:true,selected:e,children:n,parents:t});return e},out:o=>{const n=[];for(const[t,e]of o.entries())e==="on"&&n.push(t);return n}};return s},v$2=a=>{const s=p(a);return {select:n=>{let{selected:t,id:e,...r}=n;e=toRaw(e);const c=t.has(e)?new Map([[e,t.get(e)]]):new Map;return s.select({...r,id:e,selected:c})},in:(n,t,e)=>n?.length?s.in(n.slice(0,1),t,e):new Map,out:(n,t,e)=>s.out(n,t,e)}},w$2=a=>{const s=p(a);return {select:n=>{let{id:t,selected:e,children:r,...c}=n;return t=toRaw(t),r.has(t)?e:s.select({id:t,selected:e,children:r,...c})},in:s.in,out:s.out}},M$3=a=>{const s=v$2(a);return {select:n=>{let{id:t,selected:e,children:r,...c}=n;return t=toRaw(t),r.has(t)?e:s.select({id:t,selected:e,children:r,...c})},in:s.in,out:s.out}},k$2=a=>{const s={select:o=>{let{id:n,value:t,selected:e,children:r,parents:c}=o;n=toRaw(n);const y=new Map(e),g=[n];for(;g.length;){const u=g.shift();e.set(toRaw(u),t?"on":"off"),r.has(u)&&g.push(...r.get(u));}let i=toRaw(c.get(n));for(;i;){const u=r.get(i),d=u.every(f=>e.get(toRaw(f))==="on"),h=u.every(f=>!e.has(toRaw(f))||e.get(toRaw(f))==="off");e.set(i,d?"on":h?"off":"indeterminate"),i=toRaw(c.get(i));}return a&&!t&&Array.from(e.entries()).reduce((d,h)=>{let[f,S]=h;return S==="on"&&d.push(f),d},[]).length===0?y:e},in:(o,n,t)=>{let e=new Map;for(const r of o||[])e=s.select({id:r,value:true,selected:e,children:n,parents:t});return e},out:(o,n)=>{const t=[];for(const[e,r]of o.entries())r==="on"&&!n.has(e)&&t.push(e);return t}};return s};
-
-const m$1=Symbol.for("vuetify:nested"),k$1={id:shallowRef(),root:{register:()=>null,unregister:()=>null,parents:ref(new Map),children:ref(new Map),open:()=>null,openOnSelect:()=>null,activate:()=>null,select:()=>null,activatable:ref(false),selectable:ref(false),opened:ref(new Set),activated:ref(new Set),selected:ref(new Map),selectedValues:ref([]),getPath:()=>[]}},Z=y$a({activatable:Boolean,selectable:Boolean,activeStrategy:[String,Function,Object],selectStrategy:[String,Function,Object],openStrategy:[String,Object],opened:null,activated:null,selected:null,mandatory:Boolean},"nested"),_=t=>{const r=ref(new Map),n=ref(new Map),d=C$c(t,"opened",t.opened,e=>new Set(e),e=>[...e.values()]),u=computed(()=>{if(typeof t.activeStrategy=="object")return t.activeStrategy;if(typeof t.activeStrategy=="function")return t.activeStrategy(t.mandatory);switch(t.activeStrategy){case "leaf":return y$2(t.mandatory);case "single-leaf":return S$1(t.mandatory);case "independent":return l(t.mandatory);case "single-independent":default:return d$2(t.mandatory)}}),S=computed(()=>{if(typeof t.selectStrategy=="object")return t.selectStrategy;if(typeof t.selectStrategy=="function")return t.selectStrategy(t.mandatory);switch(t.selectStrategy){case "single-leaf":return M$3(t.mandatory);case "leaf":return w$2(t.mandatory);case "independent":return p(t.mandatory);case "single-independent":return v$2(t.mandatory);case "classic":default:return k$2(t.mandatory)}}),s=computed(()=>{if(typeof t.openStrategy=="object")return t.openStrategy;switch(t.openStrategy){case "list":return u$2;case "single":return s$1;case "multiple":default:return d$1}}),o=C$c(t,"activated",t.activated,e=>u.value.in(e,r.value,n.value),e=>u.value.out(e,r.value,n.value)),f=C$c(t,"selected",t.selected,e=>S.value.in(e,r.value,n.value),e=>S.value.out(e,r.value,n.value));function g(e){const a=[];let l=e;for(;l!=null;)a.unshift(l),l=n.value.get(l);return a}const w=a$b("nested"),p$1=new Set,h={id:shallowRef(),root:{opened:d,activatable:toRef(t,"activatable"),selectable:toRef(t,"selectable"),activated:o,selected:f,selectedValues:computed(()=>{const e=[];for(const[a,l]of f.value.entries())l==="on"&&e.push(a);return e}),register:(e,a,l)=>{if(p$1.has(e)){const c=g(e).map(String).join(" -> "),y=g(a).concat(e).map(String).join(" -> ");t$5(`Multiple nodes with the same ID
-	${c}
-	${y}`);return}else p$1.add(e);a&&e!==a&&n.value.set(e,a),l&&r.value.set(e,[]),a!=null&&r.value.set(a,[...r.value.get(a)||[],e]);},unregister:e=>{p$1.delete(e),r.value.delete(e);const a=n.value.get(e);if(a){const l=r.value.get(a)??[];r.value.set(a,l.filter(c=>c!==e));}n.value.delete(e);},open:(e,a,l)=>{w.emit("click:open",{id:e,value:a,path:g(e),event:l});const c=s.value.open({id:e,value:a,opened:new Set(d.value),children:r.value,parents:n.value,event:l});c&&(d.value=c);},openOnSelect:(e,a,l)=>{const c=s.value.select({id:e,value:a,selected:new Map(f.value),opened:new Set(d.value),children:r.value,parents:n.value,event:l});c&&(d.value=c);},select:(e,a,l)=>{w.emit("click:select",{id:e,value:a,path:g(e),event:l});const c=S.value.select({id:e,value:a,selected:new Map(f.value),children:r.value,parents:n.value,event:l});c&&(f.value=c),h.root.openOnSelect(e,a,l);},activate:(e,a,l)=>{if(!t.activatable)return h.root.select(e,true,l);w.emit("click:activate",{id:e,value:a,path:g(e),event:l});const c=u.value.activate({id:e,value:a,activated:new Set(o.value),children:r.value,parents:n.value,event:l});if(c.size!==o.value.size)o.value=c;else {for(const y of c)if(!o.value.has(y)){o.value=c;return}for(const y of o.value)if(!c.has(y)){o.value=c;return}}},children:r,parents:n,getPath:g}};return provide(m$1,h),h.root},ee$1=(t,r)=>{const n=inject(m$1,k$1),d=Symbol(o$a()),u=computed(()=>t.value!==void 0?t.value:d),S={...n,id:u,open:(s,o)=>n.root.open(u.value,s,o),openOnSelect:(s,o)=>n.root.openOnSelect(u.value,s,o),isOpen:computed(()=>n.root.opened.value.has(u.value)),parent:computed(()=>n.root.parents.value.get(u.value)),activate:(s,o)=>n.root.activate(u.value,s,o),isActivated:computed(()=>n.root.activated.value.has(toRaw(u.value))),select:(s,o)=>n.root.select(u.value,s,o),isSelected:computed(()=>n.root.selected.value.get(toRaw(u.value))==="on"),isIndeterminate:computed(()=>n.root.selected.value.get(toRaw(u.value))==="indeterminate"),isLeaf:computed(()=>!n.root.children.value.get(u.value)),isGroupActivator:n.isGroupActivator};return r&&provide(m$1,S),S},te=()=>{const t=inject(m$1,k$1);provide(m$1,{...t,isGroupActivator:true});};
-
-function i$2(){const o=shallowRef(false);return {ssrBootStyles:computed(()=>o.value?void 0:{transition:"none !important"}),isBooted:readonly(o)}}
-
-const N$2=g$9({name:"VListGroupActivator",setup(o,i){let{slots:t}=i;return te(),()=>t.default?.()}}),T$1=y$a({activeColor:String,baseColor:String,color:String,collapseIcon:{type:A$3,default:"$collapse"},expandIcon:{type:A$3,default:"$expand"},prependIcon:A$3,appendIcon:A$3,fluid:Boolean,subgroup:Boolean,title:String,value:null,...o$4(),...r$2()},"VListGroup"),Q=y$7()({name:"VListGroup",props:T$1(),setup(o,i){let{slots:t}=i;const{isOpen:e,open:c,id:p}=ee$1(toRef(o,"value"),true),u=computed(()=>`v-list-group--id-${String(p.value)}`),d=l$1(),{isBooted:v}=i$2();function m(s){s.stopPropagation(),c(!e.value,s);}const f=computed(()=>({onClick:m,class:"v-list-group__header",id:u.value})),n=computed(()=>e.value?o.collapseIcon:o.expandIcon),g=computed(()=>({VListItem:{active:e.value,activeColor:o.activeColor,baseColor:o.baseColor,color:o.color,prependIcon:o.prependIcon||o.subgroup&&n.value,appendIcon:o.appendIcon||!o.subgroup&&n.value,title:o.title,value:o.value}}));return o$3(()=>createVNode(o.tag,{class:["v-list-group",{"v-list-group--prepend":d?.hasPrepend.value,"v-list-group--fluid":o.fluid,"v-list-group--subgroup":o.subgroup,"v-list-group--open":e.value},o.class],style:o.style},{default:()=>[t.activator&&createVNode(P$4,{defaults:g.value},{default:()=>[createVNode(N$2,null,{default:()=>[t.activator({props:f.value,isOpen:e.value})]})]}),createVNode(O$3,{transition:{component:l$2},disabled:!v.value},{default:()=>[withDirectives(createVNode("div",{class:"v-list-group__items",role:"group","aria-labelledby":u.value},[t.default?.()]),[[vShow,e.value]])]})]})),{isOpen:e}}});
-
-const a$2=y$a({opacity:[Number,String],...o$4(),...r$2()},"VListItemSubtitle"),S=y$7()({name:"VListItemSubtitle",props:a$2(),setup(t,e){let{slots:o}=e;return o$3(()=>createVNode(t.tag,{class:["v-list-item-subtitle",t.class],style:[{"--v-list-item-subtitle-opacity":t.opacity},t.style]},o)),{}}});
-
-const i$1=f$4("v-list-item-title");
-
-const Oe=y$a({active:{type:Boolean,default:void 0},activeClass:String,activeColor:String,appendAvatar:String,appendIcon:A$3,baseColor:String,disabled:Boolean,lines:[Boolean,String],link:{type:Boolean,default:void 0},nav:Boolean,prependAvatar:String,prependIcon:A$3,ripple:{type:[Boolean,Object],default:true},slim:Boolean,subtitle:{type:[String,Number,Boolean],default:void 0},title:{type:[String,Number,Boolean],default:void 0},value:null,onClick:ie$1(),onClickOnce:ie$1(),...l$4(),...o$4(),...u$7(),...f$7(),...u$5(),...g$4(),...b$6(),...r$2(),...M$5(),...V$2({variant:"text"})},"VListItem"),ot=y$7()({name:"VListItem",directives:{Ripple:B},props:Oe(),emits:{click:e=>true},setup(e,_){let{attrs:T,slots:i,emit:E}=_;const s=C$7(e,T),N=computed(()=>e.value===void 0?s.href.value:e.value),{activate:k,isActivated:r,select:c,isOpen:O,isSelected:o,isIndeterminate:R,isGroupActivator:b,root:l,parent:p,openOnSelect:w,id:x}=ee$1(N,false),v=l$1(),d=computed(()=>e.active!==false&&(e.active||s.isActive?.value||(l.activatable.value?r.value:o.value))),A=computed(()=>e.link!==false&&s.isLink.value),I=computed(()=>!!v&&(l.selectable.value||l.activatable.value||e.value!=null)),u=computed(()=>!e.disabled&&e.link!==false&&(e.link||s.isClickable.value||I.value)),M=computed(()=>e.rounded||e.nav),F=computed(()=>e.color??e.activeColor),K=computed(()=>({color:d.value?F.value??e.baseColor:e.baseColor,variant:e.variant}));watch(()=>s.isActive?.value,t=>{t&&$();});function $(){p.value!=null&&l.open(p.value,true),w(true);}const{themeClasses:j}=_$5(e),{borderClasses:G}=b$5(e),{colorClasses:H,colorStyles:U,variantClasses:X}=_$3(K),{densityClasses:q}=l$5(e),{dimensionStyles:z}=x$4(e),{elevationClasses:J}=v$5(e),{roundedClasses:Q}=h$2(M),W=computed(()=>e.lines?`v-list-item--${e.lines}-line`:void 0),m=computed(()=>({isActive:d.value,select:c,isOpen:O.value,isSelected:o.value,isIndeterminate:R.value}));function Y(t){E("click",t),u.value&&(s.navigate?.(t),!b&&(l.activatable.value?k(!r.value,t):(l.selectable.value||e.value!=null)&&c(!o.value,t)));}function Z(t){const f=t.target;["INPUT","TEXTAREA"].includes(f.tagName)||(t.key==="Enter"||t.key===" ")&&(t.preventDefault(),t.target.dispatchEvent(new MouseEvent("click",t)));}return o$3(()=>{const t=A.value?"a":e.tag,f=i.title||e.title!=null,ee=i.subtitle||e.subtitle!=null,g=!!(e.appendAvatar||e.appendIcon),te=!!(g||i.append),C=!!(e.prependAvatar||e.prependIcon),y=!!(C||i.prepend);return v?.updateHasPrepend(y),e.activeColor&&u$e("active-color",["color","base-color"]),withDirectives(createVNode(t,mergeProps({class:["v-list-item",{"v-list-item--active":d.value,"v-list-item--disabled":e.disabled,"v-list-item--link":u.value,"v-list-item--nav":e.nav,"v-list-item--prepend":!y&&v?.hasPrepend.value,"v-list-item--slim":e.slim,[`${e.activeClass}`]:e.activeClass&&d.value},j.value,G.value,H.value,q.value,J.value,W.value,Q.value,X.value,e.class],style:[U.value,z.value,e.style],tabindex:u.value?v?-2:0:void 0,"aria-selected":I.value?l.activatable.value?r.value:l.selectable.value?o.value:d.value:void 0,onClick:Y,onKeydown:u.value&&!A.value&&Z},s.linkProps),{default:()=>[C$5(u.value||d.value,"v-list-item"),y&&createVNode("div",{key:"prepend",class:"v-list-item__prepend"},[i.prepend?createVNode(P$4,{key:"prepend-defaults",disabled:!C,defaults:{VAvatar:{density:e.density,image:e.prependAvatar},VIcon:{density:e.density,icon:e.prependIcon},VListItemAction:{start:true}}},{default:()=>[i.prepend?.(m.value)]}):createVNode(Fragment,null,[e.prependAvatar&&createVNode($$1,{key:"prepend-avatar",density:e.density,image:e.prependAvatar},null),e.prependIcon&&createVNode(L$1,{key:"prepend-icon",density:e.density,icon:e.prependIcon},null)]),createVNode("div",{class:"v-list-item__spacer"},null)]),createVNode("div",{class:"v-list-item__content","data-no-activator":""},[f&&createVNode(i$1,{key:"title"},{default:()=>[i.title?.({title:e.title})??toDisplayString(e.title)]}),ee&&createVNode(S,{key:"subtitle"},{default:()=>[i.subtitle?.({subtitle:e.subtitle})??toDisplayString(e.subtitle)]}),i.default?.(m.value)]),te&&createVNode("div",{key:"append",class:"v-list-item__append"},[i.append?createVNode(P$4,{key:"append-defaults",disabled:!g,defaults:{VAvatar:{density:e.density,image:e.appendAvatar},VIcon:{density:e.density,icon:e.appendIcon},VListItemAction:{end:true}}},{default:()=>[i.append?.(m.value)]}):createVNode(Fragment,null,[e.appendIcon&&createVNode(L$1,{key:"append-icon",density:e.density,icon:e.appendIcon},null),e.appendAvatar&&createVNode($$1,{key:"append-avatar",density:e.density,image:e.appendAvatar},null)]),createVNode("div",{class:"v-list-item__spacer"},null)])]}),[[resolveDirective("ripple"),u.value&&e.ripple]])}),{activate:k,isActivated:r,isGroupActivator:b,isSelected:o,list:v,select:c,root:l,id:x,link:s}}});
-
-const h$1=y$a({color:String,inset:Boolean,sticky:Boolean,title:String,...o$4(),...r$2()},"VListSubheader"),g=y$7()({name:"VListSubheader",props:h$1(),setup(t,s){let{slots:e}=s;const{textColorClasses:r,textColorStyles:i}=f$8(toRef(t,"color"));return o$3(()=>{const a=!!(e.default||t.title);return createVNode(t.tag,{class:["v-list-subheader",{"v-list-subheader--inset":t.inset,"v-list-subheader--sticky":t.sticky},r.value,t.class],style:[{textColorStyles:i},t.style]},{default:()=>[a&&createVNode("div",{class:"v-list-subheader__text"},[e.default?.()??t.title])]})}),{}}});
-
-const b$2=y$a({color:String,inset:Boolean,length:[Number,String],opacity:[Number,String],thickness:[Number,String],vertical:Boolean,...o$4(),...M$5()},"VDivider"),P$2=y$7()({name:"VDivider",props:b$2(),setup(e,n){let{attrs:r,slots:o}=n;const{themeClasses:a}=_$5(e),{textColorClasses:d,textColorStyles:v}=f$8(toRef(e,"color")),s=computed(()=>{const t={};return e.length&&(t[e.vertical?"height":"width"]=X$3(e.length)),e.thickness&&(t[e.vertical?"borderRightWidth":"borderTopWidth"]=X$3(e.thickness)),t});return o$3(()=>{const t=createVNode("hr",{class:[{"v-divider":true,"v-divider--inset":e.inset,"v-divider--vertical":e.vertical},a.value,d.value,e.class],style:[s.value,v.value,{"--v-border-opacity":e.opacity},e.style],"aria-orientation":!r.role||r.role==="separator"?e.vertical?"vertical":"horizontal":void 0,role:`${r.role||"separator"}`},null);return o.default?createVNode("div",{class:["v-divider__wrapper",{"v-divider__wrapper--vertical":e.vertical,"v-divider__wrapper--inset":e.inset}]},[t,createVNode("div",{class:"v-divider__content"},[o.default()]),t]):t}),{}}});
-
-const C$1=y$a({items:Array,returnObject:Boolean},"VListChildren"),O$1=y$7()({name:"VListChildren",props:C$1(),setup(p,c){let{slots:e}=c;return p$1(),()=>e.default?.()??p.items?.map(f=>{let{children:n,props:t,type:s,raw:i}=f;if(s==="divider")return e.divider?.({props:t})??createVNode(P$2,t,null);if(s==="subheader")return e.subheader?.({props:t})??createVNode(g,t,null);const u={subtitle:e.subtitle?r=>e.subtitle?.({...r,item:i}):void 0,prepend:e.prepend?r=>e.prepend?.({...r,item:i}):void 0,append:e.append?r=>e.append?.({...r,item:i}):void 0,title:e.title?r=>e.title?.({...r,item:i}):void 0},b=Q.filterProps(t);return n?createVNode(Q,mergeProps({value:t?.value},b),{activator:r=>{let{props:h}=r;const d={...t,...h,value:p.returnObject?i:t.value};return e.header?e.header({props:d}):createVNode(ot,d,u)},default:()=>createVNode(O$1,{items:n,returnObject:p.returnObject},e)}):e.item?e.item({props:t}):createVNode(ot,mergeProps(t,{value:p.returnObject?i:t.value}),u)})}});
-
-const M$2=y$a({items:{type:Array,default:()=>[]},itemTitle:{type:[String,Array,Function],default:"title"},itemValue:{type:[String,Array,Function],default:"value"},itemChildren:{type:[Boolean,String,Array,Function],default:"children"},itemProps:{type:[Boolean,String,Array,Function],default:"props"},returnObject:Boolean,valueComparator:Function},"list-items");function y$1(e,t){const s=K$6(t,e.itemTitle,t),u=K$6(t,e.itemValue,s),l=K$6(t,e.itemChildren),h=e.itemProps===true?typeof t=="object"&&t!=null&&!Array.isArray(t)?"children"in t?M$9(t,["children"]):t:void 0:K$6(t,e.itemProps),m={title:s,value:u,...h};return {title:String(m.title??""),value:m.value,props:m,children:Array.isArray(l)?b$1(e,l):void 0,raw:t}}function b$1(e,t){const s=k$6(e,["itemTitle","itemValue","itemChildren","itemProps","returnObject","valueComparator"]),u=[];for(const l of t)u.push(y$1(s,l));return u}function E(e){const t=computed(()=>b$1(e,e.items)),s=computed(()=>t.value.some(n=>n.value===null)),u=shallowRef(new Map),l=shallowRef([]);watchEffect(()=>{const n=t.value,r=new Map,o=[];for(let f=0;f<n.length;f++){const a=n[f];if(pe(a.value)||a.value===null){let i=r.get(a.value);i||(i=[],r.set(a.value,i)),i.push(a);}else o.push(a);}u.value=r,l.value=o;});function h(n){const r=u.value,o=t.value,f=l.value,a=s.value,i=e.returnObject,d=!!e.valueComparator,j=e.valueComparator||C$d,I=k$6(e,["itemTitle","itemValue","itemChildren","itemProps","returnObject","valueComparator"]),p=[];t:for(const c of n){if(!a&&c===null)continue;if(i&&typeof c=="string"){p.push(y$1(I,c));continue}const C=r.get(c);if(d||!C){for(const g of d?o:f)if(j(c,g.value)){p.push(g);continue t}p.push(y$1(I,c));continue}p.push(...C);}return p}function m(n){return e.returnObject?n.map(r=>{let{raw:o}=r;return o}):n.map(r=>{let{value:o}=r;return o})}return {items:t,transformIn:h,transformOut:m}}
-
-function fe(e,t){const i=K$6(t,e.itemType,"item"),a=pe(t)?t:K$6(t,e.itemTitle),d=K$6(t,e.itemValue,void 0),u=K$6(t,e.itemChildren),v=e.itemProps===true?M$9(t,["children"]):K$6(t,e.itemProps),l={title:a,value:d,...v};return {type:i,title:l.title,value:l.value,props:l,children:i==="item"&&u?I(e,u):void 0,raw:t}}function I(e,t){const i=[];for(const a of t)i.push(fe(e,a));return i}function Ce(e){return {items:computed(()=>I(e,e.items))}}const ye$1=y$a({baseColor:String,activeColor:String,activeClass:String,bgColor:String,disabled:Boolean,expandIcon:A$3,collapseIcon:A$3,lines:{type:[Boolean,String],default:"one"},slim:Boolean,nav:Boolean,"onClick:open":ie$1(),"onClick:select":ie$1(),"onUpdate:opened":ie$1(),...Z({selectStrategy:"single-leaf",openStrategy:"list"}),...l$4(),...o$4(),...u$7(),...f$7(),...u$5(),itemType:{type:String,default:"type"},...M$2(),...g$4(),...r$2(),...M$5(),...V$2({variant:"text"})},"VList"),Ke=y$7()({name:"VList",props:ye$1(),emits:{"update:selected":e=>true,"update:activated":e=>true,"update:opened":e=>true,"click:open":e=>true,"click:activate":e=>true,"click:select":e=>true},setup(e,t){let{slots:i}=t;const{items:a}=Ce(e),{themeClasses:d}=_$5(e),{backgroundColorClasses:u,backgroundColorStyles:v}=x$5(toRef(e,"bgColor")),{borderClasses:l}=b$5(e),{densityClasses:h}=l$5(e),{dimensionStyles:T}=x$4(e),{elevationClasses:V}=v$5(e),{roundedClasses:S}=h$2(e),{children:w,open:F,parents:L,select:p,getPath:x}=_(e),B=computed(()=>e.lines?`v-list--${e.lines}-line`:void 0),C=toRef(e,"activeColor"),y=toRef(e,"baseColor"),g=toRef(e,"color");p$1(),O$6({VListGroup:{activeColor:C,baseColor:y,color:g,expandIcon:toRef(e,"expandIcon"),collapseIcon:toRef(e,"collapseIcon")},VListItem:{activeClass:toRef(e,"activeClass"),activeColor:C,baseColor:y,color:g,density:toRef(e,"density"),disabled:toRef(e,"disabled"),lines:toRef(e,"lines"),nav:toRef(e,"nav"),slim:toRef(e,"slim"),variant:toRef(e,"variant")}});const m=shallowRef(false),r=ref();function D(o){m.value=true;}function R(o){m.value=false;}function E(o){!m.value&&!(o.relatedTarget&&r.value?.contains(o.relatedTarget))&&s();}function N(o){const U=o.target;if(!(!r.value||["INPUT","TEXTAREA"].includes(U.tagName))){if(o.key==="ArrowDown")s("next");else if(o.key==="ArrowUp")s("prev");else if(o.key==="Home")s("first");else if(o.key==="End")s("last");else return;o.preventDefault();}}function A(o){m.value=true;}function s(o){if(r.value)return D$4(r.value,o)}return o$3(()=>createVNode(e.tag,{ref:r,class:["v-list",{"v-list--disabled":e.disabled,"v-list--nav":e.nav,"v-list--slim":e.slim},d.value,u.value,l.value,h.value,V.value,B.value,S.value,e.class],style:[v.value,T.value,e.style],tabindex:e.disabled?-1:0,role:"listbox","aria-activedescendant":void 0,onFocusin:D,onFocusout:R,onFocus:E,onKeydown:N,onMousedown:A},{default:()=>[createVNode(O$1,{items:a.value,returnObject:e.returnObject},i)]})),{open:F,select:p,focus:s,children:w,parents:L,getPath:x}}});
-
-function v$1(e){const{t:c}=v$e();function i(p){let{name:o}=p;const r={prepend:"prependAction",prependInner:"prependAction",append:"appendAction",appendInner:"appendAction",clear:"clear"}[o],t=e[`onClick:${o}`];function l(n){n.key!=="Enter"&&n.key!==" "||(n.preventDefault(),n.stopPropagation(),se$1(t,new PointerEvent("click",n)));}const a=t&&r?c(`$vuetify.input.${r}`,e.label??""):void 0;return createVNode(L$1,{icon:e[`${o}Icon`],"aria-label":a,onClick:t,onKeydown:l},null)}return {InputIcon:i}}
-
-const V$1=y$a({active:Boolean,color:String,messages:{type:[Array,String],default:()=>[]},...o$4(),...T$4({transition:{component:e$1,leaveAbsolute:true,group:true}})},"VMessages"),w$1=y$7()({name:"VMessages",props:V$1(),setup(e,m){let{slots:s}=m;const o=computed(()=>q$6(e.messages)),{textColorClasses:i,textColorStyles:n}=f$8(computed(()=>e.color));return o$3(()=>createVNode(O$3,{transition:e.transition,tag:"div",class:["v-messages",i.value,e.class],style:[n.value,e.style]},{default:()=>[e.active&&o.value.map((t,l)=>createVNode("div",{class:"v-messages__message",key:`${l}-${o.value}`},[s.message?s.message({message:t}):t]))]})),{}}});
-
-const v=y$a({focused:Boolean,"onUpdate:focused":ie$1()},"focus");function F$1(e){let u=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c();const o=C$c(e,"focused"),r=computed(()=>({[`${u}--focused`]:o.value}));function t(){o.value=true;}function s(){o.value=false;}return {focusClasses:r,isFocused:o,focus:t,blur:s}}
-
-const m=Symbol.for("vuetify:form"),j=y$a({disabled:Boolean,fastFail:Boolean,readonly:Boolean,modelValue:{type:Boolean,default:null},validateOn:{type:String,default:"input"}},"form");function K$2(s){const r=C$c(s,"modelValue"),f=computed(()=>s.disabled),v=computed(()=>s.readonly),n=shallowRef(false),l=ref([]),o=ref([]);async function y(){const e=[];let a=true;o.value=[],n.value=true;for(const i of l.value){const t=await i.validate();if(t.length>0&&(a=false,e.push({id:i.id,errorMessages:t})),!a&&s.fastFail)break}return o.value=e,n.value=false,{valid:a,errors:o.value}}function g(){l.value.forEach(e=>e.reset());}function V(){l.value.forEach(e=>e.resetValidation());}return watch(l,()=>{let e=0,a=0;const i=[];for(const t of l.value)t.isValid===false?(a++,i.push({id:t.id,errorMessages:t.errorMessages})):t.isValid===true&&e++;o.value=i,r.value=a>0?false:e===l.value.length?true:null;},{deep:true,flush:"post"}),provide(m,{register:e=>{let{id:a,vm:i,validate:t,reset:d,resetValidation:p}=e;l.value.some(h=>h.id===a)&&s$b(`Duplicate input name "${a}"`),l.value.push({id:a,validate:t,reset:d,resetValidation:p,vm:markRaw(i),isValid:null,errorMessages:[]});},unregister:e=>{l.value=l.value.filter(a=>a.id!==e);},update:(e,a,i)=>{const t=l.value.find(d=>d.id===e);t&&(t.isValid=a,t.errorMessages=i);},isDisabled:f,isReadonly:v,isValidating:n,isValid:r,items:l,validateOn:toRef(s,"validateOn")}),{errors:o,isDisabled:f,isReadonly:v,isValidating:n,isValid:r,items:l,validate:y,reset:g,resetValidation:V}}function W$1(s){const r=inject(m,null);return {...r,isReadonly:computed(()=>!!(s?.readonly??r?.isReadonly.value)),isDisabled:computed(()=>!!(s?.disabled??r?.isDisabled.value))}}
-
-const K$1=y$a({disabled:{type:Boolean,default:null},error:Boolean,errorMessages:{type:[Array,String],default:()=>[]},maxErrors:{type:[Number,String],default:1},name:String,label:String,readonly:{type:Boolean,default:null},rules:{type:Array,default:()=>[]},modelValue:null,validateOn:String,validationValue:null,...v()},"validation");function L(e){let f=arguments.length>1&&arguments[1]!==void 0?arguments[1]:g$c(),S=arguments.length>2&&arguments[2]!==void 0?arguments[2]:o$a();const v=C$c(e,"modelValue"),i=computed(()=>e.validationValue===void 0?v.value:e.validationValue),u=W$1(e),t=ref([]),c=shallowRef(true),w=computed(()=>!!(q$6(v.value===""?null:v.value).length||q$6(i.value===""?null:i.value).length)),g=computed(()=>e.errorMessages?.length?q$6(e.errorMessages).concat(t.value).slice(0,Math.max(0,Number(e.maxErrors))):t.value),r=computed(()=>{let l=(e.validateOn??u.validateOn?.value)||"input";l==="lazy"&&(l="input lazy"),l==="eager"&&(l="input eager");const a=new Set(l?.split(" ")??[]);return {input:a.has("input"),blur:a.has("blur")||a.has("input")||a.has("invalid-input"),invalidInput:a.has("invalid-input"),lazy:a.has("lazy"),eager:a.has("eager")}}),s=computed(()=>e.error||e.errorMessages?.length?false:e.rules.length?c.value?t.value.length||r.value.lazy?null:true:!t.value.length:true),y=shallowRef(false),z=computed(()=>({[`${f}--error`]:s.value===false,[`${f}--dirty`]:w.value,[`${f}--disabled`]:u.isDisabled.value,[`${f}--readonly`]:u.isReadonly.value}));a$b("validation");const p=computed(()=>e.name??unref(S));r$a(()=>r.value.input||r.value.invalidInput&&s.value===false,()=>{watch(i,()=>{if(i.value!=null)o();else if(e.focused){const l=watch(()=>e.focused,a=>{a||o(),l();});}});}),r$a(()=>r.value.blur,()=>{watch(()=>e.focused,l=>{l||o();});}),watch([s,g],()=>{u.update?.(p.value,s.value,g.value);});async function I(){v.value=null,await nextTick(),await V();}async function V(){c.value=true,r.value.lazy?t.value=[]:await o(!r.value.eager);}async function o(){let l=arguments.length>0&&arguments[0]!==void 0?arguments[0]:false;const a=[];y.value=true;for(const h of e.rules){if(a.length>=Number(e.maxErrors??1))break;const d=await(typeof h=="function"?h:()=>h)(i.value);if(d!==true){if(d!==false&&typeof d!="string"){console.warn(`${d} is not a valid value. Rule functions must return boolean true or a string.`);continue}a.push(d||"");}}return t.value=a,y.value=false,c.value=l,t.value}return {errorMessages:g,isDirty:w,isDisabled:u.isDisabled,isReadonly:u.isReadonly,isPristine:c,isValid:s,isValidating:y,reset:I,resetValidation:V,validate:o,validationClasses:z}}
-
-const O=y$a({id:String,appendIcon:A$3,centerAffix:{type:Boolean,default:true},prependIcon:A$3,hideDetails:[Boolean,String],hideSpinButtons:Boolean,hint:String,persistentHint:Boolean,messages:{type:[Array,String],default:()=>[]},direction:{type:String,default:"horizontal",validator:e=>["horizontal","vertical"].includes(e)},"onClick:prepend":ie$1(),"onClick:append":ie$1(),...o$4(),...u$7(),...k$6(f$7(),["maxWidth","minWidth","width"]),...M$5(),...K$1()},"VInput"),ve$1=y$7()({name:"VInput",props:{...O()},emits:{"update:modelValue":e=>true},setup(e,y){let{attrs:Q,slots:t,emit:X}=y;const{densityClasses:I}=l$5(e),{dimensionStyles:k}=x$4(e),{themeClasses:V}=_$5(e),{rtlClasses:D}=y$d(),{InputIcon:l}=v$1(e),P=o$a(),a=computed(()=>e.id||`input-${P}`),r=computed(()=>`${a.value}-messages`),{errorMessages:o,isDirty:C,isDisabled:S,isReadonly:_,isPristine:d,isValid:u,isValidating:B,reset:m,resetValidation:p,validate:c,validationClasses:x}=L(e,"v-input",a),i=computed(()=>({id:a,messagesId:r,isDirty:C,isDisabled:S,isReadonly:_,isPristine:d,isValid:u,isValidating:B,reset:m,resetValidation:p,validate:c})),v=computed(()=>e.errorMessages?.length||!d.value&&o.value.length?o.value:e.hint&&(e.persistentHint||e.focused)?e.hint:e.messages);return o$3(()=>{const A=!!(t.prepend||e.prependIcon),M=!!(t.append||e.appendIcon),f=v.value.length>0,R=!e.hideDetails||e.hideDetails==="auto"&&(f||!!t.details);return createVNode("div",{class:["v-input",`v-input--${e.direction}`,{"v-input--center-affix":e.centerAffix,"v-input--hide-spin-buttons":e.hideSpinButtons},I.value,V.value,D.value,x.value,e.class],style:[k.value,e.style]},[A&&createVNode("div",{key:"prepend",class:"v-input__prepend"},[t.prepend?.(i.value),e.prependIcon&&createVNode(l,{key:"prepend-icon",name:"prepend"},null)]),t.default&&createVNode("div",{class:"v-input__control"},[t.default?.(i.value)]),M&&createVNode("div",{key:"append",class:"v-input__append"},[e.appendIcon&&createVNode(l,{key:"append-icon",name:"append"},null),t.append?.(i.value)]),R&&createVNode("div",{id:r.value,class:"v-input__details",role:"alert","aria-live":"polite"},[createVNode(w$1,{active:f,messages:v.value},{message:t.message}),t.details?.(i.value)])])}),{reset:m,resetValidation:p,validate:c,isValid:u,errorMessages:o}}});
-
-const b=Symbol.for("vuetify:selection-control-group"),k=y$a({color:String,disabled:{type:Boolean,default:null},defaultsTarget:String,error:Boolean,id:String,inline:Boolean,falseIcon:A$3,trueIcon:A$3,ripple:{type:[Boolean,Object],default:true},multiple:{type:Boolean,default:null},name:String,readonly:{type:Boolean,default:null},modelValue:null,type:String,valueComparator:{type:Function,default:C$d},...o$4(),...u$7(),...M$5()},"SelectionControlGroup"),T=y$a({...k({defaultsTarget:"VSelectionControl"})},"VSelectionControlGroup"),N$1=y$7()({name:"VSelectionControlGroup",props:T(),emits:{"update:modelValue":e=>true},setup(e,u){let{slots:m}=u;const l=C$c(e,"modelValue"),d=o$a(),c=computed(()=>e.id||`v-selection-control-group-${d}`),f=computed(()=>e.name||c.value),r=new Set;return provide(b,{modelValue:l,forceUpdate:()=>{r.forEach(t=>t());},onForceUpdate:t=>{r.add(t),onScopeDispose(()=>{r.delete(t);});}}),O$6({[e.defaultsTarget]:{color:toRef(e,"color"),disabled:toRef(e,"disabled"),density:toRef(e,"density"),error:toRef(e,"error"),inline:toRef(e,"inline"),modelValue:l,multiple:computed(()=>!!e.multiple||e.multiple==null&&Array.isArray(l.value)),name:f,falseIcon:toRef(e,"falseIcon"),trueIcon:toRef(e,"trueIcon"),readonly:toRef(e,"readonly"),ripple:toRef(e,"ripple"),type:toRef(e,"type"),valueComparator:toRef(e,"valueComparator")}}),o$3(()=>createVNode("div",{class:["v-selection-control-group",{"v-selection-control-group--inline":e.inline},e.class],style:e.style,role:e.type==="radio"?"radiogroup":void 0},[m.default?.()])),{}}});
-
-const s=y$a({text:String,onClick:ie$1(),...o$4(),...M$5()},"VLabel"),P$1=y$7()({name:"VLabel",props:s(),setup(e,o){let{slots:t}=o;return o$3(()=>createVNode("label",{class:["v-label",{"v-label--clickable":!!e.onClick},e.class],style:e.style,onClick:e.onClick},[e.text,t.default?.()])),{}}});
-
-const ee=y$a({label:String,baseColor:String,trueValue:null,falseValue:null,value:null,...o$4(),...k()},"VSelectionControl");function le$1(e){const i=inject(b,void 0),{densityClasses:k}=l$5(e),t=C$c(e,"modelValue"),o=computed(()=>e.trueValue!==void 0?e.trueValue:e.value!==void 0?e.value:true),f=computed(()=>e.falseValue!==void 0?e.falseValue:false),v=computed(()=>!!e.multiple||e.multiple==null&&Array.isArray(t.value)),l=computed({get(){const c=i?i.modelValue.value:t.value;return v.value?q$6(c).some(a=>e.valueComparator(a,o.value)):e.valueComparator(c,o.value)},set(c){if(e.readonly)return;const a=c?o.value:f.value;let s=a;v.value&&(s=c?[...q$6(t.value),a]:q$6(t.value).filter(u=>!e.valueComparator(u,o.value))),i?i.modelValue.value=s:t.value=s;}}),{textColorClasses:m,textColorStyles:C}=f$8(computed(()=>{if(!(e.error||e.disabled))return l.value?e.color:e.baseColor})),{backgroundColorClasses:b$1,backgroundColorStyles:V}=x$5(computed(()=>l.value&&!e.error&&!e.disabled?e.color:e.baseColor)),g=computed(()=>l.value?e.trueIcon:e.falseIcon);return {group:i,densityClasses:k,trueValue:o,falseValue:f,model:l,textColorClasses:m,textColorStyles:C,backgroundColorClasses:b$1,backgroundColorStyles:V,icon:g}}const Ve=y$7()({name:"VSelectionControl",directives:{Ripple:B},inheritAttrs:false,props:ee(),emits:{"update:modelValue":e=>true},setup(e,i){let{attrs:k,slots:t}=i;const{group:o,densityClasses:f,icon:v,model:l,textColorClasses:m,textColorStyles:C,backgroundColorClasses:b,backgroundColorStyles:V,trueValue:g}=le$1(e),c=o$a(),a=shallowRef(false),s=shallowRef(false),u=ref(),y=computed(()=>e.id||`input-${c}`),h=computed(()=>!e.disabled&&!e.readonly);o?.onForceUpdate(()=>{u.value&&(u.value.checked=l.value);});function x(r){h.value&&(a.value=true,le$2(r.target)!==false&&(s.value=true));}function I(){a.value=false,s.value=false;}function w(r){r.stopPropagation();}function _(r){if(!h.value){u.value&&(u.value.checked=l.value);return}e.readonly&&o&&nextTick(()=>o.forceUpdate()),l.value=r.target.checked;}return o$3(()=>{const r=t.label?t.label({label:e.label,props:{for:y.value}}):e.label,[B,D]=W$7(k),A=createVNode("input",mergeProps({ref:u,checked:l.value,disabled:!!e.disabled,id:y.value,onBlur:I,onFocus:x,onInput:_,"aria-disabled":!!e.disabled,"aria-label":e.label,type:e.type,value:g.value,name:e.name,"aria-checked":e.type==="checkbox"?l.value:void 0},D),null);return createVNode("div",mergeProps({class:["v-selection-control",{"v-selection-control--dirty":l.value,"v-selection-control--disabled":e.disabled,"v-selection-control--error":e.error,"v-selection-control--focused":a.value,"v-selection-control--focus-visible":s.value,"v-selection-control--inline":e.inline},f.value,e.class]},B,{style:e.style}),[createVNode("div",{class:["v-selection-control__wrapper",m.value],style:C.value},[t.default?.({backgroundColorClasses:b,backgroundColorStyles:V}),withDirectives(createVNode("div",{class:["v-selection-control__input"]},[t.input?.({model:l,textColorClasses:m,textColorStyles:C,backgroundColorClasses:b,backgroundColorStyles:V,inputNode:A,icon:v.value,props:{onFocus:x,onBlur:I,id:y.value}})??createVNode(Fragment,null,[v.value&&createVNode(L$1,{key:"icon",icon:v.value},null),A])]),[[resolveDirective("ripple"),e.ripple&&[!e.disabled&&!e.readonly,null,["center","circle"]]]])]),r&&createVNode(P$1,{for:y.value,onClick:w},{default:()=>[r]})])}),{isFocused:a,input:u}}});
-
-function i(c){const e=me$1(),t=ref();return {resizeRef:e,contentRect:readonly(t)}}
-
-const D$2=y$a({bgColor:String,color:String,indeterminate:[Boolean,String],modelValue:{type:[Number,String],default:0},rotate:{type:[Number,String],default:0},width:{type:[Number,String],default:4},...o$4(),...f$3(),...r$2({tag:"div"}),...M$5()},"VProgressCircular"),re=y$7()({name:"VProgressCircular",props:D$2(),setup(e,C){let{slots:u}=C;const a=20,s=2*Math.PI*a,o=ref(),{themeClasses:h}=_$5(e),{sizeClasses:y,sizeStyles:c}=g$3(e),{textColorClasses:p,textColorStyles:k}=f$8(toRef(e,"color")),{textColorClasses:b,textColorStyles:S}=f$8(toRef(e,"bgColor")),{intersectionRef:w,isIntersecting:x}=i$4(),{resizeRef:N,contentRect:m}=i(),l=computed(()=>Math.max(0,Math.min(100,parseFloat(e.modelValue)))),i$1=computed(()=>Number(e.width)),v=computed(()=>c.value?Number(e.size):m.value?m.value.width:Math.max(i$1.value,32)),n=computed(()=>a/(1-i$1.value/v.value)*2),d=computed(()=>i$1.value/v.value*n.value),P=computed(()=>X$3((100-l.value)/100*s));return watchEffect(()=>{w.value=o.value,N.value=o.value;}),o$3(()=>createVNode(e.tag,{ref:o,class:["v-progress-circular",{"v-progress-circular--indeterminate":!!e.indeterminate,"v-progress-circular--visible":x.value,"v-progress-circular--disable-shrink":e.indeterminate==="disable-shrink"},h.value,y.value,p.value,e.class],style:[c.value,k.value,e.style],role:"progressbar","aria-valuemin":"0","aria-valuemax":"100","aria-valuenow":e.indeterminate?void 0:l.value},{default:()=>[createVNode("svg",{style:{transform:`rotate(calc(-90deg + ${Number(e.rotate)}deg))`},xmlns:"http://www.w3.org/2000/svg",viewBox:`0 0 ${n.value} ${n.value}`},[createVNode("circle",{class:["v-progress-circular__underlay",b.value],style:S.value,fill:"transparent",cx:"50%",cy:"50%",r:a,"stroke-width":d.value,"stroke-dasharray":s,"stroke-dashoffset":0},null),createVNode("circle",{class:"v-progress-circular__overlay",fill:"transparent",cx:"50%",cy:"50%",r:a,"stroke-width":d.value,"stroke-dasharray":s,"stroke-dashoffset":P.value},null)]),u.default&&createVNode("div",{class:"v-progress-circular__content"},[u.default({value:l.value})])]})),{}}});
-
-const le=y$a({indeterminate:Boolean,inset:Boolean,flat:Boolean,loading:{type:[Boolean,String],default:false},...O(),...ee()},"VSwitch"),ye=y$7()({name:"VSwitch",inheritAttrs:false,props:le(),emits:{"update:focused":e=>true,"update:modelValue":e=>true,"update:indeterminate":e=>true},setup(e,p){let{attrs:w,slots:o}=p;const r=C$c(e,"indeterminate"),a=C$c(e,"modelValue"),{loaderClasses:y}=g$2(e),{isFocused:C,focus:b,blur:S}=F$1(e),m=ref(),P=R$2,_=computed(()=>typeof e.loading=="string"&&e.loading!==""?e.loading:e.color),I=o$a(),x=computed(()=>e.id||`switch-${I}`);function A(){r.value&&(r.value=false);}function B(n){n.stopPropagation(),n.preventDefault(),m.value?.input?.click();}return o$3(()=>{const[n,F]=W$7(w),R=ve$1.filterProps(e),z=Ve.filterProps(e);return createVNode(ve$1,mergeProps({class:["v-switch",{"v-switch--flat":e.flat},{"v-switch--inset":e.inset},{"v-switch--indeterminate":r.value},y.value,e.class]},n,R,{modelValue:a.value,"onUpdate:modelValue":s=>a.value=s,id:x.value,focused:C.value,style:e.style}),{...o,default:s=>{let{id:D,messagesId:N,isDisabled:U,isReadonly:L,isValid:f}=s;const u={model:a,isValid:f};return createVNode(Ve,mergeProps({ref:m},z,{modelValue:a.value,"onUpdate:modelValue":[i=>a.value=i,A],id:D.value,"aria-describedby":N.value,type:"checkbox","aria-checked":r.value?"mixed":void 0,disabled:U.value,readonly:L.value,onFocus:b,onBlur:S},F),{...o,default:i=>{let{backgroundColorClasses:c,backgroundColorStyles:l}=i;return createVNode("div",{class:["v-switch__track",c.value],style:l.value,onClick:B},[o["track-true"]&&createVNode("div",{key:"prepend",class:"v-switch__track-true"},[o["track-true"](u)]),o["track-false"]&&createVNode("div",{key:"append",class:"v-switch__track-false"},[o["track-false"](u)])])},input:i=>{let{inputNode:c,icon:l,backgroundColorClasses:M,backgroundColorStyles:T}=i;return createVNode(Fragment,null,[c,createVNode("div",{class:["v-switch__thumb",{"v-switch__thumb--filled":l||e.loading},e.inset||P?void 0:M.value],style:e.inset?void 0:T.value},[o.thumb?createVNode(P$4,{defaults:{VIcon:{icon:l,size:"x-small"}}},{default:()=>[o.thumb({...u,icon:l})]}):createVNode(a$3,null,{default:()=>[e.loading?createVNode(f$1,{name:"v-switch",active:true,color:f.value===false?void 0:_.value},{default:d=>o.loader?o.loader(d):createVNode(re,{active:d.isActive,color:d.color,indeterminate:true,size:"16",width:"2"},null)}):l&&createVNode(L$1,{key:String(l),icon:l,size:"x-small"},null)]})])])}})}})}),{}}});
-
-const c$1=f$4("v-spacer","div","VSpacer");
-
-const D$1=y$a({baseColor:String,divided:Boolean,...l$4(),...o$4(),...u$7(),...u$5(),...g$4(),...r$2(),...M$5(),...V$2()},"VBtnGroup"),K=y$7()({name:"VBtnGroup",props:D$1(),setup(e,t){let{slots:r}=t;const{themeClasses:s}=_$5(e),{densityClasses:a}=l$5(e),{borderClasses:m}=b$5(e),{elevationClasses:n}=v$5(e),{roundedClasses:i}=h$2(e);O$6({VBtn:{height:"auto",baseColor:toRef(e,"baseColor"),color:toRef(e,"color"),density:toRef(e,"density"),flat:true,variant:toRef(e,"variant")}}),o$3(()=>createVNode(e.tag,{class:["v-btn-group",{"v-btn-group--divided":e.divided},s.value,m.value,a.value,n.value,i.value,e.class],style:e.style},r));}});
-
-const U=y$a({modelValue:{type:null,default:void 0},multiple:Boolean,mandatory:[Boolean,String],max:Number,selectedClass:String,disabled:Boolean},"group"),z=y$a({value:null,disabled:Boolean,selectedClass:String},"group-item");function D(n,d){let e=arguments.length>2&&arguments[2]!==void 0?arguments[2]:true;const l=a$b("useGroupItem");if(!l)throw new Error("[Vuetify] useGroupItem composable must be used inside a component setup function");const r=o$a();provide(Symbol.for(`${d.description}:id`),r);const s=inject(d,null);if(!s){if(!e)return s;throw new Error(`[Vuetify] Could not find useGroup injection with symbol ${d.description}`)}const m=toRef(n,"value"),p=computed(()=>!!(s.disabled.value||n.disabled));s.register({id:r,value:m,disabled:p},l);const g=computed(()=>s.isSelected(r)),h=computed(()=>s.items.value[0].id===r),v=computed(()=>s.items.value[s.items.value.length-1].id===r),t=computed(()=>g.value&&[s.selectedClass.value,n.selectedClass]);return watch(g,i=>{l.emit("group:selected",{value:i});},{flush:"sync"}),{id:r,isSelected:g,isFirst:h,isLast:v,toggle:()=>s.select(r,!g.value),select:i=>s.select(r,i),selectedClass:t,value:m,disabled:p,group:s}}function H(n,d){const e=reactive([]),l=C$c(n,"modelValue",[],t=>t==null?[]:w(e,q$6(t)),t=>{const i=M$1(e,t);return n.multiple?i:i[0]}),r=a$b("useGroup");function s(t,i){const o=t,u=Symbol.for(`${d.description}:id`),a=s$d(u,r?.vnode).indexOf(i);unref(o.value)==null&&(o.value=a,o.useIndexAsValue=true),a>-1?e.splice(a,0,o):e.push(o);}function m(t){p();const i=e.findIndex(o=>o.id===t);e.splice(i,1);}function p(){const t=e.find(i=>!i.disabled);t&&n.mandatory==="force"&&!l.value.length&&(l.value=[t.id]);}function g(t,i){const o=e.find(u=>u.id===t);if(!(i&&o?.disabled))if(n.multiple){const u=l.value.slice(),c=u.findIndex(C=>C===t),a=~c;if(i=i??!a,a&&n.mandatory&&u.length<=1||!a&&n.max!=null&&u.length+1>n.max)return;c<0&&i?u.push(t):c>=0&&!i&&u.splice(c,1),l.value=u;}else {const u=l.value.includes(t);if(n.mandatory&&u)return;l.value=i??!u?[t]:[];}}function h(t){if(n.multiple&&s$b('This method is not supported when using "multiple" prop'),l.value.length){const i=l.value[0],o=e.findIndex(a=>a.id===i);let u=(o+t)%e.length,c=e[u];for(;c.disabled&&u!==o;)u=(u+t)%e.length,c=e[u];if(c.disabled)return;l.value=[e[u].id];}else {const i=e.find(o=>!o.disabled);i&&(l.value=[i.id]);}}const v={register:s,unregister:m,selected:l,select:g,disabled:toRef(n,"disabled"),prev:()=>h(e.length-1),next:()=>h(1),isSelected:t=>l.value.includes(t),selectedClass:computed(()=>n.selectedClass),items:computed(()=>e),getItemIndex:t=>F(e,t)};return provide(d,v),v}function F(n,d){const e=w(n,[d]);return e.length?n.findIndex(l=>l.id===e[0]):-1}function w(n,d){const e=[];return d.forEach(l=>{const r=n.find(m=>C$d(l,m.value)),s=n[l];r?.value!=null?e.push(r.id):s!=null&&e.push(s.id);}),e}function M$1(n,d){const e=[];return d.forEach(l=>{const r=n.findIndex(s=>s.id===l);if(~r){const s=n[r];e.push(s.value!=null?s.value:r);}}),e}
-
-const y=Symbol.for("vuetify:v-btn-toggle"),P=y$a({...D$1(),...U()},"VBtnToggle"),C=y$7()({name:"VBtnToggle",props:P(),emits:{"update:modelValue":e=>true},setup(e,l){let{slots:m}=l;const{isSelected:n,next:t,prev:o,select:r,selected:p}=H(e,y);return o$3(()=>{const u=K.filterProps(e);return createVNode(K,mergeProps({class:["v-btn-toggle",e.class]},u,{style:e.style}),{default:()=>[m.default?.({isSelected:n,next:t,prev:o,select:r,selected:p})]})}),{next:t,prev:o,select:r}}});
-
-function c(e,i){watch(()=>e.isActive?.value,t=>{e.isLink.value&&t&&i&&nextTick(()=>{i(true);});},{immediate:true});}
-
-const Ie=y$a({active:{type:Boolean,default:void 0},activeColor:String,baseColor:String,symbol:{type:null,default:y},flat:Boolean,icon:[Boolean,String,Function,Object],prependIcon:A$3,appendIcon:A$3,block:Boolean,readonly:Boolean,slim:Boolean,stacked:Boolean,ripple:{type:[Boolean,Object],default:true},text:{type:[String,Number,Boolean],default:void 0},...l$4(),...o$4(),...u$7(),...f$7(),...u$5(),...z(),...u$4(),...v$4(),...m$2(),...g$4(),...b$6(),...f$3(),...r$2({tag:"button"}),...M$5(),...V$2({variant:"elevated"})},"VBtn"),We=y$7()({name:"VBtn",props:Ie(),emits:{"group:selected":e=>true},setup(e,f){let{attrs:d,slots:a}=f;const{themeClasses:b}=_$5(e),{borderClasses:k}=b$5(e),{densityClasses:y}=l$5(e),{dimensionStyles:g}=x$4(e),{elevationClasses:P}=v$5(e),{loaderClasses:C}=g$2(e),{locationStyles:I}=x$2(e),{positionClasses:B$1}=c$3(e),{roundedClasses:S}=h$2(e),{sizeClasses:V,sizeStyles:h}=g$3(e),l=D(e,e.symbol,false),n=C$7(e,d),u=computed(()=>e.active!==void 0?e.active:n.isLink.value?n.isActive?.value:l?.isSelected.value),L=computed(()=>u.value?e.activeColor??e.color:e.color),_=computed(()=>({color:l?.isSelected.value&&(!n.isLink.value||n.isActive?.value)||!l||n.isActive?.value?L.value??e.baseColor:e.baseColor,variant:e.variant})),{colorClasses:D$1,colorStyles:A,variantClasses:O}=_$3(_),r=computed(()=>l?.disabled.value||e.disabled),R=computed(()=>e.variant==="elevated"&&!(e.disabled||e.flat||e.border)),T=computed(()=>{if(!(e.value===void 0||typeof e.value=="symbol"))return Object(e.value)===e.value?JSON.stringify(e.value,null,0):e.value});function w(o){r.value||n.isLink.value&&(o.metaKey||o.ctrlKey||o.shiftKey||o.button!==0||d.target==="_blank")||(n.navigate?.(o),l?.toggle());}return c(n,l?.select),o$3(()=>{const o=n.isLink.value?"a":e.tag,x=!!(e.prependIcon||a.prepend),z=!!(e.appendIcon||a.append),v=!!(e.icon&&e.icon!==true);return withDirectives(createVNode(o,mergeProps({type:o==="a"?void 0:"button",class:["v-btn",l?.selectedClass.value,{"v-btn--active":u.value,"v-btn--block":e.block,"v-btn--disabled":r.value,"v-btn--elevated":R.value,"v-btn--flat":e.flat,"v-btn--icon":!!e.icon,"v-btn--loading":e.loading,"v-btn--readonly":e.readonly,"v-btn--slim":e.slim,"v-btn--stacked":e.stacked},b.value,k.value,D$1.value,y.value,P.value,C.value,B$1.value,S.value,V.value,O.value,e.class],style:[A.value,g.value,I.value,h.value,e.style],"aria-busy":e.loading?true:void 0,disabled:r.value||void 0,tabindex:e.loading||e.readonly?-1:void 0,onClick:w,value:T.value},n.linkProps),{default:()=>[C$5(true,"v-btn"),!e.icon&&x&&createVNode("span",{key:"prepend",class:"v-btn__prepend"},[a.prepend?createVNode(P$4,{key:"prepend-defaults",disabled:!e.prependIcon,defaults:{VIcon:{icon:e.prependIcon}}},a.prepend):createVNode(L$1,{key:"prepend-icon",icon:e.prependIcon},null)]),createVNode("span",{class:"v-btn__content","data-no-activator":""},[!a.default&&v?createVNode(L$1,{key:"content-icon",icon:e.icon},null):createVNode(P$4,{key:"content-defaults",disabled:!v,defaults:{VIcon:{icon:e.icon}}},{default:()=>[a.default?.()??toDisplayString(e.text)]})]),!e.icon&&z&&createVNode("span",{key:"append",class:"v-btn__append"},[a.append?createVNode(P$4,{key:"append-defaults",disabled:!e.appendIcon,defaults:{VIcon:{icon:e.appendIcon}}},a.append):createVNode(L$1,{key:"append-icon",icon:e.appendIcon},null)]),!!e.loading&&createVNode("span",{key:"loader",class:"v-btn__loader"},[a.loader?.()??createVNode(re,{color:typeof e.loading=="boolean"?void 0:e.loading,indeterminate:true,width:"2"},null)])]}),[[B,!r.value&&e.ripple,"",{center:!!e.icon}]])}),{group:l}}});
-
-const $e=defineComponent({__name:"cookieOptions",__ssrInlineRender:true,setup(ce){const g=o$c(),v=ref(false),o=ref({essential:true,functional:g.preferences.functional,analytics:g.preferences.analytics,marketing:g.preferences.marketing}),w={essential:{label:"Cookies essentiels",description:"Necessary for the site to function, they cannot be disabled."},functional:{label:"Cookies fonctionnels",description:"Allow to remember your preferences and personalize your experience."},analytics:{label:"Cookies analytiques",description:"Help us understand how you use our site to improve it."},marketing:{label:"Cookies marketing",description:"Allow to display personalized ads based on your interests."}};function $(){g.updatePreferences({essential:true,functional:o.value.functional,analytics:o.value.analytics,marketing:o.value.marketing}),v.value=false,console.log("Après savePreferences:",{preferences:g.preferences,hasGivenConsent:g.hasGivenConsent,storedConsent:localStorage.getItem("cookie_consent")});}return (fe,ee,le,ae)=>{ee(ssrRenderComponent(U$1,mergeProps({modelValue:v.value,"onUpdate:modelValue":J=>v.value=J,width:"500"},ae),{default:withCtx((J,K,te,ne)=>{if(K)K(ssrRenderComponent(qe,null,{default:withCtx((A,d,x,I)=>{if(d)d(ssrRenderComponent(r$1,{class:"text-h5 pb-2"},{default:withCtx((b,n,c,V)=>{if(n)n(" Cookie preferences ");else return [createTextVNode(" Cookie preferences ")]}),_:1},x,I)),d(ssrRenderComponent(y$4,null,{default:withCtx((b,n,c,V)=>{if(n)n(" Customize your cookie preferences ");else return [createTextVNode(" Customize your cookie preferences ")]}),_:1},x,I)),d(ssrRenderComponent(C$3,null,{default:withCtx((b,n,c,V)=>{if(n)n(ssrRenderComponent(Ke,null,{default:withCtx((C,a,S$1,N)=>{if(a)a("<!--[-->"),ssrRenderList(w,(f,r)=>{a("<!--[-->"),a(ssrRenderComponent(ot,null,{default:withCtx((M,G,Q,W)=>{if(G)G(ssrRenderComponent(i$1,null,{default:withCtx((O,z,X,Y)=>{if(z)z(ssrRenderComponent(ye,{modelValue:o.value[r],"onUpdate:modelValue":q=>o.value[r]=q,label:f.label,color:"primary",disabled:r==="essential","hide-details":"",inset:""},null,X,Y));else return [createVNode(ye,{modelValue:o.value[r],"onUpdate:modelValue":q=>o.value[r]=q,label:f.label,color:"primary",disabled:r==="essential","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue","label","disabled"])]}),_:2},Q,W)),G(ssrRenderComponent(S,{class:"text-caption mt-1"},{default:withCtx((O,z,X,Y)=>{if(z)z(`${ssrInterpolate(f.description)}`);else return [createTextVNode(toDisplayString(f.description),1)]}),_:2},Q,W));else return [createVNode(i$1,null,{default:withCtx(()=>[createVNode(ye,{modelValue:o.value[r],"onUpdate:modelValue":O=>o.value[r]=O,label:f.label,color:"primary",disabled:r==="essential","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue","label","disabled"])]),_:2},1024),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(f.description),1)]),_:2},1024)]}),_:2},S$1,N)),a(r!=="marketing"?ssrRenderComponent(P$2,{class:"my-2"},null,S$1,N):"<!---->"),a("<!--]-->");}),a("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(w,(f,r)=>(openBlock(),createBlock(Fragment,{key:r},[createVNode(ot,null,{default:withCtx(()=>[createVNode(i$1,null,{default:withCtx(()=>[createVNode(ye,{modelValue:o.value[r],"onUpdate:modelValue":M=>o.value[r]=M,label:f.label,color:"primary",disabled:r==="essential","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue","label","disabled"])]),_:2},1024),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(f.description),1)]),_:2},1024)]),_:2},1024),r!=="marketing"?(openBlock(),createBlock(P$2,{key:0,class:"my-2"})):createCommentVNode("",true)],64))),64))]}),_:1},c,V));else return [createVNode(Ke,null,{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(w,(C,a)=>(openBlock(),createBlock(Fragment,{key:a},[createVNode(ot,null,{default:withCtx(()=>[createVNode(i$1,null,{default:withCtx(()=>[createVNode(ye,{modelValue:o.value[a],"onUpdate:modelValue":S=>o.value[a]=S,label:C.label,color:"primary",disabled:a==="essential","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue","label","disabled"])]),_:2},1024),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(C.description),1)]),_:2},1024)]),_:2},1024),a!=="marketing"?(openBlock(),createBlock(P$2,{key:0,class:"my-2"})):createCommentVNode("",true)],64))),64))]),_:1})]}),_:1},x,I)),d(ssrRenderComponent(f$5,{class:"pa-4"},{default:withCtx((b,n,c,V)=>{if(n)n(ssrRenderComponent(c$1,null,null,c,V)),n(ssrRenderComponent(We,{variant:"tonal",color:"error",onClick:C=>v.value=false},{default:withCtx((C,a,S,N)=>{if(a)a(" Cancel ");else return [createTextVNode(" Cancel ")]}),_:1},c,V)),n(ssrRenderComponent(We,{color:"success",variant:"tonal",onClick:$},{default:withCtx((C,a,S,N)=>{if(a)a(" Save ");else return [createTextVNode(" Save ")]}),_:1},c,V));else return [createVNode(c$1),createVNode(We,{variant:"tonal",color:"error",onClick:C=>v.value=false},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"]),createVNode(We,{color:"success",variant:"tonal",onClick:$},{default:withCtx(()=>[createTextVNode(" Save ")]),_:1})]}),_:1},x,I));else return [createVNode(r$1,{class:"text-h5 pb-2"},{default:withCtx(()=>[createTextVNode(" Cookie preferences ")]),_:1}),createVNode(y$4,null,{default:withCtx(()=>[createTextVNode(" Customize your cookie preferences ")]),_:1}),createVNode(C$3,null,{default:withCtx(()=>[createVNode(Ke,null,{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(w,(b,n)=>(openBlock(),createBlock(Fragment,{key:n},[createVNode(ot,null,{default:withCtx(()=>[createVNode(i$1,null,{default:withCtx(()=>[createVNode(ye,{modelValue:o.value[n],"onUpdate:modelValue":c=>o.value[n]=c,label:b.label,color:"primary",disabled:n==="essential","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue","label","disabled"])]),_:2},1024),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(b.description),1)]),_:2},1024)]),_:2},1024),n!=="marketing"?(openBlock(),createBlock(P$2,{key:0,class:"my-2"})):createCommentVNode("",true)],64))),64))]),_:1})]),_:1}),createVNode(f$5,{class:"pa-4"},{default:withCtx(()=>[createVNode(c$1),createVNode(We,{variant:"tonal",color:"error",onClick:b=>v.value=false},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"]),createVNode(We,{color:"success",variant:"tonal",onClick:$},{default:withCtx(()=>[createTextVNode(" Save ")]),_:1})]),_:1})]}),_:1},te,ne));else return [createVNode(qe,null,{default:withCtx(()=>[createVNode(r$1,{class:"text-h5 pb-2"},{default:withCtx(()=>[createTextVNode(" Cookie preferences ")]),_:1}),createVNode(y$4,null,{default:withCtx(()=>[createTextVNode(" Customize your cookie preferences ")]),_:1}),createVNode(C$3,null,{default:withCtx(()=>[createVNode(Ke,null,{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(w,(A,d)=>(openBlock(),createBlock(Fragment,{key:d},[createVNode(ot,null,{default:withCtx(()=>[createVNode(i$1,null,{default:withCtx(()=>[createVNode(ye,{modelValue:o.value[d],"onUpdate:modelValue":x=>o.value[d]=x,label:A.label,color:"primary",disabled:d==="essential","hide-details":"",inset:""},null,8,["modelValue","onUpdate:modelValue","label","disabled"])]),_:2},1024),createVNode(S,{class:"text-caption mt-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(A.description),1)]),_:2},1024)]),_:2},1024),d!=="marketing"?(openBlock(),createBlock(P$2,{key:0,class:"my-2"})):createCommentVNode("",true)],64))),64))]),_:1})]),_:1}),createVNode(f$5,{class:"pa-4"},{default:withCtx(()=>[createVNode(c$1),createVNode(We,{variant:"tonal",color:"error",onClick:A=>v.value=false},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"]),createVNode(We,{color:"success",variant:"tonal",onClick:$},{default:withCtx(()=>[createTextVNode(" Save ")]),_:1})]),_:1})]),_:1})]}),_:1},le));}}});
-
-const M=Symbol.for("vuetify:layout"),X=Symbol.for("vuetify:layout-item"),N=1e3,pt=y$a({overlaps:{type:Array,default:()=>[]},fullHeight:Boolean},"layout"),yt=y$a({name:{type:String},order:{type:[Number,String],default:0},absolute:Boolean},"layout-item");function dt(){const u=inject(M);if(!u)throw new Error("[Vuetify] Could not find injected layout");return {getLayoutItem:u.getLayoutItem,mainRect:u.mainRect,mainStyles:u.mainStyles}}function mt(u){const i=inject(M);if(!i)throw new Error("[Vuetify] Could not find injected layout");const p=u.id??`layout-item-${o$a()}`,r=a$b("useLayoutItem");provide(X,{id:p});const l=shallowRef(false),{layoutItemStyles:c,layoutItemScrimStyles:v}=i.register(r,{...u,active:computed(()=>l.value?false:u.active.value),id:p});return {layoutItemStyles:c,layoutRect:i.layoutRect,layoutItemScrimStyles:v}}const lt=(u,i,p,r)=>{let l={top:0,left:0,right:0,bottom:0};const c=[{id:"",layer:{...l}}];for(const v of u){const d=i.get(v),g=p.get(v),z=r.get(v);if(!d||!g||!z)continue;const h={...l,[d.value]:parseInt(l[d.value],10)+(z.value?parseInt(g.value,10):0)};c.push({id:v,layer:h}),l=h;}return c};function gt(u){const i$1=inject(M,null),p=computed(()=>i$1?i$1.rootZIndex.value-100:N),r=ref([]),l=reactive(new Map),c=reactive(new Map),v=reactive(new Map),d=reactive(new Map),g=reactive(new Map),{resizeRef:z,contentRect:h}=i(),q=computed(()=>{const e=new Map,s=u.overlaps??[];for(const t of s.filter(n=>n.includes(":"))){const[n,o]=t.split(":");if(!r.value.includes(n)||!r.value.includes(o))continue;const m=l.get(n),y=l.get(o),S=c.get(n),w=c.get(o);!m||!y||!S||!w||(e.set(o,{position:m.value,amount:parseInt(S.value,10)}),e.set(n,{position:y.value,amount:-parseInt(w.value,10)}));}return e}),I=computed(()=>{const e=[...new Set([...v.values()].map(t=>t.value))].sort((t,n)=>t-n),s=[];for(const t of e){const n=r.value.filter(o=>v.get(o)?.value===t);s.push(...n);}return lt(s,l,c,d)}),E=computed(()=>!Array.from(g.values()).some(e=>e.value)),x=computed(()=>I.value[I.value.length-1].layer),D=computed(()=>({"--v-layout-left":X$3(x.value.left),"--v-layout-right":X$3(x.value.right),"--v-layout-top":X$3(x.value.top),"--v-layout-bottom":X$3(x.value.bottom),...E.value?void 0:{transition:"none"}})),b=computed(()=>I.value.slice(1).map((e,s)=>{let{id:t}=e;const{layer:n}=I.value[s],o=c.get(t),m=l.get(t);return {id:t,...n,size:Number(o.value),position:m.value}})),H=e=>b.value.find(s=>s.id===e),F=a$b("createLayout"),W=shallowRef(false);provide(M,{register:(e,s)=>{let{id:t,order:n,position:o,layoutSize:m,elementSize:y,active:S,disableTransitions:w,absolute:G}=s;v.set(t,n),l.set(t,o),c.set(t,m),d.set(t,S),w&&g.set(t,w);const T=s$d(X,F?.vnode).indexOf(e);T>-1?r.value.splice(T,0,t):r.value.push(t);const j=computed(()=>b.value.findIndex(L=>L.id===t)),O=computed(()=>p.value+I.value.length*2-j.value*2),J=computed(()=>{const L=o.value==="left"||o.value==="right",V=o.value==="right",tt=o.value==="bottom",C=y.value??m.value,et=C===0?"%":"px",K={[o.value]:0,zIndex:O.value,transform:`translate${L?"X":"Y"}(${(S.value?0:-(C===0?100:C))*(V||tt?-1:1)}${et})`,position:G.value||p.value!==N?"absolute":"fixed",...E.value?void 0:{transition:"none"}};if(!W.value)return K;const f=b.value[j.value];if(!f)throw new Error(`[Vuetify] Could not find layout item "${t}"`);const P=q.value.get(t);return P&&(f[P.position]+=P.amount),{...K,height:L?`calc(100% - ${f.top}px - ${f.bottom}px)`:y.value?`${y.value}px`:void 0,left:V?void 0:`${f.left}px`,right:V?`${f.right}px`:void 0,top:o.value!=="bottom"?`${f.top}px`:void 0,bottom:o.value!=="top"?`${f.bottom}px`:void 0,width:L?y.value?`${y.value}px`:void 0:`calc(100% - ${f.left}px - ${f.right}px)`}}),Q=computed(()=>({zIndex:O.value-1}));return {layoutItemStyles:J,layoutItemScrimStyles:Q,zIndex:O}},unregister:e=>{v.delete(e),l.delete(e),c.delete(e),d.delete(e),g.delete(e),r.value=r.value.filter(s=>s!==e);},mainRect:x,mainStyles:D,getLayoutItem:H,items:b,layoutRect:h,rootZIndex:p});const Y=computed(()=>["v-layout",{"v-layout--full-height":u.fullHeight}]),_=computed(()=>({zIndex:i$1?p.value:void 0,position:i$1?"relative":void 0,overflow:i$1?"hidden":void 0}));return {layoutClasses:Y,layoutStyles:_,getLayoutItem:H,items:b,layoutRect:h,layoutRef:z}}
-
-function me(e){const n=shallowRef(e());let a=-1;function t(){clearInterval(a);}function m(){t(),nextTick(()=>n.value=e());}function v(s){const f=s?getComputedStyle(s):{transitionDuration:.2},l=parseFloat(f.transitionDuration)*1e3||200;if(t(),n.value<=0)return;const d=performance.now();a=(void 0).setInterval(()=>{const k=performance.now()-d+l;n.value=Math.max(e()-k,0),n.value<=0&&t();},l);}return onScopeDispose(t),{clear:t,time:n,start:v,reset:m}}const ve=y$a({multiLine:Boolean,text:String,timer:[Boolean,String],timeout:{type:[Number,String],default:5e3},vertical:Boolean,...v$4({location:"bottom"}),...m$2(),...g$4(),...V$2(),...M$5(),...M$9(Re({transition:"v-snackbar-transition"}),["persistent","noClickAnimation","scrim","scrollStrategy"])},"VSnackbar"),Be=y$7()({name:"VSnackbar",props:ve(),emits:{"update:modelValue":e=>true},setup(e,n){let{slots:a}=n;const t=C$c(e,"modelValue"),{positionClasses:m}=c$3(e),{scopeId:v}=t$2(),{themeClasses:s}=_$5(e),{colorClasses:f,colorStyles:l,variantClasses:d}=_$3(e),{roundedClasses:k}=h$2(e),u=me(()=>Number(e.timeout)),h=ref(),S=ref(),c=shallowRef(false),V=shallowRef(0),T=ref(),L=inject(M,void 0);r$a(()=>!!L,()=>{const o=dt();watchEffect(()=>{T.value=o.mainStyles.value;});}),watch(t,b),watch(()=>e.timeout,b);let y=-1;function b(){u.reset(),(void 0).clearTimeout(y);const o=Number(e.timeout);if(!t.value||o===-1)return;const i=T$8(S.value);u.start(i),y=(void 0).setTimeout(()=>{t.value=false;},o);}function _(){u.reset(),(void 0).clearTimeout(y);}function R(){c.value=true,_();}function g(){c.value=false,b();}function A(o){V.value=o.touches[0].clientY;}function B(o){Math.abs(V.value-o.changedTouches[0].clientY)>50&&(t.value=false);}function D(){c.value&&g();}const I=computed(()=>e.location.split(" ").reduce((o,i)=>(o[`v-snackbar--${i}`]=true,o),{}));return o$3(()=>{const o=it.filterProps(e),i=!!(a.default||a.text||e.text);return createVNode(it,mergeProps({ref:h,class:["v-snackbar",{"v-snackbar--active":t.value,"v-snackbar--multi-line":e.multiLine&&!e.vertical,"v-snackbar--timer":!!e.timer,"v-snackbar--vertical":e.vertical},I.value,m.value,e.class],style:[T.value,e.style]},o,{modelValue:t.value,"onUpdate:modelValue":N=>t.value=N,contentProps:mergeProps({class:["v-snackbar__wrapper",s.value,f.value,k.value,d.value],style:[l.value],onPointerenter:R,onPointerleave:g},o.contentProps),persistent:true,noClickAnimation:true,scrim:false,scrollStrategy:"none",_disableGlobalStack:true,onTouchstartPassive:A,onTouchend:B,onAfterLeave:D},v),{default:()=>[C$5(false,"v-snackbar"),e.timer&&!c.value&&createVNode("div",{key:"timer",class:"v-snackbar__timer"},[createVNode(ge$1,{ref:S,color:typeof e.timer=="string"?e.timer:"info",max:e.timeout,"model-value":u.time.value},null)]),i&&createVNode("div",{key:"content",class:"v-snackbar__content",role:"status","aria-live":"polite"},[a.text?.()??e.text,a.default?.()]),a.actions&&createVNode(P$4,{defaults:{VBtn:{variant:"text",ripple:false,slim:true}}},{default:()=>[createVNode("div",{class:"v-snackbar__actions"},[a.actions({isActive:t})])]})],activator:a.activator})}),d$5({},h)}});
-
-const W=defineComponent({__name:"cookie-banner",__ssrInlineRender:true,setup(h){const n=o$c(),d=ref(true),f=ref(false);ref(false),ref({essential:true,functional:true,analytics:true,marketing:true}),ref(false);function C(){n.acceptAllCookies(),d.value=false,console.log("Après acceptAll:",{preferences:n.preferences,hasGivenConsent:n.hasGivenConsent,storedConsent:localStorage.getItem("cookie_consent")});}function k(){n.rejectNonEssentialCookies(),d.value=false,console.log("Après rejectNonEssential:",{preferences:n.preferences,hasGivenConsent:n.hasGivenConsent,storedConsent:localStorage.getItem("cookie_consent")});}return (_,s,p,g)=>{unref(n).hasGivenConsent?s("<!---->"):(s(`<div${ssrRenderAttrs(g)} data-v-8bdccf7e>`),s(ssrRenderComponent(Be,{modelValue:d.value,"onUpdate:modelValue":u=>d.value=u,timeout:-1,location:"bottom",class:"cookie-banner",elevation:"4",color:"secondary"},{default:withCtx((u,a,b,e)=>{if(a)a(`<div class="d-flex flex-column" data-v-8bdccf7e${e}><div class="text-subtitle-1 font-weight-bold mb-2" data-v-8bdccf7e${e}> Cookie consent </div><div class="mb-4" data-v-8bdccf7e${e}> We use cookies to improve your experience, personalize content, and analyze our traffic. You can choose to accept all cookies or customize them. </div><div class="d-flex flex-wrap align-center justify-space-between" data-v-8bdccf7e${e}><div data-v-8bdccf7e${e}>`),a(ssrRenderComponent(We,{color:"white",variant:"text",class:"mr-2 mb-2 mb-sm-0",onClick:v=>f.value=true},{default:withCtx((v,t,x,w)=>{if(t)t(" Customize ");else return [createTextVNode(" Customize ")]}),_:1},b,e)),a(ssrRenderComponent(We,{color:"white",variant:"outlined",class:"mr-2 mb-2 mb-sm-0",onClick:k},{default:withCtx((v,t,x,w)=>{if(t)t(" Reject ");else return [createTextVNode(" Reject ")]}),_:1},b,e)),a("</div>"),a(ssrRenderComponent(We,{color:"white",variant:"elevated",class:"mb-2 mb-sm-0",onClick:C},{default:withCtx((v,t,x,w)=>{if(t)t(" Accept all ");else return [createTextVNode(" Accept all ")]}),_:1},b,e)),a("</div></div>");else return [createVNode("div",{class:"d-flex flex-column"},[createVNode("div",{class:"text-subtitle-1 font-weight-bold mb-2"}," Cookie consent "),createVNode("div",{class:"mb-4"}," We use cookies to improve your experience, personalize content, and analyze our traffic. You can choose to accept all cookies or customize them. "),createVNode("div",{class:"d-flex flex-wrap align-center justify-space-between"},[createVNode("div",null,[createVNode(We,{color:"white",variant:"text",class:"mr-2 mb-2 mb-sm-0",onClick:v=>f.value=true},{default:withCtx(()=>[createTextVNode(" Customize ")]),_:1},8,["onClick"]),createVNode(We,{color:"white",variant:"outlined",class:"mr-2 mb-2 mb-sm-0",onClick:k},{default:withCtx(()=>[createTextVNode(" Reject ")]),_:1})]),createVNode(We,{color:"white",variant:"elevated",class:"mb-2 mb-sm-0",onClick:C},{default:withCtx(()=>[createTextVNode(" Accept all ")]),_:1})])])]}),_:1},p)),s(ssrRenderComponent($e,{modelValue:f.value,"onUpdate:modelValue":u=>f.value=u},null,p)),s("</div>"));}}});
-
-const t=W.setup;W.setup=(s,n)=>{const e=useSSRContext();return (e.modules||(e.modules=new Set)).add("components/cookie-banner.vue"),t?t(s,n):void 0};const u$1=s$8(W,[["__scopeId","data-v-8bdccf7e"]]);
-
-const V=y$a({...o$4(),...pt({fullHeight:true}),...M$5()},"VApp"),x=y$7()({name:"VApp",props:V(),setup(e,r){let{slots:s}=r;const t=_$5(e),{layoutClasses:m,getLayoutItem:p,items:a,layoutRef:l}=gt(e),{rtlClasses:i}=y$d();return o$3(()=>createVNode("div",{ref:l,class:["v-application",t.themeClasses.value,m.value,i.value,e.class],style:[e.style]},[createVNode("div",{class:"v-application__wrap"},[s.default?.()])])),{getLayoutItem:p,items:a,theme:t}}});
-
-const J=defineComponent({__name:"app",__ssrInlineRender:true,setup(D){useRouter(),k$9();const r=o$c();return onErrorCaptured((e,f,p)=>e instanceof TypeError&&(e.message.includes("'parentNode'")||e.message.includes("'type' of 'vnode' as it is null"))?(console.warn("Vue component unmount error captured and handled:",e.message),false):true),(e,f,p,x$1)=>{const N=q$2,l=w$7;f(ssrRenderComponent(N,x$1,{default:withCtx((L,_,g,V)=>{if(_)_(ssrRenderComponent(x,null,{default:withCtx((P,o,m,u)=>{if(o)o(ssrRenderComponent(l,null,null,m,u)),o(ssrRenderComponent(u$1,null,null,m,u)),unref(r).preferences.analytics?o(ssrRenderComponent(f$b,null,null,m,u)):o("<!---->");else return [createVNode(l),createVNode(u$1),unref(r).preferences.analytics?(openBlock(),createBlock(f$b,{key:0})):createCommentVNode("",true)]}),_:1},g,V));else return [createVNode(x,null,{default:withCtx(()=>[createVNode(l),createVNode(u$1),unref(r).preferences.analytics?(openBlock(),createBlock(f$b,{key:0})):createCommentVNode("",true)]),_:1})]}),_:1},p));}}});
-
-const d={__name:"nuxt-error-page",__ssrInlineRender:true,props:{error:Object},setup(r){const e=r.error;e.stack&&e.stack.split(`
-`).splice(1).map(s=>({text:s.replace("webpack:/","").replace(".vue",".js").trim(),internal:s.includes("node_modules")&&!s.includes(".cache")||s.includes("internal")||s.includes("new Promise")})).map(s=>`<span class="stack${s.internal?" internal":""}">${s.text}</span>`).join(`
-`);const o=Number(e.statusCode||500),a=o===404,i=e.statusMessage??(a?"Page Not Found":"Internal Server Error"),m=e.message||e.toString(),l=void 0,_=defineAsyncComponent(()=>import('./error-404.vue.mjs')),x=defineAsyncComponent(()=>import('./error-500.vue.mjs')),f=a?_:x;return (s,c,g,C)=>{c(ssrRenderComponent(unref(f),mergeProps({statusCode:unref(o),statusMessage:unref(i),description:unref(m),stack:unref(l)},C),null,g));}}},u=d.setup;d.setup=(r,n)=>{const e=useSSRContext();return (e.modules||(e.modules=new Set)).add("node_modules/nuxt/dist/app/components/nuxt-error-page.vue"),u?u(r,n):void 0};
-
-const f={__name:"nuxt-root",__ssrInlineRender:true,setup(m){const l=()=>null,e=W$8();e.deferHydration(),e.ssrContext.url;const d$1=false;provide(t$i,N$9()),e.hooks.callHookWith(n=>n.map(o=>o()),"vue:setup");const u=a$p(),p=u.value&&!e.ssrContext.error;onErrorCaptured((n,o,t)=>{e.hooks.callHook("vue:error",n,o,t).catch(s=>console.error("[nuxt] Error in `vue:error` hook",s));{const s=e.runWithContext(()=>l$f(n));return onServerPrefetch(()=>s),false}});const c=e.ssrContext.islandContext;return (n,o,t,s)=>{ssrRenderSuspense(o,{default:()=>{unref(p)?o("<div></div>"):unref(u)?o(ssrRenderComponent(unref(d),{error:unref(u)},null,t)):unref(c)?o(ssrRenderComponent(unref(l),{context:unref(c)},null,t)):unref(d$1)?ssrRenderVNode(o,createVNode(resolveDynamicComponent(unref(d$1)),null,null),t):o(ssrRenderComponent(unref(J),null,null,t));},_:1});}}},a$1=f.setup;f.setup=(m,l)=>{const e=useSSRContext();return (e.modules||(e.modules=new Set)).add("node_modules/nuxt/dist/app/components/nuxt-root.vue"),a$1?a$1(m,l):void 0};
-
-let a;a=async function(t){const o=createApp(f),r=D$5({vueApp:o,ssrContext:t});try{await U$6(r,M$4),await r.hooks.callHook("app:created",o);}catch(p){await r.hooks.callHook("app:error",p),r.payload.error||=u$h(p);}if(t?._renderResponse)throw new Error("skipping render");return o};const h=e=>a(e);
+function useRequestEvent(nuxtApp = useNuxtApp()) {
+  var _a;
+  return (_a = nuxtApp.ssrContext) == null ? void 0 : _a.event;
+}
+
+const CookieDefaults = {
+  path: "/",
+  watch: true,
+  decode: (val) => destr(decodeURIComponent(val)),
+  encode: (val) => encodeURIComponent(typeof val === "string" ? val : JSON.stringify(val))
+};
+function useCookie(name, _opts) {
+  var _a;
+  const opts = { ...CookieDefaults, ..._opts };
+  opts.filter ?? (opts.filter = (key) => key === name);
+  const cookies = readRawCookies(opts) || {};
+  let delay;
+  if (opts.maxAge !== void 0) {
+    delay = opts.maxAge * 1e3;
+  } else if (opts.expires) {
+    delay = opts.expires.getTime() - Date.now();
+  }
+  const hasExpired = delay !== void 0 && delay <= 0;
+  const cookieValue = klona(hasExpired ? void 0 : cookies[name] ?? ((_a = opts.default) == null ? void 0 : _a.call(opts)));
+  const cookie = ref(cookieValue);
+  {
+    const nuxtApp = useNuxtApp();
+    const writeFinalCookieValue = () => {
+      if (opts.readonly || isEqual$1(cookie.value, cookies[name])) {
+        return;
+      }
+      nuxtApp._cookies || (nuxtApp._cookies = {});
+      if (name in nuxtApp._cookies) {
+        if (isEqual$1(cookie.value, nuxtApp._cookies[name])) {
+          return;
+        }
+      }
+      nuxtApp._cookies[name] = cookie.value;
+      writeServerCookie(useRequestEvent(nuxtApp), name, cookie.value, opts);
+    };
+    const unhook = nuxtApp.hooks.hookOnce("app:rendered", writeFinalCookieValue);
+    nuxtApp.hooks.hookOnce("app:error", () => {
+      unhook();
+      return writeFinalCookieValue();
+    });
+  }
+  return cookie;
+}
+function readRawCookies(opts = {}) {
+  {
+    return parse(getRequestHeader(useRequestEvent(), "cookie") || "", opts);
+  }
+}
+function writeServerCookie(event, name, value, opts = {}) {
+  if (event) {
+    if (value !== null && value !== void 0) {
+      return setCookie(event, name, value, opts);
+    }
+    if (getCookie(event, name) !== void 0) {
+      return deleteCookie(event, name, opts);
+    }
+  }
+}
+
+function cookies(options) {
+  return {
+    getItem: (key) => useCookie(
+      key,
+      {
+        ...options ?? useRuntimeConfig().public.piniaPluginPersistedstate.cookieOptions ?? {},
+        decode: decodeURIComponent,
+        readonly: true
+      }
+    ).value,
+    setItem: (key, value) => useCookie(
+      key,
+      {
+        ...options ?? useRuntimeConfig().public.piniaPluginPersistedstate.cookieOptions ?? {},
+        encode: encodeURIComponent
+      }
+    ).value = value
+  };
+}
+function localStorage$1() {
+  return {
+    getItem: (key) => null,
+    setItem: (key, value) => null
+  };
+}
+function sessionStorage() {
+  return {
+    getItem: (key) => null,
+    setItem: (key, value) => null
+  };
+}
+const storages = {
+  cookies,
+  localStorage: localStorage$1,
+  sessionStorage
+};
+
+function piniaPlugin(context) {
+  const config = useRuntimeConfig();
+  const options = config.public.piniaPluginPersistedstate;
+  createPersistence(
+    context,
+    (p) => ({
+      key: options.key ? options.key.replace(/%id/g, p.key ?? context.store.$id) : p.key ?? context.store.$id,
+      debug: p.debug ?? options.debug ?? false,
+      serializer: p.serializer ?? {
+        serialize: (data) => JSON.stringify(data),
+        deserialize: (data) => destr(data)
+      },
+      storage: p.storage ?? (options.storage ? options.storage === "cookies" ? storages.cookies(options.cookieOptions) : storages[options.storage]() : storages.cookies()),
+      beforeHydrate: p.beforeHydrate,
+      afterHydrate: p.afterHydrate,
+      pick: p.pick,
+      omit: p.omit
+    }),
+    options.auto ?? false
+  );
+}
+const plugin_9blYNaYnU54CugJxmHHBDB5pFfu0BTw1XedfwOhj3dM = defineNuxtPlugin({
+  name: "pinia-plugin-persistedstate",
+  setup({ $pinia }) {
+    $pinia.use(piniaPlugin);
+  }
+});
+
+const api_interceptor_KJ3xV5LQhnHOmIh1GhG1saeCVICF0Z93fKmu6zZ933I = defineNuxtPlugin((nuxtApp) => {
+  useUserStore();
+});
+
+const auth_ydS_uAQ5qS4E2Ez9vBX0d0JPoo00WYZNOgh9_nraCUo = defineNuxtPlugin(async (nuxtApp) => {
+  useUserStore();
+  useRouter$1();
+});
+
+const token_MOIRrJgASguRDmgQS2H1GowZgD6w5hmJ0qSy7_YgFIQ = defineNuxtPlugin(async (nuxtApp) => {
+  const userStore = useUserStore();
+  const tryRefreshToken = async () => {
+    try {
+      const response = await fetch("/api/auth/refresh", {
+        method: "GET",
+        credentials: "include"
+        // Important pour envoyer le cookie HttpOnly
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.accessToken) {
+          userStore.setToken(data.accessToken);
+          if (data.user) {
+            userStore.user = data.user;
+            userStore.isAuthenticated = true;
+          }
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.warn("Erreur lors du rafraîchissement du token:", error);
+      return false;
+    }
+  };
+  userStore.initializeStore();
+  nuxtApp.hook("app:error", async (error) => {
+    if ((error == null ? void 0 : error.statusCode) === 401 && userStore.isAuthenticated) {
+      console.log("Erreur 401 détectée, tentative de rafraîchissement du token");
+      const refreshed = await tryRefreshToken();
+      if (refreshed) {
+        console.log("Token rafraîchi avec succès, redirection vers la page courante");
+        const currentPath = (void 0).location.pathname;
+        navigateTo(currentPath);
+      } else {
+        console.log("Échec du rafraîchissement, déconnexion");
+        userStore.logout();
+        navigateTo("/login");
+      }
+    }
+  });
+  return {
+    provide: {
+      refreshToken: tryRefreshToken
+    }
+  };
+});
+
+function useToggleScope(source, fn) {
+  let scope;
+  function start() {
+    scope = effectScope();
+    scope.run(() => fn.length ? fn(() => {
+      scope == null ? void 0 : scope.stop();
+      start();
+    }) : fn());
+  }
+  watch(source, (active) => {
+    if (active && !scope) {
+      start();
+    } else if (!active) {
+      scope == null ? void 0 : scope.stop();
+      scope = void 0;
+    }
+  }, {
+    immediate: true
+  });
+  onScopeDispose(() => {
+    scope == null ? void 0 : scope.stop();
+  });
+}
+
+function getNestedValue(obj, path, fallback) {
+  const last = path.length - 1;
+  if (last < 0) return obj === void 0 ? fallback : obj;
+  for (let i = 0; i < last; i++) {
+    if (obj == null) {
+      return fallback;
+    }
+    obj = obj[path[i]];
+  }
+  if (obj == null) return fallback;
+  return obj[path[last]] === void 0 ? fallback : obj[path[last]];
+}
+function deepEqual(a, b) {
+  if (a === b) return true;
+  if (a instanceof Date && b instanceof Date && a.getTime() !== b.getTime()) {
+    return false;
+  }
+  if (a !== Object(a) || b !== Object(b)) {
+    return false;
+  }
+  const props = Object.keys(a);
+  if (props.length !== Object.keys(b).length) {
+    return false;
+  }
+  return props.every((p) => deepEqual(a[p], b[p]));
+}
+function getObjectValueByPath(obj, path, fallback) {
+  if (obj == null || !path || typeof path !== "string") return fallback;
+  if (obj[path] !== void 0) return obj[path];
+  path = path.replace(/\[(\w+)\]/g, ".$1");
+  path = path.replace(/^\./, "");
+  return getNestedValue(obj, path.split("."), fallback);
+}
+function getPropertyFromItem(item, property, fallback) {
+  if (property === true) return item === void 0 ? fallback : item;
+  if (property == null || typeof property === "boolean") return fallback;
+  if (item !== Object(item)) {
+    if (typeof property !== "function") return fallback;
+    const value2 = property(item, fallback);
+    return typeof value2 === "undefined" ? fallback : value2;
+  }
+  if (typeof property === "string") return getObjectValueByPath(item, property, fallback);
+  if (Array.isArray(property)) return getNestedValue(item, property, fallback);
+  if (typeof property !== "function") return fallback;
+  const value = property(item, fallback);
+  return typeof value === "undefined" ? fallback : value;
+}
+function createRange(length) {
+  let start = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 0;
+  return Array.from({
+    length
+  }, (v, k) => start + k);
+}
+function convertToUnit(str) {
+  let unit = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "px";
+  if (str == null || str === "") {
+    return void 0;
+  }
+  const num = Number(str);
+  if (isNaN(num)) {
+    return String(str);
+  } else if (!isFinite(num)) {
+    return void 0;
+  } else {
+    return `${num}${unit}`;
+  }
+}
+function isObject(obj) {
+  return obj !== null && typeof obj === "object" && !Array.isArray(obj);
+}
+function isPlainObject(obj) {
+  let proto;
+  return obj !== null && typeof obj === "object" && ((proto = Object.getPrototypeOf(obj)) === Object.prototype || proto === null);
+}
+function refElement(obj) {
+  if (obj && "$el" in obj) {
+    const el = obj.$el;
+    if ((el == null ? void 0 : el.nodeType) === Node.TEXT_NODE) {
+      return el.nextElementSibling;
+    }
+    return el;
+  }
+  return obj;
+}
+const keyCodes = Object.freeze({
+  enter: 13,
+  tab: 9,
+  delete: 46,
+  esc: 27,
+  space: 32,
+  up: 38,
+  down: 40,
+  left: 37,
+  right: 39,
+  end: 35,
+  home: 36,
+  del: 46,
+  backspace: 8,
+  insert: 45,
+  pageup: 33,
+  pagedown: 34,
+  shift: 16
+});
+const keyValues = Object.freeze({
+  enter: "Enter",
+  tab: "Tab",
+  delete: "Delete",
+  esc: "Escape",
+  space: "Space",
+  up: "ArrowUp",
+  down: "ArrowDown",
+  left: "ArrowLeft",
+  right: "ArrowRight",
+  end: "End",
+  home: "Home",
+  del: "Delete",
+  backspace: "Backspace",
+  insert: "Insert",
+  pageup: "PageUp",
+  pagedown: "PageDown",
+  shift: "Shift"
+});
+function keys(o) {
+  return Object.keys(o);
+}
+function has(obj, key) {
+  return key.every((k) => obj.hasOwnProperty(k));
+}
+function pick(obj, paths) {
+  const found = {};
+  for (const key of paths) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      found[key] = obj[key];
+    }
+  }
+  return found;
+}
+function pickWithRest(obj, paths, exclude) {
+  const found = /* @__PURE__ */ Object.create(null);
+  const rest = /* @__PURE__ */ Object.create(null);
+  for (const key in obj) {
+    if (paths.some((path) => path instanceof RegExp ? path.test(key) : path === key) && true) {
+      found[key] = obj[key];
+    } else {
+      rest[key] = obj[key];
+    }
+  }
+  return [found, rest];
+}
+function omit(obj, exclude) {
+  const clone = {
+    ...obj
+  };
+  exclude.forEach((prop) => delete clone[prop]);
+  return clone;
+}
+const onRE = /^on[^a-z]/;
+const isOn = (key) => onRE.test(key);
+const bubblingEvents = ["onAfterscriptexecute", "onAnimationcancel", "onAnimationend", "onAnimationiteration", "onAnimationstart", "onAuxclick", "onBeforeinput", "onBeforescriptexecute", "onChange", "onClick", "onCompositionend", "onCompositionstart", "onCompositionupdate", "onContextmenu", "onCopy", "onCut", "onDblclick", "onFocusin", "onFocusout", "onFullscreenchange", "onFullscreenerror", "onGesturechange", "onGestureend", "onGesturestart", "onGotpointercapture", "onInput", "onKeydown", "onKeypress", "onKeyup", "onLostpointercapture", "onMousedown", "onMousemove", "onMouseout", "onMouseover", "onMouseup", "onMousewheel", "onPaste", "onPointercancel", "onPointerdown", "onPointerenter", "onPointerleave", "onPointermove", "onPointerout", "onPointerover", "onPointerup", "onReset", "onSelect", "onSubmit", "onTouchcancel", "onTouchend", "onTouchmove", "onTouchstart", "onTransitioncancel", "onTransitionend", "onTransitionrun", "onTransitionstart", "onWheel"];
+function filterInputAttrs(attrs) {
+  const [events, props] = pickWithRest(attrs, [onRE]);
+  const inputEvents = omit(events, bubblingEvents);
+  const [rootAttrs, inputAttrs] = pickWithRest(props, ["class", "style", "id", /^data-/]);
+  Object.assign(rootAttrs, events);
+  Object.assign(inputAttrs, inputEvents);
+  return [rootAttrs, inputAttrs];
+}
+function wrapInArray(v) {
+  return v == null ? [] : Array.isArray(v) ? v : [v];
+}
+function debounce(fn, delay) {
+  let timeoutId = 0;
+  const wrap = function() {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), unref(delay));
+  };
+  wrap.clear = () => {
+    clearTimeout(timeoutId);
+  };
+  wrap.immediate = fn;
+  return wrap;
+}
+function clamp(value) {
+  let min = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 0;
+  let max = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1;
+  return Math.max(min, Math.min(max, value));
+}
+function getDecimals(value) {
+  const trimmedStr = value.toString().trim();
+  return trimmedStr.includes(".") ? trimmedStr.length - trimmedStr.indexOf(".") - 1 : 0;
+}
+function padEnd(str, length) {
+  let char = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : "0";
+  return str + char.repeat(Math.max(0, length - str.length));
+}
+function padStart(str, length) {
+  let char = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : "0";
+  return char.repeat(Math.max(0, length - str.length)) + str;
+}
+function chunk(str) {
+  let size = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1;
+  const chunked = [];
+  let index = 0;
+  while (index < str.length) {
+    chunked.push(str.substr(index, size));
+    index += size;
+  }
+  return chunked;
+}
+function humanReadableFileSize(bytes) {
+  let base = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1e3;
+  if (bytes < base) {
+    return `${bytes} B`;
+  }
+  const prefix = base === 1024 ? ["Ki", "Mi", "Gi"] : ["k", "M", "G"];
+  let unit = -1;
+  while (Math.abs(bytes) >= base && unit < prefix.length - 1) {
+    bytes /= base;
+    ++unit;
+  }
+  return `${bytes.toFixed(1)} ${prefix[unit]}B`;
+}
+function mergeDeep() {
+  let source = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+  let target = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+  let arrayFn = arguments.length > 2 ? arguments[2] : void 0;
+  const out = {};
+  for (const key in source) {
+    out[key] = source[key];
+  }
+  for (const key in target) {
+    const sourceProperty = source[key];
+    const targetProperty = target[key];
+    if (isPlainObject(sourceProperty) && isPlainObject(targetProperty)) {
+      out[key] = mergeDeep(sourceProperty, targetProperty, arrayFn);
+      continue;
+    }
+    if (arrayFn && Array.isArray(sourceProperty) && Array.isArray(targetProperty)) {
+      out[key] = arrayFn(sourceProperty, targetProperty);
+      continue;
+    }
+    out[key] = targetProperty;
+  }
+  return out;
+}
+function flattenFragments(nodes) {
+  return nodes.map((node) => {
+    if (node.type === Fragment) {
+      return flattenFragments(node.children);
+    } else {
+      return node;
+    }
+  }).flat();
+}
+function toKebabCase() {
+  let str = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : "";
+  if (toKebabCase.cache.has(str)) return toKebabCase.cache.get(str);
+  const kebab = str.replace(/[^a-z]/gi, "-").replace(/\B([A-Z])/g, "-$1").toLowerCase();
+  toKebabCase.cache.set(str, kebab);
+  return kebab;
+}
+toKebabCase.cache = /* @__PURE__ */ new Map();
+function findChildrenWithProvide(key, vnode) {
+  if (!vnode || typeof vnode !== "object") return [];
+  if (Array.isArray(vnode)) {
+    return vnode.map((child) => findChildrenWithProvide(key, child)).flat(1);
+  } else if (vnode.suspense) {
+    return findChildrenWithProvide(key, vnode.ssContent);
+  } else if (Array.isArray(vnode.children)) {
+    return vnode.children.map((child) => findChildrenWithProvide(key, child)).flat(1);
+  } else if (vnode.component) {
+    if (Object.getOwnPropertySymbols(vnode.component.provides).includes(key)) {
+      return [vnode.component];
+    } else if (vnode.component.subTree) {
+      return findChildrenWithProvide(key, vnode.component.subTree).flat(1);
+    }
+  }
+  return [];
+}
+function getEventCoordinates(e) {
+  if ("touches" in e) {
+    return {
+      clientX: e.touches[0].clientX,
+      clientY: e.touches[0].clientY
+    };
+  }
+  return {
+    clientX: e.clientX,
+    clientY: e.clientY
+  };
+}
+function destructComputed(getter) {
+  const refs = reactive({});
+  const base = computed(getter);
+  watchEffect(() => {
+    for (const key in base.value) {
+      refs[key] = base.value[key];
+    }
+  }, {
+    flush: "sync"
+  });
+  return toRefs(refs);
+}
+function includes(arr, val) {
+  return arr.includes(val);
+}
+const EventProp = () => [Function, Array];
+function hasEvent(props, name) {
+  name = "on" + capitalize(name);
+  return !!(props[name] || props[`${name}Once`] || props[`${name}Capture`] || props[`${name}OnceCapture`] || props[`${name}CaptureOnce`]);
+}
+function callEvent(handler) {
+  for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+    args[_key2 - 1] = arguments[_key2];
+  }
+  if (Array.isArray(handler)) {
+    for (const h of handler) {
+      h(...args);
+    }
+  } else if (typeof handler === "function") {
+    handler(...args);
+  }
+}
+function focusableChildren(el) {
+  let filterByTabIndex = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : true;
+  const targets = ["button", "[href]", 'input:not([type="hidden"])', "select", "textarea", "[tabindex]"].map((s) => `${s}${filterByTabIndex ? ':not([tabindex="-1"])' : ""}:not([disabled])`).join(", ");
+  return [...el.querySelectorAll(targets)];
+}
+function getNextElement(elements, location, condition) {
+  let _el;
+  let idx = elements.indexOf((void 0).activeElement);
+  const inc = location === "next" ? 1 : -1;
+  do {
+    idx += inc;
+    _el = elements[idx];
+  } while ((!_el || _el.offsetParent == null || !((condition == null ? void 0 : condition(_el)) ?? true)) && idx < elements.length && idx >= 0);
+  return _el;
+}
+function focusChild(el, location) {
+  var _a, _b, _c, _d;
+  const focusable = focusableChildren(el);
+  if (!location) {
+    if (el === (void 0).activeElement || !el.contains((void 0).activeElement)) {
+      (_a = focusable[0]) == null ? void 0 : _a.focus();
+    }
+  } else if (location === "first") {
+    (_b = focusable[0]) == null ? void 0 : _b.focus();
+  } else if (location === "last") {
+    (_c = focusable.at(-1)) == null ? void 0 : _c.focus();
+  } else if (typeof location === "number") {
+    (_d = focusable[location]) == null ? void 0 : _d.focus();
+  } else {
+    const _el = getNextElement(focusable, location);
+    if (_el) _el.focus();
+    else focusChild(el, location === "next" ? "first" : "last");
+  }
+}
+function isEmpty(val) {
+  return val === null || val === void 0 || typeof val === "string" && val.trim() === "";
+}
+function noop() {
+}
+function matchesSelector(el, selector) {
+  return null;
+}
+function ensureValidVNode(vnodes) {
+  return vnodes.some((child) => {
+    if (!isVNode(child)) return true;
+    if (child.type === Comment) return false;
+    return child.type !== Fragment || ensureValidVNode(child.children);
+  }) ? vnodes : null;
+}
+function defer(timeout, cb) {
+  {
+    cb();
+    return () => {
+    };
+  }
+}
+function isClickInsideElement(event, targetDiv) {
+  const mouseX = event.clientX;
+  const mouseY = event.clientY;
+  const divRect = targetDiv.getBoundingClientRect();
+  const divLeft = divRect.left;
+  const divTop = divRect.top;
+  const divRight = divRect.right;
+  const divBottom = divRect.bottom;
+  return mouseX >= divLeft && mouseX <= divRight && mouseY >= divTop && mouseY <= divBottom;
+}
+function templateRef() {
+  const el = shallowRef();
+  const fn = (target) => {
+    el.value = target;
+  };
+  Object.defineProperty(fn, "value", {
+    enumerable: true,
+    get: () => el.value,
+    set: (val) => el.value = val
+  });
+  Object.defineProperty(fn, "el", {
+    enumerable: true,
+    get: () => refElement(el.value)
+  });
+  return fn;
+}
+function checkPrintable(e) {
+  const isPrintableChar = e.key.length === 1;
+  const noModifier = !e.ctrlKey && !e.metaKey && !e.altKey;
+  return isPrintableChar && noModifier;
+}
+function isPrimitive(value) {
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean" || typeof value === "bigint";
+}
+
+function getCurrentInstance(name, message) {
+  const vm = getCurrentInstance$1();
+  if (!vm) {
+    throw new Error(`[Vuetify] ${name} ${"must be called from inside a setup function"}`);
+  }
+  return vm;
+}
+function getCurrentInstanceName() {
+  let name = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : "composables";
+  const vm = getCurrentInstance(name).type;
+  return toKebabCase((vm == null ? void 0 : vm.aliasName) || (vm == null ? void 0 : vm.name));
+}
+let _uid = 0;
+let _map = /* @__PURE__ */ new WeakMap();
+function getUid() {
+  const vm = getCurrentInstance("getUid");
+  if (_map.has(vm)) return _map.get(vm);
+  else {
+    const uid = _uid++;
+    _map.set(vm, uid);
+    return uid;
+  }
+}
+getUid.reset = () => {
+  _uid = 0;
+  _map = /* @__PURE__ */ new WeakMap();
+};
+
+function useProxiedModel(props, prop, defaultValue) {
+  let transformIn = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : (v) => v;
+  let transformOut = arguments.length > 4 && arguments[4] !== void 0 ? arguments[4] : (v) => v;
+  const vm = getCurrentInstance("useProxiedModel");
+  const internal = ref(props[prop] !== void 0 ? props[prop] : defaultValue);
+  const kebabProp = toKebabCase(prop);
+  const checkKebab = kebabProp !== prop;
+  const isControlled = checkKebab ? computed(() => {
+    var _a, _b, _c, _d;
+    void props[prop];
+    return !!((((_a = vm.vnode.props) == null ? void 0 : _a.hasOwnProperty(prop)) || ((_b = vm.vnode.props) == null ? void 0 : _b.hasOwnProperty(kebabProp))) && (((_c = vm.vnode.props) == null ? void 0 : _c.hasOwnProperty(`onUpdate:${prop}`)) || ((_d = vm.vnode.props) == null ? void 0 : _d.hasOwnProperty(`onUpdate:${kebabProp}`))));
+  }) : computed(() => {
+    var _a, _b;
+    void props[prop];
+    return !!(((_a = vm.vnode.props) == null ? void 0 : _a.hasOwnProperty(prop)) && ((_b = vm.vnode.props) == null ? void 0 : _b.hasOwnProperty(`onUpdate:${prop}`)));
+  });
+  useToggleScope(() => !isControlled.value, () => {
+    watch(() => props[prop], (val) => {
+      internal.value = val;
+    });
+  });
+  const model = computed({
+    get() {
+      const externalValue = props[prop];
+      return transformIn(isControlled.value ? externalValue : internal.value);
+    },
+    set(internalValue) {
+      const newValue = transformOut(internalValue);
+      const value = toRaw(isControlled.value ? props[prop] : internal.value);
+      if (value === newValue || transformIn(value) === internalValue) {
+        return;
+      }
+      internal.value = newValue;
+      vm == null ? void 0 : vm.emit(`update:${prop}`, newValue);
+    }
+  });
+  Object.defineProperty(model, "externalValue", {
+    get: () => isControlled.value ? props[prop] : internal.value
+  });
+  return model;
+}
+
+const en = {
+  badge: "Badge",
+  open: "Open",
+  close: "Close",
+  dismiss: "Dismiss",
+  confirmEdit: {
+    ok: "OK",
+    cancel: "Cancel"
+  },
+  dataIterator: {
+    noResultsText: "No matching records found",
+    loadingText: "Loading items..."
+  },
+  dataTable: {
+    itemsPerPageText: "Rows per page:",
+    ariaLabel: {
+      sortDescending: "Sorted descending.",
+      sortAscending: "Sorted ascending.",
+      sortNone: "Not sorted.",
+      activateNone: "Activate to remove sorting.",
+      activateDescending: "Activate to sort descending.",
+      activateAscending: "Activate to sort ascending."
+    },
+    sortBy: "Sort by"
+  },
+  dataFooter: {
+    itemsPerPageText: "Items per page:",
+    itemsPerPageAll: "All",
+    nextPage: "Next page",
+    prevPage: "Previous page",
+    firstPage: "First page",
+    lastPage: "Last page",
+    pageText: "{0}-{1} of {2}"
+  },
+  dateRangeInput: {
+    divider: "to"
+  },
+  datePicker: {
+    itemsSelected: "{0} selected",
+    range: {
+      title: "Select dates",
+      header: "Enter dates"
+    },
+    title: "Select date",
+    header: "Enter date",
+    input: {
+      placeholder: "Enter date"
+    }
+  },
+  noDataText: "No data available",
+  carousel: {
+    prev: "Previous visual",
+    next: "Next visual",
+    ariaLabel: {
+      delimiter: "Carousel slide {0} of {1}"
+    }
+  },
+  calendar: {
+    moreEvents: "{0} more",
+    today: "Today"
+  },
+  input: {
+    clear: "Clear {0}",
+    prependAction: "{0} prepended action",
+    appendAction: "{0} appended action",
+    otp: "Please enter OTP character {0}"
+  },
+  fileInput: {
+    counter: "{0} files",
+    counterSize: "{0} files ({1} in total)"
+  },
+  fileUpload: {
+    title: "Drag and drop files here",
+    divider: "or",
+    browse: "Browse Files"
+  },
+  timePicker: {
+    am: "AM",
+    pm: "PM",
+    title: "Select Time"
+  },
+  pagination: {
+    ariaLabel: {
+      root: "Pagination Navigation",
+      next: "Next page",
+      previous: "Previous page",
+      page: "Go to page {0}",
+      currentPage: "Page {0}, Current page",
+      first: "First page",
+      last: "Last page"
+    }
+  },
+  stepper: {
+    next: "Next",
+    prev: "Previous"
+  },
+  rating: {
+    ariaLabel: {
+      item: "Rating {0} of {1}"
+    }
+  },
+  loading: "Loading...",
+  infiniteScroll: {
+    loadMore: "Load more",
+    empty: "No more"
+  }
+};
+
+function consoleWarn(message) {
+  warn(`Vuetify: ${message}`);
+}
+function consoleError(message) {
+  warn(`Vuetify error: ${message}`);
+}
+function deprecate(original, replacement) {
+  replacement = Array.isArray(replacement) ? replacement.slice(0, -1).map((s) => `'${s}'`).join(", ") + ` or '${replacement.at(-1)}'` : `'${replacement}'`;
+  warn(`[Vuetify UPGRADE] '${original}' is deprecated, use ${replacement} instead.`);
+}
+
+const LANG_PREFIX = "$vuetify.";
+const replace = (str, params) => {
+  return str.replace(/\{(\d+)\}/g, (match, index) => {
+    return String(params[Number(index)]);
+  });
+};
+const createTranslateFunction = (current, fallback, messages) => {
+  return function(key) {
+    for (var _len = arguments.length, params = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      params[_key - 1] = arguments[_key];
+    }
+    if (!key.startsWith(LANG_PREFIX)) {
+      return replace(key, params);
+    }
+    const shortKey = key.replace(LANG_PREFIX, "");
+    const currentLocale = current.value && messages.value[current.value];
+    const fallbackLocale = fallback.value && messages.value[fallback.value];
+    let str = getObjectValueByPath(currentLocale, shortKey, null);
+    if (!str) {
+      consoleWarn(`Translation key "${key}" not found in "${current.value}", trying fallback locale`);
+      str = getObjectValueByPath(fallbackLocale, shortKey, null);
+    }
+    if (!str) {
+      consoleError(`Translation key "${key}" not found in fallback`);
+      str = key;
+    }
+    if (typeof str !== "string") {
+      consoleError(`Translation key "${key}" has a non-string value`);
+      str = key;
+    }
+    return replace(str, params);
+  };
+};
+function createNumberFunction(current, fallback) {
+  return (value, options) => {
+    const numberFormat = new Intl.NumberFormat([current.value, fallback.value], options);
+    return numberFormat.format(value);
+  };
+}
+function useProvided(props, prop, provided) {
+  const internal = useProxiedModel(props, prop, props[prop] ?? provided.value);
+  internal.value = props[prop] ?? provided.value;
+  watch(provided, (v) => {
+    if (props[prop] == null) {
+      internal.value = provided.value;
+    }
+  });
+  return internal;
+}
+function createProvideFunction(state) {
+  return (props) => {
+    const current = useProvided(props, "locale", state.current);
+    const fallback = useProvided(props, "fallback", state.fallback);
+    const messages = useProvided(props, "messages", state.messages);
+    return {
+      name: "vuetify",
+      current,
+      fallback,
+      messages,
+      t: createTranslateFunction(current, fallback, messages),
+      n: createNumberFunction(current, fallback),
+      provide: createProvideFunction({
+        current,
+        fallback,
+        messages
+      })
+    };
+  };
+}
+function createVuetifyAdapter(options) {
+  const current = shallowRef((options == null ? void 0 : options.locale) ?? "en");
+  const fallback = shallowRef((options == null ? void 0 : options.fallback) ?? "en");
+  const messages = ref({
+    en,
+    ...options == null ? void 0 : options.messages
+  });
+  return {
+    name: "vuetify",
+    current,
+    fallback,
+    messages,
+    t: createTranslateFunction(current, fallback, messages),
+    n: createNumberFunction(current, fallback),
+    provide: createProvideFunction({
+      current,
+      fallback,
+      messages
+    })
+  };
+}
+
+const LocaleSymbol = Symbol.for("vuetify:locale");
+function isLocaleInstance(obj) {
+  return obj.name != null;
+}
+function createLocale(options) {
+  const i18n = (options == null ? void 0 : options.adapter) && isLocaleInstance(options == null ? void 0 : options.adapter) ? options == null ? void 0 : options.adapter : createVuetifyAdapter(options);
+  const rtl = createRtl(i18n, options);
+  return {
+    ...i18n,
+    ...rtl
+  };
+}
+function useLocale() {
+  const locale = inject$1(LocaleSymbol);
+  if (!locale) throw new Error("[Vuetify] Could not find injected locale instance");
+  return locale;
+}
+function genDefaults$3() {
+  return {
+    af: false,
+    ar: true,
+    bg: false,
+    ca: false,
+    ckb: false,
+    cs: false,
+    de: false,
+    el: false,
+    en: false,
+    es: false,
+    et: false,
+    fa: true,
+    fi: false,
+    fr: false,
+    hr: false,
+    hu: false,
+    he: true,
+    id: false,
+    it: false,
+    ja: false,
+    km: false,
+    ko: false,
+    lv: false,
+    lt: false,
+    nl: false,
+    no: false,
+    pl: false,
+    pt: false,
+    ro: false,
+    ru: false,
+    sk: false,
+    sl: false,
+    srCyrl: false,
+    srLatn: false,
+    sv: false,
+    th: false,
+    tr: false,
+    az: false,
+    uk: false,
+    vi: false,
+    zhHans: false,
+    zhHant: false
+  };
+}
+function createRtl(i18n, options) {
+  const rtl = ref((options == null ? void 0 : options.rtl) ?? genDefaults$3());
+  const isRtl = computed(() => rtl.value[i18n.current.value] ?? false);
+  return {
+    isRtl,
+    rtl,
+    rtlClasses: computed(() => `v-locale--is-${isRtl.value ? "rtl" : "ltr"}`)
+  };
+}
+function useRtl() {
+  const locale = inject$1(LocaleSymbol);
+  if (!locale) throw new Error("[Vuetify] Could not find injected rtl instance");
+  return {
+    isRtl: locale.isRtl,
+    rtlClasses: locale.rtlClasses
+  };
+}
+
+const firstDay = {
+  "001": 1,
+  AD: 1,
+  AE: 6,
+  AF: 6,
+  AG: 0,
+  AI: 1,
+  AL: 1,
+  AM: 1,
+  AN: 1,
+  AR: 1,
+  AS: 0,
+  AT: 1,
+  AU: 1,
+  AX: 1,
+  AZ: 1,
+  BA: 1,
+  BD: 0,
+  BE: 1,
+  BG: 1,
+  BH: 6,
+  BM: 1,
+  BN: 1,
+  BR: 0,
+  BS: 0,
+  BT: 0,
+  BW: 0,
+  BY: 1,
+  BZ: 0,
+  CA: 0,
+  CH: 1,
+  CL: 1,
+  CM: 1,
+  CN: 1,
+  CO: 0,
+  CR: 1,
+  CY: 1,
+  CZ: 1,
+  DE: 1,
+  DJ: 6,
+  DK: 1,
+  DM: 0,
+  DO: 0,
+  DZ: 6,
+  EC: 1,
+  EE: 1,
+  EG: 6,
+  ES: 1,
+  ET: 0,
+  FI: 1,
+  FJ: 1,
+  FO: 1,
+  FR: 1,
+  GB: 1,
+  "GB-alt-variant": 0,
+  GE: 1,
+  GF: 1,
+  GP: 1,
+  GR: 1,
+  GT: 0,
+  GU: 0,
+  HK: 0,
+  HN: 0,
+  HR: 1,
+  HU: 1,
+  ID: 0,
+  IE: 1,
+  IL: 0,
+  IN: 0,
+  IQ: 6,
+  IR: 6,
+  IS: 1,
+  IT: 1,
+  JM: 0,
+  JO: 6,
+  JP: 0,
+  KE: 0,
+  KG: 1,
+  KH: 0,
+  KR: 0,
+  KW: 6,
+  KZ: 1,
+  LA: 0,
+  LB: 1,
+  LI: 1,
+  LK: 1,
+  LT: 1,
+  LU: 1,
+  LV: 1,
+  LY: 6,
+  MC: 1,
+  MD: 1,
+  ME: 1,
+  MH: 0,
+  MK: 1,
+  MM: 0,
+  MN: 1,
+  MO: 0,
+  MQ: 1,
+  MT: 0,
+  MV: 5,
+  MX: 0,
+  MY: 1,
+  MZ: 0,
+  NI: 0,
+  NL: 1,
+  NO: 1,
+  NP: 0,
+  NZ: 1,
+  OM: 6,
+  PA: 0,
+  PE: 0,
+  PH: 0,
+  PK: 0,
+  PL: 1,
+  PR: 0,
+  PT: 0,
+  PY: 0,
+  QA: 6,
+  RE: 1,
+  RO: 1,
+  RS: 1,
+  RU: 1,
+  SA: 0,
+  SD: 6,
+  SE: 1,
+  SG: 0,
+  SI: 1,
+  SK: 1,
+  SM: 1,
+  SV: 0,
+  SY: 6,
+  TH: 0,
+  TJ: 1,
+  TM: 1,
+  TR: 1,
+  TT: 0,
+  TW: 0,
+  UA: 1,
+  UM: 0,
+  US: 0,
+  UY: 1,
+  UZ: 1,
+  VA: 1,
+  VE: 0,
+  VI: 0,
+  VN: 1,
+  WS: 0,
+  XK: 1,
+  YE: 0,
+  ZA: 0,
+  ZW: 0
+};
+function getWeekArray(date2, locale, firstDayOfWeek) {
+  const weeks = [];
+  let currentWeek = [];
+  const firstDayOfMonth = startOfMonth(date2);
+  const lastDayOfMonth = endOfMonth(date2);
+  const first = firstDayOfWeek ?? firstDay[locale.slice(-2).toUpperCase()] ?? 0;
+  const firstDayWeekIndex = (firstDayOfMonth.getDay() - first + 7) % 7;
+  const lastDayWeekIndex = (lastDayOfMonth.getDay() - first + 7) % 7;
+  for (let i = 0; i < firstDayWeekIndex; i++) {
+    const adjacentDay = new Date(firstDayOfMonth);
+    adjacentDay.setDate(adjacentDay.getDate() - (firstDayWeekIndex - i));
+    currentWeek.push(adjacentDay);
+  }
+  for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+    const day = new Date(date2.getFullYear(), date2.getMonth(), i);
+    currentWeek.push(day);
+    if (currentWeek.length === 7) {
+      weeks.push(currentWeek);
+      currentWeek = [];
+    }
+  }
+  for (let i = 1; i < 7 - lastDayWeekIndex; i++) {
+    const adjacentDay = new Date(lastDayOfMonth);
+    adjacentDay.setDate(adjacentDay.getDate() + i);
+    currentWeek.push(adjacentDay);
+  }
+  if (currentWeek.length > 0) {
+    weeks.push(currentWeek);
+  }
+  return weeks;
+}
+function startOfWeek(date2, locale, firstDayOfWeek) {
+  const day = firstDayOfWeek ?? firstDay[locale.slice(-2).toUpperCase()] ?? 0;
+  const d = new Date(date2);
+  while (d.getDay() !== day) {
+    d.setDate(d.getDate() - 1);
+  }
+  return d;
+}
+function endOfWeek(date2, locale) {
+  const d = new Date(date2);
+  const lastDay = ((firstDay[locale.slice(-2).toUpperCase()] ?? 0) + 6) % 7;
+  while (d.getDay() !== lastDay) {
+    d.setDate(d.getDate() + 1);
+  }
+  return d;
+}
+function startOfMonth(date2) {
+  return new Date(date2.getFullYear(), date2.getMonth(), 1);
+}
+function endOfMonth(date2) {
+  return new Date(date2.getFullYear(), date2.getMonth() + 1, 0);
+}
+function parseLocalDate(value) {
+  const parts = value.split("-").map(Number);
+  return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+const _YYYMMDD = /^([12]\d{3}-([1-9]|0[1-9]|1[0-2])-([1-9]|0[1-9]|[12]\d|3[01]))$/;
+function date(value) {
+  if (value == null) return /* @__PURE__ */ new Date();
+  if (value instanceof Date) return value;
+  if (typeof value === "string") {
+    let parsed;
+    if (_YYYMMDD.test(value)) {
+      return parseLocalDate(value);
+    } else {
+      parsed = Date.parse(value);
+    }
+    if (!isNaN(parsed)) return new Date(parsed);
+  }
+  return null;
+}
+const sundayJanuarySecond2000 = new Date(2e3, 0, 2);
+function getWeekdays(locale, firstDayOfWeek) {
+  const daysFromSunday = firstDayOfWeek ?? firstDay[locale.slice(-2).toUpperCase()] ?? 0;
+  return createRange(7).map((i) => {
+    const weekday = new Date(sundayJanuarySecond2000);
+    weekday.setDate(sundayJanuarySecond2000.getDate() + daysFromSunday + i);
+    return new Intl.DateTimeFormat(locale, {
+      weekday: "narrow"
+    }).format(weekday);
+  });
+}
+function format(value, formatString, locale, formats) {
+  const newDate = date(value) ?? /* @__PURE__ */ new Date();
+  const customFormat = formats == null ? void 0 : formats[formatString];
+  if (typeof customFormat === "function") {
+    return customFormat(newDate, formatString, locale);
+  }
+  let options = {};
+  switch (formatString) {
+    case "fullDate":
+      options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      };
+      break;
+    case "fullDateWithWeekday":
+      options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      };
+      break;
+    case "normalDate":
+      const day = newDate.getDate();
+      const month = new Intl.DateTimeFormat(locale, {
+        month: "long"
+      }).format(newDate);
+      return `${day} ${month}`;
+    case "normalDateWithWeekday":
+      options = {
+        weekday: "short",
+        day: "numeric",
+        month: "short"
+      };
+      break;
+    case "shortDate":
+      options = {
+        month: "short",
+        day: "numeric"
+      };
+      break;
+    case "year":
+      options = {
+        year: "numeric"
+      };
+      break;
+    case "month":
+      options = {
+        month: "long"
+      };
+      break;
+    case "monthShort":
+      options = {
+        month: "short"
+      };
+      break;
+    case "monthAndYear":
+      options = {
+        month: "long",
+        year: "numeric"
+      };
+      break;
+    case "monthAndDate":
+      options = {
+        month: "long",
+        day: "numeric"
+      };
+      break;
+    case "weekday":
+      options = {
+        weekday: "long"
+      };
+      break;
+    case "weekdayShort":
+      options = {
+        weekday: "short"
+      };
+      break;
+    case "dayOfMonth":
+      return new Intl.NumberFormat(locale).format(newDate.getDate());
+    case "hours12h":
+      options = {
+        hour: "numeric",
+        hour12: true
+      };
+      break;
+    case "hours24h":
+      options = {
+        hour: "numeric",
+        hour12: false
+      };
+      break;
+    case "minutes":
+      options = {
+        minute: "numeric"
+      };
+      break;
+    case "seconds":
+      options = {
+        second: "numeric"
+      };
+      break;
+    case "fullTime":
+      options = {
+        hour: "numeric",
+        minute: "numeric"
+      };
+      break;
+    case "fullTime12h":
+      options = {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true
+      };
+      break;
+    case "fullTime24h":
+      options = {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: false
+      };
+      break;
+    case "fullDateTime":
+      options = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric"
+      };
+      break;
+    case "fullDateTime12h":
+      options = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true
+      };
+      break;
+    case "fullDateTime24h":
+      options = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: false
+      };
+      break;
+    case "keyboardDate":
+      options = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      };
+      break;
+    case "keyboardDateTime":
+      options = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric"
+      };
+      return new Intl.DateTimeFormat(locale, options).format(newDate).replace(/, /g, " ");
+    case "keyboardDateTime12h":
+      options = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true
+      };
+      return new Intl.DateTimeFormat(locale, options).format(newDate).replace(/, /g, " ");
+    case "keyboardDateTime24h":
+      options = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: false
+      };
+      return new Intl.DateTimeFormat(locale, options).format(newDate).replace(/, /g, " ");
+    default:
+      options = customFormat ?? {
+        timeZone: "UTC",
+        timeZoneName: "short"
+      };
+  }
+  return new Intl.DateTimeFormat(locale, options).format(newDate);
+}
+function toISO(adapter, value) {
+  const date2 = adapter.toJsDate(value);
+  const year = date2.getFullYear();
+  const month = padStart(String(date2.getMonth() + 1), 2, "0");
+  const day = padStart(String(date2.getDate()), 2, "0");
+  return `${year}-${month}-${day}`;
+}
+function parseISO(value) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+function addMinutes(date2, amount) {
+  const d = new Date(date2);
+  d.setMinutes(d.getMinutes() + amount);
+  return d;
+}
+function addHours(date2, amount) {
+  const d = new Date(date2);
+  d.setHours(d.getHours() + amount);
+  return d;
+}
+function addDays(date2, amount) {
+  const d = new Date(date2);
+  d.setDate(d.getDate() + amount);
+  return d;
+}
+function addWeeks(date2, amount) {
+  const d = new Date(date2);
+  d.setDate(d.getDate() + amount * 7);
+  return d;
+}
+function addMonths(date2, amount) {
+  const d = new Date(date2);
+  d.setDate(1);
+  d.setMonth(d.getMonth() + amount);
+  return d;
+}
+function getYear(date2) {
+  return date2.getFullYear();
+}
+function getMonth(date2) {
+  return date2.getMonth();
+}
+function getDate(date2) {
+  return date2.getDate();
+}
+function getNextMonth(date2) {
+  return new Date(date2.getFullYear(), date2.getMonth() + 1, 1);
+}
+function getPreviousMonth(date2) {
+  return new Date(date2.getFullYear(), date2.getMonth() - 1, 1);
+}
+function getHours(date2) {
+  return date2.getHours();
+}
+function getMinutes(date2) {
+  return date2.getMinutes();
+}
+function startOfYear(date2) {
+  return new Date(date2.getFullYear(), 0, 1);
+}
+function endOfYear(date2) {
+  return new Date(date2.getFullYear(), 11, 31);
+}
+function isWithinRange(date2, range) {
+  return isAfter(date2, range[0]) && isBefore(date2, range[1]);
+}
+function isValid(date2) {
+  const d = new Date(date2);
+  return d instanceof Date && !isNaN(d.getTime());
+}
+function isAfter(date2, comparing) {
+  return date2.getTime() > comparing.getTime();
+}
+function isAfterDay(date2, comparing) {
+  return isAfter(startOfDay(date2), startOfDay(comparing));
+}
+function isBefore(date2, comparing) {
+  return date2.getTime() < comparing.getTime();
+}
+function isEqual(date2, comparing) {
+  return date2.getTime() === comparing.getTime();
+}
+function isSameDay(date2, comparing) {
+  return date2.getDate() === comparing.getDate() && date2.getMonth() === comparing.getMonth() && date2.getFullYear() === comparing.getFullYear();
+}
+function isSameMonth(date2, comparing) {
+  return date2.getMonth() === comparing.getMonth() && date2.getFullYear() === comparing.getFullYear();
+}
+function isSameYear(date2, comparing) {
+  return date2.getFullYear() === comparing.getFullYear();
+}
+function getDiff(date2, comparing, unit) {
+  const d = new Date(date2);
+  const c = new Date(comparing);
+  switch (unit) {
+    case "years":
+      return d.getFullYear() - c.getFullYear();
+    case "quarters":
+      return Math.floor((d.getMonth() - c.getMonth() + (d.getFullYear() - c.getFullYear()) * 12) / 4);
+    case "months":
+      return d.getMonth() - c.getMonth() + (d.getFullYear() - c.getFullYear()) * 12;
+    case "weeks":
+      return Math.floor((d.getTime() - c.getTime()) / (1e3 * 60 * 60 * 24 * 7));
+    case "days":
+      return Math.floor((d.getTime() - c.getTime()) / (1e3 * 60 * 60 * 24));
+    case "hours":
+      return Math.floor((d.getTime() - c.getTime()) / (1e3 * 60 * 60));
+    case "minutes":
+      return Math.floor((d.getTime() - c.getTime()) / (1e3 * 60));
+    case "seconds":
+      return Math.floor((d.getTime() - c.getTime()) / 1e3);
+    default: {
+      return d.getTime() - c.getTime();
+    }
+  }
+}
+function setHours(date2, count) {
+  const d = new Date(date2);
+  d.setHours(count);
+  return d;
+}
+function setMinutes(date2, count) {
+  const d = new Date(date2);
+  d.setMinutes(count);
+  return d;
+}
+function setMonth(date2, count) {
+  const d = new Date(date2);
+  d.setMonth(count);
+  return d;
+}
+function setDate(date2, day) {
+  const d = new Date(date2);
+  d.setDate(day);
+  return d;
+}
+function setYear(date2, year) {
+  const d = new Date(date2);
+  d.setFullYear(year);
+  return d;
+}
+function startOfDay(date2) {
+  return new Date(date2.getFullYear(), date2.getMonth(), date2.getDate(), 0, 0, 0, 0);
+}
+function endOfDay(date2) {
+  return new Date(date2.getFullYear(), date2.getMonth(), date2.getDate(), 23, 59, 59, 999);
+}
+class VuetifyDateAdapter {
+  constructor(options) {
+    this.locale = options.locale;
+    this.formats = options.formats;
+  }
+  date(value) {
+    return date(value);
+  }
+  toJsDate(date2) {
+    return date2;
+  }
+  toISO(date2) {
+    return toISO(this, date2);
+  }
+  parseISO(date2) {
+    return parseISO(date2);
+  }
+  addMinutes(date2, amount) {
+    return addMinutes(date2, amount);
+  }
+  addHours(date2, amount) {
+    return addHours(date2, amount);
+  }
+  addDays(date2, amount) {
+    return addDays(date2, amount);
+  }
+  addWeeks(date2, amount) {
+    return addWeeks(date2, amount);
+  }
+  addMonths(date2, amount) {
+    return addMonths(date2, amount);
+  }
+  getWeekArray(date2, firstDayOfWeek) {
+    return getWeekArray(date2, this.locale, firstDayOfWeek ? Number(firstDayOfWeek) : void 0);
+  }
+  startOfWeek(date2, firstDayOfWeek) {
+    return startOfWeek(date2, this.locale, firstDayOfWeek ? Number(firstDayOfWeek) : void 0);
+  }
+  endOfWeek(date2) {
+    return endOfWeek(date2, this.locale);
+  }
+  startOfMonth(date2) {
+    return startOfMonth(date2);
+  }
+  endOfMonth(date2) {
+    return endOfMonth(date2);
+  }
+  format(date2, formatString) {
+    return format(date2, formatString, this.locale, this.formats);
+  }
+  isEqual(date2, comparing) {
+    return isEqual(date2, comparing);
+  }
+  isValid(date2) {
+    return isValid(date2);
+  }
+  isWithinRange(date2, range) {
+    return isWithinRange(date2, range);
+  }
+  isAfter(date2, comparing) {
+    return isAfter(date2, comparing);
+  }
+  isAfterDay(date2, comparing) {
+    return isAfterDay(date2, comparing);
+  }
+  isBefore(date2, comparing) {
+    return !isAfter(date2, comparing) && !isEqual(date2, comparing);
+  }
+  isSameDay(date2, comparing) {
+    return isSameDay(date2, comparing);
+  }
+  isSameMonth(date2, comparing) {
+    return isSameMonth(date2, comparing);
+  }
+  isSameYear(date2, comparing) {
+    return isSameYear(date2, comparing);
+  }
+  setMinutes(date2, count) {
+    return setMinutes(date2, count);
+  }
+  setHours(date2, count) {
+    return setHours(date2, count);
+  }
+  setMonth(date2, count) {
+    return setMonth(date2, count);
+  }
+  setDate(date2, day) {
+    return setDate(date2, day);
+  }
+  setYear(date2, year) {
+    return setYear(date2, year);
+  }
+  getDiff(date2, comparing, unit) {
+    return getDiff(date2, comparing, unit);
+  }
+  getWeekdays(firstDayOfWeek) {
+    return getWeekdays(this.locale, firstDayOfWeek ? Number(firstDayOfWeek) : void 0);
+  }
+  getYear(date2) {
+    return getYear(date2);
+  }
+  getMonth(date2) {
+    return getMonth(date2);
+  }
+  getDate(date2) {
+    return getDate(date2);
+  }
+  getNextMonth(date2) {
+    return getNextMonth(date2);
+  }
+  getPreviousMonth(date2) {
+    return getPreviousMonth(date2);
+  }
+  getHours(date2) {
+    return getHours(date2);
+  }
+  getMinutes(date2) {
+    return getMinutes(date2);
+  }
+  startOfDay(date2) {
+    return startOfDay(date2);
+  }
+  endOfDay(date2) {
+    return endOfDay(date2);
+  }
+  startOfYear(date2) {
+    return startOfYear(date2);
+  }
+  endOfYear(date2) {
+    return endOfYear(date2);
+  }
+}
+
+const DateOptionsSymbol = Symbol.for("vuetify:date-options");
+const DateAdapterSymbol = Symbol.for("vuetify:date-adapter");
+function createDate(options, locale) {
+  const _options = mergeDeep({
+    adapter: VuetifyDateAdapter,
+    locale: {
+      af: "af-ZA",
+      // ar: '', # not the same value for all variants
+      bg: "bg-BG",
+      ca: "ca-ES",
+      ckb: "",
+      cs: "cs-CZ",
+      de: "de-DE",
+      el: "el-GR",
+      en: "en-US",
+      // es: '', # not the same value for all variants
+      et: "et-EE",
+      fa: "fa-IR",
+      fi: "fi-FI",
+      // fr: '', #not the same value for all variants
+      hr: "hr-HR",
+      hu: "hu-HU",
+      he: "he-IL",
+      id: "id-ID",
+      it: "it-IT",
+      ja: "ja-JP",
+      ko: "ko-KR",
+      lv: "lv-LV",
+      lt: "lt-LT",
+      nl: "nl-NL",
+      no: "no-NO",
+      pl: "pl-PL",
+      pt: "pt-PT",
+      ro: "ro-RO",
+      ru: "ru-RU",
+      sk: "sk-SK",
+      sl: "sl-SI",
+      srCyrl: "sr-SP",
+      srLatn: "sr-SP",
+      sv: "sv-SE",
+      th: "th-TH",
+      tr: "tr-TR",
+      az: "az-AZ",
+      uk: "uk-UA",
+      vi: "vi-VN",
+      zhHans: "zh-CN",
+      zhHant: "zh-TW"
+    }
+  }, options);
+  return {
+    options: _options,
+    instance: createInstance(_options, locale)
+  };
+}
+function createInstance(options, locale) {
+  const instance = reactive(typeof options.adapter === "function" ? new options.adapter({
+    locale: options.locale[locale.current.value] ?? locale.current.value,
+    formats: options.formats
+  }) : options.adapter);
+  watch(locale.current, (value) => {
+    instance.locale = options.locale[value] ?? value ?? instance.locale;
+  });
+  return instance;
+}
+function useDate() {
+  const options = inject$1(DateOptionsSymbol);
+  if (!options) throw new Error("[Vuetify] Could not find injected date options");
+  const locale = useLocale();
+  return createInstance(options, locale);
+}
+function getWeek(adapter, value) {
+  const date = adapter.toJsDate(value);
+  let year = date.getFullYear();
+  let d1w1 = new Date(year, 0, 1);
+  if (date < d1w1) {
+    year = year - 1;
+    d1w1 = new Date(year, 0, 1);
+  } else {
+    const tv = new Date(year + 1, 0, 1);
+    if (date >= tv) {
+      year = year + 1;
+      d1w1 = tv;
+    }
+  }
+  const diffTime = Math.abs(date.getTime() - d1w1.getTime());
+  const diffDays = Math.ceil(diffTime / (1e3 * 60 * 60 * 24));
+  return Math.floor(diffDays / 7) + 1;
+}
+
+function injectSelf(key) {
+  let vm = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstance("injectSelf");
+  const {
+    provides
+  } = vm;
+  if (provides && key in provides) {
+    return provides[key];
+  }
+  return void 0;
+}
+
+const DefaultsSymbol = Symbol.for("vuetify:defaults");
+function createDefaults(options) {
+  return ref(options);
+}
+function injectDefaults() {
+  const defaults = inject$1(DefaultsSymbol);
+  if (!defaults) throw new Error("[Vuetify] Could not find defaults instance");
+  return defaults;
+}
+function provideDefaults(defaults, options) {
+  const injectedDefaults = injectDefaults();
+  const providedDefaults = ref(defaults);
+  const newDefaults = computed(() => {
+    const disabled = unref(options == null ? void 0 : options.disabled);
+    if (disabled) return injectedDefaults.value;
+    const scoped = unref(options == null ? void 0 : options.scoped);
+    const reset = unref(options == null ? void 0 : options.reset);
+    const root = unref(options == null ? void 0 : options.root);
+    if (providedDefaults.value == null && !(scoped || reset || root)) return injectedDefaults.value;
+    let properties = mergeDeep(providedDefaults.value, {
+      prev: injectedDefaults.value
+    });
+    if (scoped) return properties;
+    if (reset || root) {
+      const len = Number(reset || Infinity);
+      for (let i = 0; i <= len; i++) {
+        if (!properties || !("prev" in properties)) {
+          break;
+        }
+        properties = properties.prev;
+      }
+      if (properties && typeof root === "string" && root in properties) {
+        properties = mergeDeep(mergeDeep(properties, {
+          prev: properties
+        }), properties[root]);
+      }
+      return properties;
+    }
+    return properties.prev ? mergeDeep(properties.prev, properties) : properties;
+  });
+  provide(DefaultsSymbol, newDefaults);
+  return newDefaults;
+}
+function propIsDefined(vnode, prop) {
+  var _a, _b;
+  return typeof ((_a = vnode.props) == null ? void 0 : _a[prop]) !== "undefined" || typeof ((_b = vnode.props) == null ? void 0 : _b[toKebabCase(prop)]) !== "undefined";
+}
+function internalUseDefaults() {
+  let props = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+  let name = arguments.length > 1 ? arguments[1] : void 0;
+  let defaults = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : injectDefaults();
+  const vm = getCurrentInstance("useDefaults");
+  name = name ?? vm.type.name ?? vm.type.__name;
+  if (!name) {
+    throw new Error("[Vuetify] Could not determine component name");
+  }
+  const componentDefaults = computed(() => {
+    var _a;
+    return (_a = defaults.value) == null ? void 0 : _a[props._as ?? name];
+  });
+  const _props = new Proxy(props, {
+    get(target, prop) {
+      var _a, _b, _c, _d, _e, _f, _g;
+      const propValue = Reflect.get(target, prop);
+      if (prop === "class" || prop === "style") {
+        return [(_a = componentDefaults.value) == null ? void 0 : _a[prop], propValue].filter((v) => v != null);
+      } else if (typeof prop === "string" && !propIsDefined(vm.vnode, prop)) {
+        return ((_b = componentDefaults.value) == null ? void 0 : _b[prop]) !== void 0 ? (_c = componentDefaults.value) == null ? void 0 : _c[prop] : ((_e = (_d = defaults.value) == null ? void 0 : _d.global) == null ? void 0 : _e[prop]) !== void 0 ? (_g = (_f = defaults.value) == null ? void 0 : _f.global) == null ? void 0 : _g[prop] : propValue;
+      }
+      return propValue;
+    }
+  });
+  const _subcomponentDefaults = shallowRef();
+  watchEffect(() => {
+    if (componentDefaults.value) {
+      const subComponents = Object.entries(componentDefaults.value).filter((_ref) => {
+        let [key] = _ref;
+        return key.startsWith(key[0].toUpperCase());
+      });
+      _subcomponentDefaults.value = subComponents.length ? Object.fromEntries(subComponents) : void 0;
+    } else {
+      _subcomponentDefaults.value = void 0;
+    }
+  });
+  function provideSubDefaults() {
+    const injected = injectSelf(DefaultsSymbol, vm);
+    provide(DefaultsSymbol, computed(() => {
+      return _subcomponentDefaults.value ? mergeDeep((injected == null ? void 0 : injected.value) ?? {}, _subcomponentDefaults.value) : injected == null ? void 0 : injected.value;
+    }));
+  }
+  return {
+    props: _props,
+    provideSubDefaults
+  };
+}
+
+const IN_BROWSER = false;
+const SUPPORTS_TOUCH = IN_BROWSER;
+const SUPPORTS_EYE_DROPPER = IN_BROWSER;
+
+function propsFactory(props, source) {
+  return (defaults) => {
+    return Object.keys(props).reduce((obj, prop) => {
+      const isObjectDefinition = typeof props[prop] === "object" && props[prop] != null && !Array.isArray(props[prop]);
+      const definition = isObjectDefinition ? props[prop] : {
+        type: props[prop]
+      };
+      if (defaults && prop in defaults) {
+        obj[prop] = {
+          ...definition,
+          default: defaults[prop]
+        };
+      } else {
+        obj[prop] = definition;
+      }
+      if (source && !obj[prop].source) {
+        obj[prop].source = source;
+      }
+      return obj;
+    }, {});
+  };
+}
+
+const breakpoints = ["sm", "md", "lg", "xl", "xxl"];
+const DisplaySymbol = Symbol.for("vuetify:display");
+const defaultDisplayOptions = {
+  mobileBreakpoint: "lg",
+  thresholds: {
+    xs: 0,
+    sm: 600,
+    md: 960,
+    lg: 1280,
+    xl: 1920,
+    xxl: 2560
+  }
+};
+const parseDisplayOptions = function() {
+  let options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : defaultDisplayOptions;
+  return mergeDeep(defaultDisplayOptions, options);
+};
+function getClientWidth(ssr) {
+  return typeof ssr === "object" && ssr.clientWidth || 0;
+}
+function getClientHeight(ssr) {
+  return typeof ssr === "object" && ssr.clientHeight || 0;
+}
+function getPlatform(ssr) {
+  const userAgent = "ssr";
+  function match(regexp) {
+    return Boolean(userAgent.match(regexp));
+  }
+  const android = match(/android/i);
+  const ios = match(/iphone|ipad|ipod/i);
+  const cordova = match(/cordova/i);
+  const electron = match(/electron/i);
+  const chrome = match(/chrome/i);
+  const edge = match(/edge/i);
+  const firefox = match(/firefox/i);
+  const opera = match(/opera/i);
+  const win = match(/win/i);
+  const mac = match(/mac/i);
+  const linux = match(/linux/i);
+  return {
+    android,
+    ios,
+    cordova,
+    electron,
+    chrome,
+    edge,
+    firefox,
+    opera,
+    win,
+    mac,
+    linux,
+    touch: SUPPORTS_TOUCH,
+    ssr: userAgent === "ssr"
+  };
+}
+function createDisplay(options, ssr) {
+  const {
+    thresholds,
+    mobileBreakpoint
+  } = parseDisplayOptions(options);
+  const height = shallowRef(getClientHeight(ssr));
+  const platform = shallowRef(getPlatform());
+  const state = reactive({});
+  const width = shallowRef(getClientWidth(ssr));
+  function updateSize() {
+    height.value = getClientHeight();
+    width.value = getClientWidth();
+  }
+  function update() {
+    updateSize();
+    platform.value = getPlatform();
+  }
+  watchEffect(() => {
+    const xs = width.value < thresholds.sm;
+    const sm = width.value < thresholds.md && !xs;
+    const md = width.value < thresholds.lg && !(sm || xs);
+    const lg = width.value < thresholds.xl && !(md || sm || xs);
+    const xl = width.value < thresholds.xxl && !(lg || md || sm || xs);
+    const xxl = width.value >= thresholds.xxl;
+    const name = xs ? "xs" : sm ? "sm" : md ? "md" : lg ? "lg" : xl ? "xl" : "xxl";
+    const breakpointValue = typeof mobileBreakpoint === "number" ? mobileBreakpoint : thresholds[mobileBreakpoint];
+    const mobile = width.value < breakpointValue;
+    state.xs = xs;
+    state.sm = sm;
+    state.md = md;
+    state.lg = lg;
+    state.xl = xl;
+    state.xxl = xxl;
+    state.smAndUp = !xs;
+    state.mdAndUp = !(xs || sm);
+    state.lgAndUp = !(xs || sm || md);
+    state.xlAndUp = !(xs || sm || md || lg);
+    state.smAndDown = !(md || lg || xl || xxl);
+    state.mdAndDown = !(lg || xl || xxl);
+    state.lgAndDown = !(xl || xxl);
+    state.xlAndDown = !xxl;
+    state.name = name;
+    state.height = height.value;
+    state.width = width.value;
+    state.mobile = mobile;
+    state.mobileBreakpoint = mobileBreakpoint;
+    state.platform = platform.value;
+    state.thresholds = thresholds;
+  });
+  return {
+    ...toRefs(state),
+    update,
+    ssr: !!ssr
+  };
+}
+const makeDisplayProps = propsFactory({
+  mobile: {
+    type: Boolean,
+    default: false
+  },
+  mobileBreakpoint: [Number, String]
+}, "display");
+function useDisplay() {
+  let props = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {
+    mobile: null
+  };
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  const display = inject$1(DisplaySymbol);
+  if (!display) throw new Error("Could not find Vuetify display injection");
+  const mobile = computed(() => {
+    if (props.mobile) {
+      return true;
+    } else if (typeof props.mobileBreakpoint === "number") {
+      return display.width.value < props.mobileBreakpoint;
+    } else if (props.mobileBreakpoint) {
+      return display.width.value < display.thresholds.value[props.mobileBreakpoint];
+    } else if (props.mobile === null) {
+      return display.mobile.value;
+    } else {
+      return false;
+    }
+  });
+  const displayClasses = computed(() => {
+    if (!name) return {};
+    return {
+      [`${name}--mobile`]: mobile.value
+    };
+  });
+  return {
+    ...display,
+    displayClasses,
+    mobile
+  };
+}
+
+const GoToSymbol = Symbol.for("vuetify:goto");
+function genDefaults$2() {
+  return {
+    container: void 0,
+    duration: 300,
+    layout: false,
+    offset: 0,
+    easing: "easeInOutCubic",
+    patterns: {
+      linear: (t) => t,
+      easeInQuad: (t) => t ** 2,
+      easeOutQuad: (t) => t * (2 - t),
+      easeInOutQuad: (t) => t < 0.5 ? 2 * t ** 2 : -1 + (4 - 2 * t) * t,
+      easeInCubic: (t) => t ** 3,
+      easeOutCubic: (t) => --t ** 3 + 1,
+      easeInOutCubic: (t) => t < 0.5 ? 4 * t ** 3 : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+      easeInQuart: (t) => t ** 4,
+      easeOutQuart: (t) => 1 - --t ** 4,
+      easeInOutQuart: (t) => t < 0.5 ? 8 * t ** 4 : 1 - 8 * --t ** 4,
+      easeInQuint: (t) => t ** 5,
+      easeOutQuint: (t) => 1 + --t ** 5,
+      easeInOutQuint: (t) => t < 0.5 ? 16 * t ** 5 : 1 + 16 * --t ** 5
+    }
+  };
+}
+function getContainer(el) {
+  return getTarget$1(el) ?? ((void 0).scrollingElement || (void 0).body);
+}
+function getTarget$1(el) {
+  return typeof el === "string" ? (void 0).querySelector(el) : refElement(el);
+}
+function getOffset$1(target, horizontal, rtl) {
+  if (typeof target === "number") return horizontal && rtl ? -target : target;
+  let el = getTarget$1(target);
+  let totalOffset = 0;
+  while (el) {
+    totalOffset += horizontal ? el.offsetLeft : el.offsetTop;
+    el = el.offsetParent;
+  }
+  return totalOffset;
+}
+function createGoTo(options, locale) {
+  return {
+    rtl: locale.isRtl,
+    options: mergeDeep(genDefaults$2(), options)
+  };
+}
+async function scrollTo(_target, _options, horizontal, goTo) {
+  const property = horizontal ? "scrollLeft" : "scrollTop";
+  const options = mergeDeep((goTo == null ? void 0 : goTo.options) ?? genDefaults$2(), _options);
+  const rtl = goTo == null ? void 0 : goTo.rtl.value;
+  const target = (typeof _target === "number" ? _target : getTarget$1(_target)) ?? 0;
+  const container = options.container === "parent" && target instanceof HTMLElement ? target.parentElement : getContainer(options.container);
+  const ease = typeof options.easing === "function" ? options.easing : options.patterns[options.easing];
+  if (!ease) throw new TypeError(`Easing function "${options.easing}" not found.`);
+  let targetLocation;
+  if (typeof target === "number") {
+    targetLocation = getOffset$1(target, horizontal, rtl);
+  } else {
+    targetLocation = getOffset$1(target, horizontal, rtl) - getOffset$1(container, horizontal, rtl);
+    if (options.layout) {
+      const styles = (void 0).getComputedStyle(target);
+      const layoutOffset = styles.getPropertyValue("--v-layout-top");
+      if (layoutOffset) targetLocation -= parseInt(layoutOffset, 10);
+    }
+  }
+  targetLocation += options.offset;
+  targetLocation = clampTarget(container, targetLocation, !!rtl, !!horizontal);
+  const startLocation = container[property] ?? 0;
+  if (targetLocation === startLocation) return Promise.resolve(targetLocation);
+  const startTime = performance.now();
+  return new Promise((resolve) => requestAnimationFrame(function step(currentTime) {
+    const timeElapsed = currentTime - startTime;
+    const progress = timeElapsed / options.duration;
+    const location = Math.floor(startLocation + (targetLocation - startLocation) * ease(clamp(progress, 0, 1)));
+    container[property] = location;
+    if (progress >= 1 && Math.abs(location - container[property]) < 10) {
+      return resolve(targetLocation);
+    } else if (progress > 2) {
+      consoleWarn("Scroll target is not reachable");
+      return resolve(container[property]);
+    }
+    requestAnimationFrame(step);
+  }));
+}
+function useGoTo() {
+  let _options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+  const goToInstance = inject$1(GoToSymbol);
+  const {
+    isRtl
+  } = useRtl();
+  if (!goToInstance) throw new Error("[Vuetify] Could not find injected goto instance");
+  const goTo = {
+    ...goToInstance,
+    // can be set via VLocaleProvider
+    rtl: computed(() => goToInstance.rtl.value || isRtl.value)
+  };
+  async function go(target, options) {
+    return scrollTo(target, mergeDeep(_options, options), false, goTo);
+  }
+  go.horizontal = async (target, options) => {
+    return scrollTo(target, mergeDeep(_options, options), true, goTo);
+  };
+  return go;
+}
+function clampTarget(container, value, rtl, horizontal) {
+  const {
+    scrollWidth,
+    scrollHeight
+  } = container;
+  const [containerWidth, containerHeight] = container === (void 0).scrollingElement ? [(void 0).innerWidth, (void 0).innerHeight] : [container.offsetWidth, container.offsetHeight];
+  let min;
+  let max;
+  if (horizontal) {
+    if (rtl) {
+      min = -(scrollWidth - containerWidth);
+      max = 0;
+    } else {
+      min = 0;
+      max = scrollWidth - containerWidth;
+    }
+  } else {
+    min = 0;
+    max = scrollHeight + -containerHeight;
+  }
+  return Math.max(Math.min(value, max), min);
+}
+
+const aliases = {
+  collapse: "mdi-chevron-up",
+  complete: "mdi-check",
+  cancel: "mdi-close-circle",
+  close: "mdi-close",
+  delete: "mdi-close-circle",
+  // delete (e.g. v-chip close)
+  clear: "mdi-close-circle",
+  success: "mdi-check-circle",
+  info: "mdi-information",
+  warning: "mdi-alert-circle",
+  error: "mdi-close-circle",
+  prev: "mdi-chevron-left",
+  next: "mdi-chevron-right",
+  checkboxOn: "mdi-checkbox-marked",
+  checkboxOff: "mdi-checkbox-blank-outline",
+  checkboxIndeterminate: "mdi-minus-box",
+  delimiter: "mdi-circle",
+  // for carousel
+  sortAsc: "mdi-arrow-up",
+  sortDesc: "mdi-arrow-down",
+  expand: "mdi-chevron-down",
+  menu: "mdi-menu",
+  subgroup: "mdi-menu-down",
+  dropdown: "mdi-menu-down",
+  radioOn: "mdi-radiobox-marked",
+  radioOff: "mdi-radiobox-blank",
+  edit: "mdi-pencil",
+  ratingEmpty: "mdi-star-outline",
+  ratingFull: "mdi-star",
+  ratingHalf: "mdi-star-half-full",
+  loading: "mdi-cached",
+  first: "mdi-page-first",
+  last: "mdi-page-last",
+  unfold: "mdi-unfold-more-horizontal",
+  file: "mdi-paperclip",
+  plus: "mdi-plus",
+  minus: "mdi-minus",
+  calendar: "mdi-calendar",
+  treeviewCollapse: "mdi-menu-down",
+  treeviewExpand: "mdi-menu-right",
+  eyeDropper: "mdi-eyedropper",
+  upload: "mdi-cloud-upload"
+};
+const mdi = {
+  // Not using mergeProps here, functional components merge props by default (?)
+  component: (props) => h(VClassIcon, {
+    ...props,
+    class: "mdi"
+  })
+};
+
+function defineComponent(options) {
+  options._setup = options._setup ?? options.setup;
+  if (!options.name) {
+    consoleWarn("The component is missing an explicit name, unable to generate default prop value");
+    return options;
+  }
+  if (options._setup) {
+    options.props = propsFactory(options.props ?? {}, options.name)();
+    const propKeys = Object.keys(options.props).filter((key) => key !== "class" && key !== "style");
+    options.filterProps = function filterProps(props) {
+      return pick(props, propKeys);
+    };
+    options.props._as = String;
+    options.setup = function setup(props, ctx) {
+      const defaults = injectDefaults();
+      if (!defaults.value) return options._setup(props, ctx);
+      const {
+        props: _props,
+        provideSubDefaults
+      } = internalUseDefaults(props, props._as ?? options.name, defaults);
+      const setupBindings = options._setup(_props, ctx);
+      provideSubDefaults();
+      return setupBindings;
+    };
+  }
+  return options;
+}
+function genericComponent() {
+  let exposeDefaults = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : true;
+  return (options) => (exposeDefaults ? defineComponent : defineComponent$1)(options);
+}
+function defineFunctionalComponent(props, render) {
+  render.props = props;
+  return render;
+}
+
+const IconValue = [String, Function, Object, Array];
+const IconSymbol = Symbol.for("vuetify:icons");
+const makeIconProps = propsFactory({
+  icon: {
+    type: IconValue
+  },
+  // Could not remove this and use makeTagProps, types complained because it is not required
+  tag: {
+    type: String,
+    required: true
+  }
+}, "icon");
+const VComponentIcon = genericComponent()({
+  name: "VComponentIcon",
+  props: makeIconProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    return () => {
+      const Icon = props.icon;
+      return createVNode(props.tag, null, {
+        default: () => {
+          var _a;
+          return [props.icon ? createVNode(Icon, null, null) : (_a = slots.default) == null ? void 0 : _a.call(slots)];
+        }
+      });
+    };
+  }
+});
+const VSvgIcon = defineComponent({
+  name: "VSvgIcon",
+  inheritAttrs: false,
+  props: makeIconProps(),
+  setup(props, _ref2) {
+    let {
+      attrs
+    } = _ref2;
+    return () => {
+      return createVNode(props.tag, mergeProps(attrs, {
+        "style": null
+      }), {
+        default: () => [createVNode("svg", {
+          "class": "v-icon__svg",
+          "xmlns": "http://www.w3.org/2000/svg",
+          "viewBox": "0 0 24 24",
+          "role": "img",
+          "aria-hidden": "true"
+        }, [Array.isArray(props.icon) ? props.icon.map((path) => Array.isArray(path) ? createVNode("path", {
+          "d": path[0],
+          "fill-opacity": path[1]
+        }, null) : createVNode("path", {
+          "d": path
+        }, null)) : createVNode("path", {
+          "d": props.icon
+        }, null)])]
+      });
+    };
+  }
+});
+defineComponent({
+  name: "VLigatureIcon",
+  props: makeIconProps(),
+  setup(props) {
+    return () => {
+      return createVNode(props.tag, null, {
+        default: () => [props.icon]
+      });
+    };
+  }
+});
+const VClassIcon = defineComponent({
+  name: "VClassIcon",
+  props: makeIconProps(),
+  setup(props) {
+    return () => {
+      return createVNode(props.tag, {
+        "class": props.icon
+      }, null);
+    };
+  }
+});
+function genDefaults$1() {
+  return {
+    svg: {
+      component: VSvgIcon
+    },
+    class: {
+      component: VClassIcon
+    }
+  };
+}
+function createIcons(options) {
+  const sets = genDefaults$1();
+  const defaultSet = (options == null ? void 0 : options.defaultSet) ?? "mdi";
+  if (defaultSet === "mdi" && !sets.mdi) {
+    sets.mdi = mdi;
+  }
+  return mergeDeep({
+    defaultSet,
+    sets,
+    aliases: {
+      ...aliases,
+      /* eslint-disable max-len */
+      vuetify: ["M8.2241 14.2009L12 21L22 3H14.4459L8.2241 14.2009Z", ["M7.26303 12.4733L7.00113 12L2 3H12.5261C12.5261 3 12.5261 3 12.5261 3L7.26303 12.4733Z", 0.6]],
+      "vuetify-outline": "svg:M7.26 12.47 12.53 3H2L7.26 12.47ZM14.45 3 8.22 14.2 12 21 22 3H14.45ZM18.6 5 12 16.88 10.51 14.2 15.62 5ZM7.26 8.35 5.4 5H9.13L7.26 8.35Z",
+      "vuetify-play": ["m6.376 13.184-4.11-7.192C1.505 4.66 2.467 3 4.003 3h8.532l-.953 1.576-.006.01-.396.677c-.429.732-.214 1.507.194 2.015.404.503 1.092.878 1.869.806a3.72 3.72 0 0 1 1.005.022c.276.053.434.143.523.237.138.146.38.635-.25 2.09-.893 1.63-1.553 1.722-1.847 1.677-.213-.033-.468-.158-.756-.406a4.95 4.95 0 0 1-.8-.927c-.39-.564-1.04-.84-1.66-.846-.625-.006-1.316.27-1.693.921l-.478.826-.911 1.506Z", ["M9.093 11.552c.046-.079.144-.15.32-.148a.53.53 0 0 1 .43.207c.285.414.636.847 1.046 1.2.405.35.914.662 1.516.754 1.334.205 2.502-.698 3.48-2.495l.014-.028.013-.03c.687-1.574.774-2.852-.005-3.675-.37-.391-.861-.586-1.333-.676a5.243 5.243 0 0 0-1.447-.044c-.173.016-.393-.073-.54-.257-.145-.18-.127-.316-.082-.392l.393-.672L14.287 3h5.71c1.536 0 2.499 1.659 1.737 2.992l-7.997 13.996c-.768 1.344-2.706 1.344-3.473 0l-3.037-5.314 1.377-2.278.004-.006.004-.007.481-.831Z", 0.6]]
+      /* eslint-enable max-len */
+    }
+  }, options);
+}
+const useIcon = (props) => {
+  const icons = inject$1(IconSymbol);
+  if (!icons) throw new Error("Missing Vuetify Icons provide!");
+  const iconData = computed(() => {
+    var _a;
+    const iconAlias = unref(props);
+    if (!iconAlias) return {
+      component: VComponentIcon
+    };
+    let icon = iconAlias;
+    if (typeof icon === "string") {
+      icon = icon.trim();
+      if (icon.startsWith("$")) {
+        icon = (_a = icons.aliases) == null ? void 0 : _a[icon.slice(1)];
+      }
+    }
+    if (!icon) consoleWarn(`Could not find aliased icon "${iconAlias}"`);
+    if (Array.isArray(icon)) {
+      return {
+        component: VSvgIcon,
+        icon
+      };
+    } else if (typeof icon !== "string") {
+      return {
+        component: VComponentIcon,
+        icon
+      };
+    }
+    const iconSetName = Object.keys(icons.sets).find((setName) => typeof icon === "string" && icon.startsWith(`${setName}:`));
+    const iconName = iconSetName ? icon.slice(iconSetName.length + 1) : icon;
+    const iconSet = icons.sets[iconSetName ?? icons.defaultSet];
+    return {
+      component: iconSet.component,
+      icon: iconName
+    };
+  });
+  return {
+    iconData
+  };
+};
+
+const mainTRC = 2.4;
+const Rco = 0.2126729;
+const Gco = 0.7151522;
+const Bco = 0.072175;
+const normBG = 0.55;
+const normTXT = 0.58;
+const revTXT = 0.57;
+const revBG = 0.62;
+const blkThrs = 0.03;
+const blkClmp = 1.45;
+const deltaYmin = 5e-4;
+const scaleBoW = 1.25;
+const scaleWoB = 1.25;
+const loConThresh = 0.078;
+const loConFactor = 12.82051282051282;
+const loConOffset = 0.06;
+const loClip = 1e-3;
+function APCAcontrast(text, background) {
+  const Rtxt = (text.r / 255) ** mainTRC;
+  const Gtxt = (text.g / 255) ** mainTRC;
+  const Btxt = (text.b / 255) ** mainTRC;
+  const Rbg = (background.r / 255) ** mainTRC;
+  const Gbg = (background.g / 255) ** mainTRC;
+  const Bbg = (background.b / 255) ** mainTRC;
+  let Ytxt = Rtxt * Rco + Gtxt * Gco + Btxt * Bco;
+  let Ybg = Rbg * Rco + Gbg * Gco + Bbg * Bco;
+  if (Ytxt <= blkThrs) Ytxt += (blkThrs - Ytxt) ** blkClmp;
+  if (Ybg <= blkThrs) Ybg += (blkThrs - Ybg) ** blkClmp;
+  if (Math.abs(Ybg - Ytxt) < deltaYmin) return 0;
+  let outputContrast;
+  if (Ybg > Ytxt) {
+    const SAPC = (Ybg ** normBG - Ytxt ** normTXT) * scaleBoW;
+    outputContrast = SAPC < loClip ? 0 : SAPC < loConThresh ? SAPC - SAPC * loConFactor * loConOffset : SAPC - loConOffset;
+  } else {
+    const SAPC = (Ybg ** revBG - Ytxt ** revTXT) * scaleWoB;
+    outputContrast = SAPC > -1e-3 ? 0 : SAPC > -0.078 ? SAPC - SAPC * loConFactor * loConOffset : SAPC + loConOffset;
+  }
+  return outputContrast * 100;
+}
+
+const delta = 0.20689655172413793;
+const cielabForwardTransform = (t) => t > delta ** 3 ? Math.cbrt(t) : t / (3 * delta ** 2) + 4 / 29;
+const cielabReverseTransform = (t) => t > delta ? t ** 3 : 3 * delta ** 2 * (t - 4 / 29);
+function fromXYZ$1(xyz) {
+  const transform = cielabForwardTransform;
+  const transformedY = transform(xyz[1]);
+  return [116 * transformedY - 16, 500 * (transform(xyz[0] / 0.95047) - transformedY), 200 * (transformedY - transform(xyz[2] / 1.08883))];
+}
+function toXYZ$1(lab) {
+  const transform = cielabReverseTransform;
+  const Ln = (lab[0] + 16) / 116;
+  return [transform(Ln + lab[1] / 500) * 0.95047, transform(Ln), transform(Ln - lab[2] / 200) * 1.08883];
+}
+
+const srgbForwardMatrix = [[3.2406, -1.5372, -0.4986], [-0.9689, 1.8758, 0.0415], [0.0557, -0.204, 1.057]];
+const srgbForwardTransform = (C) => C <= 31308e-7 ? C * 12.92 : 1.055 * C ** (1 / 2.4) - 0.055;
+const srgbReverseMatrix = [[0.4124, 0.3576, 0.1805], [0.2126, 0.7152, 0.0722], [0.0193, 0.1192, 0.9505]];
+const srgbReverseTransform = (C) => C <= 0.04045 ? C / 12.92 : ((C + 0.055) / 1.055) ** 2.4;
+function fromXYZ(xyz) {
+  const rgb = Array(3);
+  const transform = srgbForwardTransform;
+  const matrix = srgbForwardMatrix;
+  for (let i = 0; i < 3; ++i) {
+    rgb[i] = Math.round(clamp(transform(matrix[i][0] * xyz[0] + matrix[i][1] * xyz[1] + matrix[i][2] * xyz[2])) * 255);
+  }
+  return {
+    r: rgb[0],
+    g: rgb[1],
+    b: rgb[2]
+  };
+}
+function toXYZ(_ref) {
+  let {
+    r,
+    g,
+    b
+  } = _ref;
+  const xyz = [0, 0, 0];
+  const transform = srgbReverseTransform;
+  const matrix = srgbReverseMatrix;
+  r = transform(r / 255);
+  g = transform(g / 255);
+  b = transform(b / 255);
+  for (let i = 0; i < 3; ++i) {
+    xyz[i] = matrix[i][0] * r + matrix[i][1] * g + matrix[i][2] * b;
+  }
+  return xyz;
+}
+
+function isCssColor(color) {
+  return !!color && /^(#|var\(--|(rgb|hsl)a?\()/.test(color);
+}
+function isParsableColor(color) {
+  return isCssColor(color) && !/^((rgb|hsl)a?\()?var\(--/.test(color);
+}
+const cssColorRe = /^(?<fn>(?:rgb|hsl)a?)\((?<values>.+)\)/;
+const mappers = {
+  rgb: (r, g, b, a) => ({
+    r,
+    g,
+    b,
+    a
+  }),
+  rgba: (r, g, b, a) => ({
+    r,
+    g,
+    b,
+    a
+  }),
+  hsl: (h, s, l, a) => HSLtoRGB({
+    h,
+    s,
+    l,
+    a
+  }),
+  hsla: (h, s, l, a) => HSLtoRGB({
+    h,
+    s,
+    l,
+    a
+  }),
+  hsv: (h, s, v, a) => HSVtoRGB({
+    h,
+    s,
+    v,
+    a
+  }),
+  hsva: (h, s, v, a) => HSVtoRGB({
+    h,
+    s,
+    v,
+    a
+  })
+};
+function parseColor(color) {
+  if (typeof color === "number") {
+    if (isNaN(color) || color < 0 || color > 16777215) {
+      consoleWarn(`'${color}' is not a valid hex color`);
+    }
+    return {
+      r: (color & 16711680) >> 16,
+      g: (color & 65280) >> 8,
+      b: color & 255
+    };
+  } else if (typeof color === "string" && cssColorRe.test(color)) {
+    const {
+      groups
+    } = color.match(cssColorRe);
+    const {
+      fn,
+      values
+    } = groups;
+    const realValues = values.split(/,\s*/).map((v) => {
+      if (v.endsWith("%") && ["hsl", "hsla", "hsv", "hsva"].includes(fn)) {
+        return parseFloat(v) / 100;
+      } else {
+        return parseFloat(v);
+      }
+    });
+    return mappers[fn](...realValues);
+  } else if (typeof color === "string") {
+    let hex = color.startsWith("#") ? color.slice(1) : color;
+    if ([3, 4].includes(hex.length)) {
+      hex = hex.split("").map((char) => char + char).join("");
+    } else if (![6, 8].includes(hex.length)) {
+      consoleWarn(`'${color}' is not a valid hex(a) color`);
+    }
+    const int = parseInt(hex, 16);
+    if (isNaN(int) || int < 0 || int > 4294967295) {
+      consoleWarn(`'${color}' is not a valid hex(a) color`);
+    }
+    return HexToRGB(hex);
+  } else if (typeof color === "object") {
+    if (has(color, ["r", "g", "b"])) {
+      return color;
+    } else if (has(color, ["h", "s", "l"])) {
+      return HSVtoRGB(HSLtoHSV(color));
+    } else if (has(color, ["h", "s", "v"])) {
+      return HSVtoRGB(color);
+    }
+  }
+  throw new TypeError(`Invalid color: ${color == null ? color : String(color) || color.constructor.name}
+Expected #hex, #hexa, rgb(), rgba(), hsl(), hsla(), object or number`);
+}
+function HSVtoRGB(hsva) {
+  const {
+    h,
+    s,
+    v,
+    a
+  } = hsva;
+  const f = (n) => {
+    const k = (n + h / 60) % 6;
+    return v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+  };
+  const rgb = [f(5), f(3), f(1)].map((v2) => Math.round(v2 * 255));
+  return {
+    r: rgb[0],
+    g: rgb[1],
+    b: rgb[2],
+    a
+  };
+}
+function HSLtoRGB(hsla) {
+  return HSVtoRGB(HSLtoHSV(hsla));
+}
+function RGBtoHSV(rgba) {
+  if (!rgba) return {
+    h: 0,
+    s: 1,
+    v: 1,
+    a: 1
+  };
+  const r = rgba.r / 255;
+  const g = rgba.g / 255;
+  const b = rgba.b / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  if (max !== min) {
+    if (max === r) {
+      h = 60 * (0 + (g - b) / (max - min));
+    } else if (max === g) {
+      h = 60 * (2 + (b - r) / (max - min));
+    } else if (max === b) {
+      h = 60 * (4 + (r - g) / (max - min));
+    }
+  }
+  if (h < 0) h = h + 360;
+  const s = max === 0 ? 0 : (max - min) / max;
+  const hsv = [h, s, max];
+  return {
+    h: hsv[0],
+    s: hsv[1],
+    v: hsv[2],
+    a: rgba.a
+  };
+}
+function HSVtoHSL(hsva) {
+  const {
+    h,
+    s,
+    v,
+    a
+  } = hsva;
+  const l = v - v * s / 2;
+  const sprime = l === 1 || l === 0 ? 0 : (v - l) / Math.min(l, 1 - l);
+  return {
+    h,
+    s: sprime,
+    l,
+    a
+  };
+}
+function HSLtoHSV(hsl) {
+  const {
+    h,
+    s,
+    l,
+    a
+  } = hsl;
+  const v = l + s * Math.min(l, 1 - l);
+  const sprime = v === 0 ? 0 : 2 - 2 * l / v;
+  return {
+    h,
+    s: sprime,
+    v,
+    a
+  };
+}
+function RGBtoCSS(_ref) {
+  let {
+    r,
+    g,
+    b,
+    a
+  } = _ref;
+  return a === void 0 ? `rgb(${r}, ${g}, ${b})` : `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+function HSVtoCSS(hsva) {
+  return RGBtoCSS(HSVtoRGB(hsva));
+}
+function toHex(v) {
+  const h = Math.round(v).toString(16);
+  return ("00".substr(0, 2 - h.length) + h).toUpperCase();
+}
+function RGBtoHex(_ref2) {
+  let {
+    r,
+    g,
+    b,
+    a
+  } = _ref2;
+  return `#${[toHex(r), toHex(g), toHex(b), a !== void 0 ? toHex(Math.round(a * 255)) : ""].join("")}`;
+}
+function HexToRGB(hex) {
+  hex = parseHex(hex);
+  let [r, g, b, a] = chunk(hex, 2).map((c) => parseInt(c, 16));
+  a = a === void 0 ? a : a / 255;
+  return {
+    r,
+    g,
+    b,
+    a
+  };
+}
+function HexToHSV(hex) {
+  const rgb = HexToRGB(hex);
+  return RGBtoHSV(rgb);
+}
+function HSVtoHex(hsva) {
+  return RGBtoHex(HSVtoRGB(hsva));
+}
+function parseHex(hex) {
+  if (hex.startsWith("#")) {
+    hex = hex.slice(1);
+  }
+  hex = hex.replace(/([^0-9a-f])/gi, "F");
+  if (hex.length === 3 || hex.length === 4) {
+    hex = hex.split("").map((x) => x + x).join("");
+  }
+  if (hex.length !== 6) {
+    hex = padEnd(padEnd(hex, 6), 8, "F");
+  }
+  return hex;
+}
+function lighten(value, amount) {
+  const lab = fromXYZ$1(toXYZ(value));
+  lab[0] = lab[0] + amount * 10;
+  return fromXYZ(toXYZ$1(lab));
+}
+function darken(value, amount) {
+  const lab = fromXYZ$1(toXYZ(value));
+  lab[0] = lab[0] - amount * 10;
+  return fromXYZ(toXYZ$1(lab));
+}
+function getLuma(color) {
+  const rgb = parseColor(color);
+  return toXYZ(rgb)[1];
+}
+function getContrast(first, second) {
+  const l1 = getLuma(first);
+  const l2 = getLuma(second);
+  const light = Math.max(l1, l2);
+  const dark = Math.min(l1, l2);
+  return (light + 0.05) / (dark + 0.05);
+}
+function getForeground(color) {
+  const blackContrast = Math.abs(APCAcontrast(parseColor(0), parseColor(color)));
+  const whiteContrast = Math.abs(APCAcontrast(parseColor(16777215), parseColor(color)));
+  return whiteContrast > Math.min(blackContrast, 50) ? "#fff" : "#000";
+}
+
+const ThemeSymbol = Symbol.for("vuetify:theme");
+const makeThemeProps = propsFactory({
+  theme: String
+}, "theme");
+function genDefaults() {
+  return {
+    defaultTheme: "light",
+    variations: {
+      colors: [],
+      lighten: 0,
+      darken: 0
+    },
+    themes: {
+      light: {
+        dark: false,
+        colors: {
+          background: "#FFFFFF",
+          surface: "#FFFFFF",
+          "surface-bright": "#FFFFFF",
+          "surface-light": "#EEEEEE",
+          "surface-variant": "#424242",
+          "on-surface-variant": "#EEEEEE",
+          primary: "#1867C0",
+          "primary-darken-1": "#1F5592",
+          secondary: "#48A9A6",
+          "secondary-darken-1": "#018786",
+          error: "#B00020",
+          info: "#2196F3",
+          success: "#4CAF50",
+          warning: "#FB8C00"
+        },
+        variables: {
+          "border-color": "#000000",
+          "border-opacity": 0.12,
+          "high-emphasis-opacity": 0.87,
+          "medium-emphasis-opacity": 0.6,
+          "disabled-opacity": 0.38,
+          "idle-opacity": 0.04,
+          "hover-opacity": 0.04,
+          "focus-opacity": 0.12,
+          "selected-opacity": 0.08,
+          "activated-opacity": 0.12,
+          "pressed-opacity": 0.12,
+          "dragged-opacity": 0.08,
+          "theme-kbd": "#212529",
+          "theme-on-kbd": "#FFFFFF",
+          "theme-code": "#F5F5F5",
+          "theme-on-code": "#000000"
+        }
+      },
+      dark: {
+        dark: true,
+        colors: {
+          background: "#121212",
+          surface: "#212121",
+          "surface-bright": "#ccbfd6",
+          "surface-light": "#424242",
+          "surface-variant": "#a3a3a3",
+          "on-surface-variant": "#424242",
+          primary: "#2196F3",
+          "primary-darken-1": "#277CC1",
+          secondary: "#54B6B2",
+          "secondary-darken-1": "#48A9A6",
+          error: "#CF6679",
+          info: "#2196F3",
+          success: "#4CAF50",
+          warning: "#FB8C00"
+        },
+        variables: {
+          "border-color": "#FFFFFF",
+          "border-opacity": 0.12,
+          "high-emphasis-opacity": 1,
+          "medium-emphasis-opacity": 0.7,
+          "disabled-opacity": 0.5,
+          "idle-opacity": 0.1,
+          "hover-opacity": 0.04,
+          "focus-opacity": 0.12,
+          "selected-opacity": 0.08,
+          "activated-opacity": 0.12,
+          "pressed-opacity": 0.16,
+          "dragged-opacity": 0.08,
+          "theme-kbd": "#212529",
+          "theme-on-kbd": "#FFFFFF",
+          "theme-code": "#343434",
+          "theme-on-code": "#CCCCCC"
+        }
+      }
+    }
+  };
+}
+function parseThemeOptions() {
+  var _a, _b;
+  let options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : genDefaults();
+  const defaults = genDefaults();
+  if (!options) return {
+    ...defaults,
+    isDisabled: true
+  };
+  const themes = {};
+  for (const [key, theme] of Object.entries(options.themes ?? {})) {
+    const defaultTheme = theme.dark || key === "dark" ? (_a = defaults.themes) == null ? void 0 : _a.dark : (_b = defaults.themes) == null ? void 0 : _b.light;
+    themes[key] = mergeDeep(defaultTheme, theme);
+  }
+  return mergeDeep(defaults, {
+    ...options,
+    themes
+  });
+}
+function createTheme(options) {
+  const parsedOptions = parseThemeOptions(options);
+  const name = ref(parsedOptions.defaultTheme);
+  const themes = ref(parsedOptions.themes);
+  const computedThemes = computed(() => {
+    const acc = {};
+    for (const [name2, original] of Object.entries(themes.value)) {
+      const theme = acc[name2] = {
+        ...original,
+        colors: {
+          ...original.colors
+        }
+      };
+      if (parsedOptions.variations) {
+        for (const name3 of parsedOptions.variations.colors) {
+          const color = theme.colors[name3];
+          if (!color) continue;
+          for (const variation of ["lighten", "darken"]) {
+            const fn = variation === "lighten" ? lighten : darken;
+            for (const amount of createRange(parsedOptions.variations[variation], 1)) {
+              theme.colors[`${name3}-${variation}-${amount}`] = RGBtoHex(fn(parseColor(color), amount));
+            }
+          }
+        }
+      }
+      for (const color of Object.keys(theme.colors)) {
+        if (/^on-[a-z]/.test(color) || theme.colors[`on-${color}`]) continue;
+        const onColor = `on-${color}`;
+        const colorVal = parseColor(theme.colors[color]);
+        theme.colors[onColor] = getForeground(colorVal);
+      }
+    }
+    return acc;
+  });
+  const current = computed(() => computedThemes.value[name.value]);
+  const styles = computed(() => {
+    var _a;
+    const lines = [];
+    if ((_a = current.value) == null ? void 0 : _a.dark) {
+      createCssClass(lines, ":root", ["color-scheme: dark"]);
+    }
+    createCssClass(lines, ":root", genCssVariables(current.value));
+    for (const [themeName, theme] of Object.entries(computedThemes.value)) {
+      createCssClass(lines, `.v-theme--${themeName}`, [`color-scheme: ${theme.dark ? "dark" : "normal"}`, ...genCssVariables(theme)]);
+    }
+    const bgLines = [];
+    const fgLines = [];
+    const colors = new Set(Object.values(computedThemes.value).flatMap((theme) => Object.keys(theme.colors)));
+    for (const key of colors) {
+      if (/^on-[a-z]/.test(key)) {
+        createCssClass(fgLines, `.${key}`, [`color: rgb(var(--v-theme-${key})) !important`]);
+      } else {
+        createCssClass(bgLines, `.bg-${key}`, [`--v-theme-overlay-multiplier: var(--v-theme-${key}-overlay-multiplier)`, `background-color: rgb(var(--v-theme-${key})) !important`, `color: rgb(var(--v-theme-on-${key})) !important`]);
+        createCssClass(fgLines, `.text-${key}`, [`color: rgb(var(--v-theme-${key})) !important`]);
+        createCssClass(fgLines, `.border-${key}`, [`--v-border-color: var(--v-theme-${key})`]);
+      }
+    }
+    lines.push(...bgLines, ...fgLines);
+    return lines.map((str, i) => i === 0 ? str : `    ${str}`).join("");
+  });
+  function getHead() {
+    return {
+      style: [{
+        textContent: styles.value,
+        id: "vuetify-theme-stylesheet",
+        nonce: parsedOptions.cspNonce || false
+      }]
+    };
+  }
+  function install(app) {
+    if (parsedOptions.isDisabled) return;
+    const head = app._context.provides.usehead;
+    if (head) {
+      if (head.push) {
+        head.push(getHead);
+      } else {
+        {
+          head.addHeadObjs(getHead());
+        }
+      }
+    }
+  }
+  const themeClasses = computed(() => parsedOptions.isDisabled ? void 0 : `v-theme--${name.value}`);
+  return {
+    install,
+    isDisabled: parsedOptions.isDisabled,
+    name,
+    themes,
+    current,
+    computedThemes,
+    themeClasses,
+    styles,
+    global: {
+      name,
+      current
+    }
+  };
+}
+function provideTheme(props) {
+  getCurrentInstance("provideTheme");
+  const theme = inject$1(ThemeSymbol, null);
+  if (!theme) throw new Error("Could not find Vuetify theme injection");
+  const name = computed(() => {
+    return props.theme ?? theme.name.value;
+  });
+  const current = computed(() => theme.themes.value[name.value]);
+  const themeClasses = computed(() => theme.isDisabled ? void 0 : `v-theme--${name.value}`);
+  const newTheme = {
+    ...theme,
+    name,
+    current,
+    themeClasses
+  };
+  provide(ThemeSymbol, newTheme);
+  return newTheme;
+}
+function useTheme() {
+  getCurrentInstance("useTheme");
+  const theme = inject$1(ThemeSymbol, null);
+  if (!theme) throw new Error("Could not find Vuetify theme injection");
+  return theme;
+}
+function createCssClass(lines, selector, content) {
+  lines.push(`${selector} {
+`, ...content.map((line) => `  ${line};
+`), "}\n");
+}
+function genCssVariables(theme) {
+  const lightOverlay = theme.dark ? 2 : 1;
+  const darkOverlay = theme.dark ? 1 : 2;
+  const variables = [];
+  for (const [key, value] of Object.entries(theme.colors)) {
+    const rgb = parseColor(value);
+    variables.push(`--v-theme-${key}: ${rgb.r},${rgb.g},${rgb.b}`);
+    if (!key.startsWith("on-")) {
+      variables.push(`--v-theme-${key}-overlay-multiplier: ${getLuma(value) > 0.18 ? lightOverlay : darkOverlay}`);
+    }
+  }
+  for (const [key, value] of Object.entries(theme.variables)) {
+    const color = typeof value === "string" && value.startsWith("#") ? parseColor(value) : void 0;
+    const rgb = color ? `${color.r}, ${color.g}, ${color.b}` : void 0;
+    variables.push(`--v-${key}: ${rgb ?? value}`);
+  }
+  return variables;
+}
+
+function createVuetify() {
+  let vuetify = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+  const {
+    blueprint,
+    ...rest
+  } = vuetify;
+  const options = mergeDeep(blueprint, rest);
+  const {
+    aliases = {},
+    components = {},
+    directives = {}
+  } = options;
+  const defaults = createDefaults(options.defaults);
+  const display = createDisplay(options.display, options.ssr);
+  const theme = createTheme(options.theme);
+  const icons = createIcons(options.icons);
+  const locale = createLocale(options.locale);
+  const date = createDate(options.date, locale);
+  const goTo = createGoTo(options.goTo, locale);
+  const install = (app) => {
+    for (const key in directives) {
+      app.directive(key, directives[key]);
+    }
+    for (const key in components) {
+      app.component(key, components[key]);
+    }
+    for (const key in aliases) {
+      app.component(key, defineComponent({
+        ...aliases[key],
+        name: key,
+        aliasName: aliases[key].name
+      }));
+    }
+    theme.install(app);
+    app.provide(DefaultsSymbol, defaults);
+    app.provide(DisplaySymbol, display);
+    app.provide(ThemeSymbol, theme);
+    app.provide(IconSymbol, icons);
+    app.provide(LocaleSymbol, locale);
+    app.provide(DateOptionsSymbol, date.options);
+    app.provide(DateAdapterSymbol, date.instance);
+    app.provide(GoToSymbol, goTo);
+    getUid.reset();
+    {
+      app.mixin({
+        computed: {
+          $vuetify() {
+            return reactive({
+              defaults: inject.call(this, DefaultsSymbol),
+              display: inject.call(this, DisplaySymbol),
+              theme: inject.call(this, ThemeSymbol),
+              icons: inject.call(this, IconSymbol),
+              locale: inject.call(this, LocaleSymbol),
+              date: inject.call(this, DateAdapterSymbol)
+            });
+          }
+        }
+      });
+    }
+  };
+  return {
+    install,
+    defaults,
+    display,
+    theme,
+    icons,
+    locale,
+    date,
+    goTo
+  };
+}
+const version = "3.7.19";
+createVuetify.version = version;
+function inject(key) {
+  var _a, _b;
+  const vm = this.$;
+  const provides = ((_a = vm.parent) == null ? void 0 : _a.provides) ?? ((_b = vm.vnode.appContext) == null ? void 0 : _b.provides);
+  if (provides && key in provides) {
+    return provides[key];
+  }
+}
+
+/* empty css                                                     */
+/* empty css                                           */
+const vuetify_hjFy4UiBVKu2U8_BW9ggkFzfvErKr3wFgTHpa6TF5Ds = defineNuxtPlugin((app) => {
+  const vuetify = createVuetify({
+    theme: {
+      defaultTheme: "dark",
+      themes: {
+        light: {
+          colors: {
+            background: "#ebedf9",
+            surface: "#f9f9ff",
+            "surface-dim": "#d7d9e5",
+            "surface-bright": "#f9f9ff",
+            "on-surface": "#181c23",
+            outline: "#717786",
+            "outline-variant": "#c1c6d7",
+            primary: "#005bc0",
+            "on-primary": "#ffffff",
+            secondary: "#00658b",
+            "on-secondary": "#ffffff",
+            tertiary: "#6440d7",
+            "on-tertiary": "#ffffff",
+            error: "#ba1a1a",
+            "on-error": "#ffffff",
+            "surface-light": "#e6e8f3"
+          },
+          dark: false,
+          variables: {
+            "overlay-background": "#161c28"
+          }
+        },
+        dark: {
+          colors: {
+            background: "#1c2027",
+            surface: "#10131b",
+            "surface-dim": "#10131b",
+            "surface-bright": "#363942",
+            "on-surface": "#e0e2ed",
+            outline: "#8b90a0",
+            "outline-variant": "#414754",
+            primary: "#adc7ff",
+            "on-primary": "#002e68",
+            secondary: "#7dd0ff",
+            "on-secondary": "#00344a",
+            tertiary: "#cbbeff",
+            "on-tertiary": "#340098",
+            error: "#ffb4ab",
+            "on-error": "#690005",
+            "surface-light": "#363942"
+          },
+          dark: true,
+          variables: {
+            "overlay-background": "#161c28"
+          }
+        },
+        landingPage: {
+          dark: true,
+          colors: {}
+        }
+      }
+    },
+    defaults: {
+      VSlider: {
+        color: "primary"
+      },
+      VTextField: {
+        color: "primary"
+      },
+      VTextarea: {
+        color: "primary"
+      },
+      VSwitch: {
+        color: "primary"
+      }
+    }
+  });
+  app.vueApp.use(vuetify);
+});
+
+const plugins = [
+  payloadPlugin,
+  unhead_k2P3m_ZDyjlr2mMYnoDPwavjsDN8hBlk9cFai0bbopU,
+  plugin$1,
+  cookies_sisHiBOjzAv5IPvFgVIiOxXz4TLhr96GevWdTx4s_U4,
+  revive_payload_server_MVtmlZaQpj6ApFmshWfUWl5PehCebzaBf2NuRMiIbms,
+  plugin,
+  components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4,
+  plugin_9blYNaYnU54CugJxmHHBDB5pFfu0BTw1XedfwOhj3dM,
+  api_interceptor_KJ3xV5LQhnHOmIh1GhG1saeCVICF0Z93fKmu6zZ933I,
+  auth_ydS_uAQ5qS4E2Ez9vBX0d0JPoo00WYZNOgh9_nraCUo,
+  token_MOIRrJgASguRDmgQS2H1GowZgD6w5hmJ0qSy7_YgFIQ,
+  vuetify_hjFy4UiBVKu2U8_BW9ggkFzfvErKr3wFgTHpa6TF5Ds
+];
+
+const layouts = {
+  dashboard: defineAsyncComponent(() => import('./dashboard.vue2.mjs').then((m) => m.default || m)),
+  default: defineAsyncComponent(() => import('./default.vue.mjs').then((m) => m.default || m)),
+  empty: defineAsyncComponent(() => import('./empty.vue.mjs').then((m) => m.default || m)),
+  landing: defineAsyncComponent(() => import('./landing.vue.mjs').then((m) => m.default || m))
+};
+
+const LayoutLoader = defineComponent$1({
+  name: "LayoutLoader",
+  inheritAttrs: false,
+  props: {
+    name: String,
+    layoutProps: Object
+  },
+  setup(props, context) {
+    return () => h(layouts[props.name], props.layoutProps, context.slots);
+  }
+});
+const nuxtLayoutProps = {
+  name: {
+    type: [String, Boolean, Object],
+    default: null
+  },
+  fallback: {
+    type: [String, Object],
+    default: null
+  }
+};
+const __nuxt_component_0$1 = defineComponent$1({
+  name: "NuxtLayout",
+  inheritAttrs: false,
+  props: nuxtLayoutProps,
+  setup(props, context) {
+    const nuxtApp = useNuxtApp();
+    const injectedRoute = inject$1(PageRouteSymbol);
+    const route = injectedRoute === useRoute$1() ? useRoute$2() : injectedRoute;
+    const layout = computed(() => {
+      let layout2 = unref(props.name) ?? route.meta.layout ?? "default";
+      if (layout2 && !(layout2 in layouts)) {
+        if (props.fallback) {
+          layout2 = unref(props.fallback);
+        }
+      }
+      return layout2;
+    });
+    const layoutRef = ref();
+    context.expose({ layoutRef });
+    const done = nuxtApp.deferHydration();
+    return () => {
+      const hasLayout = layout.value && layout.value in layouts;
+      const transitionProps = route.meta.layoutTransition ?? appLayoutTransition;
+      return _wrapInTransition(hasLayout && transitionProps, {
+        default: () => h(Suspense, { suspensible: true, onResolve: () => {
+          nextTick(done);
+        } }, {
+          default: () => h(
+            LayoutProvider,
+            {
+              layoutProps: mergeProps(context.attrs, { ref: layoutRef }),
+              key: layout.value || void 0,
+              name: layout.value,
+              shouldProvide: !props.name,
+              hasTransition: !!transitionProps
+            },
+            context.slots
+          )
+        })
+      }).default();
+    };
+  }
+});
+const LayoutProvider = defineComponent$1({
+  name: "NuxtLayoutProvider",
+  inheritAttrs: false,
+  props: {
+    name: {
+      type: [String, Boolean]
+    },
+    layoutProps: {
+      type: Object
+    },
+    hasTransition: {
+      type: Boolean
+    },
+    shouldProvide: {
+      type: Boolean
+    }
+  },
+  setup(props, context) {
+    const name = props.name;
+    if (props.shouldProvide) {
+      provide(LayoutMetaSymbol, {
+        isCurrent: (route) => name === (route.meta.layout ?? "default")
+      });
+    }
+    return () => {
+      var _a, _b;
+      if (!name || typeof name === "string" && !(name in layouts)) {
+        return (_b = (_a = context.slots).default) == null ? void 0 : _b.call(_a);
+      }
+      return h(
+        LayoutLoader,
+        { key: name, layoutProps: props.layoutProps, name },
+        context.slots
+      );
+    };
+  }
+});
+
+const defineRouteProvider = (name = "RouteProvider") => defineComponent$1({
+  name,
+  props: {
+    vnode: {
+      type: Object,
+      required: true
+    },
+    route: {
+      type: Object,
+      required: true
+    },
+    vnodeRef: Object,
+    renderKey: String,
+    trackRootNodes: Boolean
+  },
+  setup(props) {
+    const previousKey = props.renderKey;
+    const previousRoute = props.route;
+    const route = {};
+    for (const key in props.route) {
+      Object.defineProperty(route, key, {
+        get: () => previousKey === props.renderKey ? props.route[key] : previousRoute[key],
+        enumerable: true
+      });
+    }
+    provide(PageRouteSymbol, shallowReactive(route));
+    return () => {
+      return h(props.vnode, { ref: props.vnodeRef });
+    };
+  }
+});
+const RouteProvider = defineRouteProvider();
+
+const __nuxt_component_0 = defineComponent$1({
+  name: "NuxtPage",
+  inheritAttrs: false,
+  props: {
+    name: {
+      type: String
+    },
+    transition: {
+      type: [Boolean, Object],
+      default: void 0
+    },
+    keepalive: {
+      type: [Boolean, Object],
+      default: void 0
+    },
+    route: {
+      type: Object
+    },
+    pageKey: {
+      type: [Function, String],
+      default: null
+    }
+  },
+  setup(props, { attrs, slots, expose }) {
+    const nuxtApp = useNuxtApp();
+    const pageRef = ref();
+    const forkRoute = inject$1(PageRouteSymbol, null);
+    let previousPageKey;
+    expose({ pageRef });
+    inject$1(LayoutMetaSymbol, null);
+    let vnode;
+    const done = nuxtApp.deferHydration();
+    if (props.pageKey) {
+      watch(() => props.pageKey, (next, prev) => {
+        if (next !== prev) {
+          nuxtApp.callHook("page:loading:start");
+        }
+      });
+    }
+    return () => {
+      return h(RouterView, { name: props.name, route: props.route, ...attrs }, {
+        default: (routeProps) => {
+          if (!routeProps.Component) {
+            done();
+            return;
+          }
+          const key = generateRouteKey$1(routeProps, props.pageKey);
+          if (!nuxtApp.isHydrating && !hasChildrenRoutes(forkRoute, routeProps.route, routeProps.Component) && previousPageKey === key) {
+            nuxtApp.callHook("page:loading:end");
+          }
+          previousPageKey = key;
+          {
+            vnode = h(Suspense, {
+              suspensible: true
+            }, {
+              default: () => {
+                const providerVNode = h(RouteProvider, {
+                  key: key || void 0,
+                  vnode: slots.default ? normalizeSlot(slots.default, routeProps) : routeProps.Component,
+                  route: routeProps.route,
+                  renderKey: key || void 0,
+                  vnodeRef: pageRef
+                });
+                return providerVNode;
+              }
+            });
+            return vnode;
+          }
+        }
+      });
+    };
+  }
+});
+function hasChildrenRoutes(fork, newRoute, Component) {
+  if (!fork) {
+    return false;
+  }
+  const index = newRoute.matched.findIndex((m) => {
+    var _a;
+    return ((_a = m.components) == null ? void 0 : _a.default) === (Component == null ? void 0 : Component.type);
+  });
+  return index < newRoute.matched.length - 1;
+}
+function normalizeSlot(slot, data) {
+  const slotContent = slot(data);
+  return slotContent.length === 1 ? h(slotContent[0]) : h(Fragment, void 0, slotContent);
+}
+
+const _sfc_main$5 = /* @__PURE__ */ defineComponent$1({
+  __name: "DataCollector",
+  __ssrInlineRender: true,
+  setup(__props) {
+    ref("");
+    ref(Date.now());
+    ref("");
+    ref(0);
+    ref(0);
+    ref(0);
+    ref("");
+    ref("");
+    ref("");
+    ref(0);
+    ref(false);
+    useRoute$2();
+    const cookieStore = useCookieStore();
+    watch(() => cookieStore.preferences.analytics, (newValue) => {
+      return;
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+    };
+  }
+});
+
+const _export_sfc = (sfc, props) => {
+  const target = sfc.__vccOpts || sfc;
+  for (const [key, val] of props) {
+    target[key] = val;
+  }
+  return target;
+};
+
+const _sfc_setup$3 = _sfc_main$5.setup;
+_sfc_main$5.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/analytics/DataCollector.vue");
+  return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
+};
+const AnalyticsDataCollector = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["__scopeId", "data-v-fa9e3cf9"]]);
+
+function elementToViewport(point, offset) {
+  return {
+    x: point.x + offset.x,
+    y: point.y + offset.y
+  };
+}
+function getOffset(a, b) {
+  return {
+    x: a.x - b.x,
+    y: a.y - b.y
+  };
+}
+function anchorToPoint(anchor, box) {
+  if (anchor.side === "top" || anchor.side === "bottom") {
+    const {
+      side,
+      align
+    } = anchor;
+    const x = align === "left" ? 0 : align === "center" ? box.width / 2 : align === "right" ? box.width : align;
+    const y = side === "top" ? 0 : side === "bottom" ? box.height : side;
+    return elementToViewport({
+      x,
+      y
+    }, box);
+  } else if (anchor.side === "left" || anchor.side === "right") {
+    const {
+      side,
+      align
+    } = anchor;
+    const x = side === "left" ? 0 : side === "right" ? box.width : side;
+    const y = align === "top" ? 0 : align === "center" ? box.height / 2 : align === "bottom" ? box.height : align;
+    return elementToViewport({
+      x,
+      y
+    }, box);
+  }
+  return elementToViewport({
+    x: box.width / 2,
+    y: box.height / 2
+  }, box);
+}
+
+class Box {
+  constructor(_ref) {
+    let {
+      x,
+      y,
+      width,
+      height
+    } = _ref;
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+  get top() {
+    return this.y;
+  }
+  get bottom() {
+    return this.y + this.height;
+  }
+  get left() {
+    return this.x;
+  }
+  get right() {
+    return this.x + this.width;
+  }
+}
+function getOverflow(a, b) {
+  return {
+    x: {
+      before: Math.max(0, b.left - a.left),
+      after: Math.max(0, a.right - b.right)
+    },
+    y: {
+      before: Math.max(0, b.top - a.top),
+      after: Math.max(0, a.bottom - b.bottom)
+    }
+  };
+}
+function getTargetBox(target) {
+  if (Array.isArray(target)) {
+    return new Box({
+      x: target[0],
+      y: target[1],
+      width: 0,
+      height: 0
+    });
+  } else {
+    return target.getBoundingClientRect();
+  }
+}
+
+function isFixedPosition(el) {
+  while (el) {
+    if ((void 0).getComputedStyle(el).position === "fixed") {
+      return true;
+    }
+    el = el.offsetParent;
+  }
+  return false;
+}
+
+const block = ["top", "bottom"];
+const inline = ["start", "end", "left", "right"];
+function parseAnchor(anchor, isRtl) {
+  let [side, align] = anchor.split(" ");
+  if (!align) {
+    align = includes(block, side) ? "start" : includes(inline, side) ? "top" : "center";
+  }
+  return {
+    side: toPhysical(side, isRtl),
+    align: toPhysical(align, isRtl)
+  };
+}
+function toPhysical(str, isRtl) {
+  if (str === "start") return isRtl ? "right" : "left";
+  if (str === "end") return isRtl ? "left" : "right";
+  return str;
+}
+function flipSide(anchor) {
+  return {
+    side: {
+      center: "center",
+      top: "bottom",
+      bottom: "top",
+      left: "right",
+      right: "left"
+    }[anchor.side],
+    align: anchor.align
+  };
+}
+function flipAlign(anchor) {
+  return {
+    side: anchor.side,
+    align: {
+      center: "center",
+      top: "bottom",
+      bottom: "top",
+      left: "right",
+      right: "left"
+    }[anchor.align]
+  };
+}
+function flipCorner(anchor) {
+  return {
+    side: anchor.align,
+    align: anchor.side
+  };
+}
+function getAxis(anchor) {
+  return includes(block, anchor.side) ? "y" : "x";
+}
+
+function getScrollParent(el) {
+  let includeHidden = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+  while (el) {
+    if (includeHidden ? isPotentiallyScrollable(el) : hasScrollbar(el)) return el;
+    el = el.parentElement;
+  }
+  return (void 0).scrollingElement;
+}
+function getScrollParents(el, stopAt) {
+  const elements = [];
+  if (stopAt && el && !stopAt.contains(el)) return elements;
+  while (el) {
+    if (hasScrollbar(el)) elements.push(el);
+    if (el === stopAt) break;
+    el = el.parentElement;
+  }
+  return elements;
+}
+function hasScrollbar(el) {
+  if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+  const style = (void 0).getComputedStyle(el);
+  return style.overflowY === "scroll" || style.overflowY === "auto" && el.scrollHeight > el.clientHeight;
+}
+function isPotentiallyScrollable(el) {
+  if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+  const style = (void 0).getComputedStyle(el);
+  return ["scroll", "auto"].includes(style.overflowY);
+}
+
+function nullifyTransforms(el) {
+  const rect = el.getBoundingClientRect();
+  const style = getComputedStyle(el);
+  const tx = style.transform;
+  if (tx) {
+    let ta, sx, sy, dx, dy;
+    if (tx.startsWith("matrix3d(")) {
+      ta = tx.slice(9, -1).split(/, /);
+      sx = Number(ta[0]);
+      sy = Number(ta[5]);
+      dx = Number(ta[12]);
+      dy = Number(ta[13]);
+    } else if (tx.startsWith("matrix(")) {
+      ta = tx.slice(7, -1).split(/, /);
+      sx = Number(ta[0]);
+      sy = Number(ta[3]);
+      dx = Number(ta[4]);
+      dy = Number(ta[5]);
+    } else {
+      return new Box(rect);
+    }
+    const to = style.transformOrigin;
+    const x = rect.x - dx - (1 - sx) * parseFloat(to);
+    const y = rect.y - dy - (1 - sy) * parseFloat(to.slice(to.indexOf(" ") + 1));
+    const w = sx ? rect.width / sx : el.offsetWidth + 1;
+    const h = sy ? rect.height / sy : el.offsetHeight + 1;
+    return new Box({
+      x,
+      y,
+      width: w,
+      height: h
+    });
+  } else {
+    return new Box(rect);
+  }
+}
+function animate(el, keyframes, options) {
+  if (typeof el.animate === "undefined") return {
+    finished: Promise.resolve()
+  };
+  let animation;
+  try {
+    animation = el.animate(keyframes, options);
+  } catch (err) {
+    return {
+      finished: Promise.resolve()
+    };
+  }
+  if (typeof animation.finished === "undefined") {
+    animation.finished = new Promise((resolve) => {
+      animation.onfinish = () => {
+        resolve(animation);
+      };
+    });
+  }
+  return animation;
+}
+
+const locationStrategies = {
+  static: staticLocationStrategy,
+  // specific viewport position, usually centered
+  connected: connectedLocationStrategy
+  // connected to a certain element
+};
+const makeLocationStrategyProps = propsFactory({
+  locationStrategy: {
+    type: [String, Function],
+    default: "static",
+    validator: (val) => typeof val === "function" || val in locationStrategies
+  },
+  location: {
+    type: String,
+    default: "bottom"
+  },
+  origin: {
+    type: String,
+    default: "auto"
+  },
+  offset: [Number, String, Array]
+}, "VOverlay-location-strategies");
+function useLocationStrategies(props, data) {
+  const contentStyles = ref({});
+  const updateLocation = ref();
+  return {
+    contentStyles,
+    updateLocation
+  };
+}
+function staticLocationStrategy() {
+}
+function getIntrinsicSize(el, isRtl) {
+  const contentBox = nullifyTransforms(el);
+  if (isRtl) {
+    contentBox.x += parseFloat(el.style.right || 0);
+  } else {
+    contentBox.x -= parseFloat(el.style.left || 0);
+  }
+  contentBox.y -= parseFloat(el.style.top || 0);
+  return contentBox;
+}
+function connectedLocationStrategy(data, props, contentStyles) {
+  const activatorFixed = Array.isArray(data.target.value) || isFixedPosition(data.target.value);
+  if (activatorFixed) {
+    Object.assign(contentStyles.value, {
+      position: "fixed",
+      top: 0,
+      [data.isRtl.value ? "right" : "left"]: 0
+    });
+  }
+  const {
+    preferredAnchor,
+    preferredOrigin
+  } = destructComputed(() => {
+    const parsedAnchor = parseAnchor(props.location, data.isRtl.value);
+    const parsedOrigin = props.origin === "overlap" ? parsedAnchor : props.origin === "auto" ? flipSide(parsedAnchor) : parseAnchor(props.origin, data.isRtl.value);
+    if (parsedAnchor.side === parsedOrigin.side && parsedAnchor.align === flipAlign(parsedOrigin).align) {
+      return {
+        preferredAnchor: flipCorner(parsedAnchor),
+        preferredOrigin: flipCorner(parsedOrigin)
+      };
+    } else {
+      return {
+        preferredAnchor: parsedAnchor,
+        preferredOrigin: parsedOrigin
+      };
+    }
+  });
+  const [minWidth, minHeight, maxWidth, maxHeight] = ["minWidth", "minHeight", "maxWidth", "maxHeight"].map((key) => {
+    return computed(() => {
+      const val = parseFloat(props[key]);
+      return isNaN(val) ? Infinity : val;
+    });
+  });
+  const offset = computed(() => {
+    if (Array.isArray(props.offset)) {
+      return props.offset;
+    }
+    if (typeof props.offset === "string") {
+      const offset2 = props.offset.split(" ").map(parseFloat);
+      if (offset2.length < 2) offset2.push(0);
+      return offset2;
+    }
+    return typeof props.offset === "number" ? [props.offset, 0] : [0, 0];
+  });
+  let observe = false;
+  const observer = new ResizeObserver(() => {
+    if (observe) updateLocation();
+  });
+  watch([data.target, data.contentEl], (_ref, _ref2) => {
+    let [newTarget, newContentEl] = _ref;
+    let [oldTarget, oldContentEl] = _ref2;
+    if (oldTarget && !Array.isArray(oldTarget)) observer.unobserve(oldTarget);
+    if (newTarget && !Array.isArray(newTarget)) observer.observe(newTarget);
+    if (oldContentEl) observer.unobserve(oldContentEl);
+    if (newContentEl) observer.observe(newContentEl);
+  }, {
+    immediate: true
+  });
+  onScopeDispose(() => {
+    observer.disconnect();
+  });
+  function updateLocation() {
+    observe = false;
+    requestAnimationFrame(() => observe = true);
+    if (!data.target.value || !data.contentEl.value) return;
+    const targetBox = getTargetBox(data.target.value);
+    const contentBox = getIntrinsicSize(data.contentEl.value, data.isRtl.value);
+    const scrollParents = getScrollParents(data.contentEl.value);
+    const viewportMargin = 12;
+    if (!scrollParents.length) {
+      scrollParents.push((void 0).documentElement);
+      if (!(data.contentEl.value.style.top && data.contentEl.value.style.left)) {
+        contentBox.x -= parseFloat((void 0).documentElement.style.getPropertyValue("--v-body-scroll-x") || 0);
+        contentBox.y -= parseFloat((void 0).documentElement.style.getPropertyValue("--v-body-scroll-y") || 0);
+      }
+    }
+    const viewport = scrollParents.reduce((box, el) => {
+      const rect = el.getBoundingClientRect();
+      const scrollBox = new Box({
+        x: el === (void 0).documentElement ? 0 : rect.x,
+        y: el === (void 0).documentElement ? 0 : rect.y,
+        width: el.clientWidth,
+        height: el.clientHeight
+      });
+      if (box) {
+        return new Box({
+          x: Math.max(box.left, scrollBox.left),
+          y: Math.max(box.top, scrollBox.top),
+          width: Math.min(box.right, scrollBox.right) - Math.max(box.left, scrollBox.left),
+          height: Math.min(box.bottom, scrollBox.bottom) - Math.max(box.top, scrollBox.top)
+        });
+      }
+      return scrollBox;
+    }, void 0);
+    viewport.x += viewportMargin;
+    viewport.y += viewportMargin;
+    viewport.width -= viewportMargin * 2;
+    viewport.height -= viewportMargin * 2;
+    let placement = {
+      anchor: preferredAnchor.value,
+      origin: preferredOrigin.value
+    };
+    function checkOverflow(_placement) {
+      const box = new Box(contentBox);
+      const targetPoint = anchorToPoint(_placement.anchor, targetBox);
+      const contentPoint = anchorToPoint(_placement.origin, box);
+      let {
+        x: x2,
+        y: y2
+      } = getOffset(targetPoint, contentPoint);
+      switch (_placement.anchor.side) {
+        case "top":
+          y2 -= offset.value[0];
+          break;
+        case "bottom":
+          y2 += offset.value[0];
+          break;
+        case "left":
+          x2 -= offset.value[0];
+          break;
+        case "right":
+          x2 += offset.value[0];
+          break;
+      }
+      switch (_placement.anchor.align) {
+        case "top":
+          y2 -= offset.value[1];
+          break;
+        case "bottom":
+          y2 += offset.value[1];
+          break;
+        case "left":
+          x2 -= offset.value[1];
+          break;
+        case "right":
+          x2 += offset.value[1];
+          break;
+      }
+      box.x += x2;
+      box.y += y2;
+      box.width = Math.min(box.width, maxWidth.value);
+      box.height = Math.min(box.height, maxHeight.value);
+      const overflows = getOverflow(box, viewport);
+      return {
+        overflows,
+        x: x2,
+        y: y2
+      };
+    }
+    let x = 0;
+    let y = 0;
+    const available = {
+      x: 0,
+      y: 0
+    };
+    const flipped = {
+      x: false,
+      y: false
+    };
+    let resets = -1;
+    while (true) {
+      if (resets++ > 10) {
+        consoleError("Infinite loop detected in connectedLocationStrategy");
+        break;
+      }
+      const {
+        x: _x,
+        y: _y,
+        overflows
+      } = checkOverflow(placement);
+      x += _x;
+      y += _y;
+      contentBox.x += _x;
+      contentBox.y += _y;
+      {
+        const axis2 = getAxis(placement.anchor);
+        const hasOverflowX = overflows.x.before || overflows.x.after;
+        const hasOverflowY = overflows.y.before || overflows.y.after;
+        let reset = false;
+        ["x", "y"].forEach((key) => {
+          if (key === "x" && hasOverflowX && !flipped.x || key === "y" && hasOverflowY && !flipped.y) {
+            const newPlacement = {
+              anchor: {
+                ...placement.anchor
+              },
+              origin: {
+                ...placement.origin
+              }
+            };
+            const flip = key === "x" ? axis2 === "y" ? flipAlign : flipSide : axis2 === "y" ? flipSide : flipAlign;
+            newPlacement.anchor = flip(newPlacement.anchor);
+            newPlacement.origin = flip(newPlacement.origin);
+            const {
+              overflows: newOverflows
+            } = checkOverflow(newPlacement);
+            if (newOverflows[key].before <= overflows[key].before && newOverflows[key].after <= overflows[key].after || newOverflows[key].before + newOverflows[key].after < (overflows[key].before + overflows[key].after) / 2) {
+              placement = newPlacement;
+              reset = flipped[key] = true;
+            }
+          }
+        });
+        if (reset) continue;
+      }
+      if (overflows.x.before) {
+        x += overflows.x.before;
+        contentBox.x += overflows.x.before;
+      }
+      if (overflows.x.after) {
+        x -= overflows.x.after;
+        contentBox.x -= overflows.x.after;
+      }
+      if (overflows.y.before) {
+        y += overflows.y.before;
+        contentBox.y += overflows.y.before;
+      }
+      if (overflows.y.after) {
+        y -= overflows.y.after;
+        contentBox.y -= overflows.y.after;
+      }
+      {
+        const overflows2 = getOverflow(contentBox, viewport);
+        available.x = viewport.width - overflows2.x.before - overflows2.x.after;
+        available.y = viewport.height - overflows2.y.before - overflows2.y.after;
+        x += overflows2.x.before;
+        contentBox.x += overflows2.x.before;
+        y += overflows2.y.before;
+        contentBox.y += overflows2.y.before;
+      }
+      break;
+    }
+    const axis = getAxis(placement.anchor);
+    Object.assign(contentStyles.value, {
+      "--v-overlay-anchor-origin": `${placement.anchor.side} ${placement.anchor.align}`,
+      transformOrigin: `${placement.origin.side} ${placement.origin.align}`,
+      // transform: `translate(${pixelRound(x)}px, ${pixelRound(y)}px)`,
+      top: convertToUnit(pixelRound(y)),
+      left: data.isRtl.value ? void 0 : convertToUnit(pixelRound(x)),
+      right: data.isRtl.value ? convertToUnit(pixelRound(-x)) : void 0,
+      minWidth: convertToUnit(axis === "y" ? Math.min(minWidth.value, targetBox.width) : minWidth.value),
+      maxWidth: convertToUnit(pixelCeil(clamp(available.x, minWidth.value === Infinity ? 0 : minWidth.value, maxWidth.value))),
+      maxHeight: convertToUnit(pixelCeil(clamp(available.y, minHeight.value === Infinity ? 0 : minHeight.value, maxHeight.value)))
+    });
+    return {
+      available,
+      contentBox
+    };
+  }
+  watch(() => [preferredAnchor.value, preferredOrigin.value, props.offset, props.minWidth, props.minHeight, props.maxWidth, props.maxHeight], () => updateLocation());
+  nextTick(() => {
+    const result = updateLocation();
+    if (!result) return;
+    const {
+      available,
+      contentBox
+    } = result;
+    if (contentBox.height > available.y) {
+      requestAnimationFrame(() => {
+        updateLocation();
+        requestAnimationFrame(() => {
+          updateLocation();
+        });
+      });
+    }
+  });
+  return {
+    updateLocation
+  };
+}
+function pixelRound(val) {
+  return Math.round(val * devicePixelRatio) / devicePixelRatio;
+}
+function pixelCeil(val) {
+  return Math.ceil(val * devicePixelRatio) / devicePixelRatio;
+}
+
+let clean = true;
+const frames = [];
+function requestNewFrame(cb) {
+  if (!clean || frames.length) {
+    frames.push(cb);
+    run();
+  } else {
+    clean = false;
+    cb();
+    run();
+  }
+}
+let raf = -1;
+function run() {
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(() => {
+    const frame = frames.shift();
+    if (frame) frame();
+    if (frames.length) run();
+    else clean = true;
+  });
+}
+
+const scrollStrategies = {
+  none: null,
+  close: closeScrollStrategy,
+  block: blockScrollStrategy,
+  reposition: repositionScrollStrategy
+};
+const makeScrollStrategyProps = propsFactory({
+  scrollStrategy: {
+    type: [String, Function],
+    default: "block",
+    validator: (val) => typeof val === "function" || val in scrollStrategies
+  }
+}, "VOverlay-scroll-strategies");
+function closeScrollStrategy(data) {
+  function onScroll(e) {
+    data.isActive.value = false;
+  }
+  bindScroll(data.targetEl.value ?? data.contentEl.value, onScroll);
+}
+function blockScrollStrategy(data, props) {
+  var _a;
+  const offsetParent = (_a = data.root.value) == null ? void 0 : _a.offsetParent;
+  const scrollElements = [.../* @__PURE__ */ new Set([...getScrollParents(data.targetEl.value, props.contained ? offsetParent : void 0), ...getScrollParents(data.contentEl.value, props.contained ? offsetParent : void 0)])].filter((el) => !el.classList.contains("v-overlay-scroll-blocked"));
+  const scrollbarWidth = (void 0).innerWidth - (void 0).documentElement.offsetWidth;
+  const scrollableParent = ((el) => hasScrollbar(el) && el)(offsetParent || (void 0).documentElement);
+  if (scrollableParent) {
+    data.root.value.classList.add("v-overlay--scroll-blocked");
+  }
+  scrollElements.forEach((el, i) => {
+    el.style.setProperty("--v-body-scroll-x", convertToUnit(-el.scrollLeft));
+    el.style.setProperty("--v-body-scroll-y", convertToUnit(-el.scrollTop));
+    if (el !== (void 0).documentElement) {
+      el.style.setProperty("--v-scrollbar-offset", convertToUnit(scrollbarWidth));
+    }
+    el.classList.add("v-overlay-scroll-blocked");
+  });
+  onScopeDispose(() => {
+    scrollElements.forEach((el, i) => {
+      const x = parseFloat(el.style.getPropertyValue("--v-body-scroll-x"));
+      const y = parseFloat(el.style.getPropertyValue("--v-body-scroll-y"));
+      const scrollBehavior = el.style.scrollBehavior;
+      el.style.scrollBehavior = "auto";
+      el.style.removeProperty("--v-body-scroll-x");
+      el.style.removeProperty("--v-body-scroll-y");
+      el.style.removeProperty("--v-scrollbar-offset");
+      el.classList.remove("v-overlay-scroll-blocked");
+      el.scrollLeft = -x;
+      el.scrollTop = -y;
+      el.style.scrollBehavior = scrollBehavior;
+    });
+    if (scrollableParent) {
+      data.root.value.classList.remove("v-overlay--scroll-blocked");
+    }
+  });
+}
+function repositionScrollStrategy(data, props, scope) {
+  let slow = false;
+  let raf = -1;
+  let ric = -1;
+  function update(e) {
+    requestNewFrame(() => {
+      var _a, _b;
+      const start = performance.now();
+      (_b = (_a = data.updateLocation).value) == null ? void 0 : _b.call(_a, e);
+      const time = performance.now() - start;
+      slow = time / (1e3 / 60) > 2;
+    });
+  }
+  ric = (typeof requestIdleCallback === "undefined" ? (cb) => cb() : requestIdleCallback)(() => {
+    scope.run(() => {
+      bindScroll(data.targetEl.value ?? data.contentEl.value, (e) => {
+        if (slow) {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => {
+            raf = requestAnimationFrame(() => {
+              update(e);
+            });
+          });
+        } else {
+          update(e);
+        }
+      });
+    });
+  });
+  onScopeDispose(() => {
+    typeof cancelIdleCallback !== "undefined" && cancelIdleCallback(ric);
+    cancelAnimationFrame(raf);
+  });
+}
+function bindScroll(el, onScroll) {
+  const scrollElements = [void 0, ...getScrollParents(el)];
+  scrollElements.forEach((el2) => {
+    el2.addEventListener("scroll", onScroll, {
+      passive: true
+    });
+  });
+  onScopeDispose(() => {
+    scrollElements.forEach((el2) => {
+      el2.removeEventListener("scroll", onScroll);
+    });
+  });
+}
+
+const VMenuSymbol = Symbol.for("vuetify:v-menu");
+
+const makeDelayProps = propsFactory({
+  closeDelay: [Number, String],
+  openDelay: [Number, String]
+}, "delay");
+function useDelay(props, cb) {
+  let clearDelay = () => {
+  };
+  function runDelay(isOpening) {
+    clearDelay == null ? void 0 : clearDelay();
+    const delay = Number(isOpening ? props.openDelay : props.closeDelay);
+    return new Promise((resolve) => {
+      clearDelay = defer(delay, () => {
+        cb == null ? void 0 : cb(isOpening);
+        resolve(isOpening);
+      });
+    });
+  }
+  function runOpenDelay() {
+    return runDelay(true);
+  }
+  function runCloseDelay() {
+    return runDelay(false);
+  }
+  return {
+    clearDelay,
+    runOpenDelay,
+    runCloseDelay
+  };
+}
+
+const makeActivatorProps = propsFactory({
+  target: [String, Object],
+  activator: [String, Object],
+  activatorProps: {
+    type: Object,
+    default: () => ({})
+  },
+  openOnClick: {
+    type: Boolean,
+    default: void 0
+  },
+  openOnHover: Boolean,
+  openOnFocus: {
+    type: Boolean,
+    default: void 0
+  },
+  closeOnContentClick: Boolean,
+  ...makeDelayProps()
+}, "VOverlay-activator");
+function useActivator(props, _ref) {
+  let {
+    isActive,
+    isTop,
+    contentEl
+  } = _ref;
+  const vm = getCurrentInstance("useActivator");
+  const activatorEl = ref();
+  let isHovered = false;
+  let isFocused = false;
+  let firstEnter = true;
+  const openOnFocus = computed(() => props.openOnFocus || props.openOnFocus == null && props.openOnHover);
+  const openOnClick = computed(() => props.openOnClick || props.openOnClick == null && !props.openOnHover && !openOnFocus.value);
+  const {
+    runOpenDelay,
+    runCloseDelay
+  } = useDelay(props, (value) => {
+    if (value === (props.openOnHover && isHovered || openOnFocus.value && isFocused) && !(props.openOnHover && isActive.value && !isTop.value)) {
+      if (isActive.value !== value) {
+        firstEnter = true;
+      }
+      isActive.value = value;
+    }
+  });
+  const cursorTarget = ref();
+  const availableEvents = {
+    onClick: (e) => {
+      e.stopPropagation();
+      activatorEl.value = e.currentTarget || e.target;
+      if (!isActive.value) {
+        cursorTarget.value = [e.clientX, e.clientY];
+      }
+      isActive.value = !isActive.value;
+    },
+    onMouseenter: (e) => {
+      var _a;
+      if ((_a = e.sourceCapabilities) == null ? void 0 : _a.firesTouchEvents) return;
+      isHovered = true;
+      activatorEl.value = e.currentTarget || e.target;
+      runOpenDelay();
+    },
+    onMouseleave: (e) => {
+      isHovered = false;
+      runCloseDelay();
+    },
+    onFocus: (e) => {
+      if (matchesSelector(e.target) === false) ;
+      isFocused = true;
+      e.stopPropagation();
+      activatorEl.value = e.currentTarget || e.target;
+      runOpenDelay();
+    },
+    onBlur: (e) => {
+      isFocused = false;
+      e.stopPropagation();
+      runCloseDelay();
+    }
+  };
+  const activatorEvents = computed(() => {
+    const events = {};
+    if (openOnClick.value) {
+      events.onClick = availableEvents.onClick;
+    }
+    if (props.openOnHover) {
+      events.onMouseenter = availableEvents.onMouseenter;
+      events.onMouseleave = availableEvents.onMouseleave;
+    }
+    if (openOnFocus.value) {
+      events.onFocus = availableEvents.onFocus;
+      events.onBlur = availableEvents.onBlur;
+    }
+    return events;
+  });
+  const contentEvents = computed(() => {
+    const events = {};
+    if (props.openOnHover) {
+      events.onMouseenter = () => {
+        isHovered = true;
+        runOpenDelay();
+      };
+      events.onMouseleave = () => {
+        isHovered = false;
+        runCloseDelay();
+      };
+    }
+    if (openOnFocus.value) {
+      events.onFocusin = () => {
+        isFocused = true;
+        runOpenDelay();
+      };
+      events.onFocusout = () => {
+        isFocused = false;
+        runCloseDelay();
+      };
+    }
+    if (props.closeOnContentClick) {
+      const menu = inject$1(VMenuSymbol, null);
+      events.onClick = () => {
+        isActive.value = false;
+        menu == null ? void 0 : menu.closeParents();
+      };
+    }
+    return events;
+  });
+  const scrimEvents = computed(() => {
+    const events = {};
+    if (props.openOnHover) {
+      events.onMouseenter = () => {
+        if (firstEnter) {
+          isHovered = true;
+          firstEnter = false;
+          runOpenDelay();
+        }
+      };
+      events.onMouseleave = () => {
+        isHovered = false;
+        runCloseDelay();
+      };
+    }
+    return events;
+  });
+  watch(isTop, (val) => {
+    var _a;
+    if (val && (props.openOnHover && !isHovered && (!openOnFocus.value || !isFocused) || openOnFocus.value && !isFocused && (!props.openOnHover || !isHovered)) && !((_a = contentEl.value) == null ? void 0 : _a.contains((void 0).activeElement))) {
+      isActive.value = false;
+    }
+  });
+  watch(isActive, (val) => {
+    if (!val) {
+      setTimeout(() => {
+        cursorTarget.value = void 0;
+      });
+    }
+  }, {
+    flush: "post"
+  });
+  const activatorRef = templateRef();
+  watchEffect(() => {
+    if (!activatorRef.value) return;
+    nextTick(() => {
+      activatorEl.value = activatorRef.el;
+    });
+  });
+  const targetRef = templateRef();
+  const target = computed(() => {
+    if (props.target === "cursor" && cursorTarget.value) return cursorTarget.value;
+    if (targetRef.value) return targetRef.el;
+    return getTarget(props.target, vm) || activatorEl.value;
+  });
+  const targetEl = computed(() => {
+    return Array.isArray(target.value) ? void 0 : target.value;
+  });
+  watch(() => !!props.activator, (val) => {
+  }, {
+    flush: "post",
+    immediate: true
+  });
+  onScopeDispose(() => {
+  });
+  return {
+    activatorEl,
+    activatorRef,
+    target,
+    targetEl,
+    targetRef,
+    activatorEvents,
+    contentEvents,
+    scrimEvents
+  };
+}
+function getTarget(selector, vm) {
+  var _a, _b;
+  if (!selector) return;
+  let target;
+  if (selector === "parent") {
+    let el = (_b = (_a = vm == null ? void 0 : vm.proxy) == null ? void 0 : _a.$el) == null ? void 0 : _b.parentNode;
+    while (el == null ? void 0 : el.hasAttribute("data-no-activator")) {
+      el = el.parentNode;
+    }
+    target = el;
+  } else if (typeof selector === "string") {
+    target = (void 0).querySelector(selector);
+  } else if ("$el" in selector) {
+    target = selector.$el;
+  } else {
+    target = selector;
+  }
+  return target;
+}
+
+function useColor(colors) {
+  return destructComputed(() => {
+    const classes = [];
+    const styles = {};
+    if (colors.value.background) {
+      if (isCssColor(colors.value.background)) {
+        styles.backgroundColor = colors.value.background;
+        if (!colors.value.text && isParsableColor(colors.value.background)) {
+          const backgroundColor = parseColor(colors.value.background);
+          if (backgroundColor.a == null || backgroundColor.a === 1) {
+            const textColor = getForeground(backgroundColor);
+            styles.color = textColor;
+            styles.caretColor = textColor;
+          }
+        }
+      } else {
+        classes.push(`bg-${colors.value.background}`);
+      }
+    }
+    if (colors.value.text) {
+      if (isCssColor(colors.value.text)) {
+        styles.color = colors.value.text;
+        styles.caretColor = colors.value.text;
+      } else {
+        classes.push(`text-${colors.value.text}`);
+      }
+    }
+    return {
+      colorClasses: classes,
+      colorStyles: styles
+    };
+  });
+}
+function useTextColor(props, name) {
+  const colors = computed(() => ({
+    text: isRef(props) ? props.value : name ? props[name] : null
+  }));
+  const {
+    colorClasses: textColorClasses,
+    colorStyles: textColorStyles
+  } = useColor(colors);
+  return {
+    textColorClasses,
+    textColorStyles
+  };
+}
+function useBackgroundColor(props, name) {
+  const colors = computed(() => ({
+    background: isRef(props) ? props.value : name ? props[name] : null
+  }));
+  const {
+    colorClasses: backgroundColorClasses,
+    colorStyles: backgroundColorStyles
+  } = useColor(colors);
+  return {
+    backgroundColorClasses,
+    backgroundColorStyles
+  };
+}
+
+const makeComponentProps = propsFactory({
+  class: [String, Array, Object],
+  style: {
+    type: [String, Array, Object],
+    default: null
+  }
+}, "component");
+
+const makeDimensionProps = propsFactory({
+  height: [Number, String],
+  maxHeight: [Number, String],
+  maxWidth: [Number, String],
+  minHeight: [Number, String],
+  minWidth: [Number, String],
+  width: [Number, String]
+}, "dimension");
+function useDimension(props) {
+  const dimensionStyles = computed(() => {
+    const styles = {};
+    const height = convertToUnit(props.height);
+    const maxHeight = convertToUnit(props.maxHeight);
+    const maxWidth = convertToUnit(props.maxWidth);
+    const minHeight = convertToUnit(props.minHeight);
+    const minWidth = convertToUnit(props.minWidth);
+    const width = convertToUnit(props.width);
+    if (height != null) styles.height = height;
+    if (maxHeight != null) styles.maxHeight = maxHeight;
+    if (maxWidth != null) styles.maxWidth = maxWidth;
+    if (minHeight != null) styles.minHeight = minHeight;
+    if (minWidth != null) styles.minWidth = minWidth;
+    if (width != null) styles.width = width;
+    return styles;
+  });
+  return {
+    dimensionStyles
+  };
+}
+
+function useHydration() {
+  return shallowRef(false);
+}
+
+const makeLazyProps = propsFactory({
+  eager: Boolean
+}, "lazy");
+function useLazy(props, active) {
+  const isBooted = shallowRef(false);
+  const hasContent = computed(() => isBooted.value || props.eager || active.value);
+  watch(active, () => isBooted.value = true);
+  function onAfterLeave() {
+    if (!props.eager) isBooted.value = false;
+  }
+  return {
+    isBooted,
+    hasContent,
+    onAfterLeave
+  };
+}
+
+function useRoute() {
+  const vm = getCurrentInstance("useRoute");
+  return computed(() => {
+    var _a;
+    return (_a = vm == null ? void 0 : vm.proxy) == null ? void 0 : _a.$route;
+  });
+}
+function useRouter() {
+  var _a, _b;
+  return (_b = (_a = getCurrentInstance("useRouter")) == null ? void 0 : _a.proxy) == null ? void 0 : _b.$router;
+}
+function useLink(props, attrs) {
+  var _a, _b;
+  const RouterLink = resolveDynamicComponent("RouterLink");
+  const isLink = computed(() => !!(props.href || props.to));
+  const isClickable = computed(() => {
+    return (isLink == null ? void 0 : isLink.value) || hasEvent(attrs, "click") || hasEvent(props, "click");
+  });
+  if (typeof RouterLink === "string" || !("useLink" in RouterLink)) {
+    const href2 = toRef(props, "href");
+    return {
+      isLink,
+      isClickable,
+      href: href2,
+      linkProps: reactive({
+        href: href2
+      })
+    };
+  }
+  const linkProps = computed(() => ({
+    ...props,
+    to: toRef(() => props.to || "")
+  }));
+  const routerLink = RouterLink.useLink(linkProps.value);
+  const link = computed(() => props.to ? routerLink : void 0);
+  const route = useRoute();
+  const isActive = computed(() => {
+    var _a2, _b2, _c;
+    if (!link.value) return false;
+    if (!props.exact) return ((_a2 = link.value.isActive) == null ? void 0 : _a2.value) ?? false;
+    if (!route.value) return ((_b2 = link.value.isExactActive) == null ? void 0 : _b2.value) ?? false;
+    return ((_c = link.value.isExactActive) == null ? void 0 : _c.value) && deepEqual(link.value.route.value.query, route.value.query);
+  });
+  const href = computed(() => {
+    var _a2;
+    return props.to ? (_a2 = link.value) == null ? void 0 : _a2.route.value.href : props.href;
+  });
+  return {
+    isLink,
+    isClickable,
+    isActive,
+    route: (_a = link.value) == null ? void 0 : _a.route,
+    navigate: (_b = link.value) == null ? void 0 : _b.navigate,
+    href,
+    linkProps: reactive({
+      href,
+      "aria-current": computed(() => isActive.value ? "page" : void 0)
+    })
+  };
+}
+const makeRouterProps = propsFactory({
+  href: String,
+  replace: Boolean,
+  to: [String, Object],
+  exact: Boolean
+}, "router");
+
+function useScopeId() {
+  const vm = getCurrentInstance("useScopeId");
+  const scopeId = vm.vnode.scopeId;
+  return {
+    scopeId: scopeId ? {
+      [scopeId]: ""
+    } : void 0
+  };
+}
+
+const StackSymbol = Symbol.for("vuetify:stack");
+const globalStack = reactive([]);
+function useStack(isActive, zIndex, disableGlobalStack) {
+  const vm = getCurrentInstance("useStack");
+  const createStackEntry = !disableGlobalStack;
+  const parent = inject$1(StackSymbol, void 0);
+  const stack = reactive({
+    activeChildren: /* @__PURE__ */ new Set()
+  });
+  provide(StackSymbol, stack);
+  const _zIndex = shallowRef(Number(zIndex.value));
+  useToggleScope(isActive, () => {
+    var _a;
+    const lastZIndex = (_a = globalStack.at(-1)) == null ? void 0 : _a[1];
+    _zIndex.value = lastZIndex ? lastZIndex + 10 : Number(zIndex.value);
+    if (createStackEntry) {
+      globalStack.push([vm.uid, _zIndex.value]);
+    }
+    parent == null ? void 0 : parent.activeChildren.add(vm.uid);
+    onScopeDispose(() => {
+      if (createStackEntry) {
+        const idx = toRaw(globalStack).findIndex((v) => v[0] === vm.uid);
+        globalStack.splice(idx, 1);
+      }
+      parent == null ? void 0 : parent.activeChildren.delete(vm.uid);
+    });
+  });
+  const globalTop = shallowRef(true);
+  if (createStackEntry) {
+    watchEffect(() => {
+      var _a;
+      const _isTop = ((_a = globalStack.at(-1)) == null ? void 0 : _a[0]) === vm.uid;
+      setTimeout(() => globalTop.value = _isTop);
+    });
+  }
+  const localTop = computed(() => !stack.activeChildren.size);
+  return {
+    globalTop: readonly(globalTop),
+    localTop,
+    stackStyles: computed(() => ({
+      zIndex: _zIndex.value
+    }))
+  };
+}
+
+function useTeleport(target) {
+  const teleportTarget = computed(() => {
+    target();
+    return void 0;
+  });
+  return {
+    teleportTarget
+  };
+}
+
+const makeTransitionProps$1 = propsFactory({
+  transition: {
+    type: [Boolean, String, Object],
+    default: "fade-transition",
+    validator: (val) => val !== true
+  }
+}, "transition");
+const MaybeTransition = (props, _ref) => {
+  let {
+    slots
+  } = _ref;
+  const {
+    transition,
+    disabled,
+    group,
+    ...rest
+  } = props;
+  const {
+    component = group ? TransitionGroup : Transition,
+    ...customProps
+  } = typeof transition === "object" ? transition : {};
+  return h(component, mergeProps(typeof transition === "string" ? {
+    name: disabled ? "" : transition
+  } : customProps, typeof transition === "string" ? {} : Object.fromEntries(Object.entries({
+    disabled,
+    group
+  }).filter((_ref2) => {
+    let [_, v] = _ref2;
+    return v !== void 0;
+  })), rest), slots);
+};
+
+function attachedRoot(node) {
+  if (typeof node.getRootNode !== "function") {
+    while (node.parentNode) node = node.parentNode;
+    if (node !== void 0) return null;
+    return void 0;
+  }
+  const root = node.getRootNode();
+  if (root !== void 0 && root.getRootNode({
+    composed: true
+  }) !== void 0) return null;
+  return root;
+}
+
+function defaultConditional() {
+  return true;
+}
+function checkEvent(e, el, binding) {
+  if (!e || checkIsActive(e, binding) === false) return false;
+  const root = attachedRoot(el);
+  if (typeof ShadowRoot !== "undefined" && root instanceof ShadowRoot && root.host === e.target) return false;
+  const elements = (typeof binding.value === "object" && binding.value.include || (() => []))();
+  elements.push(el);
+  return !elements.some((el2) => el2 == null ? void 0 : el2.contains(e.target));
+}
+function checkIsActive(e, binding) {
+  const isActive = typeof binding.value === "object" && binding.value.closeConditional || defaultConditional;
+  return isActive(e);
+}
+function directive(e, el, binding) {
+  const handler = typeof binding.value === "function" ? binding.value : binding.value.handler;
+  e.shadowTarget = e.target;
+  el._clickOutside.lastMousedownWasOutside && checkEvent(e, el, binding) && setTimeout(() => {
+    checkIsActive(e, binding) && handler && handler(e);
+  }, 0);
+}
+function handleShadow(el, callback) {
+  const root = attachedRoot(el);
+  callback(void 0);
+  if (typeof ShadowRoot !== "undefined" && root instanceof ShadowRoot) {
+    callback(root);
+  }
+}
+const ClickOutside = {
+  // [data-app] may not be found
+  // if using bind, inserted makes
+  // sure that the root element is
+  // available, iOS does not support
+  // clicks on body
+  mounted(el, binding) {
+    const onClick = (e) => directive(e, el, binding);
+    const onMousedown = (e) => {
+      el._clickOutside.lastMousedownWasOutside = checkEvent(e, el, binding);
+    };
+    handleShadow(el, (app) => {
+      app.addEventListener("click", onClick, true);
+      app.addEventListener("mousedown", onMousedown, true);
+    });
+    if (!el._clickOutside) {
+      el._clickOutside = {
+        lastMousedownWasOutside: false
+      };
+    }
+    el._clickOutside[binding.instance.$.uid] = {
+      onClick,
+      onMousedown
+    };
+  },
+  beforeUnmount(el, binding) {
+    if (!el._clickOutside) return;
+    handleShadow(el, (app) => {
+      var _a;
+      if (!app || !((_a = el._clickOutside) == null ? void 0 : _a[binding.instance.$.uid])) return;
+      const {
+        onClick,
+        onMousedown
+      } = el._clickOutside[binding.instance.$.uid];
+      app.removeEventListener("click", onClick, true);
+      app.removeEventListener("mousedown", onMousedown, true);
+    });
+    delete el._clickOutside[binding.instance.$.uid];
+  }
+};
+
+function useRender(render) {
+  const vm = getCurrentInstance("useRender");
+  vm.render = render;
+}
+
+const standardEasing = "cubic-bezier(0.4, 0, 0.2, 1)";
+const deceleratedEasing = "cubic-bezier(0.0, 0, 0.2, 1)";
+const acceleratedEasing = "cubic-bezier(0.4, 0, 1, 1)";
+
+function Scrim(props) {
+  const {
+    modelValue,
+    color,
+    ...rest
+  } = props;
+  return createVNode(Transition, {
+    "name": "fade-transition",
+    "appear": true
+  }, {
+    default: () => [props.modelValue && createVNode("div", mergeProps({
+      "class": ["v-overlay__scrim", props.color.backgroundColorClasses.value],
+      "style": props.color.backgroundColorStyles.value
+    }, rest), null)]
+  });
+}
+const makeVOverlayProps = propsFactory({
+  absolute: Boolean,
+  attach: [Boolean, String, Object],
+  closeOnBack: {
+    type: Boolean,
+    default: true
+  },
+  contained: Boolean,
+  contentClass: null,
+  contentProps: null,
+  disabled: Boolean,
+  opacity: [Number, String],
+  noClickAnimation: Boolean,
+  modelValue: Boolean,
+  persistent: Boolean,
+  scrim: {
+    type: [Boolean, String],
+    default: true
+  },
+  zIndex: {
+    type: [Number, String],
+    default: 2e3
+  },
+  ...makeActivatorProps(),
+  ...makeComponentProps(),
+  ...makeDimensionProps(),
+  ...makeLazyProps(),
+  ...makeLocationStrategyProps(),
+  ...makeScrollStrategyProps(),
+  ...makeThemeProps(),
+  ...makeTransitionProps$1()
+}, "VOverlay");
+const VOverlay = genericComponent()({
+  name: "VOverlay",
+  directives: {
+    ClickOutside
+  },
+  inheritAttrs: false,
+  props: {
+    _disableGlobalStack: Boolean,
+    ...makeVOverlayProps()
+  },
+  emits: {
+    "click:outside": (e) => true,
+    "update:modelValue": (value) => true,
+    keydown: (e) => true,
+    afterEnter: () => true,
+    afterLeave: () => true
+  },
+  setup(props, _ref) {
+    let {
+      slots,
+      attrs,
+      emit
+    } = _ref;
+    const vm = getCurrentInstance("VOverlay");
+    const root = ref();
+    const scrimEl = ref();
+    const contentEl = ref();
+    const model = useProxiedModel(props, "modelValue");
+    const isActive = computed({
+      get: () => model.value,
+      set: (v) => {
+        if (!(v && props.disabled)) model.value = v;
+      }
+    });
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      rtlClasses
+    } = useRtl();
+    const {
+      hasContent,
+      onAfterLeave: _onAfterLeave
+    } = useLazy(props, isActive);
+    const scrimColor = useBackgroundColor(computed(() => {
+      return typeof props.scrim === "string" ? props.scrim : null;
+    }));
+    const {
+      globalTop,
+      localTop,
+      stackStyles
+    } = useStack(isActive, toRef(props, "zIndex"), props._disableGlobalStack);
+    const {
+      activatorEl,
+      activatorRef,
+      target,
+      targetRef,
+      activatorEvents,
+      contentEvents,
+      scrimEvents
+    } = useActivator(props, {
+      isActive,
+      isTop: localTop,
+      contentEl
+    });
+    const {
+      teleportTarget
+    } = useTeleport(() => {
+      var _a, _b, _c;
+      const target2 = props.attach || props.contained;
+      if (target2) return target2;
+      const rootNode = ((_a = activatorEl == null ? void 0 : activatorEl.value) == null ? void 0 : _a.getRootNode()) || ((_c = (_b = vm.proxy) == null ? void 0 : _b.$el) == null ? void 0 : _c.getRootNode());
+      if (rootNode instanceof ShadowRoot) return rootNode;
+      return false;
+    });
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    const isMounted = useHydration();
+    const {
+      scopeId
+    } = useScopeId();
+    watch(() => props.disabled, (v) => {
+      if (v) isActive.value = false;
+    });
+    const {
+      contentStyles,
+      updateLocation
+    } = useLocationStrategies();
+    function onClickOutside(e) {
+      emit("click:outside", e);
+      if (!props.persistent) isActive.value = false;
+      else animateClick();
+    }
+    function closeConditional(e) {
+      return isActive.value && globalTop.value && // If using scrim, only close if clicking on it rather than anything opened on top
+      (!props.scrim || e.target === scrimEl.value || e instanceof MouseEvent && e.shadowTarget === scrimEl.value);
+    }
+    function onKeydownSelf(e) {
+      if (e.key === "Escape" && !globalTop.value) return;
+      emit("keydown", e);
+    }
+    useRouter();
+    useToggleScope(() => props.closeOnBack, () => {
+    });
+    const top = ref();
+    watch(() => isActive.value && (props.absolute || props.contained) && teleportTarget.value == null, (val) => {
+      if (val) {
+        const scrollParent = getScrollParent(root.value);
+        if (scrollParent && scrollParent !== (void 0).scrollingElement) {
+          top.value = scrollParent.scrollTop;
+        }
+      }
+    });
+    function animateClick() {
+      if (props.noClickAnimation) return;
+      contentEl.value && animate(contentEl.value, [{
+        transformOrigin: "center"
+      }, {
+        transform: "scale(1.03)"
+      }, {
+        transformOrigin: "center"
+      }], {
+        duration: 150,
+        easing: standardEasing
+      });
+    }
+    function onAfterEnter() {
+      emit("afterEnter");
+    }
+    function onAfterLeave() {
+      _onAfterLeave();
+      emit("afterLeave");
+    }
+    useRender(() => {
+      var _a;
+      return createVNode(Fragment, null, [(_a = slots.activator) == null ? void 0 : _a.call(slots, {
+        isActive: isActive.value,
+        targetRef,
+        props: mergeProps({
+          ref: activatorRef
+        }, activatorEvents.value, props.activatorProps)
+      }), isMounted.value && hasContent.value && createVNode(Teleport, {
+        "disabled": !teleportTarget.value,
+        "to": teleportTarget.value
+      }, {
+        default: () => [createVNode("div", mergeProps({
+          "class": ["v-overlay", {
+            "v-overlay--absolute": props.absolute || props.contained,
+            "v-overlay--active": isActive.value,
+            "v-overlay--contained": props.contained
+          }, themeClasses.value, rtlClasses.value, props.class],
+          "style": [stackStyles.value, {
+            "--v-overlay-opacity": props.opacity,
+            top: convertToUnit(top.value)
+          }, props.style],
+          "ref": root,
+          "onKeydown": onKeydownSelf
+        }, scopeId, attrs), [createVNode(Scrim, mergeProps({
+          "color": scrimColor,
+          "modelValue": isActive.value && !!props.scrim,
+          "ref": scrimEl
+        }, scrimEvents.value), null), createVNode(MaybeTransition, {
+          "appear": true,
+          "persisted": true,
+          "transition": props.transition,
+          "target": target.value,
+          "onAfterEnter": onAfterEnter,
+          "onAfterLeave": onAfterLeave
+        }, {
+          default: () => {
+            var _a2;
+            return [withDirectives(createVNode("div", mergeProps({
+              "ref": contentEl,
+              "class": ["v-overlay__content", props.contentClass],
+              "style": [dimensionStyles.value, contentStyles.value]
+            }, contentEvents.value, props.contentProps), [(_a2 = slots.default) == null ? void 0 : _a2.call(slots, {
+              isActive
+            })]), [[vShow, isActive.value], [resolveDirective("click-outside"), {
+              handler: onClickOutside,
+              closeConditional,
+              include: () => [activatorEl.value]
+            }]])];
+          }
+        })])]
+      })]);
+    });
+    return {
+      activatorEl,
+      scrimEl,
+      target,
+      animateClick,
+      contentEl,
+      globalTop,
+      localTop,
+      updateLocation
+    };
+  }
+});
+
+const Refs = Symbol("Forwarded refs");
+function getDescriptor(obj, key) {
+  let currentObj = obj;
+  while (currentObj) {
+    const descriptor = Reflect.getOwnPropertyDescriptor(currentObj, key);
+    if (descriptor) return descriptor;
+    currentObj = Object.getPrototypeOf(currentObj);
+  }
+  return void 0;
+}
+function forwardRefs(target) {
+  for (var _len = arguments.length, refs = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    refs[_key - 1] = arguments[_key];
+  }
+  target[Refs] = refs;
+  return new Proxy(target, {
+    get(target2, key) {
+      if (Reflect.has(target2, key)) {
+        return Reflect.get(target2, key);
+      }
+      if (typeof key === "symbol" || key.startsWith("$") || key.startsWith("__")) return;
+      for (const ref of refs) {
+        if (ref.value && Reflect.has(ref.value, key)) {
+          const val = Reflect.get(ref.value, key);
+          return typeof val === "function" ? val.bind(ref.value) : val;
+        }
+      }
+    },
+    has(target2, key) {
+      if (Reflect.has(target2, key)) {
+        return true;
+      }
+      if (typeof key === "symbol" || key.startsWith("$") || key.startsWith("__")) return false;
+      for (const ref of refs) {
+        if (ref.value && Reflect.has(ref.value, key)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    set(target2, key, value) {
+      if (Reflect.has(target2, key)) {
+        return Reflect.set(target2, key, value);
+      }
+      if (typeof key === "symbol" || key.startsWith("$") || key.startsWith("__")) return false;
+      for (const ref of refs) {
+        if (ref.value && Reflect.has(ref.value, key)) {
+          return Reflect.set(ref.value, key, value);
+        }
+      }
+      return false;
+    },
+    getOwnPropertyDescriptor(target2, key) {
+      var _a;
+      const descriptor = Reflect.getOwnPropertyDescriptor(target2, key);
+      if (descriptor) return descriptor;
+      if (typeof key === "symbol" || key.startsWith("$") || key.startsWith("__")) return;
+      for (const ref of refs) {
+        if (!ref.value) continue;
+        const descriptor2 = getDescriptor(ref.value, key) ?? ("_" in ref.value ? getDescriptor((_a = ref.value._) == null ? void 0 : _a.setupState, key) : void 0);
+        if (descriptor2) return descriptor2;
+      }
+      for (const ref of refs) {
+        const childRefs = ref.value && ref.value[Refs];
+        if (!childRefs) continue;
+        const queue = childRefs.slice();
+        while (queue.length) {
+          const ref2 = queue.shift();
+          const descriptor2 = getDescriptor(ref2.value, key);
+          if (descriptor2) return descriptor2;
+          const childRefs2 = ref2.value && ref2.value[Refs];
+          if (childRefs2) queue.push(...childRefs2);
+        }
+      }
+      return void 0;
+    }
+  });
+}
+
+const makeVDialogTransitionProps = propsFactory({
+  target: [Object, Array]
+}, "v-dialog-transition");
+const VDialogTransition = genericComponent()({
+  name: "VDialogTransition",
+  props: makeVDialogTransitionProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const functions = {
+      onBeforeEnter(el) {
+        el.style.pointerEvents = "none";
+        el.style.visibility = "hidden";
+      },
+      async onEnter(el, done) {
+        var _a;
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        el.style.visibility = "";
+        const {
+          x,
+          y,
+          sx,
+          sy,
+          speed
+        } = getDimensions(props.target, el);
+        const animation = animate(el, [{
+          transform: `translate(${x}px, ${y}px) scale(${sx}, ${sy})`,
+          opacity: 0
+        }, {}], {
+          duration: 225 * speed,
+          easing: deceleratedEasing
+        });
+        (_a = getChildren(el)) == null ? void 0 : _a.forEach((el2) => {
+          animate(el2, [{
+            opacity: 0
+          }, {
+            opacity: 0,
+            offset: 0.33
+          }, {}], {
+            duration: 225 * 2 * speed,
+            easing: standardEasing
+          });
+        });
+        animation.finished.then(() => done());
+      },
+      onAfterEnter(el) {
+        el.style.removeProperty("pointer-events");
+      },
+      onBeforeLeave(el) {
+        el.style.pointerEvents = "none";
+      },
+      async onLeave(el, done) {
+        var _a;
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        const {
+          x,
+          y,
+          sx,
+          sy,
+          speed
+        } = getDimensions(props.target, el);
+        const animation = animate(el, [{}, {
+          transform: `translate(${x}px, ${y}px) scale(${sx}, ${sy})`,
+          opacity: 0
+        }], {
+          duration: 125 * speed,
+          easing: acceleratedEasing
+        });
+        animation.finished.then(() => done());
+        (_a = getChildren(el)) == null ? void 0 : _a.forEach((el2) => {
+          animate(el2, [{}, {
+            opacity: 0,
+            offset: 0.2
+          }, {
+            opacity: 0
+          }], {
+            duration: 125 * 2 * speed,
+            easing: standardEasing
+          });
+        });
+      },
+      onAfterLeave(el) {
+        el.style.removeProperty("pointer-events");
+      }
+    };
+    return () => {
+      return props.target ? createVNode(Transition, mergeProps({
+        "name": "dialog-transition"
+      }, functions, {
+        "css": false
+      }), slots) : createVNode(Transition, {
+        "name": "dialog-transition"
+      }, slots);
+    };
+  }
+});
+function getChildren(el) {
+  var _a;
+  const els = (_a = el.querySelector(":scope > .v-card, :scope > .v-sheet, :scope > .v-list")) == null ? void 0 : _a.children;
+  return els && [...els];
+}
+function getDimensions(target, el) {
+  const targetBox = getTargetBox(target);
+  const elBox = nullifyTransforms(el);
+  const [originX, originY] = getComputedStyle(el).transformOrigin.split(" ").map((v) => parseFloat(v));
+  const [anchorSide, anchorOffset] = getComputedStyle(el).getPropertyValue("--v-overlay-anchor-origin").split(" ");
+  let offsetX = targetBox.left + targetBox.width / 2;
+  if (anchorSide === "left" || anchorOffset === "left") {
+    offsetX -= targetBox.width / 2;
+  } else if (anchorSide === "right" || anchorOffset === "right") {
+    offsetX += targetBox.width / 2;
+  }
+  let offsetY = targetBox.top + targetBox.height / 2;
+  if (anchorSide === "top" || anchorOffset === "top") {
+    offsetY -= targetBox.height / 2;
+  } else if (anchorSide === "bottom" || anchorOffset === "bottom") {
+    offsetY += targetBox.height / 2;
+  }
+  const tsx = targetBox.width / elBox.width;
+  const tsy = targetBox.height / elBox.height;
+  const maxs = Math.max(1, tsx, tsy);
+  const sx = tsx / maxs || 0;
+  const sy = tsy / maxs || 0;
+  const asa = elBox.width * elBox.height / ((void 0).innerWidth * (void 0).innerHeight);
+  const speed = asa > 0.12 ? Math.min(1.5, (asa - 0.12) * 10 + 1) : 1;
+  return {
+    x: offsetX - (originX + elBox.left),
+    y: offsetY - (originY + elBox.top),
+    sx,
+    sy,
+    speed
+  };
+}
+
+const makeVDefaultsProviderProps = propsFactory({
+  defaults: Object,
+  disabled: Boolean,
+  reset: [Number, String],
+  root: [Boolean, String],
+  scoped: Boolean
+}, "VDefaultsProvider");
+const VDefaultsProvider = genericComponent(false)({
+  name: "VDefaultsProvider",
+  props: makeVDefaultsProviderProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      defaults,
+      disabled,
+      reset,
+      root,
+      scoped
+    } = toRefs(props);
+    provideDefaults(defaults, {
+      reset,
+      root,
+      scoped,
+      disabled
+    });
+    return () => {
+      var _a;
+      return (_a = slots.default) == null ? void 0 : _a.call(slots);
+    };
+  }
+});
+
+const makeVDialogProps = propsFactory({
+  fullscreen: Boolean,
+  retainFocus: {
+    type: Boolean,
+    default: true
+  },
+  scrollable: Boolean,
+  ...makeVOverlayProps({
+    origin: "center center",
+    scrollStrategy: "block",
+    transition: {
+      component: VDialogTransition
+    },
+    zIndex: 2400
+  })
+}, "VDialog");
+const VDialog = genericComponent()({
+  name: "VDialog",
+  props: makeVDialogProps(),
+  emits: {
+    "update:modelValue": (value) => true,
+    afterEnter: () => true,
+    afterLeave: () => true
+  },
+  setup(props, _ref) {
+    let {
+      emit,
+      slots
+    } = _ref;
+    const isActive = useProxiedModel(props, "modelValue");
+    const {
+      scopeId
+    } = useScopeId();
+    const overlay = ref();
+    function onAfterEnter() {
+      var _a;
+      emit("afterEnter");
+      if (((_a = overlay.value) == null ? void 0 : _a.contentEl) && !overlay.value.contentEl.contains((void 0).activeElement)) {
+        overlay.value.contentEl.focus({
+          preventScroll: true
+        });
+      }
+    }
+    function onAfterLeave() {
+      emit("afterLeave");
+    }
+    watch(isActive, async (val) => {
+      var _a;
+      if (!val) {
+        await nextTick();
+        (_a = overlay.value.activatorEl) == null ? void 0 : _a.focus({
+          preventScroll: true
+        });
+      }
+    });
+    useRender(() => {
+      const overlayProps = VOverlay.filterProps(props);
+      const activatorProps = mergeProps({
+        "aria-haspopup": "dialog"
+      }, props.activatorProps);
+      const contentProps = mergeProps({
+        tabindex: -1
+      }, props.contentProps);
+      return createVNode(VOverlay, mergeProps({
+        "ref": overlay,
+        "class": ["v-dialog", {
+          "v-dialog--fullscreen": props.fullscreen,
+          "v-dialog--scrollable": props.scrollable
+        }, props.class],
+        "style": props.style
+      }, overlayProps, {
+        "modelValue": isActive.value,
+        "onUpdate:modelValue": ($event) => isActive.value = $event,
+        "aria-modal": "true",
+        "activatorProps": activatorProps,
+        "contentProps": contentProps,
+        "height": !props.fullscreen ? props.height : void 0,
+        "width": !props.fullscreen ? props.width : void 0,
+        "maxHeight": !props.fullscreen ? props.maxHeight : void 0,
+        "maxWidth": !props.fullscreen ? props.maxWidth : void 0,
+        "role": "dialog",
+        "onAfterEnter": onAfterEnter,
+        "onAfterLeave": onAfterLeave
+      }, scopeId), {
+        activator: slots.activator,
+        default: function() {
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+          return createVNode(VDefaultsProvider, {
+            "root": "VDialog"
+          }, {
+            default: () => {
+              var _a;
+              return [(_a = slots.default) == null ? void 0 : _a.call(slots, ...args)];
+            }
+          });
+        }
+      });
+    });
+    return forwardRefs({}, overlay);
+  }
+});
+
+const VCardActions = genericComponent()({
+  name: "VCardActions",
+  props: makeComponentProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    provideDefaults({
+      VBtn: {
+        slim: true,
+        variant: "text"
+      }
+    });
+    useRender(() => {
+      var _a;
+      return createVNode("div", {
+        "class": ["v-card-actions", props.class],
+        "style": props.style
+      }, [(_a = slots.default) == null ? void 0 : _a.call(slots)]);
+    });
+    return {};
+  }
+});
+
+const makeTagProps = propsFactory({
+  tag: {
+    type: String,
+    default: "div"
+  }
+}, "tag");
+
+const makeVCardSubtitleProps = propsFactory({
+  opacity: [Number, String],
+  ...makeComponentProps(),
+  ...makeTagProps()
+}, "VCardSubtitle");
+const VCardSubtitle = genericComponent()({
+  name: "VCardSubtitle",
+  props: makeVCardSubtitleProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    useRender(() => createVNode(props.tag, {
+      "class": ["v-card-subtitle", props.class],
+      "style": [{
+        "--v-card-subtitle-opacity": props.opacity
+      }, props.style]
+    }, slots));
+    return {};
+  }
+});
+
+function createSimpleFunctional(klass) {
+  let tag = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "div";
+  let name = arguments.length > 2 ? arguments[2] : void 0;
+  return genericComponent()({
+    name: name ?? capitalize(camelize(klass.replace(/__/g, "-"))),
+    props: {
+      tag: {
+        type: String,
+        default: tag
+      },
+      ...makeComponentProps()
+    },
+    setup(props, _ref) {
+      let {
+        slots
+      } = _ref;
+      return () => {
+        var _a;
+        return h(props.tag, {
+          class: [klass, props.class],
+          style: props.style
+        }, (_a = slots.default) == null ? void 0 : _a.call(slots));
+      };
+    }
+  });
+}
+
+const VCardTitle = createSimpleFunctional("v-card-title");
+
+const allowedDensities = [null, "default", "comfortable", "compact"];
+const makeDensityProps = propsFactory({
+  density: {
+    type: String,
+    default: "default",
+    validator: (v) => allowedDensities.includes(v)
+  }
+}, "density");
+function useDensity(props) {
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  const densityClasses = computed(() => {
+    return `${name}--density-${props.density}`;
+  });
+  return {
+    densityClasses
+  };
+}
+
+const makeBorderProps = propsFactory({
+  border: [Boolean, Number, String]
+}, "border");
+function useBorder(props) {
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  const borderClasses = computed(() => {
+    const border = isRef(props) ? props.value : props.border;
+    const classes = [];
+    if (border === true || border === "") {
+      classes.push(`${name}--border`);
+    } else if (typeof border === "string" || border === 0) {
+      for (const value of String(border).split(" ")) {
+        classes.push(`border-${value}`);
+      }
+    }
+    return classes;
+  });
+  return {
+    borderClasses
+  };
+}
+
+const makeRoundedProps = propsFactory({
+  rounded: {
+    type: [Boolean, Number, String],
+    default: void 0
+  },
+  tile: Boolean
+}, "rounded");
+function useRounded(props) {
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  const roundedClasses = computed(() => {
+    const rounded = isRef(props) ? props.value : props.rounded;
+    const tile = isRef(props) ? props.value : props.tile;
+    const classes = [];
+    if (rounded === true || rounded === "") {
+      classes.push(`${name}--rounded`);
+    } else if (typeof rounded === "string" || rounded === 0) {
+      for (const value of String(rounded).split(" ")) {
+        classes.push(`rounded-${value}`);
+      }
+    } else if (tile || rounded === false) {
+      classes.push("rounded-0");
+    }
+    return classes;
+  });
+  return {
+    roundedClasses
+  };
+}
+
+const predefinedSizes = ["x-small", "small", "default", "large", "x-large"];
+const makeSizeProps = propsFactory({
+  size: {
+    type: [String, Number],
+    default: "default"
+  }
+}, "size");
+function useSize(props) {
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  return destructComputed(() => {
+    let sizeClasses;
+    let sizeStyles;
+    if (includes(predefinedSizes, props.size)) {
+      sizeClasses = `${name}--size-${props.size}`;
+    } else if (props.size) {
+      sizeStyles = {
+        width: convertToUnit(props.size),
+        height: convertToUnit(props.size)
+      };
+    }
+    return {
+      sizeClasses,
+      sizeStyles
+    };
+  });
+}
+
+const allowedVariants = ["elevated", "flat", "tonal", "outlined", "text", "plain"];
+function genOverlays(isClickable, name) {
+  return createVNode(Fragment, null, [isClickable && createVNode("span", {
+    "key": "overlay",
+    "class": `${name}__overlay`
+  }, null), createVNode("span", {
+    "key": "underlay",
+    "class": `${name}__underlay`
+  }, null)]);
+}
+const makeVariantProps = propsFactory({
+  color: String,
+  variant: {
+    type: String,
+    default: "elevated",
+    validator: (v) => allowedVariants.includes(v)
+  }
+}, "variant");
+function useVariant(props) {
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  const variantClasses = computed(() => {
+    const {
+      variant
+    } = unref(props);
+    return `${name}--variant-${variant}`;
+  });
+  const {
+    colorClasses,
+    colorStyles
+  } = useColor(computed(() => {
+    const {
+      variant,
+      color
+    } = unref(props);
+    return {
+      [["elevated", "flat"].includes(variant) ? "background" : "text"]: color
+    };
+  }));
+  return {
+    colorClasses,
+    colorStyles,
+    variantClasses
+  };
+}
+
+function useAspectStyles(props) {
+  return {
+    aspectStyles: computed(() => {
+      const ratio = Number(props.aspectRatio);
+      return ratio ? {
+        paddingBottom: String(1 / ratio * 100) + "%"
+      } : void 0;
+    })
+  };
+}
+const makeVResponsiveProps = propsFactory({
+  aspectRatio: [String, Number],
+  contentClass: null,
+  inline: Boolean,
+  ...makeComponentProps(),
+  ...makeDimensionProps()
+}, "VResponsive");
+const VResponsive = genericComponent()({
+  name: "VResponsive",
+  props: makeVResponsiveProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      aspectStyles
+    } = useAspectStyles(props);
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    useRender(() => {
+      var _a;
+      return createVNode("div", {
+        "class": ["v-responsive", {
+          "v-responsive--inline": props.inline
+        }, props.class],
+        "style": [dimensionStyles.value, props.style]
+      }, [createVNode("div", {
+        "class": "v-responsive__sizer",
+        "style": aspectStyles.value
+      }, null), (_a = slots.additional) == null ? void 0 : _a.call(slots), slots.default && createVNode("div", {
+        "class": ["v-responsive__content", props.contentClass]
+      }, [slots.default()])]);
+    });
+    return {};
+  }
+});
+
+function mounted$1(el, binding) {
+  return;
+}
+function unmounted$1(el, binding) {
+  var _a;
+  const observe = (_a = el._observe) == null ? void 0 : _a[binding.instance.$.uid];
+  if (!observe) return;
+  observe.observer.unobserve(el);
+  delete el._observe[binding.instance.$.uid];
+}
+const Intersect = {
+  mounted: mounted$1,
+  unmounted: unmounted$1
+};
+
+const makeVImgProps = propsFactory({
+  absolute: Boolean,
+  alt: String,
+  cover: Boolean,
+  color: String,
+  draggable: {
+    type: [Boolean, String],
+    default: void 0
+  },
+  eager: Boolean,
+  gradient: String,
+  lazySrc: String,
+  options: {
+    type: Object,
+    // For more information on types, navigate to:
+    // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+    default: () => ({
+      root: void 0,
+      rootMargin: void 0,
+      threshold: void 0
+    })
+  },
+  sizes: String,
+  src: {
+    type: [String, Object],
+    default: ""
+  },
+  crossorigin: String,
+  referrerpolicy: String,
+  srcset: String,
+  position: String,
+  ...makeVResponsiveProps(),
+  ...makeComponentProps(),
+  ...makeRoundedProps(),
+  ...makeTransitionProps$1()
+}, "VImg");
+const VImg = genericComponent()({
+  name: "VImg",
+  directives: {
+    intersect: Intersect
+  },
+  props: makeVImgProps(),
+  emits: {
+    loadstart: (value) => true,
+    load: (value) => true,
+    error: (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      emit,
+      slots
+    } = _ref;
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(toRef(props, "color"));
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const vm = getCurrentInstance("VImg");
+    const currentSrc = shallowRef("");
+    const image = ref();
+    const state = shallowRef(props.eager ? "loading" : "idle");
+    const naturalWidth = shallowRef();
+    const naturalHeight = shallowRef();
+    const normalisedSrc = computed(() => {
+      return props.src && typeof props.src === "object" ? {
+        src: props.src.src,
+        srcset: props.srcset || props.src.srcset,
+        lazySrc: props.lazySrc || props.src.lazySrc,
+        aspect: Number(props.aspectRatio || props.src.aspect || 0)
+      } : {
+        src: props.src,
+        srcset: props.srcset,
+        lazySrc: props.lazySrc,
+        aspect: Number(props.aspectRatio || 0)
+      };
+    });
+    const aspectRatio = computed(() => {
+      return normalisedSrc.value.aspect || naturalWidth.value / naturalHeight.value || 0;
+    });
+    watch(() => props.src, () => {
+      init(state.value !== "idle");
+    });
+    watch(aspectRatio, (val, oldVal) => {
+      if (!val && oldVal && image.value) {
+        pollForSize(image.value);
+      }
+    });
+    function init(isIntersecting) {
+      if (props.eager && isIntersecting) return;
+      state.value = "loading";
+      if (normalisedSrc.value.lazySrc) {
+        const lazyImg = new Image();
+        lazyImg.src = normalisedSrc.value.lazySrc;
+        pollForSize(lazyImg, null);
+      }
+      if (!normalisedSrc.value.src) return;
+      nextTick(() => {
+        var _a;
+        emit("loadstart", ((_a = image.value) == null ? void 0 : _a.currentSrc) || normalisedSrc.value.src);
+        setTimeout(() => {
+          var _a2;
+          if (vm.isUnmounted) return;
+          if ((_a2 = image.value) == null ? void 0 : _a2.complete) {
+            if (!image.value.naturalWidth) {
+              onError();
+            }
+            if (state.value === "error") return;
+            if (!aspectRatio.value) pollForSize(image.value, null);
+            if (state.value === "loading") onLoad();
+          } else {
+            if (!aspectRatio.value) pollForSize(image.value);
+            getSrc();
+          }
+        });
+      });
+    }
+    function onLoad() {
+      var _a;
+      if (vm.isUnmounted) return;
+      getSrc();
+      pollForSize(image.value);
+      state.value = "loaded";
+      emit("load", ((_a = image.value) == null ? void 0 : _a.currentSrc) || normalisedSrc.value.src);
+    }
+    function onError() {
+      var _a;
+      if (vm.isUnmounted) return;
+      state.value = "error";
+      emit("error", ((_a = image.value) == null ? void 0 : _a.currentSrc) || normalisedSrc.value.src);
+    }
+    function getSrc() {
+      const img = image.value;
+      if (img) currentSrc.value = img.currentSrc || img.src;
+    }
+    let timer = -1;
+    function pollForSize(img) {
+      let timeout = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 100;
+      const poll = () => {
+        clearTimeout(timer);
+        if (vm.isUnmounted) return;
+        const {
+          naturalHeight: imgHeight,
+          naturalWidth: imgWidth
+        } = img;
+        if (imgHeight || imgWidth) {
+          naturalWidth.value = imgWidth;
+          naturalHeight.value = imgHeight;
+        } else if (!img.complete && state.value === "loading" && timeout != null) {
+          timer = (void 0).setTimeout(poll, timeout);
+        } else if (img.currentSrc.endsWith(".svg") || img.currentSrc.startsWith("data:image/svg+xml")) {
+          naturalWidth.value = 1;
+          naturalHeight.value = 1;
+        }
+      };
+      poll();
+    }
+    const containClasses = computed(() => ({
+      "v-img__img--cover": props.cover,
+      "v-img__img--contain": !props.cover
+    }));
+    const __image = () => {
+      var _a;
+      if (!normalisedSrc.value.src || state.value === "idle") return null;
+      const img = createVNode("img", {
+        "class": ["v-img__img", containClasses.value],
+        "style": {
+          objectPosition: props.position
+        },
+        "crossorigin": props.crossorigin,
+        "src": normalisedSrc.value.src,
+        "srcset": normalisedSrc.value.srcset,
+        "alt": props.alt,
+        "referrerpolicy": props.referrerpolicy,
+        "draggable": props.draggable,
+        "sizes": props.sizes,
+        "ref": image,
+        "onLoad": onLoad,
+        "onError": onError
+      }, null);
+      const sources = (_a = slots.sources) == null ? void 0 : _a.call(slots);
+      return createVNode(MaybeTransition, {
+        "transition": props.transition,
+        "appear": true
+      }, {
+        default: () => [withDirectives(sources ? createVNode("picture", {
+          "class": "v-img__picture"
+        }, [sources, img]) : img, [[vShow, state.value === "loaded"]])]
+      });
+    };
+    const __preloadImage = () => createVNode(MaybeTransition, {
+      "transition": props.transition
+    }, {
+      default: () => [normalisedSrc.value.lazySrc && state.value !== "loaded" && createVNode("img", {
+        "class": ["v-img__img", "v-img__img--preload", containClasses.value],
+        "style": {
+          objectPosition: props.position
+        },
+        "crossorigin": props.crossorigin,
+        "src": normalisedSrc.value.lazySrc,
+        "alt": props.alt,
+        "referrerpolicy": props.referrerpolicy,
+        "draggable": props.draggable
+      }, null)]
+    });
+    const __placeholder = () => {
+      if (!slots.placeholder) return null;
+      return createVNode(MaybeTransition, {
+        "transition": props.transition,
+        "appear": true
+      }, {
+        default: () => [(state.value === "loading" || state.value === "error" && !slots.error) && createVNode("div", {
+          "class": "v-img__placeholder"
+        }, [slots.placeholder()])]
+      });
+    };
+    const __error = () => {
+      if (!slots.error) return null;
+      return createVNode(MaybeTransition, {
+        "transition": props.transition,
+        "appear": true
+      }, {
+        default: () => [state.value === "error" && createVNode("div", {
+          "class": "v-img__error"
+        }, [slots.error()])]
+      });
+    };
+    const __gradient = () => {
+      if (!props.gradient) return null;
+      return createVNode("div", {
+        "class": "v-img__gradient",
+        "style": {
+          backgroundImage: `linear-gradient(${props.gradient})`
+        }
+      }, null);
+    };
+    const isBooted = shallowRef(false);
+    {
+      const stop = watch(aspectRatio, (val) => {
+        if (val) {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              isBooted.value = true;
+            });
+          });
+          stop();
+        }
+      });
+    }
+    useRender(() => {
+      const responsiveProps = VResponsive.filterProps(props);
+      return withDirectives(createVNode(VResponsive, mergeProps({
+        "class": ["v-img", {
+          "v-img--absolute": props.absolute,
+          "v-img--booting": !isBooted.value
+        }, backgroundColorClasses.value, roundedClasses.value, props.class],
+        "style": [{
+          width: convertToUnit(props.width === "auto" ? naturalWidth.value : props.width)
+        }, backgroundColorStyles.value, props.style]
+      }, responsiveProps, {
+        "aspectRatio": aspectRatio.value,
+        "aria-label": props.alt,
+        "role": props.alt ? "img" : void 0
+      }), {
+        additional: () => createVNode(Fragment, null, [createVNode(__image, null, null), createVNode(__preloadImage, null, null), createVNode(__gradient, null, null), createVNode(__placeholder, null, null), createVNode(__error, null, null)]),
+        default: slots.default
+      }), [[resolveDirective("intersect"), {
+        handler: init,
+        options: props.options
+      }, null, {
+        once: true
+      }]]);
+    });
+    return {
+      currentSrc,
+      image,
+      state,
+      naturalWidth,
+      naturalHeight
+    };
+  }
+});
+
+const makeVIconProps = propsFactory({
+  color: String,
+  disabled: Boolean,
+  start: Boolean,
+  end: Boolean,
+  icon: IconValue,
+  ...makeComponentProps(),
+  ...makeSizeProps(),
+  ...makeTagProps({
+    tag: "i"
+  }),
+  ...makeThemeProps()
+}, "VIcon");
+const VIcon = genericComponent()({
+  name: "VIcon",
+  props: makeVIconProps(),
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots
+    } = _ref;
+    const slotIcon = ref();
+    const {
+      themeClasses
+    } = useTheme();
+    const {
+      iconData
+    } = useIcon(computed(() => slotIcon.value || props.icon));
+    const {
+      sizeClasses
+    } = useSize(props);
+    const {
+      textColorClasses,
+      textColorStyles
+    } = useTextColor(toRef(props, "color"));
+    useRender(() => {
+      var _a, _b;
+      const slotValue = (_a = slots.default) == null ? void 0 : _a.call(slots);
+      if (slotValue) {
+        slotIcon.value = (_b = flattenFragments(slotValue).filter((node) => node.type === Text && node.children && typeof node.children === "string")[0]) == null ? void 0 : _b.children;
+      }
+      const hasClick = !!(attrs.onClick || attrs.onClickOnce);
+      return createVNode(iconData.value.component, {
+        "tag": props.tag,
+        "icon": iconData.value.icon,
+        "class": ["v-icon", "notranslate", themeClasses.value, sizeClasses.value, textColorClasses.value, {
+          "v-icon--clickable": hasClick,
+          "v-icon--disabled": props.disabled,
+          "v-icon--start": props.start,
+          "v-icon--end": props.end
+        }, props.class],
+        "style": [!sizeClasses.value ? {
+          fontSize: convertToUnit(props.size),
+          height: convertToUnit(props.size),
+          width: convertToUnit(props.size)
+        } : void 0, textColorStyles.value, props.style],
+        "role": hasClick ? "button" : void 0,
+        "aria-hidden": !hasClick,
+        "tabindex": hasClick ? props.disabled ? -1 : 0 : void 0
+      }, {
+        default: () => [slotValue]
+      });
+    });
+    return {};
+  }
+});
+
+const makeVAvatarProps = propsFactory({
+  start: Boolean,
+  end: Boolean,
+  icon: IconValue,
+  image: String,
+  text: String,
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...makeRoundedProps(),
+  ...makeSizeProps(),
+  ...makeTagProps(),
+  ...makeThemeProps(),
+  ...makeVariantProps({
+    variant: "flat"
+  })
+}, "VAvatar");
+const VAvatar = genericComponent()({
+  name: "VAvatar",
+  props: makeVAvatarProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      colorClasses,
+      colorStyles,
+      variantClasses
+    } = useVariant(props);
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const {
+      sizeClasses,
+      sizeStyles
+    } = useSize(props);
+    useRender(() => createVNode(props.tag, {
+      "class": ["v-avatar", {
+        "v-avatar--start": props.start,
+        "v-avatar--end": props.end
+      }, themeClasses.value, borderClasses.value, colorClasses.value, densityClasses.value, roundedClasses.value, sizeClasses.value, variantClasses.value, props.class],
+      "style": [colorStyles.value, sizeStyles.value, props.style]
+    }, {
+      default: () => [!slots.default ? props.image ? createVNode(VImg, {
+        "key": "image",
+        "src": props.image,
+        "alt": "",
+        "cover": true
+      }, null) : props.icon ? createVNode(VIcon, {
+        "key": "icon",
+        "icon": props.icon
+      }, null) : props.text : createVNode(VDefaultsProvider, {
+        "key": "content-defaults",
+        "defaults": {
+          VImg: {
+            cover: true,
+            src: props.image
+          },
+          VIcon: {
+            icon: props.icon
+          }
+        }
+      }, {
+        default: () => [slots.default()]
+      }), genOverlays(false, "v-avatar")]
+    }));
+    return {};
+  }
+});
+
+const makeCardItemProps = propsFactory({
+  appendAvatar: String,
+  appendIcon: IconValue,
+  prependAvatar: String,
+  prependIcon: IconValue,
+  subtitle: {
+    type: [String, Number, Boolean],
+    default: void 0
+  },
+  title: {
+    type: [String, Number, Boolean],
+    default: void 0
+  },
+  ...makeComponentProps(),
+  ...makeDensityProps()
+}, "VCardItem");
+const VCardItem = genericComponent()({
+  name: "VCardItem",
+  props: makeCardItemProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    useRender(() => {
+      var _a;
+      const hasPrependMedia = !!(props.prependAvatar || props.prependIcon);
+      const hasPrepend = !!(hasPrependMedia || slots.prepend);
+      const hasAppendMedia = !!(props.appendAvatar || props.appendIcon);
+      const hasAppend = !!(hasAppendMedia || slots.append);
+      const hasTitle = !!(props.title != null || slots.title);
+      const hasSubtitle = !!(props.subtitle != null || slots.subtitle);
+      return createVNode("div", {
+        "class": ["v-card-item", props.class],
+        "style": props.style
+      }, [hasPrepend && createVNode("div", {
+        "key": "prepend",
+        "class": "v-card-item__prepend"
+      }, [!slots.prepend ? createVNode(Fragment, null, [props.prependAvatar && createVNode(VAvatar, {
+        "key": "prepend-avatar",
+        "density": props.density,
+        "image": props.prependAvatar
+      }, null), props.prependIcon && createVNode(VIcon, {
+        "key": "prepend-icon",
+        "density": props.density,
+        "icon": props.prependIcon
+      }, null)]) : createVNode(VDefaultsProvider, {
+        "key": "prepend-defaults",
+        "disabled": !hasPrependMedia,
+        "defaults": {
+          VAvatar: {
+            density: props.density,
+            image: props.prependAvatar
+          },
+          VIcon: {
+            density: props.density,
+            icon: props.prependIcon
+          }
+        }
+      }, slots.prepend)]), createVNode("div", {
+        "class": "v-card-item__content"
+      }, [hasTitle && createVNode(VCardTitle, {
+        "key": "title"
+      }, {
+        default: () => {
+          var _a2;
+          return [((_a2 = slots.title) == null ? void 0 : _a2.call(slots)) ?? toDisplayString(props.title)];
+        }
+      }), hasSubtitle && createVNode(VCardSubtitle, {
+        "key": "subtitle"
+      }, {
+        default: () => {
+          var _a2;
+          return [((_a2 = slots.subtitle) == null ? void 0 : _a2.call(slots)) ?? toDisplayString(props.subtitle)];
+        }
+      }), (_a = slots.default) == null ? void 0 : _a.call(slots)]), hasAppend && createVNode("div", {
+        "key": "append",
+        "class": "v-card-item__append"
+      }, [!slots.append ? createVNode(Fragment, null, [props.appendIcon && createVNode(VIcon, {
+        "key": "append-icon",
+        "density": props.density,
+        "icon": props.appendIcon
+      }, null), props.appendAvatar && createVNode(VAvatar, {
+        "key": "append-avatar",
+        "density": props.density,
+        "image": props.appendAvatar
+      }, null)]) : createVNode(VDefaultsProvider, {
+        "key": "append-defaults",
+        "disabled": !hasAppendMedia,
+        "defaults": {
+          VAvatar: {
+            density: props.density,
+            image: props.appendAvatar
+          },
+          VIcon: {
+            density: props.density,
+            icon: props.appendIcon
+          }
+        }
+      }, slots.append)])]);
+    });
+    return {};
+  }
+});
+
+const makeVCardTextProps = propsFactory({
+  opacity: [Number, String],
+  ...makeComponentProps(),
+  ...makeTagProps()
+}, "VCardText");
+const VCardText = genericComponent()({
+  name: "VCardText",
+  props: makeVCardTextProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    useRender(() => createVNode(props.tag, {
+      "class": ["v-card-text", props.class],
+      "style": [{
+        "--v-card-text-opacity": props.opacity
+      }, props.style]
+    }, slots));
+    return {};
+  }
+});
+
+const makeElevationProps = propsFactory({
+  elevation: {
+    type: [Number, String],
+    validator(v) {
+      const value = parseInt(v);
+      return !isNaN(value) && value >= 0 && // Material Design has a maximum elevation of 24
+      // https://material.io/design/environment/elevation.html#default-elevations
+      value <= 24;
+    }
+  }
+}, "elevation");
+function useElevation(props) {
+  const elevationClasses = computed(() => {
+    const elevation = isRef(props) ? props.value : props.elevation;
+    const classes = [];
+    if (elevation == null) return classes;
+    classes.push(`elevation-${elevation}`);
+    return classes;
+  });
+  return {
+    elevationClasses
+  };
+}
+
+function useIntersectionObserver(callback, options) {
+  const intersectionRef = ref();
+  const isIntersecting = shallowRef(false);
+  return {
+    intersectionRef,
+    isIntersecting
+  };
+}
+
+const oppositeMap = {
+  center: "center",
+  top: "bottom",
+  bottom: "top",
+  left: "right",
+  right: "left"
+};
+const makeLocationProps = propsFactory({
+  location: String
+}, "location");
+function useLocation(props) {
+  let opposite = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+  let offset = arguments.length > 2 ? arguments[2] : void 0;
+  const {
+    isRtl
+  } = useRtl();
+  const locationStyles = computed(() => {
+    if (!props.location) return {};
+    const {
+      side,
+      align
+    } = parseAnchor(props.location.split(" ").length > 1 ? props.location : `${props.location} center`, isRtl.value);
+    function getOffset(side2) {
+      return offset ? offset(side2) : 0;
+    }
+    const styles = {};
+    if (side !== "center") {
+      if (opposite) styles[oppositeMap[side]] = `calc(100% - ${getOffset(side)}px)`;
+      else styles[side] = 0;
+    }
+    if (align !== "center") {
+      if (opposite) styles[oppositeMap[align]] = `calc(100% - ${getOffset(align)}px)`;
+      else styles[align] = 0;
+    } else {
+      if (side === "center") styles.top = styles.left = "50%";
+      else {
+        styles[{
+          top: "left",
+          bottom: "left",
+          left: "top",
+          right: "top"
+        }[side]] = "50%";
+      }
+      styles.transform = {
+        top: "translateX(-50%)",
+        bottom: "translateX(-50%)",
+        left: "translateY(-50%)",
+        right: "translateY(-50%)",
+        center: "translate(-50%, -50%)"
+      }[side];
+    }
+    return styles;
+  });
+  return {
+    locationStyles
+  };
+}
+
+const makeVProgressLinearProps = propsFactory({
+  absolute: Boolean,
+  active: {
+    type: Boolean,
+    default: true
+  },
+  bgColor: String,
+  bgOpacity: [Number, String],
+  bufferValue: {
+    type: [Number, String],
+    default: 0
+  },
+  bufferColor: String,
+  bufferOpacity: [Number, String],
+  clickable: Boolean,
+  color: String,
+  height: {
+    type: [Number, String],
+    default: 4
+  },
+  indeterminate: Boolean,
+  max: {
+    type: [Number, String],
+    default: 100
+  },
+  modelValue: {
+    type: [Number, String],
+    default: 0
+  },
+  opacity: [Number, String],
+  reverse: Boolean,
+  stream: Boolean,
+  striped: Boolean,
+  roundedBar: Boolean,
+  ...makeComponentProps(),
+  ...makeLocationProps({
+    location: "top"
+  }),
+  ...makeRoundedProps(),
+  ...makeTagProps(),
+  ...makeThemeProps()
+}, "VProgressLinear");
+const VProgressLinear = genericComponent()({
+  name: "VProgressLinear",
+  props: makeVProgressLinearProps(),
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const progress = useProxiedModel(props, "modelValue");
+    const {
+      isRtl,
+      rtlClasses
+    } = useRtl();
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      locationStyles
+    } = useLocation(props);
+    const {
+      textColorClasses,
+      textColorStyles
+    } = useTextColor(props, "color");
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(computed(() => props.bgColor || props.color));
+    const {
+      backgroundColorClasses: bufferColorClasses,
+      backgroundColorStyles: bufferColorStyles
+    } = useBackgroundColor(computed(() => props.bufferColor || props.bgColor || props.color));
+    const {
+      backgroundColorClasses: barColorClasses,
+      backgroundColorStyles: barColorStyles
+    } = useBackgroundColor(props, "color");
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const {
+      intersectionRef,
+      isIntersecting
+    } = useIntersectionObserver();
+    const max = computed(() => parseFloat(props.max));
+    const height = computed(() => parseFloat(props.height));
+    const normalizedBuffer = computed(() => clamp(parseFloat(props.bufferValue) / max.value * 100, 0, 100));
+    const normalizedValue = computed(() => clamp(parseFloat(progress.value) / max.value * 100, 0, 100));
+    const isReversed = computed(() => isRtl.value !== props.reverse);
+    const transition = computed(() => props.indeterminate ? "fade-transition" : "slide-x-transition");
+    function handleClick(e) {
+      if (!intersectionRef.value) return;
+      const {
+        left,
+        right,
+        width
+      } = intersectionRef.value.getBoundingClientRect();
+      const value = isReversed.value ? width - e.clientX + (right - width) : e.clientX - left;
+      progress.value = Math.round(value / width * max.value);
+    }
+    useRender(() => createVNode(props.tag, {
+      "ref": intersectionRef,
+      "class": ["v-progress-linear", {
+        "v-progress-linear--absolute": props.absolute,
+        "v-progress-linear--active": props.active && isIntersecting.value,
+        "v-progress-linear--reverse": isReversed.value,
+        "v-progress-linear--rounded": props.rounded,
+        "v-progress-linear--rounded-bar": props.roundedBar,
+        "v-progress-linear--striped": props.striped
+      }, roundedClasses.value, themeClasses.value, rtlClasses.value, props.class],
+      "style": [{
+        bottom: props.location === "bottom" ? 0 : void 0,
+        top: props.location === "top" ? 0 : void 0,
+        height: props.active ? convertToUnit(height.value) : 0,
+        "--v-progress-linear-height": convertToUnit(height.value),
+        ...props.absolute ? locationStyles.value : {}
+      }, props.style],
+      "role": "progressbar",
+      "aria-hidden": props.active ? "false" : "true",
+      "aria-valuemin": "0",
+      "aria-valuemax": props.max,
+      "aria-valuenow": props.indeterminate ? void 0 : Math.min(parseFloat(progress.value), max.value),
+      "onClick": props.clickable && handleClick
+    }, {
+      default: () => [props.stream && createVNode("div", {
+        "key": "stream",
+        "class": ["v-progress-linear__stream", textColorClasses.value],
+        "style": {
+          ...textColorStyles.value,
+          [isReversed.value ? "left" : "right"]: convertToUnit(-height.value),
+          borderTop: `${convertToUnit(height.value / 2)} dotted`,
+          opacity: parseFloat(props.bufferOpacity),
+          top: `calc(50% - ${convertToUnit(height.value / 4)})`,
+          width: convertToUnit(100 - normalizedBuffer.value, "%"),
+          "--v-progress-linear-stream-to": convertToUnit(height.value * (isReversed.value ? 1 : -1))
+        }
+      }, null), createVNode("div", {
+        "class": ["v-progress-linear__background", backgroundColorClasses.value],
+        "style": [backgroundColorStyles.value, {
+          opacity: parseFloat(props.bgOpacity),
+          width: props.stream ? 0 : void 0
+        }]
+      }, null), createVNode("div", {
+        "class": ["v-progress-linear__buffer", bufferColorClasses.value],
+        "style": [bufferColorStyles.value, {
+          opacity: parseFloat(props.bufferOpacity),
+          width: convertToUnit(normalizedBuffer.value, "%")
+        }]
+      }, null), createVNode(Transition, {
+        "name": transition.value
+      }, {
+        default: () => [!props.indeterminate ? createVNode("div", {
+          "class": ["v-progress-linear__determinate", barColorClasses.value],
+          "style": [barColorStyles.value, {
+            width: convertToUnit(normalizedValue.value, "%")
+          }]
+        }, null) : createVNode("div", {
+          "class": "v-progress-linear__indeterminate"
+        }, [["long", "short"].map((bar) => createVNode("div", {
+          "key": bar,
+          "class": ["v-progress-linear__indeterminate", bar, barColorClasses.value],
+          "style": barColorStyles.value
+        }, null))])]
+      }), slots.default && createVNode("div", {
+        "class": "v-progress-linear__content"
+      }, [slots.default({
+        value: normalizedValue.value,
+        buffer: normalizedBuffer.value
+      })])]
+    }));
+    return {};
+  }
+});
+
+const makeLoaderProps = propsFactory({
+  loading: [Boolean, String]
+}, "loader");
+function useLoader(props) {
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  const loaderClasses = computed(() => ({
+    [`${name}--loading`]: props.loading
+  }));
+  return {
+    loaderClasses
+  };
+}
+function LoaderSlot(props, _ref) {
+  var _a;
+  let {
+    slots
+  } = _ref;
+  return createVNode("div", {
+    "class": `${props.name}__loader`
+  }, [((_a = slots.default) == null ? void 0 : _a.call(slots, {
+    color: props.color,
+    isActive: props.active
+  })) || createVNode(VProgressLinear, {
+    "absolute": props.absolute,
+    "active": props.active,
+    "color": props.color,
+    "height": "2",
+    "indeterminate": true
+  }, null)]);
+}
+
+const positionValues = ["static", "relative", "fixed", "absolute", "sticky"];
+const makePositionProps = propsFactory({
+  position: {
+    type: String,
+    validator: (
+      /* istanbul ignore next */
+      (v) => positionValues.includes(v)
+    )
+  }
+}, "position");
+function usePosition(props) {
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  const positionClasses = computed(() => {
+    return props.position ? `${name}--${props.position}` : void 0;
+  });
+  return {
+    positionClasses
+  };
+}
+
+/* empty css             */
+const stopSymbol = Symbol("rippleStop");
+const DELAY_RIPPLE = 80;
+function transform(el, value) {
+  el.style.transform = value;
+  el.style.webkitTransform = value;
+}
+function isTouchEvent(e) {
+  return e.constructor.name === "TouchEvent";
+}
+function isKeyboardEvent(e) {
+  return e.constructor.name === "KeyboardEvent";
+}
+const calculate = function(e, el) {
+  var _a;
+  let value = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {};
+  let localX = 0;
+  let localY = 0;
+  if (!isKeyboardEvent(e)) {
+    const offset = el.getBoundingClientRect();
+    const target = isTouchEvent(e) ? e.touches[e.touches.length - 1] : e;
+    localX = target.clientX - offset.left;
+    localY = target.clientY - offset.top;
+  }
+  let radius = 0;
+  let scale = 0.3;
+  if ((_a = el._ripple) == null ? void 0 : _a.circle) {
+    scale = 0.15;
+    radius = el.clientWidth / 2;
+    radius = value.center ? radius : radius + Math.sqrt((localX - radius) ** 2 + (localY - radius) ** 2) / 4;
+  } else {
+    radius = Math.sqrt(el.clientWidth ** 2 + el.clientHeight ** 2) / 2;
+  }
+  const centerX = `${(el.clientWidth - radius * 2) / 2}px`;
+  const centerY = `${(el.clientHeight - radius * 2) / 2}px`;
+  const x = value.center ? centerX : `${localX - radius}px`;
+  const y = value.center ? centerY : `${localY - radius}px`;
+  return {
+    radius,
+    scale,
+    x,
+    y,
+    centerX,
+    centerY
+  };
+};
+const ripples = {
+  /* eslint-disable max-statements */
+  show(e, el) {
+    var _a;
+    let value = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {};
+    if (!((_a = el == null ? void 0 : el._ripple) == null ? void 0 : _a.enabled)) {
+      return;
+    }
+    const container = (void 0).createElement("span");
+    const animation = (void 0).createElement("span");
+    container.appendChild(animation);
+    container.className = "v-ripple__container";
+    if (value.class) {
+      container.className += ` ${value.class}`;
+    }
+    const {
+      radius,
+      scale,
+      x,
+      y,
+      centerX,
+      centerY
+    } = calculate(e, el, value);
+    const size = `${radius * 2}px`;
+    animation.className = "v-ripple__animation";
+    animation.style.width = size;
+    animation.style.height = size;
+    el.appendChild(container);
+    const computed = (void 0).getComputedStyle(el);
+    if (computed && computed.position === "static") {
+      el.style.position = "relative";
+      el.dataset.previousPosition = "static";
+    }
+    animation.classList.add("v-ripple__animation--enter");
+    animation.classList.add("v-ripple__animation--visible");
+    transform(animation, `translate(${x}, ${y}) scale3d(${scale},${scale},${scale})`);
+    animation.dataset.activated = String(performance.now());
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        animation.classList.remove("v-ripple__animation--enter");
+        animation.classList.add("v-ripple__animation--in");
+        transform(animation, `translate(${centerX}, ${centerY}) scale3d(1,1,1)`);
+      });
+    });
+  },
+  hide(el) {
+    var _a;
+    if (!((_a = el == null ? void 0 : el._ripple) == null ? void 0 : _a.enabled)) return;
+    const ripples2 = el.getElementsByClassName("v-ripple__animation");
+    if (ripples2.length === 0) return;
+    const animation = ripples2[ripples2.length - 1];
+    if (animation.dataset.isHiding) return;
+    else animation.dataset.isHiding = "true";
+    const diff = performance.now() - Number(animation.dataset.activated);
+    const delay = Math.max(250 - diff, 0);
+    setTimeout(() => {
+      animation.classList.remove("v-ripple__animation--in");
+      animation.classList.add("v-ripple__animation--out");
+      setTimeout(() => {
+        var _a2;
+        const ripples3 = el.getElementsByClassName("v-ripple__animation");
+        if (ripples3.length === 1 && el.dataset.previousPosition) {
+          el.style.position = el.dataset.previousPosition;
+          delete el.dataset.previousPosition;
+        }
+        if (((_a2 = animation.parentNode) == null ? void 0 : _a2.parentNode) === el) el.removeChild(animation.parentNode);
+      }, 300);
+    }, delay);
+  }
+};
+function isRippleEnabled(value) {
+  return typeof value === "undefined" || !!value;
+}
+function rippleShow(e) {
+  const value = {};
+  const element = e.currentTarget;
+  if (!(element == null ? void 0 : element._ripple) || element._ripple.touched || e[stopSymbol]) return;
+  e[stopSymbol] = true;
+  if (isTouchEvent(e)) {
+    element._ripple.touched = true;
+    element._ripple.isTouch = true;
+  } else {
+    if (element._ripple.isTouch) return;
+  }
+  value.center = element._ripple.centered || isKeyboardEvent(e);
+  if (element._ripple.class) {
+    value.class = element._ripple.class;
+  }
+  if (isTouchEvent(e)) {
+    if (element._ripple.showTimerCommit) return;
+    element._ripple.showTimerCommit = () => {
+      ripples.show(e, element, value);
+    };
+    element._ripple.showTimer = (void 0).setTimeout(() => {
+      var _a;
+      if ((_a = element == null ? void 0 : element._ripple) == null ? void 0 : _a.showTimerCommit) {
+        element._ripple.showTimerCommit();
+        element._ripple.showTimerCommit = null;
+      }
+    }, DELAY_RIPPLE);
+  } else {
+    ripples.show(e, element, value);
+  }
+}
+function rippleStop(e) {
+  e[stopSymbol] = true;
+}
+function rippleHide(e) {
+  const element = e.currentTarget;
+  if (!(element == null ? void 0 : element._ripple)) return;
+  (void 0).clearTimeout(element._ripple.showTimer);
+  if (e.type === "touchend" && element._ripple.showTimerCommit) {
+    element._ripple.showTimerCommit();
+    element._ripple.showTimerCommit = null;
+    element._ripple.showTimer = (void 0).setTimeout(() => {
+      rippleHide(e);
+    });
+    return;
+  }
+  (void 0).setTimeout(() => {
+    if (element._ripple) {
+      element._ripple.touched = false;
+    }
+  });
+  ripples.hide(element);
+}
+function rippleCancelShow(e) {
+  const element = e.currentTarget;
+  if (!(element == null ? void 0 : element._ripple)) return;
+  if (element._ripple.showTimerCommit) {
+    element._ripple.showTimerCommit = null;
+  }
+  (void 0).clearTimeout(element._ripple.showTimer);
+}
+let keyboardRipple = false;
+function keyboardRippleShow(e) {
+  if (!keyboardRipple && (e.keyCode === keyCodes.enter || e.keyCode === keyCodes.space)) {
+    keyboardRipple = true;
+    rippleShow(e);
+  }
+}
+function keyboardRippleHide(e) {
+  keyboardRipple = false;
+  rippleHide(e);
+}
+function focusRippleHide(e) {
+  if (keyboardRipple) {
+    keyboardRipple = false;
+    rippleHide(e);
+  }
+}
+function updateRipple(el, binding, wasEnabled) {
+  const {
+    value,
+    modifiers
+  } = binding;
+  const enabled = isRippleEnabled(value);
+  if (!enabled) {
+    ripples.hide(el);
+  }
+  el._ripple = el._ripple ?? {};
+  el._ripple.enabled = enabled;
+  el._ripple.centered = modifiers.center;
+  el._ripple.circle = modifiers.circle;
+  if (isObject(value) && value.class) {
+    el._ripple.class = value.class;
+  }
+  if (enabled && !wasEnabled) {
+    if (modifiers.stop) {
+      el.addEventListener("touchstart", rippleStop, {
+        passive: true
+      });
+      el.addEventListener("mousedown", rippleStop);
+      return;
+    }
+    el.addEventListener("touchstart", rippleShow, {
+      passive: true
+    });
+    el.addEventListener("touchend", rippleHide, {
+      passive: true
+    });
+    el.addEventListener("touchmove", rippleCancelShow, {
+      passive: true
+    });
+    el.addEventListener("touchcancel", rippleHide);
+    el.addEventListener("mousedown", rippleShow);
+    el.addEventListener("mouseup", rippleHide);
+    el.addEventListener("mouseleave", rippleHide);
+    el.addEventListener("keydown", keyboardRippleShow);
+    el.addEventListener("keyup", keyboardRippleHide);
+    el.addEventListener("blur", focusRippleHide);
+    el.addEventListener("dragstart", rippleHide, {
+      passive: true
+    });
+  } else if (!enabled && wasEnabled) {
+    removeListeners(el);
+  }
+}
+function removeListeners(el) {
+  el.removeEventListener("mousedown", rippleShow);
+  el.removeEventListener("touchstart", rippleShow);
+  el.removeEventListener("touchend", rippleHide);
+  el.removeEventListener("touchmove", rippleCancelShow);
+  el.removeEventListener("touchcancel", rippleHide);
+  el.removeEventListener("mouseup", rippleHide);
+  el.removeEventListener("mouseleave", rippleHide);
+  el.removeEventListener("keydown", keyboardRippleShow);
+  el.removeEventListener("keyup", keyboardRippleHide);
+  el.removeEventListener("dragstart", rippleHide);
+  el.removeEventListener("blur", focusRippleHide);
+}
+function mounted(el, binding) {
+  updateRipple(el, binding, false);
+}
+function unmounted(el) {
+  delete el._ripple;
+  removeListeners(el);
+}
+function updated(el, binding) {
+  if (binding.value === binding.oldValue) {
+    return;
+  }
+  const wasEnabled = isRippleEnabled(binding.oldValue);
+  updateRipple(el, binding, wasEnabled);
+}
+const Ripple = {
+  mounted,
+  unmounted,
+  updated
+};
+
+const makeVCardProps = propsFactory({
+  appendAvatar: String,
+  appendIcon: IconValue,
+  disabled: Boolean,
+  flat: Boolean,
+  hover: Boolean,
+  image: String,
+  link: {
+    type: Boolean,
+    default: void 0
+  },
+  prependAvatar: String,
+  prependIcon: IconValue,
+  ripple: {
+    type: [Boolean, Object],
+    default: true
+  },
+  subtitle: {
+    type: [String, Number, Boolean],
+    default: void 0
+  },
+  text: {
+    type: [String, Number, Boolean],
+    default: void 0
+  },
+  title: {
+    type: [String, Number, Boolean],
+    default: void 0
+  },
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...makeDimensionProps(),
+  ...makeElevationProps(),
+  ...makeLoaderProps(),
+  ...makeLocationProps(),
+  ...makePositionProps(),
+  ...makeRoundedProps(),
+  ...makeRouterProps(),
+  ...makeTagProps(),
+  ...makeThemeProps(),
+  ...makeVariantProps({
+    variant: "elevated"
+  })
+}, "VCard");
+const VCard = genericComponent()({
+  name: "VCard",
+  directives: {
+    Ripple
+  },
+  props: makeVCardProps(),
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots
+    } = _ref;
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      colorClasses,
+      colorStyles,
+      variantClasses
+    } = useVariant(props);
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      loaderClasses
+    } = useLoader(props);
+    const {
+      locationStyles
+    } = useLocation(props);
+    const {
+      positionClasses
+    } = usePosition(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const link = useLink(props, attrs);
+    const isLink = computed(() => props.link !== false && link.isLink.value);
+    const isClickable = computed(() => !props.disabled && props.link !== false && (props.link || link.isClickable.value));
+    useRender(() => {
+      const Tag = isLink.value ? "a" : props.tag;
+      const hasTitle = !!(slots.title || props.title != null);
+      const hasSubtitle = !!(slots.subtitle || props.subtitle != null);
+      const hasHeader = hasTitle || hasSubtitle;
+      const hasAppend = !!(slots.append || props.appendAvatar || props.appendIcon);
+      const hasPrepend = !!(slots.prepend || props.prependAvatar || props.prependIcon);
+      const hasImage = !!(slots.image || props.image);
+      const hasCardItem = hasHeader || hasPrepend || hasAppend;
+      const hasText = !!(slots.text || props.text != null);
+      return withDirectives(createVNode(Tag, mergeProps({
+        "class": ["v-card", {
+          "v-card--disabled": props.disabled,
+          "v-card--flat": props.flat,
+          "v-card--hover": props.hover && !(props.disabled || props.flat),
+          "v-card--link": isClickable.value
+        }, themeClasses.value, borderClasses.value, colorClasses.value, densityClasses.value, elevationClasses.value, loaderClasses.value, positionClasses.value, roundedClasses.value, variantClasses.value, props.class],
+        "style": [colorStyles.value, dimensionStyles.value, locationStyles.value, props.style],
+        "onClick": isClickable.value && link.navigate,
+        "tabindex": props.disabled ? -1 : void 0
+      }, link.linkProps), {
+        default: () => {
+          var _a;
+          return [hasImage && createVNode("div", {
+            "key": "image",
+            "class": "v-card__image"
+          }, [!slots.image ? createVNode(VImg, {
+            "key": "image-img",
+            "cover": true,
+            "src": props.image
+          }, null) : createVNode(VDefaultsProvider, {
+            "key": "image-defaults",
+            "disabled": !props.image,
+            "defaults": {
+              VImg: {
+                cover: true,
+                src: props.image
+              }
+            }
+          }, slots.image)]), createVNode(LoaderSlot, {
+            "name": "v-card",
+            "active": !!props.loading,
+            "color": typeof props.loading === "boolean" ? void 0 : props.loading
+          }, {
+            default: slots.loader
+          }), hasCardItem && createVNode(VCardItem, {
+            "key": "item",
+            "prependAvatar": props.prependAvatar,
+            "prependIcon": props.prependIcon,
+            "title": props.title,
+            "subtitle": props.subtitle,
+            "appendAvatar": props.appendAvatar,
+            "appendIcon": props.appendIcon
+          }, {
+            default: slots.item,
+            prepend: slots.prepend,
+            title: slots.title,
+            subtitle: slots.subtitle,
+            append: slots.append
+          }), hasText && createVNode(VCardText, {
+            "key": "text"
+          }, {
+            default: () => {
+              var _a2;
+              return [((_a2 = slots.text) == null ? void 0 : _a2.call(slots)) ?? props.text];
+            }
+          }), (_a = slots.default) == null ? void 0 : _a.call(slots), slots.actions && createVNode(VCardActions, null, {
+            default: slots.actions
+          }), genOverlays(isClickable.value, "v-card")];
+        }
+      }), [[resolveDirective("ripple"), isClickable.value && props.ripple]]);
+    });
+    return {};
+  }
+});
+
+const makeTransitionProps = propsFactory({
+  disabled: Boolean,
+  group: Boolean,
+  hideOnLeave: Boolean,
+  leaveAbsolute: Boolean,
+  mode: String,
+  origin: String
+}, "transition");
+function createCssTransition(name, origin, mode) {
+  return genericComponent()({
+    name,
+    props: makeTransitionProps({
+      mode,
+      origin
+    }),
+    setup(props, _ref) {
+      let {
+        slots
+      } = _ref;
+      const functions = {
+        onBeforeEnter(el) {
+          if (props.origin) {
+            el.style.transformOrigin = props.origin;
+          }
+        },
+        onLeave(el) {
+          if (props.leaveAbsolute) {
+            const {
+              offsetTop,
+              offsetLeft,
+              offsetWidth,
+              offsetHeight
+            } = el;
+            el._transitionInitialStyles = {
+              position: el.style.position,
+              top: el.style.top,
+              left: el.style.left,
+              width: el.style.width,
+              height: el.style.height
+            };
+            el.style.position = "absolute";
+            el.style.top = `${offsetTop}px`;
+            el.style.left = `${offsetLeft}px`;
+            el.style.width = `${offsetWidth}px`;
+            el.style.height = `${offsetHeight}px`;
+          }
+          if (props.hideOnLeave) {
+            el.style.setProperty("display", "none", "important");
+          }
+        },
+        onAfterLeave(el) {
+          if (props.leaveAbsolute && (el == null ? void 0 : el._transitionInitialStyles)) {
+            const {
+              position,
+              top,
+              left,
+              width,
+              height
+            } = el._transitionInitialStyles;
+            delete el._transitionInitialStyles;
+            el.style.position = position || "";
+            el.style.top = top || "";
+            el.style.left = left || "";
+            el.style.width = width || "";
+            el.style.height = height || "";
+          }
+        }
+      };
+      return () => {
+        const tag = props.group ? TransitionGroup : Transition;
+        return h(tag, {
+          name: props.disabled ? "" : name,
+          css: !props.disabled,
+          ...props.group ? void 0 : {
+            mode: props.mode
+          },
+          ...props.disabled ? {} : functions
+        }, slots.default);
+      };
+    }
+  });
+}
+function createJavascriptTransition(name, functions) {
+  let mode = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : "in-out";
+  return genericComponent()({
+    name,
+    props: {
+      mode: {
+        type: String,
+        default: mode
+      },
+      disabled: Boolean,
+      group: Boolean
+    },
+    setup(props, _ref2) {
+      let {
+        slots
+      } = _ref2;
+      const tag = props.group ? TransitionGroup : Transition;
+      return () => {
+        return h(tag, {
+          name: props.disabled ? "" : name,
+          css: !props.disabled,
+          // mode: props.mode, // TODO: vuejs/vue-next#3104
+          ...props.disabled ? {} : functions
+        }, slots.default);
+      };
+    }
+  });
+}
+
+function ExpandTransitionGenerator() {
+  let expandedParentClass = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : "";
+  let x = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+  const sizeProperty = x ? "width" : "height";
+  const offsetProperty = camelize(`offset-${sizeProperty}`);
+  return {
+    onBeforeEnter(el) {
+      el._parent = el.parentNode;
+      el._initialStyle = {
+        transition: el.style.transition,
+        overflow: el.style.overflow,
+        [sizeProperty]: el.style[sizeProperty]
+      };
+    },
+    onEnter(el) {
+      const initialStyle = el._initialStyle;
+      if (!initialStyle) return;
+      el.style.setProperty("transition", "none", "important");
+      el.style.overflow = "hidden";
+      const offset = `${el[offsetProperty]}px`;
+      el.style[sizeProperty] = "0";
+      void el.offsetHeight;
+      el.style.transition = initialStyle.transition;
+      if (expandedParentClass && el._parent) {
+        el._parent.classList.add(expandedParentClass);
+      }
+      requestAnimationFrame(() => {
+        el.style[sizeProperty] = offset;
+      });
+    },
+    onAfterEnter: resetStyles,
+    onEnterCancelled: resetStyles,
+    onLeave(el) {
+      el._initialStyle = {
+        transition: "",
+        overflow: el.style.overflow,
+        [sizeProperty]: el.style[sizeProperty]
+      };
+      el.style.overflow = "hidden";
+      el.style[sizeProperty] = `${el[offsetProperty]}px`;
+      void el.offsetHeight;
+      requestAnimationFrame(() => el.style[sizeProperty] = "0");
+    },
+    onAfterLeave,
+    onLeaveCancelled: onAfterLeave
+  };
+  function onAfterLeave(el) {
+    if (expandedParentClass && el._parent) {
+      el._parent.classList.remove(expandedParentClass);
+    }
+    resetStyles(el);
+  }
+  function resetStyles(el) {
+    if (!el._initialStyle) return;
+    const size = el._initialStyle[sizeProperty];
+    el.style.overflow = el._initialStyle.overflow;
+    if (size != null) el.style[sizeProperty] = size;
+    delete el._initialStyle;
+  }
+}
+
+createCssTransition("fab-transition", "center center", "out-in");
+createCssTransition("dialog-bottom-transition");
+createCssTransition("dialog-top-transition");
+const VFadeTransition = createCssTransition("fade-transition");
+const VScaleTransition = createCssTransition("scale-transition");
+createCssTransition("scroll-x-transition");
+createCssTransition("scroll-x-reverse-transition");
+createCssTransition("scroll-y-transition");
+createCssTransition("scroll-y-reverse-transition");
+createCssTransition("slide-x-transition");
+createCssTransition("slide-x-reverse-transition");
+const VSlideYTransition = createCssTransition("slide-y-transition");
+createCssTransition("slide-y-reverse-transition");
+const VExpandTransition = createJavascriptTransition("expand-transition", ExpandTransitionGenerator());
+const VExpandXTransition = createJavascriptTransition("expand-x-transition", ExpandTransitionGenerator("", true));
+
+const ListKey = Symbol.for("vuetify:list");
+function createList() {
+  const parent = inject$1(ListKey, {
+    hasPrepend: shallowRef(false),
+    updateHasPrepend: () => null
+  });
+  const data = {
+    hasPrepend: shallowRef(false),
+    updateHasPrepend: (value) => {
+      if (value) data.hasPrepend.value = value;
+    }
+  };
+  provide(ListKey, data);
+  return parent;
+}
+function useList() {
+  return inject$1(ListKey, null);
+}
+
+const independentActiveStrategy = (mandatory) => {
+  const strategy = {
+    activate: (_ref) => {
+      let {
+        id,
+        value,
+        activated
+      } = _ref;
+      id = toRaw(id);
+      if (mandatory && !value && activated.size === 1 && activated.has(id)) return activated;
+      if (value) {
+        activated.add(id);
+      } else {
+        activated.delete(id);
+      }
+      return activated;
+    },
+    in: (v, children, parents) => {
+      let set = /* @__PURE__ */ new Set();
+      if (v != null) {
+        for (const id of wrapInArray(v)) {
+          set = strategy.activate({
+            id,
+            value: true,
+            activated: new Set(set),
+            children,
+            parents
+          });
+        }
+      }
+      return set;
+    },
+    out: (v) => {
+      return Array.from(v);
+    }
+  };
+  return strategy;
+};
+const independentSingleActiveStrategy = (mandatory) => {
+  const parentStrategy = independentActiveStrategy(mandatory);
+  const strategy = {
+    activate: (_ref2) => {
+      let {
+        activated,
+        id,
+        ...rest
+      } = _ref2;
+      id = toRaw(id);
+      const singleSelected = activated.has(id) ? /* @__PURE__ */ new Set([id]) : /* @__PURE__ */ new Set();
+      return parentStrategy.activate({
+        ...rest,
+        id,
+        activated: singleSelected
+      });
+    },
+    in: (v, children, parents) => {
+      let set = /* @__PURE__ */ new Set();
+      if (v != null) {
+        const arr = wrapInArray(v);
+        if (arr.length) {
+          set = parentStrategy.in(arr.slice(0, 1), children, parents);
+        }
+      }
+      return set;
+    },
+    out: (v, children, parents) => {
+      return parentStrategy.out(v, children, parents);
+    }
+  };
+  return strategy;
+};
+const leafActiveStrategy = (mandatory) => {
+  const parentStrategy = independentActiveStrategy(mandatory);
+  const strategy = {
+    activate: (_ref3) => {
+      let {
+        id,
+        activated,
+        children,
+        ...rest
+      } = _ref3;
+      id = toRaw(id);
+      if (children.has(id)) return activated;
+      return parentStrategy.activate({
+        id,
+        activated,
+        children,
+        ...rest
+      });
+    },
+    in: parentStrategy.in,
+    out: parentStrategy.out
+  };
+  return strategy;
+};
+const leafSingleActiveStrategy = (mandatory) => {
+  const parentStrategy = independentSingleActiveStrategy(mandatory);
+  const strategy = {
+    activate: (_ref4) => {
+      let {
+        id,
+        activated,
+        children,
+        ...rest
+      } = _ref4;
+      id = toRaw(id);
+      if (children.has(id)) return activated;
+      return parentStrategy.activate({
+        id,
+        activated,
+        children,
+        ...rest
+      });
+    },
+    in: parentStrategy.in,
+    out: parentStrategy.out
+  };
+  return strategy;
+};
+
+const singleOpenStrategy = {
+  open: (_ref) => {
+    let {
+      id,
+      value,
+      opened,
+      parents
+    } = _ref;
+    if (value) {
+      const newOpened = /* @__PURE__ */ new Set();
+      newOpened.add(id);
+      let parent = parents.get(id);
+      while (parent != null) {
+        newOpened.add(parent);
+        parent = parents.get(parent);
+      }
+      return newOpened;
+    } else {
+      opened.delete(id);
+      return opened;
+    }
+  },
+  select: () => null
+};
+const multipleOpenStrategy = {
+  open: (_ref2) => {
+    let {
+      id,
+      value,
+      opened,
+      parents
+    } = _ref2;
+    if (value) {
+      let parent = parents.get(id);
+      opened.add(id);
+      while (parent != null && parent !== id) {
+        opened.add(parent);
+        parent = parents.get(parent);
+      }
+      return opened;
+    } else {
+      opened.delete(id);
+    }
+    return opened;
+  },
+  select: () => null
+};
+const listOpenStrategy = {
+  open: multipleOpenStrategy.open,
+  select: (_ref3) => {
+    let {
+      id,
+      value,
+      opened,
+      parents
+    } = _ref3;
+    if (!value) return opened;
+    const path = [];
+    let parent = parents.get(id);
+    while (parent != null) {
+      path.push(parent);
+      parent = parents.get(parent);
+    }
+    return new Set(path);
+  }
+};
+
+const independentSelectStrategy = (mandatory) => {
+  const strategy = {
+    select: (_ref) => {
+      let {
+        id,
+        value,
+        selected
+      } = _ref;
+      id = toRaw(id);
+      if (mandatory && !value) {
+        const on = Array.from(selected.entries()).reduce((arr, _ref2) => {
+          let [key, value2] = _ref2;
+          if (value2 === "on") arr.push(key);
+          return arr;
+        }, []);
+        if (on.length === 1 && on[0] === id) return selected;
+      }
+      selected.set(id, value ? "on" : "off");
+      return selected;
+    },
+    in: (v, children, parents) => {
+      const map = /* @__PURE__ */ new Map();
+      for (const id of v || []) {
+        strategy.select({
+          id,
+          value: true,
+          selected: map,
+          children,
+          parents
+        });
+      }
+      return map;
+    },
+    out: (v) => {
+      const arr = [];
+      for (const [key, value] of v.entries()) {
+        if (value === "on") arr.push(key);
+      }
+      return arr;
+    }
+  };
+  return strategy;
+};
+const independentSingleSelectStrategy = (mandatory) => {
+  const parentStrategy = independentSelectStrategy(mandatory);
+  const strategy = {
+    select: (_ref3) => {
+      let {
+        selected,
+        id,
+        ...rest
+      } = _ref3;
+      id = toRaw(id);
+      const singleSelected = selected.has(id) ? /* @__PURE__ */ new Map([[id, selected.get(id)]]) : /* @__PURE__ */ new Map();
+      return parentStrategy.select({
+        ...rest,
+        id,
+        selected: singleSelected
+      });
+    },
+    in: (v, children, parents) => {
+      if (v == null ? void 0 : v.length) {
+        return parentStrategy.in(v.slice(0, 1), children, parents);
+      }
+      return /* @__PURE__ */ new Map();
+    },
+    out: (v, children, parents) => {
+      return parentStrategy.out(v, children, parents);
+    }
+  };
+  return strategy;
+};
+const leafSelectStrategy = (mandatory) => {
+  const parentStrategy = independentSelectStrategy(mandatory);
+  const strategy = {
+    select: (_ref4) => {
+      let {
+        id,
+        selected,
+        children,
+        ...rest
+      } = _ref4;
+      id = toRaw(id);
+      if (children.has(id)) return selected;
+      return parentStrategy.select({
+        id,
+        selected,
+        children,
+        ...rest
+      });
+    },
+    in: parentStrategy.in,
+    out: parentStrategy.out
+  };
+  return strategy;
+};
+const leafSingleSelectStrategy = (mandatory) => {
+  const parentStrategy = independentSingleSelectStrategy(mandatory);
+  const strategy = {
+    select: (_ref5) => {
+      let {
+        id,
+        selected,
+        children,
+        ...rest
+      } = _ref5;
+      id = toRaw(id);
+      if (children.has(id)) return selected;
+      return parentStrategy.select({
+        id,
+        selected,
+        children,
+        ...rest
+      });
+    },
+    in: parentStrategy.in,
+    out: parentStrategy.out
+  };
+  return strategy;
+};
+const classicSelectStrategy = (mandatory) => {
+  const strategy = {
+    select: (_ref6) => {
+      let {
+        id,
+        value,
+        selected,
+        children,
+        parents
+      } = _ref6;
+      id = toRaw(id);
+      const original = new Map(selected);
+      const items = [id];
+      while (items.length) {
+        const item = items.shift();
+        selected.set(toRaw(item), value ? "on" : "off");
+        if (children.has(item)) {
+          items.push(...children.get(item));
+        }
+      }
+      let parent = toRaw(parents.get(id));
+      while (parent) {
+        const childrenIds = children.get(parent);
+        const everySelected = childrenIds.every((cid) => selected.get(toRaw(cid)) === "on");
+        const noneSelected = childrenIds.every((cid) => !selected.has(toRaw(cid)) || selected.get(toRaw(cid)) === "off");
+        selected.set(parent, everySelected ? "on" : noneSelected ? "off" : "indeterminate");
+        parent = toRaw(parents.get(parent));
+      }
+      if (mandatory && !value) {
+        const on = Array.from(selected.entries()).reduce((arr, _ref7) => {
+          let [key, value2] = _ref7;
+          if (value2 === "on") arr.push(key);
+          return arr;
+        }, []);
+        if (on.length === 0) return original;
+      }
+      return selected;
+    },
+    in: (v, children, parents) => {
+      let map = /* @__PURE__ */ new Map();
+      for (const id of v || []) {
+        map = strategy.select({
+          id,
+          value: true,
+          selected: map,
+          children,
+          parents
+        });
+      }
+      return map;
+    },
+    out: (v, children) => {
+      const arr = [];
+      for (const [key, value] of v.entries()) {
+        if (value === "on" && !children.has(key)) arr.push(key);
+      }
+      return arr;
+    }
+  };
+  return strategy;
+};
+
+const VNestedSymbol = Symbol.for("vuetify:nested");
+const emptyNested = {
+  id: shallowRef(),
+  root: {
+    register: () => null,
+    unregister: () => null,
+    parents: ref(/* @__PURE__ */ new Map()),
+    children: ref(/* @__PURE__ */ new Map()),
+    open: () => null,
+    openOnSelect: () => null,
+    activate: () => null,
+    select: () => null,
+    activatable: ref(false),
+    selectable: ref(false),
+    opened: ref(/* @__PURE__ */ new Set()),
+    activated: ref(/* @__PURE__ */ new Set()),
+    selected: ref(/* @__PURE__ */ new Map()),
+    selectedValues: ref([]),
+    getPath: () => []
+  }
+};
+const makeNestedProps = propsFactory({
+  activatable: Boolean,
+  selectable: Boolean,
+  activeStrategy: [String, Function, Object],
+  selectStrategy: [String, Function, Object],
+  openStrategy: [String, Object],
+  opened: null,
+  activated: null,
+  selected: null,
+  mandatory: Boolean
+}, "nested");
+const useNested = (props) => {
+  const children = ref(/* @__PURE__ */ new Map());
+  const parents = ref(/* @__PURE__ */ new Map());
+  const opened = useProxiedModel(props, "opened", props.opened, (v) => new Set(v), (v) => [...v.values()]);
+  const activeStrategy = computed(() => {
+    if (typeof props.activeStrategy === "object") return props.activeStrategy;
+    if (typeof props.activeStrategy === "function") return props.activeStrategy(props.mandatory);
+    switch (props.activeStrategy) {
+      case "leaf":
+        return leafActiveStrategy(props.mandatory);
+      case "single-leaf":
+        return leafSingleActiveStrategy(props.mandatory);
+      case "independent":
+        return independentActiveStrategy(props.mandatory);
+      case "single-independent":
+      default:
+        return independentSingleActiveStrategy(props.mandatory);
+    }
+  });
+  const selectStrategy = computed(() => {
+    if (typeof props.selectStrategy === "object") return props.selectStrategy;
+    if (typeof props.selectStrategy === "function") return props.selectStrategy(props.mandatory);
+    switch (props.selectStrategy) {
+      case "single-leaf":
+        return leafSingleSelectStrategy(props.mandatory);
+      case "leaf":
+        return leafSelectStrategy(props.mandatory);
+      case "independent":
+        return independentSelectStrategy(props.mandatory);
+      case "single-independent":
+        return independentSingleSelectStrategy(props.mandatory);
+      case "classic":
+      default:
+        return classicSelectStrategy(props.mandatory);
+    }
+  });
+  const openStrategy = computed(() => {
+    if (typeof props.openStrategy === "object") return props.openStrategy;
+    switch (props.openStrategy) {
+      case "list":
+        return listOpenStrategy;
+      case "single":
+        return singleOpenStrategy;
+      case "multiple":
+      default:
+        return multipleOpenStrategy;
+    }
+  });
+  const activated = useProxiedModel(props, "activated", props.activated, (v) => activeStrategy.value.in(v, children.value, parents.value), (v) => activeStrategy.value.out(v, children.value, parents.value));
+  const selected = useProxiedModel(props, "selected", props.selected, (v) => selectStrategy.value.in(v, children.value, parents.value), (v) => selectStrategy.value.out(v, children.value, parents.value));
+  function getPath(id) {
+    const path = [];
+    let parent = id;
+    while (parent != null) {
+      path.unshift(parent);
+      parent = parents.value.get(parent);
+    }
+    return path;
+  }
+  const vm = getCurrentInstance("nested");
+  const nodeIds = /* @__PURE__ */ new Set();
+  const nested = {
+    id: shallowRef(),
+    root: {
+      opened,
+      activatable: toRef(props, "activatable"),
+      selectable: toRef(props, "selectable"),
+      activated,
+      selected,
+      selectedValues: computed(() => {
+        const arr = [];
+        for (const [key, value] of selected.value.entries()) {
+          if (value === "on") arr.push(key);
+        }
+        return arr;
+      }),
+      register: (id, parentId, isGroup) => {
+        if (nodeIds.has(id)) {
+          const path = getPath(id).map(String).join(" -> ");
+          const newPath = getPath(parentId).concat(id).map(String).join(" -> ");
+          consoleError(`Multiple nodes with the same ID
+	${path}
+	${newPath}`);
+          return;
+        } else {
+          nodeIds.add(id);
+        }
+        parentId && id !== parentId && parents.value.set(id, parentId);
+        isGroup && children.value.set(id, []);
+        if (parentId != null) {
+          children.value.set(parentId, [...children.value.get(parentId) || [], id]);
+        }
+      },
+      unregister: (id) => {
+        nodeIds.delete(id);
+        children.value.delete(id);
+        const parent = parents.value.get(id);
+        if (parent) {
+          const list = children.value.get(parent) ?? [];
+          children.value.set(parent, list.filter((child) => child !== id));
+        }
+        parents.value.delete(id);
+      },
+      open: (id, value, event) => {
+        vm.emit("click:open", {
+          id,
+          value,
+          path: getPath(id),
+          event
+        });
+        const newOpened = openStrategy.value.open({
+          id,
+          value,
+          opened: new Set(opened.value),
+          children: children.value,
+          parents: parents.value,
+          event
+        });
+        newOpened && (opened.value = newOpened);
+      },
+      openOnSelect: (id, value, event) => {
+        const newOpened = openStrategy.value.select({
+          id,
+          value,
+          selected: new Map(selected.value),
+          opened: new Set(opened.value),
+          children: children.value,
+          parents: parents.value,
+          event
+        });
+        newOpened && (opened.value = newOpened);
+      },
+      select: (id, value, event) => {
+        vm.emit("click:select", {
+          id,
+          value,
+          path: getPath(id),
+          event
+        });
+        const newSelected = selectStrategy.value.select({
+          id,
+          value,
+          selected: new Map(selected.value),
+          children: children.value,
+          parents: parents.value,
+          event
+        });
+        newSelected && (selected.value = newSelected);
+        nested.root.openOnSelect(id, value, event);
+      },
+      activate: (id, value, event) => {
+        if (!props.activatable) {
+          return nested.root.select(id, true, event);
+        }
+        vm.emit("click:activate", {
+          id,
+          value,
+          path: getPath(id),
+          event
+        });
+        const newActivated = activeStrategy.value.activate({
+          id,
+          value,
+          activated: new Set(activated.value),
+          children: children.value,
+          parents: parents.value,
+          event
+        });
+        if (newActivated.size !== activated.value.size) {
+          activated.value = newActivated;
+        } else {
+          for (const value2 of newActivated) {
+            if (!activated.value.has(value2)) {
+              activated.value = newActivated;
+              return;
+            }
+          }
+          for (const value2 of activated.value) {
+            if (!newActivated.has(value2)) {
+              activated.value = newActivated;
+              return;
+            }
+          }
+        }
+      },
+      children,
+      parents,
+      getPath
+    }
+  };
+  provide(VNestedSymbol, nested);
+  return nested.root;
+};
+const useNestedItem = (id, isGroup) => {
+  const parent = inject$1(VNestedSymbol, emptyNested);
+  const uidSymbol = Symbol(getUid());
+  const computedId = computed(() => id.value !== void 0 ? id.value : uidSymbol);
+  const item = {
+    ...parent,
+    id: computedId,
+    open: (open, e) => parent.root.open(computedId.value, open, e),
+    openOnSelect: (open, e) => parent.root.openOnSelect(computedId.value, open, e),
+    isOpen: computed(() => parent.root.opened.value.has(computedId.value)),
+    parent: computed(() => parent.root.parents.value.get(computedId.value)),
+    activate: (activated, e) => parent.root.activate(computedId.value, activated, e),
+    isActivated: computed(() => parent.root.activated.value.has(toRaw(computedId.value))),
+    select: (selected, e) => parent.root.select(computedId.value, selected, e),
+    isSelected: computed(() => parent.root.selected.value.get(toRaw(computedId.value)) === "on"),
+    isIndeterminate: computed(() => parent.root.selected.value.get(toRaw(computedId.value)) === "indeterminate"),
+    isLeaf: computed(() => !parent.root.children.value.get(computedId.value)),
+    isGroupActivator: parent.isGroupActivator
+  };
+  isGroup && provide(VNestedSymbol, item);
+  return item;
+};
+const useNestedGroupActivator = () => {
+  const parent = inject$1(VNestedSymbol, emptyNested);
+  provide(VNestedSymbol, {
+    ...parent,
+    isGroupActivator: true
+  });
+};
+
+function useSsrBoot() {
+  const isBooted = shallowRef(false);
+  const ssrBootStyles = computed(() => !isBooted.value ? {
+    transition: "none !important"
+  } : void 0);
+  return {
+    ssrBootStyles,
+    isBooted: readonly(isBooted)
+  };
+}
+
+const VListGroupActivator = defineComponent({
+  name: "VListGroupActivator",
+  setup(_, _ref) {
+    let {
+      slots
+    } = _ref;
+    useNestedGroupActivator();
+    return () => {
+      var _a;
+      return (_a = slots.default) == null ? void 0 : _a.call(slots);
+    };
+  }
+});
+const makeVListGroupProps = propsFactory({
+  /* @deprecated */
+  activeColor: String,
+  baseColor: String,
+  color: String,
+  collapseIcon: {
+    type: IconValue,
+    default: "$collapse"
+  },
+  expandIcon: {
+    type: IconValue,
+    default: "$expand"
+  },
+  prependIcon: IconValue,
+  appendIcon: IconValue,
+  fluid: Boolean,
+  subgroup: Boolean,
+  title: String,
+  value: null,
+  ...makeComponentProps(),
+  ...makeTagProps()
+}, "VListGroup");
+const VListGroup = genericComponent()({
+  name: "VListGroup",
+  props: makeVListGroupProps(),
+  setup(props, _ref2) {
+    let {
+      slots
+    } = _ref2;
+    const {
+      isOpen,
+      open,
+      id: _id
+    } = useNestedItem(toRef(props, "value"), true);
+    const id = computed(() => `v-list-group--id-${String(_id.value)}`);
+    const list = useList();
+    const {
+      isBooted
+    } = useSsrBoot();
+    function onClick(e) {
+      e.stopPropagation();
+      open(!isOpen.value, e);
+    }
+    const activatorProps = computed(() => ({
+      onClick,
+      class: "v-list-group__header",
+      id: id.value
+    }));
+    const toggleIcon = computed(() => isOpen.value ? props.collapseIcon : props.expandIcon);
+    const activatorDefaults = computed(() => ({
+      VListItem: {
+        active: isOpen.value,
+        activeColor: props.activeColor,
+        baseColor: props.baseColor,
+        color: props.color,
+        prependIcon: props.prependIcon || props.subgroup && toggleIcon.value,
+        appendIcon: props.appendIcon || !props.subgroup && toggleIcon.value,
+        title: props.title,
+        value: props.value
+      }
+    }));
+    useRender(() => createVNode(props.tag, {
+      "class": ["v-list-group", {
+        "v-list-group--prepend": list == null ? void 0 : list.hasPrepend.value,
+        "v-list-group--fluid": props.fluid,
+        "v-list-group--subgroup": props.subgroup,
+        "v-list-group--open": isOpen.value
+      }, props.class],
+      "style": props.style
+    }, {
+      default: () => [slots.activator && createVNode(VDefaultsProvider, {
+        "defaults": activatorDefaults.value
+      }, {
+        default: () => [createVNode(VListGroupActivator, null, {
+          default: () => [slots.activator({
+            props: activatorProps.value,
+            isOpen: isOpen.value
+          })]
+        })]
+      }), createVNode(MaybeTransition, {
+        "transition": {
+          component: VExpandTransition
+        },
+        "disabled": !isBooted.value
+      }, {
+        default: () => {
+          var _a;
+          return [withDirectives(createVNode("div", {
+            "class": "v-list-group__items",
+            "role": "group",
+            "aria-labelledby": id.value
+          }, [(_a = slots.default) == null ? void 0 : _a.call(slots)]), [[vShow, isOpen.value]])];
+        }
+      })]
+    }));
+    return {
+      isOpen
+    };
+  }
+});
+
+const makeVListItemSubtitleProps = propsFactory({
+  opacity: [Number, String],
+  ...makeComponentProps(),
+  ...makeTagProps()
+}, "VListItemSubtitle");
+const VListItemSubtitle = genericComponent()({
+  name: "VListItemSubtitle",
+  props: makeVListItemSubtitleProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    useRender(() => createVNode(props.tag, {
+      "class": ["v-list-item-subtitle", props.class],
+      "style": [{
+        "--v-list-item-subtitle-opacity": props.opacity
+      }, props.style]
+    }, slots));
+    return {};
+  }
+});
+
+const VListItemTitle = createSimpleFunctional("v-list-item-title");
+
+const makeVListItemProps = propsFactory({
+  active: {
+    type: Boolean,
+    default: void 0
+  },
+  activeClass: String,
+  /* @deprecated */
+  activeColor: String,
+  appendAvatar: String,
+  appendIcon: IconValue,
+  baseColor: String,
+  disabled: Boolean,
+  lines: [Boolean, String],
+  link: {
+    type: Boolean,
+    default: void 0
+  },
+  nav: Boolean,
+  prependAvatar: String,
+  prependIcon: IconValue,
+  ripple: {
+    type: [Boolean, Object],
+    default: true
+  },
+  slim: Boolean,
+  subtitle: {
+    type: [String, Number, Boolean],
+    default: void 0
+  },
+  title: {
+    type: [String, Number, Boolean],
+    default: void 0
+  },
+  value: null,
+  onClick: EventProp(),
+  onClickOnce: EventProp(),
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...makeDimensionProps(),
+  ...makeElevationProps(),
+  ...makeRoundedProps(),
+  ...makeRouterProps(),
+  ...makeTagProps(),
+  ...makeThemeProps(),
+  ...makeVariantProps({
+    variant: "text"
+  })
+}, "VListItem");
+const VListItem = genericComponent()({
+  name: "VListItem",
+  directives: {
+    Ripple
+  },
+  props: makeVListItemProps(),
+  emits: {
+    click: (e) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots,
+      emit
+    } = _ref;
+    const link = useLink(props, attrs);
+    const id = computed(() => props.value === void 0 ? link.href.value : props.value);
+    const {
+      activate,
+      isActivated,
+      select,
+      isOpen,
+      isSelected,
+      isIndeterminate,
+      isGroupActivator,
+      root,
+      parent,
+      openOnSelect,
+      id: uid
+    } = useNestedItem(id, false);
+    const list = useList();
+    const isActive = computed(() => {
+      var _a;
+      return props.active !== false && (props.active || ((_a = link.isActive) == null ? void 0 : _a.value) || (root.activatable.value ? isActivated.value : isSelected.value));
+    });
+    const isLink = computed(() => props.link !== false && link.isLink.value);
+    const isSelectable = computed(() => !!list && (root.selectable.value || root.activatable.value || props.value != null));
+    const isClickable = computed(() => !props.disabled && props.link !== false && (props.link || link.isClickable.value || isSelectable.value));
+    const roundedProps = computed(() => props.rounded || props.nav);
+    const color = computed(() => props.color ?? props.activeColor);
+    const variantProps = computed(() => ({
+      color: isActive.value ? color.value ?? props.baseColor : props.baseColor,
+      variant: props.variant
+    }));
+    watch(() => {
+      var _a;
+      return (_a = link.isActive) == null ? void 0 : _a.value;
+    }, (val) => {
+      if (!val) return;
+      handleActiveLink();
+    });
+    function handleActiveLink() {
+      if (parent.value != null) {
+        root.open(parent.value, true);
+      }
+      openOnSelect(true);
+    }
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      colorClasses,
+      colorStyles,
+      variantClasses
+    } = useVariant(variantProps);
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      roundedClasses
+    } = useRounded(roundedProps);
+    const lineClasses = computed(() => props.lines ? `v-list-item--${props.lines}-line` : void 0);
+    const slotProps = computed(() => ({
+      isActive: isActive.value,
+      select,
+      isOpen: isOpen.value,
+      isSelected: isSelected.value,
+      isIndeterminate: isIndeterminate.value
+    }));
+    function onClick(e) {
+      var _a;
+      emit("click", e);
+      if (!isClickable.value) return;
+      (_a = link.navigate) == null ? void 0 : _a.call(link, e);
+      if (isGroupActivator) return;
+      if (root.activatable.value) {
+        activate(!isActivated.value, e);
+      } else if (root.selectable.value) {
+        select(!isSelected.value, e);
+      } else if (props.value != null) {
+        select(!isSelected.value, e);
+      }
+    }
+    function onKeyDown(e) {
+      const target = e.target;
+      if (["INPUT", "TEXTAREA"].includes(target.tagName)) return;
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        e.target.dispatchEvent(new MouseEvent("click", e));
+      }
+    }
+    useRender(() => {
+      const Tag = isLink.value ? "a" : props.tag;
+      const hasTitle = slots.title || props.title != null;
+      const hasSubtitle = slots.subtitle || props.subtitle != null;
+      const hasAppendMedia = !!(props.appendAvatar || props.appendIcon);
+      const hasAppend = !!(hasAppendMedia || slots.append);
+      const hasPrependMedia = !!(props.prependAvatar || props.prependIcon);
+      const hasPrepend = !!(hasPrependMedia || slots.prepend);
+      list == null ? void 0 : list.updateHasPrepend(hasPrepend);
+      if (props.activeColor) {
+        deprecate("active-color", ["color", "base-color"]);
+      }
+      return withDirectives(createVNode(Tag, mergeProps({
+        "class": ["v-list-item", {
+          "v-list-item--active": isActive.value,
+          "v-list-item--disabled": props.disabled,
+          "v-list-item--link": isClickable.value,
+          "v-list-item--nav": props.nav,
+          "v-list-item--prepend": !hasPrepend && (list == null ? void 0 : list.hasPrepend.value),
+          "v-list-item--slim": props.slim,
+          [`${props.activeClass}`]: props.activeClass && isActive.value
+        }, themeClasses.value, borderClasses.value, colorClasses.value, densityClasses.value, elevationClasses.value, lineClasses.value, roundedClasses.value, variantClasses.value, props.class],
+        "style": [colorStyles.value, dimensionStyles.value, props.style],
+        "tabindex": isClickable.value ? list ? -2 : 0 : void 0,
+        "aria-selected": isSelectable.value ? root.activatable.value ? isActivated.value : root.selectable.value ? isSelected.value : isActive.value : void 0,
+        "onClick": onClick,
+        "onKeydown": isClickable.value && !isLink.value && onKeyDown
+      }, link.linkProps), {
+        default: () => {
+          var _a;
+          return [genOverlays(isClickable.value || isActive.value, "v-list-item"), hasPrepend && createVNode("div", {
+            "key": "prepend",
+            "class": "v-list-item__prepend"
+          }, [!slots.prepend ? createVNode(Fragment, null, [props.prependAvatar && createVNode(VAvatar, {
+            "key": "prepend-avatar",
+            "density": props.density,
+            "image": props.prependAvatar
+          }, null), props.prependIcon && createVNode(VIcon, {
+            "key": "prepend-icon",
+            "density": props.density,
+            "icon": props.prependIcon
+          }, null)]) : createVNode(VDefaultsProvider, {
+            "key": "prepend-defaults",
+            "disabled": !hasPrependMedia,
+            "defaults": {
+              VAvatar: {
+                density: props.density,
+                image: props.prependAvatar
+              },
+              VIcon: {
+                density: props.density,
+                icon: props.prependIcon
+              },
+              VListItemAction: {
+                start: true
+              }
+            }
+          }, {
+            default: () => {
+              var _a2;
+              return [(_a2 = slots.prepend) == null ? void 0 : _a2.call(slots, slotProps.value)];
+            }
+          }), createVNode("div", {
+            "class": "v-list-item__spacer"
+          }, null)]), createVNode("div", {
+            "class": "v-list-item__content",
+            "data-no-activator": ""
+          }, [hasTitle && createVNode(VListItemTitle, {
+            "key": "title"
+          }, {
+            default: () => {
+              var _a2;
+              return [((_a2 = slots.title) == null ? void 0 : _a2.call(slots, {
+                title: props.title
+              })) ?? toDisplayString(props.title)];
+            }
+          }), hasSubtitle && createVNode(VListItemSubtitle, {
+            "key": "subtitle"
+          }, {
+            default: () => {
+              var _a2;
+              return [((_a2 = slots.subtitle) == null ? void 0 : _a2.call(slots, {
+                subtitle: props.subtitle
+              })) ?? toDisplayString(props.subtitle)];
+            }
+          }), (_a = slots.default) == null ? void 0 : _a.call(slots, slotProps.value)]), hasAppend && createVNode("div", {
+            "key": "append",
+            "class": "v-list-item__append"
+          }, [!slots.append ? createVNode(Fragment, null, [props.appendIcon && createVNode(VIcon, {
+            "key": "append-icon",
+            "density": props.density,
+            "icon": props.appendIcon
+          }, null), props.appendAvatar && createVNode(VAvatar, {
+            "key": "append-avatar",
+            "density": props.density,
+            "image": props.appendAvatar
+          }, null)]) : createVNode(VDefaultsProvider, {
+            "key": "append-defaults",
+            "disabled": !hasAppendMedia,
+            "defaults": {
+              VAvatar: {
+                density: props.density,
+                image: props.appendAvatar
+              },
+              VIcon: {
+                density: props.density,
+                icon: props.appendIcon
+              },
+              VListItemAction: {
+                end: true
+              }
+            }
+          }, {
+            default: () => {
+              var _a2;
+              return [(_a2 = slots.append) == null ? void 0 : _a2.call(slots, slotProps.value)];
+            }
+          }), createVNode("div", {
+            "class": "v-list-item__spacer"
+          }, null)])];
+        }
+      }), [[resolveDirective("ripple"), isClickable.value && props.ripple]]);
+    });
+    return {
+      activate,
+      isActivated,
+      isGroupActivator,
+      isSelected,
+      list,
+      select,
+      root,
+      id: uid,
+      link
+    };
+  }
+});
+
+const makeVListSubheaderProps = propsFactory({
+  color: String,
+  inset: Boolean,
+  sticky: Boolean,
+  title: String,
+  ...makeComponentProps(),
+  ...makeTagProps()
+}, "VListSubheader");
+const VListSubheader = genericComponent()({
+  name: "VListSubheader",
+  props: makeVListSubheaderProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      textColorClasses,
+      textColorStyles
+    } = useTextColor(toRef(props, "color"));
+    useRender(() => {
+      const hasText = !!(slots.default || props.title);
+      return createVNode(props.tag, {
+        "class": ["v-list-subheader", {
+          "v-list-subheader--inset": props.inset,
+          "v-list-subheader--sticky": props.sticky
+        }, textColorClasses.value, props.class],
+        "style": [{
+          textColorStyles
+        }, props.style]
+      }, {
+        default: () => {
+          var _a;
+          return [hasText && createVNode("div", {
+            "class": "v-list-subheader__text"
+          }, [((_a = slots.default) == null ? void 0 : _a.call(slots)) ?? props.title])];
+        }
+      });
+    });
+    return {};
+  }
+});
+
+const makeVDividerProps = propsFactory({
+  color: String,
+  inset: Boolean,
+  length: [Number, String],
+  opacity: [Number, String],
+  thickness: [Number, String],
+  vertical: Boolean,
+  ...makeComponentProps(),
+  ...makeThemeProps()
+}, "VDivider");
+const VDivider = genericComponent()({
+  name: "VDivider",
+  props: makeVDividerProps(),
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots
+    } = _ref;
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      textColorClasses,
+      textColorStyles
+    } = useTextColor(toRef(props, "color"));
+    const dividerStyles = computed(() => {
+      const styles = {};
+      if (props.length) {
+        styles[props.vertical ? "height" : "width"] = convertToUnit(props.length);
+      }
+      if (props.thickness) {
+        styles[props.vertical ? "borderRightWidth" : "borderTopWidth"] = convertToUnit(props.thickness);
+      }
+      return styles;
+    });
+    useRender(() => {
+      const divider = createVNode("hr", {
+        "class": [{
+          "v-divider": true,
+          "v-divider--inset": props.inset,
+          "v-divider--vertical": props.vertical
+        }, themeClasses.value, textColorClasses.value, props.class],
+        "style": [dividerStyles.value, textColorStyles.value, {
+          "--v-border-opacity": props.opacity
+        }, props.style],
+        "aria-orientation": !attrs.role || attrs.role === "separator" ? props.vertical ? "vertical" : "horizontal" : void 0,
+        "role": `${attrs.role || "separator"}`
+      }, null);
+      if (!slots.default) return divider;
+      return createVNode("div", {
+        "class": ["v-divider__wrapper", {
+          "v-divider__wrapper--vertical": props.vertical,
+          "v-divider__wrapper--inset": props.inset
+        }]
+      }, [divider, createVNode("div", {
+        "class": "v-divider__content"
+      }, [slots.default()]), divider]);
+    });
+    return {};
+  }
+});
+
+const makeVListChildrenProps = propsFactory({
+  items: Array,
+  returnObject: Boolean
+}, "VListChildren");
+const VListChildren = genericComponent()({
+  name: "VListChildren",
+  props: makeVListChildrenProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    createList();
+    return () => {
+      var _a, _b;
+      return ((_a = slots.default) == null ? void 0 : _a.call(slots)) ?? ((_b = props.items) == null ? void 0 : _b.map((_ref2) => {
+        var _a2, _b2;
+        let {
+          children,
+          props: itemProps,
+          type,
+          raw: item
+        } = _ref2;
+        if (type === "divider") {
+          return ((_a2 = slots.divider) == null ? void 0 : _a2.call(slots, {
+            props: itemProps
+          })) ?? createVNode(VDivider, itemProps, null);
+        }
+        if (type === "subheader") {
+          return ((_b2 = slots.subheader) == null ? void 0 : _b2.call(slots, {
+            props: itemProps
+          })) ?? createVNode(VListSubheader, itemProps, null);
+        }
+        const slotsWithItem = {
+          subtitle: slots.subtitle ? (slotProps) => {
+            var _a3;
+            return (_a3 = slots.subtitle) == null ? void 0 : _a3.call(slots, {
+              ...slotProps,
+              item
+            });
+          } : void 0,
+          prepend: slots.prepend ? (slotProps) => {
+            var _a3;
+            return (_a3 = slots.prepend) == null ? void 0 : _a3.call(slots, {
+              ...slotProps,
+              item
+            });
+          } : void 0,
+          append: slots.append ? (slotProps) => {
+            var _a3;
+            return (_a3 = slots.append) == null ? void 0 : _a3.call(slots, {
+              ...slotProps,
+              item
+            });
+          } : void 0,
+          title: slots.title ? (slotProps) => {
+            var _a3;
+            return (_a3 = slots.title) == null ? void 0 : _a3.call(slots, {
+              ...slotProps,
+              item
+            });
+          } : void 0
+        };
+        const listGroupProps = VListGroup.filterProps(itemProps);
+        return children ? createVNode(VListGroup, mergeProps({
+          "value": itemProps == null ? void 0 : itemProps.value
+        }, listGroupProps), {
+          activator: (_ref3) => {
+            let {
+              props: activatorProps
+            } = _ref3;
+            const listItemProps = {
+              ...itemProps,
+              ...activatorProps,
+              value: props.returnObject ? item : itemProps.value
+            };
+            return slots.header ? slots.header({
+              props: listItemProps
+            }) : createVNode(VListItem, listItemProps, slotsWithItem);
+          },
+          default: () => createVNode(VListChildren, {
+            "items": children,
+            "returnObject": props.returnObject
+          }, slots)
+        }) : slots.item ? slots.item({
+          props: itemProps
+        }) : createVNode(VListItem, mergeProps(itemProps, {
+          "value": props.returnObject ? item : itemProps.value
+        }), slotsWithItem);
+      }));
+    };
+  }
+});
+
+const makeItemsProps = propsFactory({
+  items: {
+    type: Array,
+    default: () => []
+  },
+  itemTitle: {
+    type: [String, Array, Function],
+    default: "title"
+  },
+  itemValue: {
+    type: [String, Array, Function],
+    default: "value"
+  },
+  itemChildren: {
+    type: [Boolean, String, Array, Function],
+    default: "children"
+  },
+  itemProps: {
+    type: [Boolean, String, Array, Function],
+    default: "props"
+  },
+  returnObject: Boolean,
+  valueComparator: Function
+}, "list-items");
+function transformItem$1(props, item) {
+  const title = getPropertyFromItem(item, props.itemTitle, item);
+  const value = getPropertyFromItem(item, props.itemValue, title);
+  const children = getPropertyFromItem(item, props.itemChildren);
+  const itemProps = props.itemProps === true ? typeof item === "object" && item != null && !Array.isArray(item) ? "children" in item ? omit(item, ["children"]) : item : void 0 : getPropertyFromItem(item, props.itemProps);
+  const _props = {
+    title,
+    value,
+    ...itemProps
+  };
+  return {
+    title: String(_props.title ?? ""),
+    value: _props.value,
+    props: _props,
+    children: Array.isArray(children) ? transformItems$1(props, children) : void 0,
+    raw: item
+  };
+}
+function transformItems$1(props, items) {
+  const _props = pick(props, ["itemTitle", "itemValue", "itemChildren", "itemProps", "returnObject", "valueComparator"]);
+  const array = [];
+  for (const item of items) {
+    array.push(transformItem$1(_props, item));
+  }
+  return array;
+}
+function useItems(props) {
+  const items = computed(() => transformItems$1(props, props.items));
+  const hasNullItem = computed(() => items.value.some((item) => item.value === null));
+  const itemsMap = shallowRef(/* @__PURE__ */ new Map());
+  const keylessItems = shallowRef([]);
+  watchEffect(() => {
+    const _items = items.value;
+    const map = /* @__PURE__ */ new Map();
+    const keyless = [];
+    for (let i = 0; i < _items.length; i++) {
+      const item = _items[i];
+      if (isPrimitive(item.value) || item.value === null) {
+        let values = map.get(item.value);
+        if (!values) {
+          values = [];
+          map.set(item.value, values);
+        }
+        values.push(item);
+      } else {
+        keyless.push(item);
+      }
+    }
+    itemsMap.value = map;
+    keylessItems.value = keyless;
+  });
+  function transformIn(value) {
+    const _items = itemsMap.value;
+    const _allItems = items.value;
+    const _keylessItems = keylessItems.value;
+    const _hasNullItem = hasNullItem.value;
+    const _returnObject = props.returnObject;
+    const hasValueComparator = !!props.valueComparator;
+    const valueComparator = props.valueComparator || deepEqual;
+    const _props = pick(props, ["itemTitle", "itemValue", "itemChildren", "itemProps", "returnObject", "valueComparator"]);
+    const returnValue = [];
+    main: for (const v of value) {
+      if (!_hasNullItem && v === null) continue;
+      if (_returnObject && typeof v === "string") {
+        returnValue.push(transformItem$1(_props, v));
+        continue;
+      }
+      const fastItems = _items.get(v);
+      if (hasValueComparator || !fastItems) {
+        for (const item of hasValueComparator ? _allItems : _keylessItems) {
+          if (valueComparator(v, item.value)) {
+            returnValue.push(item);
+            continue main;
+          }
+        }
+        returnValue.push(transformItem$1(_props, v));
+        continue;
+      }
+      returnValue.push(...fastItems);
+    }
+    return returnValue;
+  }
+  function transformOut(value) {
+    return props.returnObject ? value.map((_ref) => {
+      let {
+        raw
+      } = _ref;
+      return raw;
+    }) : value.map((_ref2) => {
+      let {
+        value: value2
+      } = _ref2;
+      return value2;
+    });
+  }
+  return {
+    items,
+    transformIn,
+    transformOut
+  };
+}
+
+function transformItem(props, item) {
+  const type = getPropertyFromItem(item, props.itemType, "item");
+  const title = isPrimitive(item) ? item : getPropertyFromItem(item, props.itemTitle);
+  const value = getPropertyFromItem(item, props.itemValue, void 0);
+  const children = getPropertyFromItem(item, props.itemChildren);
+  const itemProps = props.itemProps === true ? omit(item, ["children"]) : getPropertyFromItem(item, props.itemProps);
+  const _props = {
+    title,
+    value,
+    ...itemProps
+  };
+  return {
+    type,
+    title: _props.title,
+    value: _props.value,
+    props: _props,
+    children: type === "item" && children ? transformItems(props, children) : void 0,
+    raw: item
+  };
+}
+function transformItems(props, items) {
+  const array = [];
+  for (const item of items) {
+    array.push(transformItem(props, item));
+  }
+  return array;
+}
+function useListItems(props) {
+  const items = computed(() => transformItems(props, props.items));
+  return {
+    items
+  };
+}
+const makeVListProps = propsFactory({
+  baseColor: String,
+  /* @deprecated */
+  activeColor: String,
+  activeClass: String,
+  bgColor: String,
+  disabled: Boolean,
+  expandIcon: IconValue,
+  collapseIcon: IconValue,
+  lines: {
+    type: [Boolean, String],
+    default: "one"
+  },
+  slim: Boolean,
+  nav: Boolean,
+  "onClick:open": EventProp(),
+  "onClick:select": EventProp(),
+  "onUpdate:opened": EventProp(),
+  ...makeNestedProps({
+    selectStrategy: "single-leaf",
+    openStrategy: "list"
+  }),
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...makeDimensionProps(),
+  ...makeElevationProps(),
+  itemType: {
+    type: String,
+    default: "type"
+  },
+  ...makeItemsProps(),
+  ...makeRoundedProps(),
+  ...makeTagProps(),
+  ...makeThemeProps(),
+  ...makeVariantProps({
+    variant: "text"
+  })
+}, "VList");
+const VList = genericComponent()({
+  name: "VList",
+  props: makeVListProps(),
+  emits: {
+    "update:selected": (value) => true,
+    "update:activated": (value) => true,
+    "update:opened": (value) => true,
+    "click:open": (value) => true,
+    "click:activate": (value) => true,
+    "click:select": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      items
+    } = useListItems(props);
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(toRef(props, "bgColor"));
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const {
+      children,
+      open,
+      parents,
+      select,
+      getPath
+    } = useNested(props);
+    const lineClasses = computed(() => props.lines ? `v-list--${props.lines}-line` : void 0);
+    const activeColor = toRef(props, "activeColor");
+    const baseColor = toRef(props, "baseColor");
+    const color = toRef(props, "color");
+    createList();
+    provideDefaults({
+      VListGroup: {
+        activeColor,
+        baseColor,
+        color,
+        expandIcon: toRef(props, "expandIcon"),
+        collapseIcon: toRef(props, "collapseIcon")
+      },
+      VListItem: {
+        activeClass: toRef(props, "activeClass"),
+        activeColor,
+        baseColor,
+        color,
+        density: toRef(props, "density"),
+        disabled: toRef(props, "disabled"),
+        lines: toRef(props, "lines"),
+        nav: toRef(props, "nav"),
+        slim: toRef(props, "slim"),
+        variant: toRef(props, "variant")
+      }
+    });
+    const isFocused = shallowRef(false);
+    const contentRef = ref();
+    function onFocusin(e) {
+      isFocused.value = true;
+    }
+    function onFocusout(e) {
+      isFocused.value = false;
+    }
+    function onFocus(e) {
+      var _a;
+      if (!isFocused.value && !(e.relatedTarget && ((_a = contentRef.value) == null ? void 0 : _a.contains(e.relatedTarget)))) focus();
+    }
+    function onKeydown(e) {
+      const target = e.target;
+      if (!contentRef.value || ["INPUT", "TEXTAREA"].includes(target.tagName)) return;
+      if (e.key === "ArrowDown") {
+        focus("next");
+      } else if (e.key === "ArrowUp") {
+        focus("prev");
+      } else if (e.key === "Home") {
+        focus("first");
+      } else if (e.key === "End") {
+        focus("last");
+      } else {
+        return;
+      }
+      e.preventDefault();
+    }
+    function onMousedown(e) {
+      isFocused.value = true;
+    }
+    function focus(location) {
+      if (contentRef.value) {
+        return focusChild(contentRef.value, location);
+      }
+    }
+    useRender(() => {
+      return createVNode(props.tag, {
+        "ref": contentRef,
+        "class": ["v-list", {
+          "v-list--disabled": props.disabled,
+          "v-list--nav": props.nav,
+          "v-list--slim": props.slim
+        }, themeClasses.value, backgroundColorClasses.value, borderClasses.value, densityClasses.value, elevationClasses.value, lineClasses.value, roundedClasses.value, props.class],
+        "style": [backgroundColorStyles.value, dimensionStyles.value, props.style],
+        "tabindex": props.disabled ? -1 : 0,
+        "role": "listbox",
+        "aria-activedescendant": void 0,
+        "onFocusin": onFocusin,
+        "onFocusout": onFocusout,
+        "onFocus": onFocus,
+        "onKeydown": onKeydown,
+        "onMousedown": onMousedown
+      }, {
+        default: () => [createVNode(VListChildren, {
+          "items": items.value,
+          "returnObject": props.returnObject
+        }, slots)]
+      });
+    });
+    return {
+      open,
+      select,
+      focus,
+      children,
+      parents,
+      getPath
+    };
+  }
+});
+
+function useInputIcon(props) {
+  const {
+    t
+  } = useLocale();
+  function InputIcon(_ref) {
+    let {
+      name
+    } = _ref;
+    const localeKey = {
+      prepend: "prependAction",
+      prependInner: "prependAction",
+      append: "appendAction",
+      appendInner: "appendAction",
+      clear: "clear"
+    }[name];
+    const listener = props[`onClick:${name}`];
+    function onKeydown(e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      e.stopPropagation();
+      callEvent(listener, new PointerEvent("click", e));
+    }
+    const label = listener && localeKey ? t(`$vuetify.input.${localeKey}`, props.label ?? "") : void 0;
+    return createVNode(VIcon, {
+      "icon": props[`${name}Icon`],
+      "aria-label": label,
+      "onClick": listener,
+      "onKeydown": onKeydown
+    }, null);
+  }
+  return {
+    InputIcon
+  };
+}
+
+const makeVMessagesProps = propsFactory({
+  active: Boolean,
+  color: String,
+  messages: {
+    type: [Array, String],
+    default: () => []
+  },
+  ...makeComponentProps(),
+  ...makeTransitionProps$1({
+    transition: {
+      component: VSlideYTransition,
+      leaveAbsolute: true,
+      group: true
+    }
+  })
+}, "VMessages");
+const VMessages = genericComponent()({
+  name: "VMessages",
+  props: makeVMessagesProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const messages = computed(() => wrapInArray(props.messages));
+    const {
+      textColorClasses,
+      textColorStyles
+    } = useTextColor(computed(() => props.color));
+    useRender(() => createVNode(MaybeTransition, {
+      "transition": props.transition,
+      "tag": "div",
+      "class": ["v-messages", textColorClasses.value, props.class],
+      "style": [textColorStyles.value, props.style]
+    }, {
+      default: () => [props.active && messages.value.map((message, i) => createVNode("div", {
+        "class": "v-messages__message",
+        "key": `${i}-${messages.value}`
+      }, [slots.message ? slots.message({
+        message
+      }) : message]))]
+    }));
+    return {};
+  }
+});
+
+const makeFocusProps = propsFactory({
+  focused: Boolean,
+  "onUpdate:focused": EventProp()
+}, "focus");
+function useFocus(props) {
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  const isFocused = useProxiedModel(props, "focused");
+  const focusClasses = computed(() => {
+    return {
+      [`${name}--focused`]: isFocused.value
+    };
+  });
+  function focus() {
+    isFocused.value = true;
+  }
+  function blur() {
+    isFocused.value = false;
+  }
+  return {
+    focusClasses,
+    isFocused,
+    focus,
+    blur
+  };
+}
+
+const FormKey = Symbol.for("vuetify:form");
+const makeFormProps = propsFactory({
+  disabled: Boolean,
+  fastFail: Boolean,
+  readonly: Boolean,
+  modelValue: {
+    type: Boolean,
+    default: null
+  },
+  validateOn: {
+    type: String,
+    default: "input"
+  }
+}, "form");
+function createForm(props) {
+  const model = useProxiedModel(props, "modelValue");
+  const isDisabled = computed(() => props.disabled);
+  const isReadonly = computed(() => props.readonly);
+  const isValidating = shallowRef(false);
+  const items = ref([]);
+  const errors = ref([]);
+  async function validate() {
+    const results = [];
+    let valid = true;
+    errors.value = [];
+    isValidating.value = true;
+    for (const item of items.value) {
+      const itemErrorMessages = await item.validate();
+      if (itemErrorMessages.length > 0) {
+        valid = false;
+        results.push({
+          id: item.id,
+          errorMessages: itemErrorMessages
+        });
+      }
+      if (!valid && props.fastFail) break;
+    }
+    errors.value = results;
+    isValidating.value = false;
+    return {
+      valid,
+      errors: errors.value
+    };
+  }
+  function reset() {
+    items.value.forEach((item) => item.reset());
+  }
+  function resetValidation() {
+    items.value.forEach((item) => item.resetValidation());
+  }
+  watch(items, () => {
+    let valid = 0;
+    let invalid = 0;
+    const results = [];
+    for (const item of items.value) {
+      if (item.isValid === false) {
+        invalid++;
+        results.push({
+          id: item.id,
+          errorMessages: item.errorMessages
+        });
+      } else if (item.isValid === true) valid++;
+    }
+    errors.value = results;
+    model.value = invalid > 0 ? false : valid === items.value.length ? true : null;
+  }, {
+    deep: true,
+    flush: "post"
+  });
+  provide(FormKey, {
+    register: (_ref) => {
+      let {
+        id,
+        vm,
+        validate: validate2,
+        reset: reset2,
+        resetValidation: resetValidation2
+      } = _ref;
+      if (items.value.some((item) => item.id === id)) {
+        consoleWarn(`Duplicate input name "${id}"`);
+      }
+      items.value.push({
+        id,
+        validate: validate2,
+        reset: reset2,
+        resetValidation: resetValidation2,
+        vm: markRaw(vm),
+        isValid: null,
+        errorMessages: []
+      });
+    },
+    unregister: (id) => {
+      items.value = items.value.filter((item) => {
+        return item.id !== id;
+      });
+    },
+    update: (id, isValid, errorMessages) => {
+      const found = items.value.find((item) => item.id === id);
+      if (!found) return;
+      found.isValid = isValid;
+      found.errorMessages = errorMessages;
+    },
+    isDisabled,
+    isReadonly,
+    isValidating,
+    isValid: model,
+    items,
+    validateOn: toRef(props, "validateOn")
+  });
+  return {
+    errors,
+    isDisabled,
+    isReadonly,
+    isValidating,
+    isValid: model,
+    items,
+    validate,
+    reset,
+    resetValidation
+  };
+}
+function useForm(props) {
+  const form = inject$1(FormKey, null);
+  return {
+    ...form,
+    isReadonly: computed(() => !!((props == null ? void 0 : props.readonly) ?? (form == null ? void 0 : form.isReadonly.value))),
+    isDisabled: computed(() => !!((props == null ? void 0 : props.disabled) ?? (form == null ? void 0 : form.isDisabled.value)))
+  };
+}
+
+const makeValidationProps = propsFactory({
+  disabled: {
+    type: Boolean,
+    default: null
+  },
+  error: Boolean,
+  errorMessages: {
+    type: [Array, String],
+    default: () => []
+  },
+  maxErrors: {
+    type: [Number, String],
+    default: 1
+  },
+  name: String,
+  label: String,
+  readonly: {
+    type: Boolean,
+    default: null
+  },
+  rules: {
+    type: Array,
+    default: () => []
+  },
+  modelValue: null,
+  validateOn: String,
+  validationValue: null,
+  ...makeFocusProps()
+}, "validation");
+function useValidation(props) {
+  let name = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : getCurrentInstanceName();
+  let id = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : getUid();
+  const model = useProxiedModel(props, "modelValue");
+  const validationModel = computed(() => props.validationValue === void 0 ? model.value : props.validationValue);
+  const form = useForm(props);
+  const internalErrorMessages = ref([]);
+  const isPristine = shallowRef(true);
+  const isDirty = computed(() => !!(wrapInArray(model.value === "" ? null : model.value).length || wrapInArray(validationModel.value === "" ? null : validationModel.value).length));
+  const errorMessages = computed(() => {
+    var _a;
+    return ((_a = props.errorMessages) == null ? void 0 : _a.length) ? wrapInArray(props.errorMessages).concat(internalErrorMessages.value).slice(0, Math.max(0, Number(props.maxErrors))) : internalErrorMessages.value;
+  });
+  const validateOn = computed(() => {
+    var _a;
+    let value = (props.validateOn ?? ((_a = form.validateOn) == null ? void 0 : _a.value)) || "input";
+    if (value === "lazy") value = "input lazy";
+    if (value === "eager") value = "input eager";
+    const set = new Set((value == null ? void 0 : value.split(" ")) ?? []);
+    return {
+      input: set.has("input"),
+      blur: set.has("blur") || set.has("input") || set.has("invalid-input"),
+      invalidInput: set.has("invalid-input"),
+      lazy: set.has("lazy"),
+      eager: set.has("eager")
+    };
+  });
+  const isValid = computed(() => {
+    var _a;
+    if (props.error || ((_a = props.errorMessages) == null ? void 0 : _a.length)) return false;
+    if (!props.rules.length) return true;
+    if (isPristine.value) {
+      return internalErrorMessages.value.length || validateOn.value.lazy ? null : true;
+    } else {
+      return !internalErrorMessages.value.length;
+    }
+  });
+  const isValidating = shallowRef(false);
+  const validationClasses = computed(() => {
+    return {
+      [`${name}--error`]: isValid.value === false,
+      [`${name}--dirty`]: isDirty.value,
+      [`${name}--disabled`]: form.isDisabled.value,
+      [`${name}--readonly`]: form.isReadonly.value
+    };
+  });
+  getCurrentInstance("validation");
+  const uid = computed(() => props.name ?? unref(id));
+  useToggleScope(() => validateOn.value.input || validateOn.value.invalidInput && isValid.value === false, () => {
+    watch(validationModel, () => {
+      if (validationModel.value != null) {
+        validate();
+      } else if (props.focused) {
+        const unwatch = watch(() => props.focused, (val) => {
+          if (!val) validate();
+          unwatch();
+        });
+      }
+    });
+  });
+  useToggleScope(() => validateOn.value.blur, () => {
+    watch(() => props.focused, (val) => {
+      if (!val) validate();
+    });
+  });
+  watch([isValid, errorMessages], () => {
+    var _a;
+    (_a = form.update) == null ? void 0 : _a.call(form, uid.value, isValid.value, errorMessages.value);
+  });
+  async function reset() {
+    model.value = null;
+    await nextTick();
+    await resetValidation();
+  }
+  async function resetValidation() {
+    isPristine.value = true;
+    if (!validateOn.value.lazy) {
+      await validate(!validateOn.value.eager);
+    } else {
+      internalErrorMessages.value = [];
+    }
+  }
+  async function validate() {
+    let silent = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : false;
+    const results = [];
+    isValidating.value = true;
+    for (const rule of props.rules) {
+      if (results.length >= Number(props.maxErrors ?? 1)) {
+        break;
+      }
+      const handler = typeof rule === "function" ? rule : () => rule;
+      const result = await handler(validationModel.value);
+      if (result === true) continue;
+      if (result !== false && typeof result !== "string") {
+        console.warn(`${result} is not a valid value. Rule functions must return boolean true or a string.`);
+        continue;
+      }
+      results.push(result || "");
+    }
+    internalErrorMessages.value = results;
+    isValidating.value = false;
+    isPristine.value = silent;
+    return internalErrorMessages.value;
+  }
+  return {
+    errorMessages,
+    isDirty,
+    isDisabled: form.isDisabled,
+    isReadonly: form.isReadonly,
+    isPristine,
+    isValid,
+    isValidating,
+    reset,
+    resetValidation,
+    validate,
+    validationClasses
+  };
+}
+
+const makeVInputProps = propsFactory({
+  id: String,
+  appendIcon: IconValue,
+  centerAffix: {
+    type: Boolean,
+    default: true
+  },
+  prependIcon: IconValue,
+  hideDetails: [Boolean, String],
+  hideSpinButtons: Boolean,
+  hint: String,
+  persistentHint: Boolean,
+  messages: {
+    type: [Array, String],
+    default: () => []
+  },
+  direction: {
+    type: String,
+    default: "horizontal",
+    validator: (v) => ["horizontal", "vertical"].includes(v)
+  },
+  "onClick:prepend": EventProp(),
+  "onClick:append": EventProp(),
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...pick(makeDimensionProps(), ["maxWidth", "minWidth", "width"]),
+  ...makeThemeProps(),
+  ...makeValidationProps()
+}, "VInput");
+const VInput = genericComponent()({
+  name: "VInput",
+  props: {
+    ...makeVInputProps()
+  },
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots,
+      emit
+    } = _ref;
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      rtlClasses
+    } = useRtl();
+    const {
+      InputIcon
+    } = useInputIcon(props);
+    const uid = getUid();
+    const id = computed(() => props.id || `input-${uid}`);
+    const messagesId = computed(() => `${id.value}-messages`);
+    const {
+      errorMessages,
+      isDirty,
+      isDisabled,
+      isReadonly,
+      isPristine,
+      isValid,
+      isValidating,
+      reset,
+      resetValidation,
+      validate,
+      validationClasses
+    } = useValidation(props, "v-input", id);
+    const slotProps = computed(() => ({
+      id,
+      messagesId,
+      isDirty,
+      isDisabled,
+      isReadonly,
+      isPristine,
+      isValid,
+      isValidating,
+      reset,
+      resetValidation,
+      validate
+    }));
+    const messages = computed(() => {
+      var _a;
+      if (((_a = props.errorMessages) == null ? void 0 : _a.length) || !isPristine.value && errorMessages.value.length) {
+        return errorMessages.value;
+      } else if (props.hint && (props.persistentHint || props.focused)) {
+        return props.hint;
+      } else {
+        return props.messages;
+      }
+    });
+    useRender(() => {
+      var _a, _b, _c, _d;
+      const hasPrepend = !!(slots.prepend || props.prependIcon);
+      const hasAppend = !!(slots.append || props.appendIcon);
+      const hasMessages = messages.value.length > 0;
+      const hasDetails = !props.hideDetails || props.hideDetails === "auto" && (hasMessages || !!slots.details);
+      return createVNode("div", {
+        "class": ["v-input", `v-input--${props.direction}`, {
+          "v-input--center-affix": props.centerAffix,
+          "v-input--hide-spin-buttons": props.hideSpinButtons
+        }, densityClasses.value, themeClasses.value, rtlClasses.value, validationClasses.value, props.class],
+        "style": [dimensionStyles.value, props.style]
+      }, [hasPrepend && createVNode("div", {
+        "key": "prepend",
+        "class": "v-input__prepend"
+      }, [(_a = slots.prepend) == null ? void 0 : _a.call(slots, slotProps.value), props.prependIcon && createVNode(InputIcon, {
+        "key": "prepend-icon",
+        "name": "prepend"
+      }, null)]), slots.default && createVNode("div", {
+        "class": "v-input__control"
+      }, [(_b = slots.default) == null ? void 0 : _b.call(slots, slotProps.value)]), hasAppend && createVNode("div", {
+        "key": "append",
+        "class": "v-input__append"
+      }, [props.appendIcon && createVNode(InputIcon, {
+        "key": "append-icon",
+        "name": "append"
+      }, null), (_c = slots.append) == null ? void 0 : _c.call(slots, slotProps.value)]), hasDetails && createVNode("div", {
+        "id": messagesId.value,
+        "class": "v-input__details",
+        "role": "alert",
+        "aria-live": "polite"
+      }, [createVNode(VMessages, {
+        "active": hasMessages,
+        "messages": messages.value
+      }, {
+        message: slots.message
+      }), (_d = slots.details) == null ? void 0 : _d.call(slots, slotProps.value)])]);
+    });
+    return {
+      reset,
+      resetValidation,
+      validate,
+      isValid,
+      errorMessages
+    };
+  }
+});
+
+const VSelectionControlGroupSymbol = Symbol.for("vuetify:selection-control-group");
+const makeSelectionControlGroupProps = propsFactory({
+  color: String,
+  disabled: {
+    type: Boolean,
+    default: null
+  },
+  defaultsTarget: String,
+  error: Boolean,
+  id: String,
+  inline: Boolean,
+  falseIcon: IconValue,
+  trueIcon: IconValue,
+  ripple: {
+    type: [Boolean, Object],
+    default: true
+  },
+  multiple: {
+    type: Boolean,
+    default: null
+  },
+  name: String,
+  readonly: {
+    type: Boolean,
+    default: null
+  },
+  modelValue: null,
+  type: String,
+  valueComparator: {
+    type: Function,
+    default: deepEqual
+  },
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...makeThemeProps()
+}, "SelectionControlGroup");
+const makeVSelectionControlGroupProps = propsFactory({
+  ...makeSelectionControlGroupProps({
+    defaultsTarget: "VSelectionControl"
+  })
+}, "VSelectionControlGroup");
+const VSelectionControlGroup = genericComponent()({
+  name: "VSelectionControlGroup",
+  props: makeVSelectionControlGroupProps(),
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const modelValue = useProxiedModel(props, "modelValue");
+    const uid = getUid();
+    const id = computed(() => props.id || `v-selection-control-group-${uid}`);
+    const name = computed(() => props.name || id.value);
+    const updateHandlers = /* @__PURE__ */ new Set();
+    provide(VSelectionControlGroupSymbol, {
+      modelValue,
+      forceUpdate: () => {
+        updateHandlers.forEach((fn) => fn());
+      },
+      onForceUpdate: (cb) => {
+        updateHandlers.add(cb);
+        onScopeDispose(() => {
+          updateHandlers.delete(cb);
+        });
+      }
+    });
+    provideDefaults({
+      [props.defaultsTarget]: {
+        color: toRef(props, "color"),
+        disabled: toRef(props, "disabled"),
+        density: toRef(props, "density"),
+        error: toRef(props, "error"),
+        inline: toRef(props, "inline"),
+        modelValue,
+        multiple: computed(() => !!props.multiple || props.multiple == null && Array.isArray(modelValue.value)),
+        name,
+        falseIcon: toRef(props, "falseIcon"),
+        trueIcon: toRef(props, "trueIcon"),
+        readonly: toRef(props, "readonly"),
+        ripple: toRef(props, "ripple"),
+        type: toRef(props, "type"),
+        valueComparator: toRef(props, "valueComparator")
+      }
+    });
+    useRender(() => {
+      var _a;
+      return createVNode("div", {
+        "class": ["v-selection-control-group", {
+          "v-selection-control-group--inline": props.inline
+        }, props.class],
+        "style": props.style,
+        "role": props.type === "radio" ? "radiogroup" : void 0
+      }, [(_a = slots.default) == null ? void 0 : _a.call(slots)]);
+    });
+    return {};
+  }
+});
+
+const makeVLabelProps = propsFactory({
+  text: String,
+  onClick: EventProp(),
+  ...makeComponentProps(),
+  ...makeThemeProps()
+}, "VLabel");
+const VLabel = genericComponent()({
+  name: "VLabel",
+  props: makeVLabelProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    useRender(() => {
+      var _a;
+      return createVNode("label", {
+        "class": ["v-label", {
+          "v-label--clickable": !!props.onClick
+        }, props.class],
+        "style": props.style,
+        "onClick": props.onClick
+      }, [props.text, (_a = slots.default) == null ? void 0 : _a.call(slots)]);
+    });
+    return {};
+  }
+});
+
+const makeVSelectionControlProps = propsFactory({
+  label: String,
+  baseColor: String,
+  trueValue: null,
+  falseValue: null,
+  value: null,
+  ...makeComponentProps(),
+  ...makeSelectionControlGroupProps()
+}, "VSelectionControl");
+function useSelectionControl(props) {
+  const group = inject$1(VSelectionControlGroupSymbol, void 0);
+  const {
+    densityClasses
+  } = useDensity(props);
+  const modelValue = useProxiedModel(props, "modelValue");
+  const trueValue = computed(() => props.trueValue !== void 0 ? props.trueValue : props.value !== void 0 ? props.value : true);
+  const falseValue = computed(() => props.falseValue !== void 0 ? props.falseValue : false);
+  const isMultiple = computed(() => !!props.multiple || props.multiple == null && Array.isArray(modelValue.value));
+  const model = computed({
+    get() {
+      const val = group ? group.modelValue.value : modelValue.value;
+      return isMultiple.value ? wrapInArray(val).some((v) => props.valueComparator(v, trueValue.value)) : props.valueComparator(val, trueValue.value);
+    },
+    set(val) {
+      if (props.readonly) return;
+      const currentValue = val ? trueValue.value : falseValue.value;
+      let newVal = currentValue;
+      if (isMultiple.value) {
+        newVal = val ? [...wrapInArray(modelValue.value), currentValue] : wrapInArray(modelValue.value).filter((item) => !props.valueComparator(item, trueValue.value));
+      }
+      if (group) {
+        group.modelValue.value = newVal;
+      } else {
+        modelValue.value = newVal;
+      }
+    }
+  });
+  const {
+    textColorClasses,
+    textColorStyles
+  } = useTextColor(computed(() => {
+    if (props.error || props.disabled) return void 0;
+    return model.value ? props.color : props.baseColor;
+  }));
+  const {
+    backgroundColorClasses,
+    backgroundColorStyles
+  } = useBackgroundColor(computed(() => {
+    return model.value && !props.error && !props.disabled ? props.color : props.baseColor;
+  }));
+  const icon = computed(() => model.value ? props.trueIcon : props.falseIcon);
+  return {
+    group,
+    densityClasses,
+    trueValue,
+    falseValue,
+    model,
+    textColorClasses,
+    textColorStyles,
+    backgroundColorClasses,
+    backgroundColorStyles,
+    icon
+  };
+}
+const VSelectionControl = genericComponent()({
+  name: "VSelectionControl",
+  directives: {
+    Ripple
+  },
+  inheritAttrs: false,
+  props: makeVSelectionControlProps(),
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots
+    } = _ref;
+    const {
+      group,
+      densityClasses,
+      icon,
+      model,
+      textColorClasses,
+      textColorStyles,
+      backgroundColorClasses,
+      backgroundColorStyles,
+      trueValue
+    } = useSelectionControl(props);
+    const uid = getUid();
+    const isFocused = shallowRef(false);
+    const isFocusVisible = shallowRef(false);
+    const input = ref();
+    const id = computed(() => props.id || `input-${uid}`);
+    const isInteractive = computed(() => !props.disabled && !props.readonly);
+    group == null ? void 0 : group.onForceUpdate(() => {
+      if (input.value) {
+        input.value.checked = model.value;
+      }
+    });
+    function onFocus(e) {
+      if (!isInteractive.value) return;
+      isFocused.value = true;
+      if (matchesSelector(e.target) !== false) {
+        isFocusVisible.value = true;
+      }
+    }
+    function onBlur() {
+      isFocused.value = false;
+      isFocusVisible.value = false;
+    }
+    function onClickLabel(e) {
+      e.stopPropagation();
+    }
+    function onInput(e) {
+      if (!isInteractive.value) {
+        if (input.value) {
+          input.value.checked = model.value;
+        }
+        return;
+      }
+      if (props.readonly && group) {
+        nextTick(() => group.forceUpdate());
+      }
+      model.value = e.target.checked;
+    }
+    useRender(() => {
+      var _a, _b;
+      const label = slots.label ? slots.label({
+        label: props.label,
+        props: {
+          for: id.value
+        }
+      }) : props.label;
+      const [rootAttrs, inputAttrs] = filterInputAttrs(attrs);
+      const inputNode = createVNode("input", mergeProps({
+        "ref": input,
+        "checked": model.value,
+        "disabled": !!props.disabled,
+        "id": id.value,
+        "onBlur": onBlur,
+        "onFocus": onFocus,
+        "onInput": onInput,
+        "aria-disabled": !!props.disabled,
+        "aria-label": props.label,
+        "type": props.type,
+        "value": trueValue.value,
+        "name": props.name,
+        "aria-checked": props.type === "checkbox" ? model.value : void 0
+      }, inputAttrs), null);
+      return createVNode("div", mergeProps({
+        "class": ["v-selection-control", {
+          "v-selection-control--dirty": model.value,
+          "v-selection-control--disabled": props.disabled,
+          "v-selection-control--error": props.error,
+          "v-selection-control--focused": isFocused.value,
+          "v-selection-control--focus-visible": isFocusVisible.value,
+          "v-selection-control--inline": props.inline
+        }, densityClasses.value, props.class]
+      }, rootAttrs, {
+        "style": props.style
+      }), [createVNode("div", {
+        "class": ["v-selection-control__wrapper", textColorClasses.value],
+        "style": textColorStyles.value
+      }, [(_a = slots.default) == null ? void 0 : _a.call(slots, {
+        backgroundColorClasses,
+        backgroundColorStyles
+      }), withDirectives(createVNode("div", {
+        "class": ["v-selection-control__input"]
+      }, [((_b = slots.input) == null ? void 0 : _b.call(slots, {
+        model,
+        textColorClasses,
+        textColorStyles,
+        backgroundColorClasses,
+        backgroundColorStyles,
+        inputNode,
+        icon: icon.value,
+        props: {
+          onFocus,
+          onBlur,
+          id: id.value
+        }
+      })) ?? createVNode(Fragment, null, [icon.value && createVNode(VIcon, {
+        "key": "icon",
+        "icon": icon.value
+      }, null), inputNode])]), [[resolveDirective("ripple"), props.ripple && [!props.disabled && !props.readonly, null, ["center", "circle"]]]])]), label && createVNode(VLabel, {
+        "for": id.value,
+        "onClick": onClickLabel
+      }, {
+        default: () => [label]
+      })]);
+    });
+    return {
+      isFocused,
+      input
+    };
+  }
+});
+
+function useResizeObserver(callback) {
+  const resizeRef = templateRef();
+  const contentRect = ref();
+  return {
+    resizeRef,
+    contentRect: readonly(contentRect)
+  };
+}
+
+const makeVProgressCircularProps = propsFactory({
+  bgColor: String,
+  color: String,
+  indeterminate: [Boolean, String],
+  modelValue: {
+    type: [Number, String],
+    default: 0
+  },
+  rotate: {
+    type: [Number, String],
+    default: 0
+  },
+  width: {
+    type: [Number, String],
+    default: 4
+  },
+  ...makeComponentProps(),
+  ...makeSizeProps(),
+  ...makeTagProps({
+    tag: "div"
+  }),
+  ...makeThemeProps()
+}, "VProgressCircular");
+const VProgressCircular = genericComponent()({
+  name: "VProgressCircular",
+  props: makeVProgressCircularProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const MAGIC_RADIUS_CONSTANT = 20;
+    const CIRCUMFERENCE = 2 * Math.PI * MAGIC_RADIUS_CONSTANT;
+    const root = ref();
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      sizeClasses,
+      sizeStyles
+    } = useSize(props);
+    const {
+      textColorClasses,
+      textColorStyles
+    } = useTextColor(toRef(props, "color"));
+    const {
+      textColorClasses: underlayColorClasses,
+      textColorStyles: underlayColorStyles
+    } = useTextColor(toRef(props, "bgColor"));
+    const {
+      intersectionRef,
+      isIntersecting
+    } = useIntersectionObserver();
+    const {
+      resizeRef,
+      contentRect
+    } = useResizeObserver();
+    const normalizedValue = computed(() => Math.max(0, Math.min(100, parseFloat(props.modelValue))));
+    const width = computed(() => Number(props.width));
+    const size = computed(() => {
+      return sizeStyles.value ? Number(props.size) : contentRect.value ? contentRect.value.width : Math.max(width.value, 32);
+    });
+    const diameter = computed(() => MAGIC_RADIUS_CONSTANT / (1 - width.value / size.value) * 2);
+    const strokeWidth = computed(() => width.value / size.value * diameter.value);
+    const strokeDashOffset = computed(() => convertToUnit((100 - normalizedValue.value) / 100 * CIRCUMFERENCE));
+    watchEffect(() => {
+      intersectionRef.value = root.value;
+      resizeRef.value = root.value;
+    });
+    useRender(() => createVNode(props.tag, {
+      "ref": root,
+      "class": ["v-progress-circular", {
+        "v-progress-circular--indeterminate": !!props.indeterminate,
+        "v-progress-circular--visible": isIntersecting.value,
+        "v-progress-circular--disable-shrink": props.indeterminate === "disable-shrink"
+      }, themeClasses.value, sizeClasses.value, textColorClasses.value, props.class],
+      "style": [sizeStyles.value, textColorStyles.value, props.style],
+      "role": "progressbar",
+      "aria-valuemin": "0",
+      "aria-valuemax": "100",
+      "aria-valuenow": props.indeterminate ? void 0 : normalizedValue.value
+    }, {
+      default: () => [createVNode("svg", {
+        "style": {
+          transform: `rotate(calc(-90deg + ${Number(props.rotate)}deg))`
+        },
+        "xmlns": "http://www.w3.org/2000/svg",
+        "viewBox": `0 0 ${diameter.value} ${diameter.value}`
+      }, [createVNode("circle", {
+        "class": ["v-progress-circular__underlay", underlayColorClasses.value],
+        "style": underlayColorStyles.value,
+        "fill": "transparent",
+        "cx": "50%",
+        "cy": "50%",
+        "r": MAGIC_RADIUS_CONSTANT,
+        "stroke-width": strokeWidth.value,
+        "stroke-dasharray": CIRCUMFERENCE,
+        "stroke-dashoffset": 0
+      }, null), createVNode("circle", {
+        "class": "v-progress-circular__overlay",
+        "fill": "transparent",
+        "cx": "50%",
+        "cy": "50%",
+        "r": MAGIC_RADIUS_CONSTANT,
+        "stroke-width": strokeWidth.value,
+        "stroke-dasharray": CIRCUMFERENCE,
+        "stroke-dashoffset": strokeDashOffset.value
+      }, null)]), slots.default && createVNode("div", {
+        "class": "v-progress-circular__content"
+      }, [slots.default({
+        value: normalizedValue.value
+      })])]
+    }));
+    return {};
+  }
+});
+
+const makeVSwitchProps = propsFactory({
+  indeterminate: Boolean,
+  inset: Boolean,
+  flat: Boolean,
+  loading: {
+    type: [Boolean, String],
+    default: false
+  },
+  ...makeVInputProps(),
+  ...makeVSelectionControlProps()
+}, "VSwitch");
+const VSwitch = genericComponent()({
+  name: "VSwitch",
+  inheritAttrs: false,
+  props: makeVSwitchProps(),
+  emits: {
+    "update:focused": (focused) => true,
+    "update:modelValue": (value) => true,
+    "update:indeterminate": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots
+    } = _ref;
+    const indeterminate = useProxiedModel(props, "indeterminate");
+    const model = useProxiedModel(props, "modelValue");
+    const {
+      loaderClasses
+    } = useLoader(props);
+    const {
+      isFocused,
+      focus,
+      blur
+    } = useFocus(props);
+    const control = ref();
+    const isForcedColorsModeActive = IN_BROWSER;
+    const loaderColor = computed(() => {
+      return typeof props.loading === "string" && props.loading !== "" ? props.loading : props.color;
+    });
+    const uid = getUid();
+    const id = computed(() => props.id || `switch-${uid}`);
+    function onChange() {
+      if (indeterminate.value) {
+        indeterminate.value = false;
+      }
+    }
+    function onTrackClick(e) {
+      var _a, _b;
+      e.stopPropagation();
+      e.preventDefault();
+      (_b = (_a = control.value) == null ? void 0 : _a.input) == null ? void 0 : _b.click();
+    }
+    useRender(() => {
+      const [rootAttrs, controlAttrs] = filterInputAttrs(attrs);
+      const inputProps = VInput.filterProps(props);
+      const controlProps = VSelectionControl.filterProps(props);
+      return createVNode(VInput, mergeProps({
+        "class": ["v-switch", {
+          "v-switch--flat": props.flat
+        }, {
+          "v-switch--inset": props.inset
+        }, {
+          "v-switch--indeterminate": indeterminate.value
+        }, loaderClasses.value, props.class]
+      }, rootAttrs, inputProps, {
+        "modelValue": model.value,
+        "onUpdate:modelValue": ($event) => model.value = $event,
+        "id": id.value,
+        "focused": isFocused.value,
+        "style": props.style
+      }), {
+        ...slots,
+        default: (_ref2) => {
+          let {
+            id: id2,
+            messagesId,
+            isDisabled,
+            isReadonly,
+            isValid
+          } = _ref2;
+          const slotProps = {
+            model,
+            isValid
+          };
+          return createVNode(VSelectionControl, mergeProps({
+            "ref": control
+          }, controlProps, {
+            "modelValue": model.value,
+            "onUpdate:modelValue": [($event) => model.value = $event, onChange],
+            "id": id2.value,
+            "aria-describedby": messagesId.value,
+            "type": "checkbox",
+            "aria-checked": indeterminate.value ? "mixed" : void 0,
+            "disabled": isDisabled.value,
+            "readonly": isReadonly.value,
+            "onFocus": focus,
+            "onBlur": blur
+          }, controlAttrs), {
+            ...slots,
+            default: (_ref3) => {
+              let {
+                backgroundColorClasses,
+                backgroundColorStyles
+              } = _ref3;
+              return createVNode("div", {
+                "class": ["v-switch__track", backgroundColorClasses.value],
+                "style": backgroundColorStyles.value,
+                "onClick": onTrackClick
+              }, [slots["track-true"] && createVNode("div", {
+                "key": "prepend",
+                "class": "v-switch__track-true"
+              }, [slots["track-true"](slotProps)]), slots["track-false"] && createVNode("div", {
+                "key": "append",
+                "class": "v-switch__track-false"
+              }, [slots["track-false"](slotProps)])]);
+            },
+            input: (_ref4) => {
+              let {
+                inputNode,
+                icon,
+                backgroundColorClasses,
+                backgroundColorStyles
+              } = _ref4;
+              return createVNode(Fragment, null, [inputNode, createVNode("div", {
+                "class": ["v-switch__thumb", {
+                  "v-switch__thumb--filled": icon || props.loading
+                }, props.inset || isForcedColorsModeActive ? void 0 : backgroundColorClasses.value],
+                "style": props.inset ? void 0 : backgroundColorStyles.value
+              }, [slots.thumb ? createVNode(VDefaultsProvider, {
+                "defaults": {
+                  VIcon: {
+                    icon,
+                    size: "x-small"
+                  }
+                }
+              }, {
+                default: () => [slots.thumb({
+                  ...slotProps,
+                  icon
+                })]
+              }) : createVNode(VScaleTransition, null, {
+                default: () => [!props.loading ? icon && createVNode(VIcon, {
+                  "key": String(icon),
+                  "icon": icon,
+                  "size": "x-small"
+                }, null) : createVNode(LoaderSlot, {
+                  "name": "v-switch",
+                  "active": true,
+                  "color": isValid.value === false ? void 0 : loaderColor.value
+                }, {
+                  default: (slotProps2) => slots.loader ? slots.loader(slotProps2) : createVNode(VProgressCircular, {
+                    "active": slotProps2.isActive,
+                    "color": slotProps2.color,
+                    "indeterminate": true,
+                    "size": "16",
+                    "width": "2"
+                  }, null)
+                })]
+              })])]);
+            }
+          });
+        }
+      });
+    });
+    return {};
+  }
+});
+
+/* empty css           */
+const VSpacer = createSimpleFunctional("v-spacer", "div", "VSpacer");
+
+const makeVBtnGroupProps = propsFactory({
+  baseColor: String,
+  divided: Boolean,
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...makeElevationProps(),
+  ...makeRoundedProps(),
+  ...makeTagProps(),
+  ...makeThemeProps(),
+  ...makeVariantProps()
+}, "VBtnGroup");
+const VBtnGroup = genericComponent()({
+  name: "VBtnGroup",
+  props: makeVBtnGroupProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    provideDefaults({
+      VBtn: {
+        height: "auto",
+        baseColor: toRef(props, "baseColor"),
+        color: toRef(props, "color"),
+        density: toRef(props, "density"),
+        flat: true,
+        variant: toRef(props, "variant")
+      }
+    });
+    useRender(() => {
+      return createVNode(props.tag, {
+        "class": ["v-btn-group", {
+          "v-btn-group--divided": props.divided
+        }, themeClasses.value, borderClasses.value, densityClasses.value, elevationClasses.value, roundedClasses.value, props.class],
+        "style": props.style
+      }, slots);
+    });
+  }
+});
+
+const makeGroupProps = propsFactory({
+  modelValue: {
+    type: null,
+    default: void 0
+  },
+  multiple: Boolean,
+  mandatory: [Boolean, String],
+  max: Number,
+  selectedClass: String,
+  disabled: Boolean
+}, "group");
+const makeGroupItemProps = propsFactory({
+  value: null,
+  disabled: Boolean,
+  selectedClass: String
+}, "group-item");
+function useGroupItem(props, injectKey) {
+  let required = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : true;
+  const vm = getCurrentInstance("useGroupItem");
+  if (!vm) {
+    throw new Error("[Vuetify] useGroupItem composable must be used inside a component setup function");
+  }
+  const id = getUid();
+  provide(Symbol.for(`${injectKey.description}:id`), id);
+  const group = inject$1(injectKey, null);
+  if (!group) {
+    if (!required) return group;
+    throw new Error(`[Vuetify] Could not find useGroup injection with symbol ${injectKey.description}`);
+  }
+  const value = toRef(props, "value");
+  const disabled = computed(() => !!(group.disabled.value || props.disabled));
+  group.register({
+    id,
+    value,
+    disabled
+  }, vm);
+  const isSelected = computed(() => {
+    return group.isSelected(id);
+  });
+  const isFirst = computed(() => {
+    return group.items.value[0].id === id;
+  });
+  const isLast = computed(() => {
+    return group.items.value[group.items.value.length - 1].id === id;
+  });
+  const selectedClass = computed(() => isSelected.value && [group.selectedClass.value, props.selectedClass]);
+  watch(isSelected, (value2) => {
+    vm.emit("group:selected", {
+      value: value2
+    });
+  }, {
+    flush: "sync"
+  });
+  return {
+    id,
+    isSelected,
+    isFirst,
+    isLast,
+    toggle: () => group.select(id, !isSelected.value),
+    select: (value2) => group.select(id, value2),
+    selectedClass,
+    value,
+    disabled,
+    group
+  };
+}
+function useGroup(props, injectKey) {
+  const items = reactive([]);
+  const selected = useProxiedModel(props, "modelValue", [], (v) => {
+    if (v == null) return [];
+    return getIds(items, wrapInArray(v));
+  }, (v) => {
+    const arr = getValues(items, v);
+    return props.multiple ? arr : arr[0];
+  });
+  const groupVm = getCurrentInstance("useGroup");
+  function register(item, vm) {
+    const unwrapped = item;
+    const key = Symbol.for(`${injectKey.description}:id`);
+    const children = findChildrenWithProvide(key, groupVm == null ? void 0 : groupVm.vnode);
+    const index = children.indexOf(vm);
+    if (unref(unwrapped.value) == null) {
+      unwrapped.value = index;
+      unwrapped.useIndexAsValue = true;
+    }
+    if (index > -1) {
+      items.splice(index, 0, unwrapped);
+    } else {
+      items.push(unwrapped);
+    }
+  }
+  function unregister(id) {
+    forceMandatoryValue();
+    const index = items.findIndex((item) => item.id === id);
+    items.splice(index, 1);
+  }
+  function forceMandatoryValue() {
+    const item = items.find((item2) => !item2.disabled);
+    if (item && props.mandatory === "force" && !selected.value.length) {
+      selected.value = [item.id];
+    }
+  }
+  function select(id, value) {
+    const item = items.find((item2) => item2.id === id);
+    if (value && (item == null ? void 0 : item.disabled)) return;
+    if (props.multiple) {
+      const internalValue = selected.value.slice();
+      const index = internalValue.findIndex((v) => v === id);
+      const isSelected = ~index;
+      value = value ?? !isSelected;
+      if (isSelected && props.mandatory && internalValue.length <= 1) return;
+      if (!isSelected && props.max != null && internalValue.length + 1 > props.max) return;
+      if (index < 0 && value) internalValue.push(id);
+      else if (index >= 0 && !value) internalValue.splice(index, 1);
+      selected.value = internalValue;
+    } else {
+      const isSelected = selected.value.includes(id);
+      if (props.mandatory && isSelected) return;
+      selected.value = value ?? !isSelected ? [id] : [];
+    }
+  }
+  function step(offset) {
+    if (props.multiple) consoleWarn('This method is not supported when using "multiple" prop');
+    if (!selected.value.length) {
+      const item = items.find((item2) => !item2.disabled);
+      item && (selected.value = [item.id]);
+    } else {
+      const currentId = selected.value[0];
+      const currentIndex = items.findIndex((i) => i.id === currentId);
+      let newIndex = (currentIndex + offset) % items.length;
+      let newItem = items[newIndex];
+      while (newItem.disabled && newIndex !== currentIndex) {
+        newIndex = (newIndex + offset) % items.length;
+        newItem = items[newIndex];
+      }
+      if (newItem.disabled) return;
+      selected.value = [items[newIndex].id];
+    }
+  }
+  const state = {
+    register,
+    unregister,
+    selected,
+    select,
+    disabled: toRef(props, "disabled"),
+    prev: () => step(items.length - 1),
+    next: () => step(1),
+    isSelected: (id) => selected.value.includes(id),
+    selectedClass: computed(() => props.selectedClass),
+    items: computed(() => items),
+    getItemIndex: (value) => getItemIndex(items, value)
+  };
+  provide(injectKey, state);
+  return state;
+}
+function getItemIndex(items, value) {
+  const ids = getIds(items, [value]);
+  if (!ids.length) return -1;
+  return items.findIndex((item) => item.id === ids[0]);
+}
+function getIds(items, modelValue) {
+  const ids = [];
+  modelValue.forEach((value) => {
+    const item = items.find((item2) => deepEqual(value, item2.value));
+    const itemByIndex = items[value];
+    if ((item == null ? void 0 : item.value) != null) {
+      ids.push(item.id);
+    } else if (itemByIndex != null) {
+      ids.push(itemByIndex.id);
+    }
+  });
+  return ids;
+}
+function getValues(items, ids) {
+  const values = [];
+  ids.forEach((id) => {
+    const itemIndex = items.findIndex((item) => item.id === id);
+    if (~itemIndex) {
+      const item = items[itemIndex];
+      values.push(item.value != null ? item.value : itemIndex);
+    }
+  });
+  return values;
+}
+
+const VBtnToggleSymbol = Symbol.for("vuetify:v-btn-toggle");
+const makeVBtnToggleProps = propsFactory({
+  ...makeVBtnGroupProps(),
+  ...makeGroupProps()
+}, "VBtnToggle");
+const VBtnToggle = genericComponent()({
+  name: "VBtnToggle",
+  props: makeVBtnToggleProps(),
+  emits: {
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      isSelected,
+      next,
+      prev,
+      select,
+      selected
+    } = useGroup(props, VBtnToggleSymbol);
+    useRender(() => {
+      const btnGroupProps = VBtnGroup.filterProps(props);
+      return createVNode(VBtnGroup, mergeProps({
+        "class": ["v-btn-toggle", props.class]
+      }, btnGroupProps, {
+        "style": props.style
+      }), {
+        default: () => {
+          var _a;
+          return [(_a = slots.default) == null ? void 0 : _a.call(slots, {
+            isSelected,
+            next,
+            prev,
+            select,
+            selected
+          })];
+        }
+      });
+    });
+    return {
+      next,
+      prev,
+      select
+    };
+  }
+});
+
+function useSelectLink(link, select) {
+  watch(() => {
+    var _a;
+    return (_a = link.isActive) == null ? void 0 : _a.value;
+  }, (isActive) => {
+    if (link.isLink.value && isActive && select) {
+      nextTick(() => {
+        select(true);
+      });
+    }
+  }, {
+    immediate: true
+  });
+}
+
+const makeVBtnProps = propsFactory({
+  active: {
+    type: Boolean,
+    default: void 0
+  },
+  activeColor: String,
+  baseColor: String,
+  symbol: {
+    type: null,
+    default: VBtnToggleSymbol
+  },
+  flat: Boolean,
+  icon: [Boolean, String, Function, Object],
+  prependIcon: IconValue,
+  appendIcon: IconValue,
+  block: Boolean,
+  readonly: Boolean,
+  slim: Boolean,
+  stacked: Boolean,
+  ripple: {
+    type: [Boolean, Object],
+    default: true
+  },
+  text: {
+    type: [String, Number, Boolean],
+    default: void 0
+  },
+  ...makeBorderProps(),
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...makeDimensionProps(),
+  ...makeElevationProps(),
+  ...makeGroupItemProps(),
+  ...makeLoaderProps(),
+  ...makeLocationProps(),
+  ...makePositionProps(),
+  ...makeRoundedProps(),
+  ...makeRouterProps(),
+  ...makeSizeProps(),
+  ...makeTagProps({
+    tag: "button"
+  }),
+  ...makeThemeProps(),
+  ...makeVariantProps({
+    variant: "elevated"
+  })
+}, "VBtn");
+const VBtn = genericComponent()({
+  name: "VBtn",
+  props: makeVBtnProps(),
+  emits: {
+    "group:selected": (val) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots
+    } = _ref;
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      borderClasses
+    } = useBorder(props);
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      loaderClasses
+    } = useLoader(props);
+    const {
+      locationStyles
+    } = useLocation(props);
+    const {
+      positionClasses
+    } = usePosition(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const {
+      sizeClasses,
+      sizeStyles
+    } = useSize(props);
+    const group = useGroupItem(props, props.symbol, false);
+    const link = useLink(props, attrs);
+    const isActive = computed(() => {
+      var _a;
+      if (props.active !== void 0) {
+        return props.active;
+      }
+      if (link.isLink.value) {
+        return (_a = link.isActive) == null ? void 0 : _a.value;
+      }
+      return group == null ? void 0 : group.isSelected.value;
+    });
+    const color = computed(() => isActive.value ? props.activeColor ?? props.color : props.color);
+    const variantProps = computed(() => {
+      var _a, _b;
+      const showColor = (group == null ? void 0 : group.isSelected.value) && (!link.isLink.value || ((_a = link.isActive) == null ? void 0 : _a.value)) || !group || ((_b = link.isActive) == null ? void 0 : _b.value);
+      return {
+        color: showColor ? color.value ?? props.baseColor : props.baseColor,
+        variant: props.variant
+      };
+    });
+    const {
+      colorClasses,
+      colorStyles,
+      variantClasses
+    } = useVariant(variantProps);
+    const isDisabled = computed(() => (group == null ? void 0 : group.disabled.value) || props.disabled);
+    const isElevated = computed(() => {
+      return props.variant === "elevated" && !(props.disabled || props.flat || props.border);
+    });
+    const valueAttr = computed(() => {
+      if (props.value === void 0 || typeof props.value === "symbol") return void 0;
+      return Object(props.value) === props.value ? JSON.stringify(props.value, null, 0) : props.value;
+    });
+    function onClick(e) {
+      var _a;
+      if (isDisabled.value || link.isLink.value && (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0 || attrs.target === "_blank")) return;
+      (_a = link.navigate) == null ? void 0 : _a.call(link, e);
+      group == null ? void 0 : group.toggle();
+    }
+    useSelectLink(link, group == null ? void 0 : group.select);
+    useRender(() => {
+      const Tag = link.isLink.value ? "a" : props.tag;
+      const hasPrepend = !!(props.prependIcon || slots.prepend);
+      const hasAppend = !!(props.appendIcon || slots.append);
+      const hasIcon = !!(props.icon && props.icon !== true);
+      return withDirectives(createVNode(Tag, mergeProps({
+        "type": Tag === "a" ? void 0 : "button",
+        "class": ["v-btn", group == null ? void 0 : group.selectedClass.value, {
+          "v-btn--active": isActive.value,
+          "v-btn--block": props.block,
+          "v-btn--disabled": isDisabled.value,
+          "v-btn--elevated": isElevated.value,
+          "v-btn--flat": props.flat,
+          "v-btn--icon": !!props.icon,
+          "v-btn--loading": props.loading,
+          "v-btn--readonly": props.readonly,
+          "v-btn--slim": props.slim,
+          "v-btn--stacked": props.stacked
+        }, themeClasses.value, borderClasses.value, colorClasses.value, densityClasses.value, elevationClasses.value, loaderClasses.value, positionClasses.value, roundedClasses.value, sizeClasses.value, variantClasses.value, props.class],
+        "style": [colorStyles.value, dimensionStyles.value, locationStyles.value, sizeStyles.value, props.style],
+        "aria-busy": props.loading ? true : void 0,
+        "disabled": isDisabled.value || void 0,
+        "tabindex": props.loading || props.readonly ? -1 : void 0,
+        "onClick": onClick,
+        "value": valueAttr.value
+      }, link.linkProps), {
+        default: () => {
+          var _a;
+          return [genOverlays(true, "v-btn"), !props.icon && hasPrepend && createVNode("span", {
+            "key": "prepend",
+            "class": "v-btn__prepend"
+          }, [!slots.prepend ? createVNode(VIcon, {
+            "key": "prepend-icon",
+            "icon": props.prependIcon
+          }, null) : createVNode(VDefaultsProvider, {
+            "key": "prepend-defaults",
+            "disabled": !props.prependIcon,
+            "defaults": {
+              VIcon: {
+                icon: props.prependIcon
+              }
+            }
+          }, slots.prepend)]), createVNode("span", {
+            "class": "v-btn__content",
+            "data-no-activator": ""
+          }, [!slots.default && hasIcon ? createVNode(VIcon, {
+            "key": "content-icon",
+            "icon": props.icon
+          }, null) : createVNode(VDefaultsProvider, {
+            "key": "content-defaults",
+            "disabled": !hasIcon,
+            "defaults": {
+              VIcon: {
+                icon: props.icon
+              }
+            }
+          }, {
+            default: () => {
+              var _a2;
+              return [((_a2 = slots.default) == null ? void 0 : _a2.call(slots)) ?? toDisplayString(props.text)];
+            }
+          })]), !props.icon && hasAppend && createVNode("span", {
+            "key": "append",
+            "class": "v-btn__append"
+          }, [!slots.append ? createVNode(VIcon, {
+            "key": "append-icon",
+            "icon": props.appendIcon
+          }, null) : createVNode(VDefaultsProvider, {
+            "key": "append-defaults",
+            "disabled": !props.appendIcon,
+            "defaults": {
+              VIcon: {
+                icon: props.appendIcon
+              }
+            }
+          }, slots.append)]), !!props.loading && createVNode("span", {
+            "key": "loader",
+            "class": "v-btn__loader"
+          }, [((_a = slots.loader) == null ? void 0 : _a.call(slots)) ?? createVNode(VProgressCircular, {
+            "color": typeof props.loading === "boolean" ? void 0 : props.loading,
+            "indeterminate": true,
+            "width": "2"
+          }, null)])];
+        }
+      }), [[Ripple, !isDisabled.value && props.ripple, "", {
+        center: !!props.icon
+      }]]);
+    });
+    return {
+      group
+    };
+  }
+});
+
+const _sfc_main$4 = /* @__PURE__ */ defineComponent$1({
+  __name: "cookieOptions",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const cookieStore = useCookieStore();
+    const showSettings = ref(false);
+    const cookiePreferences = ref({
+      essential: true,
+      functional: cookieStore.preferences.functional,
+      analytics: cookieStore.preferences.analytics,
+      marketing: cookieStore.preferences.marketing
+    });
+    const cookieOptions = {
+      essential: {
+        label: "Cookies essentiels",
+        description: "Necessary for the site to function, they cannot be disabled."
+      },
+      functional: {
+        label: "Cookies fonctionnels",
+        description: "Allow to remember your preferences and personalize your experience."
+      },
+      analytics: {
+        label: "Cookies analytiques",
+        description: "Help us understand how you use our site to improve it."
+      },
+      marketing: {
+        label: "Cookies marketing",
+        description: "Allow to display personalized ads based on your interests."
+      }
+    };
+    function savePreferences() {
+      cookieStore.updatePreferences({
+        essential: true,
+        functional: cookiePreferences.value.functional,
+        analytics: cookiePreferences.value.analytics,
+        marketing: cookiePreferences.value.marketing
+      });
+      showSettings.value = false;
+      console.log("Après savePreferences:", {
+        preferences: cookieStore.preferences,
+        hasGivenConsent: cookieStore.hasGivenConsent,
+        storedConsent: localStorage.getItem("cookie_consent")
+      });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(VDialog, mergeProps({
+        modelValue: showSettings.value,
+        "onUpdate:modelValue": ($event) => showSettings.value = $event,
+        width: "500"
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VCard, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VCardTitle, { class: "text-h5 pb-2" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(` Cookie preferences `);
+                      } else {
+                        return [
+                          createTextVNode(" Cookie preferences ")
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VCardSubtitle, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(` Customize your cookie preferences `);
+                      } else {
+                        return [
+                          createTextVNode(" Customize your cookie preferences ")
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VCardText, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VList, null, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<!--[-->`);
+                              ssrRenderList(cookieOptions, (cookie, key) => {
+                                _push5(`<!--[-->`);
+                                _push5(ssrRenderComponent(VListItem, null, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VListItemTitle, null, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VSwitch, {
+                                              modelValue: cookiePreferences.value[key],
+                                              "onUpdate:modelValue": ($event) => cookiePreferences.value[key] = $event,
+                                              label: cookie.label,
+                                              color: "primary",
+                                              disabled: key === "essential",
+                                              "hide-details": "",
+                                              inset: ""
+                                            }, null, _parent7, _scopeId6));
+                                          } else {
+                                            return [
+                                              createVNode(VSwitch, {
+                                                modelValue: cookiePreferences.value[key],
+                                                "onUpdate:modelValue": ($event) => cookiePreferences.value[key] = $event,
+                                                label: cookie.label,
+                                                color: "primary",
+                                                disabled: key === "essential",
+                                                "hide-details": "",
+                                                inset: ""
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"])
+                                            ];
+                                          }
+                                        }),
+                                        _: 2
+                                      }, _parent6, _scopeId5));
+                                      _push6(ssrRenderComponent(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(`${ssrInterpolate(cookie.description)}`);
+                                          } else {
+                                            return [
+                                              createTextVNode(toDisplayString(cookie.description), 1)
+                                            ];
+                                          }
+                                        }),
+                                        _: 2
+                                      }, _parent6, _scopeId5));
+                                    } else {
+                                      return [
+                                        createVNode(VListItemTitle, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VSwitch, {
+                                              modelValue: cookiePreferences.value[key],
+                                              "onUpdate:modelValue": ($event) => cookiePreferences.value[key] = $event,
+                                              label: cookie.label,
+                                              color: "primary",
+                                              disabled: key === "essential",
+                                              "hide-details": "",
+                                              inset: ""
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"])
+                                          ]),
+                                          _: 2
+                                        }, 1024),
+                                        createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(toDisplayString(cookie.description), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ];
+                                    }
+                                  }),
+                                  _: 2
+                                }, _parent5, _scopeId4));
+                                if (key !== "marketing") {
+                                  _push5(ssrRenderComponent(VDivider, { class: "my-2" }, null, _parent5, _scopeId4));
+                                } else {
+                                  _push5(`<!---->`);
+                                }
+                                _push5(`<!--]-->`);
+                              });
+                              _push5(`<!--]-->`);
+                            } else {
+                              return [
+                                (openBlock(), createBlock(Fragment, null, renderList(cookieOptions, (cookie, key) => {
+                                  return openBlock(), createBlock(Fragment, { key }, [
+                                    createVNode(VListItem, null, {
+                                      default: withCtx(() => [
+                                        createVNode(VListItemTitle, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VSwitch, {
+                                              modelValue: cookiePreferences.value[key],
+                                              "onUpdate:modelValue": ($event) => cookiePreferences.value[key] = $event,
+                                              label: cookie.label,
+                                              color: "primary",
+                                              disabled: key === "essential",
+                                              "hide-details": "",
+                                              inset: ""
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"])
+                                          ]),
+                                          _: 2
+                                        }, 1024),
+                                        createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(toDisplayString(cookie.description), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ]),
+                                      _: 2
+                                    }, 1024),
+                                    key !== "marketing" ? (openBlock(), createBlock(VDivider, {
+                                      key: 0,
+                                      class: "my-2"
+                                    })) : createCommentVNode("", true)
+                                  ], 64);
+                                }), 64))
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VList, null, {
+                            default: withCtx(() => [
+                              (openBlock(), createBlock(Fragment, null, renderList(cookieOptions, (cookie, key) => {
+                                return openBlock(), createBlock(Fragment, { key }, [
+                                  createVNode(VListItem, null, {
+                                    default: withCtx(() => [
+                                      createVNode(VListItemTitle, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VSwitch, {
+                                            modelValue: cookiePreferences.value[key],
+                                            "onUpdate:modelValue": ($event) => cookiePreferences.value[key] = $event,
+                                            label: cookie.label,
+                                            color: "primary",
+                                            disabled: key === "essential",
+                                            "hide-details": "",
+                                            inset: ""
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"])
+                                        ]),
+                                        _: 2
+                                      }, 1024),
+                                      createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(toDisplayString(cookie.description), 1)
+                                        ]),
+                                        _: 2
+                                      }, 1024)
+                                    ]),
+                                    _: 2
+                                  }, 1024),
+                                  key !== "marketing" ? (openBlock(), createBlock(VDivider, {
+                                    key: 0,
+                                    class: "my-2"
+                                  })) : createCommentVNode("", true)
+                                ], 64);
+                              }), 64))
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VCardActions, { class: "pa-4" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VSpacer, null, null, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VBtn, {
+                          variant: "tonal",
+                          color: "error",
+                          onClick: ($event) => showSettings.value = false
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(` Cancel `);
+                            } else {
+                              return [
+                                createTextVNode(" Cancel ")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VBtn, {
+                          color: "success",
+                          variant: "tonal",
+                          onClick: savePreferences
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(` Save `);
+                            } else {
+                              return [
+                                createTextVNode(" Save ")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VSpacer),
+                          createVNode(VBtn, {
+                            variant: "tonal",
+                            color: "error",
+                            onClick: ($event) => showSettings.value = false
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Cancel ")
+                            ]),
+                            _: 1
+                          }, 8, ["onClick"]),
+                          createVNode(VBtn, {
+                            color: "success",
+                            variant: "tonal",
+                            onClick: savePreferences
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Save ")
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VCardTitle, { class: "text-h5 pb-2" }, {
+                      default: withCtx(() => [
+                        createTextVNode(" Cookie preferences ")
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VCardSubtitle, null, {
+                      default: withCtx(() => [
+                        createTextVNode(" Customize your cookie preferences ")
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VCardText, null, {
+                      default: withCtx(() => [
+                        createVNode(VList, null, {
+                          default: withCtx(() => [
+                            (openBlock(), createBlock(Fragment, null, renderList(cookieOptions, (cookie, key) => {
+                              return openBlock(), createBlock(Fragment, { key }, [
+                                createVNode(VListItem, null, {
+                                  default: withCtx(() => [
+                                    createVNode(VListItemTitle, null, {
+                                      default: withCtx(() => [
+                                        createVNode(VSwitch, {
+                                          modelValue: cookiePreferences.value[key],
+                                          "onUpdate:modelValue": ($event) => cookiePreferences.value[key] = $event,
+                                          label: cookie.label,
+                                          color: "primary",
+                                          disabled: key === "essential",
+                                          "hide-details": "",
+                                          inset: ""
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"])
+                                      ]),
+                                      _: 2
+                                    }, 1024),
+                                    createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(toDisplayString(cookie.description), 1)
+                                      ]),
+                                      _: 2
+                                    }, 1024)
+                                  ]),
+                                  _: 2
+                                }, 1024),
+                                key !== "marketing" ? (openBlock(), createBlock(VDivider, {
+                                  key: 0,
+                                  class: "my-2"
+                                })) : createCommentVNode("", true)
+                              ], 64);
+                            }), 64))
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VCardActions, { class: "pa-4" }, {
+                      default: withCtx(() => [
+                        createVNode(VSpacer),
+                        createVNode(VBtn, {
+                          variant: "tonal",
+                          color: "error",
+                          onClick: ($event) => showSettings.value = false
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode(" Cancel ")
+                          ]),
+                          _: 1
+                        }, 8, ["onClick"]),
+                        createVNode(VBtn, {
+                          color: "success",
+                          variant: "tonal",
+                          onClick: savePreferences
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode(" Save ")
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VCard, null, {
+                default: withCtx(() => [
+                  createVNode(VCardTitle, { class: "text-h5 pb-2" }, {
+                    default: withCtx(() => [
+                      createTextVNode(" Cookie preferences ")
+                    ]),
+                    _: 1
+                  }),
+                  createVNode(VCardSubtitle, null, {
+                    default: withCtx(() => [
+                      createTextVNode(" Customize your cookie preferences ")
+                    ]),
+                    _: 1
+                  }),
+                  createVNode(VCardText, null, {
+                    default: withCtx(() => [
+                      createVNode(VList, null, {
+                        default: withCtx(() => [
+                          (openBlock(), createBlock(Fragment, null, renderList(cookieOptions, (cookie, key) => {
+                            return openBlock(), createBlock(Fragment, { key }, [
+                              createVNode(VListItem, null, {
+                                default: withCtx(() => [
+                                  createVNode(VListItemTitle, null, {
+                                    default: withCtx(() => [
+                                      createVNode(VSwitch, {
+                                        modelValue: cookiePreferences.value[key],
+                                        "onUpdate:modelValue": ($event) => cookiePreferences.value[key] = $event,
+                                        label: cookie.label,
+                                        color: "primary",
+                                        disabled: key === "essential",
+                                        "hide-details": "",
+                                        inset: ""
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"])
+                                    ]),
+                                    _: 2
+                                  }, 1024),
+                                  createVNode(VListItemSubtitle, { class: "text-caption mt-1" }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(toDisplayString(cookie.description), 1)
+                                    ]),
+                                    _: 2
+                                  }, 1024)
+                                ]),
+                                _: 2
+                              }, 1024),
+                              key !== "marketing" ? (openBlock(), createBlock(VDivider, {
+                                key: 0,
+                                class: "my-2"
+                              })) : createCommentVNode("", true)
+                            ], 64);
+                          }), 64))
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  }),
+                  createVNode(VCardActions, { class: "pa-4" }, {
+                    default: withCtx(() => [
+                      createVNode(VSpacer),
+                      createVNode(VBtn, {
+                        variant: "tonal",
+                        color: "error",
+                        onClick: ($event) => showSettings.value = false
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode(" Cancel ")
+                        ]),
+                        _: 1
+                      }, 8, ["onClick"]),
+                      createVNode(VBtn, {
+                        color: "success",
+                        variant: "tonal",
+                        onClick: savePreferences
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode(" Save ")
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
+
+const VuetifyLayoutKey = Symbol.for("vuetify:layout");
+const VuetifyLayoutItemKey = Symbol.for("vuetify:layout-item");
+const ROOT_ZINDEX = 1e3;
+const makeLayoutProps = propsFactory({
+  overlaps: {
+    type: Array,
+    default: () => []
+  },
+  fullHeight: Boolean
+}, "layout");
+const makeLayoutItemProps = propsFactory({
+  name: {
+    type: String
+  },
+  order: {
+    type: [Number, String],
+    default: 0
+  },
+  absolute: Boolean
+}, "layout-item");
+function useLayout() {
+  const layout = inject$1(VuetifyLayoutKey);
+  if (!layout) throw new Error("[Vuetify] Could not find injected layout");
+  return {
+    getLayoutItem: layout.getLayoutItem,
+    mainRect: layout.mainRect,
+    mainStyles: layout.mainStyles
+  };
+}
+function useLayoutItem(options) {
+  const layout = inject$1(VuetifyLayoutKey);
+  if (!layout) throw new Error("[Vuetify] Could not find injected layout");
+  const id = options.id ?? `layout-item-${getUid()}`;
+  const vm = getCurrentInstance("useLayoutItem");
+  provide(VuetifyLayoutItemKey, {
+    id
+  });
+  const isKeptAlive = shallowRef(false);
+  const {
+    layoutItemStyles,
+    layoutItemScrimStyles
+  } = layout.register(vm, {
+    ...options,
+    active: computed(() => isKeptAlive.value ? false : options.active.value),
+    id
+  });
+  return {
+    layoutItemStyles,
+    layoutRect: layout.layoutRect,
+    layoutItemScrimStyles
+  };
+}
+const generateLayers = (layout, positions, layoutSizes, activeItems) => {
+  let previousLayer = {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
+  };
+  const layers = [{
+    id: "",
+    layer: {
+      ...previousLayer
+    }
+  }];
+  for (const id of layout) {
+    const position = positions.get(id);
+    const amount = layoutSizes.get(id);
+    const active = activeItems.get(id);
+    if (!position || !amount || !active) continue;
+    const layer = {
+      ...previousLayer,
+      [position.value]: parseInt(previousLayer[position.value], 10) + (active.value ? parseInt(amount.value, 10) : 0)
+    };
+    layers.push({
+      id,
+      layer
+    });
+    previousLayer = layer;
+  }
+  return layers;
+};
+function createLayout(props) {
+  const parentLayout = inject$1(VuetifyLayoutKey, null);
+  const rootZIndex = computed(() => parentLayout ? parentLayout.rootZIndex.value - 100 : ROOT_ZINDEX);
+  const registered = ref([]);
+  const positions = reactive(/* @__PURE__ */ new Map());
+  const layoutSizes = reactive(/* @__PURE__ */ new Map());
+  const priorities = reactive(/* @__PURE__ */ new Map());
+  const activeItems = reactive(/* @__PURE__ */ new Map());
+  const disabledTransitions = reactive(/* @__PURE__ */ new Map());
+  const {
+    resizeRef,
+    contentRect: layoutRect
+  } = useResizeObserver();
+  const computedOverlaps = computed(() => {
+    const map = /* @__PURE__ */ new Map();
+    const overlaps = props.overlaps ?? [];
+    for (const overlap of overlaps.filter((item) => item.includes(":"))) {
+      const [top, bottom] = overlap.split(":");
+      if (!registered.value.includes(top) || !registered.value.includes(bottom)) continue;
+      const topPosition = positions.get(top);
+      const bottomPosition = positions.get(bottom);
+      const topAmount = layoutSizes.get(top);
+      const bottomAmount = layoutSizes.get(bottom);
+      if (!topPosition || !bottomPosition || !topAmount || !bottomAmount) continue;
+      map.set(bottom, {
+        position: topPosition.value,
+        amount: parseInt(topAmount.value, 10)
+      });
+      map.set(top, {
+        position: bottomPosition.value,
+        amount: -parseInt(bottomAmount.value, 10)
+      });
+    }
+    return map;
+  });
+  const layers = computed(() => {
+    const uniquePriorities = [...new Set([...priorities.values()].map((p) => p.value))].sort((a, b) => a - b);
+    const layout = [];
+    for (const p of uniquePriorities) {
+      const items2 = registered.value.filter((id) => {
+        var _a;
+        return ((_a = priorities.get(id)) == null ? void 0 : _a.value) === p;
+      });
+      layout.push(...items2);
+    }
+    return generateLayers(layout, positions, layoutSizes, activeItems);
+  });
+  const transitionsEnabled = computed(() => {
+    return !Array.from(disabledTransitions.values()).some((ref2) => ref2.value);
+  });
+  const mainRect = computed(() => {
+    return layers.value[layers.value.length - 1].layer;
+  });
+  const mainStyles = computed(() => {
+    return {
+      "--v-layout-left": convertToUnit(mainRect.value.left),
+      "--v-layout-right": convertToUnit(mainRect.value.right),
+      "--v-layout-top": convertToUnit(mainRect.value.top),
+      "--v-layout-bottom": convertToUnit(mainRect.value.bottom),
+      ...transitionsEnabled.value ? void 0 : {
+        transition: "none"
+      }
+    };
+  });
+  const items = computed(() => {
+    return layers.value.slice(1).map((_ref, index) => {
+      let {
+        id
+      } = _ref;
+      const {
+        layer
+      } = layers.value[index];
+      const size = layoutSizes.get(id);
+      const position = positions.get(id);
+      return {
+        id,
+        ...layer,
+        size: Number(size.value),
+        position: position.value
+      };
+    });
+  });
+  const getLayoutItem = (id) => {
+    return items.value.find((item) => item.id === id);
+  };
+  const rootVm = getCurrentInstance("createLayout");
+  const isMounted = shallowRef(false);
+  provide(VuetifyLayoutKey, {
+    register: (vm, _ref2) => {
+      let {
+        id,
+        order,
+        position,
+        layoutSize,
+        elementSize,
+        active,
+        disableTransitions,
+        absolute
+      } = _ref2;
+      priorities.set(id, order);
+      positions.set(id, position);
+      layoutSizes.set(id, layoutSize);
+      activeItems.set(id, active);
+      disableTransitions && disabledTransitions.set(id, disableTransitions);
+      const instances = findChildrenWithProvide(VuetifyLayoutItemKey, rootVm == null ? void 0 : rootVm.vnode);
+      const instanceIndex = instances.indexOf(vm);
+      if (instanceIndex > -1) registered.value.splice(instanceIndex, 0, id);
+      else registered.value.push(id);
+      const index = computed(() => items.value.findIndex((i) => i.id === id));
+      const zIndex = computed(() => rootZIndex.value + layers.value.length * 2 - index.value * 2);
+      const layoutItemStyles = computed(() => {
+        const isHorizontal = position.value === "left" || position.value === "right";
+        const isOppositeHorizontal = position.value === "right";
+        const isOppositeVertical = position.value === "bottom";
+        const size = elementSize.value ?? layoutSize.value;
+        const unit = size === 0 ? "%" : "px";
+        const styles = {
+          [position.value]: 0,
+          zIndex: zIndex.value,
+          transform: `translate${isHorizontal ? "X" : "Y"}(${(active.value ? 0 : -(size === 0 ? 100 : size)) * (isOppositeHorizontal || isOppositeVertical ? -1 : 1)}${unit})`,
+          position: absolute.value || rootZIndex.value !== ROOT_ZINDEX ? "absolute" : "fixed",
+          ...transitionsEnabled.value ? void 0 : {
+            transition: "none"
+          }
+        };
+        if (!isMounted.value) return styles;
+        const item = items.value[index.value];
+        if (!item) throw new Error(`[Vuetify] Could not find layout item "${id}"`);
+        const overlap = computedOverlaps.value.get(id);
+        if (overlap) {
+          item[overlap.position] += overlap.amount;
+        }
+        return {
+          ...styles,
+          height: isHorizontal ? `calc(100% - ${item.top}px - ${item.bottom}px)` : elementSize.value ? `${elementSize.value}px` : void 0,
+          left: isOppositeHorizontal ? void 0 : `${item.left}px`,
+          right: isOppositeHorizontal ? `${item.right}px` : void 0,
+          top: position.value !== "bottom" ? `${item.top}px` : void 0,
+          bottom: position.value !== "top" ? `${item.bottom}px` : void 0,
+          width: !isHorizontal ? `calc(100% - ${item.left}px - ${item.right}px)` : elementSize.value ? `${elementSize.value}px` : void 0
+        };
+      });
+      const layoutItemScrimStyles = computed(() => ({
+        zIndex: zIndex.value - 1
+      }));
+      return {
+        layoutItemStyles,
+        layoutItemScrimStyles,
+        zIndex
+      };
+    },
+    unregister: (id) => {
+      priorities.delete(id);
+      positions.delete(id);
+      layoutSizes.delete(id);
+      activeItems.delete(id);
+      disabledTransitions.delete(id);
+      registered.value = registered.value.filter((v) => v !== id);
+    },
+    mainRect,
+    mainStyles,
+    getLayoutItem,
+    items,
+    layoutRect,
+    rootZIndex
+  });
+  const layoutClasses = computed(() => ["v-layout", {
+    "v-layout--full-height": props.fullHeight
+  }]);
+  const layoutStyles = computed(() => ({
+    zIndex: parentLayout ? rootZIndex.value : void 0,
+    position: parentLayout ? "relative" : void 0,
+    overflow: parentLayout ? "hidden" : void 0
+  }));
+  return {
+    layoutClasses,
+    layoutStyles,
+    getLayoutItem,
+    items,
+    layoutRect,
+    layoutRef: resizeRef
+  };
+}
+
+function useCountdown(milliseconds) {
+  const time = shallowRef(milliseconds());
+  let timer = -1;
+  function clear() {
+    clearInterval(timer);
+  }
+  function reset() {
+    clear();
+    nextTick(() => time.value = milliseconds());
+  }
+  function start(el) {
+    const style = el ? getComputedStyle(el) : {
+      transitionDuration: 0.2
+    };
+    const interval = parseFloat(style.transitionDuration) * 1e3 || 200;
+    clear();
+    if (time.value <= 0) return;
+    const startTime = performance.now();
+    timer = (void 0).setInterval(() => {
+      const elapsed = performance.now() - startTime + interval;
+      time.value = Math.max(milliseconds() - elapsed, 0);
+      if (time.value <= 0) clear();
+    }, interval);
+  }
+  onScopeDispose(clear);
+  return {
+    clear,
+    time,
+    start,
+    reset
+  };
+}
+const makeVSnackbarProps = propsFactory({
+  multiLine: Boolean,
+  text: String,
+  timer: [Boolean, String],
+  timeout: {
+    type: [Number, String],
+    default: 5e3
+  },
+  vertical: Boolean,
+  ...makeLocationProps({
+    location: "bottom"
+  }),
+  ...makePositionProps(),
+  ...makeRoundedProps(),
+  ...makeVariantProps(),
+  ...makeThemeProps(),
+  ...omit(makeVOverlayProps({
+    transition: "v-snackbar-transition"
+  }), ["persistent", "noClickAnimation", "scrim", "scrollStrategy"])
+}, "VSnackbar");
+const VSnackbar = genericComponent()({
+  name: "VSnackbar",
+  props: makeVSnackbarProps(),
+  emits: {
+    "update:modelValue": (v) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const isActive = useProxiedModel(props, "modelValue");
+    const {
+      positionClasses
+    } = usePosition(props);
+    const {
+      scopeId
+    } = useScopeId();
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      colorClasses,
+      colorStyles,
+      variantClasses
+    } = useVariant(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const countdown = useCountdown(() => Number(props.timeout));
+    const overlay = ref();
+    const timerRef = ref();
+    const isHovering = shallowRef(false);
+    const startY = shallowRef(0);
+    const mainStyles = ref();
+    const hasLayout = inject$1(VuetifyLayoutKey, void 0);
+    useToggleScope(() => !!hasLayout, () => {
+      const layout = useLayout();
+      watchEffect(() => {
+        mainStyles.value = layout.mainStyles.value;
+      });
+    });
+    watch(isActive, startTimeout);
+    watch(() => props.timeout, startTimeout);
+    let activeTimeout = -1;
+    function startTimeout() {
+      countdown.reset();
+      (void 0).clearTimeout(activeTimeout);
+      const timeout = Number(props.timeout);
+      if (!isActive.value || timeout === -1) return;
+      const element = refElement(timerRef.value);
+      countdown.start(element);
+      activeTimeout = (void 0).setTimeout(() => {
+        isActive.value = false;
+      }, timeout);
+    }
+    function clearTimeout() {
+      countdown.reset();
+      (void 0).clearTimeout(activeTimeout);
+    }
+    function onPointerenter() {
+      isHovering.value = true;
+      clearTimeout();
+    }
+    function onPointerleave() {
+      isHovering.value = false;
+      startTimeout();
+    }
+    function onTouchstart(event) {
+      startY.value = event.touches[0].clientY;
+    }
+    function onTouchend(event) {
+      if (Math.abs(startY.value - event.changedTouches[0].clientY) > 50) {
+        isActive.value = false;
+      }
+    }
+    function onAfterLeave() {
+      if (isHovering.value) onPointerleave();
+    }
+    const locationClasses = computed(() => {
+      return props.location.split(" ").reduce((acc, loc) => {
+        acc[`v-snackbar--${loc}`] = true;
+        return acc;
+      }, {});
+    });
+    useRender(() => {
+      const overlayProps = VOverlay.filterProps(props);
+      const hasContent = !!(slots.default || slots.text || props.text);
+      return createVNode(VOverlay, mergeProps({
+        "ref": overlay,
+        "class": ["v-snackbar", {
+          "v-snackbar--active": isActive.value,
+          "v-snackbar--multi-line": props.multiLine && !props.vertical,
+          "v-snackbar--timer": !!props.timer,
+          "v-snackbar--vertical": props.vertical
+        }, locationClasses.value, positionClasses.value, props.class],
+        "style": [mainStyles.value, props.style]
+      }, overlayProps, {
+        "modelValue": isActive.value,
+        "onUpdate:modelValue": ($event) => isActive.value = $event,
+        "contentProps": mergeProps({
+          class: ["v-snackbar__wrapper", themeClasses.value, colorClasses.value, roundedClasses.value, variantClasses.value],
+          style: [colorStyles.value],
+          onPointerenter,
+          onPointerleave
+        }, overlayProps.contentProps),
+        "persistent": true,
+        "noClickAnimation": true,
+        "scrim": false,
+        "scrollStrategy": "none",
+        "_disableGlobalStack": true,
+        "onTouchstartPassive": onTouchstart,
+        "onTouchend": onTouchend,
+        "onAfterLeave": onAfterLeave
+      }, scopeId), {
+        default: () => {
+          var _a, _b;
+          return [genOverlays(false, "v-snackbar"), props.timer && !isHovering.value && createVNode("div", {
+            "key": "timer",
+            "class": "v-snackbar__timer"
+          }, [createVNode(VProgressLinear, {
+            "ref": timerRef,
+            "color": typeof props.timer === "string" ? props.timer : "info",
+            "max": props.timeout,
+            "model-value": countdown.time.value
+          }, null)]), hasContent && createVNode("div", {
+            "key": "content",
+            "class": "v-snackbar__content",
+            "role": "status",
+            "aria-live": "polite"
+          }, [((_a = slots.text) == null ? void 0 : _a.call(slots)) ?? props.text, (_b = slots.default) == null ? void 0 : _b.call(slots)]), slots.actions && createVNode(VDefaultsProvider, {
+            "defaults": {
+              VBtn: {
+                variant: "text",
+                ripple: false,
+                slim: true
+              }
+            }
+          }, {
+            default: () => [createVNode("div", {
+              "class": "v-snackbar__actions"
+            }, [slots.actions({
+              isActive
+            })])]
+          })];
+        },
+        activator: slots.activator
+      });
+    });
+    return forwardRefs({}, overlay);
+  }
+});
+
+const _sfc_main$3 = /* @__PURE__ */ defineComponent$1({
+  __name: "cookie-banner",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const cookieStore = useCookieStore();
+    const showBanner = ref(true);
+    const showSettings = ref(false);
+    ref(false);
+    ref({
+      essential: true,
+      functional: true,
+      analytics: true,
+      marketing: true
+    });
+    ref(false);
+    function acceptAll() {
+      cookieStore.acceptAllCookies();
+      showBanner.value = false;
+      console.log("Après acceptAll:", {
+        preferences: cookieStore.preferences,
+        hasGivenConsent: cookieStore.hasGivenConsent,
+        storedConsent: localStorage.getItem("cookie_consent")
+      });
+    }
+    function rejectNonEssential() {
+      cookieStore.rejectNonEssentialCookies();
+      showBanner.value = false;
+      console.log("Après rejectNonEssential:", {
+        preferences: cookieStore.preferences,
+        hasGivenConsent: cookieStore.hasGivenConsent,
+        storedConsent: localStorage.getItem("cookie_consent")
+      });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      if (!unref(cookieStore).hasGivenConsent) {
+        _push(`<div${ssrRenderAttrs(_attrs)} data-v-8bdccf7e>`);
+        _push(ssrRenderComponent(VSnackbar, {
+          modelValue: showBanner.value,
+          "onUpdate:modelValue": ($event) => showBanner.value = $event,
+          timeout: -1,
+          location: "bottom",
+          class: "cookie-banner",
+          elevation: "4",
+          color: "secondary"
+        }, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              _push2(`<div class="d-flex flex-column" data-v-8bdccf7e${_scopeId}><div class="text-subtitle-1 font-weight-bold mb-2" data-v-8bdccf7e${_scopeId}> Cookie consent </div><div class="mb-4" data-v-8bdccf7e${_scopeId}> We use cookies to improve your experience, personalize content, and analyze our traffic. You can choose to accept all cookies or customize them. </div><div class="d-flex flex-wrap align-center justify-space-between" data-v-8bdccf7e${_scopeId}><div data-v-8bdccf7e${_scopeId}>`);
+              _push2(ssrRenderComponent(VBtn, {
+                color: "white",
+                variant: "text",
+                class: "mr-2 mb-2 mb-sm-0",
+                onClick: ($event) => showSettings.value = true
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(` Customize `);
+                  } else {
+                    return [
+                      createTextVNode(" Customize ")
+                    ];
+                  }
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+              _push2(ssrRenderComponent(VBtn, {
+                color: "white",
+                variant: "outlined",
+                class: "mr-2 mb-2 mb-sm-0",
+                onClick: rejectNonEssential
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(` Reject `);
+                  } else {
+                    return [
+                      createTextVNode(" Reject ")
+                    ];
+                  }
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+              _push2(`</div>`);
+              _push2(ssrRenderComponent(VBtn, {
+                color: "white",
+                variant: "elevated",
+                class: "mb-2 mb-sm-0",
+                onClick: acceptAll
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(` Accept all `);
+                  } else {
+                    return [
+                      createTextVNode(" Accept all ")
+                    ];
+                  }
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+              _push2(`</div></div>`);
+            } else {
+              return [
+                createVNode("div", { class: "d-flex flex-column" }, [
+                  createVNode("div", { class: "text-subtitle-1 font-weight-bold mb-2" }, " Cookie consent "),
+                  createVNode("div", { class: "mb-4" }, " We use cookies to improve your experience, personalize content, and analyze our traffic. You can choose to accept all cookies or customize them. "),
+                  createVNode("div", { class: "d-flex flex-wrap align-center justify-space-between" }, [
+                    createVNode("div", null, [
+                      createVNode(VBtn, {
+                        color: "white",
+                        variant: "text",
+                        class: "mr-2 mb-2 mb-sm-0",
+                        onClick: ($event) => showSettings.value = true
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode(" Customize ")
+                        ]),
+                        _: 1
+                      }, 8, ["onClick"]),
+                      createVNode(VBtn, {
+                        color: "white",
+                        variant: "outlined",
+                        class: "mr-2 mb-2 mb-sm-0",
+                        onClick: rejectNonEssential
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode(" Reject ")
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    createVNode(VBtn, {
+                      color: "white",
+                      variant: "elevated",
+                      class: "mb-2 mb-sm-0",
+                      onClick: acceptAll
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(" Accept all ")
+                      ]),
+                      _: 1
+                    })
+                  ])
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(ssrRenderComponent(_sfc_main$4, {
+          modelValue: showSettings.value,
+          "onUpdate:modelValue": ($event) => showSettings.value = $event
+        }, null, _parent));
+        _push(`</div>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+});
+
+const _sfc_setup$2 = _sfc_main$3.setup;
+_sfc_main$3.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/cookie-banner.vue");
+  return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
+};
+const CookieBanner = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-8bdccf7e"]]);
+
+const makeVAppProps = propsFactory({
+  ...makeComponentProps(),
+  ...makeLayoutProps({
+    fullHeight: true
+  }),
+  ...makeThemeProps()
+}, "VApp");
+const VApp = genericComponent()({
+  name: "VApp",
+  props: makeVAppProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const theme = provideTheme(props);
+    const {
+      layoutClasses,
+      getLayoutItem,
+      items,
+      layoutRef
+    } = createLayout(props);
+    const {
+      rtlClasses
+    } = useRtl();
+    useRender(() => {
+      var _a;
+      return createVNode("div", {
+        "ref": layoutRef,
+        "class": ["v-application", theme.themeClasses.value, layoutClasses.value, rtlClasses.value, props.class],
+        "style": [props.style]
+      }, [createVNode("div", {
+        "class": "v-application__wrap"
+      }, [(_a = slots.default) == null ? void 0 : _a.call(slots)])]);
+    });
+    return {
+      getLayoutItem,
+      items,
+      theme
+    };
+  }
+});
+
+const _sfc_main$2 = /* @__PURE__ */ defineComponent$1({
+  __name: "app",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useRouter$2();
+    useUserStore();
+    const cookieStore = useCookieStore();
+    onErrorCaptured((err, instance, info) => {
+      if (err instanceof TypeError && (err.message.includes("'parentNode'") || err.message.includes("'type' of 'vnode' as it is null"))) {
+        console.warn("Vue component unmount error captured and handled:", err.message);
+        return false;
+      }
+      return true;
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_NuxtLayout = __nuxt_component_0$1;
+      const _component_NuxtPage = __nuxt_component_0;
+      _push(ssrRenderComponent(_component_NuxtLayout, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VApp, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(_component_NuxtPage, null, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(CookieBanner, null, null, _parent3, _scopeId2));
+                  if (unref(cookieStore).preferences.analytics) {
+                    _push3(ssrRenderComponent(AnalyticsDataCollector, null, null, _parent3, _scopeId2));
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                } else {
+                  return [
+                    createVNode(_component_NuxtPage),
+                    createVNode(CookieBanner),
+                    unref(cookieStore).preferences.analytics ? (openBlock(), createBlock(AnalyticsDataCollector, { key: 0 })) : createCommentVNode("", true)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VApp, null, {
+                default: withCtx(() => [
+                  createVNode(_component_NuxtPage),
+                  createVNode(CookieBanner),
+                  unref(cookieStore).preferences.analytics ? (openBlock(), createBlock(AnalyticsDataCollector, { key: 0 })) : createCommentVNode("", true)
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
+
+const _sfc_main$1 = {
+  __name: "nuxt-error-page",
+  __ssrInlineRender: true,
+  props: {
+    error: Object
+  },
+  setup(__props) {
+    const props = __props;
+    const _error = props.error;
+    _error.stack ? _error.stack.split("\n").splice(1).map((line) => {
+      const text = line.replace("webpack:/", "").replace(".vue", ".js").trim();
+      return {
+        text,
+        internal: line.includes("node_modules") && !line.includes(".cache") || line.includes("internal") || line.includes("new Promise")
+      };
+    }).map((i) => `<span class="stack${i.internal ? " internal" : ""}">${i.text}</span>`).join("\n") : "";
+    const statusCode = Number(_error.statusCode || 500);
+    const is404 = statusCode === 404;
+    const statusMessage = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
+    const description = _error.message || _error.toString();
+    const stack = void 0;
+    const _Error404 = defineAsyncComponent(() => import('./error-404.vue.mjs'));
+    const _Error = defineAsyncComponent(() => import('./error-500.vue.mjs'));
+    const ErrorTemplate = is404 ? _Error404 : _Error;
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(unref(ErrorTemplate), mergeProps({ statusCode: unref(statusCode), statusMessage: unref(statusMessage), description: unref(description), stack: unref(stack) }, _attrs), null, _parent));
+    };
+  }
+};
+const _sfc_setup$1 = _sfc_main$1.setup;
+_sfc_main$1.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/nuxt/dist/app/components/nuxt-error-page.vue");
+  return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
+};
+
+const _sfc_main = {
+  __name: "nuxt-root",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const IslandRenderer = () => null;
+    const nuxtApp = useNuxtApp();
+    nuxtApp.deferHydration();
+    nuxtApp.ssrContext.url;
+    const SingleRenderer = false;
+    provide(PageRouteSymbol, useRoute$1());
+    nuxtApp.hooks.callHookWith((hooks) => hooks.map((hook) => hook()), "vue:setup");
+    const error = useError();
+    const abortRender = error.value && !nuxtApp.ssrContext.error;
+    onErrorCaptured((err, target, info) => {
+      nuxtApp.hooks.callHook("vue:error", err, target, info).catch((hookError) => console.error("[nuxt] Error in `vue:error` hook", hookError));
+      {
+        const p = nuxtApp.runWithContext(() => showError(err));
+        onServerPrefetch(() => p);
+        return false;
+      }
+    });
+    const islandContext = nuxtApp.ssrContext.islandContext;
+    return (_ctx, _push, _parent, _attrs) => {
+      ssrRenderSuspense(_push, {
+        default: () => {
+          if (unref(abortRender)) {
+            _push(`<div></div>`);
+          } else if (unref(error)) {
+            _push(ssrRenderComponent(unref(_sfc_main$1), { error: unref(error) }, null, _parent));
+          } else if (unref(islandContext)) {
+            _push(ssrRenderComponent(unref(IslandRenderer), { context: unref(islandContext) }, null, _parent));
+          } else if (unref(SingleRenderer)) {
+            ssrRenderVNode(_push, createVNode(resolveDynamicComponent(unref(SingleRenderer)), null, null), _parent);
+          } else {
+            _push(ssrRenderComponent(unref(_sfc_main$2), null, null, _parent));
+          }
+        },
+        _: 1
+      });
+    };
+  }
+};
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/nuxt/dist/app/components/nuxt-root.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+
+let entry;
+{
+  entry = async function createNuxtAppServer(ssrContext) {
+    var _a;
+    const vueApp = createApp(_sfc_main);
+    const nuxt = createNuxtApp({ vueApp, ssrContext });
+    try {
+      await applyPlugins(nuxt, plugins);
+      await nuxt.hooks.callHook("app:created", vueApp);
+    } catch (error) {
+      await nuxt.hooks.callHook("app:error", error);
+      (_a = nuxt.payload).error || (_a.error = createError(error));
+    }
+    if (ssrContext == null ? void 0 : ssrContext._renderResponse) {
+      throw new Error("skipping render");
+    }
+    return vueApp;
+  };
+}
+const entry$1 = (ssrContext) => entry(ssrContext);
 
 const server = /*#__PURE__*/Object.freeze({
   __proto__: null,
-  default: h
+  default: entry$1
 });
 
-export { $$8 as $, i as A, g$4 as B, C$c as C, u$5 as D, E$9 as E, F$3 as F, l$4 as G, P$4 as H, I$5 as I, he as J, l$2 as K, L$1 as L, M$5 as M, k$9 as N, O$6 as O, P$2 as P, Ke as Q, ot as R, i$1 as S, _$2 as T, C$3 as U, j$1 as V, W$8 as W, X$3 as X, r$1 as Y, Z$3 as Z, _$c as _, a$q as a, C$d as a$, f$5 as a0, Be as a1, $$5 as a2, q$1 as a3, t$2 as a4, o$7 as a5, i$9 as a6, _$6 as a7, s$5 as a8, O$3 as a9, Ve as aA, ee as aB, S as aC, f$4 as aD, _$3 as aE, l$5 as aF, x$2 as aG, c$3 as aH, v$e as aI, C$5 as aJ, V$2 as aK, m$2 as aL, v$4 as aM, u$7 as aN, o$5 as aO, ge$2 as aP, it as aQ, Re as aR, Y$2 as aS, D$4 as aT, B$4 as aU, F$6 as aV, H$4 as aW, G$2 as aX, a$b as aY, E as aZ, W$1 as a_, T$4 as aa, e$1 as ab, P$1 as ac, v as ad, g$2 as ae, F$1 as af, v$1 as ag, o$a as ah, f$8 as ai, y$5 as aj, p$3 as ak, f$1 as al, c$2 as am, u$4 as an, ie$1 as ao, A$3 as ap, e$2 as aq, s$4 as ar, d$5 as as, O as at, W$7 as au, ve$1 as av, se$1 as aw, K$2 as ax, j as ay, M$9 as az, We as b, c$7 as b$, q$6 as b0, M$2 as b1, N$7 as b2, de as b3, le$2 as b4, Ie as b5, j$5 as b6, H as b7, D as b8, i$8 as b9, w$9 as bA, z$3 as bB, me$1 as bC, J$3 as bD, Y$6 as bE, a$3 as bF, h$8 as bG, t$5 as bH, b$e as bI, ce$1 as bJ, U$4 as bK, te$2 as bL, o$c as bM, ge$1 as bN, ie as bO, N$9 as bP, g$9 as bQ, ne$1 as bR, E$3 as bS, I$2 as bT, $$3 as bU, N$5 as bV, B$2 as bW, o$8 as bX, L$5 as bY, S$7 as bZ, W$2 as b_, m$4 as ba, z as bb, B as bc, k$6 as bd, U as be, A$4 as bf, s$2 as bg, g$3 as bh, C$7 as bi, f$3 as bj, b$6 as bk, re as bl, ae$1 as bm, K$6 as bn, C as bo, ye as bp, y$4 as bq, U$1 as br, N$1 as bs, k as bt, gt as bu, pt as bv, g as bw, q$4 as bx, l$b as by, k$5 as bz, c$1 as c, G as c0, P$6 as c1, s$b as c2, O$9 as c3, Q as c4, w$7 as c5, server as c6, d$d as d, $$1 as e, y$7 as f, yt as g, y$d as h, i$2 as i, x$4 as j, r$2 as k, f$7 as l, mt as m, o$4 as n, o$3 as o, dt as p, qe as q, r$a as r, s$8 as s, _$5 as t, x$5 as u, b$5 as v, v$5 as w, x, y$a as y, h$2 as z };;globalThis.__timing__.logEnd('Load chunks/build/server');
+export { VCardTitle as $, makeComponentProps as A, useLayout as B, breakpoints as C, provideTheme as D, useBackgroundColor as E, useBorder as F, useElevation as G, useRounded as H, useResizeObserver as I, convertToUnit as J, makeThemeProps as K, makeRoundedProps as L, makeElevationProps as M, makeBorderProps as N, provideDefaults as O, VImg as P, VDefaultsProvider as Q, VExpandTransition as R, useUserStore as S, VList as T, VListItem as U, VApp as V, VListItemTitle as W, VResponsive as X, VCardText as Y, VCardItem as Z, _export_sfc as _, useNuxtApp as a, deepEqual as a$, VCardActions as a0, VSnackbar as a1, useDisplay as a2, useRouter as a3, useScopeId as a4, toPhysical as a5, useDelay as a6, makeDisplayProps as a7, makeDelayProps as a8, MaybeTransition as a9, VSelectionControl as aA, makeVSelectionControlProps as aB, VListItemSubtitle as aC, createSimpleFunctional as aD, useVariant as aE, useDensity as aF, useLocation as aG, usePosition as aH, useLocale as aI, genOverlays as aJ, makeVariantProps as aK, makePositionProps as aL, makeLocationProps as aM, makeDensityProps as aN, VMenuSymbol as aO, isClickInsideElement as aP, VOverlay as aQ, makeVOverlayProps as aR, VDialogTransition as aS, focusChild as aT, getNextElement as aU, focusableChildren as aV, debounce as aW, isObject as aX, getCurrentInstance as aY, useItems as aZ, useForm as a_, makeTransitionProps$1 as aa, VSlideYTransition as ab, VLabel as ac, makeFocusProps as ad, useLoader as ae, useFocus as af, useInputIcon as ag, getUid as ah, useTextColor as ai, nullifyTransforms as aj, animate as ak, LoaderSlot as al, VExpandXTransition as am, makeLoaderProps as an, EventProp as ao, IconValue as ap, standardEasing as aq, Intersect as ar, forwardRefs as as, makeVInputProps as at, filterInputAttrs as au, VInput as av, callEvent as aw, createForm as ax, makeFormProps as ay, omit as az, useRuntimeConfig as b, parseColor as b$, wrapInArray as b0, makeItemsProps as b1, ensureValidVNode as b2, checkPrintable as b3, matchesSelector as b4, makeVBtnProps as b5, keys as b6, useGroup as b7, useGroupItem as b8, useLazy as b9, getWeek as bA, createRange as bB, templateRef as bC, getDecimals as bD, keyValues as bE, VScaleTransition as bF, defineFunctionalComponent as bG, consoleError as bH, getObjectValueByPath as bI, isEmpty as bJ, isOn as bK, humanReadableFileSize as bL, useCookieStore as bM, VProgressLinear as bN, makeVImgProps as bO, useRoute$1 as bP, defineComponent as bQ, getEventCoordinates as bR, HexToHSV as bS, HSVtoHex as bT, HSLtoHSV as bU, HSVtoHSL as bV, RGBtoHSV as bW, HSVtoRGB as bX, has as bY, SUPPORTS_EYE_DROPPER as bZ, HSVtoCSS as b_, makeLazyProps as ba, makeGroupItemProps as bb, Ripple as bc, pick as bd, makeGroupProps as be, useGoTo as bf, VFadeTransition as bg, useSize as bh, useLink as bi, makeSizeProps as bj, makeRouterProps as bk, VProgressCircular as bl, noop as bm, getPropertyFromItem as bn, VBtnToggle as bo, VSwitch as bp, VCardSubtitle as bq, VDialog as br, VSelectionControlGroup as bs, makeSelectionControlGroupProps as bt, createLayout as bu, makeLayoutProps as bv, VListSubheader as bw, useTheme as bx, pickWithRest as by, useDate as bz, nuxtLinkDefaults as c, RGBtoCSS as c0, getContrast as c1, consoleWarn as c2, defineNuxtRouteMiddleware as c3, VListGroup as c4, __nuxt_component_0 as c5, server as c6, VSpacer as d, VBtn as e, VCard as f, VIcon as g, VDivider as h, VAvatar as i, clamp as j, genericComponent as k, useProxiedModel as l, useToggleScope as m, navigateTo as n, useSsrBoot as o, propsFactory as p, useLayoutItem as q, resolveRouteObject as r, useRender as s, tryUseNuxtApp as t, useRouter$1 as u, makeLayoutItemProps as v, useRtl as w, useDimension as x, makeTagProps as y, makeDimensionProps as z };
+//# sourceMappingURL=server.mjs.map

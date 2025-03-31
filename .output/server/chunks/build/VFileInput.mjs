@@ -1,8 +1,239 @@
-globalThis.__timing__.logStart('Load chunks/build/VFileInput');import { computed, ref, watch, createVNode, mergeProps, Fragment, nextTick } from 'vue';
-import { J as Je, N, x as xe } from './VTextField.mjs';
-import { f as y, y as y$1, aI as v, C, af as F, bL as te, as as d, o, au as W, av as ve, b0 as q, at as O, aw as se } from './server.mjs';
-import { j as je } from './VChip.mjs';
+import { computed, ref, watch, createVNode, mergeProps, Fragment, nextTick } from 'vue';
+import { a as VField, b as VCounter, c as makeVFieldProps } from './VTextField.mjs';
+import { k as genericComponent, p as propsFactory, aI as useLocale, l as useProxiedModel, af as useFocus, bL as humanReadableFileSize, s as useRender, au as filterInputAttrs, av as VInput, as as forwardRefs, at as makeVInputProps, b0 as wrapInArray, aw as callEvent } from './server.mjs';
+import { V as VChip } from './VChip.mjs';
 
-const me=y$1({chips:Boolean,counter:Boolean,counterSizeString:{type:String,default:"$vuetify.fileInput.counterSize"},counterString:{type:String,default:"$vuetify.fileInput.counter"},hideInput:Boolean,multiple:Boolean,showSize:{type:[Boolean,Number,String],default:false,validator:e=>typeof e=="boolean"||[1e3,1024].includes(Number(e))},...O({prependIcon:"$file"}),modelValue:{type:[Array,Object],default:e=>e.multiple?[]:null,validator:e=>q(e).every(s=>s!=null&&typeof s=="object")},...xe({clearable:true})},"VFileInput"),Re=y()({name:"VFileInput",inheritAttrs:false,props:me(),emits:{"click:control":e=>true,"mousedown:control":e=>true,"update:focused":e=>true,"update:modelValue":e=>true},setup(e,s){let{attrs:M,emit:g,slots:o$1}=s;const{t:C$1}=v(),l=C(e,"modelValue",e.modelValue,t=>q(t),t=>!e.multiple&&Array.isArray(t)?t[0]:t),{isFocused:d$1,focus:N$1,blur:$}=F(e),k=computed(()=>typeof e.showSize!="boolean"?e.showSize:void 0),I=computed(()=>(l.value??[]).reduce((t,a)=>{let{size:c=0}=a;return t+c},0)),V=computed(()=>te(I.value,k.value)),f=computed(()=>(l.value??[]).map(t=>{const{name:a="",size:c=0}=t;return e.showSize?`${a} (${te(c,k.value)})`:a})),x=computed(()=>{const t=l.value?.length??0;return e.showSize?C$1(e.counterSizeString,t,V.value):C$1(e.counterString,t)}),b=ref(),S=ref(),i=ref(),j=computed(()=>d$1.value||e.active),F$1=computed(()=>["plain","underlined"].includes(e.variant));function v$1(){i.value!==(void 0).activeElement&&i.value?.focus(),d$1.value||N$1();}function T(t){i.value?.click();}function E(t){g("mousedown:control",t);}function O(t){i.value?.click(),g("click:control",t);}function L(t){t.stopPropagation(),v$1(),nextTick(()=>{l.value=[],se(e["onClick:clear"],t);});}function U(t){t.preventDefault();}function _(t){t.preventDefault(),t.dataTransfer&&(l.value=[...t.dataTransfer.files??[]]);}return watch(l,t=>{(!Array.isArray(t)||!t.length)&&i.value&&(i.value.value="");}),o(()=>{const t=!!(o$1.counter||e.counter),a=!!(t||o$1.details),[c,q]=W(M),{modelValue:pe,...G}=ve.filterProps(e),H=Je.filterProps(e);return createVNode(ve,mergeProps({ref:b,modelValue:e.multiple?l.value:l.value[0],class:["v-file-input",{"v-file-input--chips":!!e.chips,"v-file-input--hide":e.hideInput,"v-input--plain-underlined":F$1.value},e.class],style:e.style,"onClick:prepend":T},c,G,{centerAffix:!F$1.value,focused:d$1.value}),{...o$1,default:m=>{let{id:J,isDisabled:P,isDirty:z,isReadonly:A,isValid:K}=m;return createVNode(Je,mergeProps({ref:S,"prepend-icon":e.prependIcon,onMousedown:E,onClick:O,"onClick:clear":L,"onClick:prependInner":e["onClick:prependInner"],"onClick:appendInner":e["onClick:appendInner"]},H,{id:J.value,active:j.value||z.value,dirty:z.value||e.dirty,disabled:P.value,focused:d$1.value,error:K.value===false,onDragover:U,onDrop:_}),{...o$1,default:Q=>{let{props:{class:W,...X}}=Q;return createVNode(Fragment,null,[createVNode("input",mergeProps({ref:i,type:"file",readonly:A.value,disabled:P.value,multiple:e.multiple,name:e.name,onClick:u=>{u.stopPropagation(),A.value&&u.preventDefault(),v$1();},onChange:u=>{if(!u.target)return;const Y=u.target;l.value=[...Y.files??[]];},onFocus:v$1,onBlur:$},X,q),null),createVNode("div",{class:W},[!!l.value?.length&&!e.hideInput&&(o$1.selection?o$1.selection({fileNames:f.value,totalBytes:I.value,totalBytesReadable:V.value}):e.chips?f.value.map(u=>createVNode(je,{key:u,size:"small",text:u},null)):f.value.join(", "))])])}})},details:a?m=>createVNode(Fragment,null,[o$1.details?.(m),t&&createVNode(Fragment,null,[createVNode("span",null,null),createVNode(N,{active:!!l.value?.length,value:x.value,disabled:e.disabled},o$1.counter)])]):void 0})}),d({},b,S,i)}});
+const makeVFileInputProps = propsFactory({
+  chips: Boolean,
+  counter: Boolean,
+  counterSizeString: {
+    type: String,
+    default: "$vuetify.fileInput.counterSize"
+  },
+  counterString: {
+    type: String,
+    default: "$vuetify.fileInput.counter"
+  },
+  hideInput: Boolean,
+  multiple: Boolean,
+  showSize: {
+    type: [Boolean, Number, String],
+    default: false,
+    validator: (v) => {
+      return typeof v === "boolean" || [1e3, 1024].includes(Number(v));
+    }
+  },
+  ...makeVInputProps({
+    prependIcon: "$file"
+  }),
+  modelValue: {
+    type: [Array, Object],
+    default: (props) => props.multiple ? [] : null,
+    validator: (val) => {
+      return wrapInArray(val).every((v) => v != null && typeof v === "object");
+    }
+  },
+  ...makeVFieldProps({
+    clearable: true
+  })
+}, "VFileInput");
+const VFileInput = genericComponent()({
+  name: "VFileInput",
+  inheritAttrs: false,
+  props: makeVFileInputProps(),
+  emits: {
+    "click:control": (e) => true,
+    "mousedown:control": (e) => true,
+    "update:focused": (focused) => true,
+    "update:modelValue": (files) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      emit,
+      slots
+    } = _ref;
+    const {
+      t
+    } = useLocale();
+    const model = useProxiedModel(props, "modelValue", props.modelValue, (val) => wrapInArray(val), (val) => !props.multiple && Array.isArray(val) ? val[0] : val);
+    const {
+      isFocused,
+      focus,
+      blur
+    } = useFocus(props);
+    const base = computed(() => typeof props.showSize !== "boolean" ? props.showSize : void 0);
+    const totalBytes = computed(() => (model.value ?? []).reduce((bytes, _ref2) => {
+      let {
+        size = 0
+      } = _ref2;
+      return bytes + size;
+    }, 0));
+    const totalBytesReadable = computed(() => humanReadableFileSize(totalBytes.value, base.value));
+    const fileNames = computed(() => (model.value ?? []).map((file) => {
+      const {
+        name = "",
+        size = 0
+      } = file;
+      return !props.showSize ? name : `${name} (${humanReadableFileSize(size, base.value)})`;
+    }));
+    const counterValue = computed(() => {
+      var _a;
+      const fileCount = ((_a = model.value) == null ? void 0 : _a.length) ?? 0;
+      if (props.showSize) return t(props.counterSizeString, fileCount, totalBytesReadable.value);
+      else return t(props.counterString, fileCount);
+    });
+    const vInputRef = ref();
+    const vFieldRef = ref();
+    const inputRef = ref();
+    const isActive = computed(() => isFocused.value || props.active);
+    const isPlainOrUnderlined = computed(() => ["plain", "underlined"].includes(props.variant));
+    function onFocus() {
+      var _a;
+      if (inputRef.value !== (void 0).activeElement) {
+        (_a = inputRef.value) == null ? void 0 : _a.focus();
+      }
+      if (!isFocused.value) focus();
+    }
+    function onClickPrepend(e) {
+      var _a;
+      (_a = inputRef.value) == null ? void 0 : _a.click();
+    }
+    function onControlMousedown(e) {
+      emit("mousedown:control", e);
+    }
+    function onControlClick(e) {
+      var _a;
+      (_a = inputRef.value) == null ? void 0 : _a.click();
+      emit("click:control", e);
+    }
+    function onClear(e) {
+      e.stopPropagation();
+      onFocus();
+      nextTick(() => {
+        model.value = [];
+        callEvent(props["onClick:clear"], e);
+      });
+    }
+    function onDragover(e) {
+      e.preventDefault();
+    }
+    function onDrop(e) {
+      e.preventDefault();
+      if (!e.dataTransfer) return;
+      model.value = [...e.dataTransfer.files ?? []];
+    }
+    watch(model, (newValue) => {
+      const hasModelReset = !Array.isArray(newValue) || !newValue.length;
+      if (hasModelReset && inputRef.value) {
+        inputRef.value.value = "";
+      }
+    });
+    useRender(() => {
+      const hasCounter = !!(slots.counter || props.counter);
+      const hasDetails = !!(hasCounter || slots.details);
+      const [rootAttrs, inputAttrs] = filterInputAttrs(attrs);
+      const {
+        modelValue: _,
+        ...inputProps
+      } = VInput.filterProps(props);
+      const fieldProps = VField.filterProps(props);
+      return createVNode(VInput, mergeProps({
+        "ref": vInputRef,
+        "modelValue": props.multiple ? model.value : model.value[0],
+        "class": ["v-file-input", {
+          "v-file-input--chips": !!props.chips,
+          "v-file-input--hide": props.hideInput,
+          "v-input--plain-underlined": isPlainOrUnderlined.value
+        }, props.class],
+        "style": props.style,
+        "onClick:prepend": onClickPrepend
+      }, rootAttrs, inputProps, {
+        "centerAffix": !isPlainOrUnderlined.value,
+        "focused": isFocused.value
+      }), {
+        ...slots,
+        default: (_ref3) => {
+          let {
+            id,
+            isDisabled,
+            isDirty,
+            isReadonly,
+            isValid
+          } = _ref3;
+          return createVNode(VField, mergeProps({
+            "ref": vFieldRef,
+            "prepend-icon": props.prependIcon,
+            "onMousedown": onControlMousedown,
+            "onClick": onControlClick,
+            "onClick:clear": onClear,
+            "onClick:prependInner": props["onClick:prependInner"],
+            "onClick:appendInner": props["onClick:appendInner"]
+          }, fieldProps, {
+            "id": id.value,
+            "active": isActive.value || isDirty.value,
+            "dirty": isDirty.value || props.dirty,
+            "disabled": isDisabled.value,
+            "focused": isFocused.value,
+            "error": isValid.value === false,
+            "onDragover": onDragover,
+            "onDrop": onDrop
+          }), {
+            ...slots,
+            default: (_ref4) => {
+              var _a;
+              let {
+                props: {
+                  class: fieldClass,
+                  ...slotProps
+                }
+              } = _ref4;
+              return createVNode(Fragment, null, [createVNode("input", mergeProps({
+                "ref": inputRef,
+                "type": "file",
+                "readonly": isReadonly.value,
+                "disabled": isDisabled.value,
+                "multiple": props.multiple,
+                "name": props.name,
+                "onClick": (e) => {
+                  e.stopPropagation();
+                  if (isReadonly.value) e.preventDefault();
+                  onFocus();
+                },
+                "onChange": (e) => {
+                  if (!e.target) return;
+                  const target = e.target;
+                  model.value = [...target.files ?? []];
+                },
+                "onFocus": onFocus,
+                "onBlur": blur
+              }, slotProps, inputAttrs), null), createVNode("div", {
+                "class": fieldClass
+              }, [!!((_a = model.value) == null ? void 0 : _a.length) && !props.hideInput && (slots.selection ? slots.selection({
+                fileNames: fileNames.value,
+                totalBytes: totalBytes.value,
+                totalBytesReadable: totalBytesReadable.value
+              }) : props.chips ? fileNames.value.map((text) => createVNode(VChip, {
+                "key": text,
+                "size": "small",
+                "text": text
+              }, null)) : fileNames.value.join(", "))])]);
+            }
+          });
+        },
+        details: hasDetails ? (slotProps) => {
+          var _a, _b;
+          return createVNode(Fragment, null, [(_a = slots.details) == null ? void 0 : _a.call(slots, slotProps), hasCounter && createVNode(Fragment, null, [createVNode("span", null, null), createVNode(VCounter, {
+            "active": !!((_b = model.value) == null ? void 0 : _b.length),
+            "value": counterValue.value,
+            "disabled": props.disabled
+          }, slots.counter)])]);
+        } : void 0
+      });
+    });
+    return forwardRefs({}, vInputRef, vFieldRef, inputRef);
+  }
+});
 
-export { Re as R };;globalThis.__timing__.logEnd('Load chunks/build/VFileInput');
+export { VFileInput as V };
+//# sourceMappingURL=VFileInput.mjs.map

@@ -1,6 +1,46 @@
-globalThis.__timing__.logStart('Load chunks/build/VMain');import { createVNode } from 'vue';
-import { f as y$1, y as y$2, j as x, p as dt, i, o, k as r, l as f, n as o$1 } from './server.mjs';
+import { createVNode } from 'vue';
+import { k as genericComponent, p as propsFactory, x as useDimension, B as useLayout, o as useSsrBoot, s as useRender, y as makeTagProps, z as makeDimensionProps, A as makeComponentProps } from './server.mjs';
 
-const y=y$2({scrollable:Boolean,...o$1(),...f(),...r({tag:"main"})},"VMain"),_=y$1()({name:"VMain",props:y(),setup(o$1,r){let{slots:e}=r;const{dimensionStyles:s}=x(o$1),{mainStyles:a}=dt(),{ssrBootStyles:m}=i();return o(()=>createVNode(o$1.tag,{class:["v-main",{"v-main--scrollable":o$1.scrollable},o$1.class],style:[a.value,m.value,s.value,o$1.style]},{default:()=>[o$1.scrollable?createVNode("div",{class:"v-main__scroller"},[e.default?.()]):e.default?.()]})),{}}});
+const makeVMainProps = propsFactory({
+  scrollable: Boolean,
+  ...makeComponentProps(),
+  ...makeDimensionProps(),
+  ...makeTagProps({
+    tag: "main"
+  })
+}, "VMain");
+const VMain = genericComponent()({
+  name: "VMain",
+  props: makeVMainProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    const {
+      mainStyles
+    } = useLayout();
+    const {
+      ssrBootStyles
+    } = useSsrBoot();
+    useRender(() => createVNode(props.tag, {
+      "class": ["v-main", {
+        "v-main--scrollable": props.scrollable
+      }, props.class],
+      "style": [mainStyles.value, ssrBootStyles.value, dimensionStyles.value, props.style]
+    }, {
+      default: () => {
+        var _a, _b;
+        return [props.scrollable ? createVNode("div", {
+          "class": "v-main__scroller"
+        }, [(_a = slots.default) == null ? void 0 : _a.call(slots)]) : (_b = slots.default) == null ? void 0 : _b.call(slots)];
+      }
+    }));
+    return {};
+  }
+});
 
-export { _ };;globalThis.__timing__.logEnd('Load chunks/build/VMain');
+export { VMain as V };
+//# sourceMappingURL=VMain.mjs.map

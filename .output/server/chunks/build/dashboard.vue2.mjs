@@ -1,15 +1,15 @@
-globalThis.__timing__.logStart('Load chunks/build/dashboard.vue2');import { s as s$1 } from './client-only.mjs';
-import { N as k, bM as o, a2 as $, x, P, Q as Ke, R as ot, c4 as Q, bw as g, L, c5 as w, s as s$2 } from './server.mjs';
+import { _ as __nuxt_component_0 } from './client-only.mjs';
+import { S as useUserStore, bM as useCookieStore, a2 as useDisplay, V as VApp, h as VDivider, T as VList, U as VListItem, c4 as VListGroup, bw as VListSubheader, g as VIcon, c5 as __nuxt_component_0$1, _ as _export_sfc } from './server.mjs';
 import { defineComponent, ref, watch, computed, withCtx, createVNode, toDisplayString, createBlock, createCommentVNode, openBlock, Fragment, renderList, mergeProps, createTextVNode, resolveDynamicComponent, unref, markRaw, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderAttr, ssrRenderList, ssrInterpolate, ssrRenderVNode } from 'vue/server-renderer';
 import { p as publicAssetsURL } from '../routes/renderer.mjs';
-import { a } from './PremiumFeature.vue.mjs';
+import { p as premiumFeatures } from './PremiumFeature.vue.mjs';
 import { useRouter, useRoute } from 'vue-router';
-import { D } from './analytics-collector.vue2.mjs';
-import { e as ea } from './VNavigationDrawer.mjs';
-import { F as Fe } from './VTextField.mjs';
-import { _ } from './VMain.mjs';
-import { Z } from './VAppBar.mjs';
+import { _ as _sfc_main$1 } from './analytics-collector.vue2.mjs';
+import { V as VNavigationDrawer } from './VNavigationDrawer.mjs';
+import { V as VTextField } from './VTextField.mjs';
+import { V as VMain } from './VMain.mjs';
+import { V as VAppBar } from './VAppBar.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -18,7 +18,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -49,10 +48,1446 @@ import 'unhead/plugins';
 import './VChip.mjs';
 import './VToolbar.mjs';
 
-const e=publicAssetsURL("/logo/devunity-letter.png");
+const _imports_0 = publicAssetsURL("/logo/devunity-letter.png");
 
-const st=defineComponent({__name:"dashboard",__ssrInlineRender:true,setup(Te){const P$1=k();o();const xe=useRouter(),ne=useRoute(),F=ref([]),z=ref(""),H=$(),B=ref(!H.smAndDown.value),V=ref("Dashboard");watch(()=>ne.path,()=>{H.smAndDown.value&&(B.value=false),we();}),watch(()=>H.smAndDown.value,n=>{n||(B.value=true);});const we=()=>{const n=ne.path;if(n==="/dashboard")V.value="Dashboard";else if(n.includes("/snippets"))V.value="Snippets";else if(n.includes("/sql-generator"))V.value="Database Designer";else if(n.includes("/studio"))V.value="Studio";else if(n.includes("/responsive"))V.value="Responsive";else if(n.includes("/accessibility"))V.value="Accessibility";else if(n.includes("/seo-audit"))V.value="SEO Audit";else if(n.includes("/settings"))V.value="Settings";else if(n.includes("/newsletter-admin"))V.value="Newsletter";else {const m=n.split("/").pop()||"Dashboard";V.value=m.charAt(0).toUpperCase()+m.slice(1);}},_$1=computed(()=>[...P$1.personalSnippets].sort((n,m)=>{const U=ge(n);return ge(m)-U}).slice(0,5)),j=computed(()=>[...P$1.sqlSchemas].slice(0,5)),M=n=>{if(n&&n.schema_data)try{const m=typeof n.schema_data=="string"?JSON.parse(n.schema_data):n.schema_data;return m.tables?m.tables.length:0}catch(m){return console.error("Error parsing schema data:",m),0}return 0},ge=n=>{if(n){const m=n.date||n.snippet_date;if(m){const U=new Date(m);if(!isNaN(U.getTime()))return U.getTime()}}return 0},O=n=>{if(n){const m=n.date||n.snippet_date;if(m)return Se(m)}return "Date unknown"},Se=n=>{if(!n)return "Date unknown";try{const m=new Date(n);if(isNaN(m.getTime()))return "Invalid date";const G=Math.abs(new Date().getTime()-m.getTime()),Q=Math.ceil(G/(1e3*60*60*24));return Q===1?"Yesterday":Q<7?`${Q} days ago`:m.toLocaleDateString("en-GB",{day:"2-digit",month:"2-digit",year:"numeric"})}catch(m){return console.error("Error formatting date:",m),"Date error"}},J=n=>{switch(n?.toLowerCase()){case "react":return "mdi-react";case "vue.js 3":case "vue":return "mdi-vuejs";case "angular":return "mdi-angular";case "nest.js":return "mdi-nodejs";case "nuxt 3":case "nuxt":return "mdi-nuxt";default:return "mdi-code-tags"}},X=()=>{const n=ne.path;return n==="/dashboard"?"mdi-view-dashboard-outline":n.includes("/snippets")?"mdi-code-tags":n.includes("/sql-generator")?"mdi-database-cog":n.includes("/studio")?"mdi-palette":n.includes("/responsive")?"mdi-responsive":n.includes("/accessibility")?"mdi-access-point":n.includes("/seo-audit")?"mdi-magnify":n.includes("/robots")?"mdi-robot":n.includes("/settings")?"mdi-cog-outline":n.includes("/newsletter-admin")?"mdi-email-outline":"mdi-application"},s=()=>{H.smAndDown.value&&(B.value=false);},K=async()=>{try{await P$1.logout(),s(),xe.push("/login");}catch(n){console.error("Error during logout:",n);}};watch(()=>P$1.user?.isPremium,n=>{console.log("[DEBUG] Changement du statut premium détecté:",n);},{immediate:true});function re(n,m,U,G){return P$1.user?.isPremium?{title:n,link:m,icon:U}:{title:`${n} (Premium)`,link:"#",icon:U,component:{component:markRaw(a),props:{type:"list-item",title:n,icon:U,featureKey:G}}}}const W=computed(()=>[{title:"Frontend",prependIcon:"mdi-web",link:true,children:[{title:"Snippets",link:"/snippets",icon:"mdi-code-tags"},{title:"Studio",link:"/studio",icon:"mdi-palette"}]},{title:"Backend",prependIcon:"mdi-database-outline",link:true,children:[re("Database Designer","/sql-generator","mdi-database","databaseDesigner")]},{title:"UI/UX",prependIcon:"mdi-palette",link:true,children:[{title:"Responsive",link:"/responsive",icon:"mdi-responsive"},{title:"Accessibility",link:"/accessibility",icon:"mdi-access-point"}]},{title:"SEO",prependIcon:"mdi-rocket-launch-outline",link:true,children:[re("SEO Audit","/seo-audit","mdi-magnify","seoAudit"),re("Robots & Schema","/robots","mdi-robot","robots")]}]);return (n,m,U,G)=>{const Q$1=s$1,oe=w;m(ssrRenderComponent(x,G,{default:withCtx((qe,Z$1,ae,ie)=>{if(Z$1)Z$1(ssrRenderComponent(D,null,null,ae,ie)),Z$1(ssrRenderComponent(ea,{modelValue:B.value,"onUpdate:modelValue":d=>B.value=d,temporary:n.$vuetify.display.smAndDown,permanent:!n.$vuetify.display.smAndDown,app:"",clipped:"",class:"elevation-2"},{default:withCtx((d,x,D,h)=>{if(x)x(`<div class="drawer-header pa-4" data-v-b5389df5${h}><div class="d-flex align-center mb-4" data-v-b5389df5${h}><div class="logo-container mr-3" data-v-b5389df5${h}><img${ssrRenderAttr("src",e)} alt="DevUnity" class="logo-devunity" data-v-b5389df5${h}></div><div data-v-b5389df5${h}><div class="text-h6 font-weight-bold" data-v-b5389df5${h}>DevUnity</div><div class="text-caption text-medium-emphasis" data-v-b5389df5${h}>v1.0.0</div></div></div>`),x(ssrRenderComponent(Fe,{modelValue:z.value,"onUpdate:modelValue":c=>z.value=c,density:"compact",variant:"outlined",placeholder:"Search...","prepend-inner-icon":"mdi-magnify","hide-details":"",rounded:"",class:"mb-2","bg-color":"surface"},null,D,h)),x("</div>"),x(ssrRenderComponent(P,null,null,D,h)),x(ssrRenderComponent(Ke,{density:"compact",opened:F.value,"onUpdate:opened":c=>F.value=c,nav:"",class:"px-2"},{default:withCtx((c,v,b,S)=>{if(v)v(ssrRenderComponent(ot,{to:"/dashboard","prepend-icon":"mdi-view-dashboard-outline",title:"Dashboard",rounded:"lg",class:"mb-1",color:"primary",nuxt:"",onClick:s},null,b,S)),v(ssrRenderComponent(Q,{value:"Recent Projects",class:"mb-1","prepend-icon":"mdi-history"},{activator:withCtx(({props:a},i,p,f)=>{if(i)i(ssrRenderComponent(ot,mergeProps(a,{title:"Recent Projects",rounded:"lg",color:"primary"}),null,p,f));else return [createVNode(ot,mergeProps(a,{title:"Recent Projects",rounded:"lg",color:"primary"}),null,16)]}),default:withCtx((a,i,p,f)=>{if(i)i("<!--[-->"),ssrRenderList(_$1.value,(g,L)=>{i(ssrRenderComponent(ot,{key:L,to:`/snippets?id=${g.id}`,title:g.title,"prepend-icon":J(g.framework),class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx((C,T,De,se)=>{if(T)T(`<span class="text-caption" data-v-b5389df5${se}>${ssrInterpolate(O(g))}</span>`);else return [createVNode("span",{class:"text-caption"},toDisplayString(O(g)),1)]}),_:2},p,f));}),i("<!--]-->"),_$1.value.length===0?i(ssrRenderComponent(ot,{class:"ml-4",title:"No recent projects",disabled:""},null,p,f)):i("<!---->");else return [(openBlock(true),createBlock(Fragment,null,renderList(_$1.value,(g,L)=>(openBlock(),createBlock(ot,{key:L,to:`/snippets?id=${g.id}`,title:g.title,"prepend-icon":J(g.framework),class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx(()=>[createVNode("span",{class:"text-caption"},toDisplayString(O(g)),1)]),_:2},1032,["to","title","prepend-icon"]))),128)),_$1.value.length===0?(openBlock(),createBlock(ot,{key:0,class:"ml-4",title:"No recent projects",disabled:""})):createCommentVNode("",true)]}),_:1},b,S)),v(ssrRenderComponent(Q,{value:"Recent SQL schemas",class:"mb-1","prepend-icon":"mdi-database-outline"},{activator:withCtx(({props:a},i,p,f)=>{if(i)i(ssrRenderComponent(ot,mergeProps(a,{title:"Recent SQL schemas",rounded:"lg",color:"primary"}),null,p,f));else return [createVNode(ot,mergeProps(a,{title:"Recent SQL schemas",rounded:"lg",color:"primary"}),null,16)]}),default:withCtx((a,i,p,f)=>{if(i)i("<!--[-->"),ssrRenderList(j.value,(g,L)=>{i(ssrRenderComponent(ot,{key:L,to:`/sql-generator?id=${g.id}`,title:g.database_name,"prepend-icon":"mdi-database",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx((C,T,De,se)=>{if(T)T(`<span class="text-caption" data-v-b5389df5${se}>${ssrInterpolate(M(g))} tables</span>`);else return [createVNode("span",{class:"text-caption"},toDisplayString(M(g))+" tables",1)]}),_:2},p,f));}),i("<!--]-->"),j.value.length===0?i(ssrRenderComponent(ot,{class:"ml-4",title:"No recent SQL schemas",disabled:""},null,p,f)):i("<!---->");else return [(openBlock(true),createBlock(Fragment,null,renderList(j.value,(g,L)=>(openBlock(),createBlock(ot,{key:L,to:`/sql-generator?id=${g.id}`,title:g.database_name,"prepend-icon":"mdi-database",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx(()=>[createVNode("span",{class:"text-caption"},toDisplayString(M(g))+" tables",1)]),_:2},1032,["to","title"]))),128)),j.value.length===0?(openBlock(),createBlock(ot,{key:0,class:"ml-4",title:"No recent SQL schemas",disabled:""})):createCommentVNode("",true)]}),_:1},b,S)),v(ssrRenderComponent(g,{class:"mt-2 text-uppercase font-weight-bold text-caption"},{default:withCtx((a,i,p,f)=>{if(i)i("Applications");else return [createTextVNode("Applications")]}),_:1},b,S)),v("<!--[-->"),ssrRenderList(W.value,(a,i)=>{v(ssrRenderComponent(Q,{key:i,value:a.title,class:"mb-1","prepend-icon":a.prependIcon},{activator:withCtx(({props:p},f,g,L)=>{if(f)f(ssrRenderComponent(ot,mergeProps({ref_for:true},p,{title:a.title,rounded:"lg",color:"primary"}),null,g,L));else return [createVNode(ot,mergeProps({ref_for:true},p,{title:a.title,rounded:"lg",color:"primary"}),null,16,["title"])]}),default:withCtx((p,f,g,L)=>{if(f)f("<!--[-->"),ssrRenderList(a.children,(C,T)=>{f("<!--[-->"),C.component?ssrRenderVNode(f,createVNode(resolveDynamicComponent(C.component.component),mergeProps({ref_for:true},C.component.props,{class:"ml-4 my-1 premium-menu-item"}),null),g,L):f(ssrRenderComponent(ot,{to:C.link,title:C.title,"prepend-icon":C.icon||"mdi-circle-small",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},null,g,L)),f("<!--]-->");}),f("<!--]-->");else return [(openBlock(true),createBlock(Fragment,null,renderList(a.children,(C,T)=>(openBlock(),createBlock(Fragment,{key:T},[C.component?(openBlock(),createBlock(resolveDynamicComponent(C.component.component),mergeProps({key:0,ref_for:true},C.component.props,{class:"ml-4 my-1 premium-menu-item"}),null,16)):(openBlock(),createBlock(ot,{key:1,to:C.link,title:C.title,"prepend-icon":C.icon||"mdi-circle-small",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},null,8,["to","title","prepend-icon"]))],64))),128))]}),_:2},b,S));}),v("<!--]-->"),v(ssrRenderComponent(P,{class:"my-3"},null,b,S)),v(ssrRenderComponent(g,{class:"text-uppercase font-weight-bold text-caption"},{default:withCtx((a,i,p,f)=>{if(i)i("System");else return [createTextVNode("System")]}),_:1},b,S)),v(ssrRenderComponent(Q$1,null,{},b,S)),v(ssrRenderComponent(ot,{to:"/settings","prepend-icon":"mdi-cog-outline",title:"Settings",rounded:"lg",class:"mb-1",color:"primary",nuxt:"",onClick:s},null,b,S)),v(ssrRenderComponent(ot,{onClick:K,"prepend-icon":"mdi-logout",title:"Logout",rounded:"lg",color:"error"},null,b,S));else return [createVNode(ot,{to:"/dashboard","prepend-icon":"mdi-view-dashboard-outline",title:"Dashboard",rounded:"lg",class:"mb-1",color:"primary",nuxt:"",onClick:s}),createVNode(Q,{value:"Recent Projects",class:"mb-1","prepend-icon":"mdi-history"},{activator:withCtx(({props:a})=>[createVNode(ot,mergeProps(a,{title:"Recent Projects",rounded:"lg",color:"primary"}),null,16)]),default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(_$1.value,(a,i)=>(openBlock(),createBlock(ot,{key:i,to:`/snippets?id=${a.id}`,title:a.title,"prepend-icon":J(a.framework),class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx(()=>[createVNode("span",{class:"text-caption"},toDisplayString(O(a)),1)]),_:2},1032,["to","title","prepend-icon"]))),128)),_$1.value.length===0?(openBlock(),createBlock(ot,{key:0,class:"ml-4",title:"No recent projects",disabled:""})):createCommentVNode("",true)]),_:1}),createVNode(Q,{value:"Recent SQL schemas",class:"mb-1","prepend-icon":"mdi-database-outline"},{activator:withCtx(({props:a})=>[createVNode(ot,mergeProps(a,{title:"Recent SQL schemas",rounded:"lg",color:"primary"}),null,16)]),default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(j.value,(a,i)=>(openBlock(),createBlock(ot,{key:i,to:`/sql-generator?id=${a.id}`,title:a.database_name,"prepend-icon":"mdi-database",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx(()=>[createVNode("span",{class:"text-caption"},toDisplayString(M(a))+" tables",1)]),_:2},1032,["to","title"]))),128)),j.value.length===0?(openBlock(),createBlock(ot,{key:0,class:"ml-4",title:"No recent SQL schemas",disabled:""})):createCommentVNode("",true)]),_:1}),createVNode(g,{class:"mt-2 text-uppercase font-weight-bold text-caption"},{default:withCtx(()=>[createTextVNode("Applications")]),_:1}),(openBlock(true),createBlock(Fragment,null,renderList(W.value,(a,i)=>(openBlock(),createBlock(Q,{key:i,value:a.title,class:"mb-1","prepend-icon":a.prependIcon},{activator:withCtx(({props:p})=>[createVNode(ot,mergeProps({ref_for:true},p,{title:a.title,rounded:"lg",color:"primary"}),null,16,["title"])]),default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(a.children,(p,f)=>(openBlock(),createBlock(Fragment,{key:f},[p.component?(openBlock(),createBlock(resolveDynamicComponent(p.component.component),mergeProps({key:0,ref_for:true},p.component.props,{class:"ml-4 my-1 premium-menu-item"}),null,16)):(openBlock(),createBlock(ot,{key:1,to:p.link,title:p.title,"prepend-icon":p.icon||"mdi-circle-small",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},null,8,["to","title","prepend-icon"]))],64))),128))]),_:2},1032,["value","prepend-icon"]))),128)),createVNode(P,{class:"my-3"}),createVNode(g,{class:"text-uppercase font-weight-bold text-caption"},{default:withCtx(()=>[createTextVNode("System")]),_:1}),createVNode(Q$1,null,{default:withCtx(()=>[unref(P$1).user?.isAdmin?(openBlock(),createBlock(Q,{key:0,value:"Administration",class:"mb-1","prepend-icon":"mdi-shield-account"},{activator:withCtx(({props:a})=>[createVNode(ot,mergeProps(a,{title:"Administration",rounded:"lg",color:"primary"}),null,16)]),default:withCtx(()=>[createVNode(ot,{to:"/admin/newsletter-admin","prepend-icon":"mdi-email-outline",title:"Newsletter",rounded:"lg",class:"ml-4",color:"primary",nuxt:"",onClick:s}),createVNode(ot,{to:"/admin/analytics","prepend-icon":"mdi-chart-box",title:"Analytics",rounded:"lg",class:"ml-4",color:"primary",nuxt:"",onClick:s})]),_:1})):createCommentVNode("",true)]),_:1}),createVNode(ot,{to:"/settings","prepend-icon":"mdi-cog-outline",title:"Settings",rounded:"lg",class:"mb-1",color:"primary",nuxt:"",onClick:s}),createVNode(ot,{onClick:K,"prepend-icon":"mdi-logout",title:"Logout",rounded:"lg",color:"error"})]}),_:1},D,h));else return [createVNode("div",{class:"drawer-header pa-4"},[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode("div",{class:"logo-container mr-3"},[createVNode("img",{src:e,alt:"DevUnity",class:"logo-devunity"})]),createVNode("div",null,[createVNode("div",{class:"text-h6 font-weight-bold"},"DevUnity"),createVNode("div",{class:"text-caption text-medium-emphasis"},"v1.0.0")])]),createVNode(Fe,{modelValue:z.value,"onUpdate:modelValue":c=>z.value=c,density:"compact",variant:"outlined",placeholder:"Search...","prepend-inner-icon":"mdi-magnify","hide-details":"",rounded:"",class:"mb-2","bg-color":"surface"},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(P),createVNode(Ke,{density:"compact",opened:F.value,"onUpdate:opened":c=>F.value=c,nav:"",class:"px-2"},{default:withCtx(()=>[createVNode(ot,{to:"/dashboard","prepend-icon":"mdi-view-dashboard-outline",title:"Dashboard",rounded:"lg",class:"mb-1",color:"primary",nuxt:"",onClick:s}),createVNode(Q,{value:"Recent Projects",class:"mb-1","prepend-icon":"mdi-history"},{activator:withCtx(({props:c})=>[createVNode(ot,mergeProps(c,{title:"Recent Projects",rounded:"lg",color:"primary"}),null,16)]),default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(_$1.value,(c,v)=>(openBlock(),createBlock(ot,{key:v,to:`/snippets?id=${c.id}`,title:c.title,"prepend-icon":J(c.framework),class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx(()=>[createVNode("span",{class:"text-caption"},toDisplayString(O(c)),1)]),_:2},1032,["to","title","prepend-icon"]))),128)),_$1.value.length===0?(openBlock(),createBlock(ot,{key:0,class:"ml-4",title:"No recent projects",disabled:""})):createCommentVNode("",true)]),_:1}),createVNode(Q,{value:"Recent SQL schemas",class:"mb-1","prepend-icon":"mdi-database-outline"},{activator:withCtx(({props:c})=>[createVNode(ot,mergeProps(c,{title:"Recent SQL schemas",rounded:"lg",color:"primary"}),null,16)]),default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(j.value,(c,v)=>(openBlock(),createBlock(ot,{key:v,to:`/sql-generator?id=${c.id}`,title:c.database_name,"prepend-icon":"mdi-database",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx(()=>[createVNode("span",{class:"text-caption"},toDisplayString(M(c))+" tables",1)]),_:2},1032,["to","title"]))),128)),j.value.length===0?(openBlock(),createBlock(ot,{key:0,class:"ml-4",title:"No recent SQL schemas",disabled:""})):createCommentVNode("",true)]),_:1}),createVNode(g,{class:"mt-2 text-uppercase font-weight-bold text-caption"},{default:withCtx(()=>[createTextVNode("Applications")]),_:1}),(openBlock(true),createBlock(Fragment,null,renderList(W.value,(c,v)=>(openBlock(),createBlock(Q,{key:v,value:c.title,class:"mb-1","prepend-icon":c.prependIcon},{activator:withCtx(({props:b})=>[createVNode(ot,mergeProps({ref_for:true},b,{title:c.title,rounded:"lg",color:"primary"}),null,16,["title"])]),default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(c.children,(b,S)=>(openBlock(),createBlock(Fragment,{key:S},[b.component?(openBlock(),createBlock(resolveDynamicComponent(b.component.component),mergeProps({key:0,ref_for:true},b.component.props,{class:"ml-4 my-1 premium-menu-item"}),null,16)):(openBlock(),createBlock(ot,{key:1,to:b.link,title:b.title,"prepend-icon":b.icon||"mdi-circle-small",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},null,8,["to","title","prepend-icon"]))],64))),128))]),_:2},1032,["value","prepend-icon"]))),128)),createVNode(P,{class:"my-3"}),createVNode(g,{class:"text-uppercase font-weight-bold text-caption"},{default:withCtx(()=>[createTextVNode("System")]),_:1}),createVNode(Q$1,null,{default:withCtx(()=>[unref(P$1).user?.isAdmin?(openBlock(),createBlock(Q,{key:0,value:"Administration",class:"mb-1","prepend-icon":"mdi-shield-account"},{activator:withCtx(({props:c})=>[createVNode(ot,mergeProps(c,{title:"Administration",rounded:"lg",color:"primary"}),null,16)]),default:withCtx(()=>[createVNode(ot,{to:"/admin/newsletter-admin","prepend-icon":"mdi-email-outline",title:"Newsletter",rounded:"lg",class:"ml-4",color:"primary",nuxt:"",onClick:s}),createVNode(ot,{to:"/admin/analytics","prepend-icon":"mdi-chart-box",title:"Analytics",rounded:"lg",class:"ml-4",color:"primary",nuxt:"",onClick:s})]),_:1})):createCommentVNode("",true)]),_:1}),createVNode(ot,{to:"/settings","prepend-icon":"mdi-cog-outline",title:"Settings",rounded:"lg",class:"mb-1",color:"primary",nuxt:"",onClick:s}),createVNode(ot,{onClick:K,"prepend-icon":"mdi-logout",title:"Logout",rounded:"lg",color:"error"})]),_:1},8,["opened","onUpdate:opened"])]}),_:1},ae,ie)),Z$1(ssrRenderComponent(_,null,{default:withCtx((d,x,D,h)=>{if(x)n.$vuetify.display.smAndDown?x("<!---->"):x(ssrRenderComponent(Z,{color:"primary",flat:"",class:"border-b page-header px-4","scroll-behavior":"elevate",elevation:0},{default:withCtx((c,v,b,S)=>{if(v)v(`<div class="d-flex align-center" data-v-b5389df5${S}>`),v(ssrRenderComponent(L,{size:"large",class:"mr-3"},{default:withCtx((a,i,p,f)=>{if(i)i(`${ssrInterpolate(X())}`);else return [createTextVNode(toDisplayString(X()),1)]}),_:1},b,S)),v(`<div class="text-h5 font-weight-bold" data-v-b5389df5${S}>${ssrInterpolate(V.value)}</div></div>`);else return [createVNode("div",{class:"d-flex align-center"},[createVNode(L,{size:"large",class:"mr-3"},{default:withCtx(()=>[createTextVNode(toDisplayString(X()),1)]),_:1}),createVNode("div",{class:"text-h5 font-weight-bold"},toDisplayString(V.value),1)])]}),_:1},D,h)),x(ssrRenderComponent(oe,null,null,D,h));else return [n.$vuetify.display.smAndDown?createCommentVNode("",true):(openBlock(),createBlock(Z,{key:0,color:"primary",flat:"",class:"border-b page-header px-4","scroll-behavior":"elevate",elevation:0},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode(L,{size:"large",class:"mr-3"},{default:withCtx(()=>[createTextVNode(toDisplayString(X()),1)]),_:1}),createVNode("div",{class:"text-h5 font-weight-bold"},toDisplayString(V.value),1)])]),_:1})),createVNode(oe)]}),_:1},ae,ie));else return [createVNode(D),createVNode(ea,{modelValue:B.value,"onUpdate:modelValue":d=>B.value=d,temporary:n.$vuetify.display.smAndDown,permanent:!n.$vuetify.display.smAndDown,app:"",clipped:"",class:"elevation-2"},{default:withCtx(()=>[createVNode("div",{class:"drawer-header pa-4"},[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode("div",{class:"logo-container mr-3"},[createVNode("img",{src:e,alt:"DevUnity",class:"logo-devunity"})]),createVNode("div",null,[createVNode("div",{class:"text-h6 font-weight-bold"},"DevUnity"),createVNode("div",{class:"text-caption text-medium-emphasis"},"v1.0.0")])]),createVNode(Fe,{modelValue:z.value,"onUpdate:modelValue":d=>z.value=d,density:"compact",variant:"outlined",placeholder:"Search...","prepend-inner-icon":"mdi-magnify","hide-details":"",rounded:"",class:"mb-2","bg-color":"surface"},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(P),createVNode(Ke,{density:"compact",opened:F.value,"onUpdate:opened":d=>F.value=d,nav:"",class:"px-2"},{default:withCtx(()=>[createVNode(ot,{to:"/dashboard","prepend-icon":"mdi-view-dashboard-outline",title:"Dashboard",rounded:"lg",class:"mb-1",color:"primary",nuxt:"",onClick:s}),createVNode(Q,{value:"Recent Projects",class:"mb-1","prepend-icon":"mdi-history"},{activator:withCtx(({props:d})=>[createVNode(ot,mergeProps(d,{title:"Recent Projects",rounded:"lg",color:"primary"}),null,16)]),default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(_$1.value,(d,x)=>(openBlock(),createBlock(ot,{key:x,to:`/snippets?id=${d.id}`,title:d.title,"prepend-icon":J(d.framework),class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx(()=>[createVNode("span",{class:"text-caption"},toDisplayString(O(d)),1)]),_:2},1032,["to","title","prepend-icon"]))),128)),_$1.value.length===0?(openBlock(),createBlock(ot,{key:0,class:"ml-4",title:"No recent projects",disabled:""})):createCommentVNode("",true)]),_:1}),createVNode(Q,{value:"Recent SQL schemas",class:"mb-1","prepend-icon":"mdi-database-outline"},{activator:withCtx(({props:d})=>[createVNode(ot,mergeProps(d,{title:"Recent SQL schemas",rounded:"lg",color:"primary"}),null,16)]),default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(j.value,(d,x)=>(openBlock(),createBlock(ot,{key:x,to:`/sql-generator?id=${d.id}`,title:d.database_name,"prepend-icon":"mdi-database",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},{subtitle:withCtx(()=>[createVNode("span",{class:"text-caption"},toDisplayString(M(d))+" tables",1)]),_:2},1032,["to","title"]))),128)),j.value.length===0?(openBlock(),createBlock(ot,{key:0,class:"ml-4",title:"No recent SQL schemas",disabled:""})):createCommentVNode("",true)]),_:1}),createVNode(g,{class:"mt-2 text-uppercase font-weight-bold text-caption"},{default:withCtx(()=>[createTextVNode("Applications")]),_:1}),(openBlock(true),createBlock(Fragment,null,renderList(W.value,(d,x)=>(openBlock(),createBlock(Q,{key:x,value:d.title,class:"mb-1","prepend-icon":d.prependIcon},{activator:withCtx(({props:D})=>[createVNode(ot,mergeProps({ref_for:true},D,{title:d.title,rounded:"lg",color:"primary"}),null,16,["title"])]),default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(d.children,(D,h)=>(openBlock(),createBlock(Fragment,{key:h},[D.component?(openBlock(),createBlock(resolveDynamicComponent(D.component.component),mergeProps({key:0,ref_for:true},D.component.props,{class:"ml-4 my-1 premium-menu-item"}),null,16)):(openBlock(),createBlock(ot,{key:1,to:D.link,title:D.title,"prepend-icon":D.icon||"mdi-circle-small",class:"ml-4",rounded:"lg",color:"primary",nuxt:"",onClick:s},null,8,["to","title","prepend-icon"]))],64))),128))]),_:2},1032,["value","prepend-icon"]))),128)),createVNode(P,{class:"my-3"}),createVNode(g,{class:"text-uppercase font-weight-bold text-caption"},{default:withCtx(()=>[createTextVNode("System")]),_:1}),createVNode(Q$1,null,{default:withCtx(()=>[unref(P$1).user?.isAdmin?(openBlock(),createBlock(Q,{key:0,value:"Administration",class:"mb-1","prepend-icon":"mdi-shield-account"},{activator:withCtx(({props:d})=>[createVNode(ot,mergeProps(d,{title:"Administration",rounded:"lg",color:"primary"}),null,16)]),default:withCtx(()=>[createVNode(ot,{to:"/admin/newsletter-admin","prepend-icon":"mdi-email-outline",title:"Newsletter",rounded:"lg",class:"ml-4",color:"primary",nuxt:"",onClick:s}),createVNode(ot,{to:"/admin/analytics","prepend-icon":"mdi-chart-box",title:"Analytics",rounded:"lg",class:"ml-4",color:"primary",nuxt:"",onClick:s})]),_:1})):createCommentVNode("",true)]),_:1}),createVNode(ot,{to:"/settings","prepend-icon":"mdi-cog-outline",title:"Settings",rounded:"lg",class:"mb-1",color:"primary",nuxt:"",onClick:s}),createVNode(ot,{onClick:K,"prepend-icon":"mdi-logout",title:"Logout",rounded:"lg",color:"error"})]),_:1},8,["opened","onUpdate:opened"])]),_:1},8,["modelValue","onUpdate:modelValue","temporary","permanent"]),createVNode(_,null,{default:withCtx(()=>[n.$vuetify.display.smAndDown?createCommentVNode("",true):(openBlock(),createBlock(Z,{key:0,color:"primary",flat:"",class:"border-b page-header px-4","scroll-behavior":"elevate",elevation:0},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center"},[createVNode(L,{size:"large",class:"mr-3"},{default:withCtx(()=>[createTextVNode(toDisplayString(X()),1)]),_:1}),createVNode("div",{class:"text-h5 font-weight-bold"},toDisplayString(V.value),1)])]),_:1})),createVNode(oe)]),_:1})]}),_:1},U));}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "dashboard",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const userStore = useUserStore();
+    useCookieStore();
+    const router = useRouter();
+    const route = useRoute();
+    const open = ref([]);
+    const search = ref("");
+    const display = useDisplay();
+    const drawer = ref(!display.smAndDown.value);
+    const currentPageTitle = ref("Dashboard");
+    watch(() => route.path, () => {
+      if (display.smAndDown.value) {
+        drawer.value = false;
+      }
+      updatePageTitle();
+    });
+    watch(() => display.smAndDown.value, (isSmall) => {
+      if (!isSmall) {
+        drawer.value = true;
+      }
+    });
+    const updatePageTitle = () => {
+      const path = route.path;
+      if (path === "/dashboard") {
+        currentPageTitle.value = "Dashboard";
+      } else if (path.includes("/snippets")) {
+        currentPageTitle.value = "Snippets";
+      } else if (path.includes("/sql-generator")) {
+        currentPageTitle.value = "Database Designer";
+      } else if (path.includes("/studio")) {
+        currentPageTitle.value = "Studio";
+      } else if (path.includes("/responsive")) {
+        currentPageTitle.value = "Responsive";
+      } else if (path.includes("/accessibility")) {
+        currentPageTitle.value = "Accessibility";
+      } else if (path.includes("/seo-audit")) {
+        currentPageTitle.value = "SEO Audit";
+      } else if (path.includes("/settings")) {
+        currentPageTitle.value = "Settings";
+      } else if (path.includes("/newsletter-admin")) {
+        currentPageTitle.value = "Newsletter";
+      } else {
+        const routeName = path.split("/").pop() || "Dashboard";
+        currentPageTitle.value = routeName.charAt(0).toUpperCase() + routeName.slice(1);
+      }
+    };
+    const recentSnippets = computed(() => {
+      return [...userStore.personalSnippets].sort((a, b) => {
+        const dateA = getDateValue(a);
+        const dateB = getDateValue(b);
+        return dateB - dateA;
+      }).slice(0, 5);
+    });
+    const recentSQLSchemas = computed(() => {
+      return [...userStore.sqlSchemas].slice(0, 5);
+    });
+    const getSchemaTablesCount = (schema) => {
+      if (schema && schema.schema_data) {
+        try {
+          const data = typeof schema.schema_data === "string" ? JSON.parse(schema.schema_data) : schema.schema_data;
+          return data.tables ? data.tables.length : 0;
+        } catch (e) {
+          console.error("Error parsing schema data:", e);
+          return 0;
+        }
+      }
+      return 0;
+    };
+    const getDateValue = (snippet) => {
+      if (snippet) {
+        const dateStr = snippet.date || snippet.snippet_date;
+        if (dateStr) {
+          const date = new Date(dateStr);
+          if (!isNaN(date.getTime())) {
+            return date.getTime();
+          }
+        }
+      }
+      return 0;
+    };
+    const getSnippetDate = (snippet) => {
+      if (snippet) {
+        const dateStr = snippet.date || snippet.snippet_date;
+        if (dateStr) {
+          return formatDate(dateStr);
+        }
+      }
+      return "Date unknown";
+    };
+    const formatDate = (dateString) => {
+      if (!dateString) return "Date unknown";
+      try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+          return "Invalid date";
+        }
+        const now = /* @__PURE__ */ new Date();
+        const diffTime = Math.abs(now.getTime() - date.getTime());
+        const diffDays = Math.ceil(diffTime / (1e3 * 60 * 60 * 24));
+        if (diffDays === 1) {
+          return "Yesterday";
+        } else if (diffDays < 7) {
+          return `${diffDays} days ago`;
+        } else {
+          return date.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+          });
+        }
+      } catch (error) {
+        console.error("Error formatting date:", error);
+        return "Date error";
+      }
+    };
+    const getFrameworkIcon = (framework) => {
+      switch (framework == null ? void 0 : framework.toLowerCase()) {
+        case "react":
+          return "mdi-react";
+        case "vue.js 3":
+        case "vue":
+          return "mdi-vuejs";
+        case "angular":
+          return "mdi-angular";
+        case "nest.js":
+          return "mdi-nodejs";
+        case "nuxt 3":
+        case "nuxt":
+          return "mdi-nuxt";
+        default:
+          return "mdi-code-tags";
+      }
+    };
+    const getCurrentPageIcon = () => {
+      const path = route.path;
+      if (path === "/dashboard") {
+        return "mdi-view-dashboard-outline";
+      } else if (path.includes("/snippets")) {
+        return "mdi-code-tags";
+      } else if (path.includes("/sql-generator")) {
+        return "mdi-database-cog";
+      } else if (path.includes("/studio")) {
+        return "mdi-palette";
+      } else if (path.includes("/responsive")) {
+        return "mdi-responsive";
+      } else if (path.includes("/accessibility")) {
+        return "mdi-access-point";
+      } else if (path.includes("/seo-audit")) {
+        return "mdi-magnify";
+      } else if (path.includes("/robots")) {
+        return "mdi-robot";
+      } else if (path.includes("/settings")) {
+        return "mdi-cog-outline";
+      } else if (path.includes("/newsletter-admin")) {
+        return "mdi-email-outline";
+      } else {
+        return "mdi-application";
+      }
+    };
+    const closeDrawer = () => {
+      if (display.smAndDown.value) {
+        drawer.value = false;
+      }
+    };
+    const logout = async () => {
+      try {
+        await userStore.logout();
+        closeDrawer();
+        router.push("/login");
+      } catch (error) {
+        console.error("Error during logout:", error);
+      }
+    };
+    watch(() => {
+      var _a;
+      return (_a = userStore.user) == null ? void 0 : _a.isPremium;
+    }, (newValue) => {
+      console.log("[DEBUG] Changement du statut premium détecté:", newValue);
+    }, { immediate: true });
+    function createPremiumMenuItem(title, link, icon, featureKey) {
+      var _a;
+      if ((_a = userStore.user) == null ? void 0 : _a.isPremium) {
+        return {
+          title,
+          link,
+          icon
+        };
+      } else {
+        return {
+          title: `${title} (Premium)`,
+          link: "#",
+          icon,
+          component: {
+            component: markRaw(premiumFeatures),
+            props: {
+              type: "list-item",
+              title,
+              icon,
+              featureKey
+            }
+          }
+        };
+      }
+    }
+    const items = computed(() => [
+      {
+        title: "Frontend",
+        prependIcon: "mdi-web",
+        link: true,
+        children: [
+          { title: "Snippets", link: "/snippets", icon: "mdi-code-tags" },
+          { title: "Studio", link: "/studio", icon: "mdi-palette" }
+        ]
+      },
+      {
+        title: "Backend",
+        prependIcon: "mdi-database-outline",
+        link: true,
+        children: [
+          createPremiumMenuItem("Database Designer", "/sql-generator", "mdi-database", "databaseDesigner")
+        ]
+      },
+      {
+        title: "UI/UX",
+        prependIcon: "mdi-palette",
+        link: true,
+        children: [
+          { title: "Responsive", link: "/responsive", icon: "mdi-responsive" },
+          { title: "Accessibility", link: "/accessibility", icon: "mdi-access-point" }
+        ]
+      },
+      {
+        title: "SEO",
+        prependIcon: "mdi-rocket-launch-outline",
+        link: true,
+        children: [
+          createPremiumMenuItem("SEO Audit", "/seo-audit", "mdi-magnify", "seoAudit"),
+          createPremiumMenuItem("Robots & Schema", "/robots", "mdi-robot", "robots")
+        ]
+      }
+    ]);
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_client_only = __nuxt_component_0;
+      const _component_NuxtPage = __nuxt_component_0$1;
+      _push(ssrRenderComponent(VApp, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(_sfc_main$1, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VNavigationDrawer, {
+              modelValue: drawer.value,
+              "onUpdate:modelValue": ($event) => drawer.value = $event,
+              temporary: _ctx.$vuetify.display.smAndDown,
+              permanent: !_ctx.$vuetify.display.smAndDown,
+              app: "",
+              clipped: "",
+              class: "elevation-2"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="drawer-header pa-4" data-v-b5389df5${_scopeId2}><div class="d-flex align-center mb-4" data-v-b5389df5${_scopeId2}><div class="logo-container mr-3" data-v-b5389df5${_scopeId2}><img${ssrRenderAttr("src", _imports_0)} alt="DevUnity" class="logo-devunity" data-v-b5389df5${_scopeId2}></div><div data-v-b5389df5${_scopeId2}><div class="text-h6 font-weight-bold" data-v-b5389df5${_scopeId2}>DevUnity</div><div class="text-caption text-medium-emphasis" data-v-b5389df5${_scopeId2}>v1.0.0</div></div></div>`);
+                  _push3(ssrRenderComponent(VTextField, {
+                    modelValue: search.value,
+                    "onUpdate:modelValue": ($event) => search.value = $event,
+                    density: "compact",
+                    variant: "outlined",
+                    placeholder: "Search...",
+                    "prepend-inner-icon": "mdi-magnify",
+                    "hide-details": "",
+                    rounded: "",
+                    class: "mb-2",
+                    "bg-color": "surface"
+                  }, null, _parent3, _scopeId2));
+                  _push3(`</div>`);
+                  _push3(ssrRenderComponent(VDivider, null, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VList, {
+                    density: "compact",
+                    opened: open.value,
+                    "onUpdate:opened": ($event) => open.value = $event,
+                    nav: "",
+                    class: "px-2"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VListItem, {
+                          to: "/dashboard",
+                          "prepend-icon": "mdi-view-dashboard-outline",
+                          title: "Dashboard",
+                          rounded: "lg",
+                          class: "mb-1",
+                          color: "primary",
+                          nuxt: "",
+                          onClick: closeDrawer
+                        }, null, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VListGroup, {
+                          value: "Recent Projects",
+                          class: "mb-1",
+                          "prepend-icon": "mdi-history"
+                        }, {
+                          activator: withCtx(({ props }, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VListItem, mergeProps(props, {
+                                title: "Recent Projects",
+                                rounded: "lg",
+                                color: "primary"
+                              }), null, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VListItem, mergeProps(props, {
+                                  title: "Recent Projects",
+                                  rounded: "lg",
+                                  color: "primary"
+                                }), null, 16)
+                              ];
+                            }
+                          }),
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<!--[-->`);
+                              ssrRenderList(recentSnippets.value, (snippet, index) => {
+                                _push5(ssrRenderComponent(VListItem, {
+                                  key: index,
+                                  to: `/snippets?id=${snippet.id}`,
+                                  title: snippet.title,
+                                  "prepend-icon": getFrameworkIcon(snippet.framework),
+                                  class: "ml-4",
+                                  rounded: "lg",
+                                  color: "primary",
+                                  nuxt: "",
+                                  onClick: closeDrawer
+                                }, {
+                                  subtitle: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(`<span class="text-caption" data-v-b5389df5${_scopeId5}>${ssrInterpolate(getSnippetDate(snippet))}</span>`);
+                                    } else {
+                                      return [
+                                        createVNode("span", { class: "text-caption" }, toDisplayString(getSnippetDate(snippet)), 1)
+                                      ];
+                                    }
+                                  }),
+                                  _: 2
+                                }, _parent5, _scopeId4));
+                              });
+                              _push5(`<!--]-->`);
+                              if (recentSnippets.value.length === 0) {
+                                _push5(ssrRenderComponent(VListItem, {
+                                  class: "ml-4",
+                                  title: "No recent projects",
+                                  disabled: ""
+                                }, null, _parent5, _scopeId4));
+                              } else {
+                                _push5(`<!---->`);
+                              }
+                            } else {
+                              return [
+                                (openBlock(true), createBlock(Fragment, null, renderList(recentSnippets.value, (snippet, index) => {
+                                  return openBlock(), createBlock(VListItem, {
+                                    key: index,
+                                    to: `/snippets?id=${snippet.id}`,
+                                    title: snippet.title,
+                                    "prepend-icon": getFrameworkIcon(snippet.framework),
+                                    class: "ml-4",
+                                    rounded: "lg",
+                                    color: "primary",
+                                    nuxt: "",
+                                    onClick: closeDrawer
+                                  }, {
+                                    subtitle: withCtx(() => [
+                                      createVNode("span", { class: "text-caption" }, toDisplayString(getSnippetDate(snippet)), 1)
+                                    ]),
+                                    _: 2
+                                  }, 1032, ["to", "title", "prepend-icon"]);
+                                }), 128)),
+                                recentSnippets.value.length === 0 ? (openBlock(), createBlock(VListItem, {
+                                  key: 0,
+                                  class: "ml-4",
+                                  title: "No recent projects",
+                                  disabled: ""
+                                })) : createCommentVNode("", true)
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VListGroup, {
+                          value: "Recent SQL schemas",
+                          class: "mb-1",
+                          "prepend-icon": "mdi-database-outline"
+                        }, {
+                          activator: withCtx(({ props }, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VListItem, mergeProps(props, {
+                                title: "Recent SQL schemas",
+                                rounded: "lg",
+                                color: "primary"
+                              }), null, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VListItem, mergeProps(props, {
+                                  title: "Recent SQL schemas",
+                                  rounded: "lg",
+                                  color: "primary"
+                                }), null, 16)
+                              ];
+                            }
+                          }),
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<!--[-->`);
+                              ssrRenderList(recentSQLSchemas.value, (schema, index) => {
+                                _push5(ssrRenderComponent(VListItem, {
+                                  key: index,
+                                  to: `/sql-generator?id=${schema.id}`,
+                                  title: schema.database_name,
+                                  "prepend-icon": "mdi-database",
+                                  class: "ml-4",
+                                  rounded: "lg",
+                                  color: "primary",
+                                  nuxt: "",
+                                  onClick: closeDrawer
+                                }, {
+                                  subtitle: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(`<span class="text-caption" data-v-b5389df5${_scopeId5}>${ssrInterpolate(getSchemaTablesCount(schema))} tables</span>`);
+                                    } else {
+                                      return [
+                                        createVNode("span", { class: "text-caption" }, toDisplayString(getSchemaTablesCount(schema)) + " tables", 1)
+                                      ];
+                                    }
+                                  }),
+                                  _: 2
+                                }, _parent5, _scopeId4));
+                              });
+                              _push5(`<!--]-->`);
+                              if (recentSQLSchemas.value.length === 0) {
+                                _push5(ssrRenderComponent(VListItem, {
+                                  class: "ml-4",
+                                  title: "No recent SQL schemas",
+                                  disabled: ""
+                                }, null, _parent5, _scopeId4));
+                              } else {
+                                _push5(`<!---->`);
+                              }
+                            } else {
+                              return [
+                                (openBlock(true), createBlock(Fragment, null, renderList(recentSQLSchemas.value, (schema, index) => {
+                                  return openBlock(), createBlock(VListItem, {
+                                    key: index,
+                                    to: `/sql-generator?id=${schema.id}`,
+                                    title: schema.database_name,
+                                    "prepend-icon": "mdi-database",
+                                    class: "ml-4",
+                                    rounded: "lg",
+                                    color: "primary",
+                                    nuxt: "",
+                                    onClick: closeDrawer
+                                  }, {
+                                    subtitle: withCtx(() => [
+                                      createVNode("span", { class: "text-caption" }, toDisplayString(getSchemaTablesCount(schema)) + " tables", 1)
+                                    ]),
+                                    _: 2
+                                  }, 1032, ["to", "title"]);
+                                }), 128)),
+                                recentSQLSchemas.value.length === 0 ? (openBlock(), createBlock(VListItem, {
+                                  key: 0,
+                                  class: "ml-4",
+                                  title: "No recent SQL schemas",
+                                  disabled: ""
+                                })) : createCommentVNode("", true)
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VListSubheader, { class: "mt-2 text-uppercase font-weight-bold text-caption" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`Applications`);
+                            } else {
+                              return [
+                                createTextVNode("Applications")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(`<!--[-->`);
+                        ssrRenderList(items.value, (item, index) => {
+                          _push4(ssrRenderComponent(VListGroup, {
+                            key: index,
+                            value: item.title,
+                            class: "mb-1",
+                            "prepend-icon": item.prependIcon
+                          }, {
+                            activator: withCtx(({ props }, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(ssrRenderComponent(VListItem, mergeProps({ ref_for: true }, props, {
+                                  title: item.title,
+                                  rounded: "lg",
+                                  color: "primary"
+                                }), null, _parent5, _scopeId4));
+                              } else {
+                                return [
+                                  createVNode(VListItem, mergeProps({ ref_for: true }, props, {
+                                    title: item.title,
+                                    rounded: "lg",
+                                    color: "primary"
+                                  }), null, 16, ["title"])
+                                ];
+                              }
+                            }),
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(`<!--[-->`);
+                                ssrRenderList(item.children, (child, idx) => {
+                                  _push5(`<!--[-->`);
+                                  if (child.component) {
+                                    ssrRenderVNode(_push5, createVNode(resolveDynamicComponent(child.component.component), mergeProps({ ref_for: true }, child.component.props, { class: "ml-4 my-1 premium-menu-item" }), null), _parent5, _scopeId4);
+                                  } else {
+                                    _push5(ssrRenderComponent(VListItem, {
+                                      to: child.link,
+                                      title: child.title,
+                                      "prepend-icon": child.icon || "mdi-circle-small",
+                                      class: "ml-4",
+                                      rounded: "lg",
+                                      color: "primary",
+                                      nuxt: "",
+                                      onClick: closeDrawer
+                                    }, null, _parent5, _scopeId4));
+                                  }
+                                  _push5(`<!--]-->`);
+                                });
+                                _push5(`<!--]-->`);
+                              } else {
+                                return [
+                                  (openBlock(true), createBlock(Fragment, null, renderList(item.children, (child, idx) => {
+                                    return openBlock(), createBlock(Fragment, { key: idx }, [
+                                      child.component ? (openBlock(), createBlock(resolveDynamicComponent(child.component.component), mergeProps({
+                                        key: 0,
+                                        ref_for: true
+                                      }, child.component.props, { class: "ml-4 my-1 premium-menu-item" }), null, 16)) : (openBlock(), createBlock(VListItem, {
+                                        key: 1,
+                                        to: child.link,
+                                        title: child.title,
+                                        "prepend-icon": child.icon || "mdi-circle-small",
+                                        class: "ml-4",
+                                        rounded: "lg",
+                                        color: "primary",
+                                        nuxt: "",
+                                        onClick: closeDrawer
+                                      }, null, 8, ["to", "title", "prepend-icon"]))
+                                    ], 64);
+                                  }), 128))
+                                ];
+                              }
+                            }),
+                            _: 2
+                          }, _parent4, _scopeId3));
+                        });
+                        _push4(`<!--]-->`);
+                        _push4(ssrRenderComponent(VDivider, { class: "my-3" }, null, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VListSubheader, { class: "text-uppercase font-weight-bold text-caption" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`System`);
+                            } else {
+                              return [
+                                createTextVNode("System")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(_component_client_only, null, {}, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VListItem, {
+                          to: "/settings",
+                          "prepend-icon": "mdi-cog-outline",
+                          title: "Settings",
+                          rounded: "lg",
+                          class: "mb-1",
+                          color: "primary",
+                          nuxt: "",
+                          onClick: closeDrawer
+                        }, null, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VListItem, {
+                          onClick: logout,
+                          "prepend-icon": "mdi-logout",
+                          title: "Logout",
+                          rounded: "lg",
+                          color: "error"
+                        }, null, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VListItem, {
+                            to: "/dashboard",
+                            "prepend-icon": "mdi-view-dashboard-outline",
+                            title: "Dashboard",
+                            rounded: "lg",
+                            class: "mb-1",
+                            color: "primary",
+                            nuxt: "",
+                            onClick: closeDrawer
+                          }),
+                          createVNode(VListGroup, {
+                            value: "Recent Projects",
+                            class: "mb-1",
+                            "prepend-icon": "mdi-history"
+                          }, {
+                            activator: withCtx(({ props }) => [
+                              createVNode(VListItem, mergeProps(props, {
+                                title: "Recent Projects",
+                                rounded: "lg",
+                                color: "primary"
+                              }), null, 16)
+                            ]),
+                            default: withCtx(() => [
+                              (openBlock(true), createBlock(Fragment, null, renderList(recentSnippets.value, (snippet, index) => {
+                                return openBlock(), createBlock(VListItem, {
+                                  key: index,
+                                  to: `/snippets?id=${snippet.id}`,
+                                  title: snippet.title,
+                                  "prepend-icon": getFrameworkIcon(snippet.framework),
+                                  class: "ml-4",
+                                  rounded: "lg",
+                                  color: "primary",
+                                  nuxt: "",
+                                  onClick: closeDrawer
+                                }, {
+                                  subtitle: withCtx(() => [
+                                    createVNode("span", { class: "text-caption" }, toDisplayString(getSnippetDate(snippet)), 1)
+                                  ]),
+                                  _: 2
+                                }, 1032, ["to", "title", "prepend-icon"]);
+                              }), 128)),
+                              recentSnippets.value.length === 0 ? (openBlock(), createBlock(VListItem, {
+                                key: 0,
+                                class: "ml-4",
+                                title: "No recent projects",
+                                disabled: ""
+                              })) : createCommentVNode("", true)
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VListGroup, {
+                            value: "Recent SQL schemas",
+                            class: "mb-1",
+                            "prepend-icon": "mdi-database-outline"
+                          }, {
+                            activator: withCtx(({ props }) => [
+                              createVNode(VListItem, mergeProps(props, {
+                                title: "Recent SQL schemas",
+                                rounded: "lg",
+                                color: "primary"
+                              }), null, 16)
+                            ]),
+                            default: withCtx(() => [
+                              (openBlock(true), createBlock(Fragment, null, renderList(recentSQLSchemas.value, (schema, index) => {
+                                return openBlock(), createBlock(VListItem, {
+                                  key: index,
+                                  to: `/sql-generator?id=${schema.id}`,
+                                  title: schema.database_name,
+                                  "prepend-icon": "mdi-database",
+                                  class: "ml-4",
+                                  rounded: "lg",
+                                  color: "primary",
+                                  nuxt: "",
+                                  onClick: closeDrawer
+                                }, {
+                                  subtitle: withCtx(() => [
+                                    createVNode("span", { class: "text-caption" }, toDisplayString(getSchemaTablesCount(schema)) + " tables", 1)
+                                  ]),
+                                  _: 2
+                                }, 1032, ["to", "title"]);
+                              }), 128)),
+                              recentSQLSchemas.value.length === 0 ? (openBlock(), createBlock(VListItem, {
+                                key: 0,
+                                class: "ml-4",
+                                title: "No recent SQL schemas",
+                                disabled: ""
+                              })) : createCommentVNode("", true)
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VListSubheader, { class: "mt-2 text-uppercase font-weight-bold text-caption" }, {
+                            default: withCtx(() => [
+                              createTextVNode("Applications")
+                            ]),
+                            _: 1
+                          }),
+                          (openBlock(true), createBlock(Fragment, null, renderList(items.value, (item, index) => {
+                            return openBlock(), createBlock(VListGroup, {
+                              key: index,
+                              value: item.title,
+                              class: "mb-1",
+                              "prepend-icon": item.prependIcon
+                            }, {
+                              activator: withCtx(({ props }) => [
+                                createVNode(VListItem, mergeProps({ ref_for: true }, props, {
+                                  title: item.title,
+                                  rounded: "lg",
+                                  color: "primary"
+                                }), null, 16, ["title"])
+                              ]),
+                              default: withCtx(() => [
+                                (openBlock(true), createBlock(Fragment, null, renderList(item.children, (child, idx) => {
+                                  return openBlock(), createBlock(Fragment, { key: idx }, [
+                                    child.component ? (openBlock(), createBlock(resolveDynamicComponent(child.component.component), mergeProps({
+                                      key: 0,
+                                      ref_for: true
+                                    }, child.component.props, { class: "ml-4 my-1 premium-menu-item" }), null, 16)) : (openBlock(), createBlock(VListItem, {
+                                      key: 1,
+                                      to: child.link,
+                                      title: child.title,
+                                      "prepend-icon": child.icon || "mdi-circle-small",
+                                      class: "ml-4",
+                                      rounded: "lg",
+                                      color: "primary",
+                                      nuxt: "",
+                                      onClick: closeDrawer
+                                    }, null, 8, ["to", "title", "prepend-icon"]))
+                                  ], 64);
+                                }), 128))
+                              ]),
+                              _: 2
+                            }, 1032, ["value", "prepend-icon"]);
+                          }), 128)),
+                          createVNode(VDivider, { class: "my-3" }),
+                          createVNode(VListSubheader, { class: "text-uppercase font-weight-bold text-caption" }, {
+                            default: withCtx(() => [
+                              createTextVNode("System")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(_component_client_only, null, {
+                            default: withCtx(() => {
+                              var _a;
+                              return [
+                                ((_a = unref(userStore).user) == null ? void 0 : _a.isAdmin) ? (openBlock(), createBlock(VListGroup, {
+                                  key: 0,
+                                  value: "Administration",
+                                  class: "mb-1",
+                                  "prepend-icon": "mdi-shield-account"
+                                }, {
+                                  activator: withCtx(({ props }) => [
+                                    createVNode(VListItem, mergeProps(props, {
+                                      title: "Administration",
+                                      rounded: "lg",
+                                      color: "primary"
+                                    }), null, 16)
+                                  ]),
+                                  default: withCtx(() => [
+                                    createVNode(VListItem, {
+                                      to: "/admin/newsletter-admin",
+                                      "prepend-icon": "mdi-email-outline",
+                                      title: "Newsletter",
+                                      rounded: "lg",
+                                      class: "ml-4",
+                                      color: "primary",
+                                      nuxt: "",
+                                      onClick: closeDrawer
+                                    }),
+                                    createVNode(VListItem, {
+                                      to: "/admin/analytics",
+                                      "prepend-icon": "mdi-chart-box",
+                                      title: "Analytics",
+                                      rounded: "lg",
+                                      class: "ml-4",
+                                      color: "primary",
+                                      nuxt: "",
+                                      onClick: closeDrawer
+                                    })
+                                  ]),
+                                  _: 1
+                                })) : createCommentVNode("", true)
+                              ];
+                            }),
+                            _: 1
+                          }),
+                          createVNode(VListItem, {
+                            to: "/settings",
+                            "prepend-icon": "mdi-cog-outline",
+                            title: "Settings",
+                            rounded: "lg",
+                            class: "mb-1",
+                            color: "primary",
+                            nuxt: "",
+                            onClick: closeDrawer
+                          }),
+                          createVNode(VListItem, {
+                            onClick: logout,
+                            "prepend-icon": "mdi-logout",
+                            title: "Logout",
+                            rounded: "lg",
+                            color: "error"
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode("div", { class: "drawer-header pa-4" }, [
+                      createVNode("div", { class: "d-flex align-center mb-4" }, [
+                        createVNode("div", { class: "logo-container mr-3" }, [
+                          createVNode("img", {
+                            src: _imports_0,
+                            alt: "DevUnity",
+                            class: "logo-devunity"
+                          })
+                        ]),
+                        createVNode("div", null, [
+                          createVNode("div", { class: "text-h6 font-weight-bold" }, "DevUnity"),
+                          createVNode("div", { class: "text-caption text-medium-emphasis" }, "v1.0.0")
+                        ])
+                      ]),
+                      createVNode(VTextField, {
+                        modelValue: search.value,
+                        "onUpdate:modelValue": ($event) => search.value = $event,
+                        density: "compact",
+                        variant: "outlined",
+                        placeholder: "Search...",
+                        "prepend-inner-icon": "mdi-magnify",
+                        "hide-details": "",
+                        rounded: "",
+                        class: "mb-2",
+                        "bg-color": "surface"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                    ]),
+                    createVNode(VDivider),
+                    createVNode(VList, {
+                      density: "compact",
+                      opened: open.value,
+                      "onUpdate:opened": ($event) => open.value = $event,
+                      nav: "",
+                      class: "px-2"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VListItem, {
+                          to: "/dashboard",
+                          "prepend-icon": "mdi-view-dashboard-outline",
+                          title: "Dashboard",
+                          rounded: "lg",
+                          class: "mb-1",
+                          color: "primary",
+                          nuxt: "",
+                          onClick: closeDrawer
+                        }),
+                        createVNode(VListGroup, {
+                          value: "Recent Projects",
+                          class: "mb-1",
+                          "prepend-icon": "mdi-history"
+                        }, {
+                          activator: withCtx(({ props }) => [
+                            createVNode(VListItem, mergeProps(props, {
+                              title: "Recent Projects",
+                              rounded: "lg",
+                              color: "primary"
+                            }), null, 16)
+                          ]),
+                          default: withCtx(() => [
+                            (openBlock(true), createBlock(Fragment, null, renderList(recentSnippets.value, (snippet, index) => {
+                              return openBlock(), createBlock(VListItem, {
+                                key: index,
+                                to: `/snippets?id=${snippet.id}`,
+                                title: snippet.title,
+                                "prepend-icon": getFrameworkIcon(snippet.framework),
+                                class: "ml-4",
+                                rounded: "lg",
+                                color: "primary",
+                                nuxt: "",
+                                onClick: closeDrawer
+                              }, {
+                                subtitle: withCtx(() => [
+                                  createVNode("span", { class: "text-caption" }, toDisplayString(getSnippetDate(snippet)), 1)
+                                ]),
+                                _: 2
+                              }, 1032, ["to", "title", "prepend-icon"]);
+                            }), 128)),
+                            recentSnippets.value.length === 0 ? (openBlock(), createBlock(VListItem, {
+                              key: 0,
+                              class: "ml-4",
+                              title: "No recent projects",
+                              disabled: ""
+                            })) : createCommentVNode("", true)
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VListGroup, {
+                          value: "Recent SQL schemas",
+                          class: "mb-1",
+                          "prepend-icon": "mdi-database-outline"
+                        }, {
+                          activator: withCtx(({ props }) => [
+                            createVNode(VListItem, mergeProps(props, {
+                              title: "Recent SQL schemas",
+                              rounded: "lg",
+                              color: "primary"
+                            }), null, 16)
+                          ]),
+                          default: withCtx(() => [
+                            (openBlock(true), createBlock(Fragment, null, renderList(recentSQLSchemas.value, (schema, index) => {
+                              return openBlock(), createBlock(VListItem, {
+                                key: index,
+                                to: `/sql-generator?id=${schema.id}`,
+                                title: schema.database_name,
+                                "prepend-icon": "mdi-database",
+                                class: "ml-4",
+                                rounded: "lg",
+                                color: "primary",
+                                nuxt: "",
+                                onClick: closeDrawer
+                              }, {
+                                subtitle: withCtx(() => [
+                                  createVNode("span", { class: "text-caption" }, toDisplayString(getSchemaTablesCount(schema)) + " tables", 1)
+                                ]),
+                                _: 2
+                              }, 1032, ["to", "title"]);
+                            }), 128)),
+                            recentSQLSchemas.value.length === 0 ? (openBlock(), createBlock(VListItem, {
+                              key: 0,
+                              class: "ml-4",
+                              title: "No recent SQL schemas",
+                              disabled: ""
+                            })) : createCommentVNode("", true)
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VListSubheader, { class: "mt-2 text-uppercase font-weight-bold text-caption" }, {
+                          default: withCtx(() => [
+                            createTextVNode("Applications")
+                          ]),
+                          _: 1
+                        }),
+                        (openBlock(true), createBlock(Fragment, null, renderList(items.value, (item, index) => {
+                          return openBlock(), createBlock(VListGroup, {
+                            key: index,
+                            value: item.title,
+                            class: "mb-1",
+                            "prepend-icon": item.prependIcon
+                          }, {
+                            activator: withCtx(({ props }) => [
+                              createVNode(VListItem, mergeProps({ ref_for: true }, props, {
+                                title: item.title,
+                                rounded: "lg",
+                                color: "primary"
+                              }), null, 16, ["title"])
+                            ]),
+                            default: withCtx(() => [
+                              (openBlock(true), createBlock(Fragment, null, renderList(item.children, (child, idx) => {
+                                return openBlock(), createBlock(Fragment, { key: idx }, [
+                                  child.component ? (openBlock(), createBlock(resolveDynamicComponent(child.component.component), mergeProps({
+                                    key: 0,
+                                    ref_for: true
+                                  }, child.component.props, { class: "ml-4 my-1 premium-menu-item" }), null, 16)) : (openBlock(), createBlock(VListItem, {
+                                    key: 1,
+                                    to: child.link,
+                                    title: child.title,
+                                    "prepend-icon": child.icon || "mdi-circle-small",
+                                    class: "ml-4",
+                                    rounded: "lg",
+                                    color: "primary",
+                                    nuxt: "",
+                                    onClick: closeDrawer
+                                  }, null, 8, ["to", "title", "prepend-icon"]))
+                                ], 64);
+                              }), 128))
+                            ]),
+                            _: 2
+                          }, 1032, ["value", "prepend-icon"]);
+                        }), 128)),
+                        createVNode(VDivider, { class: "my-3" }),
+                        createVNode(VListSubheader, { class: "text-uppercase font-weight-bold text-caption" }, {
+                          default: withCtx(() => [
+                            createTextVNode("System")
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(_component_client_only, null, {
+                          default: withCtx(() => {
+                            var _a;
+                            return [
+                              ((_a = unref(userStore).user) == null ? void 0 : _a.isAdmin) ? (openBlock(), createBlock(VListGroup, {
+                                key: 0,
+                                value: "Administration",
+                                class: "mb-1",
+                                "prepend-icon": "mdi-shield-account"
+                              }, {
+                                activator: withCtx(({ props }) => [
+                                  createVNode(VListItem, mergeProps(props, {
+                                    title: "Administration",
+                                    rounded: "lg",
+                                    color: "primary"
+                                  }), null, 16)
+                                ]),
+                                default: withCtx(() => [
+                                  createVNode(VListItem, {
+                                    to: "/admin/newsletter-admin",
+                                    "prepend-icon": "mdi-email-outline",
+                                    title: "Newsletter",
+                                    rounded: "lg",
+                                    class: "ml-4",
+                                    color: "primary",
+                                    nuxt: "",
+                                    onClick: closeDrawer
+                                  }),
+                                  createVNode(VListItem, {
+                                    to: "/admin/analytics",
+                                    "prepend-icon": "mdi-chart-box",
+                                    title: "Analytics",
+                                    rounded: "lg",
+                                    class: "ml-4",
+                                    color: "primary",
+                                    nuxt: "",
+                                    onClick: closeDrawer
+                                  })
+                                ]),
+                                _: 1
+                              })) : createCommentVNode("", true)
+                            ];
+                          }),
+                          _: 1
+                        }),
+                        createVNode(VListItem, {
+                          to: "/settings",
+                          "prepend-icon": "mdi-cog-outline",
+                          title: "Settings",
+                          rounded: "lg",
+                          class: "mb-1",
+                          color: "primary",
+                          nuxt: "",
+                          onClick: closeDrawer
+                        }),
+                        createVNode(VListItem, {
+                          onClick: logout,
+                          "prepend-icon": "mdi-logout",
+                          title: "Logout",
+                          rounded: "lg",
+                          color: "error"
+                        })
+                      ]),
+                      _: 1
+                    }, 8, ["opened", "onUpdate:opened"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VMain, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!_ctx.$vuetify.display.smAndDown) {
+                    _push3(ssrRenderComponent(VAppBar, {
+                      color: "primary",
+                      flat: "",
+                      class: "border-b page-header px-4",
+                      "scroll-behavior": "elevate",
+                      elevation: 0
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`<div class="d-flex align-center" data-v-b5389df5${_scopeId3}>`);
+                          _push4(ssrRenderComponent(VIcon, {
+                            size: "large",
+                            class: "mr-3"
+                          }, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(`${ssrInterpolate(getCurrentPageIcon())}`);
+                              } else {
+                                return [
+                                  createTextVNode(toDisplayString(getCurrentPageIcon()), 1)
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                          _push4(`<div class="text-h5 font-weight-bold" data-v-b5389df5${_scopeId3}>${ssrInterpolate(currentPageTitle.value)}</div></div>`);
+                        } else {
+                          return [
+                            createVNode("div", { class: "d-flex align-center" }, [
+                              createVNode(VIcon, {
+                                size: "large",
+                                class: "mr-3"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(getCurrentPageIcon()), 1)
+                                ]),
+                                _: 1
+                              }),
+                              createVNode("div", { class: "text-h5 font-weight-bold" }, toDisplayString(currentPageTitle.value), 1)
+                            ])
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  _push3(ssrRenderComponent(_component_NuxtPage, null, null, _parent3, _scopeId2));
+                } else {
+                  return [
+                    !_ctx.$vuetify.display.smAndDown ? (openBlock(), createBlock(VAppBar, {
+                      key: 0,
+                      color: "primary",
+                      flat: "",
+                      class: "border-b page-header px-4",
+                      "scroll-behavior": "elevate",
+                      elevation: 0
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("div", { class: "d-flex align-center" }, [
+                          createVNode(VIcon, {
+                            size: "large",
+                            class: "mr-3"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(toDisplayString(getCurrentPageIcon()), 1)
+                            ]),
+                            _: 1
+                          }),
+                          createVNode("div", { class: "text-h5 font-weight-bold" }, toDisplayString(currentPageTitle.value), 1)
+                        ])
+                      ]),
+                      _: 1
+                    })) : createCommentVNode("", true),
+                    createVNode(_component_NuxtPage)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(_sfc_main$1),
+              createVNode(VNavigationDrawer, {
+                modelValue: drawer.value,
+                "onUpdate:modelValue": ($event) => drawer.value = $event,
+                temporary: _ctx.$vuetify.display.smAndDown,
+                permanent: !_ctx.$vuetify.display.smAndDown,
+                app: "",
+                clipped: "",
+                class: "elevation-2"
+              }, {
+                default: withCtx(() => [
+                  createVNode("div", { class: "drawer-header pa-4" }, [
+                    createVNode("div", { class: "d-flex align-center mb-4" }, [
+                      createVNode("div", { class: "logo-container mr-3" }, [
+                        createVNode("img", {
+                          src: _imports_0,
+                          alt: "DevUnity",
+                          class: "logo-devunity"
+                        })
+                      ]),
+                      createVNode("div", null, [
+                        createVNode("div", { class: "text-h6 font-weight-bold" }, "DevUnity"),
+                        createVNode("div", { class: "text-caption text-medium-emphasis" }, "v1.0.0")
+                      ])
+                    ]),
+                    createVNode(VTextField, {
+                      modelValue: search.value,
+                      "onUpdate:modelValue": ($event) => search.value = $event,
+                      density: "compact",
+                      variant: "outlined",
+                      placeholder: "Search...",
+                      "prepend-inner-icon": "mdi-magnify",
+                      "hide-details": "",
+                      rounded: "",
+                      class: "mb-2",
+                      "bg-color": "surface"
+                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                  ]),
+                  createVNode(VDivider),
+                  createVNode(VList, {
+                    density: "compact",
+                    opened: open.value,
+                    "onUpdate:opened": ($event) => open.value = $event,
+                    nav: "",
+                    class: "px-2"
+                  }, {
+                    default: withCtx(() => [
+                      createVNode(VListItem, {
+                        to: "/dashboard",
+                        "prepend-icon": "mdi-view-dashboard-outline",
+                        title: "Dashboard",
+                        rounded: "lg",
+                        class: "mb-1",
+                        color: "primary",
+                        nuxt: "",
+                        onClick: closeDrawer
+                      }),
+                      createVNode(VListGroup, {
+                        value: "Recent Projects",
+                        class: "mb-1",
+                        "prepend-icon": "mdi-history"
+                      }, {
+                        activator: withCtx(({ props }) => [
+                          createVNode(VListItem, mergeProps(props, {
+                            title: "Recent Projects",
+                            rounded: "lg",
+                            color: "primary"
+                          }), null, 16)
+                        ]),
+                        default: withCtx(() => [
+                          (openBlock(true), createBlock(Fragment, null, renderList(recentSnippets.value, (snippet, index) => {
+                            return openBlock(), createBlock(VListItem, {
+                              key: index,
+                              to: `/snippets?id=${snippet.id}`,
+                              title: snippet.title,
+                              "prepend-icon": getFrameworkIcon(snippet.framework),
+                              class: "ml-4",
+                              rounded: "lg",
+                              color: "primary",
+                              nuxt: "",
+                              onClick: closeDrawer
+                            }, {
+                              subtitle: withCtx(() => [
+                                createVNode("span", { class: "text-caption" }, toDisplayString(getSnippetDate(snippet)), 1)
+                              ]),
+                              _: 2
+                            }, 1032, ["to", "title", "prepend-icon"]);
+                          }), 128)),
+                          recentSnippets.value.length === 0 ? (openBlock(), createBlock(VListItem, {
+                            key: 0,
+                            class: "ml-4",
+                            title: "No recent projects",
+                            disabled: ""
+                          })) : createCommentVNode("", true)
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VListGroup, {
+                        value: "Recent SQL schemas",
+                        class: "mb-1",
+                        "prepend-icon": "mdi-database-outline"
+                      }, {
+                        activator: withCtx(({ props }) => [
+                          createVNode(VListItem, mergeProps(props, {
+                            title: "Recent SQL schemas",
+                            rounded: "lg",
+                            color: "primary"
+                          }), null, 16)
+                        ]),
+                        default: withCtx(() => [
+                          (openBlock(true), createBlock(Fragment, null, renderList(recentSQLSchemas.value, (schema, index) => {
+                            return openBlock(), createBlock(VListItem, {
+                              key: index,
+                              to: `/sql-generator?id=${schema.id}`,
+                              title: schema.database_name,
+                              "prepend-icon": "mdi-database",
+                              class: "ml-4",
+                              rounded: "lg",
+                              color: "primary",
+                              nuxt: "",
+                              onClick: closeDrawer
+                            }, {
+                              subtitle: withCtx(() => [
+                                createVNode("span", { class: "text-caption" }, toDisplayString(getSchemaTablesCount(schema)) + " tables", 1)
+                              ]),
+                              _: 2
+                            }, 1032, ["to", "title"]);
+                          }), 128)),
+                          recentSQLSchemas.value.length === 0 ? (openBlock(), createBlock(VListItem, {
+                            key: 0,
+                            class: "ml-4",
+                            title: "No recent SQL schemas",
+                            disabled: ""
+                          })) : createCommentVNode("", true)
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VListSubheader, { class: "mt-2 text-uppercase font-weight-bold text-caption" }, {
+                        default: withCtx(() => [
+                          createTextVNode("Applications")
+                        ]),
+                        _: 1
+                      }),
+                      (openBlock(true), createBlock(Fragment, null, renderList(items.value, (item, index) => {
+                        return openBlock(), createBlock(VListGroup, {
+                          key: index,
+                          value: item.title,
+                          class: "mb-1",
+                          "prepend-icon": item.prependIcon
+                        }, {
+                          activator: withCtx(({ props }) => [
+                            createVNode(VListItem, mergeProps({ ref_for: true }, props, {
+                              title: item.title,
+                              rounded: "lg",
+                              color: "primary"
+                            }), null, 16, ["title"])
+                          ]),
+                          default: withCtx(() => [
+                            (openBlock(true), createBlock(Fragment, null, renderList(item.children, (child, idx) => {
+                              return openBlock(), createBlock(Fragment, { key: idx }, [
+                                child.component ? (openBlock(), createBlock(resolveDynamicComponent(child.component.component), mergeProps({
+                                  key: 0,
+                                  ref_for: true
+                                }, child.component.props, { class: "ml-4 my-1 premium-menu-item" }), null, 16)) : (openBlock(), createBlock(VListItem, {
+                                  key: 1,
+                                  to: child.link,
+                                  title: child.title,
+                                  "prepend-icon": child.icon || "mdi-circle-small",
+                                  class: "ml-4",
+                                  rounded: "lg",
+                                  color: "primary",
+                                  nuxt: "",
+                                  onClick: closeDrawer
+                                }, null, 8, ["to", "title", "prepend-icon"]))
+                              ], 64);
+                            }), 128))
+                          ]),
+                          _: 2
+                        }, 1032, ["value", "prepend-icon"]);
+                      }), 128)),
+                      createVNode(VDivider, { class: "my-3" }),
+                      createVNode(VListSubheader, { class: "text-uppercase font-weight-bold text-caption" }, {
+                        default: withCtx(() => [
+                          createTextVNode("System")
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(_component_client_only, null, {
+                        default: withCtx(() => {
+                          var _a;
+                          return [
+                            ((_a = unref(userStore).user) == null ? void 0 : _a.isAdmin) ? (openBlock(), createBlock(VListGroup, {
+                              key: 0,
+                              value: "Administration",
+                              class: "mb-1",
+                              "prepend-icon": "mdi-shield-account"
+                            }, {
+                              activator: withCtx(({ props }) => [
+                                createVNode(VListItem, mergeProps(props, {
+                                  title: "Administration",
+                                  rounded: "lg",
+                                  color: "primary"
+                                }), null, 16)
+                              ]),
+                              default: withCtx(() => [
+                                createVNode(VListItem, {
+                                  to: "/admin/newsletter-admin",
+                                  "prepend-icon": "mdi-email-outline",
+                                  title: "Newsletter",
+                                  rounded: "lg",
+                                  class: "ml-4",
+                                  color: "primary",
+                                  nuxt: "",
+                                  onClick: closeDrawer
+                                }),
+                                createVNode(VListItem, {
+                                  to: "/admin/analytics",
+                                  "prepend-icon": "mdi-chart-box",
+                                  title: "Analytics",
+                                  rounded: "lg",
+                                  class: "ml-4",
+                                  color: "primary",
+                                  nuxt: "",
+                                  onClick: closeDrawer
+                                })
+                              ]),
+                              _: 1
+                            })) : createCommentVNode("", true)
+                          ];
+                        }),
+                        _: 1
+                      }),
+                      createVNode(VListItem, {
+                        to: "/settings",
+                        "prepend-icon": "mdi-cog-outline",
+                        title: "Settings",
+                        rounded: "lg",
+                        class: "mb-1",
+                        color: "primary",
+                        nuxt: "",
+                        onClick: closeDrawer
+                      }),
+                      createVNode(VListItem, {
+                        onClick: logout,
+                        "prepend-icon": "mdi-logout",
+                        title: "Logout",
+                        rounded: "lg",
+                        color: "error"
+                      })
+                    ]),
+                    _: 1
+                  }, 8, ["opened", "onUpdate:opened"])
+                ]),
+                _: 1
+              }, 8, ["modelValue", "onUpdate:modelValue", "temporary", "permanent"]),
+              createVNode(VMain, null, {
+                default: withCtx(() => [
+                  !_ctx.$vuetify.display.smAndDown ? (openBlock(), createBlock(VAppBar, {
+                    key: 0,
+                    color: "primary",
+                    flat: "",
+                    class: "border-b page-header px-4",
+                    "scroll-behavior": "elevate",
+                    elevation: 0
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("div", { class: "d-flex align-center" }, [
+                        createVNode(VIcon, {
+                          size: "large",
+                          class: "mr-3"
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode(toDisplayString(getCurrentPageIcon()), 1)
+                          ]),
+                          _: 1
+                        }),
+                        createVNode("div", { class: "text-h5 font-weight-bold" }, toDisplayString(currentPageTitle.value), 1)
+                      ])
+                    ]),
+                    _: 1
+                  })) : createCommentVNode("", true),
+                  createVNode(_component_NuxtPage)
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
 
-const s=st.setup;st.setup=(e,d)=>{const t=useSSRContext();return (t.modules||(t.modules=new Set)).add("layouts/dashboard.vue"),s?s(e,d):void 0};const f=s$2(st,[["__scopeId","data-v-b5389df5"]]);
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("layouts/dashboard.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const dashboard = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-b5389df5"]]);
 
-export { f as default };;globalThis.__timing__.logEnd('Load chunks/build/dashboard.vue2');
+export { dashboard as default };
+//# sourceMappingURL=dashboard.vue2.mjs.map

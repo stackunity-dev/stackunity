@@ -1,7 +1,252 @@
-globalThis.__timing__.logStart('Load chunks/build/VTextarea');import { computed, ref, shallowRef, watchEffect, watch, createVNode, mergeProps, Fragment, withDirectives, resolveDirective, vModelText, nextTick } from 'vue';
-import { J as Je, N, x as xe } from './VTextField.mjs';
-import { f as y, y as y$1, ar as s, C, af as F, as as d, o, au as W, av as ve, at as O, X, Z, aw as se } from './server.mjs';
+import { computed, ref, shallowRef, watchEffect, watch, createVNode, mergeProps, Fragment, withDirectives, resolveDirective, vModelText, nextTick } from 'vue';
+import { a as VField, b as VCounter, c as makeVFieldProps } from './VTextField.mjs';
+import { k as genericComponent, p as propsFactory, ar as Intersect, l as useProxiedModel, af as useFocus, s as useRender, au as filterInputAttrs, av as VInput, as as forwardRefs, at as makeVInputProps, J as convertToUnit, j as clamp, aw as callEvent } from './server.mjs';
 
-const we=y$1({autoGrow:Boolean,autofocus:Boolean,counter:[Boolean,Number,String],counterValue:Function,prefix:String,placeholder:String,persistentPlaceholder:Boolean,persistentCounter:Boolean,noResize:Boolean,rows:{type:[Number,String],default:5,validator:e=>!isNaN(parseFloat(e))},maxRows:{type:[Number,String],validator:e=>!isNaN(parseFloat(e))},suffix:String,modelModifiers:Object,...O(),...xe()},"VTextarea"),ze=y()({name:"VTextarea",directives:{Intersect:s},inheritAttrs:false,props:we(),emits:{"click:control":e=>true,"mousedown:control":e=>true,"update:focused":e=>true,"update:modelValue":e=>true},setup(e,G){let{attrs:w,emit:S,slots:i}=G;const l=C(e,"modelValue"),{isFocused:s,focus:D,blur:E}=F(e),U=computed(()=>typeof e.counterValue=="function"?e.counterValue(l.value):(l.value||"").toString().length),O=computed(()=>{if(w.maxlength)return w.maxlength;if(!(!e.counter||typeof e.counter!="number"&&typeof e.counter!="string"))return e.counter});function $(t,o){!e.autofocus||!t||o[0].target?.focus?.();}const N$1=ref(),v=ref(),p=shallowRef(""),m=ref(),j=computed(()=>e.persistentPlaceholder||s.value||e.active);function V(){m.value!==(void 0).activeElement&&m.value?.focus(),s.value||D();}function q(t){V(),S("click:control",t);}function J(t){S("mousedown:control",t);}function K(t){t.stopPropagation(),V(),nextTick(()=>{l.value="",se(e["onClick:clear"],t);});}function L(t){const o=t.target;if(l.value=o.value,e.modelModifiers?.trim){const n=[o.selectionStart,o.selectionEnd];nextTick(()=>{o.selectionStart=n[0],o.selectionEnd=n[1];});}}const u=ref(),x=ref(Number(e.rows)),y=computed(()=>["plain","underlined"].includes(e.variant));watchEffect(()=>{e.autoGrow||(x.value=Number(e.rows));});function c(){e.autoGrow&&nextTick(()=>{if(!u.value||!v.value)return;const t=getComputedStyle(u.value),o=getComputedStyle(v.value.$el),n=parseFloat(t.getPropertyValue("--v-field-padding-top"))+parseFloat(t.getPropertyValue("--v-input-padding-top"))+parseFloat(t.getPropertyValue("--v-field-padding-bottom")),F=u.value.scrollHeight,g=parseFloat(t.lineHeight),P=Math.max(parseFloat(e.rows)*g+n,parseFloat(o.getPropertyValue("--v-input-control-height"))),b=parseFloat(e.maxRows)*g+n||1/0,r=Z(F??0,P,b);x.value=Math.floor((r-n)/g),p.value=X(r);});}watch(l,c),watch(()=>e.rows,c),watch(()=>e.maxRows,c),watch(()=>e.density,c);let C$1;return watch(u,t=>{t?(C$1=new ResizeObserver(c),C$1.observe(u.value)):C$1?.disconnect();}),o(()=>{const t=!!(i.counter||e.counter||e.counterValue),o=!!(t||i.details),[n,F]=W(w),{modelValue:g,...P}=ve.filterProps(e),b=Je.filterProps(e);return createVNode(ve,mergeProps({ref:N$1,modelValue:l.value,"onUpdate:modelValue":r=>l.value=r,class:["v-textarea v-text-field",{"v-textarea--prefixed":e.prefix,"v-textarea--suffixed":e.suffix,"v-text-field--prefixed":e.prefix,"v-text-field--suffixed":e.suffix,"v-textarea--auto-grow":e.autoGrow,"v-textarea--no-resize":e.noResize||e.autoGrow,"v-input--plain-underlined":y.value},e.class],style:e.style},n,P,{centerAffix:x.value===1&&!y.value,focused:s.value}),{...i,default:r=>{let{id:Q,isDisabled:H,isDirty:M,isReadonly:W,isValid:X}=r;return createVNode(Je,mergeProps({ref:v,style:{"--v-textarea-control-height":p.value},onClick:q,onMousedown:J,"onClick:clear":K,"onClick:prependInner":e["onClick:prependInner"],"onClick:appendInner":e["onClick:appendInner"]},b,{id:Q.value,active:j.value||M.value,centerAffix:x.value===1&&!y.value,dirty:M.value||e.dirty,disabled:H.value,focused:s.value,error:X.value===false}),{...i,default:Y=>{let{props:{class:z,...A}}=Y;return createVNode(Fragment,null,[e.prefix&&createVNode("span",{class:"v-text-field__prefix"},[e.prefix]),withDirectives(createVNode("textarea",mergeProps({ref:m,class:z,value:l.value,onInput:L,autofocus:e.autofocus,readonly:W.value,disabled:H.value,placeholder:e.placeholder,rows:e.rows,name:e.name,onFocus:V,onBlur:E},A,F),null),[[resolveDirective("intersect"),{handler:$},null,{once:true}]]),e.autoGrow&&withDirectives(createVNode("textarea",{class:[z,"v-textarea__sizer"],id:`${A.id}-sizer`,"onUpdate:modelValue":Z=>l.value=Z,ref:u,readonly:true,"aria-hidden":"true"},null),[[vModelText,l.value]]),e.suffix&&createVNode("span",{class:"v-text-field__suffix"},[e.suffix])])}})},details:o?r=>createVNode(Fragment,null,[i.details?.(r),t&&createVNode(Fragment,null,[createVNode("span",null,null),createVNode(N,{active:e.persistentCounter||s.value,value:U.value,max:O.value,disabled:e.disabled},i.counter)])]):void 0})}),d({},N$1,v,m)}});
+const makeVTextareaProps = propsFactory({
+  autoGrow: Boolean,
+  autofocus: Boolean,
+  counter: [Boolean, Number, String],
+  counterValue: Function,
+  prefix: String,
+  placeholder: String,
+  persistentPlaceholder: Boolean,
+  persistentCounter: Boolean,
+  noResize: Boolean,
+  rows: {
+    type: [Number, String],
+    default: 5,
+    validator: (v) => !isNaN(parseFloat(v))
+  },
+  maxRows: {
+    type: [Number, String],
+    validator: (v) => !isNaN(parseFloat(v))
+  },
+  suffix: String,
+  modelModifiers: Object,
+  ...makeVInputProps(),
+  ...makeVFieldProps()
+}, "VTextarea");
+const VTextarea = genericComponent()({
+  name: "VTextarea",
+  directives: {
+    Intersect
+  },
+  inheritAttrs: false,
+  props: makeVTextareaProps(),
+  emits: {
+    "click:control": (e) => true,
+    "mousedown:control": (e) => true,
+    "update:focused": (focused) => true,
+    "update:modelValue": (val) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      emit,
+      slots
+    } = _ref;
+    const model = useProxiedModel(props, "modelValue");
+    const {
+      isFocused,
+      focus,
+      blur
+    } = useFocus(props);
+    const counterValue = computed(() => {
+      return typeof props.counterValue === "function" ? props.counterValue(model.value) : (model.value || "").toString().length;
+    });
+    const max = computed(() => {
+      if (attrs.maxlength) return attrs.maxlength;
+      if (!props.counter || typeof props.counter !== "number" && typeof props.counter !== "string") return void 0;
+      return props.counter;
+    });
+    function onIntersect(isIntersecting, entries) {
+      var _a, _b;
+      if (!props.autofocus || !isIntersecting) return;
+      (_b = (_a = entries[0].target) == null ? void 0 : _a.focus) == null ? void 0 : _b.call(_a);
+    }
+    const vInputRef = ref();
+    const vFieldRef = ref();
+    const controlHeight = shallowRef("");
+    const textareaRef = ref();
+    const isActive = computed(() => props.persistentPlaceholder || isFocused.value || props.active);
+    function onFocus() {
+      var _a;
+      if (textareaRef.value !== (void 0).activeElement) {
+        (_a = textareaRef.value) == null ? void 0 : _a.focus();
+      }
+      if (!isFocused.value) focus();
+    }
+    function onControlClick(e) {
+      onFocus();
+      emit("click:control", e);
+    }
+    function onControlMousedown(e) {
+      emit("mousedown:control", e);
+    }
+    function onClear(e) {
+      e.stopPropagation();
+      onFocus();
+      nextTick(() => {
+        model.value = "";
+        callEvent(props["onClick:clear"], e);
+      });
+    }
+    function onInput(e) {
+      var _a;
+      const el = e.target;
+      model.value = el.value;
+      if ((_a = props.modelModifiers) == null ? void 0 : _a.trim) {
+        const caretPosition = [el.selectionStart, el.selectionEnd];
+        nextTick(() => {
+          el.selectionStart = caretPosition[0];
+          el.selectionEnd = caretPosition[1];
+        });
+      }
+    }
+    const sizerRef = ref();
+    const rows = ref(Number(props.rows));
+    const isPlainOrUnderlined = computed(() => ["plain", "underlined"].includes(props.variant));
+    watchEffect(() => {
+      if (!props.autoGrow) rows.value = Number(props.rows);
+    });
+    function calculateInputHeight() {
+      if (!props.autoGrow) return;
+      nextTick(() => {
+        if (!sizerRef.value || !vFieldRef.value) return;
+        const style = getComputedStyle(sizerRef.value);
+        const fieldStyle = getComputedStyle(vFieldRef.value.$el);
+        const padding = parseFloat(style.getPropertyValue("--v-field-padding-top")) + parseFloat(style.getPropertyValue("--v-input-padding-top")) + parseFloat(style.getPropertyValue("--v-field-padding-bottom"));
+        const height = sizerRef.value.scrollHeight;
+        const lineHeight = parseFloat(style.lineHeight);
+        const minHeight = Math.max(parseFloat(props.rows) * lineHeight + padding, parseFloat(fieldStyle.getPropertyValue("--v-input-control-height")));
+        const maxHeight = parseFloat(props.maxRows) * lineHeight + padding || Infinity;
+        const newHeight = clamp(height ?? 0, minHeight, maxHeight);
+        rows.value = Math.floor((newHeight - padding) / lineHeight);
+        controlHeight.value = convertToUnit(newHeight);
+      });
+    }
+    watch(model, calculateInputHeight);
+    watch(() => props.rows, calculateInputHeight);
+    watch(() => props.maxRows, calculateInputHeight);
+    watch(() => props.density, calculateInputHeight);
+    let observer;
+    watch(sizerRef, (val) => {
+      if (val) {
+        observer = new ResizeObserver(calculateInputHeight);
+        observer.observe(sizerRef.value);
+      } else {
+        observer == null ? void 0 : observer.disconnect();
+      }
+    });
+    useRender(() => {
+      const hasCounter = !!(slots.counter || props.counter || props.counterValue);
+      const hasDetails = !!(hasCounter || slots.details);
+      const [rootAttrs, inputAttrs] = filterInputAttrs(attrs);
+      const {
+        modelValue: _,
+        ...inputProps
+      } = VInput.filterProps(props);
+      const fieldProps = VField.filterProps(props);
+      return createVNode(VInput, mergeProps({
+        "ref": vInputRef,
+        "modelValue": model.value,
+        "onUpdate:modelValue": ($event) => model.value = $event,
+        "class": ["v-textarea v-text-field", {
+          "v-textarea--prefixed": props.prefix,
+          "v-textarea--suffixed": props.suffix,
+          "v-text-field--prefixed": props.prefix,
+          "v-text-field--suffixed": props.suffix,
+          "v-textarea--auto-grow": props.autoGrow,
+          "v-textarea--no-resize": props.noResize || props.autoGrow,
+          "v-input--plain-underlined": isPlainOrUnderlined.value
+        }, props.class],
+        "style": props.style
+      }, rootAttrs, inputProps, {
+        "centerAffix": rows.value === 1 && !isPlainOrUnderlined.value,
+        "focused": isFocused.value
+      }), {
+        ...slots,
+        default: (_ref2) => {
+          let {
+            id,
+            isDisabled,
+            isDirty,
+            isReadonly,
+            isValid
+          } = _ref2;
+          return createVNode(VField, mergeProps({
+            "ref": vFieldRef,
+            "style": {
+              "--v-textarea-control-height": controlHeight.value
+            },
+            "onClick": onControlClick,
+            "onMousedown": onControlMousedown,
+            "onClick:clear": onClear,
+            "onClick:prependInner": props["onClick:prependInner"],
+            "onClick:appendInner": props["onClick:appendInner"]
+          }, fieldProps, {
+            "id": id.value,
+            "active": isActive.value || isDirty.value,
+            "centerAffix": rows.value === 1 && !isPlainOrUnderlined.value,
+            "dirty": isDirty.value || props.dirty,
+            "disabled": isDisabled.value,
+            "focused": isFocused.value,
+            "error": isValid.value === false
+          }), {
+            ...slots,
+            default: (_ref3) => {
+              let {
+                props: {
+                  class: fieldClass,
+                  ...slotProps
+                }
+              } = _ref3;
+              return createVNode(Fragment, null, [props.prefix && createVNode("span", {
+                "class": "v-text-field__prefix"
+              }, [props.prefix]), withDirectives(createVNode("textarea", mergeProps({
+                "ref": textareaRef,
+                "class": fieldClass,
+                "value": model.value,
+                "onInput": onInput,
+                "autofocus": props.autofocus,
+                "readonly": isReadonly.value,
+                "disabled": isDisabled.value,
+                "placeholder": props.placeholder,
+                "rows": props.rows,
+                "name": props.name,
+                "onFocus": onFocus,
+                "onBlur": blur
+              }, slotProps, inputAttrs), null), [[resolveDirective("intersect"), {
+                handler: onIntersect
+              }, null, {
+                once: true
+              }]]), props.autoGrow && withDirectives(createVNode("textarea", {
+                "class": [fieldClass, "v-textarea__sizer"],
+                "id": `${slotProps.id}-sizer`,
+                "onUpdate:modelValue": ($event) => model.value = $event,
+                "ref": sizerRef,
+                "readonly": true,
+                "aria-hidden": "true"
+              }, null), [[vModelText, model.value]]), props.suffix && createVNode("span", {
+                "class": "v-text-field__suffix"
+              }, [props.suffix])]);
+            }
+          });
+        },
+        details: hasDetails ? (slotProps) => {
+          var _a;
+          return createVNode(Fragment, null, [(_a = slots.details) == null ? void 0 : _a.call(slots, slotProps), hasCounter && createVNode(Fragment, null, [createVNode("span", null, null), createVNode(VCounter, {
+            "active": props.persistentCounter || isFocused.value,
+            "value": counterValue.value,
+            "max": max.value,
+            "disabled": props.disabled
+          }, slots.counter)])]);
+        } : void 0
+      });
+    });
+    return forwardRefs({}, vInputRef, vFieldRef, textareaRef);
+  }
+});
 
-export { ze as z };;globalThis.__timing__.logEnd('Load chunks/build/VTextarea');
+export { VTextarea as V };
+//# sourceMappingURL=VTextarea.mjs.map

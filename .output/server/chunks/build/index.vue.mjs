@@ -1,17 +1,17 @@
-globalThis.__timing__.logStart('Load chunks/build/index.vue');import { z } from './nuxt-link.mjs';
+import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { defineComponent, defineAsyncComponent, ref, mergeProps, withCtx, createVNode, toDisplayString, createTextVNode, createBlock, openBlock, Fragment, renderList, unref, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderAttr, ssrRenderList, ssrInterpolate, ssrRenderClass, ssrRenderStyle } from 'vue/server-renderer';
-import { s as s$1 } from './virtual_public.mjs';
+import { _ as _imports_0 } from './virtual_public.mjs';
 import { p as publicAssetsURL } from '../routes/renderer.mjs';
-import { N as k, x, c, b as We, L, Q as Ke, R as ot, S as i, T as _$1, J as he, q as qe, U as C, e as $, V as j, Y as r, a0 as f, P, s as s$2 } from './server.mjs';
-import { f as f$1 } from './snackbar.vue.mjs';
-import { m } from './v3.mjs';
-import { Z } from './VAppBar.mjs';
-import { x as x$1 } from './VContainer.mjs';
-import { e as ea } from './VNavigationDrawer.mjs';
-import { _ } from './VMain.mjs';
-import { x as x$2, A } from './VCol.mjs';
-import { F as Fe } from './VTextField.mjs';
+import { S as useUserStore, V as VApp, d as VSpacer, e as VBtn, g as VIcon, T as VList, U as VListItem, W as VListItemTitle, X as VResponsive, P as VImg, f as VCard, Y as VCardText, i as VAvatar, Z as VCardItem, $ as VCardTitle, a0 as VCardActions, h as VDivider, _ as _export_sfc } from './server.mjs';
+import { S as Snackbar } from './snackbar.vue.mjs';
+import { u as useHead } from './v3.mjs';
+import { V as VAppBar } from './VAppBar.mjs';
+import { V as VContainer } from './VContainer.mjs';
+import { V as VNavigationDrawer } from './VNavigationDrawer.mjs';
+import { V as VMain } from './VMain.mjs';
+import { V as VRow, a as VCol } from './VCol.mjs';
+import { V as VTextField } from './VTextField.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -20,7 +20,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -51,10 +50,3890 @@ import 'vue-router';
 import 'deep-pick-omit';
 import './VToolbar.mjs';
 
-const s=publicAssetsURL("/images/preview-devunity.avif");
+const _imports_1 = publicAssetsURL("/images/preview-devunity.avif");
 
-const Pt=defineComponent({__name:"index",__ssrInlineRender:true,setup(tt){m({title:"DevUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects.",meta:[{name:"description",content:"DevUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects."},{name:"keywords",content:"DevUnity, web development, all-in-one platform, web applications, web application platform, web application development tools, web application development framework, web application development platform"},{name:"author",content:"DevUnity"},{name:"robots",content:"index, follow"},{name:"viewport",content:"width=device-width, initial-scale=1.0"},{name:"og:title",content:"DevUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects."}]});const De=defineAsyncComponent(()=>import('./pricing.vue.mjs')),Ve=defineAsyncComponent(()=>import('./faq.vue.mjs')),ce=[{value:"2x",label:"Faster Development"},{value:"50+",label:"Ready-to-use Components"},{value:"99.9%",label:"Guaranteed Uptime"},{value:"24/7",label:"Reactive Support"}],ue=[{title:"Code Snippets",description:"Create, share and reuse code snippets to speed up your development.",icon:"mdi-code-tags",color:"primary"},{title:"SQL Generator",description:"Visually design your database schemas and generate the corresponding SQL code.",icon:"mdi-database",color:"info"},{title:"SEO Audit",description:"Analyze and optimize your websites' SEO to improve their visibility.",icon:"mdi-magnify",color:"success"},{title:"Sitemaps",description:"Generate and setup all your sitemaps in our sitemaps container.",icon:"mdi-sitemap",color:"warning"},{title:"Accessibility",description:"Check and improve the accessibility of your websites for all users.",icon:"mdi-access-point",color:"error"},{title:"Design Studio",description:"Create modern user interfaces with our integrated design studio.",icon:"mdi-palette",color:"secondary"}],me=[{title:"Create your account",description:"Sign up for free and set up your developer profile in minutes.",link:"/signup",color:"primary"},{title:"Choose your tools",description:"Select the tools you need for your project from our wide range of features.",link:"/signup",color:"info"},{title:"Develop faster",description:"Use our tools to speed up your development and improve the quality of your projects.",link:"/signup",color:"success"}],K=[{title:"Features",href:"#features",icon:"mdi-apps-box"},{title:"Pricing",href:"#pricing",icon:"mdi-tag-outline"},{title:"FAQ",href:"#faq",icon:"mdi-frequently-asked-questions"}],ie=[{title:"Product",links:[{title:"Features",to:"#features"},{title:"Pricing",to:"#pricing"},{title:"FAQ",to:"#faq"}]},{title:"Company",links:[{title:"About",to:"/about"},{title:"Contact",to:"/contact"},{title:"Blog",to:"/blog"}]},{title:"Legal",links:[{title:"Privacy",to:"/privacy"},{title:"Terms",to:"/terms"},{title:"Cookies",to:"/cookies"}]}],C$1=ref(false),ye=ref(""),we=ref(true),G=ref(""),fe=ref(false),ze=ref(""),Ce=ref(""),Le=ref(2e3),I=ref(false),Ne=k(),ve=async()=>{if(!G.value){_e("Please enter your email address","error");return}if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(G.value)){_e("Please enter a valid email address","error");return}I.value=true;try{await Ne.subscribeToNewsletter(G.value),_e("Thanks for subscribing! You'll receive our latest updates soon.","success"),G.value="";}catch(X){console.error("Error during subscription:",X),_e("An error occurred. Please try again later.","error");}finally{I.value=false;}},_e=(X,Te="info",Se=3e3)=>{ze.value=X,Ce.value=Te,Le.value=Se,fe.value=true;};return (X,Te,Se,qe$1)=>{const J=z;Te(ssrRenderComponent(x,mergeProps({class:"landing-screen"},qe$1),{default:withCtx((lt,Z$1,xe,oe)=>{if(Z$1)Z$1(ssrRenderComponent(Z,{app:"",elevation:2,color:"surface",class:"px-0 nav-bar",modelValue:we.value,"onUpdate:modelValue":f=>we.value=f},{default:withCtx((f,x,S,w)=>{if(x)x(ssrRenderComponent(x$1,{class:"d-flex align-center py-0 my-0"},{default:withCtx((b,c$1,k,h)=>{if(c$1)c$1(ssrRenderComponent(J,{to:"/",class:"text-decoration-none"},{default:withCtx((d,n,y,m)=>{if(n)n(`<div class="d-flex align-center brand-container" data-v-c6c0e7a8${m}><img${ssrRenderAttr("src",s$1)} alt="DevUnity title" width="150" class="logo-image" data-v-c6c0e7a8${m}><div class="brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left" data-v-c6c0e7a8${m}><span class="text-caption font-weight-medium text-gradient" data-v-c6c0e7a8${m}>PROPULSE YOUR CODE</span></div></div>`);else return [createVNode("div",{class:"d-flex align-center brand-container"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"150",class:"logo-image"}),createVNode("div",{class:"brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left"},[createVNode("span",{class:"text-caption font-weight-medium text-gradient"},"PROPULSE YOUR CODE")])])]}),_:1},k,h)),c$1(ssrRenderComponent(c,null,null,k,h)),X.$vuetify.display.smAndUp?(c$1(`<div class="d-flex align-center custom-nav-menu" data-v-c6c0e7a8${h}><div class="nav-links-wrapper" data-v-c6c0e7a8${h}><!--[-->`),ssrRenderList(K,d=>{c$1(ssrRenderComponent(We,{key:d.href,class:["nav-btn custom-btn",{"active-nav-btn":ye.value===d.href.substring(1)}],href:d.href,variant:"text"},{default:withCtx((n,y,m,a)=>{if(y)y(`<span class="nav-text" data-v-c6c0e7a8${a}>${ssrInterpolate(d.title)}</span><span class="nav-btn-background" data-v-c6c0e7a8${a}></span>`);else return [createVNode("span",{class:"nav-text"},toDisplayString(d.title),1),createVNode("span",{class:"nav-btn-background"})]}),_:2},k,h));}),c$1(`<!--]--></div><div class="auth-buttons ml-6" data-v-c6c0e7a8${h}>`),c$1(ssrRenderComponent(We,{color:"primary",class:"login-btn",to:"/login",variant:"tonal",rounded:"rounded-xl","prepend-icon":"mdi-login"},{default:withCtx((d,n,y,m)=>{if(n)n(" Login ");else return [createTextVNode(" Login ")]}),_:1},k,h)),c$1("</div></div>")):(c$1(`<div class="d-flex align-center" data-v-c6c0e7a8${h}>`),c$1(ssrRenderComponent(We,{color:"primary",class:"mr-2",to:"/login",size:"small",rounded:"pill"},{default:withCtx((d,n,y,m)=>{if(n)n(ssrRenderComponent(L,{size:"small",class:"mr-1"},{default:withCtx((a,u,V,_)=>{if(u)u("mdi-login");else return [createTextVNode("mdi-login")]}),_:1},y,m)),n(" Login ");else return [createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-login")]),_:1}),createTextVNode(" Login ")]}),_:1},k,h)),c$1(ssrRenderComponent(We,{icon:"",onClick:d=>C$1.value=!C$1.value,class:"menu-toggle-btn","aria-label":"Toggle navigation menu"},{default:withCtx((d,n,y,m)=>{if(n)n(`<div class="${ssrRenderClass([{active:C$1.value},"hamburger-icon"])}" data-v-c6c0e7a8${m}><span data-v-c6c0e7a8${m}></span><span data-v-c6c0e7a8${m}></span><span data-v-c6c0e7a8${m}></span></div>`);else return [createVNode("div",{class:["hamburger-icon",{active:C$1.value}]},[createVNode("span"),createVNode("span"),createVNode("span")],2)]}),_:1},k,h)),c$1("</div>"));else return [createVNode(J,{to:"/",class:"text-decoration-none"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center brand-container"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"150",class:"logo-image"}),createVNode("div",{class:"brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left"},[createVNode("span",{class:"text-caption font-weight-medium text-gradient"},"PROPULSE YOUR CODE")])])]),_:1}),createVNode(c),X.$vuetify.display.smAndUp?(openBlock(),createBlock("div",{key:0,class:"d-flex align-center custom-nav-menu"},[createVNode("div",{class:"nav-links-wrapper"},[(openBlock(),createBlock(Fragment,null,renderList(K,d=>createVNode(We,{key:d.href,class:["nav-btn custom-btn",{"active-nav-btn":ye.value===d.href.substring(1)}],href:d.href,variant:"text"},{default:withCtx(()=>[createVNode("span",{class:"nav-text"},toDisplayString(d.title),1),createVNode("span",{class:"nav-btn-background"})]),_:2},1032,["href","class"])),64))]),createVNode("div",{class:"auth-buttons ml-6"},[createVNode(We,{color:"primary",class:"login-btn",to:"/login",variant:"tonal",rounded:"rounded-xl","prepend-icon":"mdi-login"},{default:withCtx(()=>[createTextVNode(" Login ")]),_:1})])])):(openBlock(),createBlock("div",{key:1,class:"d-flex align-center"},[createVNode(We,{color:"primary",class:"mr-2",to:"/login",size:"small",rounded:"pill"},{default:withCtx(()=>[createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-login")]),_:1}),createTextVNode(" Login ")]),_:1}),createVNode(We,{icon:"",onClick:d=>C$1.value=!C$1.value,class:"menu-toggle-btn","aria-label":"Toggle navigation menu"},{default:withCtx(()=>[createVNode("div",{class:["hamburger-icon",{active:C$1.value}]},[createVNode("span"),createVNode("span"),createVNode("span")],2)]),_:1},8,["onClick"])]))]}),_:1},S,w));else return [createVNode(x$1,{class:"d-flex align-center py-0 my-0"},{default:withCtx(()=>[createVNode(J,{to:"/",class:"text-decoration-none"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center brand-container"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"150",class:"logo-image"}),createVNode("div",{class:"brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left"},[createVNode("span",{class:"text-caption font-weight-medium text-gradient"},"PROPULSE YOUR CODE")])])]),_:1}),createVNode(c),X.$vuetify.display.smAndUp?(openBlock(),createBlock("div",{key:0,class:"d-flex align-center custom-nav-menu"},[createVNode("div",{class:"nav-links-wrapper"},[(openBlock(),createBlock(Fragment,null,renderList(K,b=>createVNode(We,{key:b.href,class:["nav-btn custom-btn",{"active-nav-btn":ye.value===b.href.substring(1)}],href:b.href,variant:"text"},{default:withCtx(()=>[createVNode("span",{class:"nav-text"},toDisplayString(b.title),1),createVNode("span",{class:"nav-btn-background"})]),_:2},1032,["href","class"])),64))]),createVNode("div",{class:"auth-buttons ml-6"},[createVNode(We,{color:"primary",class:"login-btn",to:"/login",variant:"tonal",rounded:"rounded-xl","prepend-icon":"mdi-login"},{default:withCtx(()=>[createTextVNode(" Login ")]),_:1})])])):(openBlock(),createBlock("div",{key:1,class:"d-flex align-center"},[createVNode(We,{color:"primary",class:"mr-2",to:"/login",size:"small",rounded:"pill"},{default:withCtx(()=>[createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-login")]),_:1}),createTextVNode(" Login ")]),_:1}),createVNode(We,{icon:"",onClick:b=>C$1.value=!C$1.value,class:"menu-toggle-btn","aria-label":"Toggle navigation menu"},{default:withCtx(()=>[createVNode("div",{class:["hamburger-icon",{active:C$1.value}]},[createVNode("span"),createVNode("span"),createVNode("span")],2)]),_:1},8,["onClick"])]))]),_:1})]}),_:1},xe,oe)),Z$1(ssrRenderComponent(ea,{modelValue:C$1.value,"onUpdate:modelValue":f=>C$1.value=f,location:"right",temporary:"",class:"mobile-nav-drawer d-md-none pa-6"},{default:withCtx((f,x,S,w)=>{if(x)x(`<div class="drawer-header mb-8 d-flex justify-space-between align-center" data-v-c6c0e7a8${w}><img${ssrRenderAttr("src",s$1)} alt="DevUnity title" width="120" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(We,{icon:"",variant:"text",onClick:b=>C$1.value=false},{default:withCtx((b,c,k,h)=>{if(c)c(ssrRenderComponent(L,null,{default:withCtx((d,n,y,m)=>{if(n)n("mdi-close");else return [createTextVNode("mdi-close")]}),_:1},k,h));else return [createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-close")]),_:1})]}),_:1},S,w)),x(`</div><div class="mobile-nav-links" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(Ke,{nav:""},{default:withCtx((b,c,k,h)=>{if(c)c("<!--[-->"),ssrRenderList(K,d=>{c(ssrRenderComponent(ot,{key:d.href,href:d.href,onClick:n=>C$1.value=false,class:"mobile-nav-item mb-3",rounded:"lg"},{prepend:withCtx((n,y,m,a)=>{if(y)y(ssrRenderComponent(L,{class:"mr-2",icon:d.icon,color:"primary"},null,m,a));else return [createVNode(L,{class:"mr-2",icon:d.icon,color:"primary"},null,8,["icon"])]}),default:withCtx((n,y,m,a)=>{if(y)y(ssrRenderComponent(i,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx((u,V,_,R)=>{if(V)V(`${ssrInterpolate(d.title)}`);else return [createTextVNode(toDisplayString(d.title),1)]}),_:2},m,a));else return [createVNode(i,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx(()=>[createTextVNode(toDisplayString(d.title),1)]),_:2},1024)]}),_:2},k,h));}),c("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(K,d=>createVNode(ot,{key:d.href,href:d.href,onClick:n=>C$1.value=false,class:"mobile-nav-item mb-3",rounded:"lg"},{prepend:withCtx(()=>[createVNode(L,{class:"mr-2",icon:d.icon,color:"primary"},null,8,["icon"])]),default:withCtx(()=>[createVNode(i,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx(()=>[createTextVNode(toDisplayString(d.title),1)]),_:2},1024)]),_:2},1032,["href","onClick"])),64))]}),_:1},S,w)),x(`</div><div class="drawer-footer mt-auto pt-6" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(We,{block:"",color:"primary",to:"/signup",class:"mb-4",size:"large",rounded:"pill"},{default:withCtx((b,c,k,h)=>{if(c)c(ssrRenderComponent(L,{start:""},{default:withCtx((d,n,y,m)=>{if(n)n("mdi-rocket-launch-outline");else return [createTextVNode("mdi-rocket-launch-outline")]}),_:1},k,h)),c(" Get started ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-rocket-launch-outline")]),_:1}),createTextVNode(" Get started ")]}),_:1},S,w)),x(`<p class="text-caption text-center text-medium-emphasis" data-v-c6c0e7a8${w}>Join our community of developers and propulse your web projects to new horizons.</p></div>`);else return [createVNode("div",{class:"drawer-header mb-8 d-flex justify-space-between align-center"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"120"}),createVNode(We,{icon:"",variant:"text",onClick:b=>C$1.value=false},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-close")]),_:1})]),_:1},8,["onClick"])]),createVNode("div",{class:"mobile-nav-links"},[createVNode(Ke,{nav:""},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(K,b=>createVNode(ot,{key:b.href,href:b.href,onClick:c=>C$1.value=false,class:"mobile-nav-item mb-3",rounded:"lg"},{prepend:withCtx(()=>[createVNode(L,{class:"mr-2",icon:b.icon,color:"primary"},null,8,["icon"])]),default:withCtx(()=>[createVNode(i,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx(()=>[createTextVNode(toDisplayString(b.title),1)]),_:2},1024)]),_:2},1032,["href","onClick"])),64))]),_:1})]),createVNode("div",{class:"drawer-footer mt-auto pt-6"},[createVNode(We,{block:"",color:"primary",to:"/signup",class:"mb-4",size:"large",rounded:"pill"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-rocket-launch-outline")]),_:1}),createTextVNode(" Get started ")]),_:1}),createVNode("p",{class:"text-caption text-center text-medium-emphasis"},"Join our community of developers and propulse your web projects to new horizons.")])]}),_:1},xe,oe)),Z$1(ssrRenderComponent(_,{class:"main-content"},{default:withCtx((f$1,x,S,w)=>{if(x)x(`<section id="hero" class="hero-section" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(x$1,{class:"py-16"},{default:withCtx((b,c,k,h)=>{if(c)c(ssrRenderComponent(x$2,{class:"align-center justify-center"},{default:withCtx((d,n,y,m)=>{if(n)n(ssrRenderComponent(A,{cols:"12",md:"6",class:"text-center text-md-left"},{default:withCtx((a,u,V,_)=>{if(u)u(ssrRenderComponent(_$1,null,{default:withCtx((R,j,N,z)=>{if(j)j(`<h1 class="text-h2 font-weight-bold mb-4" data-v-c6c0e7a8${z}>Develop faster with DevUnity</h1><p class="text-subtitle-1 text-medium-emphasis mb-8" data-v-c6c0e7a8${z}> The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. </p><div class="d-flex flex-column flex-sm-row justify-center justify-md-start" data-v-c6c0e7a8${z}>`),j(ssrRenderComponent(We,{"x-large":"",color:"primary",variant:"tonal",class:"px-6 mb-3 mb-sm-0 mr-sm-4",to:"/signup"},{default:withCtx((H,P,F,L)=>{if(P)P(" Get started ");else return [createTextVNode(" Get started ")]}),_:1},N,z)),j(ssrRenderComponent(We,{"x-large":"",outlined:"",color:"info",variant:"tonal",class:"px-6",href:"#features"},{default:withCtx((H,P,F,L$1)=>{if(P)P(" Learn more "),P(ssrRenderComponent(L,{right:""},{default:withCtx((Q,A,ke,W)=>{if(A)A("mdi-arrow-right");else return [createTextVNode("mdi-arrow-right")]}),_:1},F,L$1));else return [createTextVNode(" Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]}),_:1},N,z)),j("</div>");else return [createVNode("h1",{class:"text-h2 font-weight-bold mb-4"},"Develop faster with DevUnity"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mb-8"}," The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),createVNode("div",{class:"d-flex flex-column flex-sm-row justify-center justify-md-start"},[createVNode(We,{"x-large":"",color:"primary",variant:"tonal",class:"px-6 mb-3 mb-sm-0 mr-sm-4",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Get started ")]),_:1}),createVNode(We,{"x-large":"",outlined:"",color:"info",variant:"tonal",class:"px-6",href:"#features"},{default:withCtx(()=>[createTextVNode(" Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:1})])]}),_:1},V,_));else return [createVNode(_$1,null,{default:withCtx(()=>[createVNode("h1",{class:"text-h2 font-weight-bold mb-4"},"Develop faster with DevUnity"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mb-8"}," The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),createVNode("div",{class:"d-flex flex-column flex-sm-row justify-center justify-md-start"},[createVNode(We,{"x-large":"",color:"primary",variant:"tonal",class:"px-6 mb-3 mb-sm-0 mr-sm-4",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Get started ")]),_:1}),createVNode(We,{"x-large":"",outlined:"",color:"info",variant:"tonal",class:"px-6",href:"#features"},{default:withCtx(()=>[createTextVNode(" Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:1})])]),_:1})]}),_:1},y,m)),n(ssrRenderComponent(A,{cols:"12",md:"6",class:"d-flex justify-center mt-8 mt-md-0"},{default:withCtx((a,u,V,_)=>{if(u)u(ssrRenderComponent(he,{src:s,"max-width":"90%",contain:"",class:"hero-image rounded-xl elevation-10",alt:"Devroid Platform"},null,V,_));else return [createVNode(he,{src:s,"max-width":"90%",contain:"",class:"hero-image rounded-xl elevation-10",alt:"Devroid Platform"})]}),_:1},y,m));else return [createVNode(A,{cols:"12",md:"6",class:"text-center text-md-left"},{default:withCtx(()=>[createVNode(_$1,null,{default:withCtx(()=>[createVNode("h1",{class:"text-h2 font-weight-bold mb-4"},"Develop faster with DevUnity"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mb-8"}," The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),createVNode("div",{class:"d-flex flex-column flex-sm-row justify-center justify-md-start"},[createVNode(We,{"x-large":"",color:"primary",variant:"tonal",class:"px-6 mb-3 mb-sm-0 mr-sm-4",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Get started ")]),_:1}),createVNode(We,{"x-large":"",outlined:"",color:"info",variant:"tonal",class:"px-6",href:"#features"},{default:withCtx(()=>[createTextVNode(" Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:1})])]),_:1})]),_:1}),createVNode(A,{cols:"12",md:"6",class:"d-flex justify-center mt-8 mt-md-0"},{default:withCtx(()=>[createVNode(he,{src:s,"max-width":"90%",contain:"",class:"hero-image rounded-xl elevation-10",alt:"Devroid Platform"})]),_:1})]}),_:1},k,h));else return [createVNode(x$2,{class:"align-center justify-center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6",class:"text-center text-md-left"},{default:withCtx(()=>[createVNode(_$1,null,{default:withCtx(()=>[createVNode("h1",{class:"text-h2 font-weight-bold mb-4"},"Develop faster with DevUnity"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mb-8"}," The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),createVNode("div",{class:"d-flex flex-column flex-sm-row justify-center justify-md-start"},[createVNode(We,{"x-large":"",color:"primary",variant:"tonal",class:"px-6 mb-3 mb-sm-0 mr-sm-4",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Get started ")]),_:1}),createVNode(We,{"x-large":"",outlined:"",color:"info",variant:"tonal",class:"px-6",href:"#features"},{default:withCtx(()=>[createTextVNode(" Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:1})])]),_:1})]),_:1}),createVNode(A,{cols:"12",md:"6",class:"d-flex justify-center mt-8 mt-md-0"},{default:withCtx(()=>[createVNode(he,{src:s,"max-width":"90%",contain:"",class:"hero-image rounded-xl elevation-10",alt:"Devroid Platform"})]),_:1})]),_:1})]}),_:1},S,w)),x(`</section><section class="stats-section py-8" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(x$1,null,{default:withCtx((b,c,k,h)=>{if(c)c(ssrRenderComponent(x$2,{class:"align-center justify-center"},{default:withCtx((d,n,y,m)=>{if(n)n("<!--[-->"),ssrRenderList(ce,(a,u)=>{n(ssrRenderComponent(A,{key:u,cols:"6",sm:"3",class:"text-center"},{default:withCtx((V,_,R,j)=>{if(_)_(`<div class="stat-value text-h3 font-weight-bold primary--text mb-1" data-v-c6c0e7a8${j}>${ssrInterpolate(a.value)}</div><div class="stat-label text-subtitle-2 text-medium-emphasis" data-v-c6c0e7a8${j}>${ssrInterpolate(a.label)}</div>`);else return [createVNode("div",{class:"stat-value text-h3 font-weight-bold primary--text mb-1"},toDisplayString(a.value),1),createVNode("div",{class:"stat-label text-subtitle-2 text-medium-emphasis"},toDisplayString(a.label),1)]}),_:2},y,m));}),n("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(ce,(a,u)=>createVNode(A,{key:u,cols:"6",sm:"3",class:"text-center"},{default:withCtx(()=>[createVNode("div",{class:"stat-value text-h3 font-weight-bold primary--text mb-1"},toDisplayString(a.value),1),createVNode("div",{class:"stat-label text-subtitle-2 text-medium-emphasis"},toDisplayString(a.label),1)]),_:2},1024)),64))]}),_:1},k,h));else return [createVNode(x$2,{class:"align-center justify-center"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ce,(d,n)=>createVNode(A,{key:n,cols:"6",sm:"3",class:"text-center"},{default:withCtx(()=>[createVNode("div",{class:"stat-value text-h3 font-weight-bold primary--text mb-1"},toDisplayString(d.value),1),createVNode("div",{class:"stat-label text-subtitle-2 text-medium-emphasis"},toDisplayString(d.label),1)]),_:2},1024)),64))]),_:1})]}),_:1},S,w)),x(`</section><section id="features" class="py-16" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(x$1,null,{default:withCtx((b,c,k,h)=>{if(c)c(`<div class="text-center mb-12" data-v-c6c0e7a8${h}><span class="section-subtitle" data-v-c6c0e7a8${h}>POWERFUL TOOLS</span><h2 class="text-h3 font-weight-bold mb-3" data-v-c6c0e7a8${h}>Features That Boost Your Productivity</h2><p class="text-subtitle-1 text-medium-emphasis mx-auto" style="${ssrRenderStyle({"max-width":"700px"})}" data-v-c6c0e7a8${h}> DevUnity combines all the tools you need to develop modern web applications in one intuitive platform. </p></div>`),c(ssrRenderComponent(x$2,null,{default:withCtx((d,n,y,m)=>{if(n)n("<!--[-->"),ssrRenderList(ue,(a,u)=>{n(ssrRenderComponent(A,{key:u,cols:"12",md:"4",class:"mb-8"},{default:withCtx((V,_,R,j)=>{if(_)_(ssrRenderComponent(qe,{class:"feature-card h-100 rounded-lg",flat:""},{default:withCtx((N,z,H,P)=>{if(z)z(ssrRenderComponent(C,{class:"pa-6"},{default:withCtx((F,L$1,Q,A)=>{if(L$1)L$1(ssrRenderComponent($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx((ke,W,$e,be)=>{if(W)W(ssrRenderComponent(L,{dark:"",size:"32"},{default:withCtx((Je,pe,We,He)=>{if(pe)pe(`${ssrInterpolate(a.icon)}`);else return [createTextVNode(toDisplayString(a.icon),1)]}),_:2},$e,be));else return [createVNode(L,{dark:"",size:"32"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.icon),1)]),_:2},1024)]}),_:2},Q,A)),L$1(`<h3 class="text-h5 font-weight-bold mb-3" data-v-c6c0e7a8${A}>${ssrInterpolate(a.title)}</h3><p class="text-body-1 text-medium-emphasis" data-v-c6c0e7a8${A}>${ssrInterpolate(a.description)}</p>`);else return [createVNode($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode(L,{dark:"",size:"32"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.icon),1)]),_:2},1024)]),_:2},1032,["color"]),createVNode("h3",{class:"text-h5 font-weight-bold mb-3"},toDisplayString(a.title),1),createVNode("p",{class:"text-body-1 text-medium-emphasis"},toDisplayString(a.description),1)]}),_:2},H,P));else return [createVNode(C,{class:"pa-6"},{default:withCtx(()=>[createVNode($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode(L,{dark:"",size:"32"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.icon),1)]),_:2},1024)]),_:2},1032,["color"]),createVNode("h3",{class:"text-h5 font-weight-bold mb-3"},toDisplayString(a.title),1),createVNode("p",{class:"text-body-1 text-medium-emphasis"},toDisplayString(a.description),1)]),_:2},1024)]}),_:2},R,j));else return [createVNode(qe,{class:"feature-card h-100 rounded-lg",flat:""},{default:withCtx(()=>[createVNode(C,{class:"pa-6"},{default:withCtx(()=>[createVNode($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode(L,{dark:"",size:"32"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.icon),1)]),_:2},1024)]),_:2},1032,["color"]),createVNode("h3",{class:"text-h5 font-weight-bold mb-3"},toDisplayString(a.title),1),createVNode("p",{class:"text-body-1 text-medium-emphasis"},toDisplayString(a.description),1)]),_:2},1024)]),_:2},1024)]}),_:2},y,m));}),n("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(ue,(a,u)=>createVNode(A,{key:u,cols:"12",md:"4",class:"mb-8"},{default:withCtx(()=>[createVNode(qe,{class:"feature-card h-100 rounded-lg",flat:""},{default:withCtx(()=>[createVNode(C,{class:"pa-6"},{default:withCtx(()=>[createVNode($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode(L,{dark:"",size:"32"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.icon),1)]),_:2},1024)]),_:2},1032,["color"]),createVNode("h3",{class:"text-h5 font-weight-bold mb-3"},toDisplayString(a.title),1),createVNode("p",{class:"text-body-1 text-medium-emphasis"},toDisplayString(a.description),1)]),_:2},1024)]),_:2},1024)]),_:2},1024)),64))]}),_:1},k,h));else return [createVNode("div",{class:"text-center mb-12"},[createVNode("span",{class:"section-subtitle"},"POWERFUL TOOLS"),createVNode("h2",{class:"text-h3 font-weight-bold mb-3"},"Features That Boost Your Productivity"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mx-auto",style:{"max-width":"700px"}}," DevUnity combines all the tools you need to develop modern web applications in one intuitive platform. ")]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ue,(d,n)=>createVNode(A,{key:n,cols:"12",md:"4",class:"mb-8"},{default:withCtx(()=>[createVNode(qe,{class:"feature-card h-100 rounded-lg",flat:""},{default:withCtx(()=>[createVNode(C,{class:"pa-6"},{default:withCtx(()=>[createVNode($,{color:d.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode(L,{dark:"",size:"32"},{default:withCtx(()=>[createTextVNode(toDisplayString(d.icon),1)]),_:2},1024)]),_:2},1032,["color"]),createVNode("h3",{class:"text-h5 font-weight-bold mb-3"},toDisplayString(d.title),1),createVNode("p",{class:"text-body-1 text-medium-emphasis"},toDisplayString(d.description),1)]),_:2},1024)]),_:2},1024)]),_:2},1024)),64))]),_:1})]}),_:1},S,w)),x(`</section><section class="py-16" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(x$1,null,{default:withCtx((b,c,k,h)=>{if(c)c(`<div class="text-center mb-12" data-v-c6c0e7a8${h}><h2 class="text-h3 font-weight-bold mb-3" data-v-c6c0e7a8${h}>How It Works</h2><p class="text-subtitle-1 text-medium-emphasis mx-auto" style="${ssrRenderStyle({"max-width":"700px"})}" data-v-c6c0e7a8${h}> Three simple steps to start using Devroid and transform your development workflow. </p></div>`),c(ssrRenderComponent(x$2,{justify:"center",class:"mt-8"},{default:withCtx((d,n,y,m)=>{if(n)n("<!--[-->"),ssrRenderList(me,(a,u)=>{n(ssrRenderComponent(A,{key:u,cols:"12",md:"4",class:"px-4"},{default:withCtx((V,_,R,j$1)=>{if(_)_(ssrRenderComponent(qe,{class:["h-100 rounded-xl",`border-${a.color}`],elevation:"3",style:{"border-top":"#00658b 4px solid"}},{default:withCtx((N,z,H,P)=>{if(z)z(ssrRenderComponent(j,null,{default:withCtx((F,L,Q,A)=>{if(L)L(ssrRenderComponent($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx((ke,W,$e,be)=>{if(W)W(`<span class="text-h5 font-weight-bold white--text" data-v-c6c0e7a8${be}>${ssrInterpolate(u+1)}</span>`);else return [createVNode("span",{class:"text-h5 font-weight-bold white--text"},toDisplayString(u+1),1)]}),_:2},Q,A));else return [createVNode($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode("span",{class:"text-h5 font-weight-bold white--text"},toDisplayString(u+1),1)]),_:2},1032,["color"])]}),_:2},H,P)),z(ssrRenderComponent(r,{class:"text-h5 font-weight-bold"},{default:withCtx((F,L,Q,A)=>{if(L)L(`${ssrInterpolate(a.title)}`);else return [createTextVNode(toDisplayString(a.title),1)]}),_:2},H,P)),z(ssrRenderComponent(C,{class:"text-body-1"},{default:withCtx((F,L,Q,A)=>{if(L)L(`${ssrInterpolate(a.description)}`);else return [createTextVNode(toDisplayString(a.description),1)]}),_:2},H,P)),z(ssrRenderComponent(f,{class:"pa-4"},{default:withCtx((F,L$1,Q,A)=>{if(L$1)L$1(ssrRenderComponent(We,{color:a.color,variant:"text",class:"text-none",to:a.link},{default:withCtx((ke,W,$e,be)=>{if(W)W("Learn more "),W(ssrRenderComponent(L,{right:""},{default:withCtx((Je,pe,We,He)=>{if(pe)pe("mdi-arrow-right");else return [createTextVNode("mdi-arrow-right")]}),_:2},$e,be));else return [createTextVNode("Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]}),_:2},Q,A));else return [createVNode(We,{color:a.color,variant:"text",class:"text-none",to:a.link},{default:withCtx(()=>[createTextVNode("Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["color","to"])]}),_:2},H,P));else return [createVNode(j,null,{default:withCtx(()=>[createVNode($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode("span",{class:"text-h5 font-weight-bold white--text"},toDisplayString(u+1),1)]),_:2},1032,["color"])]),_:2},1024),createVNode(r,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.title),1)]),_:2},1024),createVNode(C,{class:"text-body-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.description),1)]),_:2},1024),createVNode(f,{class:"pa-4"},{default:withCtx(()=>[createVNode(We,{color:a.color,variant:"text",class:"text-none",to:a.link},{default:withCtx(()=>[createTextVNode("Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["color","to"])]),_:2},1024)]}),_:2},R,j$1));else return [createVNode(qe,{class:["h-100 rounded-xl",`border-${a.color}`],elevation:"3",style:{"border-top":"#00658b 4px solid"}},{default:withCtx(()=>[createVNode(j,null,{default:withCtx(()=>[createVNode($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode("span",{class:"text-h5 font-weight-bold white--text"},toDisplayString(u+1),1)]),_:2},1032,["color"])]),_:2},1024),createVNode(r,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.title),1)]),_:2},1024),createVNode(C,{class:"text-body-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.description),1)]),_:2},1024),createVNode(f,{class:"pa-4"},{default:withCtx(()=>[createVNode(We,{color:a.color,variant:"text",class:"text-none",to:a.link},{default:withCtx(()=>[createTextVNode("Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["color","to"])]),_:2},1024)]),_:2},1032,["class"])]}),_:2},y,m));}),n("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(me,(a,u)=>createVNode(A,{key:u,cols:"12",md:"4",class:"px-4"},{default:withCtx(()=>[createVNode(qe,{class:["h-100 rounded-xl",`border-${a.color}`],elevation:"3",style:{"border-top":"#00658b 4px solid"}},{default:withCtx(()=>[createVNode(j,null,{default:withCtx(()=>[createVNode($,{color:a.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode("span",{class:"text-h5 font-weight-bold white--text"},toDisplayString(u+1),1)]),_:2},1032,["color"])]),_:2},1024),createVNode(r,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.title),1)]),_:2},1024),createVNode(C,{class:"text-body-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(a.description),1)]),_:2},1024),createVNode(f,{class:"pa-4"},{default:withCtx(()=>[createVNode(We,{color:a.color,variant:"text",class:"text-none",to:a.link},{default:withCtx(()=>[createTextVNode("Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["color","to"])]),_:2},1024)]),_:2},1032,["class"])]),_:2},1024)),64))]}),_:1},k,h)),c(`<div class="d-flex justify-center mt-12" data-v-c6c0e7a8${h}>`),c(ssrRenderComponent(We,{size:"large",color:"info",variant:"tonal",class:"px-8 rounded-pill",elevation:"2",to:"/signup",nuxt:""},{default:withCtx((d,n,y,m)=>{if(n)n(" Get Started Now "),n(ssrRenderComponent(L,{end:""},{default:withCtx((a,u,V,_)=>{if(u)u("mdi-rocket-launch-outline");else return [createTextVNode("mdi-rocket-launch-outline")]}),_:1},y,m));else return [createTextVNode(" Get Started Now "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-rocket-launch-outline")]),_:1})]}),_:1},k,h)),c("</div>");else return [createVNode("div",{class:"text-center mb-12"},[createVNode("h2",{class:"text-h3 font-weight-bold mb-3"},"How It Works"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mx-auto",style:{"max-width":"700px"}}," Three simple steps to start using Devroid and transform your development workflow. ")]),createVNode(x$2,{justify:"center",class:"mt-8"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(me,(d,n)=>createVNode(A,{key:n,cols:"12",md:"4",class:"px-4"},{default:withCtx(()=>[createVNode(qe,{class:["h-100 rounded-xl",`border-${d.color}`],elevation:"3",style:{"border-top":"#00658b 4px solid"}},{default:withCtx(()=>[createVNode(j,null,{default:withCtx(()=>[createVNode($,{color:d.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode("span",{class:"text-h5 font-weight-bold white--text"},toDisplayString(n+1),1)]),_:2},1032,["color"])]),_:2},1024),createVNode(r,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(d.title),1)]),_:2},1024),createVNode(C,{class:"text-body-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(d.description),1)]),_:2},1024),createVNode(f,{class:"pa-4"},{default:withCtx(()=>[createVNode(We,{color:d.color,variant:"text",class:"text-none",to:d.link},{default:withCtx(()=>[createTextVNode("Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["color","to"])]),_:2},1024)]),_:2},1032,["class"])]),_:2},1024)),64))]),_:1}),createVNode("div",{class:"d-flex justify-center mt-12"},[createVNode(We,{size:"large",color:"info",variant:"tonal",class:"px-8 rounded-pill",elevation:"2",to:"/signup",nuxt:""},{default:withCtx(()=>[createTextVNode(" Get Started Now "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-rocket-launch-outline")]),_:1})]),_:1})])]}),_:1},S,w)),x(`</section><section id="pricing" class="py-16" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(unref(De),null,null,S,w)),x(`</section><section id="faq" class="py-16" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(unref(Ve),null,null,S,w)),x(`</section><section class="py-16 primary" data-v-c6c0e7a8${w}>`),x(ssrRenderComponent(x$1,null,{default:withCtx((b,c,k,h)=>{if(c)c(ssrRenderComponent(x$2,{justify:"center"},{default:withCtx((d,n,y,m)=>{if(n)n(ssrRenderComponent(A,{cols:"12",md:"8",class:"text-center"},{default:withCtx((a,u,V,_)=>{if(u)u(`<h2 class="text-h3 font-weight-bold white--text mb-4" data-v-c6c0e7a8${_}>Ready to get started?</h2><p class="text-subtitle-1 white--text text-opacity-high mb-8" data-v-c6c0e7a8${_}> Join the community already using DevUnity for their projects. </p>`),u(ssrRenderComponent(We,{"x-large":"",color:"info",variant:"tonal",elevation:"2",class:"px-8",to:"/signup"},{default:withCtx((R,j,N,z)=>{if(j)j(" Create free account ");else return [createTextVNode(" Create free account ")]}),_:1},V,_));else return [createVNode("h2",{class:"text-h3 font-weight-bold white--text mb-4"},"Ready to get started?"),createVNode("p",{class:"text-subtitle-1 white--text text-opacity-high mb-8"}," Join the community already using DevUnity for their projects. "),createVNode(We,{"x-large":"",color:"info",variant:"tonal",elevation:"2",class:"px-8",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Create free account ")]),_:1})]}),_:1},y,m));else return [createVNode(A,{cols:"12",md:"8",class:"text-center"},{default:withCtx(()=>[createVNode("h2",{class:"text-h3 font-weight-bold white--text mb-4"},"Ready to get started?"),createVNode("p",{class:"text-subtitle-1 white--text text-opacity-high mb-8"}," Join the community already using DevUnity for their projects. "),createVNode(We,{"x-large":"",color:"info",variant:"tonal",elevation:"2",class:"px-8",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Create free account ")]),_:1})]),_:1})]}),_:1},k,h));else return [createVNode(x$2,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"8",class:"text-center"},{default:withCtx(()=>[createVNode("h2",{class:"text-h3 font-weight-bold white--text mb-4"},"Ready to get started?"),createVNode("p",{class:"text-subtitle-1 white--text text-opacity-high mb-8"}," Join the community already using DevUnity for their projects. "),createVNode(We,{"x-large":"",color:"info",variant:"tonal",elevation:"2",class:"px-8",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Create free account ")]),_:1})]),_:1})]),_:1})]}),_:1},S,w)),x("</section>");else return [createVNode("section",{id:"hero",class:"hero-section"},[createVNode(x$1,{class:"py-16"},{default:withCtx(()=>[createVNode(x$2,{class:"align-center justify-center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6",class:"text-center text-md-left"},{default:withCtx(()=>[createVNode(_$1,null,{default:withCtx(()=>[createVNode("h1",{class:"text-h2 font-weight-bold mb-4"},"Develop faster with DevUnity"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mb-8"}," The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),createVNode("div",{class:"d-flex flex-column flex-sm-row justify-center justify-md-start"},[createVNode(We,{"x-large":"",color:"primary",variant:"tonal",class:"px-6 mb-3 mb-sm-0 mr-sm-4",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Get started ")]),_:1}),createVNode(We,{"x-large":"",outlined:"",color:"info",variant:"tonal",class:"px-6",href:"#features"},{default:withCtx(()=>[createTextVNode(" Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:1})])]),_:1})]),_:1}),createVNode(A,{cols:"12",md:"6",class:"d-flex justify-center mt-8 mt-md-0"},{default:withCtx(()=>[createVNode(he,{src:s,"max-width":"90%",contain:"",class:"hero-image rounded-xl elevation-10",alt:"Devroid Platform"})]),_:1})]),_:1})]),_:1})]),createVNode("section",{class:"stats-section py-8"},[createVNode(x$1,null,{default:withCtx(()=>[createVNode(x$2,{class:"align-center justify-center"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ce,(b,c)=>createVNode(A,{key:c,cols:"6",sm:"3",class:"text-center"},{default:withCtx(()=>[createVNode("div",{class:"stat-value text-h3 font-weight-bold primary--text mb-1"},toDisplayString(b.value),1),createVNode("div",{class:"stat-label text-subtitle-2 text-medium-emphasis"},toDisplayString(b.label),1)]),_:2},1024)),64))]),_:1})]),_:1})]),createVNode("section",{id:"features",class:"py-16"},[createVNode(x$1,null,{default:withCtx(()=>[createVNode("div",{class:"text-center mb-12"},[createVNode("span",{class:"section-subtitle"},"POWERFUL TOOLS"),createVNode("h2",{class:"text-h3 font-weight-bold mb-3"},"Features That Boost Your Productivity"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mx-auto",style:{"max-width":"700px"}}," DevUnity combines all the tools you need to develop modern web applications in one intuitive platform. ")]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ue,(b,c)=>createVNode(A,{key:c,cols:"12",md:"4",class:"mb-8"},{default:withCtx(()=>[createVNode(qe,{class:"feature-card h-100 rounded-lg",flat:""},{default:withCtx(()=>[createVNode(C,{class:"pa-6"},{default:withCtx(()=>[createVNode($,{color:b.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode(L,{dark:"",size:"32"},{default:withCtx(()=>[createTextVNode(toDisplayString(b.icon),1)]),_:2},1024)]),_:2},1032,["color"]),createVNode("h3",{class:"text-h5 font-weight-bold mb-3"},toDisplayString(b.title),1),createVNode("p",{class:"text-body-1 text-medium-emphasis"},toDisplayString(b.description),1)]),_:2},1024)]),_:2},1024)]),_:2},1024)),64))]),_:1})]),_:1})]),createVNode("section",{class:"py-16"},[createVNode(x$1,null,{default:withCtx(()=>[createVNode("div",{class:"text-center mb-12"},[createVNode("h2",{class:"text-h3 font-weight-bold mb-3"},"How It Works"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mx-auto",style:{"max-width":"700px"}}," Three simple steps to start using Devroid and transform your development workflow. ")]),createVNode(x$2,{justify:"center",class:"mt-8"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(me,(b,c)=>createVNode(A,{key:c,cols:"12",md:"4",class:"px-4"},{default:withCtx(()=>[createVNode(qe,{class:["h-100 rounded-xl",`border-${b.color}`],elevation:"3",style:{"border-top":"#00658b 4px solid"}},{default:withCtx(()=>[createVNode(j,null,{default:withCtx(()=>[createVNode($,{color:b.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode("span",{class:"text-h5 font-weight-bold white--text"},toDisplayString(c+1),1)]),_:2},1032,["color"])]),_:2},1024),createVNode(r,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(b.title),1)]),_:2},1024),createVNode(C,{class:"text-body-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(b.description),1)]),_:2},1024),createVNode(f,{class:"pa-4"},{default:withCtx(()=>[createVNode(We,{color:b.color,variant:"text",class:"text-none",to:b.link},{default:withCtx(()=>[createTextVNode("Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["color","to"])]),_:2},1024)]),_:2},1032,["class"])]),_:2},1024)),64))]),_:1}),createVNode("div",{class:"d-flex justify-center mt-12"},[createVNode(We,{size:"large",color:"info",variant:"tonal",class:"px-8 rounded-pill",elevation:"2",to:"/signup",nuxt:""},{default:withCtx(()=>[createTextVNode(" Get Started Now "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-rocket-launch-outline")]),_:1})]),_:1})])]),_:1})]),createVNode("section",{id:"pricing",class:"py-16"},[createVNode(unref(De))]),createVNode("section",{id:"faq",class:"py-16"},[createVNode(unref(Ve))]),createVNode("section",{class:"py-16 primary"},[createVNode(x$1,null,{default:withCtx(()=>[createVNode(x$2,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"8",class:"text-center"},{default:withCtx(()=>[createVNode("h2",{class:"text-h3 font-weight-bold white--text mb-4"},"Ready to get started?"),createVNode("p",{class:"text-subtitle-1 white--text text-opacity-high mb-8"}," Join the community already using DevUnity for their projects. "),createVNode(We,{"x-large":"",color:"info",variant:"tonal",elevation:"2",class:"px-8",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Create free account ")]),_:1})]),_:1})]),_:1})]),_:1})])]}),_:1},xe,oe)),Z$1(`<footer class="py-8" data-v-c6c0e7a8${oe}>`),Z$1(ssrRenderComponent(x$1,null,{default:withCtx((f,x,S,w)=>{if(x)x(ssrRenderComponent(x$2,null,{default:withCtx((b,c,k,h)=>{if(c)c(ssrRenderComponent(A,{cols:"12",md:"5",lg:"5",class:"mb-6 mb-md-0"},{default:withCtx((d,n,y,m)=>{if(n)n(`<div class="d-flex align-center mb-4" data-v-c6c0e7a8${m}><img${ssrRenderAttr("src",s$1)} alt="DevUnity title" width="180" data-v-c6c0e7a8${m}></div><p class="text-body-2 text-medium-emphasis mb-4" data-v-c6c0e7a8${m}> The all-in-one platform for developers who want to create, manage and optimize their web projects. </p><div class="newsletter-signup mb-6" data-v-c6c0e7a8${m}><div class="d-flex" data-v-c6c0e7a8${m}>`),n(ssrRenderComponent(Fe,{modelValue:G.value,"onUpdate:modelValue":a=>G.value=a,density:"compact",placeholder:"Your email address",variant:"outlined","hide-details":"",class:"mr-2","prepend-inner-icon":"mdi-email-outline"},null,y,m)),n(ssrRenderComponent(We,{color:"info",variant:"tonal",class:"ml-n1",loading:I.value,onClick:ve},{default:withCtx((a,u,V,_)=>{if(u)u(" Subscribe ");else return [createTextVNode(" Subscribe ")]}),_:1},y,m)),n(`</div><p class="text-caption text-medium-emphasis mt-1" data-v-c6c0e7a8${m}> Receive our latest news and development tips </p></div><div class="d-flex" data-v-c6c0e7a8${m}>`),n(ssrRenderComponent(We,{icon:"",variant:"text",class:"mr-3",href:"https://twitter.com",target:"_blank"},{default:withCtx((a,u,V,_)=>{if(u)u(ssrRenderComponent(L,null,{default:withCtx((R,j,N,z)=>{if(j)j("mdi-twitter");else return [createTextVNode("mdi-twitter")]}),_:1},V,_));else return [createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-twitter")]),_:1})]}),_:1},y,m)),n(ssrRenderComponent(We,{icon:"",variant:"text",class:"mr-3",href:"https://github.com",target:"_blank"},{default:withCtx((a,u,V,_)=>{if(u)u(ssrRenderComponent(L,null,{default:withCtx((R,j,N,z)=>{if(j)j("mdi-github");else return [createTextVNode("mdi-github")]}),_:1},V,_));else return [createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-github")]),_:1})]}),_:1},y,m)),n(ssrRenderComponent(We,{icon:"",variant:"text",class:"mr-3",href:"https://linkedin.com",target:"_blank"},{default:withCtx((a,u,V,_)=>{if(u)u(ssrRenderComponent(L,null,{default:withCtx((R,j,N,z)=>{if(j)j("mdi-linkedin");else return [createTextVNode("mdi-linkedin")]}),_:1},V,_));else return [createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-linkedin")]),_:1})]}),_:1},y,m)),n("</div>");else return [createVNode("div",{class:"d-flex align-center mb-4"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"180"})]),createVNode("p",{class:"text-body-2 text-medium-emphasis mb-4"}," The all-in-one platform for developers who want to create, manage and optimize their web projects. "),createVNode("div",{class:"newsletter-signup mb-6"},[createVNode("div",{class:"d-flex"},[createVNode(Fe,{modelValue:G.value,"onUpdate:modelValue":a=>G.value=a,density:"compact",placeholder:"Your email address",variant:"outlined","hide-details":"",class:"mr-2","prepend-inner-icon":"mdi-email-outline"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(We,{color:"info",variant:"tonal",class:"ml-n1",loading:I.value,onClick:ve},{default:withCtx(()=>[createTextVNode(" Subscribe ")]),_:1},8,["loading"])]),createVNode("p",{class:"text-caption text-medium-emphasis mt-1"}," Receive our latest news and development tips ")]),createVNode("div",{class:"d-flex"},[createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://twitter.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-twitter")]),_:1})]),_:1}),createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://github.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-github")]),_:1})]),_:1}),createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://linkedin.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-linkedin")]),_:1})]),_:1})])]}),_:1},k,h)),c(ssrRenderComponent(A,{cols:"12",md:"7",lg:"7"},{default:withCtx((d,n,y,m)=>{if(n)n(ssrRenderComponent(x$2,{class:"footer-columns-container"},{default:withCtx((a,u,V,_)=>{if(u)u("<!--[-->"),ssrRenderList(ie,(R,j)=>{u(ssrRenderComponent(A,{key:j,cols:"6",md:"4",class:"footer-column px-4"},{default:withCtx((N,z,H,P)=>{if(z)z(`<h4 class="text-subtitle-1 font-weight-bold mb-4" data-v-c6c0e7a8${P}>${ssrInterpolate(R.title)}</h4><div class="footer-links" data-v-c6c0e7a8${P}><!--[-->`),ssrRenderList(R.links,(F,L)=>{z(ssrRenderComponent(J,{key:L,to:F.to,class:"footer-link d-block mb-3"},{default:withCtx((Q,A,ke,W)=>{if(A)A(`${ssrInterpolate(F.title)}`);else return [createTextVNode(toDisplayString(F.title),1)]}),_:2},H,P));}),z("<!--]--></div>");else return [createVNode("h4",{class:"text-subtitle-1 font-weight-bold mb-4"},toDisplayString(R.title),1),createVNode("div",{class:"footer-links"},[(openBlock(true),createBlock(Fragment,null,renderList(R.links,(F,L)=>(openBlock(),createBlock(J,{key:L,to:F.to,class:"footer-link d-block mb-3"},{default:withCtx(()=>[createTextVNode(toDisplayString(F.title),1)]),_:2},1032,["to"]))),128))])]}),_:2},V,_));}),u("<!--]-->");else return [(openBlock(),createBlock(Fragment,null,renderList(ie,(R,j)=>createVNode(A,{key:j,cols:"6",md:"4",class:"footer-column px-4"},{default:withCtx(()=>[createVNode("h4",{class:"text-subtitle-1 font-weight-bold mb-4"},toDisplayString(R.title),1),createVNode("div",{class:"footer-links"},[(openBlock(true),createBlock(Fragment,null,renderList(R.links,(N,z)=>(openBlock(),createBlock(J,{key:z,to:N.to,class:"footer-link d-block mb-3"},{default:withCtx(()=>[createTextVNode(toDisplayString(N.title),1)]),_:2},1032,["to"]))),128))])]),_:2},1024)),64))]}),_:1},y,m));else return [createVNode(x$2,{class:"footer-columns-container"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ie,(a,u)=>createVNode(A,{key:u,cols:"6",md:"4",class:"footer-column px-4"},{default:withCtx(()=>[createVNode("h4",{class:"text-subtitle-1 font-weight-bold mb-4"},toDisplayString(a.title),1),createVNode("div",{class:"footer-links"},[(openBlock(true),createBlock(Fragment,null,renderList(a.links,(V,_)=>(openBlock(),createBlock(J,{key:_,to:V.to,class:"footer-link d-block mb-3"},{default:withCtx(()=>[createTextVNode(toDisplayString(V.title),1)]),_:2},1032,["to"]))),128))])]),_:2},1024)),64))]),_:1})]}),_:1},k,h));else return [createVNode(A,{cols:"12",md:"5",lg:"5",class:"mb-6 mb-md-0"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"180"})]),createVNode("p",{class:"text-body-2 text-medium-emphasis mb-4"}," The all-in-one platform for developers who want to create, manage and optimize their web projects. "),createVNode("div",{class:"newsletter-signup mb-6"},[createVNode("div",{class:"d-flex"},[createVNode(Fe,{modelValue:G.value,"onUpdate:modelValue":d=>G.value=d,density:"compact",placeholder:"Your email address",variant:"outlined","hide-details":"",class:"mr-2","prepend-inner-icon":"mdi-email-outline"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(We,{color:"info",variant:"tonal",class:"ml-n1",loading:I.value,onClick:ve},{default:withCtx(()=>[createTextVNode(" Subscribe ")]),_:1},8,["loading"])]),createVNode("p",{class:"text-caption text-medium-emphasis mt-1"}," Receive our latest news and development tips ")]),createVNode("div",{class:"d-flex"},[createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://twitter.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-twitter")]),_:1})]),_:1}),createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://github.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-github")]),_:1})]),_:1}),createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://linkedin.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-linkedin")]),_:1})]),_:1})])]),_:1}),createVNode(A,{cols:"12",md:"7",lg:"7"},{default:withCtx(()=>[createVNode(x$2,{class:"footer-columns-container"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ie,(d,n)=>createVNode(A,{key:n,cols:"6",md:"4",class:"footer-column px-4"},{default:withCtx(()=>[createVNode("h4",{class:"text-subtitle-1 font-weight-bold mb-4"},toDisplayString(d.title),1),createVNode("div",{class:"footer-links"},[(openBlock(true),createBlock(Fragment,null,renderList(d.links,(y,m)=>(openBlock(),createBlock(J,{key:m,to:y.to,class:"footer-link d-block mb-3"},{default:withCtx(()=>[createTextVNode(toDisplayString(y.title),1)]),_:2},1032,["to"]))),128))])]),_:2},1024)),64))]),_:1})]),_:1})]}),_:1},S,w)),x(ssrRenderComponent(P,{class:"my-6"},null,S,w)),x(`<div class="d-flex flex-column flex-sm-row justify-space-between align-center" data-v-c6c0e7a8${w}><div class="text-body-2 text-medium-emphasis mb-3 mb-sm-0" data-v-c6c0e7a8${w}> © ${ssrInterpolate(new Date().getFullYear())} DevUnity. All rights reserved. </div><div class="d-flex align-center" data-v-c6c0e7a8${w}><a href="mailto:contact@devunity.com" class="text-body-2 text-decoration-none text-medium-emphasis" data-v-c6c0e7a8${w}>contact@devunity.com</a></div></div>`);else return [createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12",md:"5",lg:"5",class:"mb-6 mb-md-0"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"180"})]),createVNode("p",{class:"text-body-2 text-medium-emphasis mb-4"}," The all-in-one platform for developers who want to create, manage and optimize their web projects. "),createVNode("div",{class:"newsletter-signup mb-6"},[createVNode("div",{class:"d-flex"},[createVNode(Fe,{modelValue:G.value,"onUpdate:modelValue":b=>G.value=b,density:"compact",placeholder:"Your email address",variant:"outlined","hide-details":"",class:"mr-2","prepend-inner-icon":"mdi-email-outline"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(We,{color:"info",variant:"tonal",class:"ml-n1",loading:I.value,onClick:ve},{default:withCtx(()=>[createTextVNode(" Subscribe ")]),_:1},8,["loading"])]),createVNode("p",{class:"text-caption text-medium-emphasis mt-1"}," Receive our latest news and development tips ")]),createVNode("div",{class:"d-flex"},[createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://twitter.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-twitter")]),_:1})]),_:1}),createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://github.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-github")]),_:1})]),_:1}),createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://linkedin.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-linkedin")]),_:1})]),_:1})])]),_:1}),createVNode(A,{cols:"12",md:"7",lg:"7"},{default:withCtx(()=>[createVNode(x$2,{class:"footer-columns-container"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ie,(b,c)=>createVNode(A,{key:c,cols:"6",md:"4",class:"footer-column px-4"},{default:withCtx(()=>[createVNode("h4",{class:"text-subtitle-1 font-weight-bold mb-4"},toDisplayString(b.title),1),createVNode("div",{class:"footer-links"},[(openBlock(true),createBlock(Fragment,null,renderList(b.links,(k,h)=>(openBlock(),createBlock(J,{key:h,to:k.to,class:"footer-link d-block mb-3"},{default:withCtx(()=>[createTextVNode(toDisplayString(k.title),1)]),_:2},1032,["to"]))),128))])]),_:2},1024)),64))]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-6"}),createVNode("div",{class:"d-flex flex-column flex-sm-row justify-space-between align-center"},[createVNode("div",{class:"text-body-2 text-medium-emphasis mb-3 mb-sm-0"}," © "+toDisplayString(new Date().getFullYear())+" DevUnity. All rights reserved. ",1),createVNode("div",{class:"d-flex align-center"},[createVNode("a",{href:"mailto:contact@devunity.com",class:"text-body-2 text-decoration-none text-medium-emphasis"},"contact@devunity.com")])])]}),_:1},xe,oe)),Z$1("</footer>"),Z$1(ssrRenderComponent(f$1,{modelValue:fe.value,"onUpdate:modelValue":f=>fe.value=f,color:Ce.value,text:ze.value,timeout:Le.value},null,xe,oe));else return [createVNode(Z,{app:"",elevation:2,color:"surface",class:"px-0 nav-bar",modelValue:we.value,"onUpdate:modelValue":f=>we.value=f},{default:withCtx(()=>[createVNode(x$1,{class:"d-flex align-center py-0 my-0"},{default:withCtx(()=>[createVNode(J,{to:"/",class:"text-decoration-none"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center brand-container"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"150",class:"logo-image"}),createVNode("div",{class:"brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left"},[createVNode("span",{class:"text-caption font-weight-medium text-gradient"},"PROPULSE YOUR CODE")])])]),_:1}),createVNode(c),X.$vuetify.display.smAndUp?(openBlock(),createBlock("div",{key:0,class:"d-flex align-center custom-nav-menu"},[createVNode("div",{class:"nav-links-wrapper"},[(openBlock(),createBlock(Fragment,null,renderList(K,f=>createVNode(We,{key:f.href,class:["nav-btn custom-btn",{"active-nav-btn":ye.value===f.href.substring(1)}],href:f.href,variant:"text"},{default:withCtx(()=>[createVNode("span",{class:"nav-text"},toDisplayString(f.title),1),createVNode("span",{class:"nav-btn-background"})]),_:2},1032,["href","class"])),64))]),createVNode("div",{class:"auth-buttons ml-6"},[createVNode(We,{color:"primary",class:"login-btn",to:"/login",variant:"tonal",rounded:"rounded-xl","prepend-icon":"mdi-login"},{default:withCtx(()=>[createTextVNode(" Login ")]),_:1})])])):(openBlock(),createBlock("div",{key:1,class:"d-flex align-center"},[createVNode(We,{color:"primary",class:"mr-2",to:"/login",size:"small",rounded:"pill"},{default:withCtx(()=>[createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-login")]),_:1}),createTextVNode(" Login ")]),_:1}),createVNode(We,{icon:"",onClick:f=>C$1.value=!C$1.value,class:"menu-toggle-btn","aria-label":"Toggle navigation menu"},{default:withCtx(()=>[createVNode("div",{class:["hamburger-icon",{active:C$1.value}]},[createVNode("span"),createVNode("span"),createVNode("span")],2)]),_:1},8,["onClick"])]))]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(ea,{modelValue:C$1.value,"onUpdate:modelValue":f=>C$1.value=f,location:"right",temporary:"",class:"mobile-nav-drawer d-md-none pa-6"},{default:withCtx(()=>[createVNode("div",{class:"drawer-header mb-8 d-flex justify-space-between align-center"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"120"}),createVNode(We,{icon:"",variant:"text",onClick:f=>C$1.value=false},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-close")]),_:1})]),_:1},8,["onClick"])]),createVNode("div",{class:"mobile-nav-links"},[createVNode(Ke,{nav:""},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(K,f=>createVNode(ot,{key:f.href,href:f.href,onClick:x=>C$1.value=false,class:"mobile-nav-item mb-3",rounded:"lg"},{prepend:withCtx(()=>[createVNode(L,{class:"mr-2",icon:f.icon,color:"primary"},null,8,["icon"])]),default:withCtx(()=>[createVNode(i,{class:"text-subtitle-1 font-weight-medium"},{default:withCtx(()=>[createTextVNode(toDisplayString(f.title),1)]),_:2},1024)]),_:2},1032,["href","onClick"])),64))]),_:1})]),createVNode("div",{class:"drawer-footer mt-auto pt-6"},[createVNode(We,{block:"",color:"primary",to:"/signup",class:"mb-4",size:"large",rounded:"pill"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-rocket-launch-outline")]),_:1}),createTextVNode(" Get started ")]),_:1}),createVNode("p",{class:"text-caption text-center text-medium-emphasis"},"Join our community of developers and propulse your web projects to new horizons.")])]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(_,{class:"main-content"},{default:withCtx(()=>[createVNode("section",{id:"hero",class:"hero-section"},[createVNode(x$1,{class:"py-16"},{default:withCtx(()=>[createVNode(x$2,{class:"align-center justify-center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"6",class:"text-center text-md-left"},{default:withCtx(()=>[createVNode(_$1,null,{default:withCtx(()=>[createVNode("h1",{class:"text-h2 font-weight-bold mb-4"},"Develop faster with DevUnity"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mb-8"}," The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),createVNode("div",{class:"d-flex flex-column flex-sm-row justify-center justify-md-start"},[createVNode(We,{"x-large":"",color:"primary",variant:"tonal",class:"px-6 mb-3 mb-sm-0 mr-sm-4",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Get started ")]),_:1}),createVNode(We,{"x-large":"",outlined:"",color:"info",variant:"tonal",class:"px-6",href:"#features"},{default:withCtx(()=>[createTextVNode(" Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:1})])]),_:1})]),_:1}),createVNode(A,{cols:"12",md:"6",class:"d-flex justify-center mt-8 mt-md-0"},{default:withCtx(()=>[createVNode(he,{src:s,"max-width":"90%",contain:"",class:"hero-image rounded-xl elevation-10",alt:"Devroid Platform"})]),_:1})]),_:1})]),_:1})]),createVNode("section",{class:"stats-section py-8"},[createVNode(x$1,null,{default:withCtx(()=>[createVNode(x$2,{class:"align-center justify-center"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ce,(f,x)=>createVNode(A,{key:x,cols:"6",sm:"3",class:"text-center"},{default:withCtx(()=>[createVNode("div",{class:"stat-value text-h3 font-weight-bold primary--text mb-1"},toDisplayString(f.value),1),createVNode("div",{class:"stat-label text-subtitle-2 text-medium-emphasis"},toDisplayString(f.label),1)]),_:2},1024)),64))]),_:1})]),_:1})]),createVNode("section",{id:"features",class:"py-16"},[createVNode(x$1,null,{default:withCtx(()=>[createVNode("div",{class:"text-center mb-12"},[createVNode("span",{class:"section-subtitle"},"POWERFUL TOOLS"),createVNode("h2",{class:"text-h3 font-weight-bold mb-3"},"Features That Boost Your Productivity"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mx-auto",style:{"max-width":"700px"}}," DevUnity combines all the tools you need to develop modern web applications in one intuitive platform. ")]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ue,(f,x)=>createVNode(A,{key:x,cols:"12",md:"4",class:"mb-8"},{default:withCtx(()=>[createVNode(qe,{class:"feature-card h-100 rounded-lg",flat:""},{default:withCtx(()=>[createVNode(C,{class:"pa-6"},{default:withCtx(()=>[createVNode($,{color:f.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode(L,{dark:"",size:"32"},{default:withCtx(()=>[createTextVNode(toDisplayString(f.icon),1)]),_:2},1024)]),_:2},1032,["color"]),createVNode("h3",{class:"text-h5 font-weight-bold mb-3"},toDisplayString(f.title),1),createVNode("p",{class:"text-body-1 text-medium-emphasis"},toDisplayString(f.description),1)]),_:2},1024)]),_:2},1024)]),_:2},1024)),64))]),_:1})]),_:1})]),createVNode("section",{class:"py-16"},[createVNode(x$1,null,{default:withCtx(()=>[createVNode("div",{class:"text-center mb-12"},[createVNode("h2",{class:"text-h3 font-weight-bold mb-3"},"How It Works"),createVNode("p",{class:"text-subtitle-1 text-medium-emphasis mx-auto",style:{"max-width":"700px"}}," Three simple steps to start using Devroid and transform your development workflow. ")]),createVNode(x$2,{justify:"center",class:"mt-8"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(me,(f$1,x)=>createVNode(A,{key:x,cols:"12",md:"4",class:"px-4"},{default:withCtx(()=>[createVNode(qe,{class:["h-100 rounded-xl",`border-${f$1.color}`],elevation:"3",style:{"border-top":"#00658b 4px solid"}},{default:withCtx(()=>[createVNode(j,null,{default:withCtx(()=>[createVNode($,{color:f$1.color,size:"56",class:"mb-4"},{default:withCtx(()=>[createVNode("span",{class:"text-h5 font-weight-bold white--text"},toDisplayString(x+1),1)]),_:2},1032,["color"])]),_:2},1024),createVNode(r,{class:"text-h5 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(f$1.title),1)]),_:2},1024),createVNode(C,{class:"text-body-1"},{default:withCtx(()=>[createTextVNode(toDisplayString(f$1.description),1)]),_:2},1024),createVNode(f,{class:"pa-4"},{default:withCtx(()=>[createVNode(We,{color:f$1.color,variant:"text",class:"text-none",to:f$1.link},{default:withCtx(()=>[createTextVNode("Learn more "),createVNode(L,{right:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["color","to"])]),_:2},1024)]),_:2},1032,["class"])]),_:2},1024)),64))]),_:1}),createVNode("div",{class:"d-flex justify-center mt-12"},[createVNode(We,{size:"large",color:"info",variant:"tonal",class:"px-8 rounded-pill",elevation:"2",to:"/signup",nuxt:""},{default:withCtx(()=>[createTextVNode(" Get Started Now "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-rocket-launch-outline")]),_:1})]),_:1})])]),_:1})]),createVNode("section",{id:"pricing",class:"py-16"},[createVNode(unref(De))]),createVNode("section",{id:"faq",class:"py-16"},[createVNode(unref(Ve))]),createVNode("section",{class:"py-16 primary"},[createVNode(x$1,null,{default:withCtx(()=>[createVNode(x$2,{justify:"center"},{default:withCtx(()=>[createVNode(A,{cols:"12",md:"8",class:"text-center"},{default:withCtx(()=>[createVNode("h2",{class:"text-h3 font-weight-bold white--text mb-4"},"Ready to get started?"),createVNode("p",{class:"text-subtitle-1 white--text text-opacity-high mb-8"}," Join the community already using DevUnity for their projects. "),createVNode(We,{"x-large":"",color:"info",variant:"tonal",elevation:"2",class:"px-8",to:"/signup"},{default:withCtx(()=>[createTextVNode(" Create free account ")]),_:1})]),_:1})]),_:1})]),_:1})])]),_:1}),createVNode("footer",{class:"py-8"},[createVNode(x$1,null,{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12",md:"5",lg:"5",class:"mb-6 mb-md-0"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode("img",{src:s$1,alt:"DevUnity title",width:"180"})]),createVNode("p",{class:"text-body-2 text-medium-emphasis mb-4"}," The all-in-one platform for developers who want to create, manage and optimize their web projects. "),createVNode("div",{class:"newsletter-signup mb-6"},[createVNode("div",{class:"d-flex"},[createVNode(Fe,{modelValue:G.value,"onUpdate:modelValue":f=>G.value=f,density:"compact",placeholder:"Your email address",variant:"outlined","hide-details":"",class:"mr-2","prepend-inner-icon":"mdi-email-outline"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(We,{color:"info",variant:"tonal",class:"ml-n1",loading:I.value,onClick:ve},{default:withCtx(()=>[createTextVNode(" Subscribe ")]),_:1},8,["loading"])]),createVNode("p",{class:"text-caption text-medium-emphasis mt-1"}," Receive our latest news and development tips ")]),createVNode("div",{class:"d-flex"},[createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://twitter.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-twitter")]),_:1})]),_:1}),createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://github.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-github")]),_:1})]),_:1}),createVNode(We,{icon:"",variant:"text",class:"mr-3",href:"https://linkedin.com",target:"_blank"},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-linkedin")]),_:1})]),_:1})])]),_:1}),createVNode(A,{cols:"12",md:"7",lg:"7"},{default:withCtx(()=>[createVNode(x$2,{class:"footer-columns-container"},{default:withCtx(()=>[(openBlock(),createBlock(Fragment,null,renderList(ie,(f,x)=>createVNode(A,{key:x,cols:"6",md:"4",class:"footer-column px-4"},{default:withCtx(()=>[createVNode("h4",{class:"text-subtitle-1 font-weight-bold mb-4"},toDisplayString(f.title),1),createVNode("div",{class:"footer-links"},[(openBlock(true),createBlock(Fragment,null,renderList(f.links,(S,w)=>(openBlock(),createBlock(J,{key:w,to:S.to,class:"footer-link d-block mb-3"},{default:withCtx(()=>[createTextVNode(toDisplayString(S.title),1)]),_:2},1032,["to"]))),128))])]),_:2},1024)),64))]),_:1})]),_:1})]),_:1}),createVNode(P,{class:"my-6"}),createVNode("div",{class:"d-flex flex-column flex-sm-row justify-space-between align-center"},[createVNode("div",{class:"text-body-2 text-medium-emphasis mb-3 mb-sm-0"}," © "+toDisplayString(new Date().getFullYear())+" DevUnity. All rights reserved. ",1),createVNode("div",{class:"d-flex align-center"},[createVNode("a",{href:"mailto:contact@devunity.com",class:"text-body-2 text-decoration-none text-medium-emphasis"},"contact@devunity.com")])])]),_:1})]),createVNode(f$1,{modelValue:fe.value,"onUpdate:modelValue":f=>fe.value=f,color:Ce.value,text:ze.value,timeout:Le.value},null,8,["modelValue","onUpdate:modelValue","color","text","timeout"])]}),_:1},Se));}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "index",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useHead({
+      title: "DevUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects.",
+      meta: [
+        { name: "description", content: "DevUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects." },
+        { name: "keywords", content: "DevUnity, web development, all-in-one platform, web applications, web application platform, web application development tools, web application development framework, web application development platform" },
+        { name: "author", content: "DevUnity" },
+        { name: "robots", content: "index, follow" },
+        { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+        { name: "og:title", content: "DevUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects." }
+      ]
+    });
+    const Pricing = defineAsyncComponent(() => import('./pricing.vue.mjs'));
+    const Faq = defineAsyncComponent(() => import('./faq.vue.mjs'));
+    const stats = [
+      { value: "2x", label: "Faster Development" },
+      { value: "50+", label: "Ready-to-use Components" },
+      { value: "99.9%", label: "Guaranteed Uptime" },
+      { value: "24/7", label: "Reactive Support" }
+    ];
+    const features = [
+      {
+        title: "Code Snippets",
+        description: "Create, share and reuse code snippets to speed up your development.",
+        icon: "mdi-code-tags",
+        color: "primary"
+      },
+      {
+        title: "SQL Generator",
+        description: "Visually design your database schemas and generate the corresponding SQL code.",
+        icon: "mdi-database",
+        color: "info"
+      },
+      {
+        title: "SEO Audit",
+        description: "Analyze and optimize your websites' SEO to improve their visibility.",
+        icon: "mdi-magnify",
+        color: "success"
+      },
+      {
+        title: "Sitemaps",
+        description: "Generate and setup all your sitemaps in our sitemaps container.",
+        icon: "mdi-sitemap",
+        color: "warning"
+      },
+      {
+        title: "Accessibility",
+        description: "Check and improve the accessibility of your websites for all users.",
+        icon: "mdi-access-point",
+        color: "error"
+      },
+      {
+        title: "Design Studio",
+        description: "Create modern user interfaces with our integrated design studio.",
+        icon: "mdi-palette",
+        color: "secondary"
+      }
+    ];
+    const steps = [
+      {
+        title: "Create your account",
+        description: "Sign up for free and set up your developer profile in minutes.",
+        link: "/signup",
+        color: "primary"
+      },
+      {
+        title: "Choose your tools",
+        description: "Select the tools you need for your project from our wide range of features.",
+        link: "/signup",
+        color: "info"
+      },
+      {
+        title: "Develop faster",
+        description: "Use our tools to speed up your development and improve the quality of your projects.",
+        link: "/signup",
+        color: "success"
+      }
+    ];
+    const menuItems = [
+      { title: "Features", href: "#features", icon: "mdi-apps-box" },
+      { title: "Pricing", href: "#pricing", icon: "mdi-tag-outline" },
+      { title: "FAQ", href: "#faq", icon: "mdi-frequently-asked-questions" }
+    ];
+    const footerColumns = [
+      {
+        title: "Product",
+        links: [
+          { title: "Features", to: "#features" },
+          { title: "Pricing", to: "#pricing" },
+          { title: "FAQ", to: "#faq" }
+        ]
+      },
+      {
+        title: "Company",
+        links: [
+          { title: "About", to: "/about" },
+          { title: "Contact", to: "/contact" },
+          { title: "Blog", to: "/blog" }
+        ]
+      },
+      {
+        title: "Legal",
+        links: [
+          { title: "Privacy", to: "/privacy" },
+          { title: "Terms", to: "/terms" },
+          { title: "Cookies", to: "/cookies" }
+        ]
+      }
+    ];
+    const drawer = ref(false);
+    const activeSection = ref("");
+    const showAppBar = ref(true);
+    const email = ref("");
+    const showSnackbar = ref(false);
+    const snackbarText = ref("");
+    const snackbarColor = ref("");
+    const snackbarTimeout = ref(2e3);
+    const loading = ref(false);
+    const userStore = useUserStore();
+    const submitEmail = async () => {
+      if (!email.value) {
+        showMessage("Please enter your email address", "error");
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        showMessage("Please enter a valid email address", "error");
+        return;
+      }
+      loading.value = true;
+      try {
+        await userStore.subscribeToNewsletter(email.value);
+        showMessage("Thanks for subscribing! You'll receive our latest updates soon.", "success");
+        email.value = "";
+      } catch (error) {
+        console.error("Error during subscription:", error);
+        showMessage("An error occurred. Please try again later.", "error");
+      } finally {
+        loading.value = false;
+      }
+    };
+    const showMessage = (message, type = "info", timeout = 3e3) => {
+      snackbarText.value = message;
+      snackbarColor.value = type;
+      snackbarTimeout.value = timeout;
+      showSnackbar.value = true;
+    };
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_NuxtLink = __nuxt_component_0;
+      _push(ssrRenderComponent(VApp, mergeProps({ class: "landing-screen" }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VAppBar, {
+              app: "",
+              elevation: 2,
+              color: "surface",
+              class: "px-0 nav-bar",
+              modelValue: showAppBar.value,
+              "onUpdate:modelValue": ($event) => showAppBar.value = $event
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VContainer, { class: "d-flex align-center py-0 my-0" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(_component_NuxtLink, {
+                          to: "/",
+                          class: "text-decoration-none"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<div class="d-flex align-center brand-container" data-v-c6c0e7a8${_scopeId4}><img${ssrRenderAttr("src", _imports_0)} alt="DevUnity title" width="150" class="logo-image" data-v-c6c0e7a8${_scopeId4}><div class="brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left" data-v-c6c0e7a8${_scopeId4}><span class="text-caption font-weight-medium text-gradient" data-v-c6c0e7a8${_scopeId4}>PROPULSE YOUR CODE</span></div></div>`);
+                            } else {
+                              return [
+                                createVNode("div", { class: "d-flex align-center brand-container" }, [
+                                  createVNode("img", {
+                                    src: _imports_0,
+                                    alt: "DevUnity title",
+                                    width: "150",
+                                    class: "logo-image"
+                                  }),
+                                  createVNode("div", { class: "brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left" }, [
+                                    createVNode("span", { class: "text-caption font-weight-medium text-gradient" }, "PROPULSE YOUR CODE")
+                                  ])
+                                ])
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VSpacer, null, null, _parent4, _scopeId3));
+                        if (_ctx.$vuetify.display.smAndUp) {
+                          _push4(`<div class="d-flex align-center custom-nav-menu" data-v-c6c0e7a8${_scopeId3}><div class="nav-links-wrapper" data-v-c6c0e7a8${_scopeId3}><!--[-->`);
+                          ssrRenderList(menuItems, (item) => {
+                            _push4(ssrRenderComponent(VBtn, {
+                              key: item.href,
+                              class: ["nav-btn custom-btn", { "active-nav-btn": activeSection.value === item.href.substring(1) }],
+                              href: item.href,
+                              variant: "text"
+                            }, {
+                              default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                                if (_push5) {
+                                  _push5(`<span class="nav-text" data-v-c6c0e7a8${_scopeId4}>${ssrInterpolate(item.title)}</span><span class="nav-btn-background" data-v-c6c0e7a8${_scopeId4}></span>`);
+                                } else {
+                                  return [
+                                    createVNode("span", { class: "nav-text" }, toDisplayString(item.title), 1),
+                                    createVNode("span", { class: "nav-btn-background" })
+                                  ];
+                                }
+                              }),
+                              _: 2
+                            }, _parent4, _scopeId3));
+                          });
+                          _push4(`<!--]--></div><div class="auth-buttons ml-6" data-v-c6c0e7a8${_scopeId3}>`);
+                          _push4(ssrRenderComponent(VBtn, {
+                            color: "primary",
+                            class: "login-btn",
+                            to: "/login",
+                            variant: "tonal",
+                            rounded: "rounded-xl",
+                            "prepend-icon": "mdi-login"
+                          }, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(` Login `);
+                              } else {
+                                return [
+                                  createTextVNode(" Login ")
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                          _push4(`</div></div>`);
+                        } else {
+                          _push4(`<div class="d-flex align-center" data-v-c6c0e7a8${_scopeId3}>`);
+                          _push4(ssrRenderComponent(VBtn, {
+                            color: "primary",
+                            class: "mr-2",
+                            to: "/login",
+                            size: "small",
+                            rounded: "pill"
+                          }, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(ssrRenderComponent(VIcon, {
+                                  size: "small",
+                                  class: "mr-1"
+                                }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(`mdi-login`);
+                                    } else {
+                                      return [
+                                        createTextVNode("mdi-login")
+                                      ];
+                                    }
+                                  }),
+                                  _: 1
+                                }, _parent5, _scopeId4));
+                                _push5(` Login `);
+                              } else {
+                                return [
+                                  createVNode(VIcon, {
+                                    size: "small",
+                                    class: "mr-1"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-login")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" Login ")
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                          _push4(ssrRenderComponent(VBtn, {
+                            icon: "",
+                            onClick: ($event) => drawer.value = !drawer.value,
+                            class: "menu-toggle-btn",
+                            "aria-label": "Toggle navigation menu"
+                          }, {
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(`<div class="${ssrRenderClass([{ "active": drawer.value }, "hamburger-icon"])}" data-v-c6c0e7a8${_scopeId4}><span data-v-c6c0e7a8${_scopeId4}></span><span data-v-c6c0e7a8${_scopeId4}></span><span data-v-c6c0e7a8${_scopeId4}></span></div>`);
+                              } else {
+                                return [
+                                  createVNode("div", {
+                                    class: ["hamburger-icon", { "active": drawer.value }]
+                                  }, [
+                                    createVNode("span"),
+                                    createVNode("span"),
+                                    createVNode("span")
+                                  ], 2)
+                                ];
+                              }
+                            }),
+                            _: 1
+                          }, _parent4, _scopeId3));
+                          _push4(`</div>`);
+                        }
+                      } else {
+                        return [
+                          createVNode(_component_NuxtLink, {
+                            to: "/",
+                            class: "text-decoration-none"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode("div", { class: "d-flex align-center brand-container" }, [
+                                createVNode("img", {
+                                  src: _imports_0,
+                                  alt: "DevUnity title",
+                                  width: "150",
+                                  class: "logo-image"
+                                }),
+                                createVNode("div", { class: "brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left" }, [
+                                  createVNode("span", { class: "text-caption font-weight-medium text-gradient" }, "PROPULSE YOUR CODE")
+                                ])
+                              ])
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VSpacer),
+                          _ctx.$vuetify.display.smAndUp ? (openBlock(), createBlock("div", {
+                            key: 0,
+                            class: "d-flex align-center custom-nav-menu"
+                          }, [
+                            createVNode("div", { class: "nav-links-wrapper" }, [
+                              (openBlock(), createBlock(Fragment, null, renderList(menuItems, (item) => {
+                                return createVNode(VBtn, {
+                                  key: item.href,
+                                  class: ["nav-btn custom-btn", { "active-nav-btn": activeSection.value === item.href.substring(1) }],
+                                  href: item.href,
+                                  variant: "text"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode("span", { class: "nav-text" }, toDisplayString(item.title), 1),
+                                    createVNode("span", { class: "nav-btn-background" })
+                                  ]),
+                                  _: 2
+                                }, 1032, ["href", "class"]);
+                              }), 64))
+                            ]),
+                            createVNode("div", { class: "auth-buttons ml-6" }, [
+                              createVNode(VBtn, {
+                                color: "primary",
+                                class: "login-btn",
+                                to: "/login",
+                                variant: "tonal",
+                                rounded: "rounded-xl",
+                                "prepend-icon": "mdi-login"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(" Login ")
+                                ]),
+                                _: 1
+                              })
+                            ])
+                          ])) : (openBlock(), createBlock("div", {
+                            key: 1,
+                            class: "d-flex align-center"
+                          }, [
+                            createVNode(VBtn, {
+                              color: "primary",
+                              class: "mr-2",
+                              to: "/login",
+                              size: "small",
+                              rounded: "pill"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, {
+                                  size: "small",
+                                  class: "mr-1"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-login")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Login ")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VBtn, {
+                              icon: "",
+                              onClick: ($event) => drawer.value = !drawer.value,
+                              class: "menu-toggle-btn",
+                              "aria-label": "Toggle navigation menu"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode("div", {
+                                  class: ["hamburger-icon", { "active": drawer.value }]
+                                }, [
+                                  createVNode("span"),
+                                  createVNode("span"),
+                                  createVNode("span")
+                                ], 2)
+                              ]),
+                              _: 1
+                            }, 8, ["onClick"])
+                          ]))
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VContainer, { class: "d-flex align-center py-0 my-0" }, {
+                      default: withCtx(() => [
+                        createVNode(_component_NuxtLink, {
+                          to: "/",
+                          class: "text-decoration-none"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode("div", { class: "d-flex align-center brand-container" }, [
+                              createVNode("img", {
+                                src: _imports_0,
+                                alt: "DevUnity title",
+                                width: "150",
+                                class: "logo-image"
+                              }),
+                              createVNode("div", { class: "brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left" }, [
+                                createVNode("span", { class: "text-caption font-weight-medium text-gradient" }, "PROPULSE YOUR CODE")
+                              ])
+                            ])
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VSpacer),
+                        _ctx.$vuetify.display.smAndUp ? (openBlock(), createBlock("div", {
+                          key: 0,
+                          class: "d-flex align-center custom-nav-menu"
+                        }, [
+                          createVNode("div", { class: "nav-links-wrapper" }, [
+                            (openBlock(), createBlock(Fragment, null, renderList(menuItems, (item) => {
+                              return createVNode(VBtn, {
+                                key: item.href,
+                                class: ["nav-btn custom-btn", { "active-nav-btn": activeSection.value === item.href.substring(1) }],
+                                href: item.href,
+                                variant: "text"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode("span", { class: "nav-text" }, toDisplayString(item.title), 1),
+                                  createVNode("span", { class: "nav-btn-background" })
+                                ]),
+                                _: 2
+                              }, 1032, ["href", "class"]);
+                            }), 64))
+                          ]),
+                          createVNode("div", { class: "auth-buttons ml-6" }, [
+                            createVNode(VBtn, {
+                              color: "primary",
+                              class: "login-btn",
+                              to: "/login",
+                              variant: "tonal",
+                              rounded: "rounded-xl",
+                              "prepend-icon": "mdi-login"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" Login ")
+                              ]),
+                              _: 1
+                            })
+                          ])
+                        ])) : (openBlock(), createBlock("div", {
+                          key: 1,
+                          class: "d-flex align-center"
+                        }, [
+                          createVNode(VBtn, {
+                            color: "primary",
+                            class: "mr-2",
+                            to: "/login",
+                            size: "small",
+                            rounded: "pill"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, {
+                                size: "small",
+                                class: "mr-1"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-login")
+                                ]),
+                                _: 1
+                              }),
+                              createTextVNode(" Login ")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VBtn, {
+                            icon: "",
+                            onClick: ($event) => drawer.value = !drawer.value,
+                            class: "menu-toggle-btn",
+                            "aria-label": "Toggle navigation menu"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode("div", {
+                                class: ["hamburger-icon", { "active": drawer.value }]
+                              }, [
+                                createVNode("span"),
+                                createVNode("span"),
+                                createVNode("span")
+                              ], 2)
+                            ]),
+                            _: 1
+                          }, 8, ["onClick"])
+                        ]))
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VNavigationDrawer, {
+              modelValue: drawer.value,
+              "onUpdate:modelValue": ($event) => drawer.value = $event,
+              location: "right",
+              temporary: "",
+              class: "mobile-nav-drawer d-md-none pa-6"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="drawer-header mb-8 d-flex justify-space-between align-center" data-v-c6c0e7a8${_scopeId2}><img${ssrRenderAttr("src", _imports_0)} alt="DevUnity title" width="120" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(VBtn, {
+                    icon: "",
+                    variant: "text",
+                    onClick: ($event) => drawer.value = false
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VIcon, null, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`mdi-close`);
+                            } else {
+                              return [
+                                createTextVNode("mdi-close")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VIcon, null, {
+                            default: withCtx(() => [
+                              createTextVNode("mdi-close")
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`</div><div class="mobile-nav-links" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(VList, { nav: "" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<!--[-->`);
+                        ssrRenderList(menuItems, (item) => {
+                          _push4(ssrRenderComponent(VListItem, {
+                            key: item.href,
+                            href: item.href,
+                            onClick: ($event) => drawer.value = false,
+                            class: "mobile-nav-item mb-3",
+                            rounded: "lg"
+                          }, {
+                            prepend: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(ssrRenderComponent(VIcon, {
+                                  class: "mr-2",
+                                  icon: item.icon,
+                                  color: "primary"
+                                }, null, _parent5, _scopeId4));
+                              } else {
+                                return [
+                                  createVNode(VIcon, {
+                                    class: "mr-2",
+                                    icon: item.icon,
+                                    color: "primary"
+                                  }, null, 8, ["icon"])
+                                ];
+                              }
+                            }),
+                            default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                _push5(ssrRenderComponent(VListItemTitle, { class: "text-subtitle-1 font-weight-medium" }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(`${ssrInterpolate(item.title)}`);
+                                    } else {
+                                      return [
+                                        createTextVNode(toDisplayString(item.title), 1)
+                                      ];
+                                    }
+                                  }),
+                                  _: 2
+                                }, _parent5, _scopeId4));
+                              } else {
+                                return [
+                                  createVNode(VListItemTitle, { class: "text-subtitle-1 font-weight-medium" }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(toDisplayString(item.title), 1)
+                                    ]),
+                                    _: 2
+                                  }, 1024)
+                                ];
+                              }
+                            }),
+                            _: 2
+                          }, _parent4, _scopeId3));
+                        });
+                        _push4(`<!--]-->`);
+                      } else {
+                        return [
+                          (openBlock(), createBlock(Fragment, null, renderList(menuItems, (item) => {
+                            return createVNode(VListItem, {
+                              key: item.href,
+                              href: item.href,
+                              onClick: ($event) => drawer.value = false,
+                              class: "mobile-nav-item mb-3",
+                              rounded: "lg"
+                            }, {
+                              prepend: withCtx(() => [
+                                createVNode(VIcon, {
+                                  class: "mr-2",
+                                  icon: item.icon,
+                                  color: "primary"
+                                }, null, 8, ["icon"])
+                              ]),
+                              default: withCtx(() => [
+                                createVNode(VListItemTitle, { class: "text-subtitle-1 font-weight-medium" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(item.title), 1)
+                                  ]),
+                                  _: 2
+                                }, 1024)
+                              ]),
+                              _: 2
+                            }, 1032, ["href", "onClick"]);
+                          }), 64))
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`</div><div class="drawer-footer mt-auto pt-6" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(VBtn, {
+                    block: "",
+                    color: "primary",
+                    to: "/signup",
+                    class: "mb-4",
+                    size: "large",
+                    rounded: "pill"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VIcon, { start: "" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`mdi-rocket-launch-outline`);
+                            } else {
+                              return [
+                                createTextVNode("mdi-rocket-launch-outline")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(` Get started `);
+                      } else {
+                        return [
+                          createVNode(VIcon, { start: "" }, {
+                            default: withCtx(() => [
+                              createTextVNode("mdi-rocket-launch-outline")
+                            ]),
+                            _: 1
+                          }),
+                          createTextVNode(" Get started ")
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`<p class="text-caption text-center text-medium-emphasis" data-v-c6c0e7a8${_scopeId2}>Join our community of developers and propulse your web projects to new horizons.</p></div>`);
+                } else {
+                  return [
+                    createVNode("div", { class: "drawer-header mb-8 d-flex justify-space-between align-center" }, [
+                      createVNode("img", {
+                        src: _imports_0,
+                        alt: "DevUnity title",
+                        width: "120"
+                      }),
+                      createVNode(VBtn, {
+                        icon: "",
+                        variant: "text",
+                        onClick: ($event) => drawer.value = false
+                      }, {
+                        default: withCtx(() => [
+                          createVNode(VIcon, null, {
+                            default: withCtx(() => [
+                              createTextVNode("mdi-close")
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      }, 8, ["onClick"])
+                    ]),
+                    createVNode("div", { class: "mobile-nav-links" }, [
+                      createVNode(VList, { nav: "" }, {
+                        default: withCtx(() => [
+                          (openBlock(), createBlock(Fragment, null, renderList(menuItems, (item) => {
+                            return createVNode(VListItem, {
+                              key: item.href,
+                              href: item.href,
+                              onClick: ($event) => drawer.value = false,
+                              class: "mobile-nav-item mb-3",
+                              rounded: "lg"
+                            }, {
+                              prepend: withCtx(() => [
+                                createVNode(VIcon, {
+                                  class: "mr-2",
+                                  icon: item.icon,
+                                  color: "primary"
+                                }, null, 8, ["icon"])
+                              ]),
+                              default: withCtx(() => [
+                                createVNode(VListItemTitle, { class: "text-subtitle-1 font-weight-medium" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(item.title), 1)
+                                  ]),
+                                  _: 2
+                                }, 1024)
+                              ]),
+                              _: 2
+                            }, 1032, ["href", "onClick"]);
+                          }), 64))
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    createVNode("div", { class: "drawer-footer mt-auto pt-6" }, [
+                      createVNode(VBtn, {
+                        block: "",
+                        color: "primary",
+                        to: "/signup",
+                        class: "mb-4",
+                        size: "large",
+                        rounded: "pill"
+                      }, {
+                        default: withCtx(() => [
+                          createVNode(VIcon, { start: "" }, {
+                            default: withCtx(() => [
+                              createTextVNode("mdi-rocket-launch-outline")
+                            ]),
+                            _: 1
+                          }),
+                          createTextVNode(" Get started ")
+                        ]),
+                        _: 1
+                      }),
+                      createVNode("p", { class: "text-caption text-center text-medium-emphasis" }, "Join our community of developers and propulse your web projects to new horizons.")
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VMain, { class: "main-content" }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<section id="hero" class="hero-section" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(VContainer, { class: "py-16" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VRow, { class: "align-center justify-center" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VCol, {
+                                cols: "12",
+                                md: "6",
+                                class: "text-center text-md-left"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VResponsive, null, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`<h1 class="text-h2 font-weight-bold mb-4" data-v-c6c0e7a8${_scopeId6}>Develop faster with DevUnity</h1><p class="text-subtitle-1 text-medium-emphasis mb-8" data-v-c6c0e7a8${_scopeId6}> The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. </p><div class="d-flex flex-column flex-sm-row justify-center justify-md-start" data-v-c6c0e7a8${_scopeId6}>`);
+                                          _push7(ssrRenderComponent(VBtn, {
+                                            "x-large": "",
+                                            color: "primary",
+                                            variant: "tonal",
+                                            class: "px-6 mb-3 mb-sm-0 mr-sm-4",
+                                            to: "/signup"
+                                          }, {
+                                            default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                              if (_push8) {
+                                                _push8(` Get started `);
+                                              } else {
+                                                return [
+                                                  createTextVNode(" Get started ")
+                                                ];
+                                              }
+                                            }),
+                                            _: 1
+                                          }, _parent7, _scopeId6));
+                                          _push7(ssrRenderComponent(VBtn, {
+                                            "x-large": "",
+                                            outlined: "",
+                                            color: "info",
+                                            variant: "tonal",
+                                            class: "px-6",
+                                            href: "#features"
+                                          }, {
+                                            default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                              if (_push8) {
+                                                _push8(` Learn more `);
+                                                _push8(ssrRenderComponent(VIcon, { right: "" }, {
+                                                  default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                    if (_push9) {
+                                                      _push9(`mdi-arrow-right`);
+                                                    } else {
+                                                      return [
+                                                        createTextVNode("mdi-arrow-right")
+                                                      ];
+                                                    }
+                                                  }),
+                                                  _: 1
+                                                }, _parent8, _scopeId7));
+                                              } else {
+                                                return [
+                                                  createTextVNode(" Learn more "),
+                                                  createVNode(VIcon, { right: "" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("mdi-arrow-right")
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ];
+                                              }
+                                            }),
+                                            _: 1
+                                          }, _parent7, _scopeId6));
+                                          _push7(`</div>`);
+                                        } else {
+                                          return [
+                                            createVNode("h1", { class: "text-h2 font-weight-bold mb-4" }, "Develop faster with DevUnity"),
+                                            createVNode("p", { class: "text-subtitle-1 text-medium-emphasis mb-8" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),
+                                            createVNode("div", { class: "d-flex flex-column flex-sm-row justify-center justify-md-start" }, [
+                                              createVNode(VBtn, {
+                                                "x-large": "",
+                                                color: "primary",
+                                                variant: "tonal",
+                                                class: "px-6 mb-3 mb-sm-0 mr-sm-4",
+                                                to: "/signup"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" Get started ")
+                                                ]),
+                                                _: 1
+                                              }),
+                                              createVNode(VBtn, {
+                                                "x-large": "",
+                                                outlined: "",
+                                                color: "info",
+                                                variant: "tonal",
+                                                class: "px-6",
+                                                href: "#features"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" Learn more "),
+                                                  createVNode(VIcon, { right: "" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("mdi-arrow-right")
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 1
+                                              })
+                                            ])
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VResponsive, null, {
+                                        default: withCtx(() => [
+                                          createVNode("h1", { class: "text-h2 font-weight-bold mb-4" }, "Develop faster with DevUnity"),
+                                          createVNode("p", { class: "text-subtitle-1 text-medium-emphasis mb-8" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),
+                                          createVNode("div", { class: "d-flex flex-column flex-sm-row justify-center justify-md-start" }, [
+                                            createVNode(VBtn, {
+                                              "x-large": "",
+                                              color: "primary",
+                                              variant: "tonal",
+                                              class: "px-6 mb-3 mb-sm-0 mr-sm-4",
+                                              to: "/signup"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Get started ")
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VBtn, {
+                                              "x-large": "",
+                                              outlined: "",
+                                              color: "info",
+                                              variant: "tonal",
+                                              class: "px-6",
+                                              href: "#features"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" Learn more "),
+                                                createVNode(VIcon, { right: "" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("mdi-arrow-right")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            })
+                                          ])
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VCol, {
+                                cols: "12",
+                                md: "6",
+                                class: "d-flex justify-center mt-8 mt-md-0"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VImg, {
+                                      src: _imports_1,
+                                      "max-width": "90%",
+                                      contain: "",
+                                      class: "hero-image rounded-xl elevation-10",
+                                      alt: "Devroid Platform"
+                                    }, null, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VImg, {
+                                        src: _imports_1,
+                                        "max-width": "90%",
+                                        contain: "",
+                                        class: "hero-image rounded-xl elevation-10",
+                                        alt: "Devroid Platform"
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  md: "6",
+                                  class: "text-center text-md-left"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VResponsive, null, {
+                                      default: withCtx(() => [
+                                        createVNode("h1", { class: "text-h2 font-weight-bold mb-4" }, "Develop faster with DevUnity"),
+                                        createVNode("p", { class: "text-subtitle-1 text-medium-emphasis mb-8" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),
+                                        createVNode("div", { class: "d-flex flex-column flex-sm-row justify-center justify-md-start" }, [
+                                          createVNode(VBtn, {
+                                            "x-large": "",
+                                            color: "primary",
+                                            variant: "tonal",
+                                            class: "px-6 mb-3 mb-sm-0 mr-sm-4",
+                                            to: "/signup"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Get started ")
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VBtn, {
+                                            "x-large": "",
+                                            outlined: "",
+                                            color: "info",
+                                            variant: "tonal",
+                                            class: "px-6",
+                                            href: "#features"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" Learn more "),
+                                              createVNode(VIcon, { right: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-arrow-right")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          })
+                                        ])
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  md: "6",
+                                  class: "d-flex justify-center mt-8 mt-md-0"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VImg, {
+                                      src: _imports_1,
+                                      "max-width": "90%",
+                                      contain: "",
+                                      class: "hero-image rounded-xl elevation-10",
+                                      alt: "Devroid Platform"
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VRow, { class: "align-center justify-center" }, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                md: "6",
+                                class: "text-center text-md-left"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VResponsive, null, {
+                                    default: withCtx(() => [
+                                      createVNode("h1", { class: "text-h2 font-weight-bold mb-4" }, "Develop faster with DevUnity"),
+                                      createVNode("p", { class: "text-subtitle-1 text-medium-emphasis mb-8" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),
+                                      createVNode("div", { class: "d-flex flex-column flex-sm-row justify-center justify-md-start" }, [
+                                        createVNode(VBtn, {
+                                          "x-large": "",
+                                          color: "primary",
+                                          variant: "tonal",
+                                          class: "px-6 mb-3 mb-sm-0 mr-sm-4",
+                                          to: "/signup"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Get started ")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VBtn, {
+                                          "x-large": "",
+                                          outlined: "",
+                                          color: "info",
+                                          variant: "tonal",
+                                          class: "px-6",
+                                          href: "#features"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Learn more "),
+                                            createVNode(VIcon, { right: "" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("mdi-arrow-right")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })
+                                      ])
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VCol, {
+                                cols: "12",
+                                md: "6",
+                                class: "d-flex justify-center mt-8 mt-md-0"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VImg, {
+                                    src: _imports_1,
+                                    "max-width": "90%",
+                                    contain: "",
+                                    class: "hero-image rounded-xl elevation-10",
+                                    alt: "Devroid Platform"
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`</section><section class="stats-section py-8" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(VContainer, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VRow, { class: "align-center justify-center" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<!--[-->`);
+                              ssrRenderList(stats, (stat, i) => {
+                                _push5(ssrRenderComponent(VCol, {
+                                  key: i,
+                                  cols: "6",
+                                  sm: "3",
+                                  class: "text-center"
+                                }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(`<div class="stat-value text-h3 font-weight-bold primary--text mb-1" data-v-c6c0e7a8${_scopeId5}>${ssrInterpolate(stat.value)}</div><div class="stat-label text-subtitle-2 text-medium-emphasis" data-v-c6c0e7a8${_scopeId5}>${ssrInterpolate(stat.label)}</div>`);
+                                    } else {
+                                      return [
+                                        createVNode("div", { class: "stat-value text-h3 font-weight-bold primary--text mb-1" }, toDisplayString(stat.value), 1),
+                                        createVNode("div", { class: "stat-label text-subtitle-2 text-medium-emphasis" }, toDisplayString(stat.label), 1)
+                                      ];
+                                    }
+                                  }),
+                                  _: 2
+                                }, _parent5, _scopeId4));
+                              });
+                              _push5(`<!--]-->`);
+                            } else {
+                              return [
+                                (openBlock(), createBlock(Fragment, null, renderList(stats, (stat, i) => {
+                                  return createVNode(VCol, {
+                                    key: i,
+                                    cols: "6",
+                                    sm: "3",
+                                    class: "text-center"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode("div", { class: "stat-value text-h3 font-weight-bold primary--text mb-1" }, toDisplayString(stat.value), 1),
+                                      createVNode("div", { class: "stat-label text-subtitle-2 text-medium-emphasis" }, toDisplayString(stat.label), 1)
+                                    ]),
+                                    _: 2
+                                  }, 1024);
+                                }), 64))
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VRow, { class: "align-center justify-center" }, {
+                            default: withCtx(() => [
+                              (openBlock(), createBlock(Fragment, null, renderList(stats, (stat, i) => {
+                                return createVNode(VCol, {
+                                  key: i,
+                                  cols: "6",
+                                  sm: "3",
+                                  class: "text-center"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode("div", { class: "stat-value text-h3 font-weight-bold primary--text mb-1" }, toDisplayString(stat.value), 1),
+                                    createVNode("div", { class: "stat-label text-subtitle-2 text-medium-emphasis" }, toDisplayString(stat.label), 1)
+                                  ]),
+                                  _: 2
+                                }, 1024);
+                              }), 64))
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`</section><section id="features" class="py-16" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(VContainer, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<div class="text-center mb-12" data-v-c6c0e7a8${_scopeId3}><span class="section-subtitle" data-v-c6c0e7a8${_scopeId3}>POWERFUL TOOLS</span><h2 class="text-h3 font-weight-bold mb-3" data-v-c6c0e7a8${_scopeId3}>Features That Boost Your Productivity</h2><p class="text-subtitle-1 text-medium-emphasis mx-auto" style="${ssrRenderStyle({ "max-width": "700px" })}" data-v-c6c0e7a8${_scopeId3}> DevUnity combines all the tools you need to develop modern web applications in one intuitive platform. </p></div>`);
+                        _push4(ssrRenderComponent(VRow, null, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<!--[-->`);
+                              ssrRenderList(features, (feature, index) => {
+                                _push5(ssrRenderComponent(VCol, {
+                                  key: index,
+                                  cols: "12",
+                                  md: "4",
+                                  class: "mb-8"
+                                }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VCard, {
+                                        class: "feature-card h-100 rounded-lg",
+                                        flat: ""
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VCardText, { class: "pa-6" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VAvatar, {
+                                                    color: feature.color,
+                                                    size: "56",
+                                                    class: "mb-4"
+                                                  }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(VIcon, {
+                                                          dark: "",
+                                                          size: "32"
+                                                        }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`${ssrInterpolate(feature.icon)}`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode(toDisplayString(feature.icon), 1)
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(VIcon, {
+                                                            dark: "",
+                                                            size: "32"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(feature.icon), 1)
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024)
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 2
+                                                  }, _parent8, _scopeId7));
+                                                  _push8(`<h3 class="text-h5 font-weight-bold mb-3" data-v-c6c0e7a8${_scopeId7}>${ssrInterpolate(feature.title)}</h3><p class="text-body-1 text-medium-emphasis" data-v-c6c0e7a8${_scopeId7}>${ssrInterpolate(feature.description)}</p>`);
+                                                } else {
+                                                  return [
+                                                    createVNode(VAvatar, {
+                                                      color: feature.color,
+                                                      size: "56",
+                                                      class: "mb-4"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VIcon, {
+                                                          dark: "",
+                                                          size: "32"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(feature.icon), 1)
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["color"]),
+                                                    createVNode("h3", { class: "text-h5 font-weight-bold mb-3" }, toDisplayString(feature.title), 1),
+                                                    createVNode("p", { class: "text-body-1 text-medium-emphasis" }, toDisplayString(feature.description), 1)
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent7, _scopeId6));
+                                          } else {
+                                            return [
+                                              createVNode(VCardText, { class: "pa-6" }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VAvatar, {
+                                                    color: feature.color,
+                                                    size: "56",
+                                                    class: "mb-4"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VIcon, {
+                                                        dark: "",
+                                                        size: "32"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(feature.icon), 1)
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["color"]),
+                                                  createVNode("h3", { class: "text-h5 font-weight-bold mb-3" }, toDisplayString(feature.title), 1),
+                                                  createVNode("p", { class: "text-body-1 text-medium-emphasis" }, toDisplayString(feature.description), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1024)
+                                            ];
+                                          }
+                                        }),
+                                        _: 2
+                                      }, _parent6, _scopeId5));
+                                    } else {
+                                      return [
+                                        createVNode(VCard, {
+                                          class: "feature-card h-100 rounded-lg",
+                                          flat: ""
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VCardText, { class: "pa-6" }, {
+                                              default: withCtx(() => [
+                                                createVNode(VAvatar, {
+                                                  color: feature.color,
+                                                  size: "56",
+                                                  class: "mb-4"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VIcon, {
+                                                      dark: "",
+                                                      size: "32"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(feature.icon), 1)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024)
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["color"]),
+                                                createVNode("h3", { class: "text-h5 font-weight-bold mb-3" }, toDisplayString(feature.title), 1),
+                                                createVNode("p", { class: "text-body-1 text-medium-emphasis" }, toDisplayString(feature.description), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1024)
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ];
+                                    }
+                                  }),
+                                  _: 2
+                                }, _parent5, _scopeId4));
+                              });
+                              _push5(`<!--]-->`);
+                            } else {
+                              return [
+                                (openBlock(), createBlock(Fragment, null, renderList(features, (feature, index) => {
+                                  return createVNode(VCol, {
+                                    key: index,
+                                    cols: "12",
+                                    md: "4",
+                                    class: "mb-8"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VCard, {
+                                        class: "feature-card h-100 rounded-lg",
+                                        flat: ""
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VCardText, { class: "pa-6" }, {
+                                            default: withCtx(() => [
+                                              createVNode(VAvatar, {
+                                                color: feature.color,
+                                                size: "56",
+                                                class: "mb-4"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VIcon, {
+                                                    dark: "",
+                                                    size: "32"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(feature.icon), 1)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024)
+                                                ]),
+                                                _: 2
+                                              }, 1032, ["color"]),
+                                              createVNode("h3", { class: "text-h5 font-weight-bold mb-3" }, toDisplayString(feature.title), 1),
+                                              createVNode("p", { class: "text-body-1 text-medium-emphasis" }, toDisplayString(feature.description), 1)
+                                            ]),
+                                            _: 2
+                                          }, 1024)
+                                        ]),
+                                        _: 2
+                                      }, 1024)
+                                    ]),
+                                    _: 2
+                                  }, 1024);
+                                }), 64))
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode("div", { class: "text-center mb-12" }, [
+                            createVNode("span", { class: "section-subtitle" }, "POWERFUL TOOLS"),
+                            createVNode("h2", { class: "text-h3 font-weight-bold mb-3" }, "Features That Boost Your Productivity"),
+                            createVNode("p", {
+                              class: "text-subtitle-1 text-medium-emphasis mx-auto",
+                              style: { "max-width": "700px" }
+                            }, " DevUnity combines all the tools you need to develop modern web applications in one intuitive platform. ")
+                          ]),
+                          createVNode(VRow, null, {
+                            default: withCtx(() => [
+                              (openBlock(), createBlock(Fragment, null, renderList(features, (feature, index) => {
+                                return createVNode(VCol, {
+                                  key: index,
+                                  cols: "12",
+                                  md: "4",
+                                  class: "mb-8"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VCard, {
+                                      class: "feature-card h-100 rounded-lg",
+                                      flat: ""
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VCardText, { class: "pa-6" }, {
+                                          default: withCtx(() => [
+                                            createVNode(VAvatar, {
+                                              color: feature.color,
+                                              size: "56",
+                                              class: "mb-4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VIcon, {
+                                                  dark: "",
+                                                  size: "32"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(feature.icon), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024)
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["color"]),
+                                            createVNode("h3", { class: "text-h5 font-weight-bold mb-3" }, toDisplayString(feature.title), 1),
+                                            createVNode("p", { class: "text-body-1 text-medium-emphasis" }, toDisplayString(feature.description), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ]),
+                                      _: 2
+                                    }, 1024)
+                                  ]),
+                                  _: 2
+                                }, 1024);
+                              }), 64))
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`</section><section class="py-16" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(VContainer, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<div class="text-center mb-12" data-v-c6c0e7a8${_scopeId3}><h2 class="text-h3 font-weight-bold mb-3" data-v-c6c0e7a8${_scopeId3}>How It Works</h2><p class="text-subtitle-1 text-medium-emphasis mx-auto" style="${ssrRenderStyle({ "max-width": "700px" })}" data-v-c6c0e7a8${_scopeId3}> Three simple steps to start using Devroid and transform your development workflow. </p></div>`);
+                        _push4(ssrRenderComponent(VRow, {
+                          justify: "center",
+                          class: "mt-8"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<!--[-->`);
+                              ssrRenderList(steps, (step, i) => {
+                                _push5(ssrRenderComponent(VCol, {
+                                  key: i,
+                                  cols: "12",
+                                  md: "4",
+                                  class: "px-4"
+                                }, {
+                                  default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                    if (_push6) {
+                                      _push6(ssrRenderComponent(VCard, {
+                                        class: ["h-100 rounded-xl", `border-${step.color}`],
+                                        elevation: "3",
+                                        style: { "border-top": "#00658b 4px solid" }
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(ssrRenderComponent(VCardItem, null, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VAvatar, {
+                                                    color: step.color,
+                                                    size: "56",
+                                                    class: "mb-4"
+                                                  }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(`<span class="text-h5 font-weight-bold white--text" data-v-c6c0e7a8${_scopeId8}>${ssrInterpolate(i + 1)}</span>`);
+                                                      } else {
+                                                        return [
+                                                          createVNode("span", { class: "text-h5 font-weight-bold white--text" }, toDisplayString(i + 1), 1)
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 2
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VAvatar, {
+                                                      color: step.color,
+                                                      size: "56",
+                                                      class: "mb-4"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode("span", { class: "text-h5 font-weight-bold white--text" }, toDisplayString(i + 1), 1)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["color"])
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(`${ssrInterpolate(step.title)}`);
+                                                } else {
+                                                  return [
+                                                    createTextVNode(toDisplayString(step.title), 1)
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VCardText, { class: "text-body-1" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(`${ssrInterpolate(step.description)}`);
+                                                } else {
+                                                  return [
+                                                    createTextVNode(toDisplayString(step.description), 1)
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent7, _scopeId6));
+                                            _push7(ssrRenderComponent(VCardActions, { class: "pa-4" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VBtn, {
+                                                    color: step.color,
+                                                    variant: "text",
+                                                    class: "text-none",
+                                                    to: step.link
+                                                  }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(`Learn more `);
+                                                        _push9(ssrRenderComponent(VIcon, { right: "" }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`mdi-arrow-right`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode("mdi-arrow-right")
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createTextVNode("Learn more "),
+                                                          createVNode(VIcon, { right: "" }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-arrow-right")
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 2
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VBtn, {
+                                                      color: step.color,
+                                                      variant: "text",
+                                                      class: "text-none",
+                                                      to: step.link
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("Learn more "),
+                                                        createVNode(VIcon, { right: "" }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-arrow-right")
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["color", "to"])
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent7, _scopeId6));
+                                          } else {
+                                            return [
+                                              createVNode(VCardItem, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VAvatar, {
+                                                    color: step.color,
+                                                    size: "56",
+                                                    class: "mb-4"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode("span", { class: "text-h5 font-weight-bold white--text" }, toDisplayString(i + 1), 1)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["color"])
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(step.title), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode(VCardText, { class: "text-body-1" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(step.description), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode(VCardActions, { class: "pa-4" }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VBtn, {
+                                                    color: step.color,
+                                                    variant: "text",
+                                                    class: "text-none",
+                                                    to: step.link
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("Learn more "),
+                                                      createVNode(VIcon, { right: "" }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-arrow-right")
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["color", "to"])
+                                                ]),
+                                                _: 2
+                                              }, 1024)
+                                            ];
+                                          }
+                                        }),
+                                        _: 2
+                                      }, _parent6, _scopeId5));
+                                    } else {
+                                      return [
+                                        createVNode(VCard, {
+                                          class: ["h-100 rounded-xl", `border-${step.color}`],
+                                          elevation: "3",
+                                          style: { "border-top": "#00658b 4px solid" }
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VCardItem, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VAvatar, {
+                                                  color: step.color,
+                                                  size: "56",
+                                                  class: "mb-4"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode("span", { class: "text-h5 font-weight-bold white--text" }, toDisplayString(i + 1), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["color"])
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(step.title), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode(VCardText, { class: "text-body-1" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(step.description), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode(VCardActions, { class: "pa-4" }, {
+                                              default: withCtx(() => [
+                                                createVNode(VBtn, {
+                                                  color: step.color,
+                                                  variant: "text",
+                                                  class: "text-none",
+                                                  to: step.link
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("Learn more "),
+                                                    createVNode(VIcon, { right: "" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-arrow-right")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["color", "to"])
+                                              ]),
+                                              _: 2
+                                            }, 1024)
+                                          ]),
+                                          _: 2
+                                        }, 1032, ["class"])
+                                      ];
+                                    }
+                                  }),
+                                  _: 2
+                                }, _parent5, _scopeId4));
+                              });
+                              _push5(`<!--]-->`);
+                            } else {
+                              return [
+                                (openBlock(), createBlock(Fragment, null, renderList(steps, (step, i) => {
+                                  return createVNode(VCol, {
+                                    key: i,
+                                    cols: "12",
+                                    md: "4",
+                                    class: "px-4"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VCard, {
+                                        class: ["h-100 rounded-xl", `border-${step.color}`],
+                                        elevation: "3",
+                                        style: { "border-top": "#00658b 4px solid" }
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VCardItem, null, {
+                                            default: withCtx(() => [
+                                              createVNode(VAvatar, {
+                                                color: step.color,
+                                                size: "56",
+                                                class: "mb-4"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode("span", { class: "text-h5 font-weight-bold white--text" }, toDisplayString(i + 1), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1032, ["color"])
+                                            ]),
+                                            _: 2
+                                          }, 1024),
+                                          createVNode(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(toDisplayString(step.title), 1)
+                                            ]),
+                                            _: 2
+                                          }, 1024),
+                                          createVNode(VCardText, { class: "text-body-1" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(toDisplayString(step.description), 1)
+                                            ]),
+                                            _: 2
+                                          }, 1024),
+                                          createVNode(VCardActions, { class: "pa-4" }, {
+                                            default: withCtx(() => [
+                                              createVNode(VBtn, {
+                                                color: step.color,
+                                                variant: "text",
+                                                class: "text-none",
+                                                to: step.link
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("Learn more "),
+                                                  createVNode(VIcon, { right: "" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("mdi-arrow-right")
+                                                    ]),
+                                                    _: 1
+                                                  })
+                                                ]),
+                                                _: 2
+                                              }, 1032, ["color", "to"])
+                                            ]),
+                                            _: 2
+                                          }, 1024)
+                                        ]),
+                                        _: 2
+                                      }, 1032, ["class"])
+                                    ]),
+                                    _: 2
+                                  }, 1024);
+                                }), 64))
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(`<div class="d-flex justify-center mt-12" data-v-c6c0e7a8${_scopeId3}>`);
+                        _push4(ssrRenderComponent(VBtn, {
+                          size: "large",
+                          color: "info",
+                          variant: "tonal",
+                          class: "px-8 rounded-pill",
+                          elevation: "2",
+                          to: "/signup",
+                          nuxt: ""
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(` Get Started Now `);
+                              _push5(ssrRenderComponent(VIcon, { end: "" }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`mdi-rocket-launch-outline`);
+                                  } else {
+                                    return [
+                                      createTextVNode("mdi-rocket-launch-outline")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createTextVNode(" Get Started Now "),
+                                createVNode(VIcon, { end: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-rocket-launch-outline")
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(`</div>`);
+                      } else {
+                        return [
+                          createVNode("div", { class: "text-center mb-12" }, [
+                            createVNode("h2", { class: "text-h3 font-weight-bold mb-3" }, "How It Works"),
+                            createVNode("p", {
+                              class: "text-subtitle-1 text-medium-emphasis mx-auto",
+                              style: { "max-width": "700px" }
+                            }, " Three simple steps to start using Devroid and transform your development workflow. ")
+                          ]),
+                          createVNode(VRow, {
+                            justify: "center",
+                            class: "mt-8"
+                          }, {
+                            default: withCtx(() => [
+                              (openBlock(), createBlock(Fragment, null, renderList(steps, (step, i) => {
+                                return createVNode(VCol, {
+                                  key: i,
+                                  cols: "12",
+                                  md: "4",
+                                  class: "px-4"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VCard, {
+                                      class: ["h-100 rounded-xl", `border-${step.color}`],
+                                      elevation: "3",
+                                      style: { "border-top": "#00658b 4px solid" }
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VCardItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VAvatar, {
+                                              color: step.color,
+                                              size: "56",
+                                              class: "mb-4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode("span", { class: "text-h5 font-weight-bold white--text" }, toDisplayString(i + 1), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["color"])
+                                          ]),
+                                          _: 2
+                                        }, 1024),
+                                        createVNode(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(toDisplayString(step.title), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1024),
+                                        createVNode(VCardText, { class: "text-body-1" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(toDisplayString(step.description), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1024),
+                                        createVNode(VCardActions, { class: "pa-4" }, {
+                                          default: withCtx(() => [
+                                            createVNode(VBtn, {
+                                              color: step.color,
+                                              variant: "text",
+                                              class: "text-none",
+                                              to: step.link
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("Learn more "),
+                                                createVNode(VIcon, { right: "" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("mdi-arrow-right")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["color", "to"])
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ]),
+                                      _: 2
+                                    }, 1032, ["class"])
+                                  ]),
+                                  _: 2
+                                }, 1024);
+                              }), 64))
+                            ]),
+                            _: 1
+                          }),
+                          createVNode("div", { class: "d-flex justify-center mt-12" }, [
+                            createVNode(VBtn, {
+                              size: "large",
+                              color: "info",
+                              variant: "tonal",
+                              class: "px-8 rounded-pill",
+                              elevation: "2",
+                              to: "/signup",
+                              nuxt: ""
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" Get Started Now "),
+                                createVNode(VIcon, { end: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-rocket-launch-outline")
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`</section><section id="pricing" class="py-16" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(unref(Pricing), null, null, _parent3, _scopeId2));
+                  _push3(`</section><section id="faq" class="py-16" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(unref(Faq), null, null, _parent3, _scopeId2));
+                  _push3(`</section><section class="py-16 primary" data-v-c6c0e7a8${_scopeId2}>`);
+                  _push3(ssrRenderComponent(VContainer, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VRow, { justify: "center" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VCol, {
+                                cols: "12",
+                                md: "8",
+                                class: "text-center"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<h2 class="text-h3 font-weight-bold white--text mb-4" data-v-c6c0e7a8${_scopeId5}>Ready to get started?</h2><p class="text-subtitle-1 white--text text-opacity-high mb-8" data-v-c6c0e7a8${_scopeId5}> Join the community already using DevUnity for their projects. </p>`);
+                                    _push6(ssrRenderComponent(VBtn, {
+                                      "x-large": "",
+                                      color: "info",
+                                      variant: "tonal",
+                                      elevation: "2",
+                                      class: "px-8",
+                                      to: "/signup"
+                                    }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(` Create free account `);
+                                        } else {
+                                          return [
+                                            createTextVNode(" Create free account ")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode("h2", { class: "text-h3 font-weight-bold white--text mb-4" }, "Ready to get started?"),
+                                      createVNode("p", { class: "text-subtitle-1 white--text text-opacity-high mb-8" }, " Join the community already using DevUnity for their projects. "),
+                                      createVNode(VBtn, {
+                                        "x-large": "",
+                                        color: "info",
+                                        variant: "tonal",
+                                        elevation: "2",
+                                        class: "px-8",
+                                        to: "/signup"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Create free account ")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  md: "8",
+                                  class: "text-center"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode("h2", { class: "text-h3 font-weight-bold white--text mb-4" }, "Ready to get started?"),
+                                    createVNode("p", { class: "text-subtitle-1 white--text text-opacity-high mb-8" }, " Join the community already using DevUnity for their projects. "),
+                                    createVNode(VBtn, {
+                                      "x-large": "",
+                                      color: "info",
+                                      variant: "tonal",
+                                      elevation: "2",
+                                      class: "px-8",
+                                      to: "/signup"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Create free account ")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VRow, { justify: "center" }, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                md: "8",
+                                class: "text-center"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode("h2", { class: "text-h3 font-weight-bold white--text mb-4" }, "Ready to get started?"),
+                                  createVNode("p", { class: "text-subtitle-1 white--text text-opacity-high mb-8" }, " Join the community already using DevUnity for their projects. "),
+                                  createVNode(VBtn, {
+                                    "x-large": "",
+                                    color: "info",
+                                    variant: "tonal",
+                                    elevation: "2",
+                                    class: "px-8",
+                                    to: "/signup"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Create free account ")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`</section>`);
+                } else {
+                  return [
+                    createVNode("section", {
+                      id: "hero",
+                      class: "hero-section"
+                    }, [
+                      createVNode(VContainer, { class: "py-16" }, {
+                        default: withCtx(() => [
+                          createVNode(VRow, { class: "align-center justify-center" }, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                md: "6",
+                                class: "text-center text-md-left"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VResponsive, null, {
+                                    default: withCtx(() => [
+                                      createVNode("h1", { class: "text-h2 font-weight-bold mb-4" }, "Develop faster with DevUnity"),
+                                      createVNode("p", { class: "text-subtitle-1 text-medium-emphasis mb-8" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),
+                                      createVNode("div", { class: "d-flex flex-column flex-sm-row justify-center justify-md-start" }, [
+                                        createVNode(VBtn, {
+                                          "x-large": "",
+                                          color: "primary",
+                                          variant: "tonal",
+                                          class: "px-6 mb-3 mb-sm-0 mr-sm-4",
+                                          to: "/signup"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Get started ")
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VBtn, {
+                                          "x-large": "",
+                                          outlined: "",
+                                          color: "info",
+                                          variant: "tonal",
+                                          class: "px-6",
+                                          href: "#features"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" Learn more "),
+                                            createVNode(VIcon, { right: "" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("mdi-arrow-right")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })
+                                      ])
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VCol, {
+                                cols: "12",
+                                md: "6",
+                                class: "d-flex justify-center mt-8 mt-md-0"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VImg, {
+                                    src: _imports_1,
+                                    "max-width": "90%",
+                                    contain: "",
+                                    class: "hero-image rounded-xl elevation-10",
+                                    alt: "Devroid Platform"
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    createVNode("section", { class: "stats-section py-8" }, [
+                      createVNode(VContainer, null, {
+                        default: withCtx(() => [
+                          createVNode(VRow, { class: "align-center justify-center" }, {
+                            default: withCtx(() => [
+                              (openBlock(), createBlock(Fragment, null, renderList(stats, (stat, i) => {
+                                return createVNode(VCol, {
+                                  key: i,
+                                  cols: "6",
+                                  sm: "3",
+                                  class: "text-center"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode("div", { class: "stat-value text-h3 font-weight-bold primary--text mb-1" }, toDisplayString(stat.value), 1),
+                                    createVNode("div", { class: "stat-label text-subtitle-2 text-medium-emphasis" }, toDisplayString(stat.label), 1)
+                                  ]),
+                                  _: 2
+                                }, 1024);
+                              }), 64))
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    createVNode("section", {
+                      id: "features",
+                      class: "py-16"
+                    }, [
+                      createVNode(VContainer, null, {
+                        default: withCtx(() => [
+                          createVNode("div", { class: "text-center mb-12" }, [
+                            createVNode("span", { class: "section-subtitle" }, "POWERFUL TOOLS"),
+                            createVNode("h2", { class: "text-h3 font-weight-bold mb-3" }, "Features That Boost Your Productivity"),
+                            createVNode("p", {
+                              class: "text-subtitle-1 text-medium-emphasis mx-auto",
+                              style: { "max-width": "700px" }
+                            }, " DevUnity combines all the tools you need to develop modern web applications in one intuitive platform. ")
+                          ]),
+                          createVNode(VRow, null, {
+                            default: withCtx(() => [
+                              (openBlock(), createBlock(Fragment, null, renderList(features, (feature, index) => {
+                                return createVNode(VCol, {
+                                  key: index,
+                                  cols: "12",
+                                  md: "4",
+                                  class: "mb-8"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VCard, {
+                                      class: "feature-card h-100 rounded-lg",
+                                      flat: ""
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VCardText, { class: "pa-6" }, {
+                                          default: withCtx(() => [
+                                            createVNode(VAvatar, {
+                                              color: feature.color,
+                                              size: "56",
+                                              class: "mb-4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VIcon, {
+                                                  dark: "",
+                                                  size: "32"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(feature.icon), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024)
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["color"]),
+                                            createVNode("h3", { class: "text-h5 font-weight-bold mb-3" }, toDisplayString(feature.title), 1),
+                                            createVNode("p", { class: "text-body-1 text-medium-emphasis" }, toDisplayString(feature.description), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ]),
+                                      _: 2
+                                    }, 1024)
+                                  ]),
+                                  _: 2
+                                }, 1024);
+                              }), 64))
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    createVNode("section", { class: "py-16" }, [
+                      createVNode(VContainer, null, {
+                        default: withCtx(() => [
+                          createVNode("div", { class: "text-center mb-12" }, [
+                            createVNode("h2", { class: "text-h3 font-weight-bold mb-3" }, "How It Works"),
+                            createVNode("p", {
+                              class: "text-subtitle-1 text-medium-emphasis mx-auto",
+                              style: { "max-width": "700px" }
+                            }, " Three simple steps to start using Devroid and transform your development workflow. ")
+                          ]),
+                          createVNode(VRow, {
+                            justify: "center",
+                            class: "mt-8"
+                          }, {
+                            default: withCtx(() => [
+                              (openBlock(), createBlock(Fragment, null, renderList(steps, (step, i) => {
+                                return createVNode(VCol, {
+                                  key: i,
+                                  cols: "12",
+                                  md: "4",
+                                  class: "px-4"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VCard, {
+                                      class: ["h-100 rounded-xl", `border-${step.color}`],
+                                      elevation: "3",
+                                      style: { "border-top": "#00658b 4px solid" }
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VCardItem, null, {
+                                          default: withCtx(() => [
+                                            createVNode(VAvatar, {
+                                              color: step.color,
+                                              size: "56",
+                                              class: "mb-4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode("span", { class: "text-h5 font-weight-bold white--text" }, toDisplayString(i + 1), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["color"])
+                                          ]),
+                                          _: 2
+                                        }, 1024),
+                                        createVNode(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(toDisplayString(step.title), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1024),
+                                        createVNode(VCardText, { class: "text-body-1" }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(toDisplayString(step.description), 1)
+                                          ]),
+                                          _: 2
+                                        }, 1024),
+                                        createVNode(VCardActions, { class: "pa-4" }, {
+                                          default: withCtx(() => [
+                                            createVNode(VBtn, {
+                                              color: step.color,
+                                              variant: "text",
+                                              class: "text-none",
+                                              to: step.link
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode("Learn more "),
+                                                createVNode(VIcon, { right: "" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode("mdi-arrow-right")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["color", "to"])
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ]),
+                                      _: 2
+                                    }, 1032, ["class"])
+                                  ]),
+                                  _: 2
+                                }, 1024);
+                              }), 64))
+                            ]),
+                            _: 1
+                          }),
+                          createVNode("div", { class: "d-flex justify-center mt-12" }, [
+                            createVNode(VBtn, {
+                              size: "large",
+                              color: "info",
+                              variant: "tonal",
+                              class: "px-8 rounded-pill",
+                              elevation: "2",
+                              to: "/signup",
+                              nuxt: ""
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" Get Started Now "),
+                                createVNode(VIcon, { end: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-rocket-launch-outline")
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })
+                          ])
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    createVNode("section", {
+                      id: "pricing",
+                      class: "py-16"
+                    }, [
+                      createVNode(unref(Pricing))
+                    ]),
+                    createVNode("section", {
+                      id: "faq",
+                      class: "py-16"
+                    }, [
+                      createVNode(unref(Faq))
+                    ]),
+                    createVNode("section", { class: "py-16 primary" }, [
+                      createVNode(VContainer, null, {
+                        default: withCtx(() => [
+                          createVNode(VRow, { justify: "center" }, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                md: "8",
+                                class: "text-center"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode("h2", { class: "text-h3 font-weight-bold white--text mb-4" }, "Ready to get started?"),
+                                  createVNode("p", { class: "text-subtitle-1 white--text text-opacity-high mb-8" }, " Join the community already using DevUnity for their projects. "),
+                                  createVNode(VBtn, {
+                                    "x-large": "",
+                                    color: "info",
+                                    variant: "tonal",
+                                    elevation: "2",
+                                    class: "px-8",
+                                    to: "/signup"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Create free account ")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`<footer class="py-8" data-v-c6c0e7a8${_scopeId}>`);
+            _push2(ssrRenderComponent(VContainer, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VRow, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VCol, {
+                          cols: "12",
+                          md: "5",
+                          lg: "5",
+                          class: "mb-6 mb-md-0"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<div class="d-flex align-center mb-4" data-v-c6c0e7a8${_scopeId4}><img${ssrRenderAttr("src", _imports_0)} alt="DevUnity title" width="180" data-v-c6c0e7a8${_scopeId4}></div><p class="text-body-2 text-medium-emphasis mb-4" data-v-c6c0e7a8${_scopeId4}> The all-in-one platform for developers who want to create, manage and optimize their web projects. </p><div class="newsletter-signup mb-6" data-v-c6c0e7a8${_scopeId4}><div class="d-flex" data-v-c6c0e7a8${_scopeId4}>`);
+                              _push5(ssrRenderComponent(VTextField, {
+                                modelValue: email.value,
+                                "onUpdate:modelValue": ($event) => email.value = $event,
+                                density: "compact",
+                                placeholder: "Your email address",
+                                variant: "outlined",
+                                "hide-details": "",
+                                class: "mr-2",
+                                "prepend-inner-icon": "mdi-email-outline"
+                              }, null, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                color: "info",
+                                variant: "tonal",
+                                class: "ml-n1",
+                                loading: loading.value,
+                                onClick: submitEmail
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(` Subscribe `);
+                                  } else {
+                                    return [
+                                      createTextVNode(" Subscribe ")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(`</div><p class="text-caption text-medium-emphasis mt-1" data-v-c6c0e7a8${_scopeId4}> Receive our latest news and development tips </p></div><div class="d-flex" data-v-c6c0e7a8${_scopeId4}>`);
+                              _push5(ssrRenderComponent(VBtn, {
+                                icon: "",
+                                variant: "text",
+                                class: "mr-3",
+                                href: "https://twitter.com",
+                                target: "_blank"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VIcon, null, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-twitter`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-twitter")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VIcon, null, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-twitter")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                icon: "",
+                                variant: "text",
+                                class: "mr-3",
+                                href: "https://github.com",
+                                target: "_blank"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VIcon, null, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-github`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-github")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VIcon, null, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-github")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                icon: "",
+                                variant: "text",
+                                class: "mr-3",
+                                href: "https://linkedin.com",
+                                target: "_blank"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VIcon, null, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-linkedin`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-linkedin")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VIcon, null, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-linkedin")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(`</div>`);
+                            } else {
+                              return [
+                                createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                  createVNode("img", {
+                                    src: _imports_0,
+                                    alt: "DevUnity title",
+                                    width: "180"
+                                  })
+                                ]),
+                                createVNode("p", { class: "text-body-2 text-medium-emphasis mb-4" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects. "),
+                                createVNode("div", { class: "newsletter-signup mb-6" }, [
+                                  createVNode("div", { class: "d-flex" }, [
+                                    createVNode(VTextField, {
+                                      modelValue: email.value,
+                                      "onUpdate:modelValue": ($event) => email.value = $event,
+                                      density: "compact",
+                                      placeholder: "Your email address",
+                                      variant: "outlined",
+                                      "hide-details": "",
+                                      class: "mr-2",
+                                      "prepend-inner-icon": "mdi-email-outline"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                    createVNode(VBtn, {
+                                      color: "info",
+                                      variant: "tonal",
+                                      class: "ml-n1",
+                                      loading: loading.value,
+                                      onClick: submitEmail
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(" Subscribe ")
+                                      ]),
+                                      _: 1
+                                    }, 8, ["loading"])
+                                  ]),
+                                  createVNode("p", { class: "text-caption text-medium-emphasis mt-1" }, " Receive our latest news and development tips ")
+                                ]),
+                                createVNode("div", { class: "d-flex" }, [
+                                  createVNode(VBtn, {
+                                    icon: "",
+                                    variant: "text",
+                                    class: "mr-3",
+                                    href: "https://twitter.com",
+                                    target: "_blank"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, null, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-twitter")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VBtn, {
+                                    icon: "",
+                                    variant: "text",
+                                    class: "mr-3",
+                                    href: "https://github.com",
+                                    target: "_blank"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, null, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-github")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VBtn, {
+                                    icon: "",
+                                    variant: "text",
+                                    class: "mr-3",
+                                    href: "https://linkedin.com",
+                                    target: "_blank"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VIcon, null, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-linkedin")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  })
+                                ])
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCol, {
+                          cols: "12",
+                          md: "7",
+                          lg: "7"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VRow, { class: "footer-columns-container" }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<!--[-->`);
+                                    ssrRenderList(footerColumns, (column, index) => {
+                                      _push6(ssrRenderComponent(VCol, {
+                                        key: index,
+                                        cols: "6",
+                                        md: "4",
+                                        class: "footer-column px-4"
+                                      }, {
+                                        default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                          if (_push7) {
+                                            _push7(`<h4 class="text-subtitle-1 font-weight-bold mb-4" data-v-c6c0e7a8${_scopeId6}>${ssrInterpolate(column.title)}</h4><div class="footer-links" data-v-c6c0e7a8${_scopeId6}><!--[-->`);
+                                            ssrRenderList(column.links, (link, linkIndex) => {
+                                              _push7(ssrRenderComponent(_component_NuxtLink, {
+                                                key: linkIndex,
+                                                to: link.to,
+                                                class: "footer-link d-block mb-3"
+                                              }, {
+                                                default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                  if (_push8) {
+                                                    _push8(`${ssrInterpolate(link.title)}`);
+                                                  } else {
+                                                    return [
+                                                      createTextVNode(toDisplayString(link.title), 1)
+                                                    ];
+                                                  }
+                                                }),
+                                                _: 2
+                                              }, _parent7, _scopeId6));
+                                            });
+                                            _push7(`<!--]--></div>`);
+                                          } else {
+                                            return [
+                                              createVNode("h4", { class: "text-subtitle-1 font-weight-bold mb-4" }, toDisplayString(column.title), 1),
+                                              createVNode("div", { class: "footer-links" }, [
+                                                (openBlock(true), createBlock(Fragment, null, renderList(column.links, (link, linkIndex) => {
+                                                  return openBlock(), createBlock(_component_NuxtLink, {
+                                                    key: linkIndex,
+                                                    to: link.to,
+                                                    class: "footer-link d-block mb-3"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(link.title), 1)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["to"]);
+                                                }), 128))
+                                              ])
+                                            ];
+                                          }
+                                        }),
+                                        _: 2
+                                      }, _parent6, _scopeId5));
+                                    });
+                                    _push6(`<!--]-->`);
+                                  } else {
+                                    return [
+                                      (openBlock(), createBlock(Fragment, null, renderList(footerColumns, (column, index) => {
+                                        return createVNode(VCol, {
+                                          key: index,
+                                          cols: "6",
+                                          md: "4",
+                                          class: "footer-column px-4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode("h4", { class: "text-subtitle-1 font-weight-bold mb-4" }, toDisplayString(column.title), 1),
+                                            createVNode("div", { class: "footer-links" }, [
+                                              (openBlock(true), createBlock(Fragment, null, renderList(column.links, (link, linkIndex) => {
+                                                return openBlock(), createBlock(_component_NuxtLink, {
+                                                  key: linkIndex,
+                                                  to: link.to,
+                                                  class: "footer-link d-block mb-3"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(link.title), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["to"]);
+                                              }), 128))
+                                            ])
+                                          ]),
+                                          _: 2
+                                        }, 1024);
+                                      }), 64))
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VRow, { class: "footer-columns-container" }, {
+                                  default: withCtx(() => [
+                                    (openBlock(), createBlock(Fragment, null, renderList(footerColumns, (column, index) => {
+                                      return createVNode(VCol, {
+                                        key: index,
+                                        cols: "6",
+                                        md: "4",
+                                        class: "footer-column px-4"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode("h4", { class: "text-subtitle-1 font-weight-bold mb-4" }, toDisplayString(column.title), 1),
+                                          createVNode("div", { class: "footer-links" }, [
+                                            (openBlock(true), createBlock(Fragment, null, renderList(column.links, (link, linkIndex) => {
+                                              return openBlock(), createBlock(_component_NuxtLink, {
+                                                key: linkIndex,
+                                                to: link.to,
+                                                class: "footer-link d-block mb-3"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(link.title), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1032, ["to"]);
+                                            }), 128))
+                                          ])
+                                        ]),
+                                        _: 2
+                                      }, 1024);
+                                    }), 64))
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VCol, {
+                            cols: "12",
+                            md: "5",
+                            lg: "5",
+                            class: "mb-6 mb-md-0"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                createVNode("img", {
+                                  src: _imports_0,
+                                  alt: "DevUnity title",
+                                  width: "180"
+                                })
+                              ]),
+                              createVNode("p", { class: "text-body-2 text-medium-emphasis mb-4" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects. "),
+                              createVNode("div", { class: "newsletter-signup mb-6" }, [
+                                createVNode("div", { class: "d-flex" }, [
+                                  createVNode(VTextField, {
+                                    modelValue: email.value,
+                                    "onUpdate:modelValue": ($event) => email.value = $event,
+                                    density: "compact",
+                                    placeholder: "Your email address",
+                                    variant: "outlined",
+                                    "hide-details": "",
+                                    class: "mr-2",
+                                    "prepend-inner-icon": "mdi-email-outline"
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                  createVNode(VBtn, {
+                                    color: "info",
+                                    variant: "tonal",
+                                    class: "ml-n1",
+                                    loading: loading.value,
+                                    onClick: submitEmail
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(" Subscribe ")
+                                    ]),
+                                    _: 1
+                                  }, 8, ["loading"])
+                                ]),
+                                createVNode("p", { class: "text-caption text-medium-emphasis mt-1" }, " Receive our latest news and development tips ")
+                              ]),
+                              createVNode("div", { class: "d-flex" }, [
+                                createVNode(VBtn, {
+                                  icon: "",
+                                  variant: "text",
+                                  class: "mr-3",
+                                  href: "https://twitter.com",
+                                  target: "_blank"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, null, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-twitter")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VBtn, {
+                                  icon: "",
+                                  variant: "text",
+                                  class: "mr-3",
+                                  href: "https://github.com",
+                                  target: "_blank"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, null, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-github")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VBtn, {
+                                  icon: "",
+                                  variant: "text",
+                                  class: "mr-3",
+                                  href: "https://linkedin.com",
+                                  target: "_blank"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, null, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-linkedin")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ])
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCol, {
+                            cols: "12",
+                            md: "7",
+                            lg: "7"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VRow, { class: "footer-columns-container" }, {
+                                default: withCtx(() => [
+                                  (openBlock(), createBlock(Fragment, null, renderList(footerColumns, (column, index) => {
+                                    return createVNode(VCol, {
+                                      key: index,
+                                      cols: "6",
+                                      md: "4",
+                                      class: "footer-column px-4"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode("h4", { class: "text-subtitle-1 font-weight-bold mb-4" }, toDisplayString(column.title), 1),
+                                        createVNode("div", { class: "footer-links" }, [
+                                          (openBlock(true), createBlock(Fragment, null, renderList(column.links, (link, linkIndex) => {
+                                            return openBlock(), createBlock(_component_NuxtLink, {
+                                              key: linkIndex,
+                                              to: link.to,
+                                              class: "footer-link d-block mb-3"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(link.title), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["to"]);
+                                          }), 128))
+                                        ])
+                                      ]),
+                                      _: 2
+                                    }, 1024);
+                                  }), 64))
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(VDivider, { class: "my-6" }, null, _parent3, _scopeId2));
+                  _push3(`<div class="d-flex flex-column flex-sm-row justify-space-between align-center" data-v-c6c0e7a8${_scopeId2}><div class="text-body-2 text-medium-emphasis mb-3 mb-sm-0" data-v-c6c0e7a8${_scopeId2}> © ${ssrInterpolate((/* @__PURE__ */ new Date()).getFullYear())} DevUnity. All rights reserved. </div><div class="d-flex align-center" data-v-c6c0e7a8${_scopeId2}><a href="mailto:contact@devunity.com" class="text-body-2 text-decoration-none text-medium-emphasis" data-v-c6c0e7a8${_scopeId2}>contact@devunity.com</a></div></div>`);
+                } else {
+                  return [
+                    createVNode(VRow, null, {
+                      default: withCtx(() => [
+                        createVNode(VCol, {
+                          cols: "12",
+                          md: "5",
+                          lg: "5",
+                          class: "mb-6 mb-md-0"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode("div", { class: "d-flex align-center mb-4" }, [
+                              createVNode("img", {
+                                src: _imports_0,
+                                alt: "DevUnity title",
+                                width: "180"
+                              })
+                            ]),
+                            createVNode("p", { class: "text-body-2 text-medium-emphasis mb-4" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects. "),
+                            createVNode("div", { class: "newsletter-signup mb-6" }, [
+                              createVNode("div", { class: "d-flex" }, [
+                                createVNode(VTextField, {
+                                  modelValue: email.value,
+                                  "onUpdate:modelValue": ($event) => email.value = $event,
+                                  density: "compact",
+                                  placeholder: "Your email address",
+                                  variant: "outlined",
+                                  "hide-details": "",
+                                  class: "mr-2",
+                                  "prepend-inner-icon": "mdi-email-outline"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                createVNode(VBtn, {
+                                  color: "info",
+                                  variant: "tonal",
+                                  class: "ml-n1",
+                                  loading: loading.value,
+                                  onClick: submitEmail
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Subscribe ")
+                                  ]),
+                                  _: 1
+                                }, 8, ["loading"])
+                              ]),
+                              createVNode("p", { class: "text-caption text-medium-emphasis mt-1" }, " Receive our latest news and development tips ")
+                            ]),
+                            createVNode("div", { class: "d-flex" }, [
+                              createVNode(VBtn, {
+                                icon: "",
+                                variant: "text",
+                                class: "mr-3",
+                                href: "https://twitter.com",
+                                target: "_blank"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, null, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-twitter")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VBtn, {
+                                icon: "",
+                                variant: "text",
+                                class: "mr-3",
+                                href: "https://github.com",
+                                target: "_blank"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, null, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-github")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VBtn, {
+                                icon: "",
+                                variant: "text",
+                                class: "mr-3",
+                                href: "https://linkedin.com",
+                                target: "_blank"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, null, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-linkedin")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ])
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCol, {
+                          cols: "12",
+                          md: "7",
+                          lg: "7"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode(VRow, { class: "footer-columns-container" }, {
+                              default: withCtx(() => [
+                                (openBlock(), createBlock(Fragment, null, renderList(footerColumns, (column, index) => {
+                                  return createVNode(VCol, {
+                                    key: index,
+                                    cols: "6",
+                                    md: "4",
+                                    class: "footer-column px-4"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode("h4", { class: "text-subtitle-1 font-weight-bold mb-4" }, toDisplayString(column.title), 1),
+                                      createVNode("div", { class: "footer-links" }, [
+                                        (openBlock(true), createBlock(Fragment, null, renderList(column.links, (link, linkIndex) => {
+                                          return openBlock(), createBlock(_component_NuxtLink, {
+                                            key: linkIndex,
+                                            to: link.to,
+                                            class: "footer-link d-block mb-3"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(toDisplayString(link.title), 1)
+                                            ]),
+                                            _: 2
+                                          }, 1032, ["to"]);
+                                        }), 128))
+                                      ])
+                                    ]),
+                                    _: 2
+                                  }, 1024);
+                                }), 64))
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VDivider, { class: "my-6" }),
+                    createVNode("div", { class: "d-flex flex-column flex-sm-row justify-space-between align-center" }, [
+                      createVNode("div", { class: "text-body-2 text-medium-emphasis mb-3 mb-sm-0" }, " © " + toDisplayString((/* @__PURE__ */ new Date()).getFullYear()) + " DevUnity. All rights reserved. ", 1),
+                      createVNode("div", { class: "d-flex align-center" }, [
+                        createVNode("a", {
+                          href: "mailto:contact@devunity.com",
+                          class: "text-body-2 text-decoration-none text-medium-emphasis"
+                        }, "contact@devunity.com")
+                      ])
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`</footer>`);
+            _push2(ssrRenderComponent(Snackbar, {
+              modelValue: showSnackbar.value,
+              "onUpdate:modelValue": ($event) => showSnackbar.value = $event,
+              color: snackbarColor.value,
+              text: snackbarText.value,
+              timeout: snackbarTimeout.value
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VAppBar, {
+                app: "",
+                elevation: 2,
+                color: "surface",
+                class: "px-0 nav-bar",
+                modelValue: showAppBar.value,
+                "onUpdate:modelValue": ($event) => showAppBar.value = $event
+              }, {
+                default: withCtx(() => [
+                  createVNode(VContainer, { class: "d-flex align-center py-0 my-0" }, {
+                    default: withCtx(() => [
+                      createVNode(_component_NuxtLink, {
+                        to: "/",
+                        class: "text-decoration-none"
+                      }, {
+                        default: withCtx(() => [
+                          createVNode("div", { class: "d-flex align-center brand-container" }, [
+                            createVNode("img", {
+                              src: _imports_0,
+                              alt: "DevUnity title",
+                              width: "150",
+                              class: "logo-image"
+                            }),
+                            createVNode("div", { class: "brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left" }, [
+                              createVNode("span", { class: "text-caption font-weight-medium text-gradient" }, "PROPULSE YOUR CODE")
+                            ])
+                          ])
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VSpacer),
+                      _ctx.$vuetify.display.smAndUp ? (openBlock(), createBlock("div", {
+                        key: 0,
+                        class: "d-flex align-center custom-nav-menu"
+                      }, [
+                        createVNode("div", { class: "nav-links-wrapper" }, [
+                          (openBlock(), createBlock(Fragment, null, renderList(menuItems, (item) => {
+                            return createVNode(VBtn, {
+                              key: item.href,
+                              class: ["nav-btn custom-btn", { "active-nav-btn": activeSection.value === item.href.substring(1) }],
+                              href: item.href,
+                              variant: "text"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode("span", { class: "nav-text" }, toDisplayString(item.title), 1),
+                                createVNode("span", { class: "nav-btn-background" })
+                              ]),
+                              _: 2
+                            }, 1032, ["href", "class"]);
+                          }), 64))
+                        ]),
+                        createVNode("div", { class: "auth-buttons ml-6" }, [
+                          createVNode(VBtn, {
+                            color: "primary",
+                            class: "login-btn",
+                            to: "/login",
+                            variant: "tonal",
+                            rounded: "rounded-xl",
+                            "prepend-icon": "mdi-login"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Login ")
+                            ]),
+                            _: 1
+                          })
+                        ])
+                      ])) : (openBlock(), createBlock("div", {
+                        key: 1,
+                        class: "d-flex align-center"
+                      }, [
+                        createVNode(VBtn, {
+                          color: "primary",
+                          class: "mr-2",
+                          to: "/login",
+                          size: "small",
+                          rounded: "pill"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode(VIcon, {
+                              size: "small",
+                              class: "mr-1"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode("mdi-login")
+                              ]),
+                              _: 1
+                            }),
+                            createTextVNode(" Login ")
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VBtn, {
+                          icon: "",
+                          onClick: ($event) => drawer.value = !drawer.value,
+                          class: "menu-toggle-btn",
+                          "aria-label": "Toggle navigation menu"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode("div", {
+                              class: ["hamburger-icon", { "active": drawer.value }]
+                            }, [
+                              createVNode("span"),
+                              createVNode("span"),
+                              createVNode("span")
+                            ], 2)
+                          ]),
+                          _: 1
+                        }, 8, ["onClick"])
+                      ]))
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }, 8, ["modelValue", "onUpdate:modelValue"]),
+              createVNode(VNavigationDrawer, {
+                modelValue: drawer.value,
+                "onUpdate:modelValue": ($event) => drawer.value = $event,
+                location: "right",
+                temporary: "",
+                class: "mobile-nav-drawer d-md-none pa-6"
+              }, {
+                default: withCtx(() => [
+                  createVNode("div", { class: "drawer-header mb-8 d-flex justify-space-between align-center" }, [
+                    createVNode("img", {
+                      src: _imports_0,
+                      alt: "DevUnity title",
+                      width: "120"
+                    }),
+                    createVNode(VBtn, {
+                      icon: "",
+                      variant: "text",
+                      onClick: ($event) => drawer.value = false
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VIcon, null, {
+                          default: withCtx(() => [
+                            createTextVNode("mdi-close")
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    }, 8, ["onClick"])
+                  ]),
+                  createVNode("div", { class: "mobile-nav-links" }, [
+                    createVNode(VList, { nav: "" }, {
+                      default: withCtx(() => [
+                        (openBlock(), createBlock(Fragment, null, renderList(menuItems, (item) => {
+                          return createVNode(VListItem, {
+                            key: item.href,
+                            href: item.href,
+                            onClick: ($event) => drawer.value = false,
+                            class: "mobile-nav-item mb-3",
+                            rounded: "lg"
+                          }, {
+                            prepend: withCtx(() => [
+                              createVNode(VIcon, {
+                                class: "mr-2",
+                                icon: item.icon,
+                                color: "primary"
+                              }, null, 8, ["icon"])
+                            ]),
+                            default: withCtx(() => [
+                              createVNode(VListItemTitle, { class: "text-subtitle-1 font-weight-medium" }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(item.title), 1)
+                                ]),
+                                _: 2
+                              }, 1024)
+                            ]),
+                            _: 2
+                          }, 1032, ["href", "onClick"]);
+                        }), 64))
+                      ]),
+                      _: 1
+                    })
+                  ]),
+                  createVNode("div", { class: "drawer-footer mt-auto pt-6" }, [
+                    createVNode(VBtn, {
+                      block: "",
+                      color: "primary",
+                      to: "/signup",
+                      class: "mb-4",
+                      size: "large",
+                      rounded: "pill"
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(VIcon, { start: "" }, {
+                          default: withCtx(() => [
+                            createTextVNode("mdi-rocket-launch-outline")
+                          ]),
+                          _: 1
+                        }),
+                        createTextVNode(" Get started ")
+                      ]),
+                      _: 1
+                    }),
+                    createVNode("p", { class: "text-caption text-center text-medium-emphasis" }, "Join our community of developers and propulse your web projects to new horizons.")
+                  ])
+                ]),
+                _: 1
+              }, 8, ["modelValue", "onUpdate:modelValue"]),
+              createVNode(VMain, { class: "main-content" }, {
+                default: withCtx(() => [
+                  createVNode("section", {
+                    id: "hero",
+                    class: "hero-section"
+                  }, [
+                    createVNode(VContainer, { class: "py-16" }, {
+                      default: withCtx(() => [
+                        createVNode(VRow, { class: "align-center justify-center" }, {
+                          default: withCtx(() => [
+                            createVNode(VCol, {
+                              cols: "12",
+                              md: "6",
+                              class: "text-center text-md-left"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VResponsive, null, {
+                                  default: withCtx(() => [
+                                    createVNode("h1", { class: "text-h2 font-weight-bold mb-4" }, "Develop faster with DevUnity"),
+                                    createVNode("p", { class: "text-subtitle-1 text-medium-emphasis mb-8" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects with unparalleled speed and efficiency. "),
+                                    createVNode("div", { class: "d-flex flex-column flex-sm-row justify-center justify-md-start" }, [
+                                      createVNode(VBtn, {
+                                        "x-large": "",
+                                        color: "primary",
+                                        variant: "tonal",
+                                        class: "px-6 mb-3 mb-sm-0 mr-sm-4",
+                                        to: "/signup"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Get started ")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VBtn, {
+                                        "x-large": "",
+                                        outlined: "",
+                                        color: "info",
+                                        variant: "tonal",
+                                        class: "px-6",
+                                        href: "#features"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" Learn more "),
+                                          createVNode(VIcon, { right: "" }, {
+                                            default: withCtx(() => [
+                                              createTextVNode("mdi-arrow-right")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      })
+                                    ])
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VCol, {
+                              cols: "12",
+                              md: "6",
+                              class: "d-flex justify-center mt-8 mt-md-0"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VImg, {
+                                  src: _imports_1,
+                                  "max-width": "90%",
+                                  contain: "",
+                                  class: "hero-image rounded-xl elevation-10",
+                                  alt: "Devroid Platform"
+                                })
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ]),
+                  createVNode("section", { class: "stats-section py-8" }, [
+                    createVNode(VContainer, null, {
+                      default: withCtx(() => [
+                        createVNode(VRow, { class: "align-center justify-center" }, {
+                          default: withCtx(() => [
+                            (openBlock(), createBlock(Fragment, null, renderList(stats, (stat, i) => {
+                              return createVNode(VCol, {
+                                key: i,
+                                cols: "6",
+                                sm: "3",
+                                class: "text-center"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode("div", { class: "stat-value text-h3 font-weight-bold primary--text mb-1" }, toDisplayString(stat.value), 1),
+                                  createVNode("div", { class: "stat-label text-subtitle-2 text-medium-emphasis" }, toDisplayString(stat.label), 1)
+                                ]),
+                                _: 2
+                              }, 1024);
+                            }), 64))
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ]),
+                  createVNode("section", {
+                    id: "features",
+                    class: "py-16"
+                  }, [
+                    createVNode(VContainer, null, {
+                      default: withCtx(() => [
+                        createVNode("div", { class: "text-center mb-12" }, [
+                          createVNode("span", { class: "section-subtitle" }, "POWERFUL TOOLS"),
+                          createVNode("h2", { class: "text-h3 font-weight-bold mb-3" }, "Features That Boost Your Productivity"),
+                          createVNode("p", {
+                            class: "text-subtitle-1 text-medium-emphasis mx-auto",
+                            style: { "max-width": "700px" }
+                          }, " DevUnity combines all the tools you need to develop modern web applications in one intuitive platform. ")
+                        ]),
+                        createVNode(VRow, null, {
+                          default: withCtx(() => [
+                            (openBlock(), createBlock(Fragment, null, renderList(features, (feature, index) => {
+                              return createVNode(VCol, {
+                                key: index,
+                                cols: "12",
+                                md: "4",
+                                class: "mb-8"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VCard, {
+                                    class: "feature-card h-100 rounded-lg",
+                                    flat: ""
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VCardText, { class: "pa-6" }, {
+                                        default: withCtx(() => [
+                                          createVNode(VAvatar, {
+                                            color: feature.color,
+                                            size: "56",
+                                            class: "mb-4"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VIcon, {
+                                                dark: "",
+                                                size: "32"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(feature.icon), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1024)
+                                            ]),
+                                            _: 2
+                                          }, 1032, ["color"]),
+                                          createVNode("h3", { class: "text-h5 font-weight-bold mb-3" }, toDisplayString(feature.title), 1),
+                                          createVNode("p", { class: "text-body-1 text-medium-emphasis" }, toDisplayString(feature.description), 1)
+                                        ]),
+                                        _: 2
+                                      }, 1024)
+                                    ]),
+                                    _: 2
+                                  }, 1024)
+                                ]),
+                                _: 2
+                              }, 1024);
+                            }), 64))
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ]),
+                  createVNode("section", { class: "py-16" }, [
+                    createVNode(VContainer, null, {
+                      default: withCtx(() => [
+                        createVNode("div", { class: "text-center mb-12" }, [
+                          createVNode("h2", { class: "text-h3 font-weight-bold mb-3" }, "How It Works"),
+                          createVNode("p", {
+                            class: "text-subtitle-1 text-medium-emphasis mx-auto",
+                            style: { "max-width": "700px" }
+                          }, " Three simple steps to start using Devroid and transform your development workflow. ")
+                        ]),
+                        createVNode(VRow, {
+                          justify: "center",
+                          class: "mt-8"
+                        }, {
+                          default: withCtx(() => [
+                            (openBlock(), createBlock(Fragment, null, renderList(steps, (step, i) => {
+                              return createVNode(VCol, {
+                                key: i,
+                                cols: "12",
+                                md: "4",
+                                class: "px-4"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VCard, {
+                                    class: ["h-100 rounded-xl", `border-${step.color}`],
+                                    elevation: "3",
+                                    style: { "border-top": "#00658b 4px solid" }
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VCardItem, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VAvatar, {
+                                            color: step.color,
+                                            size: "56",
+                                            class: "mb-4"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode("span", { class: "text-h5 font-weight-bold white--text" }, toDisplayString(i + 1), 1)
+                                            ]),
+                                            _: 2
+                                          }, 1032, ["color"])
+                                        ]),
+                                        _: 2
+                                      }, 1024),
+                                      createVNode(VCardTitle, { class: "text-h5 font-weight-bold" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(toDisplayString(step.title), 1)
+                                        ]),
+                                        _: 2
+                                      }, 1024),
+                                      createVNode(VCardText, { class: "text-body-1" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(toDisplayString(step.description), 1)
+                                        ]),
+                                        _: 2
+                                      }, 1024),
+                                      createVNode(VCardActions, { class: "pa-4" }, {
+                                        default: withCtx(() => [
+                                          createVNode(VBtn, {
+                                            color: step.color,
+                                            variant: "text",
+                                            class: "text-none",
+                                            to: step.link
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode("Learn more "),
+                                              createVNode(VIcon, { right: "" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode("mdi-arrow-right")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 2
+                                          }, 1032, ["color", "to"])
+                                        ]),
+                                        _: 2
+                                      }, 1024)
+                                    ]),
+                                    _: 2
+                                  }, 1032, ["class"])
+                                ]),
+                                _: 2
+                              }, 1024);
+                            }), 64))
+                          ]),
+                          _: 1
+                        }),
+                        createVNode("div", { class: "d-flex justify-center mt-12" }, [
+                          createVNode(VBtn, {
+                            size: "large",
+                            color: "info",
+                            variant: "tonal",
+                            class: "px-8 rounded-pill",
+                            elevation: "2",
+                            to: "/signup",
+                            nuxt: ""
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Get Started Now "),
+                              createVNode(VIcon, { end: "" }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-rocket-launch-outline")
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ])
+                      ]),
+                      _: 1
+                    })
+                  ]),
+                  createVNode("section", {
+                    id: "pricing",
+                    class: "py-16"
+                  }, [
+                    createVNode(unref(Pricing))
+                  ]),
+                  createVNode("section", {
+                    id: "faq",
+                    class: "py-16"
+                  }, [
+                    createVNode(unref(Faq))
+                  ]),
+                  createVNode("section", { class: "py-16 primary" }, [
+                    createVNode(VContainer, null, {
+                      default: withCtx(() => [
+                        createVNode(VRow, { justify: "center" }, {
+                          default: withCtx(() => [
+                            createVNode(VCol, {
+                              cols: "12",
+                              md: "8",
+                              class: "text-center"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode("h2", { class: "text-h3 font-weight-bold white--text mb-4" }, "Ready to get started?"),
+                                createVNode("p", { class: "text-subtitle-1 white--text text-opacity-high mb-8" }, " Join the community already using DevUnity for their projects. "),
+                                createVNode(VBtn, {
+                                  "x-large": "",
+                                  color: "info",
+                                  variant: "tonal",
+                                  elevation: "2",
+                                  class: "px-8",
+                                  to: "/signup"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Create free account ")
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ])
+                ]),
+                _: 1
+              }),
+              createVNode("footer", { class: "py-8" }, [
+                createVNode(VContainer, null, {
+                  default: withCtx(() => [
+                    createVNode(VRow, null, {
+                      default: withCtx(() => [
+                        createVNode(VCol, {
+                          cols: "12",
+                          md: "5",
+                          lg: "5",
+                          class: "mb-6 mb-md-0"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode("div", { class: "d-flex align-center mb-4" }, [
+                              createVNode("img", {
+                                src: _imports_0,
+                                alt: "DevUnity title",
+                                width: "180"
+                              })
+                            ]),
+                            createVNode("p", { class: "text-body-2 text-medium-emphasis mb-4" }, " The all-in-one platform for developers who want to create, manage and optimize their web projects. "),
+                            createVNode("div", { class: "newsletter-signup mb-6" }, [
+                              createVNode("div", { class: "d-flex" }, [
+                                createVNode(VTextField, {
+                                  modelValue: email.value,
+                                  "onUpdate:modelValue": ($event) => email.value = $event,
+                                  density: "compact",
+                                  placeholder: "Your email address",
+                                  variant: "outlined",
+                                  "hide-details": "",
+                                  class: "mr-2",
+                                  "prepend-inner-icon": "mdi-email-outline"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                createVNode(VBtn, {
+                                  color: "info",
+                                  variant: "tonal",
+                                  class: "ml-n1",
+                                  loading: loading.value,
+                                  onClick: submitEmail
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Subscribe ")
+                                  ]),
+                                  _: 1
+                                }, 8, ["loading"])
+                              ]),
+                              createVNode("p", { class: "text-caption text-medium-emphasis mt-1" }, " Receive our latest news and development tips ")
+                            ]),
+                            createVNode("div", { class: "d-flex" }, [
+                              createVNode(VBtn, {
+                                icon: "",
+                                variant: "text",
+                                class: "mr-3",
+                                href: "https://twitter.com",
+                                target: "_blank"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, null, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-twitter")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VBtn, {
+                                icon: "",
+                                variant: "text",
+                                class: "mr-3",
+                                href: "https://github.com",
+                                target: "_blank"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, null, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-github")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VBtn, {
+                                icon: "",
+                                variant: "text",
+                                class: "mr-3",
+                                href: "https://linkedin.com",
+                                target: "_blank"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, null, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-linkedin")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ])
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCol, {
+                          cols: "12",
+                          md: "7",
+                          lg: "7"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode(VRow, { class: "footer-columns-container" }, {
+                              default: withCtx(() => [
+                                (openBlock(), createBlock(Fragment, null, renderList(footerColumns, (column, index) => {
+                                  return createVNode(VCol, {
+                                    key: index,
+                                    cols: "6",
+                                    md: "4",
+                                    class: "footer-column px-4"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode("h4", { class: "text-subtitle-1 font-weight-bold mb-4" }, toDisplayString(column.title), 1),
+                                      createVNode("div", { class: "footer-links" }, [
+                                        (openBlock(true), createBlock(Fragment, null, renderList(column.links, (link, linkIndex) => {
+                                          return openBlock(), createBlock(_component_NuxtLink, {
+                                            key: linkIndex,
+                                            to: link.to,
+                                            class: "footer-link d-block mb-3"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(toDisplayString(link.title), 1)
+                                            ]),
+                                            _: 2
+                                          }, 1032, ["to"]);
+                                        }), 128))
+                                      ])
+                                    ]),
+                                    _: 2
+                                  }, 1024);
+                                }), 64))
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    }),
+                    createVNode(VDivider, { class: "my-6" }),
+                    createVNode("div", { class: "d-flex flex-column flex-sm-row justify-space-between align-center" }, [
+                      createVNode("div", { class: "text-body-2 text-medium-emphasis mb-3 mb-sm-0" }, " © " + toDisplayString((/* @__PURE__ */ new Date()).getFullYear()) + " DevUnity. All rights reserved. ", 1),
+                      createVNode("div", { class: "d-flex align-center" }, [
+                        createVNode("a", {
+                          href: "mailto:contact@devunity.com",
+                          class: "text-body-2 text-decoration-none text-medium-emphasis"
+                        }, "contact@devunity.com")
+                      ])
+                    ])
+                  ]),
+                  _: 1
+                })
+              ]),
+              createVNode(Snackbar, {
+                modelValue: showSnackbar.value,
+                "onUpdate:modelValue": ($event) => showSnackbar.value = $event,
+                color: snackbarColor.value,
+                text: snackbarText.value,
+                timeout: snackbarTimeout.value
+              }, null, 8, ["modelValue", "onUpdate:modelValue", "color", "text", "timeout"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
 
-const o=Pt.setup;Pt.setup=(s,r)=>{const t=useSSRContext();return (t.modules||(t.modules=new Set)).add("pages/index.vue"),o?o(s,r):void 0};const u=s$2(Pt,[["__scopeId","data-v-c6c0e7a8"]]);
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/index.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-c6c0e7a8"]]);
 
-export { u as default };;globalThis.__timing__.logEnd('Load chunks/build/index.vue');
+export { index as default };
+//# sourceMappingURL=index.vue.mjs.map

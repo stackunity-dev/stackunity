@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/users/update-premium');import { d as defineEventHandler, m as getRequestHeader, r as readBody } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, m as getRequestHeader, r as readBody } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -63,4 +62,5 @@ const updatePremium = defineEventHandler(async (event) => {
   }
 });
 
-export { updatePremium as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/users/update-premium');
+export { updatePremium as default };
+//# sourceMappingURL=update-premium.mjs.map

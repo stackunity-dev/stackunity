@@ -1,22 +1,22 @@
-globalThis.__timing__.logStart('Load chunks/build/snippets.vue');import { z } from './nuxt-link.mjs';
+import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { defineComponent, ref, computed, withCtx, createTextVNode, createVNode, toDisplayString, withModifiers, createBlock, createCommentVNode, openBlock, Fragment, renderList, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderList, ssrInterpolate } from 'vue/server-renderer';
-import { f as f$1 } from './snackbar.vue.mjs';
-import { N as k, x, L, q as qe, J as he, bl as re, Y as r, U as C, e as $, c, P, a0 as f, b as We, br as U, bp as ye, s } from './server.mjs';
-import { m } from './v3.mjs';
-import { _ } from './VMain.mjs';
-import { x as x$1 } from './VContainer.mjs';
-import { o as oe, a as at } from './VTabs.mjs';
-import { i as ie, X } from './VWindowItem.mjs';
-import { F as Fe } from './VTextField.mjs';
-import { a as at$1 } from './VSelect.mjs';
-import { x as x$2, A } from './VCol.mjs';
-import { j as je } from './VChip.mjs';
-import { T as Te } from './VAlert.mjs';
-import { s as se, b } from './VToolbar.mjs';
-import { N } from './VForm.mjs';
-import { z as ze } from './VTextarea.mjs';
-import { R as Re } from './VFileInput.mjs';
+import { S as Snackbar } from './snackbar.vue.mjs';
+import { S as useUserStore, V as VApp, g as VIcon, f as VCard, P as VImg, bl as VProgressCircular, $ as VCardTitle, Y as VCardText, i as VAvatar, d as VSpacer, h as VDivider, a0 as VCardActions, e as VBtn, br as VDialog, bp as VSwitch, _ as _export_sfc } from './server.mjs';
+import { u as useHead } from './v3.mjs';
+import { V as VMain } from './VMain.mjs';
+import { V as VContainer } from './VContainer.mjs';
+import { V as VTabs, a as VTab } from './VTabs.mjs';
+import { V as VWindow, a as VWindowItem } from './VWindowItem.mjs';
+import { V as VTextField } from './VTextField.mjs';
+import { V as VSelect } from './VSelect.mjs';
+import { V as VRow, a as VCol } from './VCol.mjs';
+import { V as VChip } from './VChip.mjs';
+import { V as VAlert } from './VAlert.mjs';
+import { V as VToolbar, b as VToolbarTitle } from './VToolbar.mjs';
+import { V as VForm } from './VForm.mjs';
+import { V as VTextarea } from './VTextarea.mjs';
+import { V as VFileInput } from './VFileInput.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -25,7 +25,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -57,8 +56,7353 @@ import 'devalue';
 import 'unhead/plugins';
 import './VCheckboxBtn.mjs';
 
-const ea=defineComponent({__name:"snippets",__ssrInlineRender:true,setup(vl){m({title:"Snippets",meta:[{name:"description",content:"Deploy and use numerous snippets across the world"},{name:"robots",content:"index,follow"},{name:"author",content:"DevUnity"},{name:"keywords",content:"snippets, code snippets, code, snippets, deploy, use, across, world"},{name:"viewport",content:"width=device-width, initial-scale=1.0"},{name:"og:title",content:"Snippets"},{name:"og:description",content:"Deploy and use numerous snippets across the world"},{name:"og:image",content:"/logo/devunity-title.png"}]});const ce=k(),pe=ref("World"),ge=ref(false);ref(false);const j=ref(""),U$1=ref("All"),Ge=ref(false),Fe$1=ref(false),Pe=ref(""),Te$1=ref("success"),dl=ref("mdi-check-circle"),Se=ref(false),tl=ref(null),d=ref({publishWorld:"",publishPersonal:"",title:"",description:"",username:"",framework:"",img:"",imgFile:null,date:"",like:0,favoris:0,isFavorite:false}),he$1=computed(()=>{let F=ce.worldSnippets?ce.worldSnippets.slice(0,30):[];if(j.value){const de=j.value.toLowerCase();F=F.filter(Ue=>(Ue.title?.toLowerCase()||"").includes(de)||(Ue.description?.toLowerCase()||"").includes(de));}return U$1.value!=="All"&&(F=F.filter(de=>de.framework===U$1.value)),F}),be=computed(()=>{let F=ce.personalSnippets?ce.personalSnippets.slice(0,30):[];if(j.value){const de=j.value.toLowerCase();F=F.filter(Ue=>(Ue.title?.toLowerCase()||"").includes(de)||(Ue.description?.toLowerCase()||"").includes(de));}return U$1.value!=="All"&&(F=F.filter(de=>de.framework===U$1.value)),F}),we=computed(()=>{const F=ce.favoritesSnippets.map(C=>C.snippet_id);let de=ce.worldSnippets?ce.worldSnippets.slice(0,15):[],Ue=ce.personalSnippets?ce.personalSnippets.slice(0,15):[];de=de.filter(C=>F.includes(C.id)),Ue=Ue.filter(C=>F.includes(C.id));let We=[...de,...Ue];if(We.forEach(C=>{const Me=C;Me.isFavorite=true,de.includes(C)?Me.sourceType="world":Me.sourceType="personal";}),j.value){const C=j.value.toLowerCase();We=We.filter(Me=>(Me.title?.toLowerCase()||"").includes(C)||(Me.description?.toLowerCase()||"").includes(C));}return U$1.value!=="All"&&(We=We.filter(C=>C.framework===U$1.value)),We.slice(0,30)}),Be=async()=>{try{Ge.value=!0,await ce.addSnippets(d.value.title,d.value.description,d.value.framework,d.value.imgFile,d.value.publishWorld,d.value.publishPersonal),await ce.loadSnippets(),ge.value=!1,d.value={publishWorld:"",publishPersonal:"",title:"",description:"",username:"",framework:"",img:"",imgFile:null,date:"",like:0,favoris:0,isFavorite:!1},Pe.value="Snippet créé avec succès",Te$1.value="success",Fe$1.value=!0;}catch(F){console.error("Error adding snippet:",F.message,F.stack),Pe.value="Erreur lors de la création du snippet",Te$1.value="error",Fe$1.value=true;}finally{Ge.value=false;}},ie$1=async(F,de)=>{F.isFavorite=!F.isFavorite;try{F.isFavorite?(await ce.addFavorite(F.id,de),Pe.value="Ajouté aux favoris"):(await ce.removeFavorite(F.id),Pe.value="Retiré des favoris"),Te$1.value="success",Fe$1.value=!0,await ce.loadSnippets();}catch(Ue){console.error("Erreur lors de la mise à jour des favoris:",Ue),F.isFavorite=!F.isFavorite,Pe.value="Erreur lors de la mise à jour des favoris",Te$1.value="error",Fe$1.value=true;}},ze$1=F=>{tl.value=F,Se.value=true;},He=async()=>{try{tl.value&&(await ce.deleteSnippet(tl.value.id,"personal"),Se.value=!1,Pe.value="Snippet supprimé avec succès",Te$1.value="success",Fe$1.value=!0);}catch(F){console.error("Error during deletion:",F.message,F.stack),Pe.value="Erreur lors de la suppression du snippet",Te$1.value="error",Fe$1.value=true;}},Y=F=>F.snippet_date?ce.formatDate(F.snippet_date):F.date?ce.formatDate(F.date):"Date non disponible";return (F,de,Ue,We$1)=>{const C$1=z;de(ssrRenderComponent(x,We$1,{default:withCtx((Me,Qe,Xe,Ze)=>{if(Qe)Qe(ssrRenderComponent(_,null,{default:withCtx((u,xe,Re,Je)=>{if(xe)xe(ssrRenderComponent(x$1,{fluid:""},{default:withCtx((v,re$1,Ce,De)=>{if(re$1)re$1(ssrRenderComponent(oe,{modelValue:pe.value,"onUpdate:modelValue":f=>pe.value=f,color:"primary","align-tabs":"center",class:"mb-6"},{default:withCtx((f,$,B,X)=>{if($)$(ssrRenderComponent(at,{value:"World",class:"text-subtitle-1"},{default:withCtx((c,g,P,T)=>{if(g)g(ssrRenderComponent(L,{start:""},{default:withCtx((s,x,I,oe)=>{if(x)x("mdi-earth");else return [createTextVNode("mdi-earth")]}),_:1},P,T)),g(" Public Snippets ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-earth")]),_:1}),createTextVNode(" Public Snippets ")]}),_:1},B,X)),$(ssrRenderComponent(at,{value:"Personal",class:"text-subtitle-1"},{default:withCtx((c,g,P,T)=>{if(g)g(ssrRenderComponent(L,{start:""},{default:withCtx((s,x,I,oe)=>{if(x)x("mdi-account");else return [createTextVNode("mdi-account")]}),_:1},P,T)),g(" My Snippets ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-account")]),_:1}),createTextVNode(" My Snippets ")]}),_:1},B,X)),$(ssrRenderComponent(at,{value:"Favorites",class:"text-subtitle-1"},{default:withCtx((c,g,P,T)=>{if(g)g(ssrRenderComponent(L,{start:""},{default:withCtx((s,x,I,oe)=>{if(x)x("mdi-star");else return [createTextVNode("mdi-star")]}),_:1},P,T)),g(" Favorites ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-star")]),_:1}),createTextVNode(" Favorites ")]}),_:1},B,X));else return [createVNode(at,{value:"World",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-earth")]),_:1}),createTextVNode(" Public Snippets ")]),_:1}),createVNode(at,{value:"Personal",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-account")]),_:1}),createTextVNode(" My Snippets ")]),_:1}),createVNode(at,{value:"Favorites",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-star")]),_:1}),createTextVNode(" Favorites ")]),_:1})]}),_:1},Ce,De)),re$1(ssrRenderComponent(ie,{modelValue:pe.value,"onUpdate:modelValue":f=>pe.value=f},{default:withCtx((f$1,$$1,B,X$1)=>{if($$1)$$1(ssrRenderComponent(X,{value:"World"},{default:withCtx((c$1,g,P$1,T)=>{if(g)g(`<div class="d-flex align-center mb-4" data-v-6fc203b4${T}>`),g(ssrRenderComponent(Fe,{modelValue:j.value,"onUpdate:modelValue":s=>j.value=s,"prepend-inner-icon":"mdi-magnify",label:"Search snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,P$1,T)),g(ssrRenderComponent(at$1,{modelValue:U$1.value,"onUpdate:modelValue":s=>U$1.value=s,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,P$1,T)),g("</div>"),g(ssrRenderComponent(x$2,null,{default:withCtx((s,x,I,oe)=>{if(x)x("<!--[-->"),ssrRenderList(he$1.value,(t,S)=>{x(ssrRenderComponent(A,{key:S,cols:"12",sm:"6",lg:"4"},{default:withCtx((te,J,W,ke)=>{if(J)J(ssrRenderComponent(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx((Ye,ee,me,fe)=>{if(ee)ee(ssrRenderComponent(C$1,{to:`/snippetsView?id=${t.id}&type=world`,class:"text-decoration-none"},{default:withCtx((je,_,D,k)=>{if(_)_(ssrRenderComponent(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx((le,h,M,q)=>{if(h)h(ssrRenderComponent(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx((qe,ae,Ae,Ne)=>{if(ae)ae(ssrRenderComponent(re,{indeterminate:"",color:"primary"},null,Ae,Ne));else return [createVNode(re,{indeterminate:"",color:"primary"})]}),_:2},M,q));else return [createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]}),_:2},D,k));else return [createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]}),_:2},me,fe)),ee(ssrRenderComponent(r,{class:"text-h6 font-weight-bold"},{default:withCtx((je,_,D,k)=>{if(_)_(`${ssrInterpolate(t.title)}`);else return [createTextVNode(toDisplayString(t.title),1)]}),_:2},me,fe)),ee(ssrRenderComponent(C,null,{default:withCtx((je$1,_,D,k)=>{if(_)_(`<p class="text-body-1 mb-2" data-v-6fc203b4${k}>${ssrInterpolate(t.description)}</p>`),_(ssrRenderComponent(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx((le,h,M,q)=>{if(h)h(`${ssrInterpolate(t.framework)}`);else return [createTextVNode(toDisplayString(t.framework),1)]}),_:2},D,k)),_(`<div class="d-flex align-center text-grey" data-v-6fc203b4${k}>`),_(ssrRenderComponent($,{size:"24",class:"mr-2"},{default:withCtx((le,h,M,q)=>{if(h)h(ssrRenderComponent(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"},null,M,q));else return [createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]}),_:2},D,k)),_(`<span data-v-6fc203b4${k}>${ssrInterpolate(t.username)}</span>`),_(ssrRenderComponent(c,null,null,D,k)),_(ssrRenderComponent(L,{size:"small",class:"mr-1"},{default:withCtx((le,h,M,q)=>{if(h)h("mdi-calendar");else return [createTextVNode("mdi-calendar")]}),_:2},D,k)),_(`<span class="text-caption" data-v-6fc203b4${k}>${ssrInterpolate(Y(t))}</span></div>`);else return [createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]}),_:2},me,fe)),ee(ssrRenderComponent(P,null,null,me,fe)),ee(ssrRenderComponent(f,null,{default:withCtx((je,_,D,k)=>{if(_)_(ssrRenderComponent(We,{variant:"text",color:t.isFavorite?"yellow":"",onClick:le=>ie$1(t,"world")},{default:withCtx((le,h,M,q)=>{if(h)h(ssrRenderComponent(L,{icon:t.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,M,q));else return [createVNode(L,{icon:t.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]}),_:2},D,k)),_(ssrRenderComponent(c,null,null,D,k)),_(ssrRenderComponent(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=world`},{default:withCtx((le,h,M,q)=>{if(h)h(" View Details "),h(ssrRenderComponent(L,{end:""},{default:withCtx((qe,ae,Ae,Ne)=>{if(ae)ae("mdi-arrow-right");else return [createTextVNode("mdi-arrow-right")]}),_:2},M,q));else return [createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]}),_:2},D,k));else return [createVNode(We,{variant:"text",color:t.isFavorite?"yellow":"",onClick:withModifiers(le=>ie$1(t,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,{icon:t.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]),_:2},1032,["color","onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=world`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]}),_:2},me,fe));else return [createVNode(C$1,{to:`/snippetsView?id=${t.id}&type=world`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:t.isFavorite?"yellow":"",onClick:withModifiers(je=>ie$1(t,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,{icon:t.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]),_:2},1032,["color","onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=world`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]}),_:2},W,ke));else return [createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${t.id}&type=world`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:t.isFavorite?"yellow":"",onClick:withModifiers(Ye=>ie$1(t,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,{icon:t.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]),_:2},1032,["color","onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=world`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]}),_:2},I,oe));}),x("<!--]-->"),he$1.value.length===0?x(ssrRenderComponent(A,{cols:"12"},{default:withCtx((t,S,te,J)=>{if(S)S(ssrRenderComponent(Te,{type:"info",variant:"tonal"},{default:withCtx((W,ke,Ye,ee)=>{if(ke)ke(" No snippets found. Try modifying your search criteria. ");else return [createTextVNode(" No snippets found. Try modifying your search criteria. ")]}),_:1},te,J));else return [createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" No snippets found. Try modifying your search criteria. ")]),_:1})]}),_:1},I,oe)):x("<!---->");else return [(openBlock(true),createBlock(Fragment,null,renderList(he$1.value,(t,S)=>(openBlock(),createBlock(A,{key:S,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${t.id}&type=world`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:t.isFavorite?"yellow":"",onClick:withModifiers(te=>ie$1(t,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,{icon:t.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]),_:2},1032,["color","onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=world`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),he$1.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" No snippets found. Try modifying your search criteria. ")]),_:1})]),_:1})):createCommentVNode("",true)]}),_:1},P$1,T));else return [createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":s=>j.value=s,"prepend-inner-icon":"mdi-magnify",label:"Search snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":s=>U$1.value=s,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(he$1.value,(s,x)=>(openBlock(),createBlock(A,{key:x,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${s.id}&type=world`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:s.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(s.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(s.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(s.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(s.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(s)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:s.isFavorite?"yellow":"",onClick:withModifiers(I=>ie$1(s,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,{icon:s.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]),_:2},1032,["color","onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${s.id}&type=world`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),he$1.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" No snippets found. Try modifying your search criteria. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]}),_:1},B,X$1)),$$1(ssrRenderComponent(X,{value:"Personal"},{default:withCtx((c$1,g,P$1,T)=>{if(g)g(`<div class="d-flex align-center mb-4" data-v-6fc203b4${T}>`),g(ssrRenderComponent(Fe,{modelValue:j.value,"onUpdate:modelValue":s=>j.value=s,"prepend-inner-icon":"mdi-magnify",label:"Search in my snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,P$1,T)),g(ssrRenderComponent(at$1,{modelValue:U$1.value,"onUpdate:modelValue":s=>U$1.value=s,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,P$1,T)),g("</div>"),g(ssrRenderComponent(x$2,null,{default:withCtx((s,x,I,oe)=>{if(x)x("<!--[-->"),ssrRenderList(be.value,(t,S)=>{x(ssrRenderComponent(A,{key:S,cols:"12",sm:"6",lg:"4"},{default:withCtx((te,J,W,ke)=>{if(J)J(ssrRenderComponent(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx((Ye,ee,me,fe)=>{if(ee)ee(ssrRenderComponent(C$1,{to:`/snippetsView?id=${t.id}&type=personal`,class:"text-decoration-none"},{default:withCtx((je,_,D,k)=>{if(_)_(ssrRenderComponent(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx((le,h,M,q)=>{if(h)h(ssrRenderComponent(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx((qe,ae,Ae,Ne)=>{if(ae)ae(ssrRenderComponent(re,{indeterminate:"",color:"primary"},null,Ae,Ne));else return [createVNode(re,{indeterminate:"",color:"primary"})]}),_:2},M,q));else return [createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]}),_:2},D,k));else return [createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]}),_:2},me,fe)),ee(ssrRenderComponent(r,{class:"text-h6 font-weight-bold"},{default:withCtx((je,_,D,k)=>{if(_)_(`${ssrInterpolate(t.title)}`);else return [createTextVNode(toDisplayString(t.title),1)]}),_:2},me,fe)),ee(ssrRenderComponent(C,null,{default:withCtx((je$1,_,D,k)=>{if(_)_(`<p class="text-body-1 mb-2" data-v-6fc203b4${k}>${ssrInterpolate(t.description)}</p>`),_(ssrRenderComponent(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx((le,h,M,q)=>{if(h)h(`${ssrInterpolate(t.framework)}`);else return [createTextVNode(toDisplayString(t.framework),1)]}),_:2},D,k)),_(`<div class="d-flex align-center text-grey" data-v-6fc203b4${k}>`),_(ssrRenderComponent($,{size:"24",class:"mr-2"},{default:withCtx((le,h,M,q)=>{if(h)h(ssrRenderComponent(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"},null,M,q));else return [createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]}),_:2},D,k)),_(`<span data-v-6fc203b4${k}>${ssrInterpolate(t.username)}</span>`),_(ssrRenderComponent(c,null,null,D,k)),_(ssrRenderComponent(L,{size:"small",class:"mr-1"},{default:withCtx((le,h,M,q)=>{if(h)h("mdi-calendar");else return [createTextVNode("mdi-calendar")]}),_:2},D,k)),_(`<span class="text-caption" data-v-6fc203b4${k}>${ssrInterpolate(Y(t))}</span></div>`);else return [createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]}),_:2},me,fe)),ee(ssrRenderComponent(P,null,null,me,fe)),ee(ssrRenderComponent(f,null,{default:withCtx((je,_,D,k)=>{if(_)_(ssrRenderComponent(We,{variant:"text",color:"error",onClick:le=>ze$1(t)},{default:withCtx((le,h,M,q)=>{if(h)h(ssrRenderComponent(L,null,{default:withCtx((qe,ae,Ae,Ne)=>{if(ae)ae("mdi-delete");else return [createTextVNode("mdi-delete")]}),_:2},M,q));else return [createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]}),_:2},D,k)),_(ssrRenderComponent(c,null,null,D,k)),_(ssrRenderComponent(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=personal`},{default:withCtx((le,h,M,q)=>{if(h)h(" View Details "),h(ssrRenderComponent(L,{end:""},{default:withCtx((qe,ae,Ae,Ne)=>{if(ae)ae("mdi-arrow-right");else return [createTextVNode("mdi-arrow-right")]}),_:2},M,q));else return [createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]}),_:2},D,k));else return [createVNode(We,{variant:"text",color:"error",onClick:withModifiers(le=>ze$1(t),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=personal`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]}),_:2},me,fe));else return [createVNode(C$1,{to:`/snippetsView?id=${t.id}&type=personal`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"error",onClick:withModifiers(je=>ze$1(t),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=personal`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]}),_:2},W,ke));else return [createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${t.id}&type=personal`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"error",onClick:withModifiers(Ye=>ze$1(t),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=personal`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]}),_:2},I,oe));}),x("<!--]-->"),be.value.length===0?x(ssrRenderComponent(A,{cols:"12"},{default:withCtx((t,S,te,J)=>{if(S)S(ssrRenderComponent(Te,{type:"info",variant:"tonal"},{default:withCtx((W,ke,Ye,ee)=>{if(ke)ke(" You don&#39;t have any snippets yet. Create a new one! ");else return [createTextVNode(" You don't have any snippets yet. Create a new one! ")]}),_:1},te,J));else return [createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any snippets yet. Create a new one! ")]),_:1})]}),_:1},I,oe)):x("<!---->");else return [(openBlock(true),createBlock(Fragment,null,renderList(be.value,(t,S)=>(openBlock(),createBlock(A,{key:S,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${t.id}&type=personal`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"error",onClick:withModifiers(te=>ze$1(t),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=personal`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),be.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any snippets yet. Create a new one! ")]),_:1})]),_:1})):createCommentVNode("",true)]}),_:1},P$1,T));else return [createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":s=>j.value=s,"prepend-inner-icon":"mdi-magnify",label:"Search in my snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":s=>U$1.value=s,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(be.value,(s,x)=>(openBlock(),createBlock(A,{key:x,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${s.id}&type=personal`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:s.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(s.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(s.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(s.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(s.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(s)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"error",onClick:withModifiers(I=>ze$1(s),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${s.id}&type=personal`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),be.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any snippets yet. Create a new one! ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]}),_:1},B,X$1)),$$1(ssrRenderComponent(X,{value:"Favorites"},{default:withCtx((c$1,g,P$1,T)=>{if(g)g(`<div class="d-flex align-center mb-4" data-v-6fc203b4${T}>`),g(ssrRenderComponent(Fe,{modelValue:j.value,"onUpdate:modelValue":s=>j.value=s,"prepend-inner-icon":"mdi-magnify",label:"Search in my favorites",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,P$1,T)),g(ssrRenderComponent(at$1,{modelValue:U$1.value,"onUpdate:modelValue":s=>U$1.value=s,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,P$1,T)),g("</div>"),g(ssrRenderComponent(x$2,null,{default:withCtx((s,x,I,oe)=>{if(x)x("<!--[-->"),ssrRenderList(we.value,(t,S)=>{x(ssrRenderComponent(A,{key:S,cols:"12",sm:"6",lg:"4"},{default:withCtx((te,J,W,ke)=>{if(J)J(ssrRenderComponent(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx((Ye,ee,me,fe)=>{if(ee)ee(ssrRenderComponent(C$1,{to:`/snippetsView?id=${t.id}&type=${t.sourceType||"world"}`,class:"text-decoration-none"},{default:withCtx((je,_,D,k)=>{if(_)_(ssrRenderComponent(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx((le,h,M,q)=>{if(h)h(ssrRenderComponent(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx((qe,ae,Ae,Ne)=>{if(ae)ae(ssrRenderComponent(re,{indeterminate:"",color:"primary"},null,Ae,Ne));else return [createVNode(re,{indeterminate:"",color:"primary"})]}),_:2},M,q));else return [createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]}),_:2},D,k));else return [createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]}),_:2},me,fe)),ee(ssrRenderComponent(r,{class:"text-h6 font-weight-bold"},{default:withCtx((je,_,D,k)=>{if(_)_(`${ssrInterpolate(t.title)}`);else return [createTextVNode(toDisplayString(t.title),1)]}),_:2},me,fe)),ee(ssrRenderComponent(C,null,{default:withCtx((je$1,_,D,k)=>{if(_)_(`<p class="text-body-1 mb-2" data-v-6fc203b4${k}>${ssrInterpolate(t.description)}</p>`),_(ssrRenderComponent(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx((le,h,M,q)=>{if(h)h(`${ssrInterpolate(t.framework)}`);else return [createTextVNode(toDisplayString(t.framework),1)]}),_:2},D,k)),_(`<div class="d-flex align-center text-grey" data-v-6fc203b4${k}>`),_(ssrRenderComponent($,{size:"24",class:"mr-2"},{default:withCtx((le,h,M,q)=>{if(h)h(ssrRenderComponent(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"},null,M,q));else return [createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]}),_:2},D,k)),_(`<span data-v-6fc203b4${k}>${ssrInterpolate(t.username)}</span>`),_(ssrRenderComponent(c,null,null,D,k)),_(ssrRenderComponent(L,{size:"small",class:"mr-1"},{default:withCtx((le,h,M,q)=>{if(h)h("mdi-calendar");else return [createTextVNode("mdi-calendar")]}),_:2},D,k)),_(`<span class="text-caption" data-v-6fc203b4${k}>${ssrInterpolate(Y(t))}</span></div>`);else return [createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]}),_:2},me,fe)),ee(ssrRenderComponent(P,null,null,me,fe)),ee(ssrRenderComponent(f,null,{default:withCtx((je,_,D,k)=>{if(_)_(ssrRenderComponent(We,{variant:"text",color:"yellow",onClick:le=>ie$1(t,"world")},{default:withCtx((le,h,M,q)=>{if(h)h(ssrRenderComponent(L,null,{default:withCtx((qe,ae,Ae,Ne)=>{if(ae)ae("mdi-bookmark");else return [createTextVNode("mdi-bookmark")]}),_:2},M,q));else return [createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]}),_:2},D,k)),_(ssrRenderComponent(c,null,null,D,k)),_(ssrRenderComponent(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=${t.sourceType||"world"}`},{default:withCtx((le,h,M,q)=>{if(h)h(" View Details "),h(ssrRenderComponent(L,{end:""},{default:withCtx((qe,ae,Ae,Ne)=>{if(ae)ae("mdi-arrow-right");else return [createTextVNode("mdi-arrow-right")]}),_:2},M,q));else return [createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]}),_:2},D,k));else return [createVNode(We,{variant:"text",color:"yellow",onClick:withModifiers(le=>ie$1(t,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=${t.sourceType||"world"}`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]}),_:2},me,fe));else return [createVNode(C$1,{to:`/snippetsView?id=${t.id}&type=${t.sourceType||"world"}`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"yellow",onClick:withModifiers(je=>ie$1(t,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=${t.sourceType||"world"}`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]}),_:2},W,ke));else return [createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${t.id}&type=${t.sourceType||"world"}`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"yellow",onClick:withModifiers(Ye=>ie$1(t,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=${t.sourceType||"world"}`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]}),_:2},I,oe));}),x("<!--]-->"),we.value.length===0?x(ssrRenderComponent(A,{cols:"12"},{default:withCtx((t,S,te,J)=>{if(S)S(ssrRenderComponent(Te,{type:"info",variant:"tonal"},{default:withCtx((W,ke,Ye,ee)=>{if(ke)ke(" You don&#39;t have any favorite snippets yet. ");else return [createTextVNode(" You don't have any favorite snippets yet. ")]}),_:1},te,J));else return [createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any favorite snippets yet. ")]),_:1})]}),_:1},I,oe)):x("<!---->");else return [(openBlock(true),createBlock(Fragment,null,renderList(we.value,(t,S)=>(openBlock(),createBlock(A,{key:S,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${t.id}&type=${t.sourceType||"world"}`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:t.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(t.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(t.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(t.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(t)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"yellow",onClick:withModifiers(te=>ie$1(t,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${t.id}&type=${t.sourceType||"world"}`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),we.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any favorite snippets yet. ")]),_:1})]),_:1})):createCommentVNode("",true)]}),_:1},P$1,T));else return [createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":s=>j.value=s,"prepend-inner-icon":"mdi-magnify",label:"Search in my favorites",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":s=>U$1.value=s,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(we.value,(s,x)=>(openBlock(),createBlock(A,{key:x,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${s.id}&type=${s.sourceType||"world"}`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:s.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(s.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(s.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(s.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(s.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(s)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"yellow",onClick:withModifiers(I=>ie$1(s,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${s.id}&type=${s.sourceType||"world"}`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),we.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any favorite snippets yet. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]}),_:1},B,X$1));else return [createVNode(X,{value:"World"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":c=>j.value=c,"prepend-inner-icon":"mdi-magnify",label:"Search snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":c=>U$1.value=c,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(he$1.value,(c$1,g)=>(openBlock(),createBlock(A,{key:g,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${c$1.id}&type=world`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:c$1.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(c$1.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(c$1.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(c$1.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(c$1.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(c$1)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:c$1.isFavorite?"yellow":"",onClick:withModifiers(P=>ie$1(c$1,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,{icon:c$1.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]),_:2},1032,["color","onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${c$1.id}&type=world`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),he$1.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" No snippets found. Try modifying your search criteria. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1}),createVNode(X,{value:"Personal"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":c=>j.value=c,"prepend-inner-icon":"mdi-magnify",label:"Search in my snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":c=>U$1.value=c,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(be.value,(c$1,g)=>(openBlock(),createBlock(A,{key:g,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${c$1.id}&type=personal`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:c$1.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(c$1.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(c$1.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(c$1.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(c$1.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(c$1)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"error",onClick:withModifiers(P=>ze$1(c$1),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${c$1.id}&type=personal`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),be.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any snippets yet. Create a new one! ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1}),createVNode(X,{value:"Favorites"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":c=>j.value=c,"prepend-inner-icon":"mdi-magnify",label:"Search in my favorites",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":c=>U$1.value=c,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(we.value,(c$1,g)=>(openBlock(),createBlock(A,{key:g,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${c$1.id}&type=${c$1.sourceType||"world"}`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:c$1.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(c$1.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(c$1.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(c$1.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(c$1.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(c$1)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"yellow",onClick:withModifiers(P=>ie$1(c$1,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${c$1.id}&type=${c$1.sourceType||"world"}`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),we.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any favorite snippets yet. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1})]}),_:1},Ce,De));else return [createVNode(oe,{modelValue:pe.value,"onUpdate:modelValue":f=>pe.value=f,color:"primary","align-tabs":"center",class:"mb-6"},{default:withCtx(()=>[createVNode(at,{value:"World",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-earth")]),_:1}),createTextVNode(" Public Snippets ")]),_:1}),createVNode(at,{value:"Personal",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-account")]),_:1}),createTextVNode(" My Snippets ")]),_:1}),createVNode(at,{value:"Favorites",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-star")]),_:1}),createTextVNode(" Favorites ")]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(ie,{modelValue:pe.value,"onUpdate:modelValue":f=>pe.value=f},{default:withCtx(()=>[createVNode(X,{value:"World"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":f=>j.value=f,"prepend-inner-icon":"mdi-magnify",label:"Search snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":f=>U$1.value=f,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(he$1.value,(f$1,$$1)=>(openBlock(),createBlock(A,{key:$$1,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${f$1.id}&type=world`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:f$1.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(f$1.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(f$1.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(f$1.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(f$1.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(f$1)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:f$1.isFavorite?"yellow":"",onClick:withModifiers(B=>ie$1(f$1,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,{icon:f$1.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]),_:2},1032,["color","onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${f$1.id}&type=world`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),he$1.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" No snippets found. Try modifying your search criteria. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1}),createVNode(X,{value:"Personal"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":f=>j.value=f,"prepend-inner-icon":"mdi-magnify",label:"Search in my snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":f=>U$1.value=f,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(be.value,(f$1,$$1)=>(openBlock(),createBlock(A,{key:$$1,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${f$1.id}&type=personal`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:f$1.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(f$1.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(f$1.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(f$1.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(f$1.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(f$1)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"error",onClick:withModifiers(B=>ze$1(f$1),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${f$1.id}&type=personal`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),be.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any snippets yet. Create a new one! ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1}),createVNode(X,{value:"Favorites"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":f=>j.value=f,"prepend-inner-icon":"mdi-magnify",label:"Search in my favorites",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":f=>U$1.value=f,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(we.value,(f$1,$$1)=>(openBlock(),createBlock(A,{key:$$1,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${f$1.id}&type=${f$1.sourceType||"world"}`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:f$1.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(f$1.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(f$1.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(f$1.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(f$1.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(f$1)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"yellow",onClick:withModifiers(B=>ie$1(f$1,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${f$1.id}&type=${f$1.sourceType||"world"}`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),we.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any favorite snippets yet. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"])]}),_:1},Re,Je));else return [createVNode(x$1,{fluid:""},{default:withCtx(()=>[createVNode(oe,{modelValue:pe.value,"onUpdate:modelValue":v=>pe.value=v,color:"primary","align-tabs":"center",class:"mb-6"},{default:withCtx(()=>[createVNode(at,{value:"World",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-earth")]),_:1}),createTextVNode(" Public Snippets ")]),_:1}),createVNode(at,{value:"Personal",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-account")]),_:1}),createTextVNode(" My Snippets ")]),_:1}),createVNode(at,{value:"Favorites",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-star")]),_:1}),createTextVNode(" Favorites ")]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(ie,{modelValue:pe.value,"onUpdate:modelValue":v=>pe.value=v},{default:withCtx(()=>[createVNode(X,{value:"World"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":v=>j.value=v,"prepend-inner-icon":"mdi-magnify",label:"Search snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":v=>U$1.value=v,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(he$1.value,(v,re$1)=>(openBlock(),createBlock(A,{key:re$1,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${v.id}&type=world`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:v.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(v.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(v.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(v.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(v.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(v)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:v.isFavorite?"yellow":"",onClick:withModifiers(Ce=>ie$1(v,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,{icon:v.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]),_:2},1032,["color","onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${v.id}&type=world`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),he$1.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" No snippets found. Try modifying your search criteria. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1}),createVNode(X,{value:"Personal"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":v=>j.value=v,"prepend-inner-icon":"mdi-magnify",label:"Search in my snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":v=>U$1.value=v,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(be.value,(v,re$1)=>(openBlock(),createBlock(A,{key:re$1,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${v.id}&type=personal`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:v.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(v.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(v.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(v.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(v.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(v)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"error",onClick:withModifiers(Ce=>ze$1(v),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${v.id}&type=personal`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),be.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any snippets yet. Create a new one! ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1}),createVNode(X,{value:"Favorites"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":v=>j.value=v,"prepend-inner-icon":"mdi-magnify",label:"Search in my favorites",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":v=>U$1.value=v,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(we.value,(v,re$1)=>(openBlock(),createBlock(A,{key:re$1,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${v.id}&type=${v.sourceType||"world"}`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:v.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(v.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(v.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(v.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(v.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(v)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"yellow",onClick:withModifiers(Ce=>ie$1(v,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${v.id}&type=${v.sourceType||"world"}`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),we.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any favorite snippets yet. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"])]),_:1})]}),_:1},Xe,Ze)),Qe(ssrRenderComponent(U,{modelValue:ge.value,"onUpdate:modelValue":u=>ge.value=u,"max-width":"700",persistent:""},{default:withCtx((u,xe,Re$1,Je)=>{if(xe)xe(ssrRenderComponent(qe,null,{default:withCtx((v,re,Ce,De)=>{if(re)re(ssrRenderComponent(se,{color:"primary",class:"text-white"},{default:withCtx((f,$,B,X)=>{if($)$(ssrRenderComponent(b,null,{default:withCtx((c,g,P,T)=>{if(g)g("Create a New Snippet");else return [createTextVNode("Create a New Snippet")]}),_:1},B,X)),$(ssrRenderComponent(c,null,null,B,X)),$(ssrRenderComponent(We,{icon:"",onClick:c=>ge.value=false},{default:withCtx((c,g,P,T)=>{if(g)g(ssrRenderComponent(L,null,{default:withCtx((s,x,I,oe)=>{if(x)x("mdi-close");else return [createTextVNode("mdi-close")]}),_:1},P,T));else return [createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-close")]),_:1})]}),_:1},B,X));else return [createVNode(b,null,{default:withCtx(()=>[createTextVNode("Create a New Snippet")]),_:1}),createVNode(c),createVNode(We,{icon:"",onClick:c=>ge.value=false},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-close")]),_:1})]),_:1},8,["onClick"])]}),_:1},Ce,De)),re(ssrRenderComponent(C,{class:"pt-4"},{default:withCtx((f,$,B,X)=>{if($)$(ssrRenderComponent(N,null,{default:withCtx((c,g,P,T)=>{if(g)g(ssrRenderComponent(x$2,null,{default:withCtx((s,x,I,oe)=>{if(x)x(ssrRenderComponent(A,{cols:"12"},{default:withCtx((t,S,te,J)=>{if(S)S(`<div class="d-flex gap-4" data-v-6fc203b4${J}>`),S(ssrRenderComponent(ye,{modelValue:d.value.publishWorld,"onUpdate:modelValue":W=>d.value.publishWorld=W,label:"Publish Globally",color:"primary","hide-details":""},null,te,J)),S(ssrRenderComponent(ye,{modelValue:d.value.publishPersonal,"onUpdate:modelValue":W=>d.value.publishPersonal=W,label:"Save as Personal",color:"primary","hide-details":""},null,te,J)),S("</div>");else return [createVNode("div",{class:"d-flex gap-4"},[createVNode(ye,{modelValue:d.value.publishWorld,"onUpdate:modelValue":W=>d.value.publishWorld=W,label:"Publish Globally",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"]),createVNode(ye,{modelValue:d.value.publishPersonal,"onUpdate:modelValue":W=>d.value.publishPersonal=W,label:"Save as Personal",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"])])]}),_:1},I,oe)),x(ssrRenderComponent(A,{cols:"12"},{default:withCtx((t,S,te,J)=>{if(S)S(ssrRenderComponent(Fe,{modelValue:d.value.title,"onUpdate:modelValue":W=>d.value.title=W,label:"Title",variant:"outlined",placeholder:"Enter snippet title","prepend-inner-icon":"mdi-format-title"},null,te,J));else return [createVNode(Fe,{modelValue:d.value.title,"onUpdate:modelValue":W=>d.value.title=W,label:"Title",variant:"outlined",placeholder:"Enter snippet title","prepend-inner-icon":"mdi-format-title"},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},I,oe)),x(ssrRenderComponent(A,{cols:"12"},{default:withCtx((t,S,te,J)=>{if(S)S(ssrRenderComponent(ze,{modelValue:d.value.description,"onUpdate:modelValue":W=>d.value.description=W,label:"Description",variant:"outlined",rows:"3",placeholder:"Describe your snippet","prepend-inner-icon":"mdi-text"},null,te,J));else return [createVNode(ze,{modelValue:d.value.description,"onUpdate:modelValue":W=>d.value.description=W,label:"Description",variant:"outlined",rows:"3",placeholder:"Describe your snippet","prepend-inner-icon":"mdi-text"},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},I,oe)),x(ssrRenderComponent(A,{cols:"12",md:"6"},{default:withCtx((t,S,te,J)=>{if(S)S(ssrRenderComponent(at$1,{modelValue:d.value.framework,"onUpdate:modelValue":W=>d.value.framework=W,items:["React","Vue.js 3","Nuxt 3","Angular","Nest.js"],label:"Framework",variant:"outlined","prepend-inner-icon":"mdi-code-tags"},null,te,J));else return [createVNode(at$1,{modelValue:d.value.framework,"onUpdate:modelValue":W=>d.value.framework=W,items:["React","Vue.js 3","Nuxt 3","Angular","Nest.js"],label:"Framework",variant:"outlined","prepend-inner-icon":"mdi-code-tags"},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},I,oe)),x(ssrRenderComponent(A,{cols:"12",md:"6"},{default:withCtx((t,S,te,J)=>{if(S)S(ssrRenderComponent(Re,{modelValue:d.value.imgFile,"onUpdate:modelValue":W=>d.value.imgFile=W,label:"Cover Image",variant:"outlined","prepend-icon":"mdi-image",accept:"image/*","show-size":""},null,te,J));else return [createVNode(Re,{modelValue:d.value.imgFile,"onUpdate:modelValue":W=>d.value.imgFile=W,label:"Cover Image",variant:"outlined","prepend-icon":"mdi-image",accept:"image/*","show-size":""},null,8,["modelValue","onUpdate:modelValue"])]}),_:1},I,oe));else return [createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"d-flex gap-4"},[createVNode(ye,{modelValue:d.value.publishWorld,"onUpdate:modelValue":t=>d.value.publishWorld=t,label:"Publish Globally",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"]),createVNode(ye,{modelValue:d.value.publishPersonal,"onUpdate:modelValue":t=>d.value.publishPersonal=t,label:"Save as Personal",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"])])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(Fe,{modelValue:d.value.title,"onUpdate:modelValue":t=>d.value.title=t,label:"Title",variant:"outlined",placeholder:"Enter snippet title","prepend-inner-icon":"mdi-format-title"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:d.value.description,"onUpdate:modelValue":t=>d.value.description=t,label:"Description",variant:"outlined",rows:"3",placeholder:"Describe your snippet","prepend-inner-icon":"mdi-text"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(at$1,{modelValue:d.value.framework,"onUpdate:modelValue":t=>d.value.framework=t,items:["React","Vue.js 3","Nuxt 3","Angular","Nest.js"],label:"Framework",variant:"outlined","prepend-inner-icon":"mdi-code-tags"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Re,{modelValue:d.value.imgFile,"onUpdate:modelValue":t=>d.value.imgFile=t,label:"Cover Image",variant:"outlined","prepend-icon":"mdi-image",accept:"image/*","show-size":""},null,8,["modelValue","onUpdate:modelValue"])]),_:1})]}),_:1},P,T));else return [createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"d-flex gap-4"},[createVNode(ye,{modelValue:d.value.publishWorld,"onUpdate:modelValue":s=>d.value.publishWorld=s,label:"Publish Globally",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"]),createVNode(ye,{modelValue:d.value.publishPersonal,"onUpdate:modelValue":s=>d.value.publishPersonal=s,label:"Save as Personal",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"])])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(Fe,{modelValue:d.value.title,"onUpdate:modelValue":s=>d.value.title=s,label:"Title",variant:"outlined",placeholder:"Enter snippet title","prepend-inner-icon":"mdi-format-title"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:d.value.description,"onUpdate:modelValue":s=>d.value.description=s,label:"Description",variant:"outlined",rows:"3",placeholder:"Describe your snippet","prepend-inner-icon":"mdi-text"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(at$1,{modelValue:d.value.framework,"onUpdate:modelValue":s=>d.value.framework=s,items:["React","Vue.js 3","Nuxt 3","Angular","Nest.js"],label:"Framework",variant:"outlined","prepend-inner-icon":"mdi-code-tags"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Re,{modelValue:d.value.imgFile,"onUpdate:modelValue":s=>d.value.imgFile=s,label:"Cover Image",variant:"outlined","prepend-icon":"mdi-image",accept:"image/*","show-size":""},null,8,["modelValue","onUpdate:modelValue"])]),_:1})]),_:1})]}),_:1},B,X));else return [createVNode(N,null,{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"d-flex gap-4"},[createVNode(ye,{modelValue:d.value.publishWorld,"onUpdate:modelValue":c=>d.value.publishWorld=c,label:"Publish Globally",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"]),createVNode(ye,{modelValue:d.value.publishPersonal,"onUpdate:modelValue":c=>d.value.publishPersonal=c,label:"Save as Personal",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"])])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(Fe,{modelValue:d.value.title,"onUpdate:modelValue":c=>d.value.title=c,label:"Title",variant:"outlined",placeholder:"Enter snippet title","prepend-inner-icon":"mdi-format-title"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:d.value.description,"onUpdate:modelValue":c=>d.value.description=c,label:"Description",variant:"outlined",rows:"3",placeholder:"Describe your snippet","prepend-inner-icon":"mdi-text"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(at$1,{modelValue:d.value.framework,"onUpdate:modelValue":c=>d.value.framework=c,items:["React","Vue.js 3","Nuxt 3","Angular","Nest.js"],label:"Framework",variant:"outlined","prepend-inner-icon":"mdi-code-tags"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Re,{modelValue:d.value.imgFile,"onUpdate:modelValue":c=>d.value.imgFile=c,label:"Cover Image",variant:"outlined","prepend-icon":"mdi-image",accept:"image/*","show-size":""},null,8,["modelValue","onUpdate:modelValue"])]),_:1})]),_:1})]),_:1})]}),_:1},Ce,De)),re(ssrRenderComponent(f,{class:"pa-4"},{default:withCtx((f,$,B,X)=>{if($)$(ssrRenderComponent(c,null,null,B,X)),$(ssrRenderComponent(We,{variant:"outlined",onClick:c=>ge.value=false,class:"mr-2"},{default:withCtx((c,g,P,T)=>{if(g)g(" Cancel ");else return [createTextVNode(" Cancel ")]}),_:1},B,X)),$(ssrRenderComponent(We,{color:"primary",onClick:Be,loading:Ge.value},{default:withCtx((c,g,P,T)=>{if(g)g(" Create Snippet "),g(ssrRenderComponent(L,{end:""},{default:withCtx((s,x,I,oe)=>{if(x)x("mdi-check");else return [createTextVNode("mdi-check")]}),_:1},P,T));else return [createTextVNode(" Create Snippet "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-check")]),_:1})]}),_:1},B,X));else return [createVNode(c),createVNode(We,{variant:"outlined",onClick:c=>ge.value=false,class:"mr-2"},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"]),createVNode(We,{color:"primary",onClick:Be,loading:Ge.value},{default:withCtx(()=>[createTextVNode(" Create Snippet "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-check")]),_:1})]),_:1},8,["loading"])]}),_:1},Ce,De));else return [createVNode(se,{color:"primary",class:"text-white"},{default:withCtx(()=>[createVNode(b,null,{default:withCtx(()=>[createTextVNode("Create a New Snippet")]),_:1}),createVNode(c),createVNode(We,{icon:"",onClick:f=>ge.value=false},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-close")]),_:1})]),_:1},8,["onClick"])]),_:1}),createVNode(C,{class:"pt-4"},{default:withCtx(()=>[createVNode(N,null,{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"d-flex gap-4"},[createVNode(ye,{modelValue:d.value.publishWorld,"onUpdate:modelValue":f=>d.value.publishWorld=f,label:"Publish Globally",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"]),createVNode(ye,{modelValue:d.value.publishPersonal,"onUpdate:modelValue":f=>d.value.publishPersonal=f,label:"Save as Personal",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"])])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(Fe,{modelValue:d.value.title,"onUpdate:modelValue":f=>d.value.title=f,label:"Title",variant:"outlined",placeholder:"Enter snippet title","prepend-inner-icon":"mdi-format-title"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:d.value.description,"onUpdate:modelValue":f=>d.value.description=f,label:"Description",variant:"outlined",rows:"3",placeholder:"Describe your snippet","prepend-inner-icon":"mdi-text"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(at$1,{modelValue:d.value.framework,"onUpdate:modelValue":f=>d.value.framework=f,items:["React","Vue.js 3","Nuxt 3","Angular","Nest.js"],label:"Framework",variant:"outlined","prepend-inner-icon":"mdi-code-tags"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Re,{modelValue:d.value.imgFile,"onUpdate:modelValue":f=>d.value.imgFile=f,label:"Cover Image",variant:"outlined","prepend-icon":"mdi-image",accept:"image/*","show-size":""},null,8,["modelValue","onUpdate:modelValue"])]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(f,{class:"pa-4"},{default:withCtx(()=>[createVNode(c),createVNode(We,{variant:"outlined",onClick:f=>ge.value=false,class:"mr-2"},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"]),createVNode(We,{color:"primary",onClick:Be,loading:Ge.value},{default:withCtx(()=>[createTextVNode(" Create Snippet "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-check")]),_:1})]),_:1},8,["loading"])]),_:1})]}),_:1},Re$1,Je));else return [createVNode(qe,null,{default:withCtx(()=>[createVNode(se,{color:"primary",class:"text-white"},{default:withCtx(()=>[createVNode(b,null,{default:withCtx(()=>[createTextVNode("Create a New Snippet")]),_:1}),createVNode(c),createVNode(We,{icon:"",onClick:v=>ge.value=false},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-close")]),_:1})]),_:1},8,["onClick"])]),_:1}),createVNode(C,{class:"pt-4"},{default:withCtx(()=>[createVNode(N,null,{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"d-flex gap-4"},[createVNode(ye,{modelValue:d.value.publishWorld,"onUpdate:modelValue":v=>d.value.publishWorld=v,label:"Publish Globally",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"]),createVNode(ye,{modelValue:d.value.publishPersonal,"onUpdate:modelValue":v=>d.value.publishPersonal=v,label:"Save as Personal",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"])])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(Fe,{modelValue:d.value.title,"onUpdate:modelValue":v=>d.value.title=v,label:"Title",variant:"outlined",placeholder:"Enter snippet title","prepend-inner-icon":"mdi-format-title"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:d.value.description,"onUpdate:modelValue":v=>d.value.description=v,label:"Description",variant:"outlined",rows:"3",placeholder:"Describe your snippet","prepend-inner-icon":"mdi-text"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(at$1,{modelValue:d.value.framework,"onUpdate:modelValue":v=>d.value.framework=v,items:["React","Vue.js 3","Nuxt 3","Angular","Nest.js"],label:"Framework",variant:"outlined","prepend-inner-icon":"mdi-code-tags"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Re,{modelValue:d.value.imgFile,"onUpdate:modelValue":v=>d.value.imgFile=v,label:"Cover Image",variant:"outlined","prepend-icon":"mdi-image",accept:"image/*","show-size":""},null,8,["modelValue","onUpdate:modelValue"])]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(f,{class:"pa-4"},{default:withCtx(()=>[createVNode(c),createVNode(We,{variant:"outlined",onClick:v=>ge.value=false,class:"mr-2"},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"]),createVNode(We,{color:"primary",onClick:Be,loading:Ge.value},{default:withCtx(()=>[createTextVNode(" Create Snippet "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-check")]),_:1})]),_:1},8,["loading"])]),_:1})]),_:1})]}),_:1},Xe,Ze)),Qe(ssrRenderComponent(U,{modelValue:Se.value,"onUpdate:modelValue":u=>Se.value=u,"max-width":"400"},{default:withCtx((u,xe,Re,Je)=>{if(xe)xe(ssrRenderComponent(qe,null,{default:withCtx((v,re,Ce,De)=>{if(re)re(ssrRenderComponent(r,{class:"bg-error text-white"},{default:withCtx((f,$,B,X)=>{if($)$(ssrRenderComponent(L,{start:""},{default:withCtx((c,g,P,T)=>{if(g)g("mdi-alert-circle");else return [createTextVNode("mdi-alert-circle")]}),_:1},B,X)),$(" Confirmation de suppression ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createTextVNode(" Confirmation de suppression ")]}),_:1},Ce,De)),re(ssrRenderComponent(C,{class:"pt-4"},{default:withCtx((f,$,B,X)=>{if($)$(`<p data-v-6fc203b4${X}>Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.</p>`);else return [createVNode("p",null,"Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.")]}),_:1},Ce,De)),re(ssrRenderComponent(f,null,{default:withCtx((f,$,B,X)=>{if($)$(ssrRenderComponent(c,null,null,B,X)),$(ssrRenderComponent(We,{variant:"text",onClick:c=>Se.value=false},{default:withCtx((c,g,P,T)=>{if(g)g("Annuler");else return [createTextVNode("Annuler")]}),_:1},B,X)),$(ssrRenderComponent(We,{color:"error",onClick:He},{default:withCtx((c,g,P,T)=>{if(g)g(ssrRenderComponent(L,{start:""},{default:withCtx((s,x,I,oe)=>{if(x)x("mdi-delete");else return [createTextVNode("mdi-delete")]}),_:1},P,T)),g(" Supprimer ");else return [createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Supprimer ")]}),_:1},B,X));else return [createVNode(c),createVNode(We,{variant:"text",onClick:c=>Se.value=false},{default:withCtx(()=>[createTextVNode("Annuler")]),_:1},8,["onClick"]),createVNode(We,{color:"error",onClick:He},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Supprimer ")]),_:1})]}),_:1},Ce,De));else return [createVNode(r,{class:"bg-error text-white"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createTextVNode(" Confirmation de suppression ")]),_:1}),createVNode(C,{class:"pt-4"},{default:withCtx(()=>[createVNode("p",null,"Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.")]),_:1}),createVNode(f,null,{default:withCtx(()=>[createVNode(c),createVNode(We,{variant:"text",onClick:f=>Se.value=false},{default:withCtx(()=>[createTextVNode("Annuler")]),_:1},8,["onClick"]),createVNode(We,{color:"error",onClick:He},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Supprimer ")]),_:1})]),_:1})]}),_:1},Re,Je));else return [createVNode(qe,null,{default:withCtx(()=>[createVNode(r,{class:"bg-error text-white"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createTextVNode(" Confirmation de suppression ")]),_:1}),createVNode(C,{class:"pt-4"},{default:withCtx(()=>[createVNode("p",null,"Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.")]),_:1}),createVNode(f,null,{default:withCtx(()=>[createVNode(c),createVNode(We,{variant:"text",onClick:v=>Se.value=false},{default:withCtx(()=>[createTextVNode("Annuler")]),_:1},8,["onClick"]),createVNode(We,{color:"error",onClick:He},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Supprimer ")]),_:1})]),_:1})]),_:1})]}),_:1},Xe,Ze)),Qe(ssrRenderComponent(f$1,{modelValue:Fe$1.value,"onUpdate:modelValue":u=>Fe$1.value=u,text:Pe.value,color:Te$1.value,icon:dl.value,timeout:2e3},null,Xe,Ze));else return [createVNode(_,null,{default:withCtx(()=>[createVNode(x$1,{fluid:""},{default:withCtx(()=>[createVNode(oe,{modelValue:pe.value,"onUpdate:modelValue":u=>pe.value=u,color:"primary","align-tabs":"center",class:"mb-6"},{default:withCtx(()=>[createVNode(at,{value:"World",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-earth")]),_:1}),createTextVNode(" Public Snippets ")]),_:1}),createVNode(at,{value:"Personal",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-account")]),_:1}),createTextVNode(" My Snippets ")]),_:1}),createVNode(at,{value:"Favorites",class:"text-subtitle-1"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-star")]),_:1}),createTextVNode(" Favorites ")]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(ie,{modelValue:pe.value,"onUpdate:modelValue":u=>pe.value=u},{default:withCtx(()=>[createVNode(X,{value:"World"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":u=>j.value=u,"prepend-inner-icon":"mdi-magnify",label:"Search snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":u=>U$1.value=u,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(he$1.value,(u,xe)=>(openBlock(),createBlock(A,{key:xe,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${u.id}&type=world`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:u.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(u.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(u.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(u.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(u.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(u)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:u.isFavorite?"yellow":"",onClick:withModifiers(Re=>ie$1(u,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,{icon:u.isFavorite?"mdi-bookmark":"mdi-bookmark-outline"},null,8,["icon"])]),_:2},1032,["color","onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${u.id}&type=world`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),he$1.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" No snippets found. Try modifying your search criteria. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1}),createVNode(X,{value:"Personal"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":u=>j.value=u,"prepend-inner-icon":"mdi-magnify",label:"Search in my snippets",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":u=>U$1.value=u,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(be.value,(u,xe)=>(openBlock(),createBlock(A,{key:xe,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${u.id}&type=personal`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:u.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(u.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(u.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(u.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(u.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(u)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"error",onClick:withModifiers(Re=>ze$1(u),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${u.id}&type=personal`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),be.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any snippets yet. Create a new one! ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1}),createVNode(X,{value:"Favorites"},{default:withCtx(()=>[createVNode("div",{class:"d-flex align-center mb-4"},[createVNode(Fe,{modelValue:j.value,"onUpdate:modelValue":u=>j.value=u,"prepend-inner-icon":"mdi-magnify",label:"Search in my favorites",variant:"outlined",density:"comfortable","hide-details":"",class:"mr-4"},null,8,["modelValue","onUpdate:modelValue"]),createVNode(at$1,{modelValue:U$1.value,"onUpdate:modelValue":u=>U$1.value=u,items:["All","Vue.js 3","Nuxt 3","React","Angular","Svelte"],label:"Framework",variant:"outlined",density:"comfortable","hide-details":"",style:{"max-width":"200px"}},null,8,["modelValue","onUpdate:modelValue"])]),createVNode(x$2,null,{default:withCtx(()=>[(openBlock(true),createBlock(Fragment,null,renderList(we.value,(u,xe)=>(openBlock(),createBlock(A,{key:xe,cols:"12",sm:"6",lg:"4"},{default:withCtx(()=>[createVNode(qe,{class:"mx-auto snippet-card","max-width":"400",elevation:"2",hover:""},{default:withCtx(()=>[createVNode(C$1,{to:`/snippetsView?id=${u.id}&type=${u.sourceType||"world"}`,class:"text-decoration-none"},{default:withCtx(()=>[createVNode(he,{src:u.img||"/placeholder-image.jpg",height:"200",cover:"",class:"bg-grey-lighten-2"},{placeholder:withCtx(()=>[createVNode(x$2,{align:"center",justify:"center",class:"fill-height"},{default:withCtx(()=>[createVNode(re,{indeterminate:"",color:"primary"})]),_:1})]),_:2},1032,["src"])]),_:2},1032,["to"]),createVNode(r,{class:"text-h6 font-weight-bold"},{default:withCtx(()=>[createTextVNode(toDisplayString(u.title),1)]),_:2},1024),createVNode(C,null,{default:withCtx(()=>[createVNode("p",{class:"text-body-1 mb-2"},toDisplayString(u.description),1),createVNode(je,{color:"primary",variant:"outlined",size:"small",class:"mb-2"},{default:withCtx(()=>[createTextVNode(toDisplayString(u.framework),1)]),_:2},1024),createVNode("div",{class:"d-flex align-center text-grey"},[createVNode($,{size:"24",class:"mr-2"},{default:withCtx(()=>[createVNode(he,{src:"https://cdn.vuetifyjs.com/images/john.jpg",alt:"avatar"})]),_:1}),createVNode("span",null,toDisplayString(u.username),1),createVNode(c),createVNode(L,{size:"small",class:"mr-1"},{default:withCtx(()=>[createTextVNode("mdi-calendar")]),_:1}),createVNode("span",{class:"text-caption"},toDisplayString(Y(u)),1)])]),_:2},1024),createVNode(P),createVNode(f,null,{default:withCtx(()=>[createVNode(We,{variant:"text",color:"yellow",onClick:withModifiers(Re=>ie$1(u,"world"),["stop"])},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-bookmark")]),_:1})]),_:2},1032,["onClick"]),createVNode(c),createVNode(We,{variant:"text",color:"primary",to:`/snippetsView?id=${u.id}&type=${u.sourceType||"world"}`},{default:withCtx(()=>[createTextVNode(" View Details "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-arrow-right")]),_:1})]),_:2},1032,["to"])]),_:2},1024)]),_:2},1024)]),_:2},1024))),128)),we.value.length===0?(openBlock(),createBlock(A,{key:0,cols:"12"},{default:withCtx(()=>[createVNode(Te,{type:"info",variant:"tonal"},{default:withCtx(()=>[createTextVNode(" You don't have any favorite snippets yet. ")]),_:1})]),_:1})):createCommentVNode("",true)]),_:1})]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"])]),_:1})]),_:1}),createVNode(U,{modelValue:ge.value,"onUpdate:modelValue":u=>ge.value=u,"max-width":"700",persistent:""},{default:withCtx(()=>[createVNode(qe,null,{default:withCtx(()=>[createVNode(se,{color:"primary",class:"text-white"},{default:withCtx(()=>[createVNode(b,null,{default:withCtx(()=>[createTextVNode("Create a New Snippet")]),_:1}),createVNode(c),createVNode(We,{icon:"",onClick:u=>ge.value=false},{default:withCtx(()=>[createVNode(L,null,{default:withCtx(()=>[createTextVNode("mdi-close")]),_:1})]),_:1},8,["onClick"])]),_:1}),createVNode(C,{class:"pt-4"},{default:withCtx(()=>[createVNode(N,null,{default:withCtx(()=>[createVNode(x$2,null,{default:withCtx(()=>[createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode("div",{class:"d-flex gap-4"},[createVNode(ye,{modelValue:d.value.publishWorld,"onUpdate:modelValue":u=>d.value.publishWorld=u,label:"Publish Globally",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"]),createVNode(ye,{modelValue:d.value.publishPersonal,"onUpdate:modelValue":u=>d.value.publishPersonal=u,label:"Save as Personal",color:"primary","hide-details":""},null,8,["modelValue","onUpdate:modelValue"])])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(Fe,{modelValue:d.value.title,"onUpdate:modelValue":u=>d.value.title=u,label:"Title",variant:"outlined",placeholder:"Enter snippet title","prepend-inner-icon":"mdi-format-title"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12"},{default:withCtx(()=>[createVNode(ze,{modelValue:d.value.description,"onUpdate:modelValue":u=>d.value.description=u,label:"Description",variant:"outlined",rows:"3",placeholder:"Describe your snippet","prepend-inner-icon":"mdi-text"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(at$1,{modelValue:d.value.framework,"onUpdate:modelValue":u=>d.value.framework=u,items:["React","Vue.js 3","Nuxt 3","Angular","Nest.js"],label:"Framework",variant:"outlined","prepend-inner-icon":"mdi-code-tags"},null,8,["modelValue","onUpdate:modelValue"])]),_:1}),createVNode(A,{cols:"12",md:"6"},{default:withCtx(()=>[createVNode(Re,{modelValue:d.value.imgFile,"onUpdate:modelValue":u=>d.value.imgFile=u,label:"Cover Image",variant:"outlined","prepend-icon":"mdi-image",accept:"image/*","show-size":""},null,8,["modelValue","onUpdate:modelValue"])]),_:1})]),_:1})]),_:1})]),_:1}),createVNode(f,{class:"pa-4"},{default:withCtx(()=>[createVNode(c),createVNode(We,{variant:"outlined",onClick:u=>ge.value=false,class:"mr-2"},{default:withCtx(()=>[createTextVNode(" Cancel ")]),_:1},8,["onClick"]),createVNode(We,{color:"primary",onClick:Be,loading:Ge.value},{default:withCtx(()=>[createTextVNode(" Create Snippet "),createVNode(L,{end:""},{default:withCtx(()=>[createTextVNode("mdi-check")]),_:1})]),_:1},8,["loading"])]),_:1})]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(U,{modelValue:Se.value,"onUpdate:modelValue":u=>Se.value=u,"max-width":"400"},{default:withCtx(()=>[createVNode(qe,null,{default:withCtx(()=>[createVNode(r,{class:"bg-error text-white"},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-alert-circle")]),_:1}),createTextVNode(" Confirmation de suppression ")]),_:1}),createVNode(C,{class:"pt-4"},{default:withCtx(()=>[createVNode("p",null,"Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.")]),_:1}),createVNode(f,null,{default:withCtx(()=>[createVNode(c),createVNode(We,{variant:"text",onClick:u=>Se.value=false},{default:withCtx(()=>[createTextVNode("Annuler")]),_:1},8,["onClick"]),createVNode(We,{color:"error",onClick:He},{default:withCtx(()=>[createVNode(L,{start:""},{default:withCtx(()=>[createTextVNode("mdi-delete")]),_:1}),createTextVNode(" Supprimer ")]),_:1})]),_:1})]),_:1})]),_:1},8,["modelValue","onUpdate:modelValue"]),createVNode(f$1,{modelValue:Fe$1.value,"onUpdate:modelValue":u=>Fe$1.value=u,text:Pe.value,color:Te$1.value,icon:dl.value,timeout:2e3},null,8,["modelValue","onUpdate:modelValue","text","color","icon"])]}),_:1},Ue));}}});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "snippets",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useHead({
+      title: "Snippets",
+      meta: [
+        { name: "description", content: "Deploy and use numerous snippets across the world" },
+        { name: "robots", content: "index,follow" },
+        { name: "author", content: "DevUnity" },
+        { name: "keywords", content: "snippets, code snippets, code, snippets, deploy, use, across, world" },
+        { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+        { name: "og:title", content: "Snippets" },
+        { name: "og:description", content: "Deploy and use numerous snippets across the world" },
+        { name: "og:image", content: "/logo/devunity-title.png" }
+      ]
+    });
+    const userStore = useUserStore();
+    const tab = ref("World");
+    const addSnippets = ref(false);
+    ref(false);
+    const searchQuery = ref("");
+    const frameworkFilter = ref("All");
+    const isLoading = ref(false);
+    const snackbar = ref(false);
+    const snackbarText = ref("");
+    const snackbarColor = ref("success");
+    const snackbarIcon = ref("mdi-check-circle");
+    const deleteDialog = ref(false);
+    const snippetToDelete = ref(null);
+    const newSnippet = ref({
+      publishWorld: "",
+      publishPersonal: "",
+      title: "",
+      description: "",
+      username: "",
+      framework: "",
+      img: "",
+      imgFile: null,
+      date: "",
+      like: 0,
+      favoris: 0,
+      isFavorite: false
+    });
+    const filteredWorldSnippets = computed(() => {
+      let snippets = userStore.worldSnippets ? userStore.worldSnippets.slice(0, 30) : [];
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        snippets = snippets.filter(
+          (snippet) => {
+            var _a, _b;
+            return (((_a = snippet.title) == null ? void 0 : _a.toLowerCase()) || "").includes(query) || (((_b = snippet.description) == null ? void 0 : _b.toLowerCase()) || "").includes(query);
+          }
+        );
+      }
+      if (frameworkFilter.value !== "All") {
+        snippets = snippets.filter((snippet) => snippet.framework === frameworkFilter.value);
+      }
+      return snippets;
+    });
+    const filteredPersonalSnippets = computed(() => {
+      let snippets = userStore.personalSnippets ? userStore.personalSnippets.slice(0, 30) : [];
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        snippets = snippets.filter(
+          (snippet) => {
+            var _a, _b;
+            return (((_a = snippet.title) == null ? void 0 : _a.toLowerCase()) || "").includes(query) || (((_b = snippet.description) == null ? void 0 : _b.toLowerCase()) || "").includes(query);
+          }
+        );
+      }
+      if (frameworkFilter.value !== "All") {
+        snippets = snippets.filter((snippet) => snippet.framework === frameworkFilter.value);
+      }
+      return snippets;
+    });
+    const filteredFavoriteSnippets = computed(() => {
+      const favoriteIds = userStore.favoritesSnippets.map((fav) => fav.snippet_id);
+      let worldSnippets = userStore.worldSnippets ? userStore.worldSnippets.slice(0, 15) : [];
+      let personalSnippets = userStore.personalSnippets ? userStore.personalSnippets.slice(0, 15) : [];
+      worldSnippets = worldSnippets.filter((snippet) => favoriteIds.includes(snippet.id));
+      personalSnippets = personalSnippets.filter((snippet) => favoriteIds.includes(snippet.id));
+      let snippets = [...worldSnippets, ...personalSnippets];
+      snippets.forEach((snippet) => {
+        const enhancedSnippet = snippet;
+        enhancedSnippet.isFavorite = true;
+        if (worldSnippets.includes(snippet)) {
+          enhancedSnippet.sourceType = "world";
+        } else {
+          enhancedSnippet.sourceType = "personal";
+        }
+      });
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        snippets = snippets.filter(
+          (snippet) => {
+            var _a, _b;
+            return (((_a = snippet.title) == null ? void 0 : _a.toLowerCase()) || "").includes(query) || (((_b = snippet.description) == null ? void 0 : _b.toLowerCase()) || "").includes(query);
+          }
+        );
+      }
+      if (frameworkFilter.value !== "All") {
+        snippets = snippets.filter((snippet) => snippet.framework === frameworkFilter.value);
+      }
+      return snippets.slice(0, 30);
+    });
+    const sendSnippets = async () => {
+      try {
+        isLoading.value = true;
+        await userStore.addSnippets(
+          newSnippet.value.title,
+          newSnippet.value.description,
+          newSnippet.value.framework,
+          newSnippet.value.imgFile,
+          newSnippet.value.publishWorld,
+          newSnippet.value.publishPersonal
+        );
+        await userStore.loadSnippets();
+        addSnippets.value = false;
+        newSnippet.value = {
+          publishWorld: "",
+          publishPersonal: "",
+          title: "",
+          description: "",
+          username: "",
+          framework: "",
+          img: "",
+          imgFile: null,
+          date: "",
+          like: 0,
+          favoris: 0,
+          isFavorite: false
+        };
+        snackbarText.value = "Snippet créé avec succès";
+        snackbarColor.value = "success";
+        snackbar.value = true;
+      } catch (err) {
+        console.error("Error adding snippet:", err.message, err.stack);
+        snackbarText.value = "Erreur lors de la création du snippet";
+        snackbarColor.value = "error";
+        snackbar.value = true;
+      } finally {
+        isLoading.value = false;
+      }
+    };
+    const toggleFavorite = async (snippet, type) => {
+      snippet.isFavorite = !snippet.isFavorite;
+      try {
+        if (snippet.isFavorite) {
+          await userStore.addFavorite(snippet.id, type);
+          snackbarText.value = "Ajouté aux favoris";
+        } else {
+          await userStore.removeFavorite(snippet.id);
+          snackbarText.value = "Retiré des favoris";
+        }
+        snackbarColor.value = "success";
+        snackbar.value = true;
+        await userStore.loadSnippets();
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour des favoris:", error);
+        snippet.isFavorite = !snippet.isFavorite;
+        snackbarText.value = "Erreur lors de la mise à jour des favoris";
+        snackbarColor.value = "error";
+        snackbar.value = true;
+      }
+    };
+    const confirmDelete = (snippet) => {
+      snippetToDelete.value = snippet;
+      deleteDialog.value = true;
+    };
+    const deleteSnippet = async () => {
+      try {
+        if (snippetToDelete.value) {
+          await userStore.deleteSnippet(snippetToDelete.value.id, "personal");
+          deleteDialog.value = false;
+          snackbarText.value = "Snippet supprimé avec succès";
+          snackbarColor.value = "success";
+          snackbar.value = true;
+        }
+      } catch (err) {
+        console.error("Error during deletion:", err.message, err.stack);
+        snackbarText.value = "Erreur lors de la suppression du snippet";
+        snackbarColor.value = "error";
+        snackbar.value = true;
+      }
+    };
+    const formatDisplayDate = (snippet) => {
+      if (snippet.snippet_date) {
+        return userStore.formatDate(snippet.snippet_date);
+      } else if (snippet.date) {
+        return userStore.formatDate(snippet.date);
+      } else {
+        return "Date non disponible";
+      }
+    };
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_NuxtLink = __nuxt_component_0;
+      _push(ssrRenderComponent(VApp, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VMain, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VContainer, { fluid: "" }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VTabs, {
+                          modelValue: tab.value,
+                          "onUpdate:modelValue": ($event) => tab.value = $event,
+                          color: "primary",
+                          "align-tabs": "center",
+                          class: "mb-6"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VTab, {
+                                value: "World",
+                                class: "text-subtitle-1"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VIcon, { start: "" }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-earth`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-earth")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                    _push6(` Public Snippets `);
+                                  } else {
+                                    return [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-earth")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Public Snippets ")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VTab, {
+                                value: "Personal",
+                                class: "text-subtitle-1"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VIcon, { start: "" }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-account`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-account")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                    _push6(` My Snippets `);
+                                  } else {
+                                    return [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-account")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" My Snippets ")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VTab, {
+                                value: "Favorites",
+                                class: "text-subtitle-1"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VIcon, { start: "" }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-star`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-star")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                    _push6(` Favorites `);
+                                  } else {
+                                    return [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-star")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Favorites ")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VTab, {
+                                  value: "World",
+                                  class: "text-subtitle-1"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, { start: "" }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-earth")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" Public Snippets ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VTab, {
+                                  value: "Personal",
+                                  class: "text-subtitle-1"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, { start: "" }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-account")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" My Snippets ")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VTab, {
+                                  value: "Favorites",
+                                  class: "text-subtitle-1"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, { start: "" }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-star")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" Favorites ")
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VWindow, {
+                          modelValue: tab.value,
+                          "onUpdate:modelValue": ($event) => tab.value = $event
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VWindowItem, { value: "World" }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<div class="d-flex align-center mb-4" data-v-6fc203b4${_scopeId5}>`);
+                                    _push6(ssrRenderComponent(VTextField, {
+                                      modelValue: searchQuery.value,
+                                      "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                      "prepend-inner-icon": "mdi-magnify",
+                                      label: "Search snippets",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      class: "mr-4"
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(ssrRenderComponent(VSelect, {
+                                      modelValue: frameworkFilter.value,
+                                      "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                      items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                      label: "Framework",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      style: { "max-width": "200px" }
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(`</div>`);
+                                    _push6(ssrRenderComponent(VRow, null, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`<!--[-->`);
+                                          ssrRenderList(filteredWorldSnippets.value, (snippet, index) => {
+                                            _push7(ssrRenderComponent(VCol, {
+                                              key: index,
+                                              cols: "12",
+                                              sm: "6",
+                                              lg: "4"
+                                            }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VCard, {
+                                                    class: "mx-auto snippet-card",
+                                                    "max-width": "400",
+                                                    elevation: "2",
+                                                    hover: ""
+                                                  }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(_component_NuxtLink, {
+                                                          to: `/snippetsView?id=${snippet.id}&type=world`,
+                                                          class: "text-decoration-none"
+                                                        }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(ssrRenderComponent(VImg, {
+                                                                src: snippet.img || "/placeholder-image.jpg",
+                                                                height: "200",
+                                                                cover: "",
+                                                                class: "bg-grey-lighten-2"
+                                                              }, {
+                                                                placeholder: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VRow, {
+                                                                      align: "center",
+                                                                      justify: "center",
+                                                                      class: "fill-height"
+                                                                    }, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(ssrRenderComponent(VProgressCircular, {
+                                                                            indeterminate: "",
+                                                                            color: "primary"
+                                                                          }, null, _parent12, _scopeId11));
+                                                                        } else {
+                                                                          return [
+                                                                            createVNode(VProgressCircular, {
+                                                                              indeterminate: "",
+                                                                              color: "primary"
+                                                                            })
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 2
+                                                                    }, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VRow, {
+                                                                        align: "center",
+                                                                        justify: "center",
+                                                                        class: "fill-height"
+                                                                      }, {
+                                                                        default: withCtx(() => [
+                                                                          createVNode(VProgressCircular, {
+                                                                            indeterminate: "",
+                                                                            color: "primary"
+                                                                          })
+                                                                        ]),
+                                                                        _: 1
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                            } else {
+                                                              return [
+                                                                createVNode(VImg, {
+                                                                  src: snippet.img || "/placeholder-image.jpg",
+                                                                  height: "200",
+                                                                  cover: "",
+                                                                  class: "bg-grey-lighten-2"
+                                                                }, {
+                                                                  placeholder: withCtx(() => [
+                                                                    createVNode(VRow, {
+                                                                      align: "center",
+                                                                      justify: "center",
+                                                                      class: "fill-height"
+                                                                    }, {
+                                                                      default: withCtx(() => [
+                                                                        createVNode(VProgressCircular, {
+                                                                          indeterminate: "",
+                                                                          color: "primary"
+                                                                        })
+                                                                      ]),
+                                                                      _: 1
+                                                                    })
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1032, ["src"])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`${ssrInterpolate(snippet.title)}`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode(toDisplayString(snippet.title), 1)
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCardText, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`<p class="text-body-1 mb-2" data-v-6fc203b4${_scopeId9}>${ssrInterpolate(snippet.description)}</p>`);
+                                                              _push10(ssrRenderComponent(VChip, {
+                                                                color: "primary",
+                                                                variant: "outlined",
+                                                                size: "small",
+                                                                class: "mb-2"
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(`${ssrInterpolate(snippet.framework)}`);
+                                                                  } else {
+                                                                    return [
+                                                                      createTextVNode(toDisplayString(snippet.framework), 1)
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(`<div class="d-flex align-center text-grey" data-v-6fc203b4${_scopeId9}>`);
+                                                              _push10(ssrRenderComponent(VAvatar, {
+                                                                size: "24",
+                                                                class: "mr-2"
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VImg, {
+                                                                      src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                      alt: "avatar"
+                                                                    }, null, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VImg, {
+                                                                        src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                        alt: "avatar"
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(`<span data-v-6fc203b4${_scopeId9}>${ssrInterpolate(snippet.username)}</span>`);
+                                                              _push10(ssrRenderComponent(VSpacer, null, null, _parent10, _scopeId9));
+                                                              _push10(ssrRenderComponent(VIcon, {
+                                                                size: "small",
+                                                                class: "mr-1"
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(`mdi-calendar`);
+                                                                  } else {
+                                                                    return [
+                                                                      createTextVNode("mdi-calendar")
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(`<span class="text-caption" data-v-6fc203b4${_scopeId9}>${ssrInterpolate(formatDisplayDate(snippet))}</span></div>`);
+                                                            } else {
+                                                              return [
+                                                                createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                                createVNode(VChip, {
+                                                                  color: "primary",
+                                                                  variant: "outlined",
+                                                                  size: "small",
+                                                                  class: "mb-2"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode(toDisplayString(snippet.framework), 1)
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1024),
+                                                                createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                                  createVNode(VAvatar, {
+                                                                    size: "24",
+                                                                    class: "mr-2"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createVNode(VImg, {
+                                                                        src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                        alt: "avatar"
+                                                                      })
+                                                                    ]),
+                                                                    _: 1
+                                                                  }),
+                                                                  createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                                  createVNode(VSpacer),
+                                                                  createVNode(VIcon, {
+                                                                    size: "small",
+                                                                    class: "mr-1"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-calendar")
+                                                                    ]),
+                                                                    _: 1
+                                                                  }),
+                                                                  createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                                ])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VDivider, null, null, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCardActions, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(ssrRenderComponent(VBtn, {
+                                                                variant: "text",
+                                                                color: snippet.isFavorite ? "yellow" : "",
+                                                                onClick: ($event) => toggleFavorite(snippet, "world")
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VIcon, {
+                                                                      icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                                    }, null, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VIcon, {
+                                                                        icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                                      }, null, 8, ["icon"])
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(ssrRenderComponent(VSpacer, null, null, _parent10, _scopeId9));
+                                                              _push10(ssrRenderComponent(VBtn, {
+                                                                variant: "text",
+                                                                color: "primary",
+                                                                to: `/snippetsView?id=${snippet.id}&type=world`
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(` View Details `);
+                                                                    _push11(ssrRenderComponent(VIcon, { end: "" }, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(`mdi-arrow-right`);
+                                                                        } else {
+                                                                          return [
+                                                                            createTextVNode("mdi-arrow-right")
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 2
+                                                                    }, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createTextVNode(" View Details "),
+                                                                      createVNode(VIcon, { end: "" }, {
+                                                                        default: withCtx(() => [
+                                                                          createTextVNode("mdi-arrow-right")
+                                                                        ]),
+                                                                        _: 1
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                            } else {
+                                                              return [
+                                                                createVNode(VBtn, {
+                                                                  variant: "text",
+                                                                  color: snippet.isFavorite ? "yellow" : "",
+                                                                  onClick: withModifiers(($event) => toggleFavorite(snippet, "world"), ["stop"])
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VIcon, {
+                                                                      icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                                    }, null, 8, ["icon"])
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1032, ["color", "onClick"]),
+                                                                createVNode(VSpacer),
+                                                                createVNode(VBtn, {
+                                                                  variant: "text",
+                                                                  color: "primary",
+                                                                  to: `/snippetsView?id=${snippet.id}&type=world`
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode(" View Details "),
+                                                                    createVNode(VIcon, { end: "" }, {
+                                                                      default: withCtx(() => [
+                                                                        createTextVNode("mdi-arrow-right")
+                                                                      ]),
+                                                                      _: 1
+                                                                    })
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1032, ["to"])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(_component_NuxtLink, {
+                                                            to: `/snippetsView?id=${snippet.id}&type=world`,
+                                                            class: "text-decoration-none"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VImg, {
+                                                                src: snippet.img || "/placeholder-image.jpg",
+                                                                height: "200",
+                                                                cover: "",
+                                                                class: "bg-grey-lighten-2"
+                                                              }, {
+                                                                placeholder: withCtx(() => [
+                                                                  createVNode(VRow, {
+                                                                    align: "center",
+                                                                    justify: "center",
+                                                                    class: "fill-height"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createVNode(VProgressCircular, {
+                                                                        indeterminate: "",
+                                                                        color: "primary"
+                                                                      })
+                                                                    ]),
+                                                                    _: 1
+                                                                  })
+                                                                ]),
+                                                                _: 2
+                                                              }, 1032, ["src"])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["to"]),
+                                                          createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(snippet.title), 1)
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024),
+                                                          createVNode(VCardText, null, {
+                                                            default: withCtx(() => [
+                                                              createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                              createVNode(VChip, {
+                                                                color: "primary",
+                                                                variant: "outlined",
+                                                                size: "small",
+                                                                class: "mb-2"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode(toDisplayString(snippet.framework), 1)
+                                                                ]),
+                                                                _: 2
+                                                              }, 1024),
+                                                              createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                                createVNode(VAvatar, {
+                                                                  size: "24",
+                                                                  class: "mr-2"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VImg, {
+                                                                      src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                      alt: "avatar"
+                                                                    })
+                                                                  ]),
+                                                                  _: 1
+                                                                }),
+                                                                createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                                createVNode(VSpacer),
+                                                                createVNode(VIcon, {
+                                                                  size: "small",
+                                                                  class: "mr-1"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-calendar")
+                                                                  ]),
+                                                                  _: 1
+                                                                }),
+                                                                createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                              ])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024),
+                                                          createVNode(VDivider),
+                                                          createVNode(VCardActions, null, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VBtn, {
+                                                                variant: "text",
+                                                                color: snippet.isFavorite ? "yellow" : "",
+                                                                onClick: withModifiers(($event) => toggleFavorite(snippet, "world"), ["stop"])
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VIcon, {
+                                                                    icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                                  }, null, 8, ["icon"])
+                                                                ]),
+                                                                _: 2
+                                                              }, 1032, ["color", "onClick"]),
+                                                              createVNode(VSpacer),
+                                                              createVNode(VBtn, {
+                                                                variant: "text",
+                                                                color: "primary",
+                                                                to: `/snippetsView?id=${snippet.id}&type=world`
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode(" View Details "),
+                                                                  createVNode(VIcon, { end: "" }, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-arrow-right")
+                                                                    ]),
+                                                                    _: 1
+                                                                  })
+                                                                ]),
+                                                                _: 2
+                                                              }, 1032, ["to"])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024)
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 2
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VCard, {
+                                                      class: "mx-auto snippet-card",
+                                                      "max-width": "400",
+                                                      elevation: "2",
+                                                      hover: ""
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(_component_NuxtLink, {
+                                                          to: `/snippetsView?id=${snippet.id}&type=world`,
+                                                          class: "text-decoration-none"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VImg, {
+                                                              src: snippet.img || "/placeholder-image.jpg",
+                                                              height: "200",
+                                                              cover: "",
+                                                              class: "bg-grey-lighten-2"
+                                                            }, {
+                                                              placeholder: withCtx(() => [
+                                                                createVNode(VRow, {
+                                                                  align: "center",
+                                                                  justify: "center",
+                                                                  class: "fill-height"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VProgressCircular, {
+                                                                      indeterminate: "",
+                                                                      color: "primary"
+                                                                    })
+                                                                  ]),
+                                                                  _: 1
+                                                                })
+                                                              ]),
+                                                              _: 2
+                                                            }, 1032, ["src"])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["to"]),
+                                                        createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(snippet.title), 1)
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024),
+                                                        createVNode(VCardText, null, {
+                                                          default: withCtx(() => [
+                                                            createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                            createVNode(VChip, {
+                                                              color: "primary",
+                                                              variant: "outlined",
+                                                              size: "small",
+                                                              class: "mb-2"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode(toDisplayString(snippet.framework), 1)
+                                                              ]),
+                                                              _: 2
+                                                            }, 1024),
+                                                            createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                              createVNode(VAvatar, {
+                                                                size: "24",
+                                                                class: "mr-2"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VImg, {
+                                                                    src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                    alt: "avatar"
+                                                                  })
+                                                                ]),
+                                                                _: 1
+                                                              }),
+                                                              createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                              createVNode(VSpacer),
+                                                              createVNode(VIcon, {
+                                                                size: "small",
+                                                                class: "mr-1"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-calendar")
+                                                                ]),
+                                                                _: 1
+                                                              }),
+                                                              createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                            ])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024),
+                                                        createVNode(VDivider),
+                                                        createVNode(VCardActions, null, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VBtn, {
+                                                              variant: "text",
+                                                              color: snippet.isFavorite ? "yellow" : "",
+                                                              onClick: withModifiers(($event) => toggleFavorite(snippet, "world"), ["stop"])
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VIcon, {
+                                                                  icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                                }, null, 8, ["icon"])
+                                                              ]),
+                                                              _: 2
+                                                            }, 1032, ["color", "onClick"]),
+                                                            createVNode(VSpacer),
+                                                            createVNode(VBtn, {
+                                                              variant: "text",
+                                                              color: "primary",
+                                                              to: `/snippetsView?id=${snippet.id}&type=world`
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode(" View Details "),
+                                                                createVNode(VIcon, { end: "" }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-arrow-right")
+                                                                  ]),
+                                                                  _: 1
+                                                                })
+                                                              ]),
+                                                              _: 2
+                                                            }, 1032, ["to"])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024)
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent7, _scopeId6));
+                                          });
+                                          _push7(`<!--]-->`);
+                                          if (filteredWorldSnippets.value.length === 0) {
+                                            _push7(ssrRenderComponent(VCol, { cols: "12" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VAlert, {
+                                                    type: "info",
+                                                    variant: "tonal"
+                                                  }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(` No snippets found. Try modifying your search criteria. `);
+                                                      } else {
+                                                        return [
+                                                          createTextVNode(" No snippets found. Try modifying your search criteria. ")
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VAlert, {
+                                                      type: "info",
+                                                      variant: "tonal"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" No snippets found. Try modifying your search criteria. ")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                          } else {
+                                            _push7(`<!---->`);
+                                          }
+                                        } else {
+                                          return [
+                                            (openBlock(true), createBlock(Fragment, null, renderList(filteredWorldSnippets.value, (snippet, index) => {
+                                              return openBlock(), createBlock(VCol, {
+                                                key: index,
+                                                cols: "12",
+                                                sm: "6",
+                                                lg: "4"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VCard, {
+                                                    class: "mx-auto snippet-card",
+                                                    "max-width": "400",
+                                                    elevation: "2",
+                                                    hover: ""
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(_component_NuxtLink, {
+                                                        to: `/snippetsView?id=${snippet.id}&type=world`,
+                                                        class: "text-decoration-none"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VImg, {
+                                                            src: snippet.img || "/placeholder-image.jpg",
+                                                            height: "200",
+                                                            cover: "",
+                                                            class: "bg-grey-lighten-2"
+                                                          }, {
+                                                            placeholder: withCtx(() => [
+                                                              createVNode(VRow, {
+                                                                align: "center",
+                                                                justify: "center",
+                                                                class: "fill-height"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VProgressCircular, {
+                                                                    indeterminate: "",
+                                                                    color: "primary"
+                                                                  })
+                                                                ]),
+                                                                _: 1
+                                                              })
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["src"])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["to"]),
+                                                      createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(snippet.title), 1)
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024),
+                                                      createVNode(VCardText, null, {
+                                                        default: withCtx(() => [
+                                                          createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                          createVNode(VChip, {
+                                                            color: "primary",
+                                                            variant: "outlined",
+                                                            size: "small",
+                                                            class: "mb-2"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(snippet.framework), 1)
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024),
+                                                          createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                            createVNode(VAvatar, {
+                                                              size: "24",
+                                                              class: "mr-2"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VImg, {
+                                                                  src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                  alt: "avatar"
+                                                                })
+                                                              ]),
+                                                              _: 1
+                                                            }),
+                                                            createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                            createVNode(VSpacer),
+                                                            createVNode(VIcon, {
+                                                              size: "small",
+                                                              class: "mr-1"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-calendar")
+                                                              ]),
+                                                              _: 1
+                                                            }),
+                                                            createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                          ])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024),
+                                                      createVNode(VDivider),
+                                                      createVNode(VCardActions, null, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VBtn, {
+                                                            variant: "text",
+                                                            color: snippet.isFavorite ? "yellow" : "",
+                                                            onClick: withModifiers(($event) => toggleFavorite(snippet, "world"), ["stop"])
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VIcon, {
+                                                                icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                              }, null, 8, ["icon"])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["color", "onClick"]),
+                                                          createVNode(VSpacer),
+                                                          createVNode(VBtn, {
+                                                            variant: "text",
+                                                            color: "primary",
+                                                            to: `/snippetsView?id=${snippet.id}&type=world`
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(" View Details "),
+                                                              createVNode(VIcon, { end: "" }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-arrow-right")
+                                                                ]),
+                                                                _: 1
+                                                              })
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["to"])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024)
+                                                ]),
+                                                _: 2
+                                              }, 1024);
+                                            }), 128)),
+                                            filteredWorldSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                              key: 0,
+                                              cols: "12"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VAlert, {
+                                                  type: "info",
+                                                  variant: "tonal"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" No snippets found. Try modifying your search criteria. ")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            })) : createCommentVNode("", true)
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                        createVNode(VTextField, {
+                                          modelValue: searchQuery.value,
+                                          "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                          "prepend-inner-icon": "mdi-magnify",
+                                          label: "Search snippets",
+                                          variant: "outlined",
+                                          density: "comfortable",
+                                          "hide-details": "",
+                                          class: "mr-4"
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                        createVNode(VSelect, {
+                                          modelValue: frameworkFilter.value,
+                                          "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                          items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                          label: "Framework",
+                                          variant: "outlined",
+                                          density: "comfortable",
+                                          "hide-details": "",
+                                          style: { "max-width": "200px" }
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                      ]),
+                                      createVNode(VRow, null, {
+                                        default: withCtx(() => [
+                                          (openBlock(true), createBlock(Fragment, null, renderList(filteredWorldSnippets.value, (snippet, index) => {
+                                            return openBlock(), createBlock(VCol, {
+                                              key: index,
+                                              cols: "12",
+                                              sm: "6",
+                                              lg: "4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VCard, {
+                                                  class: "mx-auto snippet-card",
+                                                  "max-width": "400",
+                                                  elevation: "2",
+                                                  hover: ""
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(_component_NuxtLink, {
+                                                      to: `/snippetsView?id=${snippet.id}&type=world`,
+                                                      class: "text-decoration-none"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VImg, {
+                                                          src: snippet.img || "/placeholder-image.jpg",
+                                                          height: "200",
+                                                          cover: "",
+                                                          class: "bg-grey-lighten-2"
+                                                        }, {
+                                                          placeholder: withCtx(() => [
+                                                            createVNode(VRow, {
+                                                              align: "center",
+                                                              justify: "center",
+                                                              class: "fill-height"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VProgressCircular, {
+                                                                  indeterminate: "",
+                                                                  color: "primary"
+                                                                })
+                                                              ]),
+                                                              _: 1
+                                                            })
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["src"])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["to"]),
+                                                    createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(snippet.title), 1)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024),
+                                                    createVNode(VCardText, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                        createVNode(VChip, {
+                                                          color: "primary",
+                                                          variant: "outlined",
+                                                          size: "small",
+                                                          class: "mb-2"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(snippet.framework), 1)
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024),
+                                                        createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                          createVNode(VAvatar, {
+                                                            size: "24",
+                                                            class: "mr-2"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VImg, {
+                                                                src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                alt: "avatar"
+                                                              })
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                          createVNode(VSpacer),
+                                                          createVNode(VIcon, {
+                                                            size: "small",
+                                                            class: "mr-1"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-calendar")
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                        ])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024),
+                                                    createVNode(VDivider),
+                                                    createVNode(VCardActions, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VBtn, {
+                                                          variant: "text",
+                                                          color: snippet.isFavorite ? "yellow" : "",
+                                                          onClick: withModifiers(($event) => toggleFavorite(snippet, "world"), ["stop"])
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VIcon, {
+                                                              icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                            }, null, 8, ["icon"])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["color", "onClick"]),
+                                                        createVNode(VSpacer),
+                                                        createVNode(VBtn, {
+                                                          variant: "text",
+                                                          color: "primary",
+                                                          to: `/snippetsView?id=${snippet.id}&type=world`
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(" View Details "),
+                                                            createVNode(VIcon, { end: "" }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-arrow-right")
+                                                              ]),
+                                                              _: 1
+                                                            })
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["to"])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024)
+                                              ]),
+                                              _: 2
+                                            }, 1024);
+                                          }), 128)),
+                                          filteredWorldSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                            key: 0,
+                                            cols: "12"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VAlert, {
+                                                type: "info",
+                                                variant: "tonal"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" No snippets found. Try modifying your search criteria. ")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          })) : createCommentVNode("", true)
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VWindowItem, { value: "Personal" }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<div class="d-flex align-center mb-4" data-v-6fc203b4${_scopeId5}>`);
+                                    _push6(ssrRenderComponent(VTextField, {
+                                      modelValue: searchQuery.value,
+                                      "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                      "prepend-inner-icon": "mdi-magnify",
+                                      label: "Search in my snippets",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      class: "mr-4"
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(ssrRenderComponent(VSelect, {
+                                      modelValue: frameworkFilter.value,
+                                      "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                      items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                      label: "Framework",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      style: { "max-width": "200px" }
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(`</div>`);
+                                    _push6(ssrRenderComponent(VRow, null, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`<!--[-->`);
+                                          ssrRenderList(filteredPersonalSnippets.value, (snippet, index) => {
+                                            _push7(ssrRenderComponent(VCol, {
+                                              key: index,
+                                              cols: "12",
+                                              sm: "6",
+                                              lg: "4"
+                                            }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VCard, {
+                                                    class: "mx-auto snippet-card",
+                                                    "max-width": "400",
+                                                    elevation: "2",
+                                                    hover: ""
+                                                  }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(_component_NuxtLink, {
+                                                          to: `/snippetsView?id=${snippet.id}&type=personal`,
+                                                          class: "text-decoration-none"
+                                                        }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(ssrRenderComponent(VImg, {
+                                                                src: snippet.img || "/placeholder-image.jpg",
+                                                                height: "200",
+                                                                cover: "",
+                                                                class: "bg-grey-lighten-2"
+                                                              }, {
+                                                                placeholder: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VRow, {
+                                                                      align: "center",
+                                                                      justify: "center",
+                                                                      class: "fill-height"
+                                                                    }, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(ssrRenderComponent(VProgressCircular, {
+                                                                            indeterminate: "",
+                                                                            color: "primary"
+                                                                          }, null, _parent12, _scopeId11));
+                                                                        } else {
+                                                                          return [
+                                                                            createVNode(VProgressCircular, {
+                                                                              indeterminate: "",
+                                                                              color: "primary"
+                                                                            })
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 2
+                                                                    }, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VRow, {
+                                                                        align: "center",
+                                                                        justify: "center",
+                                                                        class: "fill-height"
+                                                                      }, {
+                                                                        default: withCtx(() => [
+                                                                          createVNode(VProgressCircular, {
+                                                                            indeterminate: "",
+                                                                            color: "primary"
+                                                                          })
+                                                                        ]),
+                                                                        _: 1
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                            } else {
+                                                              return [
+                                                                createVNode(VImg, {
+                                                                  src: snippet.img || "/placeholder-image.jpg",
+                                                                  height: "200",
+                                                                  cover: "",
+                                                                  class: "bg-grey-lighten-2"
+                                                                }, {
+                                                                  placeholder: withCtx(() => [
+                                                                    createVNode(VRow, {
+                                                                      align: "center",
+                                                                      justify: "center",
+                                                                      class: "fill-height"
+                                                                    }, {
+                                                                      default: withCtx(() => [
+                                                                        createVNode(VProgressCircular, {
+                                                                          indeterminate: "",
+                                                                          color: "primary"
+                                                                        })
+                                                                      ]),
+                                                                      _: 1
+                                                                    })
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1032, ["src"])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`${ssrInterpolate(snippet.title)}`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode(toDisplayString(snippet.title), 1)
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCardText, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`<p class="text-body-1 mb-2" data-v-6fc203b4${_scopeId9}>${ssrInterpolate(snippet.description)}</p>`);
+                                                              _push10(ssrRenderComponent(VChip, {
+                                                                color: "primary",
+                                                                variant: "outlined",
+                                                                size: "small",
+                                                                class: "mb-2"
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(`${ssrInterpolate(snippet.framework)}`);
+                                                                  } else {
+                                                                    return [
+                                                                      createTextVNode(toDisplayString(snippet.framework), 1)
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(`<div class="d-flex align-center text-grey" data-v-6fc203b4${_scopeId9}>`);
+                                                              _push10(ssrRenderComponent(VAvatar, {
+                                                                size: "24",
+                                                                class: "mr-2"
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VImg, {
+                                                                      src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                      alt: "avatar"
+                                                                    }, null, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VImg, {
+                                                                        src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                        alt: "avatar"
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(`<span data-v-6fc203b4${_scopeId9}>${ssrInterpolate(snippet.username)}</span>`);
+                                                              _push10(ssrRenderComponent(VSpacer, null, null, _parent10, _scopeId9));
+                                                              _push10(ssrRenderComponent(VIcon, {
+                                                                size: "small",
+                                                                class: "mr-1"
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(`mdi-calendar`);
+                                                                  } else {
+                                                                    return [
+                                                                      createTextVNode("mdi-calendar")
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(`<span class="text-caption" data-v-6fc203b4${_scopeId9}>${ssrInterpolate(formatDisplayDate(snippet))}</span></div>`);
+                                                            } else {
+                                                              return [
+                                                                createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                                createVNode(VChip, {
+                                                                  color: "primary",
+                                                                  variant: "outlined",
+                                                                  size: "small",
+                                                                  class: "mb-2"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode(toDisplayString(snippet.framework), 1)
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1024),
+                                                                createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                                  createVNode(VAvatar, {
+                                                                    size: "24",
+                                                                    class: "mr-2"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createVNode(VImg, {
+                                                                        src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                        alt: "avatar"
+                                                                      })
+                                                                    ]),
+                                                                    _: 1
+                                                                  }),
+                                                                  createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                                  createVNode(VSpacer),
+                                                                  createVNode(VIcon, {
+                                                                    size: "small",
+                                                                    class: "mr-1"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-calendar")
+                                                                    ]),
+                                                                    _: 1
+                                                                  }),
+                                                                  createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                                ])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VDivider, null, null, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCardActions, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(ssrRenderComponent(VBtn, {
+                                                                variant: "text",
+                                                                color: "error",
+                                                                onClick: ($event) => confirmDelete(snippet)
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VIcon, null, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(`mdi-delete`);
+                                                                        } else {
+                                                                          return [
+                                                                            createTextVNode("mdi-delete")
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 2
+                                                                    }, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VIcon, null, {
+                                                                        default: withCtx(() => [
+                                                                          createTextVNode("mdi-delete")
+                                                                        ]),
+                                                                        _: 1
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(ssrRenderComponent(VSpacer, null, null, _parent10, _scopeId9));
+                                                              _push10(ssrRenderComponent(VBtn, {
+                                                                variant: "text",
+                                                                color: "primary",
+                                                                to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(` View Details `);
+                                                                    _push11(ssrRenderComponent(VIcon, { end: "" }, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(`mdi-arrow-right`);
+                                                                        } else {
+                                                                          return [
+                                                                            createTextVNode("mdi-arrow-right")
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 2
+                                                                    }, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createTextVNode(" View Details "),
+                                                                      createVNode(VIcon, { end: "" }, {
+                                                                        default: withCtx(() => [
+                                                                          createTextVNode("mdi-arrow-right")
+                                                                        ]),
+                                                                        _: 1
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                            } else {
+                                                              return [
+                                                                createVNode(VBtn, {
+                                                                  variant: "text",
+                                                                  color: "error",
+                                                                  onClick: withModifiers(($event) => confirmDelete(snippet), ["stop"])
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VIcon, null, {
+                                                                      default: withCtx(() => [
+                                                                        createTextVNode("mdi-delete")
+                                                                      ]),
+                                                                      _: 1
+                                                                    })
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1032, ["onClick"]),
+                                                                createVNode(VSpacer),
+                                                                createVNode(VBtn, {
+                                                                  variant: "text",
+                                                                  color: "primary",
+                                                                  to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode(" View Details "),
+                                                                    createVNode(VIcon, { end: "" }, {
+                                                                      default: withCtx(() => [
+                                                                        createTextVNode("mdi-arrow-right")
+                                                                      ]),
+                                                                      _: 1
+                                                                    })
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1032, ["to"])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(_component_NuxtLink, {
+                                                            to: `/snippetsView?id=${snippet.id}&type=personal`,
+                                                            class: "text-decoration-none"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VImg, {
+                                                                src: snippet.img || "/placeholder-image.jpg",
+                                                                height: "200",
+                                                                cover: "",
+                                                                class: "bg-grey-lighten-2"
+                                                              }, {
+                                                                placeholder: withCtx(() => [
+                                                                  createVNode(VRow, {
+                                                                    align: "center",
+                                                                    justify: "center",
+                                                                    class: "fill-height"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createVNode(VProgressCircular, {
+                                                                        indeterminate: "",
+                                                                        color: "primary"
+                                                                      })
+                                                                    ]),
+                                                                    _: 1
+                                                                  })
+                                                                ]),
+                                                                _: 2
+                                                              }, 1032, ["src"])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["to"]),
+                                                          createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(snippet.title), 1)
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024),
+                                                          createVNode(VCardText, null, {
+                                                            default: withCtx(() => [
+                                                              createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                              createVNode(VChip, {
+                                                                color: "primary",
+                                                                variant: "outlined",
+                                                                size: "small",
+                                                                class: "mb-2"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode(toDisplayString(snippet.framework), 1)
+                                                                ]),
+                                                                _: 2
+                                                              }, 1024),
+                                                              createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                                createVNode(VAvatar, {
+                                                                  size: "24",
+                                                                  class: "mr-2"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VImg, {
+                                                                      src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                      alt: "avatar"
+                                                                    })
+                                                                  ]),
+                                                                  _: 1
+                                                                }),
+                                                                createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                                createVNode(VSpacer),
+                                                                createVNode(VIcon, {
+                                                                  size: "small",
+                                                                  class: "mr-1"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-calendar")
+                                                                  ]),
+                                                                  _: 1
+                                                                }),
+                                                                createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                              ])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024),
+                                                          createVNode(VDivider),
+                                                          createVNode(VCardActions, null, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VBtn, {
+                                                                variant: "text",
+                                                                color: "error",
+                                                                onClick: withModifiers(($event) => confirmDelete(snippet), ["stop"])
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VIcon, null, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-delete")
+                                                                    ]),
+                                                                    _: 1
+                                                                  })
+                                                                ]),
+                                                                _: 2
+                                                              }, 1032, ["onClick"]),
+                                                              createVNode(VSpacer),
+                                                              createVNode(VBtn, {
+                                                                variant: "text",
+                                                                color: "primary",
+                                                                to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode(" View Details "),
+                                                                  createVNode(VIcon, { end: "" }, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-arrow-right")
+                                                                    ]),
+                                                                    _: 1
+                                                                  })
+                                                                ]),
+                                                                _: 2
+                                                              }, 1032, ["to"])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024)
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 2
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VCard, {
+                                                      class: "mx-auto snippet-card",
+                                                      "max-width": "400",
+                                                      elevation: "2",
+                                                      hover: ""
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(_component_NuxtLink, {
+                                                          to: `/snippetsView?id=${snippet.id}&type=personal`,
+                                                          class: "text-decoration-none"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VImg, {
+                                                              src: snippet.img || "/placeholder-image.jpg",
+                                                              height: "200",
+                                                              cover: "",
+                                                              class: "bg-grey-lighten-2"
+                                                            }, {
+                                                              placeholder: withCtx(() => [
+                                                                createVNode(VRow, {
+                                                                  align: "center",
+                                                                  justify: "center",
+                                                                  class: "fill-height"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VProgressCircular, {
+                                                                      indeterminate: "",
+                                                                      color: "primary"
+                                                                    })
+                                                                  ]),
+                                                                  _: 1
+                                                                })
+                                                              ]),
+                                                              _: 2
+                                                            }, 1032, ["src"])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["to"]),
+                                                        createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(snippet.title), 1)
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024),
+                                                        createVNode(VCardText, null, {
+                                                          default: withCtx(() => [
+                                                            createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                            createVNode(VChip, {
+                                                              color: "primary",
+                                                              variant: "outlined",
+                                                              size: "small",
+                                                              class: "mb-2"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode(toDisplayString(snippet.framework), 1)
+                                                              ]),
+                                                              _: 2
+                                                            }, 1024),
+                                                            createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                              createVNode(VAvatar, {
+                                                                size: "24",
+                                                                class: "mr-2"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VImg, {
+                                                                    src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                    alt: "avatar"
+                                                                  })
+                                                                ]),
+                                                                _: 1
+                                                              }),
+                                                              createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                              createVNode(VSpacer),
+                                                              createVNode(VIcon, {
+                                                                size: "small",
+                                                                class: "mr-1"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-calendar")
+                                                                ]),
+                                                                _: 1
+                                                              }),
+                                                              createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                            ])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024),
+                                                        createVNode(VDivider),
+                                                        createVNode(VCardActions, null, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VBtn, {
+                                                              variant: "text",
+                                                              color: "error",
+                                                              onClick: withModifiers(($event) => confirmDelete(snippet), ["stop"])
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VIcon, null, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-delete")
+                                                                  ]),
+                                                                  _: 1
+                                                                })
+                                                              ]),
+                                                              _: 2
+                                                            }, 1032, ["onClick"]),
+                                                            createVNode(VSpacer),
+                                                            createVNode(VBtn, {
+                                                              variant: "text",
+                                                              color: "primary",
+                                                              to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode(" View Details "),
+                                                                createVNode(VIcon, { end: "" }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-arrow-right")
+                                                                  ]),
+                                                                  _: 1
+                                                                })
+                                                              ]),
+                                                              _: 2
+                                                            }, 1032, ["to"])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024)
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent7, _scopeId6));
+                                          });
+                                          _push7(`<!--]-->`);
+                                          if (filteredPersonalSnippets.value.length === 0) {
+                                            _push7(ssrRenderComponent(VCol, { cols: "12" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VAlert, {
+                                                    type: "info",
+                                                    variant: "tonal"
+                                                  }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(` You don&#39;t have any snippets yet. Create a new one! `);
+                                                      } else {
+                                                        return [
+                                                          createTextVNode(" You don't have any snippets yet. Create a new one! ")
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VAlert, {
+                                                      type: "info",
+                                                      variant: "tonal"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" You don't have any snippets yet. Create a new one! ")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                          } else {
+                                            _push7(`<!---->`);
+                                          }
+                                        } else {
+                                          return [
+                                            (openBlock(true), createBlock(Fragment, null, renderList(filteredPersonalSnippets.value, (snippet, index) => {
+                                              return openBlock(), createBlock(VCol, {
+                                                key: index,
+                                                cols: "12",
+                                                sm: "6",
+                                                lg: "4"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VCard, {
+                                                    class: "mx-auto snippet-card",
+                                                    "max-width": "400",
+                                                    elevation: "2",
+                                                    hover: ""
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(_component_NuxtLink, {
+                                                        to: `/snippetsView?id=${snippet.id}&type=personal`,
+                                                        class: "text-decoration-none"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VImg, {
+                                                            src: snippet.img || "/placeholder-image.jpg",
+                                                            height: "200",
+                                                            cover: "",
+                                                            class: "bg-grey-lighten-2"
+                                                          }, {
+                                                            placeholder: withCtx(() => [
+                                                              createVNode(VRow, {
+                                                                align: "center",
+                                                                justify: "center",
+                                                                class: "fill-height"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VProgressCircular, {
+                                                                    indeterminate: "",
+                                                                    color: "primary"
+                                                                  })
+                                                                ]),
+                                                                _: 1
+                                                              })
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["src"])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["to"]),
+                                                      createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(snippet.title), 1)
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024),
+                                                      createVNode(VCardText, null, {
+                                                        default: withCtx(() => [
+                                                          createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                          createVNode(VChip, {
+                                                            color: "primary",
+                                                            variant: "outlined",
+                                                            size: "small",
+                                                            class: "mb-2"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(snippet.framework), 1)
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024),
+                                                          createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                            createVNode(VAvatar, {
+                                                              size: "24",
+                                                              class: "mr-2"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VImg, {
+                                                                  src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                  alt: "avatar"
+                                                                })
+                                                              ]),
+                                                              _: 1
+                                                            }),
+                                                            createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                            createVNode(VSpacer),
+                                                            createVNode(VIcon, {
+                                                              size: "small",
+                                                              class: "mr-1"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-calendar")
+                                                              ]),
+                                                              _: 1
+                                                            }),
+                                                            createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                          ])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024),
+                                                      createVNode(VDivider),
+                                                      createVNode(VCardActions, null, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VBtn, {
+                                                            variant: "text",
+                                                            color: "error",
+                                                            onClick: withModifiers(($event) => confirmDelete(snippet), ["stop"])
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VIcon, null, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-delete")
+                                                                ]),
+                                                                _: 1
+                                                              })
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["onClick"]),
+                                                          createVNode(VSpacer),
+                                                          createVNode(VBtn, {
+                                                            variant: "text",
+                                                            color: "primary",
+                                                            to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(" View Details "),
+                                                              createVNode(VIcon, { end: "" }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-arrow-right")
+                                                                ]),
+                                                                _: 1
+                                                              })
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["to"])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024)
+                                                ]),
+                                                _: 2
+                                              }, 1024);
+                                            }), 128)),
+                                            filteredPersonalSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                              key: 0,
+                                              cols: "12"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VAlert, {
+                                                  type: "info",
+                                                  variant: "tonal"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" You don't have any snippets yet. Create a new one! ")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            })) : createCommentVNode("", true)
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                        createVNode(VTextField, {
+                                          modelValue: searchQuery.value,
+                                          "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                          "prepend-inner-icon": "mdi-magnify",
+                                          label: "Search in my snippets",
+                                          variant: "outlined",
+                                          density: "comfortable",
+                                          "hide-details": "",
+                                          class: "mr-4"
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                        createVNode(VSelect, {
+                                          modelValue: frameworkFilter.value,
+                                          "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                          items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                          label: "Framework",
+                                          variant: "outlined",
+                                          density: "comfortable",
+                                          "hide-details": "",
+                                          style: { "max-width": "200px" }
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                      ]),
+                                      createVNode(VRow, null, {
+                                        default: withCtx(() => [
+                                          (openBlock(true), createBlock(Fragment, null, renderList(filteredPersonalSnippets.value, (snippet, index) => {
+                                            return openBlock(), createBlock(VCol, {
+                                              key: index,
+                                              cols: "12",
+                                              sm: "6",
+                                              lg: "4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VCard, {
+                                                  class: "mx-auto snippet-card",
+                                                  "max-width": "400",
+                                                  elevation: "2",
+                                                  hover: ""
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(_component_NuxtLink, {
+                                                      to: `/snippetsView?id=${snippet.id}&type=personal`,
+                                                      class: "text-decoration-none"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VImg, {
+                                                          src: snippet.img || "/placeholder-image.jpg",
+                                                          height: "200",
+                                                          cover: "",
+                                                          class: "bg-grey-lighten-2"
+                                                        }, {
+                                                          placeholder: withCtx(() => [
+                                                            createVNode(VRow, {
+                                                              align: "center",
+                                                              justify: "center",
+                                                              class: "fill-height"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VProgressCircular, {
+                                                                  indeterminate: "",
+                                                                  color: "primary"
+                                                                })
+                                                              ]),
+                                                              _: 1
+                                                            })
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["src"])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["to"]),
+                                                    createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(snippet.title), 1)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024),
+                                                    createVNode(VCardText, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                        createVNode(VChip, {
+                                                          color: "primary",
+                                                          variant: "outlined",
+                                                          size: "small",
+                                                          class: "mb-2"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(snippet.framework), 1)
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024),
+                                                        createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                          createVNode(VAvatar, {
+                                                            size: "24",
+                                                            class: "mr-2"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VImg, {
+                                                                src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                alt: "avatar"
+                                                              })
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                          createVNode(VSpacer),
+                                                          createVNode(VIcon, {
+                                                            size: "small",
+                                                            class: "mr-1"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-calendar")
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                        ])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024),
+                                                    createVNode(VDivider),
+                                                    createVNode(VCardActions, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VBtn, {
+                                                          variant: "text",
+                                                          color: "error",
+                                                          onClick: withModifiers(($event) => confirmDelete(snippet), ["stop"])
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VIcon, null, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-delete")
+                                                              ]),
+                                                              _: 1
+                                                            })
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["onClick"]),
+                                                        createVNode(VSpacer),
+                                                        createVNode(VBtn, {
+                                                          variant: "text",
+                                                          color: "primary",
+                                                          to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(" View Details "),
+                                                            createVNode(VIcon, { end: "" }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-arrow-right")
+                                                              ]),
+                                                              _: 1
+                                                            })
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["to"])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024)
+                                              ]),
+                                              _: 2
+                                            }, 1024);
+                                          }), 128)),
+                                          filteredPersonalSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                            key: 0,
+                                            cols: "12"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VAlert, {
+                                                type: "info",
+                                                variant: "tonal"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" You don't have any snippets yet. Create a new one! ")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          })) : createCommentVNode("", true)
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VWindowItem, { value: "Favorites" }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<div class="d-flex align-center mb-4" data-v-6fc203b4${_scopeId5}>`);
+                                    _push6(ssrRenderComponent(VTextField, {
+                                      modelValue: searchQuery.value,
+                                      "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                      "prepend-inner-icon": "mdi-magnify",
+                                      label: "Search in my favorites",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      class: "mr-4"
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(ssrRenderComponent(VSelect, {
+                                      modelValue: frameworkFilter.value,
+                                      "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                      items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                      label: "Framework",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      style: { "max-width": "200px" }
+                                    }, null, _parent6, _scopeId5));
+                                    _push6(`</div>`);
+                                    _push6(ssrRenderComponent(VRow, null, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`<!--[-->`);
+                                          ssrRenderList(filteredFavoriteSnippets.value, (favorite, index) => {
+                                            _push7(ssrRenderComponent(VCol, {
+                                              key: index,
+                                              cols: "12",
+                                              sm: "6",
+                                              lg: "4"
+                                            }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VCard, {
+                                                    class: "mx-auto snippet-card",
+                                                    "max-width": "400",
+                                                    elevation: "2",
+                                                    hover: ""
+                                                  }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(ssrRenderComponent(_component_NuxtLink, {
+                                                          to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`,
+                                                          class: "text-decoration-none"
+                                                        }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(ssrRenderComponent(VImg, {
+                                                                src: favorite.img || "/placeholder-image.jpg",
+                                                                height: "200",
+                                                                cover: "",
+                                                                class: "bg-grey-lighten-2"
+                                                              }, {
+                                                                placeholder: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VRow, {
+                                                                      align: "center",
+                                                                      justify: "center",
+                                                                      class: "fill-height"
+                                                                    }, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(ssrRenderComponent(VProgressCircular, {
+                                                                            indeterminate: "",
+                                                                            color: "primary"
+                                                                          }, null, _parent12, _scopeId11));
+                                                                        } else {
+                                                                          return [
+                                                                            createVNode(VProgressCircular, {
+                                                                              indeterminate: "",
+                                                                              color: "primary"
+                                                                            })
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 2
+                                                                    }, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VRow, {
+                                                                        align: "center",
+                                                                        justify: "center",
+                                                                        class: "fill-height"
+                                                                      }, {
+                                                                        default: withCtx(() => [
+                                                                          createVNode(VProgressCircular, {
+                                                                            indeterminate: "",
+                                                                            color: "primary"
+                                                                          })
+                                                                        ]),
+                                                                        _: 1
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                            } else {
+                                                              return [
+                                                                createVNode(VImg, {
+                                                                  src: favorite.img || "/placeholder-image.jpg",
+                                                                  height: "200",
+                                                                  cover: "",
+                                                                  class: "bg-grey-lighten-2"
+                                                                }, {
+                                                                  placeholder: withCtx(() => [
+                                                                    createVNode(VRow, {
+                                                                      align: "center",
+                                                                      justify: "center",
+                                                                      class: "fill-height"
+                                                                    }, {
+                                                                      default: withCtx(() => [
+                                                                        createVNode(VProgressCircular, {
+                                                                          indeterminate: "",
+                                                                          color: "primary"
+                                                                        })
+                                                                      ]),
+                                                                      _: 1
+                                                                    })
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1032, ["src"])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`${ssrInterpolate(favorite.title)}`);
+                                                            } else {
+                                                              return [
+                                                                createTextVNode(toDisplayString(favorite.title), 1)
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCardText, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(`<p class="text-body-1 mb-2" data-v-6fc203b4${_scopeId9}>${ssrInterpolate(favorite.description)}</p>`);
+                                                              _push10(ssrRenderComponent(VChip, {
+                                                                color: "primary",
+                                                                variant: "outlined",
+                                                                size: "small",
+                                                                class: "mb-2"
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(`${ssrInterpolate(favorite.framework)}`);
+                                                                  } else {
+                                                                    return [
+                                                                      createTextVNode(toDisplayString(favorite.framework), 1)
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(`<div class="d-flex align-center text-grey" data-v-6fc203b4${_scopeId9}>`);
+                                                              _push10(ssrRenderComponent(VAvatar, {
+                                                                size: "24",
+                                                                class: "mr-2"
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VImg, {
+                                                                      src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                      alt: "avatar"
+                                                                    }, null, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VImg, {
+                                                                        src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                        alt: "avatar"
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(`<span data-v-6fc203b4${_scopeId9}>${ssrInterpolate(favorite.username)}</span>`);
+                                                              _push10(ssrRenderComponent(VSpacer, null, null, _parent10, _scopeId9));
+                                                              _push10(ssrRenderComponent(VIcon, {
+                                                                size: "small",
+                                                                class: "mr-1"
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(`mdi-calendar`);
+                                                                  } else {
+                                                                    return [
+                                                                      createTextVNode("mdi-calendar")
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(`<span class="text-caption" data-v-6fc203b4${_scopeId9}>${ssrInterpolate(formatDisplayDate(favorite))}</span></div>`);
+                                                            } else {
+                                                              return [
+                                                                createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(favorite.description), 1),
+                                                                createVNode(VChip, {
+                                                                  color: "primary",
+                                                                  variant: "outlined",
+                                                                  size: "small",
+                                                                  class: "mb-2"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode(toDisplayString(favorite.framework), 1)
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1024),
+                                                                createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                                  createVNode(VAvatar, {
+                                                                    size: "24",
+                                                                    class: "mr-2"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createVNode(VImg, {
+                                                                        src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                        alt: "avatar"
+                                                                      })
+                                                                    ]),
+                                                                    _: 1
+                                                                  }),
+                                                                  createVNode("span", null, toDisplayString(favorite.username), 1),
+                                                                  createVNode(VSpacer),
+                                                                  createVNode(VIcon, {
+                                                                    size: "small",
+                                                                    class: "mr-1"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-calendar")
+                                                                    ]),
+                                                                    _: 1
+                                                                  }),
+                                                                  createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(favorite)), 1)
+                                                                ])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VDivider, null, null, _parent9, _scopeId8));
+                                                        _push9(ssrRenderComponent(VCardActions, null, {
+                                                          default: withCtx((_9, _push10, _parent10, _scopeId9) => {
+                                                            if (_push10) {
+                                                              _push10(ssrRenderComponent(VBtn, {
+                                                                variant: "text",
+                                                                color: "yellow",
+                                                                onClick: ($event) => toggleFavorite(favorite, "world")
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(ssrRenderComponent(VIcon, null, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(`mdi-bookmark`);
+                                                                        } else {
+                                                                          return [
+                                                                            createTextVNode("mdi-bookmark")
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 2
+                                                                    }, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createVNode(VIcon, null, {
+                                                                        default: withCtx(() => [
+                                                                          createTextVNode("mdi-bookmark")
+                                                                        ]),
+                                                                        _: 1
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                              _push10(ssrRenderComponent(VSpacer, null, null, _parent10, _scopeId9));
+                                                              _push10(ssrRenderComponent(VBtn, {
+                                                                variant: "text",
+                                                                color: "primary",
+                                                                to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                              }, {
+                                                                default: withCtx((_10, _push11, _parent11, _scopeId10) => {
+                                                                  if (_push11) {
+                                                                    _push11(` View Details `);
+                                                                    _push11(ssrRenderComponent(VIcon, { end: "" }, {
+                                                                      default: withCtx((_11, _push12, _parent12, _scopeId11) => {
+                                                                        if (_push12) {
+                                                                          _push12(`mdi-arrow-right`);
+                                                                        } else {
+                                                                          return [
+                                                                            createTextVNode("mdi-arrow-right")
+                                                                          ];
+                                                                        }
+                                                                      }),
+                                                                      _: 2
+                                                                    }, _parent11, _scopeId10));
+                                                                  } else {
+                                                                    return [
+                                                                      createTextVNode(" View Details "),
+                                                                      createVNode(VIcon, { end: "" }, {
+                                                                        default: withCtx(() => [
+                                                                          createTextVNode("mdi-arrow-right")
+                                                                        ]),
+                                                                        _: 1
+                                                                      })
+                                                                    ];
+                                                                  }
+                                                                }),
+                                                                _: 2
+                                                              }, _parent10, _scopeId9));
+                                                            } else {
+                                                              return [
+                                                                createVNode(VBtn, {
+                                                                  variant: "text",
+                                                                  color: "yellow",
+                                                                  onClick: withModifiers(($event) => toggleFavorite(favorite, "world"), ["stop"])
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VIcon, null, {
+                                                                      default: withCtx(() => [
+                                                                        createTextVNode("mdi-bookmark")
+                                                                      ]),
+                                                                      _: 1
+                                                                    })
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1032, ["onClick"]),
+                                                                createVNode(VSpacer),
+                                                                createVNode(VBtn, {
+                                                                  variant: "text",
+                                                                  color: "primary",
+                                                                  to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode(" View Details "),
+                                                                    createVNode(VIcon, { end: "" }, {
+                                                                      default: withCtx(() => [
+                                                                        createTextVNode("mdi-arrow-right")
+                                                                      ]),
+                                                                      _: 1
+                                                                    })
+                                                                  ]),
+                                                                  _: 2
+                                                                }, 1032, ["to"])
+                                                              ];
+                                                            }
+                                                          }),
+                                                          _: 2
+                                                        }, _parent9, _scopeId8));
+                                                      } else {
+                                                        return [
+                                                          createVNode(_component_NuxtLink, {
+                                                            to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`,
+                                                            class: "text-decoration-none"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VImg, {
+                                                                src: favorite.img || "/placeholder-image.jpg",
+                                                                height: "200",
+                                                                cover: "",
+                                                                class: "bg-grey-lighten-2"
+                                                              }, {
+                                                                placeholder: withCtx(() => [
+                                                                  createVNode(VRow, {
+                                                                    align: "center",
+                                                                    justify: "center",
+                                                                    class: "fill-height"
+                                                                  }, {
+                                                                    default: withCtx(() => [
+                                                                      createVNode(VProgressCircular, {
+                                                                        indeterminate: "",
+                                                                        color: "primary"
+                                                                      })
+                                                                    ]),
+                                                                    _: 1
+                                                                  })
+                                                                ]),
+                                                                _: 2
+                                                              }, 1032, ["src"])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["to"]),
+                                                          createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(favorite.title), 1)
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024),
+                                                          createVNode(VCardText, null, {
+                                                            default: withCtx(() => [
+                                                              createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(favorite.description), 1),
+                                                              createVNode(VChip, {
+                                                                color: "primary",
+                                                                variant: "outlined",
+                                                                size: "small",
+                                                                class: "mb-2"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode(toDisplayString(favorite.framework), 1)
+                                                                ]),
+                                                                _: 2
+                                                              }, 1024),
+                                                              createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                                createVNode(VAvatar, {
+                                                                  size: "24",
+                                                                  class: "mr-2"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VImg, {
+                                                                      src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                      alt: "avatar"
+                                                                    })
+                                                                  ]),
+                                                                  _: 1
+                                                                }),
+                                                                createVNode("span", null, toDisplayString(favorite.username), 1),
+                                                                createVNode(VSpacer),
+                                                                createVNode(VIcon, {
+                                                                  size: "small",
+                                                                  class: "mr-1"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-calendar")
+                                                                  ]),
+                                                                  _: 1
+                                                                }),
+                                                                createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(favorite)), 1)
+                                                              ])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024),
+                                                          createVNode(VDivider),
+                                                          createVNode(VCardActions, null, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VBtn, {
+                                                                variant: "text",
+                                                                color: "yellow",
+                                                                onClick: withModifiers(($event) => toggleFavorite(favorite, "world"), ["stop"])
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VIcon, null, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-bookmark")
+                                                                    ]),
+                                                                    _: 1
+                                                                  })
+                                                                ]),
+                                                                _: 2
+                                                              }, 1032, ["onClick"]),
+                                                              createVNode(VSpacer),
+                                                              createVNode(VBtn, {
+                                                                variant: "text",
+                                                                color: "primary",
+                                                                to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode(" View Details "),
+                                                                  createVNode(VIcon, { end: "" }, {
+                                                                    default: withCtx(() => [
+                                                                      createTextVNode("mdi-arrow-right")
+                                                                    ]),
+                                                                    _: 1
+                                                                  })
+                                                                ]),
+                                                                _: 2
+                                                              }, 1032, ["to"])
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024)
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 2
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VCard, {
+                                                      class: "mx-auto snippet-card",
+                                                      "max-width": "400",
+                                                      elevation: "2",
+                                                      hover: ""
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(_component_NuxtLink, {
+                                                          to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`,
+                                                          class: "text-decoration-none"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VImg, {
+                                                              src: favorite.img || "/placeholder-image.jpg",
+                                                              height: "200",
+                                                              cover: "",
+                                                              class: "bg-grey-lighten-2"
+                                                            }, {
+                                                              placeholder: withCtx(() => [
+                                                                createVNode(VRow, {
+                                                                  align: "center",
+                                                                  justify: "center",
+                                                                  class: "fill-height"
+                                                                }, {
+                                                                  default: withCtx(() => [
+                                                                    createVNode(VProgressCircular, {
+                                                                      indeterminate: "",
+                                                                      color: "primary"
+                                                                    })
+                                                                  ]),
+                                                                  _: 1
+                                                                })
+                                                              ]),
+                                                              _: 2
+                                                            }, 1032, ["src"])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["to"]),
+                                                        createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(favorite.title), 1)
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024),
+                                                        createVNode(VCardText, null, {
+                                                          default: withCtx(() => [
+                                                            createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(favorite.description), 1),
+                                                            createVNode(VChip, {
+                                                              color: "primary",
+                                                              variant: "outlined",
+                                                              size: "small",
+                                                              class: "mb-2"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode(toDisplayString(favorite.framework), 1)
+                                                              ]),
+                                                              _: 2
+                                                            }, 1024),
+                                                            createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                              createVNode(VAvatar, {
+                                                                size: "24",
+                                                                class: "mr-2"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VImg, {
+                                                                    src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                    alt: "avatar"
+                                                                  })
+                                                                ]),
+                                                                _: 1
+                                                              }),
+                                                              createVNode("span", null, toDisplayString(favorite.username), 1),
+                                                              createVNode(VSpacer),
+                                                              createVNode(VIcon, {
+                                                                size: "small",
+                                                                class: "mr-1"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-calendar")
+                                                                ]),
+                                                                _: 1
+                                                              }),
+                                                              createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(favorite)), 1)
+                                                            ])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024),
+                                                        createVNode(VDivider),
+                                                        createVNode(VCardActions, null, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VBtn, {
+                                                              variant: "text",
+                                                              color: "yellow",
+                                                              onClick: withModifiers(($event) => toggleFavorite(favorite, "world"), ["stop"])
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VIcon, null, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-bookmark")
+                                                                  ]),
+                                                                  _: 1
+                                                                })
+                                                              ]),
+                                                              _: 2
+                                                            }, 1032, ["onClick"]),
+                                                            createVNode(VSpacer),
+                                                            createVNode(VBtn, {
+                                                              variant: "text",
+                                                              color: "primary",
+                                                              to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode(" View Details "),
+                                                                createVNode(VIcon, { end: "" }, {
+                                                                  default: withCtx(() => [
+                                                                    createTextVNode("mdi-arrow-right")
+                                                                  ]),
+                                                                  _: 1
+                                                                })
+                                                              ]),
+                                                              _: 2
+                                                            }, 1032, ["to"])
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024)
+                                                  ];
+                                                }
+                                              }),
+                                              _: 2
+                                            }, _parent7, _scopeId6));
+                                          });
+                                          _push7(`<!--]-->`);
+                                          if (filteredFavoriteSnippets.value.length === 0) {
+                                            _push7(ssrRenderComponent(VCol, { cols: "12" }, {
+                                              default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                                if (_push8) {
+                                                  _push8(ssrRenderComponent(VAlert, {
+                                                    type: "info",
+                                                    variant: "tonal"
+                                                  }, {
+                                                    default: withCtx((_8, _push9, _parent9, _scopeId8) => {
+                                                      if (_push9) {
+                                                        _push9(` You don&#39;t have any favorite snippets yet. `);
+                                                      } else {
+                                                        return [
+                                                          createTextVNode(" You don't have any favorite snippets yet. ")
+                                                        ];
+                                                      }
+                                                    }),
+                                                    _: 1
+                                                  }, _parent8, _scopeId7));
+                                                } else {
+                                                  return [
+                                                    createVNode(VAlert, {
+                                                      type: "info",
+                                                      variant: "tonal"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" You don't have any favorite snippets yet. ")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ];
+                                                }
+                                              }),
+                                              _: 1
+                                            }, _parent7, _scopeId6));
+                                          } else {
+                                            _push7(`<!---->`);
+                                          }
+                                        } else {
+                                          return [
+                                            (openBlock(true), createBlock(Fragment, null, renderList(filteredFavoriteSnippets.value, (favorite, index) => {
+                                              return openBlock(), createBlock(VCol, {
+                                                key: index,
+                                                cols: "12",
+                                                sm: "6",
+                                                lg: "4"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VCard, {
+                                                    class: "mx-auto snippet-card",
+                                                    "max-width": "400",
+                                                    elevation: "2",
+                                                    hover: ""
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(_component_NuxtLink, {
+                                                        to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`,
+                                                        class: "text-decoration-none"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VImg, {
+                                                            src: favorite.img || "/placeholder-image.jpg",
+                                                            height: "200",
+                                                            cover: "",
+                                                            class: "bg-grey-lighten-2"
+                                                          }, {
+                                                            placeholder: withCtx(() => [
+                                                              createVNode(VRow, {
+                                                                align: "center",
+                                                                justify: "center",
+                                                                class: "fill-height"
+                                                              }, {
+                                                                default: withCtx(() => [
+                                                                  createVNode(VProgressCircular, {
+                                                                    indeterminate: "",
+                                                                    color: "primary"
+                                                                  })
+                                                                ]),
+                                                                _: 1
+                                                              })
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["src"])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["to"]),
+                                                      createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(favorite.title), 1)
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024),
+                                                      createVNode(VCardText, null, {
+                                                        default: withCtx(() => [
+                                                          createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(favorite.description), 1),
+                                                          createVNode(VChip, {
+                                                            color: "primary",
+                                                            variant: "outlined",
+                                                            size: "small",
+                                                            class: "mb-2"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(toDisplayString(favorite.framework), 1)
+                                                            ]),
+                                                            _: 2
+                                                          }, 1024),
+                                                          createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                            createVNode(VAvatar, {
+                                                              size: "24",
+                                                              class: "mr-2"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VImg, {
+                                                                  src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                  alt: "avatar"
+                                                                })
+                                                              ]),
+                                                              _: 1
+                                                            }),
+                                                            createVNode("span", null, toDisplayString(favorite.username), 1),
+                                                            createVNode(VSpacer),
+                                                            createVNode(VIcon, {
+                                                              size: "small",
+                                                              class: "mr-1"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-calendar")
+                                                              ]),
+                                                              _: 1
+                                                            }),
+                                                            createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(favorite)), 1)
+                                                          ])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024),
+                                                      createVNode(VDivider),
+                                                      createVNode(VCardActions, null, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VBtn, {
+                                                            variant: "text",
+                                                            color: "yellow",
+                                                            onClick: withModifiers(($event) => toggleFavorite(favorite, "world"), ["stop"])
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VIcon, null, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-bookmark")
+                                                                ]),
+                                                                _: 1
+                                                              })
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["onClick"]),
+                                                          createVNode(VSpacer),
+                                                          createVNode(VBtn, {
+                                                            variant: "text",
+                                                            color: "primary",
+                                                            to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode(" View Details "),
+                                                              createVNode(VIcon, { end: "" }, {
+                                                                default: withCtx(() => [
+                                                                  createTextVNode("mdi-arrow-right")
+                                                                ]),
+                                                                _: 1
+                                                              })
+                                                            ]),
+                                                            _: 2
+                                                          }, 1032, ["to"])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024)
+                                                ]),
+                                                _: 2
+                                              }, 1024);
+                                            }), 128)),
+                                            filteredFavoriteSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                              key: 0,
+                                              cols: "12"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VAlert, {
+                                                  type: "info",
+                                                  variant: "tonal"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" You don't have any favorite snippets yet. ")
+                                                  ]),
+                                                  _: 1
+                                                })
+                                              ]),
+                                              _: 1
+                                            })) : createCommentVNode("", true)
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                        createVNode(VTextField, {
+                                          modelValue: searchQuery.value,
+                                          "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                          "prepend-inner-icon": "mdi-magnify",
+                                          label: "Search in my favorites",
+                                          variant: "outlined",
+                                          density: "comfortable",
+                                          "hide-details": "",
+                                          class: "mr-4"
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                        createVNode(VSelect, {
+                                          modelValue: frameworkFilter.value,
+                                          "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                          items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                          label: "Framework",
+                                          variant: "outlined",
+                                          density: "comfortable",
+                                          "hide-details": "",
+                                          style: { "max-width": "200px" }
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                      ]),
+                                      createVNode(VRow, null, {
+                                        default: withCtx(() => [
+                                          (openBlock(true), createBlock(Fragment, null, renderList(filteredFavoriteSnippets.value, (favorite, index) => {
+                                            return openBlock(), createBlock(VCol, {
+                                              key: index,
+                                              cols: "12",
+                                              sm: "6",
+                                              lg: "4"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VCard, {
+                                                  class: "mx-auto snippet-card",
+                                                  "max-width": "400",
+                                                  elevation: "2",
+                                                  hover: ""
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(_component_NuxtLink, {
+                                                      to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`,
+                                                      class: "text-decoration-none"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VImg, {
+                                                          src: favorite.img || "/placeholder-image.jpg",
+                                                          height: "200",
+                                                          cover: "",
+                                                          class: "bg-grey-lighten-2"
+                                                        }, {
+                                                          placeholder: withCtx(() => [
+                                                            createVNode(VRow, {
+                                                              align: "center",
+                                                              justify: "center",
+                                                              class: "fill-height"
+                                                            }, {
+                                                              default: withCtx(() => [
+                                                                createVNode(VProgressCircular, {
+                                                                  indeterminate: "",
+                                                                  color: "primary"
+                                                                })
+                                                              ]),
+                                                              _: 1
+                                                            })
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["src"])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["to"]),
+                                                    createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(favorite.title), 1)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024),
+                                                    createVNode(VCardText, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(favorite.description), 1),
+                                                        createVNode(VChip, {
+                                                          color: "primary",
+                                                          variant: "outlined",
+                                                          size: "small",
+                                                          class: "mb-2"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(toDisplayString(favorite.framework), 1)
+                                                          ]),
+                                                          _: 2
+                                                        }, 1024),
+                                                        createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                          createVNode(VAvatar, {
+                                                            size: "24",
+                                                            class: "mr-2"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VImg, {
+                                                                src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                                alt: "avatar"
+                                                              })
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode("span", null, toDisplayString(favorite.username), 1),
+                                                          createVNode(VSpacer),
+                                                          createVNode(VIcon, {
+                                                            size: "small",
+                                                            class: "mr-1"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-calendar")
+                                                            ]),
+                                                            _: 1
+                                                          }),
+                                                          createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(favorite)), 1)
+                                                        ])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024),
+                                                    createVNode(VDivider),
+                                                    createVNode(VCardActions, null, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VBtn, {
+                                                          variant: "text",
+                                                          color: "yellow",
+                                                          onClick: withModifiers(($event) => toggleFavorite(favorite, "world"), ["stop"])
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VIcon, null, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-bookmark")
+                                                              ]),
+                                                              _: 1
+                                                            })
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["onClick"]),
+                                                        createVNode(VSpacer),
+                                                        createVNode(VBtn, {
+                                                          variant: "text",
+                                                          color: "primary",
+                                                          to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode(" View Details "),
+                                                            createVNode(VIcon, { end: "" }, {
+                                                              default: withCtx(() => [
+                                                                createTextVNode("mdi-arrow-right")
+                                                              ]),
+                                                              _: 1
+                                                            })
+                                                          ]),
+                                                          _: 2
+                                                        }, 1032, ["to"])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024)
+                                              ]),
+                                              _: 2
+                                            }, 1024);
+                                          }), 128)),
+                                          filteredFavoriteSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                            key: 0,
+                                            cols: "12"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VAlert, {
+                                                type: "info",
+                                                variant: "tonal"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(" You don't have any favorite snippets yet. ")
+                                                ]),
+                                                _: 1
+                                              })
+                                            ]),
+                                            _: 1
+                                          })) : createCommentVNode("", true)
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VWindowItem, { value: "World" }, {
+                                  default: withCtx(() => [
+                                    createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                      createVNode(VTextField, {
+                                        modelValue: searchQuery.value,
+                                        "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                        "prepend-inner-icon": "mdi-magnify",
+                                        label: "Search snippets",
+                                        variant: "outlined",
+                                        density: "comfortable",
+                                        "hide-details": "",
+                                        class: "mr-4"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                      createVNode(VSelect, {
+                                        modelValue: frameworkFilter.value,
+                                        "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                        items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                        label: "Framework",
+                                        variant: "outlined",
+                                        density: "comfortable",
+                                        "hide-details": "",
+                                        style: { "max-width": "200px" }
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ]),
+                                    createVNode(VRow, null, {
+                                      default: withCtx(() => [
+                                        (openBlock(true), createBlock(Fragment, null, renderList(filteredWorldSnippets.value, (snippet, index) => {
+                                          return openBlock(), createBlock(VCol, {
+                                            key: index,
+                                            cols: "12",
+                                            sm: "6",
+                                            lg: "4"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VCard, {
+                                                class: "mx-auto snippet-card",
+                                                "max-width": "400",
+                                                elevation: "2",
+                                                hover: ""
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(_component_NuxtLink, {
+                                                    to: `/snippetsView?id=${snippet.id}&type=world`,
+                                                    class: "text-decoration-none"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VImg, {
+                                                        src: snippet.img || "/placeholder-image.jpg",
+                                                        height: "200",
+                                                        cover: "",
+                                                        class: "bg-grey-lighten-2"
+                                                      }, {
+                                                        placeholder: withCtx(() => [
+                                                          createVNode(VRow, {
+                                                            align: "center",
+                                                            justify: "center",
+                                                            class: "fill-height"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VProgressCircular, {
+                                                                indeterminate: "",
+                                                                color: "primary"
+                                                              })
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["src"])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["to"]),
+                                                  createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(snippet.title), 1)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024),
+                                                  createVNode(VCardText, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                      createVNode(VChip, {
+                                                        color: "primary",
+                                                        variant: "outlined",
+                                                        size: "small",
+                                                        class: "mb-2"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(snippet.framework), 1)
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024),
+                                                      createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                        createVNode(VAvatar, {
+                                                          size: "24",
+                                                          class: "mr-2"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VImg, {
+                                                              src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                              alt: "avatar"
+                                                            })
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                        createVNode(VSpacer),
+                                                        createVNode(VIcon, {
+                                                          size: "small",
+                                                          class: "mr-1"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-calendar")
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                      ])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024),
+                                                  createVNode(VDivider),
+                                                  createVNode(VCardActions, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VBtn, {
+                                                        variant: "text",
+                                                        color: snippet.isFavorite ? "yellow" : "",
+                                                        onClick: withModifiers(($event) => toggleFavorite(snippet, "world"), ["stop"])
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VIcon, {
+                                                            icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                          }, null, 8, ["icon"])
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["color", "onClick"]),
+                                                      createVNode(VSpacer),
+                                                      createVNode(VBtn, {
+                                                        variant: "text",
+                                                        color: "primary",
+                                                        to: `/snippetsView?id=${snippet.id}&type=world`
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(" View Details "),
+                                                          createVNode(VIcon, { end: "" }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-arrow-right")
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["to"])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024)
+                                                ]),
+                                                _: 2
+                                              }, 1024)
+                                            ]),
+                                            _: 2
+                                          }, 1024);
+                                        }), 128)),
+                                        filteredWorldSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                          key: 0,
+                                          cols: "12"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VAlert, {
+                                              type: "info",
+                                              variant: "tonal"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" No snippets found. Try modifying your search criteria. ")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })) : createCommentVNode("", true)
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VWindowItem, { value: "Personal" }, {
+                                  default: withCtx(() => [
+                                    createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                      createVNode(VTextField, {
+                                        modelValue: searchQuery.value,
+                                        "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                        "prepend-inner-icon": "mdi-magnify",
+                                        label: "Search in my snippets",
+                                        variant: "outlined",
+                                        density: "comfortable",
+                                        "hide-details": "",
+                                        class: "mr-4"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                      createVNode(VSelect, {
+                                        modelValue: frameworkFilter.value,
+                                        "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                        items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                        label: "Framework",
+                                        variant: "outlined",
+                                        density: "comfortable",
+                                        "hide-details": "",
+                                        style: { "max-width": "200px" }
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ]),
+                                    createVNode(VRow, null, {
+                                      default: withCtx(() => [
+                                        (openBlock(true), createBlock(Fragment, null, renderList(filteredPersonalSnippets.value, (snippet, index) => {
+                                          return openBlock(), createBlock(VCol, {
+                                            key: index,
+                                            cols: "12",
+                                            sm: "6",
+                                            lg: "4"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VCard, {
+                                                class: "mx-auto snippet-card",
+                                                "max-width": "400",
+                                                elevation: "2",
+                                                hover: ""
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(_component_NuxtLink, {
+                                                    to: `/snippetsView?id=${snippet.id}&type=personal`,
+                                                    class: "text-decoration-none"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VImg, {
+                                                        src: snippet.img || "/placeholder-image.jpg",
+                                                        height: "200",
+                                                        cover: "",
+                                                        class: "bg-grey-lighten-2"
+                                                      }, {
+                                                        placeholder: withCtx(() => [
+                                                          createVNode(VRow, {
+                                                            align: "center",
+                                                            justify: "center",
+                                                            class: "fill-height"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VProgressCircular, {
+                                                                indeterminate: "",
+                                                                color: "primary"
+                                                              })
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["src"])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["to"]),
+                                                  createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(snippet.title), 1)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024),
+                                                  createVNode(VCardText, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                      createVNode(VChip, {
+                                                        color: "primary",
+                                                        variant: "outlined",
+                                                        size: "small",
+                                                        class: "mb-2"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(snippet.framework), 1)
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024),
+                                                      createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                        createVNode(VAvatar, {
+                                                          size: "24",
+                                                          class: "mr-2"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VImg, {
+                                                              src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                              alt: "avatar"
+                                                            })
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                        createVNode(VSpacer),
+                                                        createVNode(VIcon, {
+                                                          size: "small",
+                                                          class: "mr-1"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-calendar")
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                      ])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024),
+                                                  createVNode(VDivider),
+                                                  createVNode(VCardActions, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VBtn, {
+                                                        variant: "text",
+                                                        color: "error",
+                                                        onClick: withModifiers(($event) => confirmDelete(snippet), ["stop"])
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VIcon, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-delete")
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["onClick"]),
+                                                      createVNode(VSpacer),
+                                                      createVNode(VBtn, {
+                                                        variant: "text",
+                                                        color: "primary",
+                                                        to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(" View Details "),
+                                                          createVNode(VIcon, { end: "" }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-arrow-right")
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["to"])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024)
+                                                ]),
+                                                _: 2
+                                              }, 1024)
+                                            ]),
+                                            _: 2
+                                          }, 1024);
+                                        }), 128)),
+                                        filteredPersonalSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                          key: 0,
+                                          cols: "12"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VAlert, {
+                                              type: "info",
+                                              variant: "tonal"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" You don't have any snippets yet. Create a new one! ")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })) : createCommentVNode("", true)
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VWindowItem, { value: "Favorites" }, {
+                                  default: withCtx(() => [
+                                    createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                      createVNode(VTextField, {
+                                        modelValue: searchQuery.value,
+                                        "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                        "prepend-inner-icon": "mdi-magnify",
+                                        label: "Search in my favorites",
+                                        variant: "outlined",
+                                        density: "comfortable",
+                                        "hide-details": "",
+                                        class: "mr-4"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                      createVNode(VSelect, {
+                                        modelValue: frameworkFilter.value,
+                                        "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                        items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                        label: "Framework",
+                                        variant: "outlined",
+                                        density: "comfortable",
+                                        "hide-details": "",
+                                        style: { "max-width": "200px" }
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ]),
+                                    createVNode(VRow, null, {
+                                      default: withCtx(() => [
+                                        (openBlock(true), createBlock(Fragment, null, renderList(filteredFavoriteSnippets.value, (favorite, index) => {
+                                          return openBlock(), createBlock(VCol, {
+                                            key: index,
+                                            cols: "12",
+                                            sm: "6",
+                                            lg: "4"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VCard, {
+                                                class: "mx-auto snippet-card",
+                                                "max-width": "400",
+                                                elevation: "2",
+                                                hover: ""
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(_component_NuxtLink, {
+                                                    to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`,
+                                                    class: "text-decoration-none"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VImg, {
+                                                        src: favorite.img || "/placeholder-image.jpg",
+                                                        height: "200",
+                                                        cover: "",
+                                                        class: "bg-grey-lighten-2"
+                                                      }, {
+                                                        placeholder: withCtx(() => [
+                                                          createVNode(VRow, {
+                                                            align: "center",
+                                                            justify: "center",
+                                                            class: "fill-height"
+                                                          }, {
+                                                            default: withCtx(() => [
+                                                              createVNode(VProgressCircular, {
+                                                                indeterminate: "",
+                                                                color: "primary"
+                                                              })
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["src"])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["to"]),
+                                                  createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(favorite.title), 1)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024),
+                                                  createVNode(VCardText, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(favorite.description), 1),
+                                                      createVNode(VChip, {
+                                                        color: "primary",
+                                                        variant: "outlined",
+                                                        size: "small",
+                                                        class: "mb-2"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(toDisplayString(favorite.framework), 1)
+                                                        ]),
+                                                        _: 2
+                                                      }, 1024),
+                                                      createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                        createVNode(VAvatar, {
+                                                          size: "24",
+                                                          class: "mr-2"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VImg, {
+                                                              src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                              alt: "avatar"
+                                                            })
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode("span", null, toDisplayString(favorite.username), 1),
+                                                        createVNode(VSpacer),
+                                                        createVNode(VIcon, {
+                                                          size: "small",
+                                                          class: "mr-1"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-calendar")
+                                                          ]),
+                                                          _: 1
+                                                        }),
+                                                        createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(favorite)), 1)
+                                                      ])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024),
+                                                  createVNode(VDivider),
+                                                  createVNode(VCardActions, null, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VBtn, {
+                                                        variant: "text",
+                                                        color: "yellow",
+                                                        onClick: withModifiers(($event) => toggleFavorite(favorite, "world"), ["stop"])
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VIcon, null, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-bookmark")
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["onClick"]),
+                                                      createVNode(VSpacer),
+                                                      createVNode(VBtn, {
+                                                        variant: "text",
+                                                        color: "primary",
+                                                        to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode(" View Details "),
+                                                          createVNode(VIcon, { end: "" }, {
+                                                            default: withCtx(() => [
+                                                              createTextVNode("mdi-arrow-right")
+                                                            ]),
+                                                            _: 1
+                                                          })
+                                                        ]),
+                                                        _: 2
+                                                      }, 1032, ["to"])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024)
+                                                ]),
+                                                _: 2
+                                              }, 1024)
+                                            ]),
+                                            _: 2
+                                          }, 1024);
+                                        }), 128)),
+                                        filteredFavoriteSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                          key: 0,
+                                          cols: "12"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VAlert, {
+                                              type: "info",
+                                              variant: "tonal"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(" You don't have any favorite snippets yet. ")
+                                              ]),
+                                              _: 1
+                                            })
+                                          ]),
+                                          _: 1
+                                        })) : createCommentVNode("", true)
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VTabs, {
+                            modelValue: tab.value,
+                            "onUpdate:modelValue": ($event) => tab.value = $event,
+                            color: "primary",
+                            "align-tabs": "center",
+                            class: "mb-6"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VTab, {
+                                value: "World",
+                                class: "text-subtitle-1"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, { start: "" }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-earth")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" Public Snippets ")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VTab, {
+                                value: "Personal",
+                                class: "text-subtitle-1"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, { start: "" }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-account")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" My Snippets ")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VTab, {
+                                value: "Favorites",
+                                class: "text-subtitle-1"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, { start: "" }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-star")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" Favorites ")
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }, 8, ["modelValue", "onUpdate:modelValue"]),
+                          createVNode(VWindow, {
+                            modelValue: tab.value,
+                            "onUpdate:modelValue": ($event) => tab.value = $event
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VWindowItem, { value: "World" }, {
+                                default: withCtx(() => [
+                                  createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                    createVNode(VTextField, {
+                                      modelValue: searchQuery.value,
+                                      "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                      "prepend-inner-icon": "mdi-magnify",
+                                      label: "Search snippets",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      class: "mr-4"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                    createVNode(VSelect, {
+                                      modelValue: frameworkFilter.value,
+                                      "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                      items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                      label: "Framework",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      style: { "max-width": "200px" }
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                  ]),
+                                  createVNode(VRow, null, {
+                                    default: withCtx(() => [
+                                      (openBlock(true), createBlock(Fragment, null, renderList(filteredWorldSnippets.value, (snippet, index) => {
+                                        return openBlock(), createBlock(VCol, {
+                                          key: index,
+                                          cols: "12",
+                                          sm: "6",
+                                          lg: "4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VCard, {
+                                              class: "mx-auto snippet-card",
+                                              "max-width": "400",
+                                              elevation: "2",
+                                              hover: ""
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(_component_NuxtLink, {
+                                                  to: `/snippetsView?id=${snippet.id}&type=world`,
+                                                  class: "text-decoration-none"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VImg, {
+                                                      src: snippet.img || "/placeholder-image.jpg",
+                                                      height: "200",
+                                                      cover: "",
+                                                      class: "bg-grey-lighten-2"
+                                                    }, {
+                                                      placeholder: withCtx(() => [
+                                                        createVNode(VRow, {
+                                                          align: "center",
+                                                          justify: "center",
+                                                          class: "fill-height"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VProgressCircular, {
+                                                              indeterminate: "",
+                                                              color: "primary"
+                                                            })
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["src"])
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["to"]),
+                                                createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(snippet.title), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024),
+                                                createVNode(VCardText, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                    createVNode(VChip, {
+                                                      color: "primary",
+                                                      variant: "outlined",
+                                                      size: "small",
+                                                      class: "mb-2"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(snippet.framework), 1)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024),
+                                                    createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                      createVNode(VAvatar, {
+                                                        size: "24",
+                                                        class: "mr-2"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VImg, {
+                                                            src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                            alt: "avatar"
+                                                          })
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                      createVNode(VSpacer),
+                                                      createVNode(VIcon, {
+                                                        size: "small",
+                                                        class: "mr-1"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-calendar")
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                    ])
+                                                  ]),
+                                                  _: 2
+                                                }, 1024),
+                                                createVNode(VDivider),
+                                                createVNode(VCardActions, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VBtn, {
+                                                      variant: "text",
+                                                      color: snippet.isFavorite ? "yellow" : "",
+                                                      onClick: withModifiers(($event) => toggleFavorite(snippet, "world"), ["stop"])
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VIcon, {
+                                                          icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                        }, null, 8, ["icon"])
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["color", "onClick"]),
+                                                    createVNode(VSpacer),
+                                                    createVNode(VBtn, {
+                                                      variant: "text",
+                                                      color: "primary",
+                                                      to: `/snippetsView?id=${snippet.id}&type=world`
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" View Details "),
+                                                        createVNode(VIcon, { end: "" }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-arrow-right")
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["to"])
+                                                  ]),
+                                                  _: 2
+                                                }, 1024)
+                                              ]),
+                                              _: 2
+                                            }, 1024)
+                                          ]),
+                                          _: 2
+                                        }, 1024);
+                                      }), 128)),
+                                      filteredWorldSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                        key: 0,
+                                        cols: "12"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VAlert, {
+                                            type: "info",
+                                            variant: "tonal"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" No snippets found. Try modifying your search criteria. ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      })) : createCommentVNode("", true)
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VWindowItem, { value: "Personal" }, {
+                                default: withCtx(() => [
+                                  createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                    createVNode(VTextField, {
+                                      modelValue: searchQuery.value,
+                                      "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                      "prepend-inner-icon": "mdi-magnify",
+                                      label: "Search in my snippets",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      class: "mr-4"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                    createVNode(VSelect, {
+                                      modelValue: frameworkFilter.value,
+                                      "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                      items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                      label: "Framework",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      style: { "max-width": "200px" }
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                  ]),
+                                  createVNode(VRow, null, {
+                                    default: withCtx(() => [
+                                      (openBlock(true), createBlock(Fragment, null, renderList(filteredPersonalSnippets.value, (snippet, index) => {
+                                        return openBlock(), createBlock(VCol, {
+                                          key: index,
+                                          cols: "12",
+                                          sm: "6",
+                                          lg: "4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VCard, {
+                                              class: "mx-auto snippet-card",
+                                              "max-width": "400",
+                                              elevation: "2",
+                                              hover: ""
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(_component_NuxtLink, {
+                                                  to: `/snippetsView?id=${snippet.id}&type=personal`,
+                                                  class: "text-decoration-none"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VImg, {
+                                                      src: snippet.img || "/placeholder-image.jpg",
+                                                      height: "200",
+                                                      cover: "",
+                                                      class: "bg-grey-lighten-2"
+                                                    }, {
+                                                      placeholder: withCtx(() => [
+                                                        createVNode(VRow, {
+                                                          align: "center",
+                                                          justify: "center",
+                                                          class: "fill-height"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VProgressCircular, {
+                                                              indeterminate: "",
+                                                              color: "primary"
+                                                            })
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["src"])
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["to"]),
+                                                createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(snippet.title), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024),
+                                                createVNode(VCardText, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                    createVNode(VChip, {
+                                                      color: "primary",
+                                                      variant: "outlined",
+                                                      size: "small",
+                                                      class: "mb-2"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(snippet.framework), 1)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024),
+                                                    createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                      createVNode(VAvatar, {
+                                                        size: "24",
+                                                        class: "mr-2"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VImg, {
+                                                            src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                            alt: "avatar"
+                                                          })
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                      createVNode(VSpacer),
+                                                      createVNode(VIcon, {
+                                                        size: "small",
+                                                        class: "mr-1"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-calendar")
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                    ])
+                                                  ]),
+                                                  _: 2
+                                                }, 1024),
+                                                createVNode(VDivider),
+                                                createVNode(VCardActions, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VBtn, {
+                                                      variant: "text",
+                                                      color: "error",
+                                                      onClick: withModifiers(($event) => confirmDelete(snippet), ["stop"])
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VIcon, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-delete")
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["onClick"]),
+                                                    createVNode(VSpacer),
+                                                    createVNode(VBtn, {
+                                                      variant: "text",
+                                                      color: "primary",
+                                                      to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" View Details "),
+                                                        createVNode(VIcon, { end: "" }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-arrow-right")
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["to"])
+                                                  ]),
+                                                  _: 2
+                                                }, 1024)
+                                              ]),
+                                              _: 2
+                                            }, 1024)
+                                          ]),
+                                          _: 2
+                                        }, 1024);
+                                      }), 128)),
+                                      filteredPersonalSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                        key: 0,
+                                        cols: "12"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VAlert, {
+                                            type: "info",
+                                            variant: "tonal"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" You don't have any snippets yet. Create a new one! ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      })) : createCommentVNode("", true)
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VWindowItem, { value: "Favorites" }, {
+                                default: withCtx(() => [
+                                  createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                    createVNode(VTextField, {
+                                      modelValue: searchQuery.value,
+                                      "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                      "prepend-inner-icon": "mdi-magnify",
+                                      label: "Search in my favorites",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      class: "mr-4"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                    createVNode(VSelect, {
+                                      modelValue: frameworkFilter.value,
+                                      "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                      items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                      label: "Framework",
+                                      variant: "outlined",
+                                      density: "comfortable",
+                                      "hide-details": "",
+                                      style: { "max-width": "200px" }
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                  ]),
+                                  createVNode(VRow, null, {
+                                    default: withCtx(() => [
+                                      (openBlock(true), createBlock(Fragment, null, renderList(filteredFavoriteSnippets.value, (favorite, index) => {
+                                        return openBlock(), createBlock(VCol, {
+                                          key: index,
+                                          cols: "12",
+                                          sm: "6",
+                                          lg: "4"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VCard, {
+                                              class: "mx-auto snippet-card",
+                                              "max-width": "400",
+                                              elevation: "2",
+                                              hover: ""
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(_component_NuxtLink, {
+                                                  to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`,
+                                                  class: "text-decoration-none"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VImg, {
+                                                      src: favorite.img || "/placeholder-image.jpg",
+                                                      height: "200",
+                                                      cover: "",
+                                                      class: "bg-grey-lighten-2"
+                                                    }, {
+                                                      placeholder: withCtx(() => [
+                                                        createVNode(VRow, {
+                                                          align: "center",
+                                                          justify: "center",
+                                                          class: "fill-height"
+                                                        }, {
+                                                          default: withCtx(() => [
+                                                            createVNode(VProgressCircular, {
+                                                              indeterminate: "",
+                                                              color: "primary"
+                                                            })
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["src"])
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["to"]),
+                                                createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(favorite.title), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024),
+                                                createVNode(VCardText, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(favorite.description), 1),
+                                                    createVNode(VChip, {
+                                                      color: "primary",
+                                                      variant: "outlined",
+                                                      size: "small",
+                                                      class: "mb-2"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(toDisplayString(favorite.framework), 1)
+                                                      ]),
+                                                      _: 2
+                                                    }, 1024),
+                                                    createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                      createVNode(VAvatar, {
+                                                        size: "24",
+                                                        class: "mr-2"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VImg, {
+                                                            src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                            alt: "avatar"
+                                                          })
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode("span", null, toDisplayString(favorite.username), 1),
+                                                      createVNode(VSpacer),
+                                                      createVNode(VIcon, {
+                                                        size: "small",
+                                                        class: "mr-1"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-calendar")
+                                                        ]),
+                                                        _: 1
+                                                      }),
+                                                      createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(favorite)), 1)
+                                                    ])
+                                                  ]),
+                                                  _: 2
+                                                }, 1024),
+                                                createVNode(VDivider),
+                                                createVNode(VCardActions, null, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VBtn, {
+                                                      variant: "text",
+                                                      color: "yellow",
+                                                      onClick: withModifiers(($event) => toggleFavorite(favorite, "world"), ["stop"])
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VIcon, null, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-bookmark")
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["onClick"]),
+                                                    createVNode(VSpacer),
+                                                    createVNode(VBtn, {
+                                                      variant: "text",
+                                                      color: "primary",
+                                                      to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode(" View Details "),
+                                                        createVNode(VIcon, { end: "" }, {
+                                                          default: withCtx(() => [
+                                                            createTextVNode("mdi-arrow-right")
+                                                          ]),
+                                                          _: 1
+                                                        })
+                                                      ]),
+                                                      _: 2
+                                                    }, 1032, ["to"])
+                                                  ]),
+                                                  _: 2
+                                                }, 1024)
+                                              ]),
+                                              _: 2
+                                            }, 1024)
+                                          ]),
+                                          _: 2
+                                        }, 1024);
+                                      }), 128)),
+                                      filteredFavoriteSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                        key: 0,
+                                        cols: "12"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VAlert, {
+                                            type: "info",
+                                            variant: "tonal"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createTextVNode(" You don't have any favorite snippets yet. ")
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      })) : createCommentVNode("", true)
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }, 8, ["modelValue", "onUpdate:modelValue"])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VContainer, { fluid: "" }, {
+                      default: withCtx(() => [
+                        createVNode(VTabs, {
+                          modelValue: tab.value,
+                          "onUpdate:modelValue": ($event) => tab.value = $event,
+                          color: "primary",
+                          "align-tabs": "center",
+                          class: "mb-6"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode(VTab, {
+                              value: "World",
+                              class: "text-subtitle-1"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, { start: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-earth")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Public Snippets ")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VTab, {
+                              value: "Personal",
+                              class: "text-subtitle-1"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, { start: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-account")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" My Snippets ")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VTab, {
+                              value: "Favorites",
+                              class: "text-subtitle-1"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, { start: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-star")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Favorites ")
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        }, 8, ["modelValue", "onUpdate:modelValue"]),
+                        createVNode(VWindow, {
+                          modelValue: tab.value,
+                          "onUpdate:modelValue": ($event) => tab.value = $event
+                        }, {
+                          default: withCtx(() => [
+                            createVNode(VWindowItem, { value: "World" }, {
+                              default: withCtx(() => [
+                                createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                  createVNode(VTextField, {
+                                    modelValue: searchQuery.value,
+                                    "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                    "prepend-inner-icon": "mdi-magnify",
+                                    label: "Search snippets",
+                                    variant: "outlined",
+                                    density: "comfortable",
+                                    "hide-details": "",
+                                    class: "mr-4"
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                  createVNode(VSelect, {
+                                    modelValue: frameworkFilter.value,
+                                    "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                    items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                    label: "Framework",
+                                    variant: "outlined",
+                                    density: "comfortable",
+                                    "hide-details": "",
+                                    style: { "max-width": "200px" }
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                ]),
+                                createVNode(VRow, null, {
+                                  default: withCtx(() => [
+                                    (openBlock(true), createBlock(Fragment, null, renderList(filteredWorldSnippets.value, (snippet, index) => {
+                                      return openBlock(), createBlock(VCol, {
+                                        key: index,
+                                        cols: "12",
+                                        sm: "6",
+                                        lg: "4"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VCard, {
+                                            class: "mx-auto snippet-card",
+                                            "max-width": "400",
+                                            elevation: "2",
+                                            hover: ""
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(_component_NuxtLink, {
+                                                to: `/snippetsView?id=${snippet.id}&type=world`,
+                                                class: "text-decoration-none"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VImg, {
+                                                    src: snippet.img || "/placeholder-image.jpg",
+                                                    height: "200",
+                                                    cover: "",
+                                                    class: "bg-grey-lighten-2"
+                                                  }, {
+                                                    placeholder: withCtx(() => [
+                                                      createVNode(VRow, {
+                                                        align: "center",
+                                                        justify: "center",
+                                                        class: "fill-height"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VProgressCircular, {
+                                                            indeterminate: "",
+                                                            color: "primary"
+                                                          })
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["src"])
+                                                ]),
+                                                _: 2
+                                              }, 1032, ["to"]),
+                                              createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(snippet.title), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode(VCardText, null, {
+                                                default: withCtx(() => [
+                                                  createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                  createVNode(VChip, {
+                                                    color: "primary",
+                                                    variant: "outlined",
+                                                    size: "small",
+                                                    class: "mb-2"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(snippet.framework), 1)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024),
+                                                  createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                    createVNode(VAvatar, {
+                                                      size: "24",
+                                                      class: "mr-2"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VImg, {
+                                                          src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                          alt: "avatar"
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                    createVNode(VSpacer),
+                                                    createVNode(VIcon, {
+                                                      size: "small",
+                                                      class: "mr-1"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-calendar")
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                  ])
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode(VDivider),
+                                              createVNode(VCardActions, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VBtn, {
+                                                    variant: "text",
+                                                    color: snippet.isFavorite ? "yellow" : "",
+                                                    onClick: withModifiers(($event) => toggleFavorite(snippet, "world"), ["stop"])
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VIcon, {
+                                                        icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                      }, null, 8, ["icon"])
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["color", "onClick"]),
+                                                  createVNode(VSpacer),
+                                                  createVNode(VBtn, {
+                                                    variant: "text",
+                                                    color: "primary",
+                                                    to: `/snippetsView?id=${snippet.id}&type=world`
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(" View Details "),
+                                                      createVNode(VIcon, { end: "" }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-arrow-right")
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["to"])
+                                                ]),
+                                                _: 2
+                                              }, 1024)
+                                            ]),
+                                            _: 2
+                                          }, 1024)
+                                        ]),
+                                        _: 2
+                                      }, 1024);
+                                    }), 128)),
+                                    filteredWorldSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                      key: 0,
+                                      cols: "12"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VAlert, {
+                                          type: "info",
+                                          variant: "tonal"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" No snippets found. Try modifying your search criteria. ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    })) : createCommentVNode("", true)
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VWindowItem, { value: "Personal" }, {
+                              default: withCtx(() => [
+                                createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                  createVNode(VTextField, {
+                                    modelValue: searchQuery.value,
+                                    "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                    "prepend-inner-icon": "mdi-magnify",
+                                    label: "Search in my snippets",
+                                    variant: "outlined",
+                                    density: "comfortable",
+                                    "hide-details": "",
+                                    class: "mr-4"
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                  createVNode(VSelect, {
+                                    modelValue: frameworkFilter.value,
+                                    "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                    items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                    label: "Framework",
+                                    variant: "outlined",
+                                    density: "comfortable",
+                                    "hide-details": "",
+                                    style: { "max-width": "200px" }
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                ]),
+                                createVNode(VRow, null, {
+                                  default: withCtx(() => [
+                                    (openBlock(true), createBlock(Fragment, null, renderList(filteredPersonalSnippets.value, (snippet, index) => {
+                                      return openBlock(), createBlock(VCol, {
+                                        key: index,
+                                        cols: "12",
+                                        sm: "6",
+                                        lg: "4"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VCard, {
+                                            class: "mx-auto snippet-card",
+                                            "max-width": "400",
+                                            elevation: "2",
+                                            hover: ""
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(_component_NuxtLink, {
+                                                to: `/snippetsView?id=${snippet.id}&type=personal`,
+                                                class: "text-decoration-none"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VImg, {
+                                                    src: snippet.img || "/placeholder-image.jpg",
+                                                    height: "200",
+                                                    cover: "",
+                                                    class: "bg-grey-lighten-2"
+                                                  }, {
+                                                    placeholder: withCtx(() => [
+                                                      createVNode(VRow, {
+                                                        align: "center",
+                                                        justify: "center",
+                                                        class: "fill-height"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VProgressCircular, {
+                                                            indeterminate: "",
+                                                            color: "primary"
+                                                          })
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["src"])
+                                                ]),
+                                                _: 2
+                                              }, 1032, ["to"]),
+                                              createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(snippet.title), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode(VCardText, null, {
+                                                default: withCtx(() => [
+                                                  createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                  createVNode(VChip, {
+                                                    color: "primary",
+                                                    variant: "outlined",
+                                                    size: "small",
+                                                    class: "mb-2"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(snippet.framework), 1)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024),
+                                                  createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                    createVNode(VAvatar, {
+                                                      size: "24",
+                                                      class: "mr-2"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VImg, {
+                                                          src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                          alt: "avatar"
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                    createVNode(VSpacer),
+                                                    createVNode(VIcon, {
+                                                      size: "small",
+                                                      class: "mr-1"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-calendar")
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                  ])
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode(VDivider),
+                                              createVNode(VCardActions, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VBtn, {
+                                                    variant: "text",
+                                                    color: "error",
+                                                    onClick: withModifiers(($event) => confirmDelete(snippet), ["stop"])
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VIcon, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-delete")
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["onClick"]),
+                                                  createVNode(VSpacer),
+                                                  createVNode(VBtn, {
+                                                    variant: "text",
+                                                    color: "primary",
+                                                    to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(" View Details "),
+                                                      createVNode(VIcon, { end: "" }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-arrow-right")
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["to"])
+                                                ]),
+                                                _: 2
+                                              }, 1024)
+                                            ]),
+                                            _: 2
+                                          }, 1024)
+                                        ]),
+                                        _: 2
+                                      }, 1024);
+                                    }), 128)),
+                                    filteredPersonalSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                      key: 0,
+                                      cols: "12"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VAlert, {
+                                          type: "info",
+                                          variant: "tonal"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" You don't have any snippets yet. Create a new one! ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    })) : createCommentVNode("", true)
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VWindowItem, { value: "Favorites" }, {
+                              default: withCtx(() => [
+                                createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                  createVNode(VTextField, {
+                                    modelValue: searchQuery.value,
+                                    "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                    "prepend-inner-icon": "mdi-magnify",
+                                    label: "Search in my favorites",
+                                    variant: "outlined",
+                                    density: "comfortable",
+                                    "hide-details": "",
+                                    class: "mr-4"
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                  createVNode(VSelect, {
+                                    modelValue: frameworkFilter.value,
+                                    "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                    items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                    label: "Framework",
+                                    variant: "outlined",
+                                    density: "comfortable",
+                                    "hide-details": "",
+                                    style: { "max-width": "200px" }
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                ]),
+                                createVNode(VRow, null, {
+                                  default: withCtx(() => [
+                                    (openBlock(true), createBlock(Fragment, null, renderList(filteredFavoriteSnippets.value, (favorite, index) => {
+                                      return openBlock(), createBlock(VCol, {
+                                        key: index,
+                                        cols: "12",
+                                        sm: "6",
+                                        lg: "4"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VCard, {
+                                            class: "mx-auto snippet-card",
+                                            "max-width": "400",
+                                            elevation: "2",
+                                            hover: ""
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(_component_NuxtLink, {
+                                                to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`,
+                                                class: "text-decoration-none"
+                                              }, {
+                                                default: withCtx(() => [
+                                                  createVNode(VImg, {
+                                                    src: favorite.img || "/placeholder-image.jpg",
+                                                    height: "200",
+                                                    cover: "",
+                                                    class: "bg-grey-lighten-2"
+                                                  }, {
+                                                    placeholder: withCtx(() => [
+                                                      createVNode(VRow, {
+                                                        align: "center",
+                                                        justify: "center",
+                                                        class: "fill-height"
+                                                      }, {
+                                                        default: withCtx(() => [
+                                                          createVNode(VProgressCircular, {
+                                                            indeterminate: "",
+                                                            color: "primary"
+                                                          })
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["src"])
+                                                ]),
+                                                _: 2
+                                              }, 1032, ["to"]),
+                                              createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                                default: withCtx(() => [
+                                                  createTextVNode(toDisplayString(favorite.title), 1)
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode(VCardText, null, {
+                                                default: withCtx(() => [
+                                                  createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(favorite.description), 1),
+                                                  createVNode(VChip, {
+                                                    color: "primary",
+                                                    variant: "outlined",
+                                                    size: "small",
+                                                    class: "mb-2"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(toDisplayString(favorite.framework), 1)
+                                                    ]),
+                                                    _: 2
+                                                  }, 1024),
+                                                  createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                    createVNode(VAvatar, {
+                                                      size: "24",
+                                                      class: "mr-2"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VImg, {
+                                                          src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                          alt: "avatar"
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode("span", null, toDisplayString(favorite.username), 1),
+                                                    createVNode(VSpacer),
+                                                    createVNode(VIcon, {
+                                                      size: "small",
+                                                      class: "mr-1"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-calendar")
+                                                      ]),
+                                                      _: 1
+                                                    }),
+                                                    createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(favorite)), 1)
+                                                  ])
+                                                ]),
+                                                _: 2
+                                              }, 1024),
+                                              createVNode(VDivider),
+                                              createVNode(VCardActions, null, {
+                                                default: withCtx(() => [
+                                                  createVNode(VBtn, {
+                                                    variant: "text",
+                                                    color: "yellow",
+                                                    onClick: withModifiers(($event) => toggleFavorite(favorite, "world"), ["stop"])
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VIcon, null, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-bookmark")
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["onClick"]),
+                                                  createVNode(VSpacer),
+                                                  createVNode(VBtn, {
+                                                    variant: "text",
+                                                    color: "primary",
+                                                    to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode(" View Details "),
+                                                      createVNode(VIcon, { end: "" }, {
+                                                        default: withCtx(() => [
+                                                          createTextVNode("mdi-arrow-right")
+                                                        ]),
+                                                        _: 1
+                                                      })
+                                                    ]),
+                                                    _: 2
+                                                  }, 1032, ["to"])
+                                                ]),
+                                                _: 2
+                                              }, 1024)
+                                            ]),
+                                            _: 2
+                                          }, 1024)
+                                        ]),
+                                        _: 2
+                                      }, 1024);
+                                    }), 128)),
+                                    filteredFavoriteSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                      key: 0,
+                                      cols: "12"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VAlert, {
+                                          type: "info",
+                                          variant: "tonal"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createTextVNode(" You don't have any favorite snippets yet. ")
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    })) : createCommentVNode("", true)
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        }, 8, ["modelValue", "onUpdate:modelValue"])
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VDialog, {
+              modelValue: addSnippets.value,
+              "onUpdate:modelValue": ($event) => addSnippets.value = $event,
+              "max-width": "700",
+              persistent: ""
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VCard, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VToolbar, {
+                          color: "primary",
+                          class: "text-white"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VToolbarTitle, null, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`Create a New Snippet`);
+                                  } else {
+                                    return [
+                                      createTextVNode("Create a New Snippet")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VSpacer, null, null, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                icon: "",
+                                onClick: ($event) => addSnippets.value = false
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VIcon, null, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-close`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-close")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VIcon, null, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-close")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VToolbarTitle, null, {
+                                  default: withCtx(() => [
+                                    createTextVNode("Create a New Snippet")
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VSpacer),
+                                createVNode(VBtn, {
+                                  icon: "",
+                                  onClick: ($event) => addSnippets.value = false
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, null, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-close")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }, 8, ["onClick"])
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCardText, { class: "pt-4" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VForm, null, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VRow, null, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(ssrRenderComponent(VCol, { cols: "12" }, {
+                                            default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                              if (_push8) {
+                                                _push8(`<div class="d-flex gap-4" data-v-6fc203b4${_scopeId7}>`);
+                                                _push8(ssrRenderComponent(VSwitch, {
+                                                  modelValue: newSnippet.value.publishWorld,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.publishWorld = $event,
+                                                  label: "Publish Globally",
+                                                  color: "primary",
+                                                  "hide-details": ""
+                                                }, null, _parent8, _scopeId7));
+                                                _push8(ssrRenderComponent(VSwitch, {
+                                                  modelValue: newSnippet.value.publishPersonal,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.publishPersonal = $event,
+                                                  label: "Save as Personal",
+                                                  color: "primary",
+                                                  "hide-details": ""
+                                                }, null, _parent8, _scopeId7));
+                                                _push8(`</div>`);
+                                              } else {
+                                                return [
+                                                  createVNode("div", { class: "d-flex gap-4" }, [
+                                                    createVNode(VSwitch, {
+                                                      modelValue: newSnippet.value.publishWorld,
+                                                      "onUpdate:modelValue": ($event) => newSnippet.value.publishWorld = $event,
+                                                      label: "Publish Globally",
+                                                      color: "primary",
+                                                      "hide-details": ""
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                                    createVNode(VSwitch, {
+                                                      modelValue: newSnippet.value.publishPersonal,
+                                                      "onUpdate:modelValue": ($event) => newSnippet.value.publishPersonal = $event,
+                                                      label: "Save as Personal",
+                                                      color: "primary",
+                                                      "hide-details": ""
+                                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                  ])
+                                                ];
+                                              }
+                                            }),
+                                            _: 1
+                                          }, _parent7, _scopeId6));
+                                          _push7(ssrRenderComponent(VCol, { cols: "12" }, {
+                                            default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                              if (_push8) {
+                                                _push8(ssrRenderComponent(VTextField, {
+                                                  modelValue: newSnippet.value.title,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.title = $event,
+                                                  label: "Title",
+                                                  variant: "outlined",
+                                                  placeholder: "Enter snippet title",
+                                                  "prepend-inner-icon": "mdi-format-title"
+                                                }, null, _parent8, _scopeId7));
+                                              } else {
+                                                return [
+                                                  createVNode(VTextField, {
+                                                    modelValue: newSnippet.value.title,
+                                                    "onUpdate:modelValue": ($event) => newSnippet.value.title = $event,
+                                                    label: "Title",
+                                                    variant: "outlined",
+                                                    placeholder: "Enter snippet title",
+                                                    "prepend-inner-icon": "mdi-format-title"
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ];
+                                              }
+                                            }),
+                                            _: 1
+                                          }, _parent7, _scopeId6));
+                                          _push7(ssrRenderComponent(VCol, { cols: "12" }, {
+                                            default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                              if (_push8) {
+                                                _push8(ssrRenderComponent(VTextarea, {
+                                                  modelValue: newSnippet.value.description,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.description = $event,
+                                                  label: "Description",
+                                                  variant: "outlined",
+                                                  rows: "3",
+                                                  placeholder: "Describe your snippet",
+                                                  "prepend-inner-icon": "mdi-text"
+                                                }, null, _parent8, _scopeId7));
+                                              } else {
+                                                return [
+                                                  createVNode(VTextarea, {
+                                                    modelValue: newSnippet.value.description,
+                                                    "onUpdate:modelValue": ($event) => newSnippet.value.description = $event,
+                                                    label: "Description",
+                                                    variant: "outlined",
+                                                    rows: "3",
+                                                    placeholder: "Describe your snippet",
+                                                    "prepend-inner-icon": "mdi-text"
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ];
+                                              }
+                                            }),
+                                            _: 1
+                                          }, _parent7, _scopeId6));
+                                          _push7(ssrRenderComponent(VCol, {
+                                            cols: "12",
+                                            md: "6"
+                                          }, {
+                                            default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                              if (_push8) {
+                                                _push8(ssrRenderComponent(VSelect, {
+                                                  modelValue: newSnippet.value.framework,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.framework = $event,
+                                                  items: ["React", "Vue.js 3", "Nuxt 3", "Angular", "Nest.js"],
+                                                  label: "Framework",
+                                                  variant: "outlined",
+                                                  "prepend-inner-icon": "mdi-code-tags"
+                                                }, null, _parent8, _scopeId7));
+                                              } else {
+                                                return [
+                                                  createVNode(VSelect, {
+                                                    modelValue: newSnippet.value.framework,
+                                                    "onUpdate:modelValue": ($event) => newSnippet.value.framework = $event,
+                                                    items: ["React", "Vue.js 3", "Nuxt 3", "Angular", "Nest.js"],
+                                                    label: "Framework",
+                                                    variant: "outlined",
+                                                    "prepend-inner-icon": "mdi-code-tags"
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ];
+                                              }
+                                            }),
+                                            _: 1
+                                          }, _parent7, _scopeId6));
+                                          _push7(ssrRenderComponent(VCol, {
+                                            cols: "12",
+                                            md: "6"
+                                          }, {
+                                            default: withCtx((_7, _push8, _parent8, _scopeId7) => {
+                                              if (_push8) {
+                                                _push8(ssrRenderComponent(VFileInput, {
+                                                  modelValue: newSnippet.value.imgFile,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.imgFile = $event,
+                                                  label: "Cover Image",
+                                                  variant: "outlined",
+                                                  "prepend-icon": "mdi-image",
+                                                  accept: "image/*",
+                                                  "show-size": ""
+                                                }, null, _parent8, _scopeId7));
+                                              } else {
+                                                return [
+                                                  createVNode(VFileInput, {
+                                                    modelValue: newSnippet.value.imgFile,
+                                                    "onUpdate:modelValue": ($event) => newSnippet.value.imgFile = $event,
+                                                    label: "Cover Image",
+                                                    variant: "outlined",
+                                                    "prepend-icon": "mdi-image",
+                                                    accept: "image/*",
+                                                    "show-size": ""
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ];
+                                              }
+                                            }),
+                                            _: 1
+                                          }, _parent7, _scopeId6));
+                                        } else {
+                                          return [
+                                            createVNode(VCol, { cols: "12" }, {
+                                              default: withCtx(() => [
+                                                createVNode("div", { class: "d-flex gap-4" }, [
+                                                  createVNode(VSwitch, {
+                                                    modelValue: newSnippet.value.publishWorld,
+                                                    "onUpdate:modelValue": ($event) => newSnippet.value.publishWorld = $event,
+                                                    label: "Publish Globally",
+                                                    color: "primary",
+                                                    "hide-details": ""
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                                  createVNode(VSwitch, {
+                                                    modelValue: newSnippet.value.publishPersonal,
+                                                    "onUpdate:modelValue": ($event) => newSnippet.value.publishPersonal = $event,
+                                                    label: "Save as Personal",
+                                                    color: "primary",
+                                                    "hide-details": ""
+                                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                                ])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VCol, { cols: "12" }, {
+                                              default: withCtx(() => [
+                                                createVNode(VTextField, {
+                                                  modelValue: newSnippet.value.title,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.title = $event,
+                                                  label: "Title",
+                                                  variant: "outlined",
+                                                  placeholder: "Enter snippet title",
+                                                  "prepend-inner-icon": "mdi-format-title"
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VCol, { cols: "12" }, {
+                                              default: withCtx(() => [
+                                                createVNode(VTextarea, {
+                                                  modelValue: newSnippet.value.description,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.description = $event,
+                                                  label: "Description",
+                                                  variant: "outlined",
+                                                  rows: "3",
+                                                  placeholder: "Describe your snippet",
+                                                  "prepend-inner-icon": "mdi-text"
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VCol, {
+                                              cols: "12",
+                                              md: "6"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VSelect, {
+                                                  modelValue: newSnippet.value.framework,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.framework = $event,
+                                                  items: ["React", "Vue.js 3", "Nuxt 3", "Angular", "Nest.js"],
+                                                  label: "Framework",
+                                                  variant: "outlined",
+                                                  "prepend-inner-icon": "mdi-code-tags"
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ]),
+                                              _: 1
+                                            }),
+                                            createVNode(VCol, {
+                                              cols: "12",
+                                              md: "6"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VFileInput, {
+                                                  modelValue: newSnippet.value.imgFile,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.imgFile = $event,
+                                                  label: "Cover Image",
+                                                  variant: "outlined",
+                                                  "prepend-icon": "mdi-image",
+                                                  accept: "image/*",
+                                                  "show-size": ""
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ]),
+                                              _: 1
+                                            })
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode(VRow, null, {
+                                        default: withCtx(() => [
+                                          createVNode(VCol, { cols: "12" }, {
+                                            default: withCtx(() => [
+                                              createVNode("div", { class: "d-flex gap-4" }, [
+                                                createVNode(VSwitch, {
+                                                  modelValue: newSnippet.value.publishWorld,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.publishWorld = $event,
+                                                  label: "Publish Globally",
+                                                  color: "primary",
+                                                  "hide-details": ""
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                                createVNode(VSwitch, {
+                                                  modelValue: newSnippet.value.publishPersonal,
+                                                  "onUpdate:modelValue": ($event) => newSnippet.value.publishPersonal = $event,
+                                                  label: "Save as Personal",
+                                                  color: "primary",
+                                                  "hide-details": ""
+                                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                              ])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VCol, { cols: "12" }, {
+                                            default: withCtx(() => [
+                                              createVNode(VTextField, {
+                                                modelValue: newSnippet.value.title,
+                                                "onUpdate:modelValue": ($event) => newSnippet.value.title = $event,
+                                                label: "Title",
+                                                variant: "outlined",
+                                                placeholder: "Enter snippet title",
+                                                "prepend-inner-icon": "mdi-format-title"
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VCol, { cols: "12" }, {
+                                            default: withCtx(() => [
+                                              createVNode(VTextarea, {
+                                                modelValue: newSnippet.value.description,
+                                                "onUpdate:modelValue": ($event) => newSnippet.value.description = $event,
+                                                label: "Description",
+                                                variant: "outlined",
+                                                rows: "3",
+                                                placeholder: "Describe your snippet",
+                                                "prepend-inner-icon": "mdi-text"
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VCol, {
+                                            cols: "12",
+                                            md: "6"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VSelect, {
+                                                modelValue: newSnippet.value.framework,
+                                                "onUpdate:modelValue": ($event) => newSnippet.value.framework = $event,
+                                                items: ["React", "Vue.js 3", "Nuxt 3", "Angular", "Nest.js"],
+                                                label: "Framework",
+                                                variant: "outlined",
+                                                "prepend-inner-icon": "mdi-code-tags"
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ]),
+                                            _: 1
+                                          }),
+                                          createVNode(VCol, {
+                                            cols: "12",
+                                            md: "6"
+                                          }, {
+                                            default: withCtx(() => [
+                                              createVNode(VFileInput, {
+                                                modelValue: newSnippet.value.imgFile,
+                                                "onUpdate:modelValue": ($event) => newSnippet.value.imgFile = $event,
+                                                label: "Cover Image",
+                                                variant: "outlined",
+                                                "prepend-icon": "mdi-image",
+                                                accept: "image/*",
+                                                "show-size": ""
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ]),
+                                            _: 1
+                                          })
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VForm, null, {
+                                  default: withCtx(() => [
+                                    createVNode(VRow, null, {
+                                      default: withCtx(() => [
+                                        createVNode(VCol, { cols: "12" }, {
+                                          default: withCtx(() => [
+                                            createVNode("div", { class: "d-flex gap-4" }, [
+                                              createVNode(VSwitch, {
+                                                modelValue: newSnippet.value.publishWorld,
+                                                "onUpdate:modelValue": ($event) => newSnippet.value.publishWorld = $event,
+                                                label: "Publish Globally",
+                                                color: "primary",
+                                                "hide-details": ""
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                              createVNode(VSwitch, {
+                                                modelValue: newSnippet.value.publishPersonal,
+                                                "onUpdate:modelValue": ($event) => newSnippet.value.publishPersonal = $event,
+                                                label: "Save as Personal",
+                                                color: "primary",
+                                                "hide-details": ""
+                                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                            ])
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VCol, { cols: "12" }, {
+                                          default: withCtx(() => [
+                                            createVNode(VTextField, {
+                                              modelValue: newSnippet.value.title,
+                                              "onUpdate:modelValue": ($event) => newSnippet.value.title = $event,
+                                              label: "Title",
+                                              variant: "outlined",
+                                              placeholder: "Enter snippet title",
+                                              "prepend-inner-icon": "mdi-format-title"
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VCol, { cols: "12" }, {
+                                          default: withCtx(() => [
+                                            createVNode(VTextarea, {
+                                              modelValue: newSnippet.value.description,
+                                              "onUpdate:modelValue": ($event) => newSnippet.value.description = $event,
+                                              label: "Description",
+                                              variant: "outlined",
+                                              rows: "3",
+                                              placeholder: "Describe your snippet",
+                                              "prepend-inner-icon": "mdi-text"
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VCol, {
+                                          cols: "12",
+                                          md: "6"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VSelect, {
+                                              modelValue: newSnippet.value.framework,
+                                              "onUpdate:modelValue": ($event) => newSnippet.value.framework = $event,
+                                              items: ["React", "Vue.js 3", "Nuxt 3", "Angular", "Nest.js"],
+                                              label: "Framework",
+                                              variant: "outlined",
+                                              "prepend-inner-icon": "mdi-code-tags"
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ]),
+                                          _: 1
+                                        }),
+                                        createVNode(VCol, {
+                                          cols: "12",
+                                          md: "6"
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(VFileInput, {
+                                              modelValue: newSnippet.value.imgFile,
+                                              "onUpdate:modelValue": ($event) => newSnippet.value.imgFile = $event,
+                                              label: "Cover Image",
+                                              variant: "outlined",
+                                              "prepend-icon": "mdi-image",
+                                              accept: "image/*",
+                                              "show-size": ""
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ]),
+                                          _: 1
+                                        })
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCardActions, { class: "pa-4" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VSpacer, null, null, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                variant: "outlined",
+                                onClick: ($event) => addSnippets.value = false,
+                                class: "mr-2"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(` Cancel `);
+                                  } else {
+                                    return [
+                                      createTextVNode(" Cancel ")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                color: "primary",
+                                onClick: sendSnippets,
+                                loading: isLoading.value
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(` Create Snippet `);
+                                    _push6(ssrRenderComponent(VIcon, { end: "" }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-check`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-check")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createTextVNode(" Create Snippet "),
+                                      createVNode(VIcon, { end: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-check")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VSpacer),
+                                createVNode(VBtn, {
+                                  variant: "outlined",
+                                  onClick: ($event) => addSnippets.value = false,
+                                  class: "mr-2"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Cancel ")
+                                  ]),
+                                  _: 1
+                                }, 8, ["onClick"]),
+                                createVNode(VBtn, {
+                                  color: "primary",
+                                  onClick: sendSnippets,
+                                  loading: isLoading.value
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(" Create Snippet "),
+                                    createVNode(VIcon, { end: "" }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-check")
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                }, 8, ["loading"])
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VToolbar, {
+                            color: "primary",
+                            class: "text-white"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VToolbarTitle, null, {
+                                default: withCtx(() => [
+                                  createTextVNode("Create a New Snippet")
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VSpacer),
+                              createVNode(VBtn, {
+                                icon: "",
+                                onClick: ($event) => addSnippets.value = false
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, null, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-close")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }, 8, ["onClick"])
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCardText, { class: "pt-4" }, {
+                            default: withCtx(() => [
+                              createVNode(VForm, null, {
+                                default: withCtx(() => [
+                                  createVNode(VRow, null, {
+                                    default: withCtx(() => [
+                                      createVNode(VCol, { cols: "12" }, {
+                                        default: withCtx(() => [
+                                          createVNode("div", { class: "d-flex gap-4" }, [
+                                            createVNode(VSwitch, {
+                                              modelValue: newSnippet.value.publishWorld,
+                                              "onUpdate:modelValue": ($event) => newSnippet.value.publishWorld = $event,
+                                              label: "Publish Globally",
+                                              color: "primary",
+                                              "hide-details": ""
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                            createVNode(VSwitch, {
+                                              modelValue: newSnippet.value.publishPersonal,
+                                              "onUpdate:modelValue": ($event) => newSnippet.value.publishPersonal = $event,
+                                              label: "Save as Personal",
+                                              color: "primary",
+                                              "hide-details": ""
+                                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                          ])
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VCol, { cols: "12" }, {
+                                        default: withCtx(() => [
+                                          createVNode(VTextField, {
+                                            modelValue: newSnippet.value.title,
+                                            "onUpdate:modelValue": ($event) => newSnippet.value.title = $event,
+                                            label: "Title",
+                                            variant: "outlined",
+                                            placeholder: "Enter snippet title",
+                                            "prepend-inner-icon": "mdi-format-title"
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VCol, { cols: "12" }, {
+                                        default: withCtx(() => [
+                                          createVNode(VTextarea, {
+                                            modelValue: newSnippet.value.description,
+                                            "onUpdate:modelValue": ($event) => newSnippet.value.description = $event,
+                                            label: "Description",
+                                            variant: "outlined",
+                                            rows: "3",
+                                            placeholder: "Describe your snippet",
+                                            "prepend-inner-icon": "mdi-text"
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VCol, {
+                                        cols: "12",
+                                        md: "6"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VSelect, {
+                                            modelValue: newSnippet.value.framework,
+                                            "onUpdate:modelValue": ($event) => newSnippet.value.framework = $event,
+                                            items: ["React", "Vue.js 3", "Nuxt 3", "Angular", "Nest.js"],
+                                            label: "Framework",
+                                            variant: "outlined",
+                                            "prepend-inner-icon": "mdi-code-tags"
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createVNode(VCol, {
+                                        cols: "12",
+                                        md: "6"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createVNode(VFileInput, {
+                                            modelValue: newSnippet.value.imgFile,
+                                            "onUpdate:modelValue": ($event) => newSnippet.value.imgFile = $event,
+                                            label: "Cover Image",
+                                            variant: "outlined",
+                                            "prepend-icon": "mdi-image",
+                                            accept: "image/*",
+                                            "show-size": ""
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCardActions, { class: "pa-4" }, {
+                            default: withCtx(() => [
+                              createVNode(VSpacer),
+                              createVNode(VBtn, {
+                                variant: "outlined",
+                                onClick: ($event) => addSnippets.value = false,
+                                class: "mr-2"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(" Cancel ")
+                                ]),
+                                _: 1
+                              }, 8, ["onClick"]),
+                              createVNode(VBtn, {
+                                color: "primary",
+                                onClick: sendSnippets,
+                                loading: isLoading.value
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(" Create Snippet "),
+                                  createVNode(VIcon, { end: "" }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-check")
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              }, 8, ["loading"])
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VCard, null, {
+                      default: withCtx(() => [
+                        createVNode(VToolbar, {
+                          color: "primary",
+                          class: "text-white"
+                        }, {
+                          default: withCtx(() => [
+                            createVNode(VToolbarTitle, null, {
+                              default: withCtx(() => [
+                                createTextVNode("Create a New Snippet")
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VSpacer),
+                            createVNode(VBtn, {
+                              icon: "",
+                              onClick: ($event) => addSnippets.value = false
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, null, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-close")
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            }, 8, ["onClick"])
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCardText, { class: "pt-4" }, {
+                          default: withCtx(() => [
+                            createVNode(VForm, null, {
+                              default: withCtx(() => [
+                                createVNode(VRow, null, {
+                                  default: withCtx(() => [
+                                    createVNode(VCol, { cols: "12" }, {
+                                      default: withCtx(() => [
+                                        createVNode("div", { class: "d-flex gap-4" }, [
+                                          createVNode(VSwitch, {
+                                            modelValue: newSnippet.value.publishWorld,
+                                            "onUpdate:modelValue": ($event) => newSnippet.value.publishWorld = $event,
+                                            label: "Publish Globally",
+                                            color: "primary",
+                                            "hide-details": ""
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                          createVNode(VSwitch, {
+                                            modelValue: newSnippet.value.publishPersonal,
+                                            "onUpdate:modelValue": ($event) => newSnippet.value.publishPersonal = $event,
+                                            label: "Save as Personal",
+                                            color: "primary",
+                                            "hide-details": ""
+                                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                        ])
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VCol, { cols: "12" }, {
+                                      default: withCtx(() => [
+                                        createVNode(VTextField, {
+                                          modelValue: newSnippet.value.title,
+                                          "onUpdate:modelValue": ($event) => newSnippet.value.title = $event,
+                                          label: "Title",
+                                          variant: "outlined",
+                                          placeholder: "Enter snippet title",
+                                          "prepend-inner-icon": "mdi-format-title"
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VCol, { cols: "12" }, {
+                                      default: withCtx(() => [
+                                        createVNode(VTextarea, {
+                                          modelValue: newSnippet.value.description,
+                                          "onUpdate:modelValue": ($event) => newSnippet.value.description = $event,
+                                          label: "Description",
+                                          variant: "outlined",
+                                          rows: "3",
+                                          placeholder: "Describe your snippet",
+                                          "prepend-inner-icon": "mdi-text"
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VCol, {
+                                      cols: "12",
+                                      md: "6"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VSelect, {
+                                          modelValue: newSnippet.value.framework,
+                                          "onUpdate:modelValue": ($event) => newSnippet.value.framework = $event,
+                                          items: ["React", "Vue.js 3", "Nuxt 3", "Angular", "Nest.js"],
+                                          label: "Framework",
+                                          variant: "outlined",
+                                          "prepend-inner-icon": "mdi-code-tags"
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createVNode(VCol, {
+                                      cols: "12",
+                                      md: "6"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VFileInput, {
+                                          modelValue: newSnippet.value.imgFile,
+                                          "onUpdate:modelValue": ($event) => newSnippet.value.imgFile = $event,
+                                          label: "Cover Image",
+                                          variant: "outlined",
+                                          "prepend-icon": "mdi-image",
+                                          accept: "image/*",
+                                          "show-size": ""
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                      ]),
+                                      _: 1
+                                    })
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCardActions, { class: "pa-4" }, {
+                          default: withCtx(() => [
+                            createVNode(VSpacer),
+                            createVNode(VBtn, {
+                              variant: "outlined",
+                              onClick: ($event) => addSnippets.value = false,
+                              class: "mr-2"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" Cancel ")
+                              ]),
+                              _: 1
+                            }, 8, ["onClick"]),
+                            createVNode(VBtn, {
+                              color: "primary",
+                              onClick: sendSnippets,
+                              loading: isLoading.value
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" Create Snippet "),
+                                createVNode(VIcon, { end: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-check")
+                                  ]),
+                                  _: 1
+                                })
+                              ]),
+                              _: 1
+                            }, 8, ["loading"])
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VDialog, {
+              modelValue: deleteDialog.value,
+              "onUpdate:modelValue": ($event) => deleteDialog.value = $event,
+              "max-width": "400"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VCard, null, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(ssrRenderComponent(VCardTitle, { class: "bg-error text-white" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VIcon, { start: "" }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`mdi-alert-circle`);
+                                  } else {
+                                    return [
+                                      createTextVNode("mdi-alert-circle")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(` Confirmation de suppression `);
+                            } else {
+                              return [
+                                createVNode(VIcon, { start: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-alert-circle")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Confirmation de suppression ")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCardText, { class: "pt-4" }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(`<p data-v-6fc203b4${_scopeId4}>Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.</p>`);
+                            } else {
+                              return [
+                                createVNode("p", null, "Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCardActions, null, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VSpacer, null, null, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                variant: "text",
+                                onClick: ($event) => deleteDialog.value = false
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`Annuler`);
+                                  } else {
+                                    return [
+                                      createTextVNode("Annuler")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VBtn, {
+                                color: "error",
+                                onClick: deleteSnippet
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(ssrRenderComponent(VIcon, { start: "" }, {
+                                      default: withCtx((_6, _push7, _parent7, _scopeId6) => {
+                                        if (_push7) {
+                                          _push7(`mdi-delete`);
+                                        } else {
+                                          return [
+                                            createTextVNode("mdi-delete")
+                                          ];
+                                        }
+                                      }),
+                                      _: 1
+                                    }, _parent6, _scopeId5));
+                                    _push6(` Supprimer `);
+                                  } else {
+                                    return [
+                                      createVNode(VIcon, { start: "" }, {
+                                        default: withCtx(() => [
+                                          createTextVNode("mdi-delete")
+                                        ]),
+                                        _: 1
+                                      }),
+                                      createTextVNode(" Supprimer ")
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VSpacer),
+                                createVNode(VBtn, {
+                                  variant: "text",
+                                  onClick: ($event) => deleteDialog.value = false
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("Annuler")
+                                  ]),
+                                  _: 1
+                                }, 8, ["onClick"]),
+                                createVNode(VBtn, {
+                                  color: "error",
+                                  onClick: deleteSnippet
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode(VIcon, { start: "" }, {
+                                      default: withCtx(() => [
+                                        createTextVNode("mdi-delete")
+                                      ]),
+                                      _: 1
+                                    }),
+                                    createTextVNode(" Supprimer ")
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                      } else {
+                        return [
+                          createVNode(VCardTitle, { class: "bg-error text-white" }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, { start: "" }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-alert-circle")
+                                ]),
+                                _: 1
+                              }),
+                              createTextVNode(" Confirmation de suppression ")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCardText, { class: "pt-4" }, {
+                            default: withCtx(() => [
+                              createVNode("p", null, "Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCardActions, null, {
+                            default: withCtx(() => [
+                              createVNode(VSpacer),
+                              createVNode(VBtn, {
+                                variant: "text",
+                                onClick: ($event) => deleteDialog.value = false
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode("Annuler")
+                                ]),
+                                _: 1
+                              }, 8, ["onClick"]),
+                              createVNode(VBtn, {
+                                color: "error",
+                                onClick: deleteSnippet
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode(VIcon, { start: "" }, {
+                                    default: withCtx(() => [
+                                      createTextVNode("mdi-delete")
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createTextVNode(" Supprimer ")
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VCard, null, {
+                      default: withCtx(() => [
+                        createVNode(VCardTitle, { class: "bg-error text-white" }, {
+                          default: withCtx(() => [
+                            createVNode(VIcon, { start: "" }, {
+                              default: withCtx(() => [
+                                createTextVNode("mdi-alert-circle")
+                              ]),
+                              _: 1
+                            }),
+                            createTextVNode(" Confirmation de suppression ")
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCardText, { class: "pt-4" }, {
+                          default: withCtx(() => [
+                            createVNode("p", null, "Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.")
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCardActions, null, {
+                          default: withCtx(() => [
+                            createVNode(VSpacer),
+                            createVNode(VBtn, {
+                              variant: "text",
+                              onClick: ($event) => deleteDialog.value = false
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode("Annuler")
+                              ]),
+                              _: 1
+                            }, 8, ["onClick"]),
+                            createVNode(VBtn, {
+                              color: "error",
+                              onClick: deleteSnippet
+                            }, {
+                              default: withCtx(() => [
+                                createVNode(VIcon, { start: "" }, {
+                                  default: withCtx(() => [
+                                    createTextVNode("mdi-delete")
+                                  ]),
+                                  _: 1
+                                }),
+                                createTextVNode(" Supprimer ")
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Snackbar, {
+              modelValue: snackbar.value,
+              "onUpdate:modelValue": ($event) => snackbar.value = $event,
+              text: snackbarText.value,
+              color: snackbarColor.value,
+              icon: snackbarIcon.value,
+              timeout: 2e3
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VMain, null, {
+                default: withCtx(() => [
+                  createVNode(VContainer, { fluid: "" }, {
+                    default: withCtx(() => [
+                      createVNode(VTabs, {
+                        modelValue: tab.value,
+                        "onUpdate:modelValue": ($event) => tab.value = $event,
+                        color: "primary",
+                        "align-tabs": "center",
+                        class: "mb-6"
+                      }, {
+                        default: withCtx(() => [
+                          createVNode(VTab, {
+                            value: "World",
+                            class: "text-subtitle-1"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, { start: "" }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-earth")
+                                ]),
+                                _: 1
+                              }),
+                              createTextVNode(" Public Snippets ")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VTab, {
+                            value: "Personal",
+                            class: "text-subtitle-1"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, { start: "" }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-account")
+                                ]),
+                                _: 1
+                              }),
+                              createTextVNode(" My Snippets ")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VTab, {
+                            value: "Favorites",
+                            class: "text-subtitle-1"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, { start: "" }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-star")
+                                ]),
+                                _: 1
+                              }),
+                              createTextVNode(" Favorites ")
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      }, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode(VWindow, {
+                        modelValue: tab.value,
+                        "onUpdate:modelValue": ($event) => tab.value = $event
+                      }, {
+                        default: withCtx(() => [
+                          createVNode(VWindowItem, { value: "World" }, {
+                            default: withCtx(() => [
+                              createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                createVNode(VTextField, {
+                                  modelValue: searchQuery.value,
+                                  "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                  "prepend-inner-icon": "mdi-magnify",
+                                  label: "Search snippets",
+                                  variant: "outlined",
+                                  density: "comfortable",
+                                  "hide-details": "",
+                                  class: "mr-4"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                createVNode(VSelect, {
+                                  modelValue: frameworkFilter.value,
+                                  "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                  items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                  label: "Framework",
+                                  variant: "outlined",
+                                  density: "comfortable",
+                                  "hide-details": "",
+                                  style: { "max-width": "200px" }
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                              ]),
+                              createVNode(VRow, null, {
+                                default: withCtx(() => [
+                                  (openBlock(true), createBlock(Fragment, null, renderList(filteredWorldSnippets.value, (snippet, index) => {
+                                    return openBlock(), createBlock(VCol, {
+                                      key: index,
+                                      cols: "12",
+                                      sm: "6",
+                                      lg: "4"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VCard, {
+                                          class: "mx-auto snippet-card",
+                                          "max-width": "400",
+                                          elevation: "2",
+                                          hover: ""
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(_component_NuxtLink, {
+                                              to: `/snippetsView?id=${snippet.id}&type=world`,
+                                              class: "text-decoration-none"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VImg, {
+                                                  src: snippet.img || "/placeholder-image.jpg",
+                                                  height: "200",
+                                                  cover: "",
+                                                  class: "bg-grey-lighten-2"
+                                                }, {
+                                                  placeholder: withCtx(() => [
+                                                    createVNode(VRow, {
+                                                      align: "center",
+                                                      justify: "center",
+                                                      class: "fill-height"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VProgressCircular, {
+                                                          indeterminate: "",
+                                                          color: "primary"
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["src"])
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["to"]),
+                                            createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(snippet.title), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode(VCardText, null, {
+                                              default: withCtx(() => [
+                                                createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                createVNode(VChip, {
+                                                  color: "primary",
+                                                  variant: "outlined",
+                                                  size: "small",
+                                                  class: "mb-2"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(snippet.framework), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024),
+                                                createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                  createVNode(VAvatar, {
+                                                    size: "24",
+                                                    class: "mr-2"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VImg, {
+                                                        src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                        alt: "avatar"
+                                                      })
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                  createVNode(VSpacer),
+                                                  createVNode(VIcon, {
+                                                    size: "small",
+                                                    class: "mr-1"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("mdi-calendar")
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                ])
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode(VDivider),
+                                            createVNode(VCardActions, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VBtn, {
+                                                  variant: "text",
+                                                  color: snippet.isFavorite ? "yellow" : "",
+                                                  onClick: withModifiers(($event) => toggleFavorite(snippet, "world"), ["stop"])
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VIcon, {
+                                                      icon: snippet.isFavorite ? "mdi-bookmark" : "mdi-bookmark-outline"
+                                                    }, null, 8, ["icon"])
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["color", "onClick"]),
+                                                createVNode(VSpacer),
+                                                createVNode(VBtn, {
+                                                  variant: "text",
+                                                  color: "primary",
+                                                  to: `/snippetsView?id=${snippet.id}&type=world`
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" View Details "),
+                                                    createVNode(VIcon, { end: "" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-arrow-right")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["to"])
+                                              ]),
+                                              _: 2
+                                            }, 1024)
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ]),
+                                      _: 2
+                                    }, 1024);
+                                  }), 128)),
+                                  filteredWorldSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                    key: 0,
+                                    cols: "12"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VAlert, {
+                                        type: "info",
+                                        variant: "tonal"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" No snippets found. Try modifying your search criteria. ")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  })) : createCommentVNode("", true)
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VWindowItem, { value: "Personal" }, {
+                            default: withCtx(() => [
+                              createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                createVNode(VTextField, {
+                                  modelValue: searchQuery.value,
+                                  "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                  "prepend-inner-icon": "mdi-magnify",
+                                  label: "Search in my snippets",
+                                  variant: "outlined",
+                                  density: "comfortable",
+                                  "hide-details": "",
+                                  class: "mr-4"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                createVNode(VSelect, {
+                                  modelValue: frameworkFilter.value,
+                                  "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                  items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                  label: "Framework",
+                                  variant: "outlined",
+                                  density: "comfortable",
+                                  "hide-details": "",
+                                  style: { "max-width": "200px" }
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                              ]),
+                              createVNode(VRow, null, {
+                                default: withCtx(() => [
+                                  (openBlock(true), createBlock(Fragment, null, renderList(filteredPersonalSnippets.value, (snippet, index) => {
+                                    return openBlock(), createBlock(VCol, {
+                                      key: index,
+                                      cols: "12",
+                                      sm: "6",
+                                      lg: "4"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VCard, {
+                                          class: "mx-auto snippet-card",
+                                          "max-width": "400",
+                                          elevation: "2",
+                                          hover: ""
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(_component_NuxtLink, {
+                                              to: `/snippetsView?id=${snippet.id}&type=personal`,
+                                              class: "text-decoration-none"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VImg, {
+                                                  src: snippet.img || "/placeholder-image.jpg",
+                                                  height: "200",
+                                                  cover: "",
+                                                  class: "bg-grey-lighten-2"
+                                                }, {
+                                                  placeholder: withCtx(() => [
+                                                    createVNode(VRow, {
+                                                      align: "center",
+                                                      justify: "center",
+                                                      class: "fill-height"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VProgressCircular, {
+                                                          indeterminate: "",
+                                                          color: "primary"
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["src"])
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["to"]),
+                                            createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(snippet.title), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode(VCardText, null, {
+                                              default: withCtx(() => [
+                                                createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(snippet.description), 1),
+                                                createVNode(VChip, {
+                                                  color: "primary",
+                                                  variant: "outlined",
+                                                  size: "small",
+                                                  class: "mb-2"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(snippet.framework), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024),
+                                                createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                  createVNode(VAvatar, {
+                                                    size: "24",
+                                                    class: "mr-2"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VImg, {
+                                                        src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                        alt: "avatar"
+                                                      })
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode("span", null, toDisplayString(snippet.username), 1),
+                                                  createVNode(VSpacer),
+                                                  createVNode(VIcon, {
+                                                    size: "small",
+                                                    class: "mr-1"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("mdi-calendar")
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(snippet)), 1)
+                                                ])
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode(VDivider),
+                                            createVNode(VCardActions, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VBtn, {
+                                                  variant: "text",
+                                                  color: "error",
+                                                  onClick: withModifiers(($event) => confirmDelete(snippet), ["stop"])
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VIcon, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-delete")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["onClick"]),
+                                                createVNode(VSpacer),
+                                                createVNode(VBtn, {
+                                                  variant: "text",
+                                                  color: "primary",
+                                                  to: `/snippetsView?id=${snippet.id}&type=personal`
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" View Details "),
+                                                    createVNode(VIcon, { end: "" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-arrow-right")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["to"])
+                                              ]),
+                                              _: 2
+                                            }, 1024)
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ]),
+                                      _: 2
+                                    }, 1024);
+                                  }), 128)),
+                                  filteredPersonalSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                    key: 0,
+                                    cols: "12"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VAlert, {
+                                        type: "info",
+                                        variant: "tonal"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" You don't have any snippets yet. Create a new one! ")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  })) : createCommentVNode("", true)
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VWindowItem, { value: "Favorites" }, {
+                            default: withCtx(() => [
+                              createVNode("div", { class: "d-flex align-center mb-4" }, [
+                                createVNode(VTextField, {
+                                  modelValue: searchQuery.value,
+                                  "onUpdate:modelValue": ($event) => searchQuery.value = $event,
+                                  "prepend-inner-icon": "mdi-magnify",
+                                  label: "Search in my favorites",
+                                  variant: "outlined",
+                                  density: "comfortable",
+                                  "hide-details": "",
+                                  class: "mr-4"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                createVNode(VSelect, {
+                                  modelValue: frameworkFilter.value,
+                                  "onUpdate:modelValue": ($event) => frameworkFilter.value = $event,
+                                  items: ["All", "Vue.js 3", "Nuxt 3", "React", "Angular", "Svelte"],
+                                  label: "Framework",
+                                  variant: "outlined",
+                                  density: "comfortable",
+                                  "hide-details": "",
+                                  style: { "max-width": "200px" }
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                              ]),
+                              createVNode(VRow, null, {
+                                default: withCtx(() => [
+                                  (openBlock(true), createBlock(Fragment, null, renderList(filteredFavoriteSnippets.value, (favorite, index) => {
+                                    return openBlock(), createBlock(VCol, {
+                                      key: index,
+                                      cols: "12",
+                                      sm: "6",
+                                      lg: "4"
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(VCard, {
+                                          class: "mx-auto snippet-card",
+                                          "max-width": "400",
+                                          elevation: "2",
+                                          hover: ""
+                                        }, {
+                                          default: withCtx(() => [
+                                            createVNode(_component_NuxtLink, {
+                                              to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`,
+                                              class: "text-decoration-none"
+                                            }, {
+                                              default: withCtx(() => [
+                                                createVNode(VImg, {
+                                                  src: favorite.img || "/placeholder-image.jpg",
+                                                  height: "200",
+                                                  cover: "",
+                                                  class: "bg-grey-lighten-2"
+                                                }, {
+                                                  placeholder: withCtx(() => [
+                                                    createVNode(VRow, {
+                                                      align: "center",
+                                                      justify: "center",
+                                                      class: "fill-height"
+                                                    }, {
+                                                      default: withCtx(() => [
+                                                        createVNode(VProgressCircular, {
+                                                          indeterminate: "",
+                                                          color: "primary"
+                                                        })
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["src"])
+                                              ]),
+                                              _: 2
+                                            }, 1032, ["to"]),
+                                            createVNode(VCardTitle, { class: "text-h6 font-weight-bold" }, {
+                                              default: withCtx(() => [
+                                                createTextVNode(toDisplayString(favorite.title), 1)
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode(VCardText, null, {
+                                              default: withCtx(() => [
+                                                createVNode("p", { class: "text-body-1 mb-2" }, toDisplayString(favorite.description), 1),
+                                                createVNode(VChip, {
+                                                  color: "primary",
+                                                  variant: "outlined",
+                                                  size: "small",
+                                                  class: "mb-2"
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(toDisplayString(favorite.framework), 1)
+                                                  ]),
+                                                  _: 2
+                                                }, 1024),
+                                                createVNode("div", { class: "d-flex align-center text-grey" }, [
+                                                  createVNode(VAvatar, {
+                                                    size: "24",
+                                                    class: "mr-2"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createVNode(VImg, {
+                                                        src: "https://cdn.vuetifyjs.com/images/john.jpg",
+                                                        alt: "avatar"
+                                                      })
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode("span", null, toDisplayString(favorite.username), 1),
+                                                  createVNode(VSpacer),
+                                                  createVNode(VIcon, {
+                                                    size: "small",
+                                                    class: "mr-1"
+                                                  }, {
+                                                    default: withCtx(() => [
+                                                      createTextVNode("mdi-calendar")
+                                                    ]),
+                                                    _: 1
+                                                  }),
+                                                  createVNode("span", { class: "text-caption" }, toDisplayString(formatDisplayDate(favorite)), 1)
+                                                ])
+                                              ]),
+                                              _: 2
+                                            }, 1024),
+                                            createVNode(VDivider),
+                                            createVNode(VCardActions, null, {
+                                              default: withCtx(() => [
+                                                createVNode(VBtn, {
+                                                  variant: "text",
+                                                  color: "yellow",
+                                                  onClick: withModifiers(($event) => toggleFavorite(favorite, "world"), ["stop"])
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createVNode(VIcon, null, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-bookmark")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["onClick"]),
+                                                createVNode(VSpacer),
+                                                createVNode(VBtn, {
+                                                  variant: "text",
+                                                  color: "primary",
+                                                  to: `/snippetsView?id=${favorite.id}&type=${favorite.sourceType || "world"}`
+                                                }, {
+                                                  default: withCtx(() => [
+                                                    createTextVNode(" View Details "),
+                                                    createVNode(VIcon, { end: "" }, {
+                                                      default: withCtx(() => [
+                                                        createTextVNode("mdi-arrow-right")
+                                                      ]),
+                                                      _: 1
+                                                    })
+                                                  ]),
+                                                  _: 2
+                                                }, 1032, ["to"])
+                                              ]),
+                                              _: 2
+                                            }, 1024)
+                                          ]),
+                                          _: 2
+                                        }, 1024)
+                                      ]),
+                                      _: 2
+                                    }, 1024);
+                                  }), 128)),
+                                  filteredFavoriteSnippets.value.length === 0 ? (openBlock(), createBlock(VCol, {
+                                    key: 0,
+                                    cols: "12"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VAlert, {
+                                        type: "info",
+                                        variant: "tonal"
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(" You don't have any favorite snippets yet. ")
+                                        ]),
+                                        _: 1
+                                      })
+                                    ]),
+                                    _: 1
+                                  })) : createCommentVNode("", true)
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      }, 8, ["modelValue", "onUpdate:modelValue"])
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }),
+              createVNode(VDialog, {
+                modelValue: addSnippets.value,
+                "onUpdate:modelValue": ($event) => addSnippets.value = $event,
+                "max-width": "700",
+                persistent: ""
+              }, {
+                default: withCtx(() => [
+                  createVNode(VCard, null, {
+                    default: withCtx(() => [
+                      createVNode(VToolbar, {
+                        color: "primary",
+                        class: "text-white"
+                      }, {
+                        default: withCtx(() => [
+                          createVNode(VToolbarTitle, null, {
+                            default: withCtx(() => [
+                              createTextVNode("Create a New Snippet")
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VSpacer),
+                          createVNode(VBtn, {
+                            icon: "",
+                            onClick: ($event) => addSnippets.value = false
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, null, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-close")
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }, 8, ["onClick"])
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCardText, { class: "pt-4" }, {
+                        default: withCtx(() => [
+                          createVNode(VForm, null, {
+                            default: withCtx(() => [
+                              createVNode(VRow, null, {
+                                default: withCtx(() => [
+                                  createVNode(VCol, { cols: "12" }, {
+                                    default: withCtx(() => [
+                                      createVNode("div", { class: "d-flex gap-4" }, [
+                                        createVNode(VSwitch, {
+                                          modelValue: newSnippet.value.publishWorld,
+                                          "onUpdate:modelValue": ($event) => newSnippet.value.publishWorld = $event,
+                                          label: "Publish Globally",
+                                          color: "primary",
+                                          "hide-details": ""
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                                        createVNode(VSwitch, {
+                                          modelValue: newSnippet.value.publishPersonal,
+                                          "onUpdate:modelValue": ($event) => newSnippet.value.publishPersonal = $event,
+                                          label: "Save as Personal",
+                                          color: "primary",
+                                          "hide-details": ""
+                                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                      ])
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VCol, { cols: "12" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VTextField, {
+                                        modelValue: newSnippet.value.title,
+                                        "onUpdate:modelValue": ($event) => newSnippet.value.title = $event,
+                                        label: "Title",
+                                        variant: "outlined",
+                                        placeholder: "Enter snippet title",
+                                        "prepend-inner-icon": "mdi-format-title"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VCol, { cols: "12" }, {
+                                    default: withCtx(() => [
+                                      createVNode(VTextarea, {
+                                        modelValue: newSnippet.value.description,
+                                        "onUpdate:modelValue": ($event) => newSnippet.value.description = $event,
+                                        label: "Description",
+                                        variant: "outlined",
+                                        rows: "3",
+                                        placeholder: "Describe your snippet",
+                                        "prepend-inner-icon": "mdi-text"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VCol, {
+                                    cols: "12",
+                                    md: "6"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VSelect, {
+                                        modelValue: newSnippet.value.framework,
+                                        "onUpdate:modelValue": ($event) => newSnippet.value.framework = $event,
+                                        items: ["React", "Vue.js 3", "Nuxt 3", "Angular", "Nest.js"],
+                                        label: "Framework",
+                                        variant: "outlined",
+                                        "prepend-inner-icon": "mdi-code-tags"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ]),
+                                    _: 1
+                                  }),
+                                  createVNode(VCol, {
+                                    cols: "12",
+                                    md: "6"
+                                  }, {
+                                    default: withCtx(() => [
+                                      createVNode(VFileInput, {
+                                        modelValue: newSnippet.value.imgFile,
+                                        "onUpdate:modelValue": ($event) => newSnippet.value.imgFile = $event,
+                                        label: "Cover Image",
+                                        variant: "outlined",
+                                        "prepend-icon": "mdi-image",
+                                        accept: "image/*",
+                                        "show-size": ""
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ]),
+                                    _: 1
+                                  })
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCardActions, { class: "pa-4" }, {
+                        default: withCtx(() => [
+                          createVNode(VSpacer),
+                          createVNode(VBtn, {
+                            variant: "outlined",
+                            onClick: ($event) => addSnippets.value = false,
+                            class: "mr-2"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Cancel ")
+                            ]),
+                            _: 1
+                          }, 8, ["onClick"]),
+                          createVNode(VBtn, {
+                            color: "primary",
+                            onClick: sendSnippets,
+                            loading: isLoading.value
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Create Snippet "),
+                              createVNode(VIcon, { end: "" }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-check")
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }, 8, ["loading"])
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }, 8, ["modelValue", "onUpdate:modelValue"]),
+              createVNode(VDialog, {
+                modelValue: deleteDialog.value,
+                "onUpdate:modelValue": ($event) => deleteDialog.value = $event,
+                "max-width": "400"
+              }, {
+                default: withCtx(() => [
+                  createVNode(VCard, null, {
+                    default: withCtx(() => [
+                      createVNode(VCardTitle, { class: "bg-error text-white" }, {
+                        default: withCtx(() => [
+                          createVNode(VIcon, { start: "" }, {
+                            default: withCtx(() => [
+                              createTextVNode("mdi-alert-circle")
+                            ]),
+                            _: 1
+                          }),
+                          createTextVNode(" Confirmation de suppression ")
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCardText, { class: "pt-4" }, {
+                        default: withCtx(() => [
+                          createVNode("p", null, "Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.")
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCardActions, null, {
+                        default: withCtx(() => [
+                          createVNode(VSpacer),
+                          createVNode(VBtn, {
+                            variant: "text",
+                            onClick: ($event) => deleteDialog.value = false
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode("Annuler")
+                            ]),
+                            _: 1
+                          }, 8, ["onClick"]),
+                          createVNode(VBtn, {
+                            color: "error",
+                            onClick: deleteSnippet
+                          }, {
+                            default: withCtx(() => [
+                              createVNode(VIcon, { start: "" }, {
+                                default: withCtx(() => [
+                                  createTextVNode("mdi-delete")
+                                ]),
+                                _: 1
+                              }),
+                              createTextVNode(" Supprimer ")
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }, 8, ["modelValue", "onUpdate:modelValue"]),
+              createVNode(Snackbar, {
+                modelValue: snackbar.value,
+                "onUpdate:modelValue": ($event) => snackbar.value = $event,
+                text: snackbarText.value,
+                color: snackbarColor.value,
+                icon: snackbarIcon.value,
+                timeout: 2e3
+              }, null, 8, ["modelValue", "onUpdate:modelValue", "text", "color", "icon"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+});
 
-const e=ea.setup;ea.setup=(o,p)=>{const t=useSSRContext();return (t.modules||(t.modules=new Set)).add("pages/snippets.vue"),e?e(o,p):void 0};const d=s(ea,[["__scopeId","data-v-6fc203b4"]]);
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/snippets.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const snippets = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-6fc203b4"]]);
 
-export { d as default };;globalThis.__timing__.logEnd('Load chunks/build/snippets.vue');
+export { snippets as default };
+//# sourceMappingURL=snippets.vue.mjs.map

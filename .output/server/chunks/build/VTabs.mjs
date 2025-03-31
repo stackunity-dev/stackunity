@@ -1,16 +1,306 @@
-globalThis.__timing__.logStart('Load chunks/build/VTabs');import { ref, computed, createVNode, mergeProps, Fragment, inject, toRef } from 'vue';
-import { f as y$1, y as y$2, ai as f, as as d, o as o$1, az as M, b5 as Ie, b as We, ak as p, aq as e, C, aF as l, u as x$1, a4 as t, O, k as r, aN as u, aX as G, X as X$1 } from './server.mjs';
-import { i as ie, q, X, x } from './VWindowItem.mjs';
-import { t as te, S as Se } from './VChip.mjs';
+import { ref, computed, createVNode, mergeProps, Fragment, inject, toRef } from 'vue';
+import { k as genericComponent, p as propsFactory, ai as useTextColor, s as useRender, as as forwardRefs, az as omit, b5 as makeVBtnProps, e as VBtn, ak as animate, aq as standardEasing, l as useProxiedModel, aF as useDensity, E as useBackgroundColor, a4 as useScopeId, O as provideDefaults, y as makeTagProps, aN as makeDensityProps, aX as isObject, J as convertToUnit } from './server.mjs';
+import { V as VWindow, m as makeVWindowProps, a as VWindowItem, b as makeVWindowItemProps } from './VWindowItem.mjs';
+import { m as makeVSlideGroupProps, b as VSlideGroup } from './VChip.mjs';
 
-const o=Symbol.for("vuetify:v-tabs");
+const VTabsSymbol = Symbol.for("vuetify:v-tabs");
 
-const j$1=y$2({fixed:Boolean,sliderColor:String,hideSlider:Boolean,direction:{type:String,default:"horizontal"},...M(Ie({selectedClass:"v-tab--selected",variant:"text"}),["active","block","flat","location","position","symbol"])},"VTab"),at=y$1()({name:"VTab",props:j$1(),setup(t,C){let{slots:f$1,attrs:S}=C;const{textColorClasses:B,textColorStyles:$}=f(t,"sliderColor"),s=ref(),v=ref(),e$1=computed(()=>t.direction==="horizontal"),g=computed(()=>s.value?.group?.isSelected.value??false);function V(c){let{value:P}=c;if(P){const d=s.value?.$el.parentElement?.querySelector(".v-tab--selected .v-tab__slider"),m=v.value;if(!d||!m)return;const E=getComputedStyle(d).color,o=d.getBoundingClientRect(),r=m.getBoundingClientRect(),n=e$1.value?"x":"y",i=e$1.value?"X":"Y",b=e$1.value?"right":"bottom",l=e$1.value?"width":"height",T=o[n],k=r[n],a=T>k?o[b]-r[b]:o[n]-r[n],z=Math.sign(a)>0?e$1.value?"right":"bottom":Math.sign(a)<0?e$1.value?"left":"top":"center",M=(Math.abs(a)+(Math.sign(a)<0?o[l]:r[l]))/Math.max(o[l],r[l])||0,R=o[l]/r[l]||0,p$1=1.5;p(m,{backgroundColor:[E,"currentcolor"],transform:[`translate${i}(${a}px) scale${i}(${R})`,`translate${i}(${a/p$1}px) scale${i}(${(M-1)/p$1+1})`,"none"],transformOrigin:Array(3).fill(z)},{duration:225,easing:e});}}return o$1(()=>{const c=We.filterProps(t);return createVNode(We,mergeProps({symbol:o,ref:s,class:["v-tab",t.class],style:t.style,tabindex:g.value?0:-1,role:"tab","aria-selected":String(g.value),active:false},c,S,{block:t.fixed,maxWidth:t.fixed?300:void 0,"onGroup:selected":V}),{...f$1,default:()=>createVNode(Fragment,null,[f$1.default?.()??t.text,!t.hideSlider&&createVNode("div",{ref:v,class:["v-tab__slider",B.value],style:$.value},null)])})}),d({},s)}});
+const makeVTabProps = propsFactory({
+  fixed: Boolean,
+  sliderColor: String,
+  hideSlider: Boolean,
+  direction: {
+    type: String,
+    default: "horizontal"
+  },
+  ...omit(makeVBtnProps({
+    selectedClass: "v-tab--selected",
+    variant: "text"
+  }), ["active", "block", "flat", "location", "position", "symbol"])
+}, "VTab");
+const VTab = genericComponent()({
+  name: "VTab",
+  props: makeVTabProps(),
+  setup(props, _ref) {
+    let {
+      slots,
+      attrs
+    } = _ref;
+    const {
+      textColorClasses: sliderColorClasses,
+      textColorStyles: sliderColorStyles
+    } = useTextColor(props, "sliderColor");
+    const rootEl = ref();
+    const sliderEl = ref();
+    const isHorizontal = computed(() => props.direction === "horizontal");
+    const isSelected = computed(() => {
+      var _a, _b;
+      return ((_b = (_a = rootEl.value) == null ? void 0 : _a.group) == null ? void 0 : _b.isSelected.value) ?? false;
+    });
+    function updateSlider(_ref2) {
+      var _a, _b;
+      let {
+        value
+      } = _ref2;
+      if (value) {
+        const prevEl = (_b = (_a = rootEl.value) == null ? void 0 : _a.$el.parentElement) == null ? void 0 : _b.querySelector(".v-tab--selected .v-tab__slider");
+        const nextEl = sliderEl.value;
+        if (!prevEl || !nextEl) return;
+        const color = getComputedStyle(prevEl).color;
+        const prevBox = prevEl.getBoundingClientRect();
+        const nextBox = nextEl.getBoundingClientRect();
+        const xy = isHorizontal.value ? "x" : "y";
+        const XY = isHorizontal.value ? "X" : "Y";
+        const rightBottom = isHorizontal.value ? "right" : "bottom";
+        const widthHeight = isHorizontal.value ? "width" : "height";
+        const prevPos = prevBox[xy];
+        const nextPos = nextBox[xy];
+        const delta = prevPos > nextPos ? prevBox[rightBottom] - nextBox[rightBottom] : prevBox[xy] - nextBox[xy];
+        const origin = Math.sign(delta) > 0 ? isHorizontal.value ? "right" : "bottom" : Math.sign(delta) < 0 ? isHorizontal.value ? "left" : "top" : "center";
+        const size = Math.abs(delta) + (Math.sign(delta) < 0 ? prevBox[widthHeight] : nextBox[widthHeight]);
+        const scale = size / Math.max(prevBox[widthHeight], nextBox[widthHeight]) || 0;
+        const initialScale = prevBox[widthHeight] / nextBox[widthHeight] || 0;
+        const sigma = 1.5;
+        animate(nextEl, {
+          backgroundColor: [color, "currentcolor"],
+          transform: [`translate${XY}(${delta}px) scale${XY}(${initialScale})`, `translate${XY}(${delta / sigma}px) scale${XY}(${(scale - 1) / sigma + 1})`, "none"],
+          transformOrigin: Array(3).fill(origin)
+        }, {
+          duration: 225,
+          easing: standardEasing
+        });
+      }
+    }
+    useRender(() => {
+      const btnProps = VBtn.filterProps(props);
+      return createVNode(VBtn, mergeProps({
+        "symbol": VTabsSymbol,
+        "ref": rootEl,
+        "class": ["v-tab", props.class],
+        "style": props.style,
+        "tabindex": isSelected.value ? 0 : -1,
+        "role": "tab",
+        "aria-selected": String(isSelected.value),
+        "active": false
+      }, btnProps, attrs, {
+        "block": props.fixed,
+        "maxWidth": props.fixed ? 300 : void 0,
+        "onGroup:selected": updateSlider
+      }), {
+        ...slots,
+        default: () => {
+          var _a;
+          return createVNode(Fragment, null, [((_a = slots.default) == null ? void 0 : _a.call(slots)) ?? props.text, !props.hideSlider && createVNode("div", {
+            "ref": sliderEl,
+            "class": ["v-tab__slider", sliderColorClasses.value],
+            "style": sliderColorStyles.value
+          }, null)]);
+        }
+      });
+    });
+    return forwardRefs({}, rootEl);
+  }
+});
 
-const y=y$2({...M(q(),["continuous","nextIcon","prevIcon","showArrows","touch","mandatory"])},"VTabsWindow"),j=y$1()({name:"VTabsWindow",props:y(),emits:{"update:modelValue":o=>true},setup(o$2,a){let{slots:l}=a;const t=inject(o,null),r=C(o$2,"modelValue"),s=computed({get(){return r.value!=null||!t?r.value:t.items.value.find(e=>t.selected.value.includes(e.id))?.value},set(e){r.value=e;}});return o$1(()=>{const e=ie.filterProps(o$2);return createVNode(ie,mergeProps({_as:"VTabsWindow"},e,{modelValue:s.value,"onUpdate:modelValue":m=>s.value=m,class:["v-tabs-window",o$2.class],style:o$2.style,mandatory:false,touch:false}),l)}),{}}});
+const makeVTabsWindowProps = propsFactory({
+  ...omit(makeVWindowProps(), ["continuous", "nextIcon", "prevIcon", "showArrows", "touch", "mandatory"])
+}, "VTabsWindow");
+const VTabsWindow = genericComponent()({
+  name: "VTabsWindow",
+  props: makeVTabsWindowProps(),
+  emits: {
+    "update:modelValue": (v) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const group = inject(VTabsSymbol, null);
+    const _model = useProxiedModel(props, "modelValue");
+    const model = computed({
+      get() {
+        var _a;
+        if (_model.value != null || !group) return _model.value;
+        return (_a = group.items.value.find((item) => group.selected.value.includes(item.id))) == null ? void 0 : _a.value;
+      },
+      set(val) {
+        _model.value = val;
+      }
+    });
+    useRender(() => {
+      const windowProps = VWindow.filterProps(props);
+      return createVNode(VWindow, mergeProps({
+        "_as": "VTabsWindow"
+      }, windowProps, {
+        "modelValue": model.value,
+        "onUpdate:modelValue": ($event) => model.value = $event,
+        "class": ["v-tabs-window", props.class],
+        "style": props.style,
+        "mandatory": false,
+        "touch": false
+      }), slots);
+    });
+    return {};
+  }
+});
 
-const w=y$2({...x()},"VTabsWindowItem"),b=y$1()({name:"VTabsWindowItem",props:w(),setup(o,t){let{slots:r}=t;return o$1(()=>{const s=X.filterProps(o);return createVNode(X,mergeProps({_as:"VTabsWindowItem"},s,{class:["v-tabs-window-item",o.class],style:o.style}),r)}),{}}});
+const makeVTabsWindowItemProps = propsFactory({
+  ...makeVWindowItemProps()
+}, "VTabsWindowItem");
+const VTabsWindowItem = genericComponent()({
+  name: "VTabsWindowItem",
+  props: makeVTabsWindowItemProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    useRender(() => {
+      const windowItemProps = VWindowItem.filterProps(props);
+      return createVNode(VWindowItem, mergeProps({
+        "_as": "VTabsWindowItem"
+      }, windowItemProps, {
+        "class": ["v-tabs-window-item", props.class],
+        "style": props.style
+      }), slots);
+    });
+    return {};
+  }
+});
 
-function N(e){return e?e.map(r=>G(r)?r:{text:r,value:r}):[]}const R=y$2({alignTabs:{type:String,default:"start"},color:String,fixedTabs:Boolean,items:{type:Array,default:()=>[]},stacked:Boolean,bgColor:String,grow:Boolean,height:{type:[Number,String],default:void 0},hideSlider:Boolean,sliderColor:String,...te({mandatory:"force",selectedClass:"v-tab-item--selected"}),...u(),...r()},"VTabs"),oe=y$1()({name:"VTabs",props:R(),emits:{"update:modelValue":e=>true},setup(e,r){let{attrs:m,slots:t$1}=r;const s=C(e,"modelValue"),d=computed(()=>N(e.items)),{densityClasses:b$1}=l(e),{backgroundColorClasses:c,backgroundColorStyles:f}=x$1(toRef(e,"bgColor")),{scopeId:n}=t();return O({VTab:{color:toRef(e,"color"),direction:toRef(e,"direction"),stacked:toRef(e,"stacked"),fixed:toRef(e,"fixedTabs"),sliderColor:toRef(e,"sliderColor"),hideSlider:toRef(e,"hideSlider")}}),o$1(()=>{const v=Se.filterProps(e),g=!!(t$1.window||e.items.length>0);return createVNode(Fragment,null,[createVNode(Se,mergeProps(v,{modelValue:s.value,"onUpdate:modelValue":o=>s.value=o,class:["v-tabs",`v-tabs--${e.direction}`,`v-tabs--align-tabs-${e.alignTabs}`,{"v-tabs--fixed-tabs":e.fixedTabs,"v-tabs--grow":e.grow,"v-tabs--stacked":e.stacked},b$1.value,c.value,e.class],style:[{"--v-tabs-height":X$1(e.height)},f.value,e.style],role:"tablist",symbol:o},n,m),{default:()=>[t$1.default?.()??d.value.map(o=>t$1.tab?.({item:o})??createVNode(at,mergeProps(o,{key:o.text,value:o.value}),{default:t$1[`tab.${o.value}`]?()=>t$1[`tab.${o.value}`]?.({item:o}):void 0}))]}),g&&createVNode(j,mergeProps({modelValue:s.value,"onUpdate:modelValue":o=>s.value=o,key:"tabs-window"},n),{default:()=>[d.value.map(o=>t$1.item?.({item:o})??createVNode(b,{value:o.value},{default:()=>t$1[`item.${o.value}`]?.({item:o})})),t$1.window?.()]})])}),{}}});
+function parseItems(items) {
+  if (!items) return [];
+  return items.map((item) => {
+    if (!isObject(item)) return {
+      text: item,
+      value: item
+    };
+    return item;
+  });
+}
+const makeVTabsProps = propsFactory({
+  alignTabs: {
+    type: String,
+    default: "start"
+  },
+  color: String,
+  fixedTabs: Boolean,
+  items: {
+    type: Array,
+    default: () => []
+  },
+  stacked: Boolean,
+  bgColor: String,
+  grow: Boolean,
+  height: {
+    type: [Number, String],
+    default: void 0
+  },
+  hideSlider: Boolean,
+  sliderColor: String,
+  ...makeVSlideGroupProps({
+    mandatory: "force",
+    selectedClass: "v-tab-item--selected"
+  }),
+  ...makeDensityProps(),
+  ...makeTagProps()
+}, "VTabs");
+const VTabs = genericComponent()({
+  name: "VTabs",
+  props: makeVTabsProps(),
+  emits: {
+    "update:modelValue": (v) => true
+  },
+  setup(props, _ref) {
+    let {
+      attrs,
+      slots
+    } = _ref;
+    const model = useProxiedModel(props, "modelValue");
+    const items = computed(() => parseItems(props.items));
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(toRef(props, "bgColor"));
+    const {
+      scopeId
+    } = useScopeId();
+    provideDefaults({
+      VTab: {
+        color: toRef(props, "color"),
+        direction: toRef(props, "direction"),
+        stacked: toRef(props, "stacked"),
+        fixed: toRef(props, "fixedTabs"),
+        sliderColor: toRef(props, "sliderColor"),
+        hideSlider: toRef(props, "hideSlider")
+      }
+    });
+    useRender(() => {
+      const slideGroupProps = VSlideGroup.filterProps(props);
+      const hasWindow = !!(slots.window || props.items.length > 0);
+      return createVNode(Fragment, null, [createVNode(VSlideGroup, mergeProps(slideGroupProps, {
+        "modelValue": model.value,
+        "onUpdate:modelValue": ($event) => model.value = $event,
+        "class": ["v-tabs", `v-tabs--${props.direction}`, `v-tabs--align-tabs-${props.alignTabs}`, {
+          "v-tabs--fixed-tabs": props.fixedTabs,
+          "v-tabs--grow": props.grow,
+          "v-tabs--stacked": props.stacked
+        }, densityClasses.value, backgroundColorClasses.value, props.class],
+        "style": [{
+          "--v-tabs-height": convertToUnit(props.height)
+        }, backgroundColorStyles.value, props.style],
+        "role": "tablist",
+        "symbol": VTabsSymbol
+      }, scopeId, attrs), {
+        default: () => {
+          var _a;
+          return [((_a = slots.default) == null ? void 0 : _a.call(slots)) ?? items.value.map((item) => {
+            var _a2;
+            return ((_a2 = slots.tab) == null ? void 0 : _a2.call(slots, {
+              item
+            })) ?? createVNode(VTab, mergeProps(item, {
+              "key": item.text,
+              "value": item.value
+            }), {
+              default: slots[`tab.${item.value}`] ? () => {
+                var _a3;
+                return (_a3 = slots[`tab.${item.value}`]) == null ? void 0 : _a3.call(slots, {
+                  item
+                });
+              } : void 0
+            });
+          })];
+        }
+      }), hasWindow && createVNode(VTabsWindow, mergeProps({
+        "modelValue": model.value,
+        "onUpdate:modelValue": ($event) => model.value = $event,
+        "key": "tabs-window"
+      }, scopeId), {
+        default: () => {
+          var _a;
+          return [items.value.map((item) => {
+            var _a2;
+            return ((_a2 = slots.item) == null ? void 0 : _a2.call(slots, {
+              item
+            })) ?? createVNode(VTabsWindowItem, {
+              "value": item.value
+            }, {
+              default: () => {
+                var _a3;
+                return (_a3 = slots[`item.${item.value}`]) == null ? void 0 : _a3.call(slots, {
+                  item
+                });
+              }
+            });
+          }), (_a = slots.window) == null ? void 0 : _a.call(slots)];
+        }
+      })]);
+    });
+    return {};
+  }
+});
 
-export { at as a, oe as o };;globalThis.__timing__.logEnd('Load chunks/build/VTabs');
+export { VTabs as V, VTab as a };
+//# sourceMappingURL=VTabs.mjs.map

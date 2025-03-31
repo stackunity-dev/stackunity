@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes//renderer');import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'vue-bundle-renderer/runtime';
+import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'vue-bundle-renderer/runtime';
 import { v as joinRelativeURL, w as useRuntimeConfig, x as getResponseStatusText, y as getResponseStatus, z as defineRenderHandler, l as getQuery, c as createError, B as getRouteRules, u as useNitroApp } from '../_/nitro.mjs';
 import { createHead as createHead$1, propsToString, renderSSRHead } from 'unhead/server';
 import { walkResolver } from 'unhead/utils';
@@ -405,4 +405,5 @@ const renderer$1 = /*#__PURE__*/Object.freeze({
   default: renderer
 });
 
-export { headSymbol as h, publicAssetsURL as p, renderer$1 as r, useHead as u };;globalThis.__timing__.logEnd('Load chunks/routes//renderer');
+export { headSymbol as h, publicAssetsURL as p, renderer$1 as r, useHead as u };
+//# sourceMappingURL=renderer.mjs.map

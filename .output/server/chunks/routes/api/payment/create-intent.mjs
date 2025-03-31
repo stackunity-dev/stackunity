@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/payment/create-intent');import Stripe from 'stripe';
+import Stripe from 'stripe';
 import { d as defineEventHandler, r as readBody } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -7,7 +7,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -129,4 +128,5 @@ const createIntent = defineEventHandler(async (event) => {
   }
 });
 
-export { createIntent as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/payment/create-intent');
+export { createIntent as default };
+//# sourceMappingURL=create-intent.mjs.map

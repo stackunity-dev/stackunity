@@ -1,8 +1,196 @@
-globalThis.__timing__.logStart('Load chunks/build/VAlert');import { computed, toRef, createVNode, mergeProps } from 'vue';
-import { aD as f, f as y, y as y$1, C, t as _, aE as _$1, aF as l$1, j as x, w as v, aG as x$1, aH as c, z as h, ai as f$1, aI as v$1, aJ as C$1, H as P, L, b as We, aK as V, M, k as r, B as g, aL as m, aM as v$2, D as u, l as f$2, aN as u$1, n as o, ap as A } from './server.mjs';
+import { computed, toRef, createVNode, mergeProps } from 'vue';
+import { aD as createSimpleFunctional, k as genericComponent, p as propsFactory, l as useProxiedModel, D as provideTheme, aE as useVariant, aF as useDensity, x as useDimension, G as useElevation, aG as useLocation, aH as usePosition, H as useRounded, ai as useTextColor, aI as useLocale, aJ as genOverlays, g as VIcon, Q as VDefaultsProvider, e as VBtn, aK as makeVariantProps, K as makeThemeProps, y as makeTagProps, L as makeRoundedProps, aL as makePositionProps, aM as makeLocationProps, M as makeElevationProps, z as makeDimensionProps, aN as makeDensityProps, A as makeComponentProps, ap as IconValue } from './server.mjs';
 
-const l=f("v-alert-title");
+const VAlertTitle = createSimpleFunctional("v-alert-title");
 
-const le=["success","info","warning","error"],ae=y$1({border:{type:[Boolean,String],validator:e=>typeof e=="boolean"||["top","end","bottom","start"].includes(e)},borderColor:String,closable:Boolean,closeIcon:{type:A,default:"$close"},closeLabel:{type:String,default:"$vuetify.close"},icon:{type:[Boolean,String,Function,Object],default:null},modelValue:{type:Boolean,default:true},prominent:Boolean,title:String,text:String,type:{type:String,validator:e=>le.includes(e)},...o(),...u$1(),...f$2(),...u(),...v$2(),...m(),...g(),...r(),...M(),...V({variant:"flat"})},"VAlert"),Te=y()({name:"VAlert",props:ae(),emits:{"click:close":e=>true,"update:modelValue":e=>true},setup(e,c$1){let{emit:m,slots:t}=c$1;const n=C(e,"modelValue"),l$2=computed(()=>{if(e.icon!==false)return e.type?e.icon??`$${e.type}`:e.icon}),u=computed(()=>({color:e.color??e.type,variant:e.variant})),{themeClasses:d}=_(e),{colorClasses:v$2,colorStyles:f,variantClasses:y}=_$1(u),{densityClasses:k}=l$1(e),{dimensionStyles:b}=x(e),{elevationClasses:p}=v(e),{locationStyles:P$1}=x$1(e),{positionClasses:C$2}=c(e),{roundedClasses:V}=h(e),{textColorClasses:g,textColorStyles:x$2}=f$1(toRef(e,"borderColor")),{t:S}=v$1(),s=computed(()=>({"aria-label":S(e.closeLabel),onClick(a){n.value=false,m("click:close",a);}}));return ()=>{const a=!!(t.prepend||l$2.value),_=!!(t.title||e.title),B=!!(t.close||e.closable);return n.value&&createVNode(e.tag,{class:["v-alert",e.border&&{"v-alert--border":!!e.border,[`v-alert--border-${e.border===true?"start":e.border}`]:true},{"v-alert--prominent":e.prominent},d.value,v$2.value,k.value,p.value,C$2.value,V.value,y.value,e.class],style:[f.value,b.value,P$1.value,e.style],role:"alert"},{default:()=>[C$1(false,"v-alert"),e.border&&createVNode("div",{key:"border",class:["v-alert__border",g.value],style:x$2.value},null),a&&createVNode("div",{key:"prepend",class:"v-alert__prepend"},[t.prepend?createVNode(P,{key:"prepend-defaults",disabled:!l$2.value,defaults:{VIcon:{density:e.density,icon:l$2.value,size:e.prominent?44:28}}},t.prepend):createVNode(L,{key:"prepend-icon",density:e.density,icon:l$2.value,size:e.prominent?44:28},null)]),createVNode("div",{class:"v-alert__content"},[_&&createVNode(l,{key:"title"},{default:()=>[t.title?.()??e.title]}),t.text?.()??e.text,t.default?.()]),t.append&&createVNode("div",{key:"append",class:"v-alert__append"},[t.append()]),B&&createVNode("div",{key:"close",class:"v-alert__close"},[t.close?createVNode(P,{key:"close-defaults",defaults:{VBtn:{icon:e.closeIcon,size:"x-small",variant:"text"}}},{default:()=>[t.close?.({props:s.value})]}):createVNode(We,mergeProps({key:"close-btn",icon:e.closeIcon,size:"x-small",variant:"text"},s.value),null)])]})}}});
+const allowedTypes = ["success", "info", "warning", "error"];
+const makeVAlertProps = propsFactory({
+  border: {
+    type: [Boolean, String],
+    validator: (val) => {
+      return typeof val === "boolean" || ["top", "end", "bottom", "start"].includes(val);
+    }
+  },
+  borderColor: String,
+  closable: Boolean,
+  closeIcon: {
+    type: IconValue,
+    default: "$close"
+  },
+  closeLabel: {
+    type: String,
+    default: "$vuetify.close"
+  },
+  icon: {
+    type: [Boolean, String, Function, Object],
+    default: null
+  },
+  modelValue: {
+    type: Boolean,
+    default: true
+  },
+  prominent: Boolean,
+  title: String,
+  text: String,
+  type: {
+    type: String,
+    validator: (val) => allowedTypes.includes(val)
+  },
+  ...makeComponentProps(),
+  ...makeDensityProps(),
+  ...makeDimensionProps(),
+  ...makeElevationProps(),
+  ...makeLocationProps(),
+  ...makePositionProps(),
+  ...makeRoundedProps(),
+  ...makeTagProps(),
+  ...makeThemeProps(),
+  ...makeVariantProps({
+    variant: "flat"
+  })
+}, "VAlert");
+const VAlert = genericComponent()({
+  name: "VAlert",
+  props: makeVAlertProps(),
+  emits: {
+    "click:close": (e) => true,
+    "update:modelValue": (value) => true
+  },
+  setup(props, _ref) {
+    let {
+      emit,
+      slots
+    } = _ref;
+    const isActive = useProxiedModel(props, "modelValue");
+    const icon = computed(() => {
+      if (props.icon === false) return void 0;
+      if (!props.type) return props.icon;
+      return props.icon ?? `$${props.type}`;
+    });
+    const variantProps = computed(() => ({
+      color: props.color ?? props.type,
+      variant: props.variant
+    }));
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const {
+      colorClasses,
+      colorStyles,
+      variantClasses
+    } = useVariant(variantProps);
+    const {
+      densityClasses
+    } = useDensity(props);
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      locationStyles
+    } = useLocation(props);
+    const {
+      positionClasses
+    } = usePosition(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const {
+      textColorClasses,
+      textColorStyles
+    } = useTextColor(toRef(props, "borderColor"));
+    const {
+      t
+    } = useLocale();
+    const closeProps = computed(() => ({
+      "aria-label": t(props.closeLabel),
+      onClick(e) {
+        isActive.value = false;
+        emit("click:close", e);
+      }
+    }));
+    return () => {
+      const hasPrepend = !!(slots.prepend || icon.value);
+      const hasTitle = !!(slots.title || props.title);
+      const hasClose = !!(slots.close || props.closable);
+      return isActive.value && createVNode(props.tag, {
+        "class": ["v-alert", props.border && {
+          "v-alert--border": !!props.border,
+          [`v-alert--border-${props.border === true ? "start" : props.border}`]: true
+        }, {
+          "v-alert--prominent": props.prominent
+        }, themeClasses.value, colorClasses.value, densityClasses.value, elevationClasses.value, positionClasses.value, roundedClasses.value, variantClasses.value, props.class],
+        "style": [colorStyles.value, dimensionStyles.value, locationStyles.value, props.style],
+        "role": "alert"
+      }, {
+        default: () => {
+          var _a, _b;
+          return [genOverlays(false, "v-alert"), props.border && createVNode("div", {
+            "key": "border",
+            "class": ["v-alert__border", textColorClasses.value],
+            "style": textColorStyles.value
+          }, null), hasPrepend && createVNode("div", {
+            "key": "prepend",
+            "class": "v-alert__prepend"
+          }, [!slots.prepend ? createVNode(VIcon, {
+            "key": "prepend-icon",
+            "density": props.density,
+            "icon": icon.value,
+            "size": props.prominent ? 44 : 28
+          }, null) : createVNode(VDefaultsProvider, {
+            "key": "prepend-defaults",
+            "disabled": !icon.value,
+            "defaults": {
+              VIcon: {
+                density: props.density,
+                icon: icon.value,
+                size: props.prominent ? 44 : 28
+              }
+            }
+          }, slots.prepend)]), createVNode("div", {
+            "class": "v-alert__content"
+          }, [hasTitle && createVNode(VAlertTitle, {
+            "key": "title"
+          }, {
+            default: () => {
+              var _a2;
+              return [((_a2 = slots.title) == null ? void 0 : _a2.call(slots)) ?? props.title];
+            }
+          }), ((_a = slots.text) == null ? void 0 : _a.call(slots)) ?? props.text, (_b = slots.default) == null ? void 0 : _b.call(slots)]), slots.append && createVNode("div", {
+            "key": "append",
+            "class": "v-alert__append"
+          }, [slots.append()]), hasClose && createVNode("div", {
+            "key": "close",
+            "class": "v-alert__close"
+          }, [!slots.close ? createVNode(VBtn, mergeProps({
+            "key": "close-btn",
+            "icon": props.closeIcon,
+            "size": "x-small",
+            "variant": "text"
+          }, closeProps.value), null) : createVNode(VDefaultsProvider, {
+            "key": "close-defaults",
+            "defaults": {
+              VBtn: {
+                icon: props.closeIcon,
+                size: "x-small",
+                variant: "text"
+              }
+            }
+          }, {
+            default: () => {
+              var _a2;
+              return [(_a2 = slots.close) == null ? void 0 : _a2.call(slots, {
+                props: closeProps.value
+              })];
+            }
+          })])];
+        }
+      });
+    };
+  }
+});
 
-export { Te as T };;globalThis.__timing__.logEnd('Load chunks/build/VAlert');
+export { VAlert as V };
+//# sourceMappingURL=VAlert.mjs.map

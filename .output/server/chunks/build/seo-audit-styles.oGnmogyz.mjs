@@ -1,5 +1,6 @@
-globalThis.__timing__.logStart('Load chunks/build/seo-audit-styles.oGnmogyz');import { e } from './seo-audit-styles-1.mjs.mjs';
+import { s as seoAudit_vue_vue_type_style_index_0_lang } from './seo-audit-styles-1.mjs.mjs';
 
-const seoAuditStyles_oGnmogyz = [e, e];
+const seoAuditStyles_oGnmogyz = [seoAudit_vue_vue_type_style_index_0_lang, seoAudit_vue_vue_type_style_index_0_lang];
 
-export { seoAuditStyles_oGnmogyz as default };;globalThis.__timing__.logEnd('Load chunks/build/seo-audit-styles.oGnmogyz');
+export { seoAuditStyles_oGnmogyz as default };
+//# sourceMappingURL=seo-audit-styles.oGnmogyz.mjs.map

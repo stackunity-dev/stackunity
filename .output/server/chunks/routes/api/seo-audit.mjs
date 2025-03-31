@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/seo-audit');import { d as defineEventHandler, r as readBody, c as createError } from '../../_/nitro.mjs';
+import { d as defineEventHandler, r as readBody, c as createError } from '../../_/nitro.mjs';
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import puppeteer from 'puppeteer';
@@ -9,7 +9,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -684,4 +683,5 @@ const seoAudit = defineEventHandler(async (event) => {
   }
 });
 
-export { seoAudit as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/seo-audit');
+export { seoAudit as default };
+//# sourceMappingURL=seo-audit.mjs.map

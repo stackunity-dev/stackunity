@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/seo-audit.pdf.post');import { d as defineEventHandler, r as readBody, c as createError, n as setHeader } from '../../_/nitro.mjs';
+import { d as defineEventHandler, r as readBody, c as createError, n as setHeader } from '../../_/nitro.mjs';
 import PDFDocument from 'pdfkit';
 import 'node:http';
 import 'node:https';
@@ -7,7 +7,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -350,4 +349,5 @@ const seoAudit_pdf_post = defineEventHandler(async (event) => {
   });
 });
 
-export { seoAudit_pdf_post as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/seo-audit.pdf.post');
+export { seoAudit_pdf_post as default };
+//# sourceMappingURL=seo-audit.pdf.post.mjs.map

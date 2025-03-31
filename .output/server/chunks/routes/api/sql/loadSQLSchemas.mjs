@@ -1,4 +1,4 @@
-globalThis.__timing__.logStart('Load chunks/routes/api/sql/loadSQLSchemas');import { d as defineEventHandler, p as pool } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, p as pool } from '../../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -6,7 +6,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:async_hooks';
 import 'jsonwebtoken';
 import 'sqlstring';
 import 'net';
@@ -48,4 +47,5 @@ const loadSQLSchemas = defineEventHandler(async (event) => {
   }
 });
 
-export { loadSQLSchemas as default };;globalThis.__timing__.logEnd('Load chunks/routes/api/sql/loadSQLSchemas');
+export { loadSQLSchemas as default };
+//# sourceMappingURL=loadSQLSchemas.mjs.map

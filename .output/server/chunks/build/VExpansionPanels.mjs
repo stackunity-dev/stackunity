@@ -1,14 +1,287 @@
-globalThis.__timing__.logStart('Load chunks/build/VExpansionPanels');import { inject, createVNode, withDirectives, vShow, computed, resolveDirective, provide, toRef } from 'vue';
-import { f as y, y as y$1, b9 as i, o, ba as m, n as o$1, K as l, bc as B$1, u as x, j as x$1, l as f, ap as A, H as P, L, b8 as D, w as v, z as h, k as r, B as g, bb as z, D as u, b7 as H, t as _, O as O$1, M, bd as k, be as U } from './server.mjs';
+import { inject, createVNode, withDirectives, vShow, computed, resolveDirective, provide, toRef } from 'vue';
+import { k as genericComponent, p as propsFactory, b9 as useLazy, s as useRender, ba as makeLazyProps, A as makeComponentProps, R as VExpandTransition, bc as Ripple, E as useBackgroundColor, x as useDimension, z as makeDimensionProps, ap as IconValue, Q as VDefaultsProvider, g as VIcon, b8 as useGroupItem, G as useElevation, H as useRounded, y as makeTagProps, L as makeRoundedProps, bb as makeGroupItemProps, M as makeElevationProps, b7 as useGroup, D as provideTheme, O as provideDefaults, K as makeThemeProps, bd as pick, be as makeGroupProps } from './server.mjs';
 
-const n=Symbol.for("vuetify:v-expansion-panel");
+const VExpansionPanelSymbol = Symbol.for("vuetify:v-expansion-panel");
 
-const V=y$1({...o$1(),...m()},"VExpansionPanelText"),C$1=y()({name:"VExpansionPanelText",props:V(),setup(e,a){let{slots:t}=a;const n$1=inject(n);if(!n$1)throw new Error("[Vuetify] v-expansion-panel-text needs to be placed inside v-expansion-panel");const{hasContent:s,onAfterLeave:r}=i(e,n$1.isSelected);return o(()=>createVNode(l,{onAfterLeave:r},{default:()=>[withDirectives(createVNode("div",{class:["v-expansion-panel-text",e.class],style:e.style},[t.default&&s.value&&createVNode("div",{class:"v-expansion-panel-text__wrapper"},[t.default?.()])]),[[vShow,n$1.isSelected.value]])]})),{}}});
+const makeVExpansionPanelTextProps = propsFactory({
+  ...makeComponentProps(),
+  ...makeLazyProps()
+}, "VExpansionPanelText");
+const VExpansionPanelText = genericComponent()({
+  name: "VExpansionPanelText",
+  props: makeVExpansionPanelTextProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const expansionPanel = inject(VExpansionPanelSymbol);
+    if (!expansionPanel) throw new Error("[Vuetify] v-expansion-panel-text needs to be placed inside v-expansion-panel");
+    const {
+      hasContent,
+      onAfterLeave
+    } = useLazy(props, expansionPanel.isSelected);
+    useRender(() => createVNode(VExpandTransition, {
+      "onAfterLeave": onAfterLeave
+    }, {
+      default: () => {
+        var _a;
+        return [withDirectives(createVNode("div", {
+          "class": ["v-expansion-panel-text", props.class],
+          "style": props.style
+        }, [slots.default && hasContent.value && createVNode("div", {
+          "class": "v-expansion-panel-text__wrapper"
+        }, [(_a = slots.default) == null ? void 0 : _a.call(slots)])]), [[vShow, expansionPanel.isSelected.value]])];
+      }
+    }));
+    return {};
+  }
+});
 
-const B=y$1({color:String,expandIcon:{type:A,default:"$expand"},collapseIcon:{type:A,default:"$collapse"},hideActions:Boolean,focusable:Boolean,static:Boolean,ripple:{type:[Boolean,Object],default:false},readonly:Boolean,...o$1(),...f()},"VExpansionPanelTitle"),O=y()({name:"VExpansionPanelTitle",directives:{Ripple:B$1},props:B(),setup(e,s){let{slots:l}=s;const n$1=inject(n);if(!n$1)throw new Error("[Vuetify] v-expansion-panel-title needs to be placed inside v-expansion-panel");const{backgroundColorClasses:c,backgroundColorStyles:d}=x(e,"color"),{dimensionStyles:r}=x$1(e),a=computed(()=>({collapseIcon:e.collapseIcon,disabled:n$1.disabled.value,expanded:n$1.isSelected.value,expandIcon:e.expandIcon,readonly:e.readonly})),p=computed(()=>n$1.isSelected.value?e.collapseIcon:e.expandIcon);return o(()=>withDirectives(createVNode("button",{class:["v-expansion-panel-title",{"v-expansion-panel-title--active":n$1.isSelected.value,"v-expansion-panel-title--focusable":e.focusable,"v-expansion-panel-title--static":e.static},c.value,e.class],style:[d.value,r.value,e.style],type:"button",tabindex:n$1.disabled.value?-1:void 0,disabled:n$1.disabled.value,"aria-expanded":n$1.isSelected.value,onClick:e.readonly?void 0:n$1.toggle},[createVNode("span",{class:"v-expansion-panel-title__overlay"},null),l.default?.(a.value),!e.hideActions&&createVNode(P,{defaults:{VIcon:{icon:p.value}}},{default:()=>[createVNode("span",{class:"v-expansion-panel-title__icon"},[l.actions?.(a.value)??createVNode(L,null,null)])]})]),[[resolveDirective("ripple"),e.ripple]])),{}}});
+const makeVExpansionPanelTitleProps = propsFactory({
+  color: String,
+  expandIcon: {
+    type: IconValue,
+    default: "$expand"
+  },
+  collapseIcon: {
+    type: IconValue,
+    default: "$collapse"
+  },
+  hideActions: Boolean,
+  focusable: Boolean,
+  static: Boolean,
+  ripple: {
+    type: [Boolean, Object],
+    default: false
+  },
+  readonly: Boolean,
+  ...makeComponentProps(),
+  ...makeDimensionProps()
+}, "VExpansionPanelTitle");
+const VExpansionPanelTitle = genericComponent()({
+  name: "VExpansionPanelTitle",
+  directives: {
+    Ripple
+  },
+  props: makeVExpansionPanelTitleProps(),
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const expansionPanel = inject(VExpansionPanelSymbol);
+    if (!expansionPanel) throw new Error("[Vuetify] v-expansion-panel-title needs to be placed inside v-expansion-panel");
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(props, "color");
+    const {
+      dimensionStyles
+    } = useDimension(props);
+    const slotProps = computed(() => ({
+      collapseIcon: props.collapseIcon,
+      disabled: expansionPanel.disabled.value,
+      expanded: expansionPanel.isSelected.value,
+      expandIcon: props.expandIcon,
+      readonly: props.readonly
+    }));
+    const icon = computed(() => expansionPanel.isSelected.value ? props.collapseIcon : props.expandIcon);
+    useRender(() => {
+      var _a;
+      return withDirectives(createVNode("button", {
+        "class": ["v-expansion-panel-title", {
+          "v-expansion-panel-title--active": expansionPanel.isSelected.value,
+          "v-expansion-panel-title--focusable": props.focusable,
+          "v-expansion-panel-title--static": props.static
+        }, backgroundColorClasses.value, props.class],
+        "style": [backgroundColorStyles.value, dimensionStyles.value, props.style],
+        "type": "button",
+        "tabindex": expansionPanel.disabled.value ? -1 : void 0,
+        "disabled": expansionPanel.disabled.value,
+        "aria-expanded": expansionPanel.isSelected.value,
+        "onClick": !props.readonly ? expansionPanel.toggle : void 0
+      }, [createVNode("span", {
+        "class": "v-expansion-panel-title__overlay"
+      }, null), (_a = slots.default) == null ? void 0 : _a.call(slots, slotProps.value), !props.hideActions && createVNode(VDefaultsProvider, {
+        "defaults": {
+          VIcon: {
+            icon: icon.value
+          }
+        }
+      }, {
+        default: () => {
+          var _a2;
+          return [createVNode("span", {
+            "class": "v-expansion-panel-title__icon"
+          }, [((_a2 = slots.actions) == null ? void 0 : _a2.call(slots, slotProps.value)) ?? createVNode(VIcon, null, null)])];
+        }
+      })]), [[resolveDirective("ripple"), props.ripple]]);
+    });
+    return {};
+  }
+});
 
-const F=y$1({title:String,text:String,bgColor:String,...u(),...z(),...g(),...r(),...B(),...V()},"VExpansionPanel"),X=y()({name:"VExpansionPanel",props:F(),emits:{"group:selected":e=>true},setup(e,p){let{slots:a}=p;const t=D(e,n),{backgroundColorClasses:c,backgroundColorStyles:x$1}=x(e,"bgColor"),{elevationClasses:v$1}=v(e),{roundedClasses:f}=h(e),P$1=computed(()=>t?.disabled.value||e.disabled),r=computed(()=>t.group.items.value.reduce((o,n,i)=>(t.group.selected.value.includes(n.id)&&o.push(i),o),[])),g=computed(()=>{const o=t.group.items.value.findIndex(n=>n.id===t.id);return !t.isSelected.value&&r.value.some(n=>n-o===1)}),E=computed(()=>{const o=t.group.items.value.findIndex(n=>n.id===t.id);return !t.isSelected.value&&r.value.some(n=>n-o===-1)});return provide(n,t),o(()=>{const o=!!(a.text||e.text),n=!!(a.title||e.title),i=O.filterProps(e),V=C$1.filterProps(e);return createVNode(e.tag,{class:["v-expansion-panel",{"v-expansion-panel--active":t.isSelected.value,"v-expansion-panel--before-active":g.value,"v-expansion-panel--after-active":E.value,"v-expansion-panel--disabled":P$1.value},f.value,c.value,e.class],style:[x$1.value,e.style]},{default:()=>[createVNode("div",{class:["v-expansion-panel__shadow",...v$1.value]},null),createVNode(P,{defaults:{VExpansionPanelTitle:{...i},VExpansionPanelText:{...V}}},{default:()=>[n&&createVNode(O,{key:"title"},{default:()=>[a.title?a.title():e.title]}),o&&createVNode(C$1,{key:"text"},{default:()=>[a.text?a.text():e.text]}),a.default?.()]})]})}),{groupItem:t}}});
+const makeVExpansionPanelProps = propsFactory({
+  title: String,
+  text: String,
+  bgColor: String,
+  ...makeElevationProps(),
+  ...makeGroupItemProps(),
+  ...makeRoundedProps(),
+  ...makeTagProps(),
+  ...makeVExpansionPanelTitleProps(),
+  ...makeVExpansionPanelTextProps()
+}, "VExpansionPanel");
+const VExpansionPanel = genericComponent()({
+  name: "VExpansionPanel",
+  props: makeVExpansionPanelProps(),
+  emits: {
+    "group:selected": (val) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const groupItem = useGroupItem(props, VExpansionPanelSymbol);
+    const {
+      backgroundColorClasses,
+      backgroundColorStyles
+    } = useBackgroundColor(props, "bgColor");
+    const {
+      elevationClasses
+    } = useElevation(props);
+    const {
+      roundedClasses
+    } = useRounded(props);
+    const isDisabled = computed(() => (groupItem == null ? void 0 : groupItem.disabled.value) || props.disabled);
+    const selectedIndices = computed(() => groupItem.group.items.value.reduce((arr, item, index) => {
+      if (groupItem.group.selected.value.includes(item.id)) arr.push(index);
+      return arr;
+    }, []));
+    const isBeforeSelected = computed(() => {
+      const index = groupItem.group.items.value.findIndex((item) => item.id === groupItem.id);
+      return !groupItem.isSelected.value && selectedIndices.value.some((selectedIndex) => selectedIndex - index === 1);
+    });
+    const isAfterSelected = computed(() => {
+      const index = groupItem.group.items.value.findIndex((item) => item.id === groupItem.id);
+      return !groupItem.isSelected.value && selectedIndices.value.some((selectedIndex) => selectedIndex - index === -1);
+    });
+    provide(VExpansionPanelSymbol, groupItem);
+    useRender(() => {
+      const hasText = !!(slots.text || props.text);
+      const hasTitle = !!(slots.title || props.title);
+      const expansionPanelTitleProps = VExpansionPanelTitle.filterProps(props);
+      const expansionPanelTextProps = VExpansionPanelText.filterProps(props);
+      return createVNode(props.tag, {
+        "class": ["v-expansion-panel", {
+          "v-expansion-panel--active": groupItem.isSelected.value,
+          "v-expansion-panel--before-active": isBeforeSelected.value,
+          "v-expansion-panel--after-active": isAfterSelected.value,
+          "v-expansion-panel--disabled": isDisabled.value
+        }, roundedClasses.value, backgroundColorClasses.value, props.class],
+        "style": [backgroundColorStyles.value, props.style]
+      }, {
+        default: () => [createVNode("div", {
+          "class": ["v-expansion-panel__shadow", ...elevationClasses.value]
+        }, null), createVNode(VDefaultsProvider, {
+          "defaults": {
+            VExpansionPanelTitle: {
+              ...expansionPanelTitleProps
+            },
+            VExpansionPanelText: {
+              ...expansionPanelTextProps
+            }
+          }
+        }, {
+          default: () => {
+            var _a;
+            return [hasTitle && createVNode(VExpansionPanelTitle, {
+              "key": "title"
+            }, {
+              default: () => [slots.title ? slots.title() : props.title]
+            }), hasText && createVNode(VExpansionPanelText, {
+              "key": "text"
+            }, {
+              default: () => [slots.text ? slots.text() : props.text]
+            }), (_a = slots.default) == null ? void 0 : _a.call(slots)];
+          }
+        })]
+      });
+    });
+    return {
+      groupItem
+    };
+  }
+});
 
-const C=["default","accordion","inset","popout"],E=y$1({flat:Boolean,...U(),...k(F(),["bgColor","collapseIcon","color","eager","elevation","expandIcon","focusable","hideActions","readonly","ripple","rounded","tile","static"]),...M(),...o$1(),...r(),variant:{type:String,default:"default",validator:e=>C.includes(e)}},"VExpansionPanels"),j=y()({name:"VExpansionPanels",props:E(),emits:{"update:modelValue":e=>true},setup(e,t){let{slots:l}=t;const{next:a,prev:n$1}=H(e,n),{themeClasses:i}=_(e),r=computed(()=>e.variant&&`v-expansion-panels--variant-${e.variant}`);return O$1({VExpansionPanel:{bgColor:toRef(e,"bgColor"),collapseIcon:toRef(e,"collapseIcon"),color:toRef(e,"color"),eager:toRef(e,"eager"),elevation:toRef(e,"elevation"),expandIcon:toRef(e,"expandIcon"),focusable:toRef(e,"focusable"),hideActions:toRef(e,"hideActions"),readonly:toRef(e,"readonly"),ripple:toRef(e,"ripple"),rounded:toRef(e,"rounded"),static:toRef(e,"static")}}),o(()=>createVNode(e.tag,{class:["v-expansion-panels",{"v-expansion-panels--flat":e.flat,"v-expansion-panels--tile":e.tile},i.value,r.value,e.class],style:e.style},{default:()=>[l.default?.({prev:n$1,next:a})]})),{next:a,prev:n$1}}});
+const allowedVariants = ["default", "accordion", "inset", "popout"];
+const makeVExpansionPanelsProps = propsFactory({
+  flat: Boolean,
+  ...makeGroupProps(),
+  ...pick(makeVExpansionPanelProps(), ["bgColor", "collapseIcon", "color", "eager", "elevation", "expandIcon", "focusable", "hideActions", "readonly", "ripple", "rounded", "tile", "static"]),
+  ...makeThemeProps(),
+  ...makeComponentProps(),
+  ...makeTagProps(),
+  variant: {
+    type: String,
+    default: "default",
+    validator: (v) => allowedVariants.includes(v)
+  }
+}, "VExpansionPanels");
+const VExpansionPanels = genericComponent()({
+  name: "VExpansionPanels",
+  props: makeVExpansionPanelsProps(),
+  emits: {
+    "update:modelValue": (val) => true
+  },
+  setup(props, _ref) {
+    let {
+      slots
+    } = _ref;
+    const {
+      next,
+      prev
+    } = useGroup(props, VExpansionPanelSymbol);
+    const {
+      themeClasses
+    } = provideTheme(props);
+    const variantClass = computed(() => props.variant && `v-expansion-panels--variant-${props.variant}`);
+    provideDefaults({
+      VExpansionPanel: {
+        bgColor: toRef(props, "bgColor"),
+        collapseIcon: toRef(props, "collapseIcon"),
+        color: toRef(props, "color"),
+        eager: toRef(props, "eager"),
+        elevation: toRef(props, "elevation"),
+        expandIcon: toRef(props, "expandIcon"),
+        focusable: toRef(props, "focusable"),
+        hideActions: toRef(props, "hideActions"),
+        readonly: toRef(props, "readonly"),
+        ripple: toRef(props, "ripple"),
+        rounded: toRef(props, "rounded"),
+        static: toRef(props, "static")
+      }
+    });
+    useRender(() => createVNode(props.tag, {
+      "class": ["v-expansion-panels", {
+        "v-expansion-panels--flat": props.flat,
+        "v-expansion-panels--tile": props.tile
+      }, themeClasses.value, variantClass.value, props.class],
+      "style": props.style
+    }, {
+      default: () => {
+        var _a;
+        return [(_a = slots.default) == null ? void 0 : _a.call(slots, {
+          prev,
+          next
+        })];
+      }
+    }));
+    return {
+      next,
+      prev
+    };
+  }
+});
 
-export { C$1 as C, O, X, j };;globalThis.__timing__.logEnd('Load chunks/build/VExpansionPanels');
+export { VExpansionPanels as V, VExpansionPanel as a, VExpansionPanelTitle as b, VExpansionPanelText as c };
+//# sourceMappingURL=VExpansionPanels.mjs.map
