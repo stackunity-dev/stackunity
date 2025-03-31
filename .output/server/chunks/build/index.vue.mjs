@@ -30,7 +30,6 @@ import 'devalue';
 import 'unhead/plugins';
 import 'pinia';
 import 'vue-router';
-import 'pinia-plugin-persistedstate';
 import './VToolbar.mjs';
 
 const _imports_1 = publicAssetsURL("/images/preview-devunity.avif");

@@ -13,7 +13,6 @@ import 'jsonwebtoken';
 import 'mysql2/promise';
 import 'pinia';
 import 'vue-router';
-import 'pinia-plugin-persistedstate';
 import 'vue/server-renderer';
 
 const _sfc_main = {};

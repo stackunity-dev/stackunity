@@ -28,7 +28,6 @@ import 'devalue';
 import 'unhead/plugins';
 import 'pinia';
 import 'vue-router';
-import 'pinia-plugin-persistedstate';
 import './VToolbar.mjs';
 
 const _sfc_main = /* @__PURE__ */ defineComponent({

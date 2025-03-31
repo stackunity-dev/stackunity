@@ -33,7 +33,6 @@ import 'devalue';
 import 'unhead/plugins';
 import 'pinia';
 import 'vue-router';
-import 'pinia-plugin-persistedstate';
 import './VToolbar.mjs';
 import './VCheckboxBtn.mjs';
 import './VChip.mjs';

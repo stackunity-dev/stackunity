@@ -27,7 +27,6 @@ import 'unhead/utils';
 import 'devalue';
 import 'unhead/plugins';
 import 'pinia';
-import 'pinia-plugin-persistedstate';
 import './VCheckboxBtn.mjs';
 import './VChip.mjs';
 

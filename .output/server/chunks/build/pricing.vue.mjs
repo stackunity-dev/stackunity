@@ -17,7 +17,6 @@ import 'jsonwebtoken';
 import 'mysql2/promise';
 import 'pinia';
 import 'vue-router';
-import 'pinia-plugin-persistedstate';
 
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "pricing",
