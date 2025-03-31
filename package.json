@@ -13,7 +13,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
-    "git": "npm run build && git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
+    "git": "git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
     "clean": "rmdir /s /q node_modules .nuxt .output && del package-lock.json && npm install --legacy-peer-deps"
   },
   "config": {
@@ -31,6 +31,7 @@
     "@pinia/nuxt": "^0.10.1",
     "@sentry/nuxt": "^9.8.0",
     "@sentry/vue": "^9.8.0",
+    "@sparticuz/chromium": "^121.0.0",
     "@stripe/stripe-js": "^6.1.0",
     "@types/bcrypt": "^5.0.2",
     "@types/formidable": "^3.4.5",
@@ -64,6 +65,7 @@
     "pdfkit": "^0.16.0",
     "pinia": "^3.0.1",
     "puppeteer": "^24.4.0",
+    "puppeteer-core": "^21.0.0",
     "resend": "^4.1.2",
     "sass-embedded": "^1.85.0",
     "systeminformation": "^5.25.11",
