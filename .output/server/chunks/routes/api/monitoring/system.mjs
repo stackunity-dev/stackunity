@@ -1,4 +1,4 @@
-import { d as defineEventHandler } from '../../../_/nitro.mjs';
+import { c as defineEventHandler } from '../../../_/nitro.mjs';
 import si from 'systeminformation';
 import 'node:http';
 import 'node:https';
@@ -7,6 +7,7 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'node:url';
 import 'jsonwebtoken';
 import 'mysql2/promise';
 

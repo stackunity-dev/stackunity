@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import { IncomingForm } from 'formidable';
-import { d as defineEventHandler } from '../../_/nitro.mjs';
+import { c as defineEventHandler } from '../../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -9,6 +9,7 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'node:url';
 import 'jsonwebtoken';
 import 'mysql2/promise';
 
