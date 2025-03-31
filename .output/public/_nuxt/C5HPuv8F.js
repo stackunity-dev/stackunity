@@ -1,1 +1,0 @@
-import{N as r,Q as s,O as e,b as n,P as t,g as c,ch as m}from"./GE5AgfcP.js";const V=s({...m({icon:"$menu",variant:"text"})},"VAppBarNavIcon"),B=r()({name:"VAppBarNavIcon",props:V(),setup(a,o){let{slots:p}=o;return e(()=>n(c,t(a,{class:["v-app-bar-nav-icon"]}),p)),{}}});export{B as V};
