@@ -15,6 +15,12 @@
     "git": "npm run build && git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
     "clean": "rmdir /s /q node_modules .nuxt .output && del package-lock.json && npm install --legacy-peer-deps"
   },
+  "config": {
+    "rollup": {
+      "platform": "linux",
+      "arch": "x64"
+    }
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
     "@highlightjs/vue-plugin": "^2.1.0",
