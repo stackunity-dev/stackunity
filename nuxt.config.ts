@@ -3,6 +3,7 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 
 export default defineNuxtConfig({
   ssr: true,
+
   nitro: {
     preset: 'node',
     output: {
@@ -13,19 +14,19 @@ export default defineNuxtConfig({
     externals: {
       inline: ['@pinia-plugin-persistedstate/nuxt'],
       external: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor']
-    },
-    server: {
-      port: 8080,
-      host: '0.0.0.0'
     }
   },
+
   typescript: {
     shim: false
   },
+
   devtools: { enabled: false },
+
   build: {
     transpile: ['vuetify']
   },
+
   modules: [
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
@@ -36,6 +37,7 @@ export default defineNuxtConfig({
       })
     },
   ],
+
   runtimeConfig: {
     public: {
       stripe: {
@@ -43,6 +45,7 @@ export default defineNuxtConfig({
       }
     }
   },
+
   vite: {
     vue: {
       template: {
@@ -54,4 +57,6 @@ export default defineNuxtConfig({
       external: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor']
     },
   },
+
+  compatibilityDate: '2025-03-31',
 });
