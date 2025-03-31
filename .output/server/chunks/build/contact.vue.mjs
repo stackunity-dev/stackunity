@@ -1,7 +1,7 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { defineComponent, ref, withCtx, createVNode, createTextVNode, withModifiers, toDisplayString, useSSRContext } from 'vue';
 import { ssrRenderComponent, ssrRenderAttr, ssrInterpolate } from 'vue/server-renderer';
-import { _ as _imports_0 } from './virtual_public2.mjs';
+import { _ as _imports_0 } from './virtual_public.mjs';
 import { S as Snackbar } from './snackbar.vue.mjs';
 import { u as useHead } from './v3.mjs';
 import { V as VApp, d as VSpacer, e as VBtn, f as VCard, _ as _export_sfc } from './server.mjs';

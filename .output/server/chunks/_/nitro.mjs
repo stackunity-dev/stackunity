@@ -6,7 +6,7 @@ import { promises, existsSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import jwt from 'jsonwebtoken';
-import mysql from 'mysql2/promise';
+import * as mysql from 'mysql2/promise';
 
 const HASH_RE = /#/g;
 const AMPERSAND_RE = /&/g;
@@ -4281,7 +4281,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "28d579ff-6d81-4234-b202-62b4d08f2ffe",
+    "buildId": "c1498343-64a5-496f-8b22-d62c7a51a926",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
