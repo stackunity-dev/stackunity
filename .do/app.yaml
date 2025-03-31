@@ -5,8 +5,11 @@ services:
     branch: main
     deploy_on_push: true
     repo: nurdjedidi/devunity
+  buildpacks:
+    - name: digitalocean/nodejs-appdetect
+      version: v0.0.6
   build_command: |
-    npm install @rollup/rollup-linux-x64-gnu@4.9.5 --platform=linux --arch=x64
+    npm install --platform=linux --arch=x64
     npm install --legacy-peer-deps
     npm run build
   run_command: npm run start
