@@ -64,7 +64,7 @@ export default defineNuxtConfig({
         { name: 'crossorigin', content: 'use-credentials' }
       ],
       link: [
-        { rel: 'preload', as: 'fetch', crossorigin: 'use-credentials' }
+        { rel: 'preload', as: 'fetch', href: '/_nuxt/builds/meta/latest.json', crossorigin: 'use-credentials' }
       ]
     }
   },

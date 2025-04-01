@@ -156,9 +156,12 @@ export const useUserStore = defineStore('user', {
     initializeStore() {
       const nuxtApp = useNuxtApp();
       if (!nuxtApp.ssrContext) {
+        console.log('Initialisation du store utilisateur...');
         this.restoreUserData();
+
         const token = TokenManager.retrieveToken();
         if (token) {
+          console.log('Token trouvé, initialisation de la session...');
           this.token = token;
           this.isAuthenticated = true;
 
@@ -166,12 +169,15 @@ export const useUserStore = defineStore('user', {
             if (!result.success) {
               console.error('Erreur lors du chargement des données:', result.error);
               this.logout();
+            } else {
+              console.log('Données utilisateur chargées avec succès');
             }
           }).catch(err => {
             console.error('Erreur lors du chargement des données:', err);
             this.logout();
           });
         } else {
+          console.log('Aucun token trouvé, déconnexion...');
           this.logout();
         }
       }
@@ -477,11 +483,29 @@ export const useUserStore = defineStore('user', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          }
+          },
+          credentials: 'include'
         });
 
         if (response.status === 401) {
-          console.log('Token expiré ou invalide, déconnexion...');
+          console.log('Token expiré ou invalide, tentative de rafraîchissement...');
+          try {
+            const refreshResponse = await fetch('/api/auth/refresh', {
+              method: 'POST',
+              credentials: 'include'
+            });
+
+            if (refreshResponse.ok) {
+              const refreshData = await refreshResponse.json();
+              if (refreshData.accessToken) {
+                this.setToken(refreshData.accessToken);
+                return this.loadData(); // Réessayer avec le nouveau token
+              }
+            }
+          } catch (refreshError) {
+            console.error('Erreur lors du rafraîchissement du token:', refreshError);
+          }
+
           this.logout();
           return { success: false, error: 'Session expirée' };
         }
@@ -510,6 +534,7 @@ export const useUserStore = defineStore('user', {
           website: userData?.website || '',
           bio: userData?.bio || ''
         };
+
         console.log('Données utilisateur chargées:', this.user);
         console.log('Statut premium:', this.user.isPremium ? 'PREMIUM' : 'NON PREMIUM');
 
@@ -521,7 +546,7 @@ export const useUserStore = defineStore('user', {
           console.log('Aucun composant studio trouvé');
         }
 
-        console.log('Chargement des données terminé avec succès');
+        this.persistUserData();
         return { success: true, user: this.user };
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
@@ -539,32 +564,54 @@ export const useUserStore = defineStore('user', {
           return null;
         }
 
-        const response: any = await $fetch('/api/snippets/loadSnippets', {
+        const response = await fetch('/api/snippets/loadSnippets', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          }
+          },
+          credentials: 'include'
         });
 
         if (response.status === 401) {
-          console.log('Token expiré ou invalide, déconnexion...');
+          console.log('Token expiré ou invalide, tentative de rafraîchissement...');
+          try {
+            const refreshResponse = await fetch('/api/auth/refresh', {
+              method: 'POST',
+              credentials: 'include'
+            });
+
+            if (refreshResponse.ok) {
+              const refreshData = await refreshResponse.json();
+              if (refreshData.accessToken) {
+                this.setToken(refreshData.accessToken);
+                return this.loadSnippets(); // Réessayer avec le nouveau token
+              }
+            }
+          } catch (refreshError) {
+            console.error('Erreur lors du rafraîchissement du token:', refreshError);
+          }
+
           this.logout();
           return null;
         }
 
-        console.log('Résultat du chargement des snippets:', response);
+        if (!response.ok) {
+          throw new Error('Erreur lors du chargement des snippets');
+        }
 
-        if (response.success) {
-          this.personalSnippets = response.data.personalSnippets;
-          this.worldSnippets = response.data.worldSnippets;
-          this.favoritesSnippets = response.data.favoritesSnippets;
+        const data = await response.json();
+        console.log('Résultat du chargement des snippets:', data);
 
+        if (data.success) {
+          this.personalSnippets = data.data.personalSnippets;
+          this.worldSnippets = data.data.worldSnippets;
+          this.favoritesSnippets = data.data.favoritesSnippets;
           this.markFavoriteSnippets();
         }
 
-        return response;
-      } catch (err: any) {
-        console.error('Erreur lors du chargement des snippets:', err.message, err.stack);
+        return data;
+      } catch (err) {
+        console.error('Erreur lors du chargement des snippets:', err);
         if (err.status === 401) {
           this.logout();
         }
@@ -589,21 +636,44 @@ export const useUserStore = defineStore('user', {
           return;
         }
 
-        const response: any = await $fetch('/api/sql/loadSQLSchemas', {
+        const response = await fetch('/api/sql/loadSQLSchemas', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          }
+          },
+          credentials: 'include'
         });
 
         if (response.status === 401) {
-          console.log('Token expiré ou invalide, déconnexion...');
+          console.log('Token expiré ou invalide, tentative de rafraîchissement...');
+          try {
+            const refreshResponse = await fetch('/api/auth/refresh', {
+              method: 'POST',
+              credentials: 'include'
+            });
+
+            if (refreshResponse.ok) {
+              const refreshData = await refreshResponse.json();
+              if (refreshData.accessToken) {
+                this.setToken(refreshData.accessToken);
+                return this.loadSQLSchemas(); // Réessayer avec le nouveau token
+              }
+            }
+          } catch (refreshError) {
+            console.error('Erreur lors du rafraîchissement du token:', refreshError);
+          }
+
           this.logout();
           return;
         }
 
-        console.log(response.schemas);
-        this.sqlSchemas = response.schemas;
+        if (!response.ok) {
+          throw new Error('Erreur lors du chargement des schémas');
+        }
+
+        const data = await response.json();
+        console.log('Schémas SQL chargés:', data);
+        this.sqlSchemas = data.schemas;
       } catch (err) {
         console.error('Erreur lors du chargement des schémas:', err);
         if (err.status === 401) {
