@@ -141,7 +141,8 @@ export const useUserStore = defineStore('user', {
     studioComponents: [] as StudioComponent[],
     emailHistory: [] as EmailHistoryItem[],
     isAuthenticated: false,
-    authError: '',
+    loading: false,
+    error: null,
     seoData: null as CrawlReport | SEOAuditResult | null,
     seoError: '',
     isSeoLoading: false,
@@ -193,7 +194,7 @@ export const useUserStore = defineStore('user', {
         this.user = null;
         this.isAuthenticated = false;
         this.token = null;
-        this.authError = '';
+        this.error = null;
 
         // Supprimer le token du localStorage
         TokenManager.removeToken();
@@ -211,17 +212,21 @@ export const useUserStore = defineStore('user', {
       return date.toLocaleDateString('fr-FR', options);
     },
 
-    setToken(newToken: string): void {
-      if (!newToken) {
-        console.error('Tentative de définir un token vide');
-        return;
+    async setToken(token: string) {
+      try {
+        if (!TokenManager.isValidToken(token)) {
+          console.error('Token invalide');
+          this.logout();
+          return;
+        }
+
+        TokenManager.storeToken(token);
+        this.isAuthenticated = true;
+        await this.loadData();
+      } catch (error) {
+        console.error('Erreur lors de la définition du token:', error);
+        this.logout();
       }
-
-      this.token = newToken;
-      this.isAuthenticated = true;
-
-      // Stocker le token dans localStorage
-      TokenManager.storeToken(newToken);
     },
 
     persistUserData() {
@@ -299,13 +304,13 @@ export const useUserStore = defineStore('user', {
           bio: data.user.bio || ''
         };
         this.isAuthenticated = true;
-        this.authError = '';
+        this.error = null;
 
         return { success: true, user: this.user };
       } catch (error) {
-        this.authError = 'Identifiants invalides';
+        this.error = 'Identifiants invalides';
         console.error('Erreur de connexion:', error);
-        return { success: false, error: this.authError };
+        return { success: false, error: this.error };
       }
     },
 
@@ -394,12 +399,12 @@ export const useUserStore = defineStore('user', {
           bio: data.user.bio || ''
         };
         this.isAuthenticated = true;
-        this.authError = '';
+        this.error = null;
         this.persistUserData();
 
         return { success: true, user: this.user };
       } catch (error) {
-        this.authError = error instanceof Error ? error.message : 'Erreur lors de l\'inscription';
+        this.error = error instanceof Error ? error.message : 'Erreur lors de l\'inscription';
         throw error;
       }
     },
@@ -472,86 +477,47 @@ export const useUserStore = defineStore('user', {
 
     async loadData() {
       try {
+        this.loading = true;
         const token = TokenManager.retrieveToken();
+
         if (!token) {
-          console.log('Aucun token trouvé, déconnexion...');
+          console.error('Pas de token disponible');
           this.logout();
-          return { success: false, error: 'Token manquant' };
+          return;
         }
 
-        const response = await fetch('/api/user/loadData', {
+        const response = await fetch('/api/auth/session', {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
+            'Authorization': `Bearer ${token}`
+          }
         });
 
-        if (response.status === 401) {
-          console.log('Token expiré ou invalide, tentative de rafraîchissement...');
-          try {
-            const refreshResponse = await fetch('/api/auth/refresh', {
-              method: 'POST',
-              credentials: 'include'
-            });
-
-            if (refreshResponse.ok) {
-              const refreshData = await refreshResponse.json();
-              if (refreshData.accessToken) {
-                this.setToken(refreshData.accessToken);
-                return this.loadData(); // Réessayer avec le nouveau token
-              }
-            }
-          } catch (refreshError) {
-            console.error('Erreur lors du rafraîchissement du token:', refreshError);
-          }
-
-          this.logout();
-          return { success: false, error: 'Session expirée' };
-        }
-
         if (!response.ok) {
+          if (response.status === 401) {
+            console.log('Token expiré, tentative de rafraîchissement...');
+            const newToken = await TokenManager.refreshAccessToken();
+            if (newToken) {
+              return this.loadData();
+            }
+          }
           throw new Error('Erreur lors du chargement des données');
         }
 
         const data = await response.json();
-        console.log('Réponse de loadData:', data);
-
-        if (!data || !data.data || !data.data.userData || !Array.isArray(data.data.userData) || data.data.userData.length === 0) {
-          console.error('Données utilisateur invalides:', data);
+        if (!data.user?.id) {
+          console.error('ID utilisateur manquant dans la réponse');
           this.logout();
-          return { success: false, error: 'Format de données utilisateur invalide' };
+          return;
         }
 
-        const userData = data.data.userData[0];
-        this.user = {
-          id: userData?.id || 0,
-          username: userData?.username || '',
-          email: userData?.email || '',
-          isAdmin: Boolean(userData?.isAdmin),
-          isPremium: Boolean(userData?.isPremium),
-          company: userData?.company || '',
-          website: userData?.website || '',
-          bio: userData?.bio || ''
-        };
-
-        console.log('Données utilisateur chargées:', this.user);
-        console.log('Statut premium:', this.user.isPremium ? 'PREMIUM' : 'NON PREMIUM');
-
-        if (Array.isArray(data.data.studioComponents)) {
-          this.studioComponents = data.data.studioComponents;
-          console.log(`${this.studioComponents.length} composants studio chargés`);
-        } else {
-          this.studioComponents = [];
-          console.log('Aucun composant studio trouvé');
-        }
-
-        this.persistUserData();
-        return { success: true, user: this.user };
+        this.user = data.user;
+        this.isAuthenticated = true;
+        this.error = null;
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
         this.logout();
-        return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' };
+      } finally {
+        this.loading = false;
       }
     },
 
