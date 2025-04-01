@@ -16,6 +16,7 @@ interface TokenRequestBody {
 
 interface JwtPayload {
   userId: number;
+  id?: number; // Pour la compatibilité avec les anciens tokens
   username?: string;
   email?: string;
   isAdmin?: boolean;
@@ -56,58 +57,60 @@ export default defineEventHandler(async (event) => {
         // Vérifier et décoder le token
         const decoded = jwt.verify(sessionToken, JWT_SECRET) as JwtPayload;
 
-        // Vérifier si l'utilisateur existe toujours dans la base de données
-        if (decoded.userId) {
-          const [rows] = await pool.execute(
-            'SELECT id, username, email, isAdmin, isPremium FROM users WHERE id = ?',
-            [decoded.userId]
-          );
+        // Utiliser userId ou id selon ce qui est disponible
+        const userId = decoded.userId || decoded.id;
 
-          if (!Array.isArray(rows) || rows.length === 0) {
-            deleteCookie(event, 'devunity_secure_session', cookieOptions);
-            return {
-              success: false,
-              message: 'Utilisateur non trouvé'
-            };
-          }
-
-          const user = rows[0] as any;
-
-          // Générer un nouveau token avec des informations à jour
-          const newToken = jwt.sign(
-            {
-              userId: user.id,
-              username: user.username,
-              email: user.email,
-              isPremium: user.isPremium === 1,
-              isAdmin: user.isAdmin === 1
-            },
-            JWT_SECRET,
-            { expiresIn: TOKEN_EXPIRY }
-          );
-
-          // Mettre à jour le cookie avec le nouveau token
-          setCookie(event, 'devunity_secure_session', newToken, cookieOptions);
-
-          // Renvoyer le nouveau token au client
+        if (!userId) {
+          console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'ID utilisateur manquant dans le token');
           return {
-            success: true,
-            token: newToken,
-            user: {
-              id: user.id,
-              username: user.username,
-              email: user.email,
-              isAdmin: user.isAdmin === 1,
-              isPremium: user.isPremium === 1
-            }
+            success: false,
+            message: 'ID utilisateur manquant'
           };
         }
 
-        // Renvoyer le token au client
+        // Vérifier si l'utilisateur existe toujours dans la base de données
+        const [rows] = await pool.execute(
+          'SELECT id, username, email, isAdmin, isPremium FROM users WHERE id = ?',
+          [userId]
+        );
+
+        if (!Array.isArray(rows) || rows.length === 0) {
+          deleteCookie(event, 'devunity_secure_session', cookieOptions);
+          return {
+            success: false,
+            message: 'Utilisateur non trouvé'
+          };
+        }
+
+        const user = rows[0] as any;
+
+        // Générer un nouveau token avec des informations à jour
+        const newToken = jwt.sign(
+          {
+            userId: user.id, // Utiliser userId au lieu de id pour la cohérence
+            username: user.username,
+            email: user.email,
+            isPremium: user.isPremium === 1,
+            isAdmin: user.isAdmin === 1
+          },
+          JWT_SECRET,
+          { expiresIn: TOKEN_EXPIRY }
+        );
+
+        // Mettre à jour le cookie avec le nouveau token
+        setCookie(event, 'devunity_secure_session', newToken, cookieOptions);
+
+        // Renvoyer le nouveau token au client
         return {
           success: true,
-          token: sessionToken,
-          user: decoded
+          token: newToken,
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            isAdmin: user.isAdmin === 1,
+            isPremium: user.isPremium === 1
+          }
         };
       } catch (jwtError) {
         // Si le token est invalide, supprimer le cookie

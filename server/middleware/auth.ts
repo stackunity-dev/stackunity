@@ -62,6 +62,7 @@ const SESSION_COOKIE_NAME = 'devunity_session_token'
 
 interface JwtPayload {
   userId: number;
+  id?: number;   // Pour la compatibilité avec les anciens tokens
   username?: string;
   email?: string;
   isPremium?: boolean;
@@ -80,18 +81,18 @@ interface UserRow extends RowDataPacket {
 
 export default defineEventHandler(async (event: H3Event) => {
   const url = event.node.req.url;
-  console.log('Middleware auth - URL:', url);
+  console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Middleware auth - URL:', url);
 
   // Vérifier si la route est publique
   if (publicRoutes.some(route => url?.startsWith(route))) {
-    console.log('Route publique détectée:', url);
+    console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Route publique détectée:', url);
     return;
   }
 
   // Récupérer le token depuis les headers
-  const authHeader = getRequestHeaders(event)['Authorization'];
+  const authHeader = getRequestHeaders(event)['Authorization'] || getRequestHeaders(event)['authorization'];
   if (!authHeader) {
-    console.log('Token manquant pour la route:', url);
+    console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Token manquant pour la route:', url);
     throw createError({
       statusCode: 401,
       message: 'Token manquant'
@@ -100,7 +101,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const token = authHeader.replace('Bearer ', '');
   if (!token) {
-    console.log('Token invalide pour la route:', url);
+    console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Token invalide pour la route:', url);
     throw createError({
       statusCode: 401,
       message: 'Token invalide'
@@ -109,17 +110,28 @@ export default defineEventHandler(async (event: H3Event) => {
 
   try {
     // Vérifier le token
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || '') as { id: number };
-    console.log('Token décodé:', decoded);
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || '') as JwtPayload;
+    console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Token décodé:', decoded);
+
+    // Utiliser userId ou id selon ce qui est disponible
+    const userId = decoded.userId || decoded.id;
+
+    if (!userId) {
+      console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'ID utilisateur manquant dans le token');
+      throw createError({
+        statusCode: 401,
+        message: 'Token invalide - ID utilisateur manquant'
+      });
+    }
 
     // Vérifier si l'utilisateur existe dans la base de données
     const [rows] = await pool.execute<UserRow[]>(
       'SELECT id, username, email, is_admin, is_premium FROM users WHERE id = ?',
-      [decoded.id]
+      [userId]
     );
 
     if (rows.length === 0) {
-      console.log('Utilisateur non trouvé pour l\'ID:', decoded.id);
+      console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Utilisateur non trouvé pour l\'ID:', userId);
       throw createError({
         statusCode: 401,
         message: 'Utilisateur non trouvé'
@@ -130,7 +142,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
     // Vérifier les permissions pour les routes admin et premium
     if (adminRoutes.some(route => url?.startsWith(route)) && !user.is_admin) {
-      console.log('Accès admin refusé pour:', url);
+      console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Accès admin refusé pour:', url);
       throw createError({
         statusCode: 403,
         message: 'Accès non autorisé'
@@ -138,7 +150,7 @@ export default defineEventHandler(async (event: H3Event) => {
     }
 
     if (premiumRoutes.some(route => url?.startsWith(route)) && !user.is_premium) {
-      console.log('Accès premium refusé pour:', url);
+      console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Accès premium refusé pour:', url);
       throw createError({
         statusCode: 403,
         message: 'Accès non autorisé'
@@ -162,7 +174,7 @@ export default defineEventHandler(async (event: H3Event) => {
     });
 
   } catch (error: any) {
-    console.error('Erreur d\'authentification:', error);
+    console.error('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Erreur d\'authentification:', error);
     if (error.name === 'TokenExpiredError') {
       throw createError({
         statusCode: 401,
