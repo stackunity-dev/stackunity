@@ -82,32 +82,16 @@ export default defineEventHandler(async (event: H3Event) => {
   const url = event.node.req.url;
   console.log('Middleware auth - URL:', url);
 
-  // Routes publiques qui ne nécessitent pas d'authentification
-  const publicRoutes = [
-    '/api/auth/login',
-    '/api/auth/signup',
-    '/api/auth/forgot-password',
-    '/api/auth/reset-password',
-    '/api/auth/refresh',
-    '/api/auth/session'
-  ];
-
   // Vérifier si la route est publique
   if (publicRoutes.some(route => url?.startsWith(route))) {
-<<<<<<< HEAD
     console.log('Route publique détectée:', url);
-=======
->>>>>>> 2dbeea0c6edd44286b2dbb86755348722acfa20d
     return;
   }
 
   // Récupérer le token depuis les headers
   const authHeader = getRequestHeaders(event)['Authorization'];
   if (!authHeader) {
-<<<<<<< HEAD
     console.log('Token manquant pour la route:', url);
-=======
->>>>>>> 2dbeea0c6edd44286b2dbb86755348722acfa20d
     throw createError({
       statusCode: 401,
       message: 'Token manquant'
@@ -116,10 +100,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const token = authHeader.replace('Bearer ', '');
   if (!token) {
-<<<<<<< HEAD
     console.log('Token invalide pour la route:', url);
-=======
->>>>>>> 2dbeea0c6edd44286b2dbb86755348722acfa20d
     throw createError({
       statusCode: 401,
       message: 'Token invalide'
@@ -138,10 +119,7 @@ export default defineEventHandler(async (event: H3Event) => {
     );
 
     if (rows.length === 0) {
-<<<<<<< HEAD
       console.log('Utilisateur non trouvé pour l\'ID:', decoded.id);
-=======
->>>>>>> 2dbeea0c6edd44286b2dbb86755348722acfa20d
       throw createError({
         statusCode: 401,
         message: 'Utilisateur non trouvé'
@@ -151,24 +129,16 @@ export default defineEventHandler(async (event: H3Event) => {
     const user = rows[0];
 
     // Vérifier les permissions pour les routes admin et premium
-<<<<<<< HEAD
     if (adminRoutes.some(route => url?.startsWith(route)) && !user.is_admin) {
       console.log('Accès admin refusé pour:', url);
-=======
-    if (url?.startsWith('/api/admin') && !user.is_admin) {
->>>>>>> 2dbeea0c6edd44286b2dbb86755348722acfa20d
       throw createError({
         statusCode: 403,
         message: 'Accès non autorisé'
       });
     }
 
-<<<<<<< HEAD
     if (premiumRoutes.some(route => url?.startsWith(route)) && !user.is_premium) {
       console.log('Accès premium refusé pour:', url);
-=======
-    if (url?.startsWith('/api/premium') && !user.is_premium) {
->>>>>>> 2dbeea0c6edd44286b2dbb86755348722acfa20d
       throw createError({
         statusCode: 403,
         message: 'Accès non autorisé'
@@ -184,7 +154,6 @@ export default defineEventHandler(async (event: H3Event) => {
       isPremium: user.is_premium
     };
 
-<<<<<<< HEAD
     setResponseHeaders(event, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -194,16 +163,6 @@ export default defineEventHandler(async (event: H3Event) => {
 
   } catch (error: any) {
     console.error('Erreur d\'authentification:', error);
-=======
-    // Définir les headers de réponse
-    setResponseHeaders(event, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    });
-
-  } catch (error: any) {
->>>>>>> 2dbeea0c6edd44286b2dbb86755348722acfa20d
     if (error.name === 'TokenExpiredError') {
       throw createError({
         statusCode: 401,
