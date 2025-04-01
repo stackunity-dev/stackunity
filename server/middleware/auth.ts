@@ -133,8 +133,8 @@ export default defineEventHandler(async (event: H3Event) => {
     }
 
     // Ajouter les informations de l'utilisateur à l'événement
-    event.context.auth = {
-      userId: user.id,
+    event.context.user = {
+      id: user.id,
       username: user.username,
       email: user.email,
       isAdmin: Boolean(user.is_admin),
@@ -164,9 +164,9 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 });
 
-function setHeaders(event: any) {
-  event.node.res.setHeader('Access-Control-Allow-Origin', '*')
-  event.node.res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  event.node.res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type')
-  event.node.res.setHeader('Access-Control-Max-Age', '86400')
+function setHeaders(event: H3Event) {
+  event.node.res.setHeader('Access-Control-Allow-Origin', '*');
+  event.node.res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  event.node.res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  event.node.res.setHeader('Access-Control-Max-Age', '86400');
 }
