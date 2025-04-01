@@ -28,6 +28,7 @@ export const REFRESH_TOKEN_COOKIE_OPTIONS = {
 // Types pour les payloads JWT
 export interface AccessTokenPayload {
   userId: number;
+  id?: number; // Pour la compatibilité avec les anciens systèmes
   username: string;
   email: string;
   isPremium: boolean;
@@ -38,6 +39,7 @@ export interface AccessTokenPayload {
 
 export interface RefreshTokenPayload {
   userId: number;
+  id?: number; // Pour la compatibilité avec les anciens systèmes
   tokenId: string;
   iat?: number;
   exp?: number;

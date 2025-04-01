@@ -214,14 +214,42 @@ export const useUserStore = defineStore('user', {
 
     async setToken(token: string) {
       try {
-        if (!TokenManager.isValidToken(token)) {
-          console.error('Token invalide');
+        if (!token) {
+          console.error('Tentative de définir un token vide');
           this.logout();
           return;
         }
 
+        console.log('Tentative de définir le token:', token.substring(0, 10) + '...');
+
+        // Décoder le token pour vérifier son contenu
+        const decodedToken = TokenManager.decodeToken(token);
+        console.log('Token décodé:', decodedToken);
+
+        if (!decodedToken) {
+          console.error('Impossible de décoder le token');
+          this.logout();
+          return;
+        }
+
+        if (!decodedToken.userId && !decodedToken.id) {
+          console.error('Token invalide: ID utilisateur manquant');
+          this.logout();
+          return;
+        }
+
+        if (!TokenManager.isValidToken(token)) {
+          console.error('Token invalide ou expiré');
+          this.logout();
+          return;
+        }
+
+        // Stocker le token
         TokenManager.storeToken(token);
+        this.token = token;
         this.isAuthenticated = true;
+
+        // Charger les données utilisateur
         await this.loadData();
       } catch (error) {
         console.error('Erreur lors de la définition du token:', error);
@@ -478,44 +506,81 @@ export const useUserStore = defineStore('user', {
     async loadData() {
       try {
         this.loading = true;
-        const token = TokenManager.retrieveToken();
+        console.log('Chargement des données utilisateur...');
 
+        const token = TokenManager.retrieveToken();
         if (!token) {
           console.error('Pas de token disponible');
           this.logout();
-          return;
+          return { success: false, error: 'Token manquant' };
         }
+
+        // Vérifier si le token est valide
+        if (!TokenManager.isValidToken(token)) {
+          console.error('Token invalide ou expiré');
+          // Essayer de rafraîchir le token
+          const newToken = await TokenManager.refreshAccessToken();
+          if (!newToken) {
+            console.error('Impossible de rafraîchir le token');
+            this.logout();
+            return { success: false, error: 'Session expirée' };
+          }
+
+          // Continuer avec le nouveau token
+          this.token = newToken;
+        }
+
+        console.log('Tentative de chargement des données avec le token');
 
         const response = await fetch('/api/auth/session', {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${this.token || token}`
           }
         });
 
+        // Gérer les erreurs HTTP
         if (!response.ok) {
+          console.error('Erreur HTTP lors de la récupération des données:', response.status);
+
           if (response.status === 401) {
             console.log('Token expiré, tentative de rafraîchissement...');
             const newToken = await TokenManager.refreshAccessToken();
             if (newToken) {
+              this.token = newToken;
               return this.loadData();
             }
           }
-          throw new Error('Erreur lors du chargement des données');
+
+          throw new Error(`Erreur lors du chargement des données: ${response.status}`);
         }
 
+        // Récupérer et traiter les données
         const data = await response.json();
-        if (!data.user?.id) {
-          console.error('ID utilisateur manquant dans la réponse');
+        console.log('Réponse de la session:', data);
+
+        if (!data.success) {
+          console.error('Échec de chargement des données:', data.message);
           this.logout();
-          return;
+          return { success: false, error: data.message };
         }
 
+        if (!data.user || !data.user.id) {
+          console.error('ID utilisateur manquant dans la réponse:', data);
+          this.logout();
+          return { success: false, error: 'ID utilisateur manquant' };
+        }
+
+        // Mettre à jour les données utilisateur
         this.user = data.user;
         this.isAuthenticated = true;
         this.error = null;
+
+        console.log('Données utilisateur chargées avec succès:', this.user);
+        return { success: true, user: this.user };
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
         this.logout();
+        return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' };
       } finally {
         this.loading = false;
       }

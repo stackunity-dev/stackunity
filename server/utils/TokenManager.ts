@@ -57,9 +57,16 @@ export class TokenManager {
 
       const data = await response.json();
       if (data.accessToken) {
-        this.storeToken(data.accessToken);
-        console.log('Token rafraîchi avec succès');
-        return data.accessToken;
+        // Vérifier que le nouveau token est valide avant de le stocker
+        if (this.isValidToken(data.accessToken)) {
+          this.storeToken(data.accessToken);
+          console.log('Token rafraîchi avec succès');
+          return data.accessToken;
+        } else {
+          console.error('Le token rafraîchi est invalide');
+          this.removeToken();
+          return null;
+        }
       }
       console.error('Pas de token dans la réponse de rafraîchissement');
       return null;
@@ -71,18 +78,60 @@ export class TokenManager {
   }
 
   static isValidToken(token: string | null): boolean {
-    if (!token) return false;
+    if (!token) {
+      console.error('Token vide ou nul');
+      return false;
+    }
+
     try {
       // Vérifier si le token est un JWT valide
       const parts = token.split('.');
-      if (parts.length !== 3) return false;
+      if (parts.length !== 3) {
+        console.error('Format de token invalide (pas 3 parties)');
+        return false;
+      }
 
       const payload = JSON.parse(atob(parts[1]));
+      console.log('Payload du token:', payload);
+
+      // Vérifier la présence d'un ID utilisateur (userId ou id)
+      if (!payload.userId && !payload.id) {
+        console.error('Token invalide: ID utilisateur manquant');
+        return false;
+      }
+
+      // Vérifier l'expiration
+      if (!payload.exp) {
+        console.error('Token invalide: champ exp manquant');
+        return false;
+      }
+
       const expiration = payload.exp * 1000; // Convertir en millisecondes
-      return Date.now() < expiration;
+      const isExpired = Date.now() >= expiration;
+
+      if (isExpired) {
+        console.error('Token expiré');
+        return false;
+      }
+
+      return true;
     } catch (error) {
       console.error('Erreur lors de la validation du token:', error);
       return false;
+    }
+  }
+
+  static decodeToken(token: string | null): any {
+    if (!token) return null;
+
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+
+      return JSON.parse(atob(parts[1]));
+    } catch (error) {
+      console.error('Erreur lors du décodage du token:', error);
+      return null;
     }
   }
 } 

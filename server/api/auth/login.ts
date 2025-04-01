@@ -24,12 +24,15 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    console.log(`[${new Date().toISOString()}] Tentative de connexion pour l'email:`, body.email);
+
     const [rows] = await pool.execute<RowDataPacket[]>(
       'SELECT * FROM users WHERE email = ?',
       [body.email]
     );
 
     if (rows.length === 0) {
+      console.log(`[${new Date().toISOString()}] Utilisateur non trouvé:`, body.email);
       return {
         success: false,
         error: 'Utilisateur non trouvé'
@@ -40,24 +43,47 @@ export default defineEventHandler(async (event) => {
     const isPasswordValid = await bcrypt.compare(body.password, user.password);
 
     if (!isPasswordValid) {
+      console.log(`[${new Date().toISOString()}] Mot de passe incorrect pour:`, body.email);
       return {
         success: false,
         error: 'Mot de passe incorrect'
       };
     }
 
+    console.log(`[${new Date().toISOString()}] Connexion réussie pour l'utilisateur:`, user.id);
+
     // Générer un token d'accès (courte durée)
+    const accessTokenPayload = {
+      userId: user.id,
+      id: user.id, // Pour la compatibilité avec les anciens systèmes
+      username: user.username,
+      email: user.email,
+      isPremium: user.isPremium === 1,
+      isAdmin: user.isAdmin === 1
+    };
+
+    console.log(`[${new Date().toISOString()}] Payload du token d'accès:`, accessTokenPayload);
+
     const accessToken = jwt.sign(
-      {
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        isPremium: user.isPremium === 1,
-        isAdmin: user.isAdmin === 1
-      },
+      accessTokenPayload,
       ACCESS_TOKEN_SECRET,
       { expiresIn: ACCESS_TOKEN_EXPIRY }
     );
+
+    try {
+      const decoded = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as any;
+      console.log(`[${new Date().toISOString()}] Token décodé après création:`, decoded);
+
+      if (!decoded.userId) {
+        throw new Error('ID utilisateur manquant dans le token généré');
+      }
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] Erreur lors de la vérification du token:`, error);
+      return {
+        success: false,
+        error: 'Erreur lors de la génération du token'
+      };
+    }
 
     // Générer un token de rafraîchissement (longue durée)
     const refreshTokenId = uuidv4();
@@ -79,6 +105,8 @@ export default defineEventHandler(async (event) => {
     // Définir le cookie HttpOnly avec le token de rafraîchissement
     setCookie(event, REFRESH_TOKEN_COOKIE_NAME, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
+    console.log(`[${new Date().toISOString()}] Tokens générés avec succès pour l'utilisateur:`, user.id);
+
     return {
       success: true,
       accessToken,
@@ -95,7 +123,7 @@ export default defineEventHandler(async (event) => {
     };
 
   } catch (err: any) {
-    console.error('Erreur de connexion:', err);
+    console.error(`[${new Date().toISOString()}] Erreur de connexion:`, err);
     return {
       success: false,
       error: 'Erreur serveur lors de la connexion',
