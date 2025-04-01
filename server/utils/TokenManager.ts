@@ -1,33 +1,66 @@
 export class TokenManager {
   private static TOKEN_KEY = 'auth_token';
+  private static FALLBACK_TOKEN_KEY = 'auth_token_backup';
 
   static storeToken(token: string): void {
     if (!token) {
-      console.error('Tentative de stocker un token vide');
-      this.removeToken();
+      console.error('[TokenManager] Tentative de stocker un token vide');
       return;
     }
 
     try {
+      // Vérifier que le token est valide avant de le stocker
+      if (!this.isValidTokenFormat(token)) {
+        console.error('[TokenManager] Tentative de stocker un token avec un format invalide');
+        return;
+      }
+
+      // Stocker le token dans localStorage
       localStorage.setItem(this.TOKEN_KEY, token);
-      console.log('Token stocké avec succès');
+
+      // Stocker une copie de secours
+      localStorage.setItem(this.FALLBACK_TOKEN_KEY, token);
+
+      console.log('[TokenManager] Token stocké avec succès, longueur:', token.length);
     } catch (error) {
-      console.error('Erreur lors du stockage du token:', error);
-      this.removeToken();
+      console.error('[TokenManager] Erreur lors du stockage du token:', error);
     }
   }
 
   static retrieveToken(): string | null {
     try {
-      const token = localStorage.getItem(this.TOKEN_KEY);
+      // Tenter de récupérer le token principal
+      let token = localStorage.getItem(this.TOKEN_KEY);
+
+      // Si le token principal est manquant, essayer avec la copie de secours
       if (!token) {
-        console.log('Aucun token trouvé dans le localStorage');
-      } else {
-        console.log('Token récupéré avec succès');
+        console.log('[TokenManager] Token principal manquant, tentative de récupération du token de secours');
+        token = localStorage.getItem(this.FALLBACK_TOKEN_KEY);
+
+        // Si un token de secours est trouvé, restaurer le token principal
+        if (token) {
+          console.log('[TokenManager] Token de secours trouvé, restauration du token principal');
+          localStorage.setItem(this.TOKEN_KEY, token);
+        }
       }
+
+      if (!token) {
+        console.log('[TokenManager] Aucun token trouvé dans le localStorage');
+        return null;
+      }
+
+      console.log('[TokenManager] Token récupéré avec succès, longueur:', token.length);
+
+      // Vérifier que le token est toujours valide
+      if (!this.isValidTokenFormat(token)) {
+        console.error('[TokenManager] Token récupéré avec un format invalide');
+        this.removeToken();
+        return null;
+      }
+
       return token;
     } catch (error) {
-      console.error('Erreur lors de la récupération du token:', error);
+      console.error('[TokenManager] Erreur lors de la récupération du token:', error);
       return null;
     }
   }
@@ -35,51 +68,73 @@ export class TokenManager {
   static removeToken(): void {
     try {
       localStorage.removeItem(this.TOKEN_KEY);
-      console.log('Token supprimé avec succès');
+      localStorage.removeItem(this.FALLBACK_TOKEN_KEY);
+      console.log('[TokenManager] Tokens supprimés avec succès');
     } catch (error) {
-      console.error('Erreur lors de la suppression du token:', error);
+      console.error('[TokenManager] Erreur lors de la suppression des tokens:', error);
     }
   }
 
   static async refreshAccessToken(): Promise<string | null> {
     try {
-      console.log('Tentative de rafraîchissement du token...');
+      console.log('[TokenManager] Tentative de rafraîchissement du token...');
       const response = await fetch('/api/auth/refresh', {
         method: 'POST',
         credentials: 'include'
       });
 
       if (!response.ok) {
-        console.error('Erreur lors du rafraîchissement du token:', response.status);
-        this.removeToken();
-        throw new Error('Erreur lors du rafraîchissement du token');
+        console.error('[TokenManager] Erreur lors du rafraîchissement du token:', response.status);
+        if (response.status === 401) {
+          this.removeToken();
+        }
+        return null;
       }
 
-      const data = await response.json();
-      if (data.accessToken) {
+      try {
+        const data = await response.json();
+        console.log('[TokenManager] Réponse du rafraîchissement:', data);
+
+        if (!data.success) {
+          console.error('[TokenManager] Échec du rafraîchissement:', data.error || 'Erreur inconnue');
+          return null;
+        }
+
+        if (!data.accessToken) {
+          console.error('[TokenManager] Pas de token dans la réponse de rafraîchissement');
+          return null;
+        }
+
         // Vérifier que le nouveau token est valide avant de le stocker
         if (this.isValidToken(data.accessToken)) {
           this.storeToken(data.accessToken);
-          console.log('Token rafraîchi avec succès');
+          console.log('[TokenManager] Token rafraîchi avec succès');
           return data.accessToken;
         } else {
-          console.error('Le token rafraîchi est invalide');
-          this.removeToken();
+          console.error('[TokenManager] Le token rafraîchi est invalide');
           return null;
         }
+      } catch (error) {
+        console.error('[TokenManager] Erreur lors du traitement de la réponse:', error);
+        return null;
       }
-      console.error('Pas de token dans la réponse de rafraîchissement');
-      return null;
     } catch (error) {
-      console.error('Erreur lors du rafraîchissement du token:', error);
-      this.removeToken();
+      console.error('[TokenManager] Erreur lors du rafraîchissement du token:', error);
       return null;
     }
   }
 
+  static isValidTokenFormat(token: string | null): boolean {
+    if (!token) return false;
+
+    // Vérifier le format de base du JWT (3 parties séparées par des points)
+    const parts = token.split('.');
+    return parts.length === 3;
+  }
+
   static isValidToken(token: string | null): boolean {
     if (!token) {
-      console.error('Token vide ou nul');
+      console.error('[TokenManager] Token vide ou nul');
       return false;
     }
 
@@ -87,22 +142,24 @@ export class TokenManager {
       // Vérifier si le token est un JWT valide
       const parts = token.split('.');
       if (parts.length !== 3) {
-        console.error('Format de token invalide (pas 3 parties)');
+        console.error('[TokenManager] Format de token invalide (pas 3 parties)');
         return false;
       }
 
       const payload = JSON.parse(atob(parts[1]));
-      console.log('Payload du token:', payload);
+
+      // Ne pas logger le payload complet pour des raisons de sécurité
+      console.log('[TokenManager] Vérification du payload du token, contient userId:', !!payload.userId, 'contient id:', !!payload.id);
 
       // Vérifier la présence d'un ID utilisateur (userId ou id)
       if (!payload.userId && !payload.id) {
-        console.error('Token invalide: ID utilisateur manquant');
+        console.error('[TokenManager] Token invalide: ID utilisateur manquant');
         return false;
       }
 
       // Vérifier l'expiration
       if (!payload.exp) {
-        console.error('Token invalide: champ exp manquant');
+        console.error('[TokenManager] Token invalide: champ exp manquant');
         return false;
       }
 
@@ -110,13 +167,13 @@ export class TokenManager {
       const isExpired = Date.now() >= expiration;
 
       if (isExpired) {
-        console.error('Token expiré');
+        console.error('[TokenManager] Token expiré');
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erreur lors de la validation du token:', error);
+      console.error('[TokenManager] Erreur lors de la validation du token:', error);
       return false;
     }
   }
@@ -130,7 +187,7 @@ export class TokenManager {
 
       return JSON.parse(atob(parts[1]));
     } catch (error) {
-      console.error('Erreur lors du décodage du token:', error);
+      console.error('[TokenManager] Erreur lors du décodage du token:', error);
       return null;
     }
   }

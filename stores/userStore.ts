@@ -158,25 +158,60 @@ export const useUserStore = defineStore('user', {
       const nuxtApp = useNuxtApp();
       if (!nuxtApp.ssrContext) {
         console.log('Initialisation du store utilisateur...');
+
+        // Restaurer les données persistantes
         this.restoreUserData();
 
+        // Vérifier si un token est disponible
         const token = TokenManager.retrieveToken();
         if (token) {
-          console.log('Token trouvé, initialisation de la session...');
-          this.token = token;
-          this.isAuthenticated = true;
+          console.log("Token trouvé, tentative d'initialisation de la session...");
 
-          this.loadData().then(result => {
-            if (!result.success) {
-              console.error('Erreur lors du chargement des données:', result.error);
+          // Vérifier que le token est toujours valide
+          if (TokenManager.isValidToken(token)) {
+            this.token = token;
+            this.isAuthenticated = true;
+
+            // Charger les données utilisateur
+            this.loadData().then((result: any) => {
+              if (result && !result.success) {
+                console.error('Erreur lors du chargement des données:', result.error);
+                this.logout();
+              } else {
+                console.log('Données utilisateur chargées avec succès');
+              }
+            }).catch((err: any) => {
+              console.error('Erreur lors du chargement des données:', err);
               this.logout();
-            } else {
-              console.log('Données utilisateur chargées avec succès');
-            }
-          }).catch(err => {
-            console.error('Erreur lors du chargement des données:', err);
-            this.logout();
-          });
+            });
+          } else {
+            console.log('Le token trouvé est invalide, tentative de rafraîchissement...');
+
+            // Tenter de rafraîchir le token
+            TokenManager.refreshAccessToken().then(newToken => {
+              if (newToken) {
+                console.log('Token rafraîchi avec succès');
+                this.token = newToken;
+                this.isAuthenticated = true;
+
+                // Charger les données utilisateur avec le nouveau token
+                this.loadData().then((result: any) => {
+                  if (result && !result.success) {
+                    console.error('Erreur lors du chargement des données après rafraîchissement:', result.error);
+                    this.logout();
+                  } else {
+                    console.log('Données utilisateur chargées avec succès après rafraîchissement');
+                  }
+                }).catch((err: any) => {
+                  console.error('Erreur lors du chargement des données après rafraîchissement:', err);
+                  this.logout();
+                });
+              } else {
+                console.log('Impossible de rafraîchir le token, déconnexion...');
+                this.logout();
+              }
+            });
+          }
         } else {
           console.log('Aucun token trouvé, déconnexion...');
           this.logout();
@@ -186,11 +221,22 @@ export const useUserStore = defineStore('user', {
 
     async logout() {
       try {
-        await fetch('/api/auth/logout', {
-          method: 'POST',
-          credentials: 'include' // Important pour envoyer le cookie HttpOnly
-        });
+        console.log('Déconnexion en cours...');
 
+        // Appel à l'API de déconnexion seulement si l'utilisateur est authentifié
+        if (this.isAuthenticated) {
+          try {
+            await fetch('/api/auth/logout', {
+              method: 'POST',
+              credentials: 'include' // Important pour envoyer le cookie HttpOnly
+            });
+            console.log('Déconnexion côté serveur réussie');
+          } catch (error) {
+            console.error('Erreur lors de la déconnexion côté serveur:', error);
+          }
+        }
+
+        // Réinitialiser l'état du store
         this.user = null;
         this.isAuthenticated = false;
         this.token = null;
@@ -198,6 +244,7 @@ export const useUserStore = defineStore('user', {
 
         // Supprimer le token du localStorage
         TokenManager.removeToken();
+        console.log('Déconnexion locale réussie');
 
         return { success: true };
       } catch (error) {
@@ -224,7 +271,7 @@ export const useUserStore = defineStore('user', {
 
         // Décoder le token pour vérifier son contenu
         const decodedToken = TokenManager.decodeToken(token);
-        console.log('Token décodé:', decodedToken);
+        console.log('Token décodé:', decodedToken ? 'valide' : 'invalide');
 
         if (!decodedToken) {
           console.error('Impossible de décoder le token');
@@ -300,6 +347,8 @@ export const useUserStore = defineStore('user', {
 
     async login(email: string, password: string) {
       try {
+        console.log(`Tentative de connexion pour ${email}...`);
+
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
@@ -310,29 +359,41 @@ export const useUserStore = defineStore('user', {
         });
 
         if (!response.ok) {
+          console.error(`Erreur de connexion: ${response.status} ${response.statusText}`);
           throw new Error('Identifiants invalides');
         }
 
         const data = await response.json();
+        console.log('Réponse de connexion:', data.success ? 'succès' : 'échec');
 
         if (!data.success || !data.accessToken || !data.user) {
           console.error('Format de réponse invalide:', data);
           throw new Error('Format de réponse invalide');
         }
 
-        this.setToken(data.accessToken);
-        this.user = {
-          id: data.user.id || 0,
-          username: data.user.username || '',
-          email: data.user.email || '',
-          isAdmin: Boolean(data.user.isAdmin),
-          isPremium: Boolean(data.user.isPremium),
-          company: data.user.company || '',
-          website: data.user.website || '',
-          bio: data.user.bio || ''
-        };
+        // Stocker le token et les informations utilisateur
+        await this.setToken(data.accessToken);
+
+        if (!this.user) {
+          this.user = {
+            id: data.user.id || 0,
+            username: data.user.username || '',
+            email: data.user.email || '',
+            isAdmin: Boolean(data.user.isAdmin),
+            isPremium: Boolean(data.user.isPremium),
+            company: data.user.company || '',
+            website: data.user.website || '',
+            bio: data.user.bio || ''
+          };
+        }
+
         this.isAuthenticated = true;
         this.error = null;
+
+        // Persister les données utilisateur
+        this.persistUserData();
+
+        console.log('Connexion réussie pour l\'utilisateur:', this.user.id);
 
         return { success: true, user: this.user };
       } catch (error) {
@@ -508,7 +569,7 @@ export const useUserStore = defineStore('user', {
         this.loading = true;
         console.log('Chargement des données utilisateur...');
 
-        const token = TokenManager.retrieveToken();
+        const token = this.token || TokenManager.retrieveToken();
         if (!token) {
           console.error('Pas de token disponible');
           this.logout();
@@ -556,7 +617,7 @@ export const useUserStore = defineStore('user', {
 
         // Récupérer et traiter les données
         const data = await response.json();
-        console.log('Réponse de la session:', data);
+        console.log('Réponse de la session:', data.success ? 'succès' : 'échec');
 
         if (!data.success) {
           console.error('Échec de chargement des données:', data.message);
@@ -574,6 +635,15 @@ export const useUserStore = defineStore('user', {
         this.user = data.user;
         this.isAuthenticated = true;
         this.error = null;
+
+        // Si un nouveau token est présent dans la réponse, le stocker
+        if (data.token) {
+          this.token = data.token;
+          TokenManager.storeToken(data.token);
+        }
+
+        // Persister les données utilisateur
+        this.persistUserData();
 
         console.log('Données utilisateur chargées avec succès:', this.user);
         return { success: true, user: this.user };
