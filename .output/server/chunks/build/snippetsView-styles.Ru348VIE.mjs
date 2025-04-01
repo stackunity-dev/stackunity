@@ -1,6 +1,0 @@
-const snippetsView_vue_vue_type_style_index_0_scoped_1698d373_lang = ".fill-height[data-v-1698d373]{height:calc(100vh - 64px)}.editor-container[data-v-1698d373]{border-radius:8px;overflow:hidden}.code-viewer[data-v-1698d373]{background:#0d1117;color:#c9d1d9;display:flex;flex-direction:column;height:100%}.code-header[data-v-1698d373]{background:#161b22}.code-content[data-v-1698d373]{flex:1;overflow:auto}pre[data-v-1698d373]{font-family:Fira Code,Consolas,monospace;font-size:14px;line-height:1.6;margin:0;padding:1rem;-o-tab-size:2;tab-size:2;-moz-tab-size:2}code[data-v-1698d373]{background:transparent!important;font-family:inherit;padding:0!important;white-space:pre;word-break:normal;word-spacing:normal;word-wrap:normal}[data-v-1698d373]::-webkit-scrollbar{height:8px;width:8px}[data-v-1698d373]::-webkit-scrollbar-track{background:#161b22}[data-v-1698d373]::-webkit-scrollbar-thumb{background:#30363d;border-radius:4px}[data-v-1698d373]::-webkit-scrollbar-thumb:hover{background:#6e7681}";
-
-const snippetsViewStyles_Ru348VIE = [snippetsView_vue_vue_type_style_index_0_scoped_1698d373_lang];
-
-export { snippetsViewStyles_Ru348VIE as default };
-//# sourceMappingURL=snippetsView-styles.Ru348VIE.mjs.map

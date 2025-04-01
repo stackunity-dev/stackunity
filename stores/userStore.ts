@@ -466,9 +466,25 @@ export const useUserStore = defineStore('user', {
 
     async loadData() {
       try {
+        const token = TokenManager.retrieveToken();
+        if (!token) {
+          console.log('Aucun token trouvé, déconnexion...');
+          this.logout();
+          return { success: false, error: 'Token manquant' };
+        }
+
         const response = await fetch('/api/user/loadData', {
-          headers: this.getAuthHeader
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         });
+
+        if (response.status === 401) {
+          console.log('Token expiré ou invalide, déconnexion...');
+          this.logout();
+          return { success: false, error: 'Session expirée' };
+        }
 
         if (!response.ok) {
           throw new Error('Erreur lors du chargement des données');
@@ -479,7 +495,8 @@ export const useUserStore = defineStore('user', {
 
         if (!data || !data.data || !data.data.userData || !Array.isArray(data.data.userData) || data.data.userData.length === 0) {
           console.error('Données utilisateur invalides:', data);
-          throw new Error('Format de données utilisateur invalide');
+          this.logout();
+          return { success: false, error: 'Format de données utilisateur invalide' };
         }
 
         const userData = data.data.userData[0];
@@ -508,17 +525,32 @@ export const useUserStore = defineStore('user', {
         return { success: true, user: this.user };
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
+        this.logout();
         return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' };
       }
     },
 
     async loadSnippets() {
       try {
+        const token = TokenManager.retrieveToken();
+        if (!token) {
+          console.log('Aucun token trouvé, déconnexion...');
+          this.logout();
+          return null;
+        }
+
         const response: any = await $fetch('/api/snippets/loadSnippets', {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
         });
+
+        if (response.status === 401) {
+          console.log('Token expiré ou invalide, déconnexion...');
+          this.logout();
+          return null;
+        }
 
         console.log('Résultat du chargement des snippets:', response);
 
@@ -533,6 +565,9 @@ export const useUserStore = defineStore('user', {
         return response;
       } catch (err: any) {
         console.error('Erreur lors du chargement des snippets:', err.message, err.stack);
+        if (err.status === 401) {
+          this.logout();
+        }
         return null;
       }
     },
@@ -547,14 +582,33 @@ export const useUserStore = defineStore('user', {
 
     async loadSQLSchemas() {
       try {
+        const token = TokenManager.retrieveToken();
+        if (!token) {
+          console.log('Aucun token trouvé, déconnexion...');
+          this.logout();
+          return;
+        }
+
         const response: any = await $fetch('/api/sql/loadSQLSchemas', {
-          headers: { Authorization: `Bearer ${this.token}` }
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         });
 
-        console.log(response.schemas)
+        if (response.status === 401) {
+          console.log('Token expiré ou invalide, déconnexion...');
+          this.logout();
+          return;
+        }
+
+        console.log(response.schemas);
         this.sqlSchemas = response.schemas;
       } catch (err) {
         console.error('Erreur lors du chargement des schémas:', err);
+        if (err.status === 401) {
+          this.logout();
+        }
         throw err;
       }
     },

@@ -1,5 +1,6 @@
-import { createError, defineEventHandler, getRequestHeaders, H3Event, setResponseHeaders } from 'h3'
+import { createError, defineEventHandler, getRequestHeaders, H3Event } from 'h3'
 import jwt from 'jsonwebtoken'
+import { RowDataPacket } from 'mysql2'
 import { pool } from '../api/db'
 import { ACCESS_TOKEN_SECRET } from '../utils/auth-config'
 
@@ -64,170 +65,104 @@ interface JwtPayload {
   exp?: number;
 }
 
+interface UserRow extends RowDataPacket {
+  id: number;
+  username: string;
+  email: string;
+  is_admin: number;
+  is_premium: number;
+}
+
 export default defineEventHandler(async (event: H3Event) => {
-  try {
-    const url = event.path || ''
-    // En production, on n'affiche pas tous les URLs dans les logs (diminue le volume de logs)
-    if (process.env.NODE_ENV !== 'production' || url.startsWith('/api/')) {
-      console.log(`Middleware auth - URL: ${url}`)
-    }
+  const url = event.path;
+  console.log('Middleware auth - URL:', url);
 
-    // Exclure automatiquement les fichiers statiques courants
-    const isStaticFile = url.match(/\.(ico|png|jpg|jpeg|gif|svg|css|js|woff|woff2|ttf|eot)$/i);
-    if (isStaticFile) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(`Fichier statique autorisé: ${url}`);
-      }
-      return;
-    }
-
-    if (event.node.req.method === 'OPTIONS') {
-      setResponseHeaders(event, {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-      })
-      event.node.res.statusCode = 204
-      return
-    }
-
-    setResponseHeaders(event, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    })
-
-    if (publicRoutes.some(route => {
-      if (route === '/') return url === '/';
-      const normalizedRoute = route.toLowerCase();
-      const normalizedUrl = url.toLowerCase();
-      return normalizedUrl === normalizedRoute || normalizedUrl.startsWith(`${normalizedRoute}/`);
-    })) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(`Route publique autorisée: ${url}`)
-      }
-      return
-    }
-
-    // Récupérer le token d'accès depuis l'en-tête Authorization
-    const authHeader = getRequestHeaders(event).authorization;
-
-    const token = authHeader?.substring(7);
-    if (!token) {
-      console.log(`Authentication requise pour: ${url} - Token manquant`)
-      throw createError({
-        statusCode: 401,
-        statusMessage: 'Authentification requise'
-      })
-    }
-    try {
-      // Vérifier la validité du token
-      const payload = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
-
-      // En production, on n'affiche pas les infos des tokens décodés
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(`Token décodé pour ${url}, userId:`, payload.userId)
-      }
-
-      const [rows] = await pool.execute(
-        'SELECT id, username, email, isAdmin, isPremium FROM users WHERE id = ?',
-        [payload.userId]
-      )
-
-      if (!Array.isArray(rows) || rows.length === 0) {
-        console.log(`Utilisateur non trouvé pour le token: ${token.substring(0, 10)}...`)
-        throw createError({
-          statusCode: 401,
-          message: 'Non autorisé - Utilisateur non trouvé'
-        })
-      }
-
-      const user = rows[0]
-
-      // En production, on n'affiche pas les infos des utilisateurs
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(`Utilisateur trouvé:`, user)
-      }
-
-      if (premiumRoutes.some(route => {
-        const normalizedRoute = route.toLowerCase();
-        const normalizedUrl = url.toLowerCase();
-        return normalizedUrl === normalizedRoute || normalizedUrl.startsWith(`${normalizedRoute}/`);
-      })) {
-        const userRow = rows[0] as any;
-        const isPremium = userRow.isPremium === 1;
-
-        if (!isPremium) {
-          console.log(`Accès premium requis pour: ${url} - L'utilisateur n'est pas premium`);
-          if (url.startsWith('/api/')) {
-            throw createError({
-              statusCode: 403,
-              message: 'Interdit - Abonnement premium requis'
-            })
-          } else {
-            return {
-              statusCode: 302,
-              headers: {
-                'Location': '/subscription'
-              }
-            };
-          }
-        }
-      }
-
-      if (adminRoutes.some(route => {
-        const normalizedRoute = route.toLowerCase();
-        const normalizedUrl = url.toLowerCase();
-        return normalizedUrl === normalizedRoute || normalizedUrl.startsWith(`${normalizedRoute}/`);
-      })) {
-        const userRow = rows[0] as any;
-        const isAdmin = userRow.isAdmin === 1;
-
-        if (!isAdmin) {
-          console.log(`Accès admin requis pour: ${url} - L'utilisateur n'est pas admin`);
-          throw createError({
-            statusCode: 404,
-            message: 'Non trouvé'
-          })
-        }
-      }
-
-      event.context.user = {
-        id: payload.userId,
-        username: payload.username,
-        email: payload.email,
-        isPremium: payload.isPremium,
-        isAdmin: payload.isAdmin
-      }
-
-      // En production, on n'affiche pas cette ligne
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(`Contexte utilisateur défini pour ${url}:`, (user as any).id)
-      }
-
-    } catch (tokenError) {
-      console.log(`Token invalide ou expiré: ${token.substring(0, 10)}...`)
-
-      // En production, on limite les détails des erreurs
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Erreur de token:', tokenError)
-      }
-
-      throw createError({
-        statusCode: 401,
-        statusMessage: 'Token invalide ou expiré'
-      })
-    }
-  } catch (error: any) {
-    // En production, on limite les détails des erreurs
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('Erreur d\'authentification:', error)
-    } else {
-      console.error('Erreur d\'authentification:', error.statusCode || 500)
-    }
-
+  // Vérifier si la route est publique
+  if (publicRoutes.some(route => url.startsWith(route))) {
+    return;
   }
-})
+
+  // Récupérer le token depuis les headers
+  const headers = getRequestHeaders(event);
+  const authHeader = headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw createError({
+      statusCode: 401,
+      message: 'Token d\'authentification manquant'
+    });
+  }
+
+  const token = authHeader.split(' ')[1];
+  console.log('Token reçu:', token.substring(0, 20) + '...');
+
+  try {
+    // Vérifier le token
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
+    console.log('Token décodé:', { userId: decoded.userId, isAdmin: decoded.isAdmin, isPremium: decoded.isPremium });
+
+    // Vérifier si l'utilisateur existe toujours dans la base de données
+    const [rows] = await pool.execute<UserRow[]>(
+      'SELECT id, username, email, is_admin, is_premium FROM users WHERE id = ?',
+      [decoded.userId]
+    );
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      throw createError({
+        statusCode: 401,
+        message: 'Utilisateur non trouvé'
+      });
+    }
+
+    const user = rows[0];
+
+    // Vérifier les routes admin
+    if (adminRoutes.some(route => url.startsWith(route)) && !user.is_admin) {
+      throw createError({
+        statusCode: 403,
+        message: 'Accès non autorisé'
+      });
+    }
+
+    // Vérifier les routes premium
+    if (premiumRoutes.some(route => url.startsWith(route)) && !user.is_premium) {
+      throw createError({
+        statusCode: 403,
+        message: 'Fonctionnalité premium requise'
+      });
+    }
+
+    // Ajouter les informations de l'utilisateur à l'événement
+    event.context.auth = {
+      userId: user.id,
+      username: user.username,
+      email: user.email,
+      isAdmin: Boolean(user.is_admin),
+      isPremium: Boolean(user.is_premium)
+    };
+
+    // Définir les headers de réponse
+    setHeaders(event);
+  } catch (error) {
+    console.error('Token invalide ou expiré:', token.substring(0, 20) + '...');
+    if (error instanceof jwt.TokenExpiredError) {
+      throw createError({
+        statusCode: 401,
+        message: 'Session expirée'
+      });
+    }
+    if (error instanceof jwt.JsonWebTokenError) {
+      throw createError({
+        statusCode: 401,
+        message: 'Token invalide'
+      });
+    }
+    throw createError({
+      statusCode: 401,
+      message: 'Erreur d\'authentification'
+    });
+  }
+});
 
 function setHeaders(event: any) {
   event.node.res.setHeader('Access-Control-Allow-Origin', '*')
