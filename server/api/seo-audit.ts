@@ -1,6 +1,8 @@
 import chromium from '@sparticuz/chromium-min';
 import axios from 'axios';
+import { execSync } from 'child_process';
 import { XMLParser } from 'fast-xml-parser';
+import * as fs from 'fs';
 import { createError, defineEventHandler, readBody } from 'h3';
 import puppeteer from 'puppeteer-core';
 
@@ -233,21 +235,14 @@ export default defineEventHandler(async (event) => {
       chromium.setHeadlessMode = true;
       chromium.setGraphicsMode = false;
 
-      // Récupérer le chemin de Chromium depuis les variables d'environnement
       const chromiumBinaryPath = process.env.CHROMIUM_PATH ? `${process.env.CHROMIUM_PATH}/chromium` : '/tmp/chromium-pack/chromium';
       console.log('Chemin vers le binaire Chromium:', chromiumBinaryPath);
 
       try {
-        // Vérifier l'existence du fichier
         try {
-          const fs = require('fs');
-          const { execSync } = require('child_process');
-
-          // Tentative de correction de permissions si le fichier existe
           if (fs.existsSync(chromiumBinaryPath)) {
             console.log('Le fichier Chromium existe à l\'emplacement spécifié');
             try {
-              // Essayer de modifier les permissions
               execSync(`chmod 755 ${chromiumBinaryPath}`);
               console.log('Permissions mises à jour pour:', chromiumBinaryPath);
             } catch (chmodError) {
@@ -255,7 +250,6 @@ export default defineEventHandler(async (event) => {
             }
           } else {
             console.warn(`AVERTISSEMENT: Le fichier Chromium n'existe pas à ${chromiumBinaryPath}`);
-            // Tenter de trouver où il pourrait être
             const possibleLocations = [
               '/tmp/chromium-pack/chromium',
               '/tmp/chromium/chromium',
@@ -266,7 +260,6 @@ export default defineEventHandler(async (event) => {
               if (fs.existsSync(loc)) {
                 console.log(`Chromium trouvé à: ${loc}`);
                 foundLocation = loc;
-                // Essayer de corriger les permissions
                 try {
                   execSync(`chmod 755 ${loc}`);
                   console.log(`Permissions mises à jour pour: ${loc}`);
@@ -277,15 +270,11 @@ export default defineEventHandler(async (event) => {
               }
             }
 
-            // Si on trouve le binaire ailleurs, essayer de le copier
             if (foundLocation && foundLocation !== chromiumBinaryPath) {
               try {
-                // Créer le répertoire parent si nécessaire
                 const parentDir = chromiumBinaryPath.substring(0, chromiumBinaryPath.lastIndexOf('/'));
                 execSync(`mkdir -p ${parentDir}`);
-                // Copier le fichier
                 execSync(`cp ${foundLocation} ${chromiumBinaryPath}`);
-                // Définir les permissions
                 execSync(`chmod 755 ${chromiumBinaryPath}`);
                 console.log(`Chromium copié de ${foundLocation} vers ${chromiumBinaryPath}`);
               } catch (copyError) {
@@ -294,7 +283,6 @@ export default defineEventHandler(async (event) => {
             }
           }
 
-          // Lister tous les fichiers dans le dossier parent
           try {
             const parentDir = chromiumBinaryPath.substring(0, chromiumBinaryPath.lastIndexOf('/'));
             console.log(`Contenu de ${parentDir}:`);
@@ -310,8 +298,16 @@ export default defineEventHandler(async (event) => {
         const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
         console.log('Utilisation de Chromium depuis:', chromiumPath);
 
+        try {
+          execSync('mkdir -p /tmp/chromium');
+          execSync('chmod 1777 /tmp/chromium');
+          execSync('chmod -R 755 /tmp/chromium-pack 2>/dev/null || true');
+        } catch (e) {
+          console.error('Erreur lors de la préparation des répertoires:', e);
+        }
+
         browser = await puppeteer.launch({
-          args: chromium.args,
+          args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
           defaultViewport: chromium.defaultViewport,
           executablePath: await chromium.executablePath(chromiumPath),
           ignoreHTTPSErrors: true
