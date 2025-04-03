@@ -233,20 +233,13 @@ export default defineEventHandler(async (event) => {
       chromium.setHeadlessMode = true;
       chromium.setGraphicsMode = false;
 
+      const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
+      console.log('Utilisation de Chromium depuis:', chromiumPath);
+
       browser = await puppeteer.launch({
-        args: [
-          ...chromium.args,
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-accelerated-2d-canvas',
-          '--no-first-run',
-          '--no-zygote',
-          '--single-process',
-          '--disable-gpu'
-        ],
-        executablePath: await chromium.executablePath(),
-        headless: true,
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(chromiumPath),
         ignoreHTTPSErrors: true
       });
     } else {
