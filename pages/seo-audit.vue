@@ -931,9 +931,10 @@ const startAudit = async () => {
     report.value = null;
 
     console.log('Démarrage de l\'audit SEO pour:', targetUrl.value);
+    console.log('Options:', options.value);
     console.log('Token disponible:', !!userStore.token);
 
-    report.value = await userStore.auditSEO(targetUrl.value);
+    report.value = await userStore.auditSEO(targetUrl.value, options.value);
     console.log('Audit SEO terminé, résultat:', !!report.value);
     if (report.value) {
       console.log('Pages analysées:', report.value.summary?.totalPages || 'N/A');

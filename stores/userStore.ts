@@ -1143,7 +1143,15 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async auditSEO(url: string) {
+    async auditSEO(url: string, options?: {
+      maxDepth?: number;
+      sameDomainOnly?: boolean;
+      timeout?: number;
+      analyzeMultiplePages?: boolean;
+      scrapeAllUrls?: boolean;
+      useRapidApi?: boolean;
+      maxUrlsToAnalyze?: number;
+    }) {
       try {
         this.isSeoLoading = true;
         this.seoError = '';
@@ -1166,9 +1174,13 @@ export const useUserStore = defineStore('user', {
           body: JSON.stringify({
             url,
             options: {
-              maxDepth: 2,
-              sameDomainOnly: true,
-              timeout: 30000
+              maxDepth: options?.maxDepth ?? 2,
+              sameDomainOnly: options?.sameDomainOnly ?? true,
+              timeout: options?.timeout ?? 30000,
+              analyzeMultiplePages: options?.analyzeMultiplePages ?? false,
+              scrapeAllUrls: options?.scrapeAllUrls ?? false,
+              useRapidApi: options?.useRapidApi ?? true,
+              maxUrlsToAnalyze: options?.maxUrlsToAnalyze ?? 20
             }
           })
         });
