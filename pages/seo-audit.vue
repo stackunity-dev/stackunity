@@ -49,6 +49,19 @@
                       <v-switch v-model="options.sameDomainOnly" label="Same Domain Only" color="primary" hide-details
                         class="mb-4"></v-switch>
 
+                      <v-switch v-model="options.analyzeMultiplePages" label="Analyze Multiple Pages" color="primary"
+                        hide-details class="mb-4"></v-switch>
+
+                      <v-switch v-model="options.scrapeAllUrls" label="Analyze Entire Domain" color="primary"
+                        hide-details class="mb-4"></v-switch>
+
+                      <v-switch v-model="options.useRapidApi" label="Use Advanced Analysis (RapidAPI)" color="primary"
+                        hide-details class="mb-4"></v-switch>
+
+                      <v-text-field v-model="options.maxUrlsToAnalyze" type="number" label="Max URLs to Analyze"
+                        variant="outlined" density="comfortable" class="mb-2" hide-details
+                        :disabled="!options.scrapeAllUrls && !options.analyzeMultiplePages"></v-text-field>
+
                       <v-text-field v-model="options.timeout" type="number" label="Timeout (ms)" variant="outlined"
                         density="comfortable" class="mb-2" hide-details></v-text-field>
                     </v-expansion-panel-text>
@@ -871,10 +884,24 @@ const showSitemapPreview = ref(false);
 const sitemapPreview = ref('');
 const sitemapPreviewTab = ref('code');
 
-const options = ref({
+interface AuditOptions {
+  maxDepth: number;
+  sameDomainOnly: boolean;
+  timeout: number;
+  analyzeMultiplePages: boolean;
+  scrapeAllUrls: boolean;
+  useRapidApi: boolean;
+  maxUrlsToAnalyze: number;
+}
+
+const options = ref<AuditOptions>({
   maxDepth: 2,
   sameDomainOnly: true,
-  timeout: 30000
+  timeout: 30000,
+  analyzeMultiplePages: false,
+  scrapeAllUrls: false,
+  useRapidApi: true,
+  maxUrlsToAnalyze: 20
 });
 
 const activeTab = ref('overview');

@@ -551,10 +551,10 @@ export default defineEventHandler(async (event) => {
       externalLinks: links.external,
       warnings: [],
       coreWebVitals: {
-        FCP: 500, // Valeurs estimées
-        LCP: 1000,
-        TTFB: 200,
-        domLoad: 800
+        FCP: 0,
+        LCP: 0,
+        TTFB: 0,
+        domLoad: loadTime
       },
       headingStructure: {
         h1: headings.h1 || [],
@@ -569,7 +569,7 @@ export default defineEventHandler(async (event) => {
       mobileCompatibility: {
         hasViewport: viewport.hasViewport,
         viewportContent: viewport.viewportContent,
-        smallTouchTargets: 0 // Impossible à détecter avec cette méthode
+        smallTouchTargets: 0
       },
       securityChecks: {
         https: url.startsWith('https'),
@@ -579,8 +579,8 @@ export default defineEventHandler(async (event) => {
       links,
       contentStats: {
         wordCount,
-        keywordDensity: 1.5, // Valeur estimée
-        readabilityScore: 65 // Valeur estimée
+        keywordDensity: calculateKeywordDensity(html),
+        readabilityScore: calculateReadabilityScore(html)
       },
       technicalSEO: {
         sitemapFound,
@@ -982,24 +982,87 @@ async function analyzePageStandard(url: string, timeout: number): Promise<SEOAud
   const viewport = extractViewportMeta(html);
   const wordCount = countWords(html);
 
-  // S'assurer que headings contient toutes les propriétés nécessaires
-  const headingStructure = {
-    h1: headings.h1 || [],
-    h2: headings.h2 || [],
-    h3: headings.h3 || [],
-    h4: headings.h4 || [],
-    h5: headings.h5 || [],
-    h6: headings.h6 || []
-  };
+  // Récupérer robots.txt et sitemap
+  let robotsTxtContent = '';
+  let robotsTxtFound = false;
+  let sitemapFound = false;
+  let sitemapUrl = '';
+  let sitemapUrls = 0;
+
+  try {
+    const urlObj = new URL(url);
+    const baseUrl = `${urlObj.protocol}//${urlObj.hostname}`;
+    const robotsUrl = `${baseUrl}/robots.txt`;
+
+    const robotsResponse = await axios.get(robotsUrl, { timeout: 5000 });
+    if (robotsResponse.status === 200) {
+      robotsTxtContent = robotsResponse.data;
+      robotsTxtFound = true;
+
+      // Extraire l'URL du sitemap du robots.txt
+      const sitemapMatches = robotsTxtContent.match(/Sitemap:\s*(.+)/gi);
+      if (sitemapMatches && sitemapMatches.length > 0) {
+        const sitemapLine = sitemapMatches[0];
+        sitemapUrl = sitemapLine.replace(/Sitemap:\s*/i, '').trim();
+        sitemapFound = true;
+
+        // Récupérer le contenu du sitemap
+        try {
+          const sitemapResponse = await axios.get(sitemapUrl, { timeout: 10000 });
+          if (sitemapResponse.status === 200) {
+            const xmlData = sitemapResponse.data;
+            const parser = new XMLParser({ ignoreAttributes: false });
+            const parsedXml = parser.parse(xmlData);
+
+            if (parsedXml.sitemapindex && parsedXml.sitemapindex.sitemap) {
+              const sitemaps = Array.isArray(parsedXml.sitemapindex.sitemap)
+                ? parsedXml.sitemapindex.sitemap
+                : [parsedXml.sitemapindex.sitemap];
+              sitemapUrls = sitemaps.length;
+            }
+            else if (parsedXml.urlset && parsedXml.urlset.url) {
+              const urls = Array.isArray(parsedXml.urlset.url)
+                ? parsedXml.urlset.url
+                : [parsedXml.urlset.url];
+              sitemapUrls = urls.length;
+            }
+          }
+        } catch (error) {
+          console.error('Erreur lors de l\'analyse du sitemap:', error);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération du robots.txt:', error);
+  }
+
+  // Analyser les schémas structurés et compter les types
+  const schemaTypeCount: Record<string, number> = {};
+  for (const schema of structuredData) {
+    try {
+      if (schema && schema['@type']) {
+        const type = schema['@type'];
+        if (Array.isArray(type)) {
+          type.forEach(t => {
+            schemaTypeCount[t] = (schemaTypeCount[t] || 0) + 1;
+          });
+        } else {
+          schemaTypeCount[type] = (schemaTypeCount[type] || 0) + 1;
+        }
+      }
+    } catch (error) {
+      console.error('Erreur d\'analyse du type de schéma:', error);
+    }
+  }
 
   // Construire le résultat
   const result: SEOAuditResult = {
     url,
     title,
     description,
-    h1: headingStructure.h1,
-    h2: headingStructure.h2,
-    h3: headingStructure.h3,
+    h1: headings.h1,
+    h2: headings.h2,
+    h3: headings.h3,
     metaTags,
     robotsMeta,
     imageAlt,
@@ -1010,12 +1073,19 @@ async function analyzePageStandard(url: string, timeout: number): Promise<SEOAud
     externalLinks: links.external,
     warnings: [],
     coreWebVitals: {
-      FCP: 500, // Valeurs estimées
-      LCP: 1000,
-      TTFB: 200,
-      domLoad: 800
+      FCP: 0,
+      LCP: 0,
+      TTFB: 0,
+      domLoad: loadTime
     },
-    headingStructure,
+    headingStructure: {
+      h1: headings.h1 || [],
+      h2: headings.h2 || [],
+      h3: headings.h3 || [],
+      h4: headings.h4 || [],
+      h5: headings.h5 || [],
+      h6: headings.h6 || []
+    },
     structuredData,
     socialTags,
     mobileCompatibility: {
@@ -1031,16 +1101,16 @@ async function analyzePageStandard(url: string, timeout: number): Promise<SEOAud
     links,
     contentStats: {
       wordCount,
-      keywordDensity: 1.5,
-      readabilityScore: 65
+      keywordDensity: calculateKeywordDensity(html),
+      readabilityScore: calculateReadabilityScore(html)
     },
     technicalSEO: {
-      sitemapFound: false,
-      sitemapUrl: '',
-      sitemapUrls: 0,
-      robotsTxtFound: false,
-      robotsTxtContent: '',
-      schemaTypeCount: {}
+      sitemapFound,
+      sitemapUrl,
+      sitemapUrls,
+      robotsTxtFound,
+      robotsTxtContent,
+      schemaTypeCount
     }
   };
 
@@ -1048,6 +1118,73 @@ async function analyzePageStandard(url: string, timeout: number): Promise<SEOAud
   generateStandardWarnings(result);
 
   return result;
+}
+
+function calculateKeywordDensity(html: string): number {
+  // Nettoyer le HTML et extraire le texte
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+  const words = text.split(/\s+/);
+
+  // Compter la fréquence des mots (en excluant les mots communs)
+  const wordFrequency: Record<string, number> = {};
+  const commonWords = new Set(['le', 'la', 'les', 'un', 'une', 'des', 'et', 'ou', 'de', 'à', 'en', 'dans', 'sur', 'pour']);
+
+  words.forEach(word => {
+    if (word.length > 2 && !commonWords.has(word)) {
+      wordFrequency[word] = (wordFrequency[word] || 0) + 1;
+    }
+  });
+
+  // Trouver le mot le plus fréquent et calculer sa densité
+  const maxFrequency = Math.max(...Object.values(wordFrequency));
+  return (maxFrequency / words.length) * 100;
+}
+
+function calculateReadabilityScore(html: string): number {
+  // Nettoyer le HTML et extraire le texte
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+  // Compter les phrases
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+
+  // Compter les mots
+  const words = text.split(/\s+/).filter(w => w.trim().length > 0);
+
+  // Compter les syllabes (estimation simple)
+  const syllables = words.reduce((count, word) => {
+    return count + countSyllables(word);
+  }, 0);
+
+  // Calculer le score de Flesch-Kincaid
+  const score = 206.835 - 1.015 * (words.length / sentences.length) - 84.6 * (syllables / words.length);
+
+  // Normaliser le score entre 0 et 100
+  return Math.max(0, Math.min(100, score));
+}
+
+function countSyllables(word: string): number {
+  word = word.toLowerCase();
+  if (word.length <= 3) return 1;
+
+  // Compter les voyelles consécutives comme une syllabe
+  const vowels = 'aeiouy';
+  let count = 0;
+  let wasVowel = false;
+
+  for (let i = 0; i < word.length; i++) {
+    const isVowel = vowels.includes(word[i]);
+    if (isVowel && !wasVowel) {
+      count++;
+    }
+    wasVowel = isVowel;
+  }
+
+  // Ajustements pour les règles communes en français
+  if (word.endsWith('e')) count--;
+  if (word.endsWith('es')) count--;
+  if (word.endsWith('ent')) count--;
+
+  return Math.max(1, count);
 }
 
 /**
@@ -1305,84 +1442,133 @@ async function performRapidApiAudit(url: string): Promise<CrawlReport> {
   const seoAnalysis = await getSeoAnalysis(url, rapidApiKey);
   console.log(`Analyse SEO récupérée: ${seoAnalysis.basic?.webtitle?.title || 'Titre non trouvé'}`);
 
-  // Construire le résultat de l'audit
+  // Faire une analyse standard pour compléter les informations manquantes
+  const standardResult = await analyzePageStandard(url, 30000);
+
+  // Construire le résultat de l'audit en combinant les données
   const result: SEOAuditResult = {
-    url,
-    title: seoAnalysis.basic?.webtitle?.title || '',
-    description: seoAnalysis.basic?.metadescription?.description || '',
-    h1: seoAnalysis.basic?.headings?.h1?.headings || [],
-    h2: seoAnalysis.basic?.headings?.h2?.headings || [],
-    h3: seoAnalysis.basic?.headings?.h3?.headings || [],
-    metaTags: extractMetaTagsFromRapidApi(seoAnalysis),
-    robotsMeta: {
-      index: true,
-      follow: true,
-      noindex: false,
-      nofollow: false,
-      noarchive: false,
-      nosnippet: false,
-      noodp: false
-    },
-    imageAlt: extractImagesFromRapidApi(seoAnalysis),
-    videoInfo: [],
-    loadTime: performanceMetrics?.serverResponseTime ? parseInt(performanceMetrics.serverResponseTime) : 0,
-    statusCode: 200,
-    internalLinks: extractInternalLinks(seoAnalysis, url),
-    externalLinks: extractExternalLinks(seoAnalysis, url),
-    warnings: generateWarnings(seoAnalysis, performanceMetrics),
+    ...standardResult,
     coreWebVitals: {
-      FCP: performanceMetrics?.firstContentfulPaint ? parseInt(performanceMetrics.firstContentfulPaint) : 500,
-      LCP: performanceMetrics?.largestContentfulPaint ? parseInt(performanceMetrics.largestContentfulPaint) : 1000,
-      TTFB: performanceMetrics?.serverResponseTime ? parseInt(performanceMetrics.serverResponseTime) : 200,
-      domLoad: performanceMetrics?.domContentLoadedTime ? parseInt(performanceMetrics.domContentLoadedTime) : 800
-    },
-    headingStructure: {
-      h1: seoAnalysis.basic?.headings?.h1?.headings || [],
-      h2: seoAnalysis.basic?.headings?.h2?.headings || [],
-      h3: seoAnalysis.basic?.headings?.h3?.headings || [],
-      h4: seoAnalysis.basic?.headings?.h4?.headings || [],
-      h5: seoAnalysis.basic?.headings?.h5?.headings || [],
-      h6: seoAnalysis.basic?.headings?.h6?.headings || []
-    },
-    structuredData: seoAnalysis.basic?.jsonld || [],
-    socialTags: {
-      ogTags: extractOpenGraphTags(seoAnalysis),
-      twitterTags: extractTwitterTags(seoAnalysis)
-    },
-    mobileCompatibility: {
-      hasViewport: true,
-      viewportContent: seoAnalysis.basic?.viewport || '',
-      smallTouchTargets: 0
-    },
-    securityChecks: {
-      https: url.startsWith('https'),
-      validCertificate: true,
-      securityHeaders: []
-    },
-    links: {
-      internal: extractInternalLinks(seoAnalysis, url),
-      external: extractExternalLinks(seoAnalysis, url)
+      FCP: performanceMetrics?.firstContentfulPaint ? parseInt(performanceMetrics.firstContentfulPaint) : standardResult.coreWebVitals.FCP,
+      LCP: performanceMetrics?.largestContentfulPaint ? parseInt(performanceMetrics.largestContentfulPaint) : standardResult.coreWebVitals.LCP,
+      TTFB: performanceMetrics?.serverResponseTime ? parseInt(performanceMetrics.serverResponseTime) : standardResult.coreWebVitals.TTFB,
+      domLoad: performanceMetrics?.domContentLoadedTime ? parseInt(performanceMetrics.domContentLoadedTime) : standardResult.coreWebVitals.domLoad
     },
     contentStats: {
-      wordCount: seoAnalysis.basic?.wordcount || 0,
-      keywordDensity: 0,
-      readabilityScore: 0
-    },
-    technicalSEO: {
-      sitemapFound: seoAnalysis.basic?.sitemap_robots?.includes("sitemap.xml") || false,
-      sitemapUrl: `${new URL(url).origin}/sitemap.xml`,
-      sitemapUrls: 0,
-      robotsTxtFound: seoAnalysis.basic?.sitemap_robots?.includes("robots.txt") || false,
-      robotsTxtContent: '',
-      schemaTypeCount: {}
-    },
-    isHomePage: url === new URL(url).origin || url === `${new URL(url).origin}/`
+      ...standardResult.contentStats,
+      readabilityScore: performanceMetrics?.readabilityScore ? parseInt(performanceMetrics.readabilityScore) : standardResult.contentStats.readabilityScore
+    }
   };
+
+  // Ajouter les informations spécifiques de l'API SEO si disponibles
+  if (seoAnalysis.basic) {
+    // Mise à jour du titre et de la description si disponibles
+    if (seoAnalysis.basic.webtitle?.title) {
+      result.title = seoAnalysis.basic.webtitle.title;
+    }
+    if (seoAnalysis.basic.metadescription?.description) {
+      result.description = seoAnalysis.basic.metadescription.description;
+    }
+
+    // Mise à jour des headings
+    if (seoAnalysis.basic.headings) {
+      result.headingStructure = {
+        h1: seoAnalysis.basic.headings.h1?.headings || [],
+        h2: seoAnalysis.basic.headings.h2?.headings || [],
+        h3: seoAnalysis.basic.headings.h3?.headings || [],
+        h4: seoAnalysis.basic.headings.h4?.headings || [],
+        h5: seoAnalysis.basic.headings.h5?.headings || [],
+        h6: seoAnalysis.basic.headings.h6?.headings || []
+      };
+      result.h1 = result.headingStructure.h1;
+      result.h2 = result.headingStructure.h2;
+      result.h3 = result.headingStructure.h3;
+    }
+
+    // Mise à jour des images
+    if (seoAnalysis.basic.images?.data) {
+      result.imageAlt = seoAnalysis.basic.images.data.map((src: string) => ({
+        src,
+        alt: null,
+        title: undefined,
+        width: '',
+        height: '',
+        hasDimensions: false
+      }));
+    }
+
+    // Mise à jour des liens
+    if (seoAnalysis.basic.links?.data) {
+      const internalLinks: string[] = [];
+      const externalLinks: string[] = [];
+      const urlObj = new URL(url);
+      const baseHost = urlObj.hostname;
+
+      seoAnalysis.basic.links.data.forEach((linkObj: any) => {
+        if (linkObj && linkObj.link) {
+          try {
+            const linkUrl = new URL(linkObj.link, url);
+            if (linkUrl.hostname === baseHost) {
+              if (!internalLinks.includes(linkUrl.href)) {
+                internalLinks.push(linkUrl.href);
+              }
+            } else {
+              if (!externalLinks.includes(linkUrl.href)) {
+                externalLinks.push(linkUrl.href);
+              }
+            }
+          } catch (e) {
+            // Ignorer les URLs invalides
+          }
+        }
+      });
+
+      result.internalLinks = internalLinks;
+      result.externalLinks = externalLinks;
+      result.links = { internal: internalLinks, external: externalLinks };
+    }
+
+    // Mise à jour des balises sociales
+    if (seoAnalysis.basic.ogdata || seoAnalysis.basic.twitterdata) {
+      result.socialTags = {
+        ogTags: [],
+        twitterTags: []
+      };
+
+      if (seoAnalysis.basic.ogdata) {
+        Object.entries(seoAnalysis.basic.ogdata).forEach(([key, value]) => {
+          result.socialTags.ogTags.push({
+            property: `og:${key}`,
+            content: value as string
+          });
+        });
+      }
+
+      if (seoAnalysis.basic.twitterdata) {
+        Object.entries(seoAnalysis.basic.twitterdata).forEach(([key, value]) => {
+          result.socialTags.twitterTags.push({
+            name: `twitter:${key}`,
+            content: value as string
+          });
+        });
+      }
+    }
+
+    // Mise à jour des méta tags
+    if (seoAnalysis.basic.metakeywords?.keywords) {
+      result.metaTags.push({
+        name: 'keywords',
+        content: seoAnalysis.basic.metakeywords.keywords
+      });
+    }
+  }
 
   // Ajouter plus d'avertissements basés sur les métriques de performance
   if (performanceMetrics) {
+    const warnings = [...result.warnings];
+
     if (parseInt(performanceMetrics.largestContentfulPaint) > 2500) {
-      result.warnings.push({
+      warnings.push({
         message: 'Largest Contentful Paint (LCP) trop lent (> 2.5s)',
         severity: 'high',
         type: 'performance'
@@ -1390,12 +1576,30 @@ async function performRapidApiAudit(url: string): Promise<CrawlReport> {
     }
 
     if (parseInt(performanceMetrics.firstContentfulPaint) > 1000) {
-      result.warnings.push({
+      warnings.push({
         message: 'First Contentful Paint (FCP) trop lent (> 1s)',
         severity: 'medium',
         type: 'performance'
       });
     }
+
+    if (parseInt(performanceMetrics.totalBlockingTime) > 300) {
+      warnings.push({
+        message: 'Temps de blocage total trop élevé (> 300ms)',
+        severity: 'high',
+        type: 'performance'
+      });
+    }
+
+    if (parseFloat(performanceMetrics.cumulativeLayoutShift) > 0.1) {
+      warnings.push({
+        message: 'Cumulative Layout Shift trop élevé (> 0.1)',
+        severity: 'medium',
+        type: 'performance'
+      });
+    }
+
+    result.warnings = warnings;
   }
 
   // Construire le rapport final
@@ -1427,383 +1631,6 @@ async function performRapidApiAudit(url: string): Promise<CrawlReport> {
 
   console.log('Audit SEO avec RapidAPI terminé avec succès');
   return report;
-}
-
-/**
- * Extrait les liens internes à partir de la réponse de l'API
- */
-function extractInternalLinks(seoAnalysis: any, baseUrl: string): string[] {
-  const internalLinks: string[] = [];
-
-  if (seoAnalysis.basic?.links?.data && Array.isArray(seoAnalysis.basic.links.data)) {
-    const parsedUrl = new URL(baseUrl);
-    const host = parsedUrl.hostname;
-
-    for (const linkObj of seoAnalysis.basic.links.data) {
-      if (linkObj && linkObj.link) {
-        const link = linkObj.link;
-
-        try {
-          // Ignorer les liens vides, les ancres et les fichiers non HTML
-          if (!link || link === '#' || link.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js|xml)$/i)) {
-            continue;
-          }
-
-          // Construire l'URL complète
-          let fullUrl: string;
-          if (link.startsWith('http')) {
-            fullUrl = link;
-          } else if (link.startsWith('/')) {
-            fullUrl = `${parsedUrl.protocol}//${host}${link}`;
-          } else {
-            fullUrl = `${parsedUrl.protocol}//${host}/${link}`;
-          }
-
-          // Vérifier si c'est une URL interne
-          const linkUrl = new URL(fullUrl);
-          if (linkUrl.hostname === host && !internalLinks.includes(fullUrl)) {
-            internalLinks.push(fullUrl);
-          }
-        } catch (error) {
-          // Ignorer les URLs invalides
-        }
-      }
-    }
-  }
-
-  return internalLinks;
-}
-
-/**
- * Extrait les liens externes à partir de la réponse de l'API
- */
-function extractExternalLinks(seoAnalysis: any, baseUrl: string): string[] {
-  const externalLinks: string[] = [];
-
-  if (seoAnalysis.basic?.links?.data && Array.isArray(seoAnalysis.basic.links.data)) {
-    const parsedUrl = new URL(baseUrl);
-    const host = parsedUrl.hostname;
-
-    for (const linkObj of seoAnalysis.basic.links.data) {
-      if (linkObj && linkObj.link) {
-        const link = linkObj.link;
-
-        try {
-          // Ignorer les liens non HTTP
-          if (!link || !link.startsWith('http')) {
-            continue;
-          }
-
-          // Vérifier si c'est une URL externe
-          const linkUrl = new URL(link);
-          if (linkUrl.hostname !== host && !externalLinks.includes(link)) {
-            externalLinks.push(link);
-          }
-        } catch (error) {
-          // Ignorer les URLs invalides
-        }
-      }
-    }
-  }
-
-  return externalLinks;
-}
-
-/**
- * Extrait les balises Open Graph à partir de la réponse de l'API
- */
-function extractOpenGraphTags(seoAnalysis: any): Array<{ property: string | null, content: string | null }> {
-  const ogTags: Array<{ property: string | null, content: string | null }> = [];
-
-  // Vérifier les balises OG que l'API pourrait renvoyer
-  if (seoAnalysis.basic?.ogdata) {
-    if (seoAnalysis.basic.ogdata.title) {
-      ogTags.push({
-        property: 'og:title',
-        content: seoAnalysis.basic.ogdata.title
-      });
-    }
-
-    if (seoAnalysis.basic.ogdata.description) {
-      ogTags.push({
-        property: 'og:description',
-        content: seoAnalysis.basic.ogdata.description
-      });
-    }
-
-    if (seoAnalysis.basic.ogdata.image) {
-      ogTags.push({
-        property: 'og:image',
-        content: seoAnalysis.basic.ogdata.image
-      });
-    }
-
-    if (seoAnalysis.basic.ogdata.url) {
-      ogTags.push({
-        property: 'og:url',
-        content: seoAnalysis.basic.ogdata.url
-      });
-    }
-
-    if (seoAnalysis.basic.ogdata.site_name) {
-      ogTags.push({
-        property: 'og:site_name',
-        content: seoAnalysis.basic.ogdata.site_name
-      });
-    }
-
-    if (seoAnalysis.basic.ogdata.type) {
-      ogTags.push({
-        property: 'og:type',
-        content: seoAnalysis.basic.ogdata.type
-      });
-    }
-  }
-
-  return ogTags;
-}
-
-/**
- * Extrait les balises Twitter à partir de la réponse de l'API
- */
-function extractTwitterTags(seoAnalysis: any): Array<{ name: string | null, content: string | null }> {
-  const twitterTags: Array<{ name: string | null, content: string | null }> = [];
-
-  // Vérifier les balises Twitter que l'API pourrait renvoyer
-  if (seoAnalysis.basic?.twitterdata) {
-    if (seoAnalysis.basic.twitterdata.card) {
-      twitterTags.push({
-        name: 'twitter:card',
-        content: seoAnalysis.basic.twitterdata.card
-      });
-    }
-
-    if (seoAnalysis.basic.twitterdata.title) {
-      twitterTags.push({
-        name: 'twitter:title',
-        content: seoAnalysis.basic.twitterdata.title
-      });
-    }
-
-    if (seoAnalysis.basic.twitterdata.description) {
-      twitterTags.push({
-        name: 'twitter:description',
-        content: seoAnalysis.basic.twitterdata.description
-      });
-    }
-
-    if (seoAnalysis.basic.twitterdata.image) {
-      twitterTags.push({
-        name: 'twitter:image',
-        content: seoAnalysis.basic.twitterdata.image
-      });
-    }
-
-    if (seoAnalysis.basic.twitterdata.site) {
-      twitterTags.push({
-        name: 'twitter:site',
-        content: seoAnalysis.basic.twitterdata.site
-      });
-    }
-
-    if (seoAnalysis.basic.twitterdata.creator) {
-      twitterTags.push({
-        name: 'twitter:creator',
-        content: seoAnalysis.basic.twitterdata.creator
-      });
-    }
-  }
-
-  return twitterTags;
-}
-
-/**
- * Récupère les métriques de performance depuis l'API SEO Master
- */
-async function getPerformanceMetrics(url: string, rapidApiKey: string): Promise<any> {
-  try {
-    const response = await axios({
-      method: 'POST',
-      url: 'https://seo-master-scan-website-analysis-performance-reporting.p.rapidapi.com/analyze?noqueue=1',
-      headers: {
-        'content-type': 'application/json',
-        'X-RapidAPI-Key': rapidApiKey,
-        'X-RapidAPI-Host': 'seo-master-scan-website-analysis-performance-reporting.p.rapidapi.com'
-      },
-      data: {
-        url,
-        sections: ['performanceMetrics']
-      }
-    });
-
-    return response.data.content.performanceMetrics;
-  } catch (error) {
-    console.error('Erreur lors de la récupération des métriques de performance:', error);
-    return null;
-  }
-}
-
-/**
- * Récupère l'analyse SEO complète depuis l'API Website Analyze
- */
-async function getSeoAnalysis(url: string, rapidApiKey: string): Promise<any> {
-  try {
-    // Retirer le protocole (http:// ou https://) de l'URL
-    const domain = url.replace(/^https?:\/\//, '');
-
-    const response = await axios({
-      method: 'GET',
-      url: `https://website-analyze-and-seo-audit-pro.p.rapidapi.com/onpage.php?website=${domain}`,
-      headers: {
-        'X-RapidAPI-Key': rapidApiKey,
-        'X-RapidAPI-Host': 'website-analyze-and-seo-audit-pro.p.rapidapi.com'
-      }
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Erreur lors de la récupération de l\'analyse SEO:', error);
-    return {};
-  }
-}
-
-/**
- * Extrait les méta-tags à partir de la réponse de l'API
- */
-function extractMetaTagsFromRapidApi(seoAnalysis: any): Array<{ name: string, content: string }> {
-  const metaTags: Array<{ name: string, content: string }> = [];
-
-  // Ajouter la meta description si elle existe
-  if (seoAnalysis.basic?.metadescription?.description) {
-    metaTags.push({
-      name: 'description',
-      content: seoAnalysis.basic.metadescription.description
-    });
-  }
-
-  // Ajouter les meta keywords si elles existent
-  if (seoAnalysis.basic?.metakeywords?.keywords) {
-    metaTags.push({
-      name: 'keywords',
-      content: seoAnalysis.basic.metakeywords.keywords
-    });
-  }
-
-  return metaTags;
-}
-
-/**
- * Extrait les informations sur les images à partir de la réponse de l'API
- */
-function extractImagesFromRapidApi(seoAnalysis: any): Array<{
-  src: string;
-  alt: string | null;
-  title?: string;
-  width?: string;
-  height?: string;
-  hasDimensions: boolean;
-}> {
-  const images: Array<{
-    src: string;
-    alt: string | null;
-    title?: string;
-    width?: string;
-    height?: string;
-    hasDimensions: boolean;
-  }> = [];
-
-  if (seoAnalysis.basic?.images?.data && Array.isArray(seoAnalysis.basic.images.data)) {
-    seoAnalysis.basic.images.data.forEach((src: string) => {
-      if (src && !src.includes('lazy_placeholder')) {
-        images.push({
-          src,
-          alt: null, // L'API ne fournit pas les attributs alt
-          title: undefined, // Utiliser undefined au lieu de null
-          width: '',
-          height: '',
-          hasDimensions: false
-        });
-      }
-    });
-  }
-
-  return images;
-}
-
-/**
- * Génère les avertissements SEO basés sur les analyses
- */
-function generateWarnings(seoAnalysis: any, performanceMetrics: any): Array<Warning> {
-  const warnings: Array<Warning> = [];
-
-  // Vérifier le titre
-  if (!seoAnalysis.basic?.webtitle?.title) {
-    warnings.push({
-      message: 'Titre manquant',
-      severity: 'high',
-      type: 'title'
-    });
-  }
-
-  // Vérifier la meta description
-  if (!seoAnalysis.basic?.metadescription?.description) {
-    warnings.push({
-      message: 'Meta description manquante',
-      severity: 'high',
-      type: 'description'
-    });
-  }
-
-  // Vérifier les balises H1
-  if (!seoAnalysis.basic?.headings?.h1?.headings || seoAnalysis.basic.headings.h1.count === 0) {
-    warnings.push({
-      message: 'Balise H1 manquante',
-      severity: 'high',
-      type: 'h1'
-    });
-  } else if (seoAnalysis.basic.headings.h1.count > 1) {
-    warnings.push({
-      message: 'Plusieurs balises H1 détectées',
-      severity: 'medium',
-      type: 'h1'
-    });
-  }
-
-  if (performanceMetrics) {
-    if (parseInt(performanceMetrics.largestContentfulPaint) > 2500) {
-      warnings.push({
-        message: 'Largest Contentful Paint (LCP) trop lent (> 2.5s)',
-        severity: 'high',
-        type: 'performance'
-      });
-    }
-
-    if (parseInt(performanceMetrics.firstContentfulPaint) > 1000) {
-      warnings.push({
-        message: 'First Contentful Paint (FCP) trop lent (> 1s)',
-        severity: 'medium',
-        type: 'performance'
-      });
-    }
-  }
-
-  if (!seoAnalysis.basic?.sitemap_robots?.includes("sitemap.xml")) {
-    warnings.push({
-      message: 'Pas de sitemap.xml trouvé',
-      severity: 'medium',
-      type: 'general'
-    });
-  }
-
-  if (!seoAnalysis.basic?.sitemap_robots?.includes("robots.txt")) {
-    warnings.push({
-      message: 'Pas de robots.txt trouvé',
-      severity: 'medium',
-      type: 'general'
-    });
-  }
-
-  return warnings;
 }
 
 /**
@@ -2004,4 +1831,54 @@ async function scrapeDomainAndAnalyze(
 
   console.log(`Scraping complet du domaine terminé: ${Object.keys(seoResults).length} pages analysées`);
   return report;
+}
+
+/**
+ * Récupère les métriques de performance depuis l'API SEO Master
+ */
+async function getPerformanceMetrics(url: string, rapidApiKey: string): Promise<any> {
+  try {
+    const response = await axios({
+      method: 'POST',
+      url: 'https://seo-master-scan-website-analysis-performance-reporting.p.rapidapi.com/analyze?noqueue=1',
+      headers: {
+        'content-type': 'application/json',
+        'X-RapidAPI-Key': rapidApiKey,
+        'X-RapidAPI-Host': 'seo-master-scan-website-analysis-performance-reporting.p.rapidapi.com'
+      },
+      data: {
+        url,
+        sections: ['performanceMetrics']
+      }
+    });
+
+    return response.data.content.performanceMetrics;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des métriques de performance:', error);
+    return null;
+  }
+}
+
+/**
+ * Récupère l'analyse SEO complète depuis l'API Website Analyze
+ */
+async function getSeoAnalysis(url: string, rapidApiKey: string): Promise<any> {
+  try {
+    // Retirer le protocole (http:// ou https://) de l'URL
+    const domain = url.replace(/^https?:\/\//, '');
+
+    const response = await axios({
+      method: 'GET',
+      url: `https://website-analyze-and-seo-audit-pro.p.rapidapi.com/onpage.php?website=${domain}`,
+      headers: {
+        'X-RapidAPI-Key': rapidApiKey,
+        'X-RapidAPI-Host': 'website-analyze-and-seo-audit-pro.p.rapidapi.com'
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'analyse SEO:', error);
+    return {};
+  }
 } 
