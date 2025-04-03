@@ -241,8 +241,18 @@ export default defineEventHandler(async (event) => {
         // Vérifier l'existence du fichier
         try {
           const fs = require('fs');
+          const { execSync } = require('child_process');
+
+          // Tentative de correction de permissions si le fichier existe
           if (fs.existsSync(chromiumBinaryPath)) {
             console.log('Le fichier Chromium existe à l\'emplacement spécifié');
+            try {
+              // Essayer de modifier les permissions
+              execSync(`chmod 755 ${chromiumBinaryPath}`);
+              console.log('Permissions mises à jour pour:', chromiumBinaryPath);
+            } catch (chmodError) {
+              console.error('Erreur lors de la modification des permissions:', chmodError);
+            }
           } else {
             console.warn(`AVERTISSEMENT: Le fichier Chromium n'existe pas à ${chromiumBinaryPath}`);
             // Tenter de trouver où il pourrait être
@@ -251,25 +261,50 @@ export default defineEventHandler(async (event) => {
               '/tmp/chromium/chromium',
               '/app/node_modules/.cache/@sparticuz/chromium/chromium'
             ];
+            let foundLocation: string | null = null;
             for (const loc of possibleLocations) {
               if (fs.existsSync(loc)) {
                 console.log(`Chromium trouvé à: ${loc}`);
+                foundLocation = loc;
+                // Essayer de corriger les permissions
+                try {
+                  execSync(`chmod 755 ${loc}`);
+                  console.log(`Permissions mises à jour pour: ${loc}`);
+                  break;
+                } catch (chmodError) {
+                  console.error(`Erreur lors de la modification des permissions pour ${loc}:`, chmodError);
+                }
+              }
+            }
+
+            // Si on trouve le binaire ailleurs, essayer de le copier
+            if (foundLocation && foundLocation !== chromiumBinaryPath) {
+              try {
+                // Créer le répertoire parent si nécessaire
+                const parentDir = chromiumBinaryPath.substring(0, chromiumBinaryPath.lastIndexOf('/'));
+                execSync(`mkdir -p ${parentDir}`);
+                // Copier le fichier
+                execSync(`cp ${foundLocation} ${chromiumBinaryPath}`);
+                // Définir les permissions
+                execSync(`chmod 755 ${chromiumBinaryPath}`);
+                console.log(`Chromium copié de ${foundLocation} vers ${chromiumBinaryPath}`);
+              } catch (copyError) {
+                console.error('Erreur lors de la copie du fichier:', copyError);
               }
             }
           }
+
+          // Lister tous les fichiers dans le dossier parent
+          try {
+            const parentDir = chromiumBinaryPath.substring(0, chromiumBinaryPath.lastIndexOf('/'));
+            console.log(`Contenu de ${parentDir}:`);
+            const lsOutput = execSync(`ls -la ${parentDir}`).toString();
+            console.log(lsOutput);
+          } catch (execError) {
+            console.error('Erreur lors de la liste des fichiers:', execError);
+          }
         } catch (fsError) {
           console.error('Erreur lors de la vérification du fichier:', fsError);
-        }
-
-        // Lister tous les fichiers dans le dossier parent
-        try {
-          const { execSync } = require('child_process');
-          const parentDir = chromiumBinaryPath.substring(0, chromiumBinaryPath.lastIndexOf('/'));
-          console.log(`Contenu de ${parentDir}:`);
-          const lsOutput = execSync(`ls -la ${parentDir}`).toString();
-          console.log(lsOutput);
-        } catch (execError) {
-          console.error('Erreur lors de la liste des fichiers:', execError);
         }
 
         const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';

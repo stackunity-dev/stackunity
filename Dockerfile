@@ -80,12 +80,22 @@ RUN if [ -f /tmp/chromium-pack/chromium ]; then \
     chmod 755 /tmp/chromium-pack/chromium; \
     fi
 
+# S'assurer que /tmp/chromium contient le binaire et a les bonnes permissions
+RUN mkdir -p /tmp/chromium \
+    && if [ -f /tmp/chromium-pack/chromium ]; then \
+      cp /tmp/chromium-pack/chromium /tmp/chromium/; \
+    fi \
+    && chmod 755 /tmp/chromium/chromium || echo "No chromium binary to chmod" \
+    && chmod -R 755 /tmp/chromium
+
 # Build de l'application
 RUN npm run build
 
 EXPOSE 3000
 
-# Vérification finale des dépendances
-RUN ldd /tmp/chromium-pack/chromium || echo "chromium not found or cannot be checked"
+# Vérification finale des dépendances et permissions
+RUN ldd /tmp/chromium-pack/chromium || echo "chromium not found or cannot be checked" \
+    && ls -la /tmp/chromium/ || echo "chromium directory not found" \
+    && ls -la /tmp/chromium-pack/ || echo "chromium-pack directory not found"
 
 CMD ["node", ".output/server/index.mjs"] 
