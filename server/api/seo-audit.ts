@@ -2,7 +2,7 @@ import chromium from '@sparticuz/chromium';
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { createError, defineEventHandler, readBody } from 'h3';
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
 
 export interface SEOAuditResult {
   url: string;
@@ -229,11 +229,17 @@ export default defineEventHandler(async (event) => {
 
     if (process.env.NODE_ENV === 'production') {
       browser = await puppeteer.launch({
-        args: chromium.args,
+        args: [
+          ...chromium.args,
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu'
+        ],
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
-        headless: chromium.headless as boolean,
-        ignoreDefaultArgs: false
+        headless: true,
+        ignoreDefaultArgs: ['--disable-extensions']
       });
     } else {
       browser = await puppeteer.launch({
