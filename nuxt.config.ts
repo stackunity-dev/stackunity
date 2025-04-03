@@ -12,7 +12,7 @@ export default defineNuxtConfig({
       publicDir: '.output/public',
     },
     externals: {
-      external: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor']
+      external: ['puppeteer-core', '@puppeteer/browsers', 'monaco-editor', '@sparticuz/chromium-min']
     }
   },
 
@@ -42,6 +42,10 @@ export default defineNuxtConfig({
         publishableKey: 'pk_test_TYooMQauvdEDq54NiTphI7jx',
       },
       CHROMIUM_PATH: process.env.NODE_ENV === 'production' ? '/tmp/chromium' : undefined
+    },
+    chromium: {
+      executablePath: process.env.NODE_ENV === 'production' ? '/tmp/chromium' : undefined,
+      s3Url: process.env.CHROMIUM_S3_URL || 'https://votre-bucket.s3.amazonaws.com/chromium-pack.tar'
     }
   },
 

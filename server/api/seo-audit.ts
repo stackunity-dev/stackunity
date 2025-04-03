@@ -228,25 +228,23 @@ export default defineEventHandler(async (event) => {
     console.log('Lancement du navigateur pour l\'audit SEO...');
 
     if (process.env.NODE_ENV === 'production') {
-      const executablePath = await chromium.executablePath();
-      console.log('Chemin de Chromium en production:', executablePath);
+      console.log('Configuration de Chromium en production...');
+
+      chromium.setHeadlessMode = true;
+      chromium.setGraphicsMode = false;
+
+      const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
+      console.log('Utilisation de Chromium depuis:', chromiumPath);
 
       browser = await puppeteer.launch({
-        args: [
-          ...chromium.args,
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu'
-        ],
+        args: chromium.args,
         defaultViewport: chromium.defaultViewport,
-        executablePath,
-        headless: true,
+        executablePath: await chromium.executablePath(chromiumPath),
         ignoreHTTPSErrors: true
       });
     } else {
       browser = await puppeteer.launch({
-        headless: true,
+        headless: "new",
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox'

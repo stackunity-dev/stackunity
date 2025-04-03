@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
     region: 'lon1',
     endpoint: 'https://lon1.digitaloceanspaces.com',
     credentials: {
-      accessKeyId: 'DO00WJ394ATTR7FTRZCG',
-      secretAccessKey: 'G9jYkuDcfry2PMKHBLrUPCjTlLSHxf+p+axMK8Ri+X4'
+      accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string
     },
   });
 
