@@ -232,150 +232,80 @@ export default defineEventHandler(async (event) => {
     if (process.env.NODE_ENV === 'production') {
       console.log('Configuration de Chromium en production...');
 
-      chromium.setHeadlessMode = true;
-      chromium.setGraphicsMode = false;
-
-      const chromiumBinaryPath = process.env.CHROMIUM_PATH ? `${process.env.CHROMIUM_PATH}/chromium` : '/tmp/chromium-pack/chromium';
-      console.log('Chemin vers le binaire Chromium:', chromiumBinaryPath);
-
       try {
-        // Vérifier si un fichier .br existe dans /tmp/chromium-pack et le décompresser
-        if (fs.existsSync('/tmp/chromium-pack/chromium.br')) {
-          console.log('Fichier chromium.br trouvé, mais brotli peut ne pas être installé. Utilisation d\'une méthode alternative...');
-          try {
-            // Utiliser le binaire directement depuis le package @sparticuz/chromium-min
-            console.log('Tentative d\'utilisation du binaire inclus dans @sparticuz/chromium-min...');
+        // Solution alternative sans utiliser chromium.br ou setHeadlessMode
+        console.log('Utilisation d\'une approche alternative sans chromium.br...');
 
-            // Vérifier si le binaire de secours existe
-            if (fs.existsSync('/tmp/chromium-pack.tar')) {
-              console.log('Archive tar trouvée, extraction en cours...');
-              execSync('mkdir -p /tmp/chromium');
-              execSync('tar -xf /tmp/chromium-pack.tar -C /tmp');
+        // Utiliser un fichier temporaire pour tester les permissions d'écriture
+        const testFile = '/tmp/chromium-test-file';
+        fs.writeFileSync(testFile, 'test', { mode: 0o755 });
+        console.log(`Test de permission d'écriture réussi: ${testFile}`);
 
-              if (fs.existsSync('/tmp/chromium/chromium')) {
-                execSync('chmod 755 /tmp/chromium/chromium');
-                console.log('Extraction et permissions réussies pour /tmp/chromium/chromium');
-              } else {
-                console.log('Vérification du contenu de l\'archive tar:');
-                console.log(execSync('tar -tvf /tmp/chromium-pack.tar').toString());
-                console.log('Contenu du répertoire /tmp après extraction:');
-                console.log(execSync('ls -la /tmp').toString());
-              }
-            } else {
-              console.log('Archive tar non trouvée, téléchargement en cours...');
-            }
-          } catch (error) {
-            console.error('Erreur pendant le traitement du fichier chromium.br:', error);
-          }
+        // Préparation du répertoire pour chromium
+        execSync('mkdir -p /tmp/chromium-executable');
+        execSync('chmod 777 /tmp/chromium-executable');
+
+        // Télécharger directement le binaire compilé (si nécessaire)
+        const chromiumPath = '/tmp/chromium-executable/chromium';
+
+        if (!fs.existsSync(chromiumPath)) {
+          console.log('Téléchargement direct du binaire Chromium...');
+          // URL d'un binaire Chromium pré-compilé compatible Lambda
+          const chromiumURL = 'https://devroid.lon1.digitaloceanspaces.com/chromium-aws-lambda';
+          execSync(`curl -L ${chromiumURL} -o ${chromiumPath}`);
+          execSync(`chmod 755 ${chromiumPath}`);
+          console.log(`Binaire Chromium téléchargé vers: ${chromiumPath}`);
         }
 
-        const possibleLocations = [
-          '/tmp/chromium/chromium',
-          '/tmp/chromium-pack/chromium',
-          '/app/node_modules/.cache/@sparticuz/chromium/chromium'
-        ];
-
-        let executableFound = false;
-        let foundLocation: string | null = null;
-
-        for (const loc of possibleLocations) {
-          if (fs.existsSync(loc)) {
-            console.log(`Chromium trouvé à: ${loc}`);
-            foundLocation = loc;
-            try {
-              execSync(`chmod 755 ${loc}`);
-              console.log(`Permissions mises à jour pour: ${loc}`);
-              executableFound = true;
-              break;
-            } catch (chmodError) {
-              console.error(`Erreur lors de la modification des permissions pour ${loc}:`, chmodError);
-            }
-          }
-        }
-
-        if (!executableFound) {
-          console.log('Téléchargement du binary Chromium depuis le CDN...');
-          try {
-            // Télécharger et extraire chromium-pack.tar
-            execSync('mkdir -p /tmp/chromium');
-            execSync('curl -L https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar -o /tmp/chromium-pack.tar');
-            execSync('tar -xf /tmp/chromium-pack.tar -C /tmp');
-
-            // Vérifier si le binaire a été correctement extrait
-            const tarContents = execSync('tar -tvf /tmp/chromium-pack.tar').toString();
-            console.log('Contenu de l\'archive tar:', tarContents);
-
-            if (fs.existsSync('/tmp/chromium/chromium')) {
-              execSync('chmod 755 /tmp/chromium/chromium');
-              console.log('Chromium téléchargé et extrait avec succès');
-              foundLocation = '/tmp/chromium/chromium';
-            } else {
-              // Chercher le binaire dans l'archive
-              console.log('Contenu du répertoire /tmp après extraction:');
-              console.log(execSync('ls -la /tmp').toString());
-              console.log('Recherche du binaire chromium dans les sous-répertoires:');
-              console.log(execSync('find /tmp -name "chromium" -type f').toString());
-
-              const chromiumBinPath = execSync('find /tmp -name "chromium" -type f').toString().trim().split('\n')[0];
-              if (chromiumBinPath) {
-                execSync(`chmod 755 ${chromiumBinPath}`);
-                console.log(`Binaire trouvé et permissions mises à jour: ${chromiumBinPath}`);
-                foundLocation = chromiumBinPath;
-              } else {
-                throw new Error('Binaire chromium introuvable après extraction');
-              }
-            }
-          } catch (error) {
-            console.error('Erreur lors du téléchargement/extraction de Chromium:', error);
-
-            // Tentative de fallback sur le binaire fourni par @sparticuz/chromium-min
-            try {
-              console.log('Tentative de fallback sur le binaire fourni par @sparticuz/chromium-min');
-              const execPath = await chromium.executablePath();
-              console.log(`Chemin d'exécution fourni par chromium-min: ${execPath}`);
-              if (fs.existsSync(execPath)) {
-                execSync(`chmod 755 ${execPath}`);
-                console.log(`Permissions mises à jour pour: ${execPath}`);
-                foundLocation = execPath;
-                executableFound = true;
-              }
-            } catch (fallbackError) {
-              console.error('Erreur lors du fallback sur chromium-min:', fallbackError);
-            }
-          }
-        }
-
-        // Afficher les informations sur le fichier Chromium
-        if (foundLocation) {
-          try {
-            const stats = execSync(`ls -la ${foundLocation}`).toString();
-            console.log(`Information sur le fichier Chromium: ${stats}`);
-
-            const permissions = execSync(`stat -c '%a' ${foundLocation}`).toString().trim();
-            console.log(`Permissions actuelles: ${permissions}`);
-
-            if (permissions !== "755") {
-              execSync(`chmod 755 ${foundLocation}`);
-              console.log('Permissions corrigées à 755');
-            }
-          } catch (error) {
-            console.error('Erreur lors de la vérification des permissions:', error);
-          }
-        } else {
-          console.error('Aucun binaire Chromium trouvé après les tentatives de récupération');
-          throw new Error('Impossible de trouver un binaire Chromium valide');
-        }
-
-        browser = await puppeteer.launch({
-          args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-          defaultViewport: chromium.defaultViewport,
-          executablePath: foundLocation || await chromium.executablePath(),
-          ignoreHTTPSErrors: true,
-          headless: "new"  // Utiliser la nouvelle API headless
+        // Vérifier que le fichier existe et qu'il a les bonnes permissions
+        const stats = fs.statSync(chromiumPath);
+        console.log(`Informations sur le binaire Chromium:`, {
+          exists: fs.existsSync(chromiumPath),
+          size: stats.size,
+          mode: stats.mode.toString(8),
+          isExecutable: !!(stats.mode & 0o111)
         });
+
+        // Utiliser puppeteer-core sans dépendre de chromium-min
+        browser = await puppeteer.launch({
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--disable-software-rasterizer',
+            '--headless=new'
+          ],
+          executablePath: chromiumPath,
+          ignoreHTTPSErrors: true
+        });
+
       } catch (error) {
         console.error('Erreur lors du lancement de Chromium:', error);
-        throw error;
+
+        // Plan B: Utiliser le module @sparticuz/chromium-min comme dernier recours
+        try {
+          console.log('Tentative avec @sparticuz/chromium-min comme dernier recours...');
+          // Forcer l'utilisation de chrome-aws-lambda qui est plus compatible
+          const execPath = await chromium.executablePath();
+          console.log(`Chemin d'exécution fourni par chromium-min: ${execPath}`);
+
+          browser = await puppeteer.launch({
+            args: [
+              ...chromium.args,
+              '--no-sandbox',
+              '--disable-setuid-sandbox',
+              '--disable-dev-shm-usage'
+            ],
+            defaultViewport: chromium.defaultViewport,
+            executablePath: execPath,
+            ignoreHTTPSErrors: true,
+            headless: true
+          });
+        } catch (lastError) {
+          console.error('Échec du lancement de Chromium avec toutes les méthodes:', lastError);
+          throw new Error(`Impossible de lancer le navigateur Chrome: ${lastError.message}`);
+        }
       }
     } else {
       const executablePath = process.platform === 'win32'
