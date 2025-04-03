@@ -1,6 +1,5 @@
 <template>
   <v-app>
-    <AnalyticsCollector />
 
     <v-navigation-drawer v-model="mobileDrawer" :mobile-breakpoint="960" :permanent="display.mdAndUp.value"
       :temporary="display.smAndDown.value" location="left" class="dashboard-drawer">
@@ -86,9 +85,6 @@
 
             <v-list-item to="/admin/newsletter-admin" prepend-icon="mdi-email-outline" title="Newsletter" rounded="lg"
               class="ml-4" color="primary" nuxt @click="closeDrawer" />
-
-            <v-list-item to="/admin/analytics" prepend-icon="mdi-chart-box" title="Analytics" rounded="lg" class="ml-4"
-              color="primary" nuxt @click="closeDrawer" />
           </v-list-group>
         </client-only>
 
@@ -182,9 +178,6 @@
 
             <v-list-item to="/admin/newsletter-admin" prepend-icon="mdi-email-outline" title="Newsletter" rounded="lg"
               class="ml-4" color="primary" nuxt @click="closeDrawer" />
-
-            <v-list-item to="/admin/analytics" prepend-icon="mdi-chart-box" title="Analytics" rounded="lg" class="ml-4"
-              color="primary" nuxt @click="closeDrawer" />
           </v-list-group>
         </client-only>
 
@@ -197,7 +190,7 @@
 
     <v-app-bar class="border-b page-header px-4" color="primary" flat scroll-behavior="elevate" :elevation="0">
       <v-app-bar-nav-icon v-if="display.smAndDown.value" @click="mobileDrawer = !mobileDrawer"
-        color="white"></v-app-bar-nav-icon>
+        color="on-surface"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
         <v-icon size="large" class="mr-3">{{ getCurrentPageIcon() }}</v-icon>
         <div class="text-h5 font-weight-bold">{{ currentPageTitle }}</div>
@@ -217,7 +210,6 @@ import { computed, markRaw, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
-import AnalyticsCollector from '../components/analytics-collector.vue';
 import { useCookieStore } from '../stores/cookieStore';
 import { useUserStore } from '../stores/userStore';
 
@@ -424,24 +416,12 @@ onMounted(() => {
   userStore.loadSnippets();
   userStore.loadSQLSchemas();
   updatePageTitle();
-
-  if (process.client) {
-    console.log('[DEBUG] Marketing activé dans layout dashboard:', cookieStore.preferences.marketing);
-    console.log('[DEBUG] Analytics activé dans layout dashboard:', cookieStore.preferences.analytics);
-    console.log('[DEBUG] Préférences cookies complètes:', cookieStore.preferences);
-
-    // Debug du statut premium
-    console.log('[DEBUG] Statut premium de l\'utilisateur:', userStore.user?.isPremium);
-  }
 });
 
-// Watcher pour forcer le rafraîchissement du menu quand le statut premium change
 watch(() => userStore.user?.isPremium, (newValue) => {
   console.log('[DEBUG] Changement du statut premium détecté:', newValue);
-  // Le menu se mettra à jour automatiquement grâce aux computed properties
 }, { immediate: true });
 
-// Fonction pour créer un élément de menu premium
 function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string): any {
   if (userStore.user?.isPremium) {
     return {
@@ -467,7 +447,6 @@ function createPremiumMenuItem(title: string, link: string, icon: string, featur
   }
 }
 
-// Simplification de l'approche pour les menus
 const items = computed(() => [
   {
     title: 'Frontend',

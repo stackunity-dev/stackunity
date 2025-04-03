@@ -1,16 +1,10 @@
 import bcrypt from 'bcrypt';
 import { defineEventHandler, readBody, setCookie } from 'h3';
-import jwt from 'jsonwebtoken';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  ACCESS_TOKEN_EXPIRY,
-  ACCESS_TOKEN_SECRET,
-  REFRESH_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_OPTIONS,
-  REFRESH_TOKEN_EXPIRY,
-  REFRESH_TOKEN_SECRET
-} from '../../utils/auth-config';
+import { TokenManager } from '../../utils/TokenManager';
+import { TokenService } from '../../utils/TokenService';
+import { REFRESH_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_OPTIONS } from '../../utils/auth-config';
 import { pool } from '../db.js';
 
 export default defineEventHandler(async (event) => {
@@ -59,48 +53,27 @@ export default defineEventHandler(async (event) => {
 
     const userId = userRows.insertId;
 
-    // Générer un token d'accès (courte durée)
-    const accessToken = jwt.sign(
-      {
-        userId: userId,
-        username: body.username,
-        email: body.email,
-        isPremium: false,
-        isAdmin: false
-      },
-      ACCESS_TOKEN_SECRET,
-      { expiresIn: ACCESS_TOKEN_EXPIRY }
-    );
+    // Générer un token d'accès
+    const accessToken = TokenManager.generateAccessToken({
+      userId: userId,
+      username: body.username,
+      email: body.email,
+      isPremium: false,
+      isAdmin: false
+    });
 
-    // Générer un token de rafraîchissement (longue durée)
+    // Générer un token de rafraîchissement
     const refreshTokenId = uuidv4();
-    const refreshToken = jwt.sign(
-      {
-        userId: userId,
-        tokenId: refreshTokenId
-      },
-      REFRESH_TOKEN_SECRET,
-      { expiresIn: REFRESH_TOKEN_EXPIRY }
-    );
+    const refreshToken = TokenManager.generateRefreshToken({
+      userId: userId,
+      tokenId: refreshTokenId
+    });
 
     // Stocker le token de rafraîchissement dans la base de données
-    await pool.execute(
-      'INSERT INTO refresh_tokens (token_id, user_id, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))',
-      [refreshTokenId, userId]
-    );
+    await TokenService.saveRefreshToken(refreshTokenId, userId);
 
     // Définir le cookie HttpOnly avec le token de rafraîchissement
     setCookie(event, REFRESH_TOKEN_COOKIE_NAME, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
-
-    // Définir le cookie de session sécurisé
-    const sessionCookieOptions = {
-      httpOnly: true,
-      path: '/',
-      maxAge: 30 * 24 * 60 * 60, // 30 jours
-      sameSite: 'strict' as const,
-      secure: true
-    };
-    setCookie(event, 'devunity_secure_session', accessToken, sessionCookieOptions);
 
     return {
       success: true,

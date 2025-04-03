@@ -1,13 +1,13 @@
 import { pool } from '../../db';
+import { defineEventHandler, createError, readBody } from 'h3';
 
 export default defineEventHandler(async (event) => {
-  const templateId = event.context.params?.id;
-  const userId = event.context.user?.id;
+  const body = await readBody(event);
 
-  console.log('Deleting template with ID:', templateId);
-  console.log('User ID:', userId);
+  console.log('Deleting template with ID:', body.templateId);
+  console.log('User ID:', body.userId);
 
-  if (!templateId) {
+  if (!body.templateId) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Template ID is required'
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const result = await pool.query('DELETE FROM studio_components WHERE id = ? AND user_id = ?', [templateId, userId]);
+    const result = await pool.query('DELETE FROM studio_components WHERE id = ? AND user_id = ?', [body.templateId, body.userId]);
 
     console.log('Delete result:', result);
 

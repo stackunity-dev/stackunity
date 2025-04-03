@@ -78,6 +78,22 @@
                     <component :is="MonacoEditor" v-model:value="code" :key="editMode" :language="selectedLanguage"
                       theme="vs-dark" :options="editorOptions" class="fill-height editor-container" />
                   </client-only>
+                  <client-only v-else-if="snippetType === 'personal' && !editMode">
+                    <div class="code-viewer">
+                      <div class="code-header pa-4">
+                        <v-chip color="primary" size="small" variant="flat" class="mr-2">
+                          {{ selectedLanguage }}
+                        </v-chip>
+                        <v-chip size="small" variant="outlined">
+                          {{ code.split('\n').length }} lines
+                        </v-chip>
+                      </div>
+                      <v-divider></v-divider>
+                      <div class="pa-6 code-content">
+                        <pre><code ref="codeBlock" :class="selectedLanguage">{{ code }}</code></pre>
+                      </div>
+                    </div>
+                  </client-only>
                   <client-only v-else>
                     <div class="code-viewer">
                       <div class="code-header pa-4">
@@ -86,6 +102,9 @@
                         </v-chip>
                         <v-chip size="small" variant="outlined">
                           {{ code.split('\n').length }} lines
+                        </v-chip>
+                        <v-chip size="small" color="info" class="ml-2">
+                          Read Only
                         </v-chip>
                       </div>
                       <v-divider></v-divider>
@@ -126,11 +145,13 @@
 </template>
 
 <script lang="ts" setup>
+// @ts-ignore 
+import { definePageMeta, navigateTo, useHead, useRoute } from '#imports';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
-import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
-import Snackbar from '~/components/snackbar.vue';
-import { useUserStore } from '~/stores/userStore';
+import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue';
+import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
 
 const userStore = useUserStore();
 const MonacoEditor = defineAsyncComponent(() => import('monaco-editor-vue3'));
@@ -161,7 +182,7 @@ useHead({
   ]
 });
 
-if (import.meta.client) {
+if (process.client) {
   import('monaco-editor').then(() => {
     self.MonacoEnvironment = {
       getWorker: function (_moduleId, label) {
@@ -197,10 +218,18 @@ const editorOptions = ref({
   automaticLayout: true,
   fontSize: 14,
   lineHeight: 24,
-  minimap: { enabled: true },
+  minimap: { enabled: false },
   scrollBeyondLastLine: false,
   roundedSelection: true,
-  padding: { top: 16 }
+  padding: { top: 16 },
+  scrollbar: {
+    vertical: 'visible',
+    horizontal: 'visible',
+    useShadows: true,
+    verticalHasArrows: true,
+    horizontalHasArrows: true,
+    alwaysConsumeMouseWheel: false
+  }
 });
 const editMode = ref(false);
 const monacoKey = ref(Date.now());
@@ -223,15 +252,13 @@ interface Snippet {
   like?: number;
   likes?: number;
   favoris?: number;
-  isFavorite?: boolean;
-  sourceType?: string;
   [key: string]: any;
 }
 
 const snippetData = ref<Snippet | null>(null);
 
 const applyHighlight = () => {
-  if (codeBlock.value && import.meta.client) {
+  if (codeBlock.value && process.client) {
     hljs.highlightElement(codeBlock.value);
   }
 };
@@ -248,13 +275,20 @@ onMounted(async () => {
 
   try {
     isLoading.value = true;
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    let snippet = null;
+    if (!userStore.isAuthenticated) {
+      console.log('[SNIPPETS VIEW] Utilisateur non authentifié, redirection...');
+      navigateTo('/login');
+      return;
+    }
+
+    let snippet: Snippet | null = null;
 
     if (snippetType === 'world') {
-      snippet = userStore.worldSnippets.find(s => s.id === snippetId);
+      snippet = userStore.worldSnippets.find((s): s is Snippet => s.id === snippetId);
     } else {
-      snippet = userStore.personalSnippets.find(s => s.id === snippetId);
+      snippet = userStore.personalSnippets.find((s): s is Snippet => s.id === snippetId);
     }
 
     if (snippet) {
@@ -272,9 +306,9 @@ onMounted(async () => {
       await userStore.loadData();
 
       if (snippetType === 'world') {
-        snippet = userStore.worldSnippets.find(s => s.id === snippetId);
+        snippet = userStore.worldSnippets.find((s): s is Snippet => s.id === snippetId);
       } else {
-        snippet = userStore.personalSnippets.find(s => s.id === snippetId);
+        snippet = userStore.personalSnippets.find((s): s is Snippet => s.id === snippetId);
       }
 
       if (snippet) {
@@ -298,6 +332,11 @@ onMounted(async () => {
 function toggleEdit() {
   editMode.value = !editMode.value;
   monacoKey.value = Date.now();
+  if (!editMode.value) {
+    nextTick(() => {
+      applyHighlight();
+    });
+  }
 };
 
 const highlightedCode = computed(() => {
@@ -311,11 +350,32 @@ const highlightedCode = computed(() => {
 
 const updateSnippet = async () => {
   try {
-    await userStore.updateSnippet(snippetId, code.value, snippetType);
+    console.log('Current snippet:', snippetData.value);
+    const isPublishedWorld = userStore.worldSnippets.some((s: Snippet) => {
+      return s.title === snippetData.value?.title && s.description === snippetData.value?.description;
+    });
+    const isPublishedPersonal = userStore.personalSnippets.some((s: Snippet) => {
+      return s.id === snippetId;
+    });
+    console.log('Publication status:', { isPublishedWorld, isPublishedPersonal });
+
+    if (isPublishedWorld) {
+      const worldSnippet = userStore.worldSnippets.find(s => s.title === snippetData.value?.title);
+      if (worldSnippet) {
+        await userStore.updateSnippet(worldSnippet.id, code.value, 'world');
+      }
+    }
+    if (isPublishedPersonal) {
+      await userStore.updateSnippet(snippetId, code.value, 'personal');
+    }
+
     snackbarText.value = 'Snippet mis à jour avec succès';
     snackbarColor.value = 'success';
     snackbar.value = true;
     editMode.value = false;
+    nextTick(() => {
+      applyHighlight();
+    });
   }
   catch (err: any) {
     console.error(err.message, err.stack);
@@ -331,7 +391,17 @@ const deleteSnippet = () => {
 
 const confirmDeleteSnippet = async () => {
   try {
-    await userStore.deleteSnippet(snippetId, snippetType);
+    const isPublishedWorld = userStore.worldSnippets.some(s => s.id === snippetId);
+    const isPublishedPersonal = userStore.personalSnippets.some(s => s.id === snippetId);
+    console.log('Publication status:', { isPublishedWorld, isPublishedPersonal });
+
+    if (isPublishedWorld) {
+      await userStore.deleteSnippet(snippetId, 'world');
+    }
+    if (isPublishedPersonal) {
+      await userStore.deleteSnippet(snippetId, 'personal');
+    }
+
     deleteDialog.value = false;
     snackbarText.value = 'Snippet supprimé avec succès';
     snackbarColor.value = 'success';
@@ -350,13 +420,11 @@ const confirmDeleteSnippet = async () => {
 </script>
 
 <style scoped>
-.fill-height {
-  height: calc(100vh - 64px);
-}
-
 .editor-container {
+  height: 500px;
+  width: 100%;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 .code-viewer {
@@ -365,6 +433,7 @@ const confirmDeleteSnippet = async () => {
   color: #c9d1d9;
   display: flex;
   flex-direction: column;
+  overflow: scroll;
 }
 
 .code-header {
@@ -373,7 +442,7 @@ const confirmDeleteSnippet = async () => {
 
 .code-content {
   flex: 1;
-  overflow: auto;
+  overflow: scroll;
 }
 
 pre {

@@ -15,7 +15,23 @@
                   placeholder="https://example.com" class="mb-4"></v-text-field>
 
                 <v-alert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = null">
-                  {{ error }}
+                  <div class="d-flex flex-column">
+                    <div class="text-subtitle-1 font-weight-bold mb-1">
+                      Erreur lors de l'audit SEO
+                    </div>
+                    <div>{{ error }}</div>
+                    <div v-if="error && error.includes('Chrome') || error.includes('chromium')"
+                      class="mt-2 text-caption">
+                      <v-divider class="my-2"></v-divider>
+                      <div class="font-weight-bold">Solutions possibles :</div>
+                      <ul>
+                        <li>Vérifiez que Google Chrome est installé sur le serveur dans un des chemins standards</li>
+                        <li>Sur Windows, Chrome doit être installé dans "C:\Program
+                          Files\Google\Chrome\Application\chrome.exe"</li>
+                        <li>L'utilisateur du serveur doit avoir les droits d'accès au fichier chrome.exe</li>
+                      </ul>
+                    </div>
+                  </div>
                 </v-alert>
 
                 <v-expansion-panels variant="accordion">
@@ -822,10 +838,12 @@
 </template>
 
 <script setup lang="ts">
-import type { CrawlReport } from '@/server/api/seo-audit';
-import { useUserStore } from '@/stores/userStore';
+// @ts-ignore
+import { definePageMeta, useHead } from '#imports';
 import { onBeforeUnmount, ref } from 'vue';
-import { calculateOverallScore, getActionItems, getCoreWebVitalColor, getCoreWebVitalStatus, getCoreWebVitalThresholds, getCriticalIssues, getMobileScore, getPerformanceColor, getPerformanceScore, getRankingImpactColor, getRankingImpactDescription, getRankingImpactIcon, getRankingImpactTitle, getRobotsMeta, getSEOScore, getScoreColor, getScoreDescription, getScoreStatus, getWarningImpactDescription, getWarningSeverityColor, getWarningSeverityIcon, parseUrl } from '~/utils/seoAuditUtils';
+import type { CrawlReport } from '../server/api/seo-audit';
+import { useUserStore } from '../stores/userStore';
+import { calculateOverallScore, getActionItems, getCoreWebVitalColor, getCoreWebVitalName, getCoreWebVitalStatus, getCoreWebVitalThresholds, getCriticalIssues, getMobileScore, getPerformanceColor, getPerformanceScore, getRankingImpactColor, getRankingImpactDescription, getRankingImpactIcon, getRankingImpactTitle, getRobotsMeta, getSEOScore, getScoreColor, getScoreDescription, getScoreStatus, getWarningImpactDescription, getWarningSeverityColor, getWarningSeverityIcon, parseUrl } from '../utils/seoAuditUtils';
 
 useHead({
   title: 'SEO Audit Tool',

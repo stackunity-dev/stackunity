@@ -1,8 +1,8 @@
 import { pool } from '../db';
+import { readBody, defineEventHandler } from 'h3';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const userId = event.context.user?.id;
   console.log(body)
 
   try {
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
         }
       }
     } else {
-      const [personalSnippetsRows] = await pool.execute('UPDATE personal_snippets SET content = ? WHERE id = ? AND user_id = ?', [body.code, body.id, userId]);
+      const [personalSnippetsRows] = await pool.execute('UPDATE personal_snippets SET content = ? WHERE id = ? AND user_id = ?', [body.code, body.id, body.userId]);
 
       return {
         success: true,

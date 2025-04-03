@@ -24,34 +24,34 @@
         </v-col>
 
         <v-col cols="12" md="6" class="right-panel-signup d-flex align-center justify-center">
-          <v-card class="signup-card pa-8 elevation-0" max-width="450" width="100%">
-            <div class="d-flex justify-center d-md-none mb-8">
-              <img src="/logo/devunity.png" alt="Devunity Logo" width="350" />
+          <v-card class="signup-card pa-md-8 pa-4 elevation-0" max-width="450" width="100%">
+            <div class="d-flex justify-center d-md-none mb-6">
+              <img src="/logo/devunity.png" alt="Devunity Logo" width="240" />
             </div>
 
             <h2 class="text-h5 font-weight-bold mb-2">Create an account</h2>
-            <p class="text-subtitle-1 text-medium-emphasis mb-8">Join Devunity and start your experience</p>
+            <p class="text-subtitle-1 text-medium-emphasis mb-6">Join Devunity and start your experience</p>
 
             <v-form @submit.prevent="handleSignup">
               <v-text-field v-model="form.username" label="Username" type="text" variant="outlined"
-                prepend-inner-icon="mdi-account-outline" class="mb-4" :rules="[v => !!v || 'Username required']"
-                hide-details="auto"></v-text-field>
+                density="comfortable" prepend-inner-icon="mdi-account-outline" class="mb-3"
+                :rules="[v => !!v || 'Username required']" hide-details="auto"></v-text-field>
 
               <v-text-field v-model="form.email" label="Email address" type="email" variant="outlined"
-                prepend-inner-icon="mdi-email-outline" class="mb-4" :rules="[
+                density="comfortable" prepend-inner-icon="mdi-email-outline" class="mb-3" :rules="[
                   v => !!v || 'Email required',
                   v => /.+@.+\..+/.test(v) || 'Invalid email format'
                 ]" hide-details="auto"></v-text-field>
 
               <v-text-field v-model="form.password" :type="showPassword ? 'text' : 'password'" label="Password"
-                variant="outlined" prepend-inner-icon="mdi-lock-outline"
+                variant="outlined" prepend-inner-icon="mdi-lock-outline" density="comfortable"
                 :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                @click:append-inner="togglePasswordVisibility" class="mb-6" :rules="[
+                @click:append-inner="togglePasswordVisibility" class="mb-5" :rules="[
                   v => !!v || 'Password required',
                   v => v.length >= 8 || 'Password must contain at least 8 characters'
                 ]" hide-details="auto"></v-text-field>
 
-              <v-btn block color="primary" type="submit" :loading="loading" min-height="48"
+              <v-btn block color="primary" type="submit" :loading="loading" min-height="44"
                 class="text-none font-weight-medium">
                 Create account
                 <template v-slot:loader>
@@ -59,7 +59,7 @@
                 </template>
               </v-btn>
 
-              <div class="text-center mt-8">
+              <div class="text-center mt-6">
                 <span class="text-medium-emphasis">Already have an account?</span>
                 <NuxtLink class="text-decoration-none ml-1 font-weight-medium" to="/login">
                   Sign in
@@ -76,7 +76,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '~/stores/userStore';
+import { useUserStore } from '../stores/userStore';
+// @ts-ignore
+import { definePageMeta, useHead } from '#imports';
 
 definePageMeta({
   layout: 'empty'
@@ -206,9 +208,19 @@ const togglePasswordVisibility = () => {
 }
 
 
-@media (max-width: 959px) {
+@media (max-width: 600px) {
   .right-panel-signup {
-    padding: 2rem 1rem;
+    padding: 1rem;
+    min-height: auto;
+  }
+
+  .signup-card {
+    border-radius: 12px;
+  }
+
+  .auth-screen {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
   }
 }
 </style>

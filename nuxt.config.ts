@@ -23,7 +23,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
 
   build: {
-    transpile: ['vuetify']
+    transpile: ['vuetify'],
   },
 
   modules: [
@@ -62,14 +62,14 @@ export default defineNuxtConfig({
     head: {
       meta: [
         { name: 'crossorigin', content: 'use-credentials' }
-      ],
-      link: [
-        { rel: 'preload', as: 'fetch', href: '/_nuxt/builds/meta/latest.json', crossorigin: 'use-credentials' }
       ]
-    }
+    },
+    buildAssetsDir: '/_nuxt/',
+    cdnURL: ''
   },
 
   experimental: {
-    payloadExtraction: false
+    payloadExtraction: false,
+    renderJsonPayloads: false
   }
 });

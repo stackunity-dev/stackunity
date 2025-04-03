@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useCookieStore } from '@/stores/cookieStore';
+import { useCookieStore } from '../stores/cookieStore';
 import { onMounted, ref } from 'vue';
 import CookieOptions from './cookieOptions.vue';
 

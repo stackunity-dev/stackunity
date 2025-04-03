@@ -1,5 +1,6 @@
-import { defineNuxtRouteMiddleware, navigateTo } from '#app';
-import { useUserStore } from '~/stores/userStore';
+// @ts-ignore
+import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app';
+import { useUserStore } from '../stores/userStore';
 
 export default defineNuxtRouteMiddleware((to) => {
   const userStore = useUserStore();
@@ -7,7 +8,8 @@ export default defineNuxtRouteMiddleware((to) => {
   const premiumRoutes = [
     '/sql-generator',
     '/seo-audit',
-    '/robots'
+    '/robots',
+    '/studio'
   ];
 
   const normalizedPath = to.path.toLowerCase();
@@ -18,8 +20,10 @@ export default defineNuxtRouteMiddleware((to) => {
       normalizedPath.startsWith(`${normalizedRoute}/`);
   });
 
-  if ((to.meta.requiresPremium || isRestrictedRoute) && !userStore.user.isPremium) {
+  const isPremium = userStore.user && userStore.user.isPremium;
+
+  if ((to.meta.requiresPremium || isRestrictedRoute) && !isPremium) {
     console.log(`Access denied to premium route: ${to.path}`);
-    return navigateTo('/subscription');
+    return navigateTo('/checkout');
   }
 }); 

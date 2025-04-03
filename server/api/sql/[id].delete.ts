@@ -1,7 +1,8 @@
 import { pool } from '../db';
+import { getRouterParam, defineEventHandler, readBody } from 'h3';
 
 export default defineEventHandler(async (event) => {
-  const userId = event.context.user.id;
+  const body = await readBody(event);
   const id = getRouterParam(event, 'id');
 
   if (!id) {
@@ -14,7 +15,7 @@ export default defineEventHandler(async (event) => {
   try {
     const [schemas] = await pool.execute(
       'SELECT id FROM sql_schemas WHERE id = ? AND user_id = ?',
-      [id, userId]
+      [id, body.userId]
     );
 
     // @ts-ignore
@@ -27,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
     await pool.execute(
       'DELETE FROM sql_schemas WHERE id = ? AND user_id = ?',
-      [id, userId]
+      [id, body.userId]
     );
 
     return {

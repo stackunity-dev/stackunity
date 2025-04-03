@@ -148,9 +148,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue';
-import PremiumFeature from '~/components/PremiumFeature.vue';
-import { useUserStore } from '~/stores/userStore';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useUserStore } from '../stores/userStore';
+// @ts-ignore
+import { definePageMeta, useHead, useRouter } from '#imports';
+import { TokenUtils } from '../utils/token';
 
 definePageMeta({
   layout: 'dashboard'
@@ -278,21 +280,21 @@ const quickTools = ref([
     icon: 'mdi-magnify',
     color: 'primary',
     link: '/seo-audit',
-    disabled: !userStore.user.isPremium
+    disabled: !userStore.user?.isPremium
   },
   {
     title: 'SQL Generator',
     icon: 'mdi-database',
     color: 'info',
     link: '/sql-generator',
-    disabled: !userStore.user.isPremium
+    disabled: !userStore.user?.isPremium
   },
   {
     title: 'Robots.txt & Schema.org',
     icon: 'mdi-robot',
     color: 'success',
     link: '/robots',
-    disabled: !userStore.user.isPremium
+    disabled: !userStore.user?.isPremium
   },
   {
     title: 'Accessibility',
@@ -327,7 +329,7 @@ const quickTools = ref([
     icon: 'mdi-sitemap',
     color: 'grey',
     link: '/seo-audit',
-    disabled: !userStore.user.isPremium
+    disabled: !userStore.user?.isPremium
   },
 ]);
 
@@ -359,13 +361,103 @@ const tips = ref([
 ]);
 
 onMounted(async () => {
+  const router = useRouter();
+  console.log("userStore.user", userStore.user);
+
   try {
-    await userStore.loadData();
-    setInterval(async () => {
-      await userStore.getMonitoringData();
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (!userStore.token && !TokenUtils.retrieveToken()) {
+      console.log('Aucun token trouvé, redirection vers login...');
+      router.push('/login');
+      return;
+    }
+
+    console.log('Vérification de l\'authentification...');
+    const authResult = await userStore.checkAuthentication();
+
+    if (!authResult || !authResult.isAuthenticated) {
+      console.log('Échec de l\'authentification, redirection vers login');
+      router.push('/login');
+      return;
+    }
+
+    console.log('Authentification réussie, chargement des données...');
+    const result = await userStore.loadData();
+
+    if (!result || !result.success) {
+      console.log('Impossible de charger les données utilisateur:', result?.error || 'Erreur inconnue');
+      router.push('/login');
+      return;
+    }
+
+    console.log('[DEBUG] Statut premium de l\'utilisateur:', userStore.user?.isPremium);
+
+    setTimeout(async () => {
+      if (userStore.isUserAuthenticated) {
+        try {
+          const loadWithRetry = async (fn: () => Promise<any>, name: string, retries = 1) => {
+            for (let i = 0; i <= retries; i++) {
+              try {
+                console.log(`Tentative de chargement ${name} (${i + 1}/${retries + 1})...`);
+                const result = await fn();
+                console.log(`Chargement de ${name} réussi`);
+                return result;
+              } catch (err) {
+                console.error(`Erreur lors du chargement de ${name}:`, err);
+                if (i < retries) {
+                  await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+              }
+            }
+            console.warn(`Échec du chargement de ${name} après ${retries + 1} tentatives`);
+            return null;
+          };
+
+          await loadWithRetry(() => userStore.loadSQLSchemas(), 'schémas SQL', 2);
+
+          await loadWithRetry(() => userStore.loadSnippets(), 'snippets', 2);
+
+          await loadWithRetry(() => userStore.getMonitoringData(), 'monitoring', 1);
+        } catch (err) {
+          console.error('Erreur globale lors du chargement des données:', err);
+        }
+      }
+    }, 1000);
+
+    let monitoringInterval: number | null = null;
+    const startMonitoring = () => {
+      if (monitoringInterval) clearInterval(monitoringInterval);
+
+      monitoringInterval = window.setInterval(async () => {
+        if (userStore.isUserAuthenticated) {
+          try {
+            await userStore.getMonitoringData();
+          } catch (err) {
+            console.warn('Erreur de monitoring, l\'intervalle continue...', err);
+          }
+        } else if (monitoringInterval) {
+          clearInterval(monitoringInterval);
+          monitoringInterval = null;
+        }
+      }, 15000);
+    };
+
+    setTimeout(() => {
+      if (userStore.isUserAuthenticated) {
+        startMonitoring();
+      }
     }, 5000);
+
+    onUnmounted(() => {
+      if (monitoringInterval) {
+        clearInterval(monitoringInterval);
+        monitoringInterval = null;
+      }
+    });
   } catch (error) {
-    console.error('Error loading data:', error);
+    console.error('[Dashboard] Erreur d\'initialisation:', error);
+    router.push('/login');
   }
 });
 

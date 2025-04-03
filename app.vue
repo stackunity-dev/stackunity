@@ -3,7 +3,6 @@
     <v-app>
       <NuxtPage />
       <CookieBanner />
-      <AnalyticsDataCollector v-if="cookieStore.preferences.analytics" />
     </v-app>
   </NuxtLayout>
 </template>
@@ -11,31 +10,25 @@
 <script lang="ts" setup>
 import { onErrorCaptured, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import AnalyticsDataCollector from '~/components/analytics/DataCollector.vue';
-import CookieBanner from '~/components/cookie-banner.vue';
-import { useCookieStore } from '~/stores/cookieStore';
-import { useUserStore } from '~/stores/userStore';
-import { TokenManager } from '~/utils/TokenManager';
+import CookieBanner from './components/cookie-banner.vue';
+import { useCookieStore } from './stores/cookieStore';
+import { useUserStore } from './stores/userStore';
+import { TokenUtils } from './utils/token';
 
 const router = useRouter();
 const userStore = useUserStore();
 const cookieStore = useCookieStore();
 
-// Capture les erreurs pour éviter qu'elles ne se propagent 
-// et gérer spécifiquement les erreurs de démontage de composants
 onErrorCaptured((err, instance, info) => {
-  // Capturer les erreurs de type "Cannot read properties of null (reading 'parentNode')"
-  // ou "Cannot destructure property 'type' of 'vnode' as it is null"
   if (
     err instanceof TypeError &&
     (err.message.includes("'parentNode'") ||
       err.message.includes("'type' of 'vnode' as it is null"))
   ) {
     console.warn('Vue component unmount error captured and handled:', err.message);
-    return false; // Empêcher la propagation de l'erreur
+    return false;
   }
 
-  // Laisser les autres erreurs se propager
   return true;
 });
 
@@ -45,10 +38,14 @@ onMounted(() => {
 
   if (process.client) {
     cookieStore.initCookieConsent();
+
+    userStore.validateToken().then(result => {
+      console.log('Validation du token au démarrage:', result.valid ? 'Valide' : 'Invalide');
+    });
   }
 
   useRouter().beforeEach((to, from, next) => {
-    const token = TokenManager.retrieveToken();
+    const token = TokenUtils.retrieveToken();
 
     if (token && !userStore.token) {
       userStore.token = token;
@@ -70,7 +67,6 @@ onMounted(() => {
         normalizedPath.startsWith(`${normalizedRoute}/`);
     });
 
-    // Vérifier si l'utilisateur est premium ou non (avec gestion de null)
     const isPremium = userStore.user?.isPremium ?? false;
 
     if (isPremiumRoute && !isPremium) {

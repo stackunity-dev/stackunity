@@ -2,7 +2,7 @@ import chromium from '@sparticuz/chromium';
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { createError, defineEventHandler, readBody } from 'h3';
-import puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer';
 
 export interface SEOAuditResult {
   url: string;
@@ -223,12 +223,39 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
-    headless: true
-  } as any);
+  let browser;
+  try {
+    console.log('Lancement du navigateur pour l\'audit SEO...');
+
+    // Essayer d'utiliser puppeteer standard
+    try {
+      browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        headless: true
+      });
+      console.log('Navigateur lancé avec succès via puppeteer standard');
+    } catch (browserError) {
+      console.log('Échec avec puppeteer standard, tentative avec @sparticuz/chromium...');
+
+      // Utiliser @sparticuz/chromium comme alternative
+      const execPath = await chromium.executablePath();
+      console.log('Chemin d\'exécutable de Chromium:', execPath);
+
+      browser = await puppeteer.launch({
+        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        defaultViewport: chromium.defaultViewport,
+        executablePath: execPath,
+        headless: true
+      });
+      console.log('Navigateur lancé avec succès via @sparticuz/chromium');
+    }
+  } catch (error) {
+    console.error('Erreur lors du lancement du navigateur:', error);
+    throw createError({
+      statusCode: 500,
+      message: `Erreur lors du lancement du navigateur: ${error.message}. Vérifiez l'installation de Chromium ou les droits d'accès.`
+    });
+  }
 
   try {
     const page = await browser.newPage();
@@ -838,7 +865,21 @@ export default defineEventHandler(async (event) => {
     };
 
     return report;
+  } catch (error) {
+    console.error('Erreur pendant l\'analyse SEO:', error);
+    throw createError({
+      statusCode: 500,
+      message: `Erreur pendant l'analyse SEO: ${error.message}`
+    });
   } finally {
-    await browser.close();
+    // S'assurer que le navigateur est toujours fermé
+    if (browser) {
+      try {
+        await browser.close();
+        console.log('Navigateur fermé avec succès');
+      } catch (closeError) {
+        console.error('Erreur lors de la fermeture du navigateur:', closeError);
+      }
+    }
   }
 }); 

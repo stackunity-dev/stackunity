@@ -1,0 +1,290 @@
+# React - Custom Hook for Infinite Scroll
+title: Infinite Scroll Hook with Intersection Observer
+description: A reusable React hook that implements infinite scrolling using the Intersection Observer API. Perfect for loading paginated data as the user scrolls.
+framework: React
+code:
+```tsx
+import { useEffect, useRef, useState } from 'react';
+
+export const useInfiniteScroll = <T>(
+  fetchData: (page: number) => Promise<T[]>,
+  options = { threshold: 0.1, initialPage: 1 }
+) => {
+  const [items, setItems] = useState<T[]>([]);
+  const [page, setPage] = useState(options.initialPage);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const observerRef = useRef<IntersectionObserver>();
+  const lastElementRef = useRef<HTMLElement | null>(null);
+
+  const loadMore = async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const newItems = await fetchData(page);
+      if (newItems.length === 0) {
+        setHasMore(false);
+      } else {
+        setItems(prev => [...prev, ...newItems]);
+        setPage(prev => prev + 1);
+      }
+    } catch (error) {
+      console.error('Error loading more items:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: options.threshold }
+    );
+
+    return () => observerRef.current?.disconnect();
+  }, []);
+
+  const setLastElement = (element: HTMLElement | null) => {
+    if (lastElementRef.current) {
+      observerRef.current?.unobserve(lastElementRef.current);
+    }
+    if (element && hasMore) {
+      observerRef.current?.observe(element);
+      lastElementRef.current = element;
+    }
+  };
+
+  return { items, loading, hasMore, setLastElement };
+};
+```
+
+# Vue.js 3 - Dynamic Form Generator
+title: Dynamic Form Generator Component
+description: A powerful Vue 3 component that generates forms dynamically from a JSON schema. Supports various input types and validation.
+framework: Vue.js 3
+code:
+```vue
+<template>
+  <form @submit.prevent="handleSubmit">
+    <div v-for="field in schema" :key="field.name" class="form-field">
+      <label :for="field.name">{{ field.label }}</label>
+      
+      <input v-if="field.type === 'text' || field.type === 'email' || field.type === 'password'"
+        :type="field.type"
+        :id="field.name"
+        v-model="formData[field.name]"
+        :required="field.required"
+        :pattern="field.pattern"
+        class="form-input" />
+        
+      <select v-else-if="field.type === 'select'"
+        :id="field.name"
+        v-model="formData[field.name]"
+        :required="field.required"
+        class="form-select">
+        <option v-for="option in field.options"
+          :key="option.value"
+          :value="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+      
+      <div v-else-if="field.type === 'radio'"
+        class="radio-group">
+        <div v-for="option in field.options"
+          :key="option.value"
+          class="radio-option">
+          <input type="radio"
+            :id="option.value"
+            :name="field.name"
+            :value="option.value"
+            v-model="formData[field.name]"
+            :required="field.required" />
+          <label :for="option.value">{{ option.label }}</label>
+        </div>
+      </div>
+      
+      <span v-if="errors[field.name]" class="error-message">
+        {{ errors[field.name] }}
+      </span>
+    </div>
+    
+    <button type="submit" :disabled="isSubmitting">
+      {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+    </button>
+  </form>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive } from 'vue';
+
+interface Field {
+  name: string;
+  label: string;
+  type: 'text' | 'email' | 'password' | 'select' | 'radio';
+  required?: boolean;
+  pattern?: string;
+  options?: { value: string; label: string }[];
+}
+
+const props = defineProps<{
+  schema: Field[];
+  initialData?: Record<string, any>;
+}>();
+
+const emit = defineEmits<{
+  (e: 'submit', data: Record<string, any>): void;
+}>();
+
+const formData = reactive<Record<string, any>>(props.initialData || {});
+const errors = reactive<Record<string, string>>({});
+const isSubmitting = ref(false);
+
+const validateField = (field: Field) => {
+  const value = formData[field.name];
+  if (field.required && !value) {
+    errors[field.name] = `${field.label} is required`;
+    return false;
+  }
+  if (field.pattern && !new RegExp(field.pattern).test(value)) {
+    errors[field.name] = `${field.label} is invalid`;
+    return false;
+  }
+  delete errors[field.name];
+  return true;
+};
+
+const handleSubmit = async () => {
+  const isValid = props.schema.every(validateField);
+  if (!isValid) return;
+  
+  isSubmitting.value = true;
+  try {
+    emit('submit', { ...formData });
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+</script>
+
+<style scoped>
+.form-field {
+  margin-bottom: 1rem;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+</style>
+```
+
+# Nest.js - Rate Limiter Middleware
+title: Advanced Rate Limiter with Redis
+description: A robust rate limiter middleware for Nest.js using Redis for distributed rate limiting. Perfect for API protection and traffic control.
+framework: Nest.js
+code:
+```typescript
+import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
+import Redis from 'ioredis';
+
+interface RateLimitConfig {
+  points: number;
+  duration: number;
+  blockDuration: number;
+}
+
+@Injectable()
+export class RateLimiterMiddleware implements NestMiddleware {
+  private redis: Redis;
+  private readonly keyPrefix = 'ratelimit:';
+
+  constructor(
+    private config: RateLimitConfig = {
+      points: 10,
+      duration: 1,
+      blockDuration: 2
+    }
+  ) {
+    this.redis = new Redis({
+      host: process.env.REDIS_HOST || 'localhost',
+      port: Number(process.env.REDIS_PORT) || 6379,
+      password: process.env.REDIS_PASSWORD,
+    });
+  }
+
+  async use(req: Request, res: Response, next: NextFunction) {
+    const key = this.getKey(req);
+    const now = Date.now();
+    const clearBefore = now - (this.config.duration * 1000);
+
+    try {
+      const multi = this.redis.multi();
+      multi.zremrangebyscore(key, 0, clearBefore);
+      multi.zadd(key, now, `${now}`);
+      multi.zcard(key);
+      multi.pttl(key);
+      
+      const [, , current, ttl] = await multi.exec() as [any, any, [null, number], [null, number]];
+      const points = current[1];
+
+      if (ttl[1] === -1) {
+        await this.redis.expire(key, this.config.duration);
+      }
+
+      if (points > this.config.points) {
+        const retryAfter = Math.floor(ttl[1] / 1000) || 1;
+        await this.blockClient(key);
+        
+        res.header('Retry-After', String(retryAfter));
+        throw new HttpException({
+          statusCode: HttpStatus.TOO_MANY_REQUESTS,
+          message: 'Too Many Requests',
+          retryAfter,
+        }, HttpStatus.TOO_MANY_REQUESTS);
+      }
+
+      res.header('X-RateLimit-Limit', String(this.config.points));
+      res.header('X-RateLimit-Remaining', String(Math.max(0, this.config.points - points)));
+      res.header('X-RateLimit-Reset', String(Math.floor(ttl[1] / 1000) || 0));
+
+      next();
+    } catch (err) {
+      if (err instanceof HttpException) throw err;
+      next(err);
+    }
+  }
+
+  private getKey(req: Request): string {
+    const identifier = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    return `${this.keyPrefix}${identifier}`;
+  }
+
+  private async blockClient(key: string): Promise<void> {
+    await this.redis.expire(key, this.config.blockDuration);
+  }
+
+  async onModuleDestroy() {
+    await this.redis.quit();
+  }
+}
+``` 

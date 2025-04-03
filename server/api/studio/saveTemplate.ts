@@ -1,9 +1,9 @@
 import { pool } from '../db';
+import { defineEventHandler, readBody } from 'h3';
 
 export default defineEventHandler(async (event) => {
-  const { templateName, templateData, componentType } = await readBody(event);
+  const { templateName, templateData, componentType, userId } = await readBody(event);
   console.log(templateName, templateData, componentType);
-  const userId = event.context.user.id;
 
   try {
     const result = await pool.execute('INSERT INTO studio_components (name, content, user_id, component_type) VALUES (?, ?, ?, ?)', [templateName, templateData, userId, componentType]);

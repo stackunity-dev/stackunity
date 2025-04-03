@@ -125,13 +125,6 @@
                         for 14 days.</td>
                     </tr>
                     <tr>
-                      <td><code>token</code></td>
-                      <td>Essential</td>
-                      <td>7 days</td>
-                      <td>Contains your encrypted authentication token, necessary to access secure areas of the site.
-                      </td>
-                    </tr>
-                    <tr>
                       <td><code>devunity_preferences</code></td>
                       <td>Essential</td>
                       <td>6 months</td>
@@ -150,16 +143,10 @@
                       <td>Remembers your last visit to redirect you to your recent projects.</td>
                     </tr>
                     <tr>
-                      <td><code>devunity_recent_projects</code></td>
-                      <td>Functional</td>
-                      <td>90 days</td>
-                      <td>Stores the list of your recently viewed projects for quick access.</td>
-                    </tr>
-                    <tr>
                       <td><code>_ga, _gid, _gat</code></td>
-                      <td>Analytical</td>
+                      <td>Analytics</td>
                       <td>_ga: 2 years, _gid: 24h, _gat: 1 min</td>
-                      <td>Google Analytics cookies used to distinguish users and analyze their behavior on the site.
+                      <td>Plausible Analytics cookies used to distinguish users and analyze their behavior on the site.
                       </td>
                     </tr>
                   </tbody>
@@ -348,7 +335,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useCookieStore } from '~/stores/cookieStore';
+import { ref } from 'vue';
+import { useCookieStore } from '../stores/cookieStore';
+// @ts-ignore
+import { definePageMeta, useHead } from 'nuxt/kit';
 
 definePageMeta({
   layout: 'default',

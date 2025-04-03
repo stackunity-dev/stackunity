@@ -37,8 +37,8 @@ const faqItems = [
     answer: 'Yes, you can access the application free of charge with paid premium extensions.'
   },
   {
-    question: 'Can I cancel my subscription at any time?',
-    answer: 'Yes, you can cancel your subscription at any time. If you cancel, you can continue using DevUnity forever.'
+    question: 'Why this price?',
+    answer: 'We offer a lifetime access to all our tools for a single price. This is a one-time payment that gives you access to all our tools forever and updates are included.'
   },
   {
     question: 'Are there any limitations in the free plan?',

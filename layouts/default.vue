@@ -1,13 +1,11 @@
 <template>
   <div>
-    <AnalyticsCollector v-if="cookieStore.preferences.analytics" />
     <slot />
   </div>
 </template>
 
 <script lang="ts" setup>
-import AnalyticsCollector from '@/components/analytics-collector.vue';
-import { useCookieStore } from '@/stores/cookieStore';
+import { useCookieStore } from '../stores/cookieStore';
 import { onMounted } from 'vue';
 
 const cookieStore = useCookieStore();

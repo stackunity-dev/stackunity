@@ -68,12 +68,12 @@
                 <v-expansion-panel-title class="text-subtitle-1 font-weight-medium">
                   {{ componentType }}
                   <v-chip size="x-small" color="primary" class="ml-2">
-                    {{ getComponentsByType(componentType).length }}
+                    {{ getComponentsByType(componentType as string).length }}
                   </v-chip>
                 </v-expansion-panel-title>
                 <v-expansion-panel-text>
                   <v-list lines="two" class="pa-0">
-                    <v-list-item v-for="template in getComponentsByType(componentType)" :key="template.id"
+                    <v-list-item v-for="template in getComponentsByType(componentType as string)" :key="template.id"
                       :title="template.name" :subtitle="'Updated on ' + formatDate(template.updated_at)" class="mb-2"
                       @click="applyTemplate(template)">
                       <template v-slot:prepend>
@@ -142,13 +142,15 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import Snackbar from '~/components/snackbar.vue';
-import StudioEditor from '~/components/studioCard.vue';
-import StudioForm from '~/components/studioForm.vue';
-import StudioNav from '~/components/studioNav.vue';
-import StudioTimeline from '~/components/studioTimeline.vue';
-import StudioUtils from '~/components/studioUtils.vue';
-import { useUserStore } from '~/stores/userStore';
+import Snackbar from '../components/snackbar.vue';
+import StudioEditor from '../components/studioCard.vue';
+import StudioForm from '../components/studioForm.vue';
+import StudioNav from '../components/studioNav.vue';
+import StudioTimeline from '../components/studioTimeline.vue';
+import StudioUtils from '../components/studioUtils.vue';
+import { useUserStore } from '../stores/userStore';
+// @ts-ignore
+import { definePageMeta, navigateTo, useHead } from '#imports';
 
 definePageMeta({
   layout: 'dashboard',
@@ -219,8 +221,9 @@ const formatDate = (dateString: string) => {
 }
 
 const getUniqueComponentTypes = () => {
-  if (!userStore.studioComponents || userStore.studioComponents.length === 0) return []
-  return [...new Set(userStore.studioComponents.map(comp => comp.component_type))]
+  if (!userStore.studioComponents || userStore.studioComponents.length === 0) return [];
+  const types = [...new Set(userStore.studioComponents.map(comp => comp.component_type))];
+  return types as string[];
 }
 
 const getComponentsByType = (type: string) => {
@@ -306,39 +309,28 @@ const confirmDelete = (template: any) => {
 }
 
 const deleteTemplate = async () => {
-  console.log('Template to delete:', templateToDelete.value);
-
-  if (!templateToDelete.value) {
-    console.error('Template is undefined');
-    return;
-  }
-
-  const templateId = templateToDelete.value.id;
-  console.log('Template ID:', templateId);
-
-  if (!templateId) {
-    console.error('Template ID is undefined');
-    return;
-  }
-
   try {
-    const response = await userStore.removeTemplate(templateId);
-
-    if (!response) {
-      throw new Error('No response from server');
-    }
-
-    const result = await response.json();
-
-    if (result.success) {
-      deleteConfirmation.value = false;
-      snackbarText.value = 'Template deleted successfully';
-      snackbarColor.value = 'success';
+    if (!templateToDelete.value || !templateToDelete.value.id) {
+      console.error('Invalid template or missing ID');
+      snackbarText.value = 'Error: invalid template';
+      snackbarColor.value = 'error';
       showSnackbar.value = true;
-      await userStore.loadData();
-    } else {
-      throw new Error(result.error || 'Failed to delete template');
+      return;
     }
+
+    const templateId = templateToDelete.value.id;
+    console.log('Deleting template:', templateId);
+
+    const response = await userStore.removeTemplate(templateId);
+    if (!response || !response.ok) {
+      throw new Error('Failed to delete template');
+    }
+
+    deleteConfirmation.value = false;
+    snackbarText.value = 'Template deleted successfully';
+    snackbarColor.value = 'success';
+    showSnackbar.value = true;
+    await userStore.loadStudioComponents();
   } catch (error) {
     console.error('Error deleting template:', error);
     snackbarText.value = 'Error deleting template';
@@ -346,6 +338,7 @@ const deleteTemplate = async () => {
     showSnackbar.value = true;
   } finally {
     templateToDelete.value = null;
+    deleteConfirmation.value = false;
   }
 }
 
@@ -359,7 +352,7 @@ const loadTemplateFromUrl = async () => {
     console.log('Template ID found in URL:', templateId);
 
     if (!userStore.studioComponents || userStore.studioComponents.length === 0) {
-      await userStore.loadData();
+      await userStore.loadStudioComponents();
     }
 
     const template = userStore.studioComponents.find(t => t.id === parseInt(templateId));
@@ -409,24 +402,48 @@ const applyTemplateWithoutUrlChange = (template: any) => {
 onMounted(loadTemplateFromUrl)
 
 const isLoading = ref(false);
+const snackbarText = ref<string>('');
+const snackbarColor = ref<'success' | 'error' | 'warning'>('success');
 const showSnackbar = ref(false);
-const snackbarText = ref('');
-const snackbarColor = ref('success');
 
 const refreshTemplates = async () => {
-  isLoading.value = true;
   try {
-    await userStore.loadData();
+    isLoading.value = true;
+    await userStore.loadStudioComponents();
     snackbarText.value = 'Templates refreshed successfully';
+    snackbarColor.value = 'success';
     showSnackbar.value = true;
   } catch (error) {
     console.error('Error refreshing templates:', error);
     snackbarText.value = 'Error refreshing templates';
+    snackbarColor.value = 'error';
     showSnackbar.value = true;
   } finally {
     isLoading.value = false;
   }
 };
+
+onMounted(async () => {
+  try {
+    isLoading.value = true;
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (!userStore.isAuthenticated) {
+      console.log('[STUDIO] Utilisateur non authentifié, redirection...');
+      navigateTo('/login');
+      return;
+    }
+
+    await userStore.loadStudioComponents();
+  } catch (error: any) {
+    console.error('Error loading components:', error);
+    snackbarText.value = error?.message || 'Error loading components';
+    snackbarColor.value = 'error';
+    showSnackbar.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <style scoped>

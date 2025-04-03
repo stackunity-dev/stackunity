@@ -31,7 +31,7 @@
               <v-col v-for="(snippet, index) in filteredWorldSnippets" :key="index" cols="12" sm="6" lg="4">
                 <v-card class="mx-auto snippet-card" max-width="400" elevation="2" hover>
                   <NuxtLink :to="`/snippetsView?id=${snippet.id}&type=world`" class="text-decoration-none">
-                    <v-img :src="snippet.img || '/placeholder-image.jpg'" height="200" cover class="bg-grey-lighten-2">
+                    <v-img :src="snippet.img" height="200" cover class="bg-grey-lighten-2">
                       <template v-slot:placeholder>
                         <v-row align="center" justify="center" class="fill-height">
                           <v-progress-circular indeterminate color="primary"></v-progress-circular>
@@ -50,9 +50,7 @@
                       {{ snippet.framework }}
                     </v-chip>
                     <div class="d-flex align-center text-grey">
-                      <v-avatar size="24" class="mr-2">
-                        <v-img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="avatar"></v-img>
-                      </v-avatar>
+                      <v-icon size="small" class="mr-2">mdi-account</v-icon>
                       <span>{{ snippet.username }}</span>
                       <v-spacer></v-spacer>
                       <v-icon size="small" class="mr-1">mdi-calendar</v-icon>
@@ -90,13 +88,17 @@
               <v-select v-model="frameworkFilter" :items="['All', 'Vue.js 3', 'Nuxt 3', 'React', 'Angular', 'Svelte']"
                 label="Framework" variant="outlined" density="comfortable" hide-details
                 style="max-width: 200px"></v-select>
+              <v-btn color="primary" variant="tonal" class="ml-2" @click="addSnippets = true">
+                <v-icon>mdi-plus</v-icon>
+                Add Snippet
+              </v-btn>
             </div>
 
             <v-row>
               <v-col v-for="(snippet, index) in filteredPersonalSnippets" :key="index" cols="12" sm="6" lg="4">
                 <v-card class="mx-auto snippet-card" max-width="400" elevation="2" hover>
                   <NuxtLink :to="`/snippetsView?id=${snippet.id}&type=personal`" class="text-decoration-none">
-                    <v-img :src="snippet.img || '/placeholder-image.jpg'" height="200" cover class="bg-grey-lighten-2">
+                    <v-img :src="snippet.img" height="200" cover class="bg-grey-lighten-2">
                       <template v-slot:placeholder>
                         <v-row align="center" justify="center" class="fill-height">
                           <v-progress-circular indeterminate color="primary"></v-progress-circular>
@@ -115,9 +117,7 @@
                       {{ snippet.framework }}
                     </v-chip>
                     <div class="d-flex align-center text-grey">
-                      <v-avatar size="24" class="mr-2">
-                        <v-img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="avatar"></v-img>
-                      </v-avatar>
+                      <v-icon size="small" class="mr-2">mdi-account</v-icon>
                       <span>{{ snippet.username }}</span>
                       <v-spacer></v-spacer>
                       <v-icon size="small" class="mr-1">mdi-calendar</v-icon>
@@ -161,7 +161,7 @@
                 <v-card class="mx-auto snippet-card" max-width="400" elevation="2" hover>
                   <NuxtLink :to="`/snippetsView?id=${favorite.id}&type=${(favorite as any).sourceType || 'world'}`"
                     class="text-decoration-none">
-                    <v-img :src="favorite.img || '/placeholder-image.jpg'" height="200" cover class="bg-grey-lighten-2">
+                    <v-img :src="favorite.img" height="200" cover class="bg-grey-lighten-2">
                       <template v-slot:placeholder>
                         <v-row align="center" justify="center" class="fill-height">
                           <v-progress-circular indeterminate color="primary"></v-progress-circular>
@@ -180,9 +180,7 @@
                       {{ favorite.framework }}
                     </v-chip>
                     <div class="d-flex align-center text-grey">
-                      <v-avatar size="24" class="mr-2">
-                        <v-img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="avatar"></v-img>
-                      </v-avatar>
+                      <v-icon size="small" class="mr-2">mdi-account</v-icon>
                       <span>{{ favorite.username }}</span>
                       <v-spacer></v-spacer>
                       <v-icon size="small" class="mr-1">mdi-calendar</v-icon>
@@ -250,12 +248,35 @@
 
               <v-col cols="12" md="6">
                 <v-select v-model="newSnippet.framework" :items="['React', 'Vue.js 3', 'Nuxt 3', 'Angular', 'Nest.js']"
-                  label="Framework" variant="outlined" prepend-inner-icon="mdi-code-tags"></v-select>
+                  label="Framework" variant="outlined" prepend-inner-icon="mdi-code-tags"
+                  @update:model-value="updateDefaultImage"></v-select>
               </v-col>
 
               <v-col cols="12" md="6">
                 <v-file-input v-model="newSnippet.imgFile as File" label="Cover Image" variant="outlined"
                   prepend-icon="mdi-image" accept="image/*" show-size></v-file-input>
+              </v-col>
+
+              <v-col cols="12">
+                <div class="default-images-section">
+                  <div class="text-subtitle-1 mb-2">Suggested icons</div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <v-card v-for="(iconData, index) in defaultImages" :key="index" width="100" height="100"
+                      class="default-image-card mr-6" @click="selectDefaultImage(iconData)"
+                      :class="{ 'selected-image': selectedDefaultImage === iconData }"
+                      :style="{ background: `linear-gradient(${iconData.gradient})` }">
+                      <div class="d-flex align-center justify-center fill-height">
+                        <v-icon :icon="iconData.icon" size="48" color="white" class="icon-shadow"></v-icon>
+                      </div>
+                      <v-overlay activator="parent" contained class="align-center justify-center">
+                        <v-btn icon color="white" variant="text" density="comfortable" size="small">
+                          <v-icon>{{ selectedDefaultImage === iconData ? 'mdi-check-circle' :
+                            'mdi-arrow-up-bold-circle-outline' }}</v-icon>
+                        </v-btn>
+                      </v-overlay>
+                    </v-card>
+                  </div>
+                </div>
               </v-col>
             </v-row>
           </v-form>
@@ -278,17 +299,17 @@
       <v-card>
         <v-card-title class="bg-error text-white">
           <v-icon start>mdi-alert-circle</v-icon>
-          Confirmation de suppression
+          delete confirmation
         </v-card-title>
         <v-card-text class="pt-4">
-          <p>Êtes-vous sûr de vouloir supprimer ce snippet ? Cette action est irréversible.</p>
+          <p>Are you sure you want to delete this snippet? This action is irreversible.</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn variant="text" @click="deleteDialog = false">Annuler</v-btn>
+          <v-btn variant="text" @click="deleteDialog = false">Cancel</v-btn>
           <v-btn color="error" @click="deleteSnippet">
             <v-icon start>mdi-delete</v-icon>
-            Supprimer
+            Delete
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -300,8 +321,10 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
-import Snackbar from '~/components/snackbar.vue';
-import { useUserStore } from '~/stores/userStore';
+import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
+// @ts-ignore
+import { definePageMeta, useHead } from '#imports';
 
 definePageMeta({
   layout: 'dashboard'
@@ -324,7 +347,6 @@ useHead({
 const userStore = useUserStore();
 const tab = ref('World');
 const addSnippets = ref(false);
-const isFavorite = ref(false);
 const searchQuery = ref('');
 const frameworkFilter = ref('All');
 const isLoading = ref(false);
@@ -354,6 +376,54 @@ interface Snippet {
   sourceType?: string;
 }
 
+interface IconData {
+  icon: string;
+  color: string;
+  gradient: string;
+}
+
+const frameworkImageMap: Record<string, IconData[]> = {
+  'React': [
+    { icon: 'mdi-react', color: '#61DAFB', gradient: 'to bottom right, #61DAFB, #2D8BBA' },
+    { icon: 'mdi-code-json', color: '#61DAFB', gradient: 'to bottom right, #61DAFB, #2D8BBA' },
+    { icon: 'mdi-language-javascript', color: '#61DAFB', gradient: 'to bottom right, #61DAFB, #2D8BBA' },
+    { icon: 'mdi-application-brackets', color: '#61DAFB', gradient: 'to bottom right, #61DAFB, #2D8BBA' }
+  ],
+  'Vue.js 3': [
+    { icon: 'mdi-vuejs', color: '#42B883', gradient: 'to bottom right, #42B883, #347474' },
+    { icon: 'mdi-code-tags', color: '#42B883', gradient: 'to bottom right, #42B883, #347474' },
+    { icon: 'mdi-language-typescript', color: '#42B883', gradient: 'to bottom right, #42B883, #347474' },
+    { icon: 'mdi-application-variable', color: '#42B883', gradient: 'to bottom right, #42B883, #347474' }
+  ],
+  'Nuxt 3': [
+    { icon: 'mdi-nuxt', color: '#00DC82', gradient: 'to bottom right, #00DC82, #018B52' },
+    { icon: 'mdi-code-braces', color: '#00DC82', gradient: 'to bottom right, #00DC82, #018B52' },
+    { icon: 'mdi-server', color: '#00DC82', gradient: 'to bottom right, #00DC82, #018B52' },
+    { icon: 'mdi-application-settings', color: '#00DC82', gradient: 'to bottom right, #00DC82, #018B52' }
+  ],
+  'Angular': [
+    { icon: 'mdi-angular', color: '#DD0031', gradient: 'to bottom right, #DD0031, #C3002F' },
+    { icon: 'mdi-language-typescript', color: '#DD0031', gradient: 'to bottom right, #DD0031, #C3002F' },
+    { icon: 'mdi-code-array', color: '#DD0031', gradient: 'to bottom right, #DD0031, #C3002F' },
+    { icon: 'mdi-application-cog', color: '#DD0031', gradient: 'to bottom right, #DD0031, #C3002F' }
+  ],
+  'Nest.js': [
+    { icon: 'mdi-nodejs', color: '#E0234E', gradient: 'to bottom right, #E0234E, #C31B41' },
+    { icon: 'mdi-database', color: '#E0234E', gradient: 'to bottom right, #E0234E, #C31B41' },
+    { icon: 'mdi-api', color: '#E0234E', gradient: 'to bottom right, #E0234E, #C31B41' },
+    { icon: 'mdi-server-security', color: '#E0234E', gradient: 'to bottom right, #E0234E, #C31B41' }
+  ],
+  'default': [
+    { icon: 'mdi-code-tags', color: '#607D8B', gradient: 'to bottom right, #607D8B, #455A64' },
+    { icon: 'mdi-code-braces-box', color: '#607D8B', gradient: 'to bottom right, #607D8B, #455A64' },
+    { icon: 'mdi-application', color: '#607D8B', gradient: 'to bottom right, #607D8B, #455A64' },
+    { icon: 'mdi-code-greater-than', color: '#607D8B', gradient: 'to bottom right, #607D8B, #455A64' }
+  ]
+};
+
+const defaultImages = ref<IconData[]>([]);
+const selectedDefaultImage = ref<IconData | null>(null);
+
 const newSnippet = ref<Snippet>({
   publishWorld: '',
   publishPersonal: '',
@@ -368,6 +438,102 @@ const newSnippet = ref<Snippet>({
   favoris: 0,
   isFavorite: false
 });
+
+const updateDefaultImage = () => {
+  const framework = newSnippet.value.framework;
+  if (framework && framework in frameworkImageMap) {
+    defaultImages.value = frameworkImageMap[framework];
+  } else {
+    defaultImages.value = frameworkImageMap['default'];
+  }
+  selectedDefaultImage.value = null;
+};
+
+const selectDefaultImage = async (iconData: IconData) => {
+  selectedDefaultImage.value = iconData;
+
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 400;
+    canvas.height = 400;
+    const ctx = canvas.getContext('2d');
+
+    if (ctx) {
+      const gradient = ctx.createLinearGradient(0, 0, 400, 400);
+      const gradientColors = iconData.gradient.match(/#[A-Fa-f0-9]{6}/g);
+
+      if (gradientColors && gradientColors.length >= 2) {
+        gradient.addColorStop(0, gradientColors[0]);
+        gradient.addColorStop(1, gradientColors[1]);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 400, 400);
+
+        ctx.fillStyle = 'white';
+        ctx.font = '200px "Material Design Icons"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        await document.fonts.load('200px "Material Design Icons"');
+
+        const mdiIconsMap: Record<string, string> = {
+          'mdi-react': 'F0708',
+          'mdi-vuejs': 'F0844',
+          'mdi-nuxt': 'F1106',
+          'mdi-angular': 'F0077',
+          'mdi-nodejs': 'F0399',
+          'mdi-code-tags': 'F0174',
+          'mdi-code-braces': 'F0101',
+          'mdi-code-array': 'F0168',
+          'mdi-code-json': 'F0626',
+          'mdi-language-javascript': 'F0627',
+          'mdi-language-typescript': 'F06E6',
+          'mdi-database': 'F01BC',
+          'mdi-api': 'F0C70',
+          'mdi-server': 'F048B',
+          'mdi-server-security': 'F048C',
+          'mdi-application': 'F0614',
+          'mdi-application-brackets': 'F0C8B',
+          'mdi-application-cog': 'F0675',
+          'mdi-application-settings': 'F0B60',
+          'mdi-application-variable': 'F0C8C',
+          'mdi-code-braces-box': 'F10D6',
+          'mdi-code-greater-than': 'F0174'
+        };
+
+        const iconCode = mdiIconsMap[iconData.icon] || '0F0174';
+        const iconChar = String.fromCodePoint(parseInt(iconCode, 16));
+        ctx.fillText(iconChar, 200, 200);
+
+        const timestamp = new Date().getTime();
+        const fileName = `icon-${iconData.icon.replace('mdi-', '')}-${timestamp}.png`;
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], fileName, {
+              type: 'image/png',
+              lastModified: Date.now()
+            });
+
+            newSnippet.value.imgFile = file;
+
+            snackbarText.value = "Icône sélectionnée";
+            snackbarColor.value = "success";
+            snackbarIcon.value = "mdi-check-circle";
+            snackbar.value = true;
+          }
+        }, 'image/png', 1.0);
+      } else {
+        throw new Error("Format de gradient invalide");
+      }
+    }
+  } catch (error) {
+    console.error("Erreur lors de la génération de l'icône:", error);
+    snackbarText.value = "Erreur lors de la sélection de l'icône";
+    snackbarColor.value = "error";
+    snackbarIcon.value = "mdi-alert-circle";
+    snackbar.value = true;
+  }
+};
 
 const filteredWorldSnippets = computed(() => {
   let snippets = userStore.worldSnippets ? userStore.worldSnippets.slice(0, 30) : [];
@@ -445,16 +611,39 @@ const filteredFavoriteSnippets = computed(() => {
 const sendSnippets = async () => {
   try {
     isLoading.value = true;
+
+    if (!newSnippet.value.title || !newSnippet.value.description || !newSnippet.value.framework || !newSnippet.value.imgFile) {
+      snackbarText.value = "Please fill in all required fields";
+      snackbarColor.value = "error";
+      snackbarIcon.value = "mdi-alert-circle";
+      snackbar.value = true;
+      return;
+    }
+
+    if (!newSnippet.value.publishWorld && !newSnippet.value.publishPersonal) {
+      snackbarText.value = "Please select a publish option";
+      snackbarColor.value = "error";
+      snackbarIcon.value = "mdi-alert-circle";
+      snackbar.value = true;
+      return;
+    }
+
     await userStore.addSnippets(
       newSnippet.value.title,
       newSnippet.value.description,
       newSnippet.value.framework,
-      newSnippet.value.imgFile!,
+      newSnippet.value.imgFile,
       newSnippet.value.publishWorld,
       newSnippet.value.publishPersonal
     );
-    await userStore.loadSnippets();
+
+    snackbarText.value = "Snippet created successfully";
+    snackbarColor.value = "success";
+    snackbarIcon.value = "mdi-check-circle";
+    snackbar.value = true;
     addSnippets.value = false;
+
+    await userStore.loadSnippets();
 
     newSnippet.value = {
       publishWorld: '',
@@ -470,14 +659,12 @@ const sendSnippets = async () => {
       favoris: 0,
       isFavorite: false
     };
-
-    snackbarText.value = "Snippet créé avec succès";
-    snackbarColor.value = "success";
-    snackbar.value = true;
-  } catch (err: any) {
-    console.error("Error adding snippet:", err.message, err.stack);
-    snackbarText.value = "Erreur lors de la création du snippet";
+    selectedDefaultImage.value = null;
+  } catch (error: any) {
+    console.error('Erreur lors de la création du snippet:', error);
+    snackbarText.value = error.message || "Erreur lors de la création du snippet";
     snackbarColor.value = "error";
+    snackbarIcon.value = "mdi-alert-circle";
     snackbar.value = true;
   } finally {
     isLoading.value = false;
@@ -490,10 +677,10 @@ const toggleFavorite = async (snippet: any, type: string) => {
   try {
     if (snippet.isFavorite) {
       await userStore.addFavorite(snippet.id, type as 'world' | 'personal');
-      snackbarText.value = "Ajouté aux favoris";
+      snackbarText.value = "Added to favorites";
     } else {
       await userStore.removeFavorite(snippet.id);
-      snackbarText.value = "Retiré des favoris";
+      snackbarText.value = "Removed from favorites";
     }
     snackbarColor.value = "success";
     snackbar.value = true;
@@ -518,13 +705,14 @@ const deleteSnippet = async () => {
     if (snippetToDelete.value) {
       await userStore.deleteSnippet(snippetToDelete.value.id, 'personal');
       deleteDialog.value = false;
-      snackbarText.value = "Snippet supprimé avec succès";
+      snackbarText.value = "Snippet deleted successfully";
       snackbarColor.value = "success";
       snackbar.value = true;
+      await userStore.loadSnippets();
     }
   } catch (err: any) {
     console.error("Error during deletion:", err.message, err.stack);
-    snackbarText.value = "Erreur lors de la suppression du snippet";
+    snackbarText.value = "Error during deletion";
     snackbarColor.value = "error";
     snackbar.value = true;
   }
@@ -536,13 +724,14 @@ const formatDisplayDate = (snippet: any) => {
   } else if (snippet.date) {
     return userStore.formatDate(snippet.date);
   } else {
-    return 'Date non disponible';
+    return 'Date not available';
   }
 };
 
 onMounted(async () => {
   await userStore.loadSnippets();
-  console.log("Snippets chargés avec succès");
+  console.log("Snippets loaded successfully");
+  defaultImages.value = frameworkImageMap['default'];
 });
 </script>
 
@@ -630,5 +819,33 @@ onMounted(async () => {
 
 .v-col:nth-child(6) {
   animation-delay: 0.5s;
+}
+
+.default-images-section {
+  padding: 10px;
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface-variant), 0.3);
+}
+
+.default-image-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+  overflow: hidden;
+  position: relative;
+}
+
+.default-image-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.selected-image {
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.icon-shadow {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 </style>

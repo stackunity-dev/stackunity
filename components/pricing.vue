@@ -21,7 +21,7 @@
             </div>
 
             <div class="text-h3 mb-8 text-high-emphasis font-weight-bold">
-              $300
+              $199
               <small class="text-overline">USD</small>
             </div>
 
@@ -29,7 +29,7 @@
               text="Get Access Now" to="/login" variant="flat" width="100%" size="large" />
 
             <div class="text-caption text-medium-emphasis w-75 text-center">
-              Limited time offer - Regular price: $349
+              Limited time offer - Regular price: $249
             </div>
           </v-card>
         </v-col>

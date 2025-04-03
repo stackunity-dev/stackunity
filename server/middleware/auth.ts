@@ -1,47 +1,34 @@
 import { createError, defineEventHandler, getRequestHeaders, H3Event } from 'h3'
-import jwt from 'jsonwebtoken'
 import { RowDataPacket } from 'mysql2'
-import { pool } from '../api/db'
+import { ServerTokenManager } from '../utils/ServerTokenManager'
 
-// Routes accessibles sans authentification
 const publicRoutes = [
-  '/api/auth/login',
-  '/api/auth/signup',
-  '/api/auth/forgot-password',
-  '/api/auth/reset-password',
-  '/api/auth/refresh',
-  '/api/auth/session',
-  '/api/auth/logout',
-  '/api/auth/register',
+  '/api/auth/',
   '/api/newsletter/unsubscribe',
   '/api/newsletter/subscribe',
   '/api/health',
   '/api/public',
-  '/api/analytics',
-  '/api/analytics/collect',
-  '/api/marketing/collect',
   '/api/cookies',
+  '/api/payment/webhook',
+  '/api/payment/create-intent',
+  '/api/snippets/world',
+  '/api/snippets/personal',
   '/signup',
   '/login',
+  '/dashboard',
   '/',
   '/favicon.ico',
   '/assets/',
   '/_nuxt/',
   '/robots.txt',
   '/sitemap.xml',
-  '/manifest.json',
-  '/api/payment/webhook',
-  '/api/payment/create-intent'
+  '/manifest.json'
 ]
 
 const adminRoutes = [
   '/newsletter-admin',
   '/api/newsletter/stats',
   '/api/admin',
-  '/api/analytics',
-  '/admin/analytics',
-  '/admin/marketing',
-  '/api/marketing',
   '/api/cookies'
 ]
 
@@ -57,12 +44,9 @@ const premiumRoutes = [
 const JWT_SECRET = process.env.JWT_SECRET || 'secret'
 const SESSION_COOKIE_NAME = 'devunity_session_token'
 
-// Secret pour le token d'accès
-// const ACCESS_TOKEN_SECRET = 'access_token_secret_key' // Cette ligne est maintenant commentée, nous utilisons l'import
-
 interface JwtPayload {
   userId: number;
-  id?: number;   // Pour la compatibilité avec les anciens tokens
+  id?: number;
   username?: string;
   email?: string;
   isPremium?: boolean;
@@ -80,91 +64,102 @@ interface UserRow extends RowDataPacket {
 }
 
 export default defineEventHandler(async (event: H3Event) => {
-  const url = event.node.req.url;
+  const url = event.node.req.url || '';
   console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Middleware auth - URL:', url);
 
-  // Vérifier si la route est publique
-  if (publicRoutes.some(route => url?.startsWith(route))) {
+  const isPublicRoute = (url: string): boolean => {
+    if (url.startsWith('/api/Studio/')) {
+      console.log('[AUTH] Route studio détectée (protégée):', url);
+      return false;
+    }
+
+    if (url === '/api/snippets' || url === '/api/snippets/world' || url === '/api/snippets/personal') {
+      console.log('[AUTH] Route snippets publique détectée:', url);
+      return true;
+    }
+
+    if (url.startsWith('/api/sql')) {
+      console.log('[AUTH] Route SQL publique détectée:', url);
+      return true;
+    }
+
+    if (url === '/dashboard' || url.startsWith('/dashboard?') || url.startsWith('/dashboard/')) {
+      console.log('[AUTH] URL dashboard détectée comme publique:', url);
+      return true;
+    }
+
+    const isPublic = publicRoutes.some(route => {
+      if (route.endsWith('/')) {
+        return url.startsWith(route);
+      }
+      return url === route || url.startsWith(route + '/');
+    });
+
+    if (isPublic) {
+      console.log('[AUTH] Route publique trouvée dans la liste:', url);
+    }
+
+    return isPublic;
+  };
+
+  // Vérifier si c'est une route publique
+  if (isPublicRoute(url)) {
     console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Route publique détectée:', url);
     return;
   }
 
-  // Récupérer le token depuis les headers
-  const authHeader = getRequestHeaders(event)['Authorization'] || getRequestHeaders(event)['authorization'];
-  if (!authHeader) {
-    console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Token manquant pour la route:', url);
-    throw createError({
-      statusCode: 401,
-      message: 'Token manquant'
-    });
-  }
+  // Récupérer le token d'autorisation
+  const authHeader = getRequestHeaders(event).authorization;
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-  const token = authHeader.replace('Bearer ', '');
+  console.log('[AUTH] URL:', url, 'Token présent:', !!token);
+
+  // Si pas de token, mais ce n'est pas une route admin ou premium, autoriser l'accès
   if (!token) {
-    console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Token invalide pour la route:', url);
+    if (!adminRoutes.some(route => url.includes(route)) &&
+      !premiumRoutes.some(route => url.includes(route))) {
+      return; // Accès autorisé aux routes non-protégées
+    }
+
     throw createError({
       statusCode: 401,
-      message: 'Token invalide'
+      message: 'Authentification requise'
     });
   }
 
   try {
-    // Vérifier le token
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || '') as JwtPayload;
-    console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Token décodé:', decoded);
+    // Vérifier le token d'accès
+    const decodedToken = ServerTokenManager.verifyAccessToken(token);
 
-    // Utiliser userId ou id selon ce qui est disponible
-    const userId = decoded.userId || decoded.id;
+    console.log('[AUTH] Token décodé:', decodedToken ? 'Valide' : 'Invalide');
 
-    if (!userId) {
-      console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'ID utilisateur manquant dans le token');
+    if (!decodedToken) {
       throw createError({
         statusCode: 401,
-        message: 'Token invalide - ID utilisateur manquant'
+        message: 'Token invalide ou expiré'
       });
     }
 
-    // Vérifier si l'utilisateur existe dans la base de données
-    const [rows] = await pool.execute<UserRow[]>(
-      'SELECT id, username, email, is_admin, is_premium FROM users WHERE id = ?',
-      [userId]
-    );
-
-    if (rows.length === 0) {
-      console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Utilisateur non trouvé pour l\'ID:', userId);
-      throw createError({
-        statusCode: 401,
-        message: 'Utilisateur non trouvé'
-      });
-    }
-
-    const user = rows[0];
-
-    // Vérifier les permissions pour les routes admin et premium
-    if (adminRoutes.some(route => url?.startsWith(route)) && !user.is_admin) {
+    // Vérifier les permissions pour les routes admin
+    if (adminRoutes.some(route => url.includes(route)) && !decodedToken.isAdmin) {
       console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Accès admin refusé pour:', url);
       throw createError({
         statusCode: 403,
-        message: 'Accès non autorisé'
+        message: 'Accès refusé - Permissions administrateur requises'
       });
     }
 
-    if (premiumRoutes.some(route => url?.startsWith(route)) && !user.is_premium) {
+    // Vérifier les permissions pour les routes premium
+    if (premiumRoutes.some(route => url.includes(route)) && !decodedToken.isPremium) {
       console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Accès premium refusé pour:', url);
       throw createError({
         statusCode: 403,
-        message: 'Accès non autorisé'
+        message: 'Accès refusé - Compte premium requis'
       });
     }
 
-    // Ajouter les informations utilisateur au contexte
-    event.context.user = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      isAdmin: user.is_admin,
-      isPremium: user.is_premium
-    };
+    // Ajouter les infos utilisateur à l'événement
+    event.context.user = decodedToken;
 
     setResponseHeaders(event, {
       'Access-Control-Allow-Origin': '*',
@@ -175,6 +170,12 @@ export default defineEventHandler(async (event: H3Event) => {
 
   } catch (error: any) {
     console.error('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Erreur d\'authentification:', error);
+
+    // Si c'est une route publique, autoriser l'accès même si le token est invalide
+    if (isPublicRoute(url)) {
+      return;
+    }
+
     if (error.name === 'TokenExpiredError') {
       throw createError({
         statusCode: 401,

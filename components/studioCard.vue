@@ -6,8 +6,8 @@
           <div class="px-4 py-2 d-flex align-center">
             <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2">Vue.js</v-chip>
             <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2">Vuetify</v-chip>
-            <PremiumFeature premium-link="/subscribe" title="Studio components" icon="mdi-palette" type="chip"
-              feature-key="studioComponents" />
+            <PremiumFeature v-if="!userStore.user.isPremium" premium-link="/subscribe" title="Studio components"
+              icon="mdi-palette" type="chip" feature-key="studioComponents" />
           </div>
 
           <v-tabs v-model="propertiesTab" color="primary" align-tabs="center" class="px-4">
@@ -574,12 +574,12 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import PremiumFeature from '~/components/PremiumFeature.vue';
-import Snackbar from '~/components/snackbar.vue';
-import { useUserStore } from '~/stores/userStore';
-import { getCardTemplate } from '~/utils/cardTemplates';
-import icons from '~/utils/icons';
-import theme from '~/utils/theme';
+import PremiumFeature from '../components/PremiumFeature.vue';
+import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
+import { getCardTemplate } from '../utils/cardTemplates';
+import icons from '../utils/icons';
+import theme from '../utils/theme';
 
 const props = defineProps({
   initialContent: {
@@ -860,7 +860,7 @@ function generateCardCode() {
     code += '\n  </v-card-actions>';
   }
 
-  return code + '\n</v-card>' + theme;
+  return code + '\n</v-card>\n\n' + theme;
 }
 
 function generateCardCodeSilently() {

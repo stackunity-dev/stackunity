@@ -40,15 +40,10 @@ export default defineEventHandler(async (event) => {
     const [userRows] = await pool.execute('SELECT id, username, email, isAdmin, isPremium FROM users WHERE id = ?', [userId]);
     console.log('userRows:', userRows);
 
-    const [studioComponentsRows] = await pool.execute('SELECT * FROM studio_components WHERE user_id = ?', [userId]);
-
-    console.log('Données récupérées avec succès');
-
     return {
       success: true,
       data: {
-        userData: userRows,
-        studioComponents: studioComponentsRows
+        userData: userRows
       }
     }
   }

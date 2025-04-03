@@ -116,7 +116,7 @@ export const useCookieStore = defineStore('cookie', {
       const cookieValue = JSON.stringify(this.preferences);
       const cookieOptions = {
         path: '/',
-        maxAge: 365 * 24 * 60 * 60, // 1 an
+        maxAge: 365 * 24 * 60 * 60,
         sameSite: 'Lax' as const,
         secure: process.env.NODE_ENV === 'production'
       };
@@ -143,21 +143,12 @@ export const useCookieStore = defineStore('cookie', {
       if (!process.client) return;
 
       this.setEssentialCookies();
-
-      if (this.preferences.analytics) {
-        this.setAnalyticsCookies();
-      }
-
-      if (this.preferences.marketing) {
-        this.setMarketingCookies();
-      }
     },
 
     setEssentialCookies() {
       if (!process.client) return;
 
-      // Vérifiez que theme est défini ou utilisez une valeur par défaut
-      const theme = 'light'; // Valeur par défaut
+      const theme = 'light';
 
       const userPreferences = {
         theme: theme,
@@ -168,96 +159,6 @@ export const useCookieStore = defineStore('cookie', {
       prefsExpiryDate.setMonth(prefsExpiryDate.getMonth() + 6);
 
       document.cookie = `devunity_preferences=${encodeURIComponent(JSON.stringify(userPreferences))}; path=/; expires=${prefsExpiryDate.toUTCString()}; SameSite=Lax;`;
-    },
-
-    setAnalyticsCookies() {
-      if (!process.client) return;
-
-      const analyticsData = {
-        email: this.getCookie('devunity_email'),
-        name: this.getCookie('devunity_name'),
-        region: this.getCookie('devunity_region'),
-        lastVisit: new Date().toISOString()
-      };
-
-      this.sendCookieDataToServer('analytics', analyticsData);
-    },
-
-    setMarketingCookies() {
-      if (!process.client) return;
-
-      const visitedPages = JSON.parse(this.getCookie('devunity_visited_pages') || '[]');
-
-      if (window.location.pathname) {
-        const currentPath = window.location.pathname;
-
-        if (!visitedPages.includes(currentPath)) {
-          visitedPages.push(currentPath);
-          this.setCookie('devunity_visited_pages', JSON.stringify(visitedPages), 30);
-        }
-
-        // Tracker checkout page visits
-        if (currentPath === '/checkout') {
-          this.setCookie('devunity_checkout_visit', new Date().toISOString(), 30);
-        }
-      }
-
-      // Track premium purchases
-      const userStore = useUserStore();
-      if (userStore.user?.isPremium) {
-        this.setCookie('devunity_premium_user', 'true', 365);
-      }
-
-      // Track conversion rates
-      let clickCount = parseInt(this.getCookie('devunity_click_count') || '0');
-      clickCount++;
-      this.setCookie('devunity_click_count', clickCount.toString(), 30);
-
-      window.addEventListener('click', () => {
-        let clickCount = parseInt(this.getCookie('devunity_click_count') || '0');
-        clickCount++;
-        this.setCookie('devunity_click_count', clickCount.toString(), 30);
-      }, { once: true });
-
-      const marketingData = {
-        visitedPages: visitedPages,
-        checkoutVisit: this.getCookie('devunity_checkout_visit'),
-        premiumUser: this.getCookie('devunity_premium_user'),
-        clickCount: clickCount,
-        lastPurchase: this.getCookie('devunity_last_purchase'),
-        interests: JSON.parse(this.getCookie('devunity_interests') || '[]'),
-        conversionRate: this.calculateConversionRate()
-      };
-
-      this.sendCookieDataToServer('marketing', marketingData);
-    },
-
-    calculateConversionRate() {
-      if (!process.client) return 0;
-
-      const visitedCheckout = this.getCookie('devunity_checkout_visit') !== null;
-      const isPremium = this.getCookie('devunity_premium_user') === 'true';
-      const clickCount = parseInt(this.getCookie('devunity_click_count') || '0');
-
-      if (clickCount === 0) return 0;
-
-      if (isPremium) {
-        return 100;
-      }
-
-      if (visitedCheckout) {
-        return 50;
-      }
-
-      if (clickCount > 20) {
-        return 25;
-      } else if (clickCount > 10) {
-        return 15;
-      } else if (clickCount > 5) {
-        return 5;
-      }
-
-      return 1;
     },
 
     setCookie(name: string, value: string, expiryDays: number = 30, options: { httpOnly?: boolean, secure?: boolean, sameSite?: 'Strict' | 'Lax' | 'None' } = {}) {
@@ -287,54 +188,6 @@ export const useCookieStore = defineStore('cookie', {
       }
 
       return null;
-    },
-
-    async sendCookieDataToServer(type: 'analytics' | 'marketing', data: any) {
-      if (!process.client) return;
-
-      try {
-        const userStore = useUserStore();
-        const token = userStore.token || '';
-        const userId = this.getCookie('devunity_user_id');
-
-        if (!userId) {
-          console.log(`Pas d'userId disponible pour envoyer les données de type ${type}`);
-          return;
-        }
-
-        let endpoint = '/api/cookies';
-        let payload: any = {
-          userId: userId,
-          cookiePreferences: {
-            [type]: data
-          }
-        };
-
-        if (type === 'marketing') {
-          endpoint = '/api/marketing';
-          payload = {
-            userId: userId,
-            marketingData: data
-          };
-        }
-
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to send ${type} data to server`);
-        }
-
-        console.log(`Cookie data of type ${type} sent successfully`);
-      } catch (error) {
-        console.error(`Error sending cookie data of type ${type}:`, error);
-      }
     },
 
     debugCookieState() {

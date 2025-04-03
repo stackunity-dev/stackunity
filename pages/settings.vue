@@ -122,14 +122,6 @@
                     <v-list-item-title>Functional cookies:</v-list-item-title>
                     <v-list-item-subtitle>{{ cookies.functional ? 'Enabled' : 'Disabled' }}</v-list-item-subtitle>
                   </v-list-item>
-                  <v-list-item>
-                    <v-list-item-title>Analytics cookies:</v-list-item-title>
-                    <v-list-item-subtitle>{{ cookies.analytics ? 'Enabled' : 'Disabled' }}</v-list-item-subtitle>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-title>Marketing cookies:</v-list-item-title>
-                    <v-list-item-subtitle>{{ cookies.marketing ? 'Enabled' : 'Disabled' }}</v-list-item-subtitle>
-                  </v-list-item>
                 </v-list>
               </v-card>
 
@@ -167,18 +159,6 @@
                     Help us understand how you use our site to improve it.
                   </v-list-item-subtitle>
                 </v-list-item>
-
-                <v-divider class="my-2"></v-divider>
-
-                <v-list-item>
-                  <v-list-item-title>
-                    <v-switch v-model="cookies.marketing" label="Marketing cookies" color="primary" hide-details
-                      inset></v-switch>
-                  </v-list-item-title>
-                  <v-list-item-subtitle class="text-caption mt-1">
-                    Used to provide you with personalized advertisements.
-                  </v-list-item-subtitle>
-                </v-list-item>
               </v-list>
 
               <v-divider class="my-4"></v-divider>
@@ -213,7 +193,6 @@
 
               <v-divider class="my-4"></v-divider>
 
-              <!-- Debug section pour le statut premium -->
               <div class="text-subtitle-1 font-weight-bold mb-3 text-success">Premium Status</div>
               <p class="mb-4">
                 Current status:
@@ -262,8 +241,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useTheme } from 'vuetify';
-import Snackbar from '~/components/snackbar.vue';
-import { useUserStore } from '~/stores/userStore';
+import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
+// @ts-ignore
+import { definePageMeta, useHead } from '#imports';
 
 definePageMeta({
   layout: 'dashboard'

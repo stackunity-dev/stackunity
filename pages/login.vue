@@ -23,37 +23,37 @@
         </v-col>
 
         <v-col cols="12" md="6" class="right-panel d-flex align-center justify-center">
-          <v-card class="login-card pa-8 elevation-0" max-width="450" width="100%">
-            <div class="d-flex justify-center d-md-none mb-8">
-              <img src="/logo/devunity.png" alt="Devunity Logo" width="300" />
+          <v-card class="login-card pa-md-8 pa-4 elevation-0" max-width="450" width="100%">
+            <div class="d-flex justify-center d-md-none mb-6">
+              <img src="/logo/devunity.png" alt="Devunity Logo" width="240" />
             </div>
 
             <h2 class="text-h5 font-weight-bold mb-2">Sign In</h2>
-            <p class="text-subtitle-1 text-medium-emphasis mb-8">Pick up where you left off</p>
+            <p class="text-subtitle-1 text-medium-emphasis mb-6">Pick up where you left off</p>
 
             <v-form @submit.prevent="handleSignin">
               <v-text-field v-model="form.email" label="Email address" type="email" variant="outlined"
-                prepend-inner-icon="mdi-email-outline"
+                prepend-inner-icon="mdi-email-outline" density="comfortable"
                 :rules="[v => !!v || 'Email required', v => /.+@.+\..+/.test(v) || 'Invalid email format']"
-                hide-details="auto"></v-text-field>
+                hide-details="auto" autocomplete="email"></v-text-field>
 
               <v-text-field v-model="form.password" :type="showPassword ? 'text' : 'password'" label="Password"
-                variant="outlined" prepend-inner-icon="mdi-lock-outline"
+                variant="outlined" prepend-inner-icon="mdi-lock-outline" density="comfortable"
                 :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append-inner="togglePasswordVisibility" class="mb-2 mt-4"
                 :rules="[v => !!v || 'Password required']" hide-details="auto"></v-text-field>
 
-              <div class="d-flex justify-space-between align-center mb-8">
+              <div class="d-flex justify-space-between align-center mb-6">
                 <v-checkbox v-model="rememberMe" label="Remember me" color="primary" density="compact"
                   hide-details></v-checkbox>
               </div>
 
-              <v-btn block color="primary" type="submit" :loading="loading" min-height="48"
+              <v-btn block color="primary" type="submit" :loading="loading" min-height="44"
                 class="text-none font-weight-medium">
                 Sign in
               </v-btn>
 
-              <div class="text-center mt-8">
+              <div class="text-center mt-6">
                 <span class="text-medium-emphasis">Don't have an account?</span>
                 <NuxtLink class="text-decoration-none ml-1 font-weight-medium" to="/signup">
                   Create account
@@ -70,10 +70,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import Snackbar from '~/components/snackbar.vue';
-import { useUserStore } from '~/stores/userStore';
+import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
+// @ts-ignore
+import { definePageMeta, useHead } from '#imports';
 
 definePageMeta({
   layout: 'empty'
@@ -127,21 +129,75 @@ const showSnackbar = ref(false);
 const snackbarColor = ref('');
 const snackbarText = ref('');
 
+// Vérifier si l'utilisateur est déjà connecté
+onMounted(async () => {
+  console.log('[Login] Vérification de l\'état de connexion...');
+  loading.value = true;
+
+  // D'abord, nettoyer les éventuels tokens invalides
+  // pour éviter les problèmes de token invalide lors des vérifications
+  if (localStorage.getItem('auth_token')) {
+    try {
+      const token = localStorage.getItem('auth_token');
+      // Vérifier rapidement si le token a un format valide
+      if (!token || token.split('.').length !== 3) {
+        localStorage.removeItem('auth_token');
+        console.log('[Login] Token invalide supprimé');
+      }
+    } catch (err) {
+      console.error('[Login] Erreur lors de la vérification du token:', err);
+    }
+  }
+
+  try {
+    // Vérifier si l'utilisateur est déjà authentifié
+    const authResult = await userStore.checkAuthentication();
+
+    if (authResult && authResult.isAuthenticated) {
+      console.log('[Login] Utilisateur déjà authentifié, redirection vers le dashboard');
+      router.push('/dashboard');
+    } else {
+      console.log('[Login] Utilisateur non authentifié, affichage du formulaire de connexion');
+    }
+  } catch (err) {
+    console.error('[Login] Erreur lors de la vérification de l\'authentification:', err);
+  } finally {
+    loading.value = false;
+  }
+});
+
 const handleSignin = async () => {
   loading.value = true;
+  snackbarText.value = ''; // Réinitialiser le message d'erreur
+
   try {
+    // Validation basique côté client
+    if (!form.value.email || !form.value.email.includes('@')) {
+      snackbarColor.value = 'error';
+      snackbarText.value = 'Email invalide';
+      showSnackbar.value = true;
+      return;
+    }
+
+    if (!form.value.password || form.value.password.length < 6) {
+      snackbarColor.value = 'error';
+      snackbarText.value = 'Le mot de passe doit contenir au moins 6 caractères';
+      showSnackbar.value = true;
+      return;
+    }
+
     const response = await userStore.login(form.value.email, form.value.password);
     if (response.success) {
       router.push('/dashboard');
     } else {
       snackbarColor.value = 'error';
-      snackbarText.value = response.error || 'Login error';
+      snackbarText.value = response.error || 'Erreur de connexion';
       showSnackbar.value = true;
     }
   } catch (err: any) {
-    console.error(err.message);
+    console.error('[Login] Erreur de connexion:', err);
     snackbarColor.value = 'error';
-    snackbarText.value = err.message || 'Unexpected error';
+    snackbarText.value = err.message || 'Erreur inattendue';
     showSnackbar.value = true;
   } finally {
     loading.value = false;
@@ -210,9 +266,14 @@ const togglePasswordVisibility = () => {
   border: 0;
 }
 
-@media (max-width: 959px) {
+@media (max-width: 600px) {
   .right-panel {
-    padding: 2rem 1rem;
+    padding: 1rem;
+    min-height: auto;
+  }
+
+  .login-card {
+    border-radius: 12px;
   }
 }
 </style>

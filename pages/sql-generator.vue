@@ -385,13 +385,15 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from '@/stores/userStore';
+import { useUserStore } from '../stores/userStore';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import Snackbar from '~/components/snackbar.vue';
-import { getSQLTemplate, getSQLTemplateNames } from '~/utils/sqlTemplates';
+import Snackbar from '../components/snackbar.vue';
+import { getSQLTemplate, getSQLTemplateNames } from '../utils/sqlTemplates';
+// @ts-ignore
+import { definePageMeta, useHead } from '#imports';
 
 useHead({
   title: 'SQL Designer',
@@ -735,10 +737,10 @@ const saveSQLSchema = async () => {
 
   try {
     await userStore.saveSQLSchema(databaseName.value, tables.value as any);
-    await userStore.loadSQLSchemas();
     snackbarText.value = 'SQL schema saved successfully';
     snackbarColor.value = 'success';
     showSnackbar.value = true;
+    await userStore.loadSQLSchemas();
   } catch (err) {
     console.error('Error saving SQL schema:', err);
     snackbarText.value = 'Error saving schema';
@@ -796,10 +798,10 @@ const applyTemplateToDatabase = () => {
       const isPrimaryKey = templateTable.primaryKey === col.name;
       const constraints = [];
 
-      if (isPrimaryKey) constraints.push('primaryKey');
-      if (!col.nullable) constraints.push('notNull');
-      if (col.unique) constraints.push('unique');
-      if (col.autoIncrement) constraints.push('autoIncrement');
+      if (isPrimaryKey) constraints.push('primaryKey' as never);
+      if (!col.nullable) constraints.push('notNull' as never);
+      if (col.unique) constraints.push('unique' as never);
+      if (col.autoIncrement) constraints.push('autoIncrement' as never);
 
       newTable.columns.push({
         name: col.name,

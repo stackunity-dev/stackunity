@@ -1,15 +1,10 @@
 import { pool } from '../db';
+import { ServerTokenManager } from '../../utils/ServerTokenManager';
+import { defineEventHandler, readBody } from 'h3';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const userId = event.context.user?.id;
-
-  if (!userId) {
-    return {
-      success: false,
-      error: "Utilisateur non authentifié"
-    };
-  }
+  console.log(body);
 
   if (!body.id) {
     return {
@@ -20,7 +15,6 @@ export default defineEventHandler(async (event) => {
 
   try {
     if (body.type === 'world') {
-      // Vérifier si l'utilisateur est autorisé à supprimer ce snippet mondial
       const [ownerCheck] = await pool.execute(
         'SELECT user_id FROM world_snippets WHERE id = ?',
         [body.id]
@@ -43,7 +37,7 @@ export default defineEventHandler(async (event) => {
     } else {
       const [result] = await pool.execute(
         'DELETE FROM personal_snippets WHERE id = ? AND user_id = ?',
-        [body.id, userId]
+        [body.id, body.userId]
       );
 
       // @ts-ignore

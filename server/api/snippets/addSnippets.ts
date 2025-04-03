@@ -1,12 +1,20 @@
+import { defineEventHandler, readBody } from 'h3';
 import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  console.log(body)
+  console.log("Body reçu :", body);
 
-  const userId = event.context.user?.id;
+  console.log("UserID récupéré :", body.userId);
 
   try {
+    if (!body.userId) {
+      return {
+        success: false,
+        message: "Utilisateur non authentifié ou ID utilisateur manquant"
+      }
+    }
+
     if (body.publishWorld === true) {
       const [worldSnippetsRows] = await pool.execute('INSERT INTO world_snippets (img, title, description, username, framework, snippet_date) VALUES (?, ?, ?, ?, ?, ?)', [
         body.img,
@@ -23,7 +31,7 @@ export default defineEventHandler(async (event) => {
         body.username,
         body.framework,
         body.date,
-        userId
+        body.userId
       ]);
 
       return {
@@ -37,7 +45,7 @@ export default defineEventHandler(async (event) => {
         body.username,
         body.framework,
         body.date,
-        userId
+        body.userId
       ]);
 
       return {

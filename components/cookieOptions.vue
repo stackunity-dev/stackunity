@@ -20,7 +20,6 @@
                 {{ cookie.description }}
               </v-list-item-subtitle>
             </v-list-item>
-            <v-divider v-if="key !== 'marketing'" class="my-2"></v-divider>
           </template>
         </v-list>
       </v-card-text>
@@ -40,15 +39,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useCookieStore } from '@/stores/cookieStore';
+import { useCookieStore } from '../stores/cookieStore';
 
 const cookieStore = useCookieStore();
 const showSettings = ref(false);
 const cookiePreferences = ref({
   essential: true,
-  functional: cookieStore.preferences.functional,
-  analytics: cookieStore.preferences.analytics,
-  marketing: cookieStore.preferences.marketing
+  functional: cookieStore.preferences.functional
 });
 
 const cookieOptions = {
@@ -59,14 +56,6 @@ const cookieOptions = {
   functional: {
     label: 'Cookies fonctionnels',
     description: 'Allow to remember your preferences and personalize your experience.'
-  },
-  analytics: {
-    label: 'Cookies analytiques',
-    description: 'Help us understand how you use our site to improve it.'
-  },
-  marketing: {
-    label: 'Cookies marketing',
-    description: 'Allow to display personalized ads based on your interests.'
   }
 };
 
@@ -74,8 +63,8 @@ function savePreferences() {
   cookieStore.updatePreferences({
     essential: true,
     functional: cookiePreferences.value.functional,
-    analytics: cookiePreferences.value.analytics,
-    marketing: cookiePreferences.value.marketing
+    analytics: false,
+    marketing: false
   });
 
   showSettings.value = false;

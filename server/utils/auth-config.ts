@@ -1,45 +1,25 @@
 /**
- * Configuration pour le système d'authentification
+ * Configuration pour l'authentification et les tokens
  */
 
-// Secrets pour les tokens JWT (à placer dans des variables d'environnement en production)
-export const ACCESS_TOKEN_SECRET = 'access_token_secret_key';
-export const REFRESH_TOKEN_SECRET = 'refresh_token_secret_key';
+// Durée de validité des tokens d'accès (12 heures)
+export const ACCESS_TOKEN_EXPIRY = '12h';
+export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access_token_secret_key_dev';
 
-// Durées de validité des tokens
-export const ACCESS_TOKEN_EXPIRY = '15m'; // 15 minutes
-export const REFRESH_TOKEN_EXPIRY = '7d'; // 7 jours
+// Durée de validité des tokens de rafraîchissement (30 jours)
+export const REFRESH_TOKEN_EXPIRY = '30d';
+export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refresh_token_secret_key_dev';
 
-// Nom du cookie de rafraîchissement
-export const REFRESH_TOKEN_COOKIE_NAME = 'refresh_token';
-
-// Durée de validité du cookie de rafraîchissement en secondes (7 jours)
-export const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
-
+// Configuration des cookies
+export const REFRESH_TOKEN_COOKIE_NAME = 'devunity_refresh_token';
 export const REFRESH_TOKEN_COOKIE_OPTIONS = {
   httpOnly: true,
   path: '/',
-  maxAge: REFRESH_TOKEN_MAX_AGE,
+  maxAge: 30 * 24 * 60 * 60, // 30 jours en secondes
   sameSite: 'strict' as const,
-  secure: true
+  secure: process.env.NODE_ENV === 'production'
 };
 
-// Types pour les payloads JWT
-export interface AccessTokenPayload {
-  userId: number;
-  id?: number;
-  username: string;
-  email: string;
-  isPremium: boolean;
-  isAdmin: boolean;
-  iat?: number;
-  exp?: number;
-}
-
-export interface RefreshTokenPayload {
-  userId: number;
-  id?: number;
-  tokenId: string;
-  iat?: number;
-  exp?: number;
-} 
+// Configuration du refresh automatique
+export const AUTO_REFRESH_THRESHOLD = 30 * 60; // 30 minutes avant expiration
+export const SESSION_MAX_AGE = 12 * 60 * 60; // 12 heures en secondes 

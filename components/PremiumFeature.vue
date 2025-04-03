@@ -14,47 +14,73 @@
     <v-chip v-else-if="type === 'chip'" prepend-icon="mdi-crown" color="warning" @click="showDialog = true" size="small"
       class="gold-gradient-chip">Premium </v-chip>
 
-    <v-dialog v-model="showDialog" max-width="500">
-      <v-card class="rounded-lg" elevation="8">
-        <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
-          <v-icon color="white" class="mr-2">{{ icon }}</v-icon>
+    <v-dialog v-model="showDialog" max-width="650">
+      <v-card class="rounded-lg premium-dialog" elevation="12">
+        <v-card-title class="bg-primary text-white py-4 px-4 rounded-t-lg d-flex align-center">
+          <v-icon color="white" class="mr-2" size="24">{{ icon }}</v-icon>
           {{ title || 'Premium feature' }}
         </v-card-title>
-        <v-card-text class="pa-4">
-          <div class="text-center mb-6">
-            <v-icon :icon="icon" size="64" :color="color" class="mb-2"></v-icon>
-            <div class="text-h6 mb-2">{{ title || 'Premium feature' }}</div>
-            <div class="text-body-2 text-medium-emphasis">
-              Unlock all premium features
+
+        <v-card-text class="pa-0">
+          <div class="premium-hero pa-4" :class="`premium-hero-${featureType}`">
+            <div class="text-center mb-4">
+              <v-icon :icon="icon" size="64" color="warning" class="mb-2 premium-icon"></v-icon>
+              <div class="text-h5 font-weight-bold mb-2">{{ title || 'Premium feature' }}</div>
+              <div class="text-subtitle-2 text-medium-emphasis mx-auto" style="max-width: 400px">
+                Unlock this premium feature and access all advanced tools to optimize your web development.
+              </div>
             </div>
           </div>
 
-          <v-list class="rounded-lg mb-6 premium-features-list">
-            <v-list-item v-for="(feature, index) in getFeatures(featureType)" :key="index"
-              prepend-icon="mdi-check-circle" class="premium-feature-item">
-              <v-list-item-title>{{ feature }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
+          <div class="px-4 premium-content">
+            <v-row>
+              <v-col cols="12" sm="7" class="py-2 mt-2">
+                <div class="text-h6 font-weight-bold mb-3">Included features:</div>
+                <v-list class="rounded-lg mb-4 premium-features-list pa-0">
+                  <v-list-item v-for="(feature, index) in getFeatures(featureType)" :key="index"
+                    prepend-icon="mdi-check-circle-outline" class="premium-feature-item py-1 px-0" density="compact">
+                    <v-list-item-title class="text-body-2">{{ feature }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
 
-          <div class="text-center">
-            <div class="text-h3 font-weight-bold mb-1">300$</div>
-            <div class="text-subtitle-1 text-medium-emphasis mb-4">Lifetime access</div>
-            <v-btn color="warning" variant="elevated" size="large" block @click="goToPricingPage"
-              class="premium-action-btn">
-              <v-icon start>mdi-crown</v-icon>
-              Get lifetime access
-            </v-btn>
-            <div class="text-caption text-medium-emphasis mt-2">
-              Single payment • Unlimited access • Priority support
-            </div>
+              </v-col>
+
+              <v-col cols="12" sm="5" class="py-2">
+                <div class="preview-image-container mb-3 mt-5 d-none d-sm-block">
+                  <v-img :src="getFeatureImage(featureType)" class="rounded-lg premium-preview-image" height="160"
+                    :width="400" contain position="center" :alt="`${title} preview`">
+                    <template v-slot:placeholder>
+                      <v-row class="fill-height ma-0" align="center" justify="center">
+                        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                      </v-row>
+                    </template>
+                  </v-img>
+                </div>
+
+                <v-card class="price-card mb-3 pa-4" color="surface" rounded="lg" elevation="1">
+                  <div class="d-flex justify-space-between align-center mb-2">
+                    <div class="text-h4 font-weight-bold">199€</div>
+                    <v-chip color="success" size="small">Save 25%</v-chip>
+                  </div>
+                  <div class="text-body-2 text-medium-emphasis mb-4">Unlimited access for life</div>
+                  <v-btn color="warning" variant="elevated" block size="large" height="48" @click="goToPricingPage"
+                    class="premium-action-btn text-uppercase font-weight-bold">
+                    <v-icon start>mdi-crown</v-icon>
+                    Get now
+                  </v-btn>
+                  <div class="d-flex align-center justify-center mt-3">
+                    <v-icon size="small" color="success" class="mr-1">mdi-check-circle</v-icon>
+                    <span class="text-caption">Single payment • Unlimited access • Priority support</span>
+                  </div>
+                </v-card>
+
+                <v-btn color="error" variant="tonal" @click="showDialog = false" class="text-none pa-2">
+                  I'll continue with the free version
+                </v-btn>
+              </v-col>
+            </v-row>
           </div>
         </v-card-text>
-        <v-card-actions class="pa-4 pt-0">
-          <v-spacer></v-spacer>
-          <v-btn color="grey" variant="text" @click="showDialog = false">
-            Close
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </div>
@@ -115,7 +141,6 @@ type FeatureMap = {
   seoAudit: string[];
   robots: string[];
   studioComponents: string[];
-  audit: string[];
   default: string[];
 };
 
@@ -145,13 +170,6 @@ const features: FeatureMap = {
     "Form builder with validation",
     "Advanced UI utilities"
   ],
-  audit: [
-    "Website analysis",
-    "Accessibility audit",
-    "Performance audit",
-    "Errors audit",
-    "Recommendations"
-  ],
   default: [
     "Unlimited access to all features",
     "Priority support",
@@ -166,8 +184,17 @@ const getFeatures = (type: string): string[] => {
     case 'seoAudit': return features.seoAudit;
     case 'robots': return features.robots;
     case 'studioComponents': return features.studioComponents;
-    case 'audit': return features.audit;
     default: return features.default;
+  }
+};
+
+const getFeatureImage = (type: string): string => {
+  switch (type) {
+    case 'databaseDesigner': return '/images/premium/sql-designer.avif';
+    case 'seoAudit': return '/images/premium/seo-audit.avif';
+    case 'robots': return '/images/premium/robots.avif';
+    case 'studioComponents': return '/images/premium/studio-preview.avif';
+    default: return '/images/preview-devunity.avif';
   }
 };
 
@@ -267,23 +294,120 @@ const goToPricingPage = () => {
 .premium-action-btn {
   background: linear-gradient(45deg, #FFD700, #FFA500);
   border: 1px solid rgba(255, 215, 0, 0.3);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.5px;
-  text-transform: none;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
 }
 
 .premium-action-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  background: linear-gradient(45deg, #FFC800, #FF9500);
 }
 
 .premium-feature-item :deep(.v-list-item__prepend) {
-  color: #FFD700;
-  margin-right: 12px;
+  color: #4CAF50;
+  margin-right: 8px;
 }
 
 .premium-feature-item :deep(.v-list-item-title) {
   font-weight: 500;
+}
+
+.testimonial-box {
+  background-color: rgba(var(--v-theme-surface-variant), 0.5);
+  border-radius: 12px;
+  border-left: 4px solid #FFD700;
+}
+
+.testimonial-text {
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.premium-dialog {
+  overflow: hidden;
+}
+
+.premium-hero {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+  overflow: hidden;
+}
+
+.premium-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.2), transparent 60%);
+  z-index: 0;
+}
+
+.premium-icon {
+  filter: drop-shadow(0 2px 5px rgba(255, 215, 0, 0.5));
+  animation: pulse 2s infinite;
+}
+
+.premium-preview-image {
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 4px;
+}
+
+.premium-preview-image :deep(img) {
+  width: 100% !important;
+  height: 152px !important;
+  max-height: 152px !important;
+  max-width: 100% !important;
+  object-position: center;
+}
+
+.premium-preview-image:hover {
+  transform: scale(1.02);
+}
+
+.price-card {
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  background: linear-gradient(to bottom, rgba(255, 251, 235, 0.7), rgba(255, 249, 219, 0.4));
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.premium-hero-databaseDesigner {
+  background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(25, 118, 210, 0.05));
+}
+
+.premium-hero-seoAudit {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(56, 142, 60, 0.05));
+}
+
+.premium-hero-robots {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 179, 0, 0.05));
+}
+
+.premium-hero-studioComponents {
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.1), rgba(123, 31, 162, 0.05));
+}
+
+.premium-hero-audit {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(211, 47, 47, 0.05));
 }
 
 .gold-gradient-chip {

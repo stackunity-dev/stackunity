@@ -1,8 +1,8 @@
 import { pool } from '../db';
+import { readBody, defineEventHandler } from 'h3';
 
 export default defineEventHandler(async (event) => {
-  const { snippetId } = await readBody(event);
-  const userId = event.context.user.id;
+  const { snippetId, userId } = await readBody(event);
   try {
     const insertFavorite = await pool.execute('INSERT INTO favorites_snippets (snippet_id, user_id) VALUES (?, ?)', [snippetId, userId]);
   }
