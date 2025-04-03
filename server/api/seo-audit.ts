@@ -230,16 +230,18 @@ export default defineEventHandler(async (event) => {
     if (process.env.NODE_ENV === 'production') {
       browser = await puppeteer.launch({
         args: [
-          ...chromium.args,
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
-          '--disable-gpu'
+          '--single-process',
+          '--no-zygote'
         ],
-        defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
         headless: true,
-        ignoreDefaultArgs: ['--disable-extensions']
+        defaultViewport: {
+          width: 1920,
+          height: 1080
+        }
       });
     } else {
       browser = await puppeteer.launch({
@@ -590,14 +592,14 @@ export default defineEventHandler(async (event) => {
       result.socialTags = await page.evaluate(() => {
         const ogTags = Array.from(document.querySelectorAll('meta[property^="og:"]'))
           .map((tag: Element) => ({
-            property: tag.getAttribute('property'),
-            content: tag.getAttribute('content')
+            property: tag.getAttribute('property') || null,
+            content: tag.getAttribute('content') || null
           }));
 
         const twitterTags = Array.from(document.querySelectorAll('meta[name^="twitter:"]'))
           .map((tag: Element) => ({
-            name: tag.getAttribute('name'),
-            content: tag.getAttribute('content')
+            name: tag.getAttribute('name') || null,
+            content: tag.getAttribute('content') || null
           }));
 
         return { ogTags, twitterTags };
