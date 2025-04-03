@@ -233,16 +233,12 @@ export default defineEventHandler(async (event) => {
       chromium.setHeadlessMode = true;
       chromium.setGraphicsMode = false;
 
-      const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
-      console.log('Utilisation de Chromium depuis:', chromiumPath);
-
-      process.env.LD_LIBRARY_PATH = '/tmp/chromium-pack/lib';
-      process.env.FONTCONFIG_PATH = '/tmp/chromium-pack/etc/fonts';
-      process.env.CHROME_DEVEL_SANDBOX = '/tmp/chromium-pack/chrome-sandbox';
+      // Utilisation de la version précompilée de Chrome pour AWS Lambda
+      const executablePath = await chromium.executablePath('https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-linux-x64.tar.gz');
+      console.log('Utilisation de Chromium depuis:', executablePath);
 
       browser = await puppeteer.launch({
         args: [
-          ...chromium.args,
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
@@ -250,16 +246,12 @@ export default defineEventHandler(async (event) => {
           '--no-zygote',
           '--single-process',
           '--disable-extensions',
-          '--disable-software-rasterizer'
+          '--disable-software-rasterizer',
+          '--headless=new'
         ],
         defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(chromiumPath),
-        ignoreHTTPSErrors: true,
-        env: {
-          ...process.env,
-          FONTCONFIG_PATH: '/tmp/chromium-pack/etc/fonts',
-          LD_LIBRARY_PATH: '/tmp/chromium-pack/lib'
-        }
+        executablePath,
+        ignoreHTTPSErrors: true
       });
     } else {
       browser = await puppeteer.launch({
