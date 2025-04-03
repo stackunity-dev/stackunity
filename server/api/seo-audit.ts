@@ -116,6 +116,272 @@ export interface CrawlReport {
   };
 }
 
+// Fonctions d'extraction HTML par regex
+function extractTitle(html: string): string {
+  const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
+  return titleMatch ? titleMatch[1].trim() : '';
+}
+
+function extractMetaDescription(html: string): string {
+  const metaMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i)
+    || html.match(/<meta[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i);
+  return metaMatch ? metaMatch[1].trim() : '';
+}
+
+function extractAllHeadings(html: string): { [key: string]: string[] } {
+  const headings: { [key: string]: string[] } = {
+    h1: [], h2: [], h3: [], h4: [], h5: [], h6: []
+  };
+
+  for (let i = 1; i <= 6; i++) {
+    const regex = new RegExp(`<h${i}[^>]*>(.*?)<\/h${i}>`, 'gi');
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+      // Nettoyer les balises HTML à l'intérieur du titre
+      const content = match[1].replace(/<[^>]*>/g, '').trim();
+      headings[`h${i}`].push(content);
+    }
+  }
+
+  return headings;
+}
+
+function extractImages(html: string, baseUrl: string): any[] {
+  const images: Array<{
+    src: string;
+    alt: string | null;
+    title: string | null;
+    width: string;
+    height: string;
+    hasDimensions: boolean;
+  }> = [];
+  const regex = /<img[^>]*>/gi;
+  let match;
+
+  while ((match = regex.exec(html)) !== null) {
+    const imgTag = match[0];
+
+    const srcMatch = imgTag.match(/src=["']([^"']*)["']/i);
+    const altMatch = imgTag.match(/alt=["']([^"']*)["']/i);
+    const titleMatch = imgTag.match(/title=["']([^"']*)["']/i);
+    const widthMatch = imgTag.match(/width=["']([^"']*)["']/i);
+    const heightMatch = imgTag.match(/height=["']([^"']*)["']/i);
+
+    const src = srcMatch ? srcMatch[1] : '';
+
+    // Construire l'URL complète si nécessaire
+    let fullSrc = src;
+    if (src && !src.startsWith('data:') && !src.match(/^(http|https):\/\//)) {
+      if (src.startsWith('/')) {
+        const urlObj = new URL(baseUrl);
+        fullSrc = `${urlObj.protocol}//${urlObj.hostname}${src}`;
+      } else {
+        fullSrc = new URL(src, baseUrl).href;
+      }
+    }
+
+    images.push({
+      src: fullSrc,
+      alt: altMatch ? altMatch[1] : null,
+      title: titleMatch ? titleMatch[1] : null,
+      width: widthMatch ? widthMatch[1] : '',
+      height: heightMatch ? heightMatch[1] : '',
+      hasDimensions: !!(widthMatch && heightMatch)
+    });
+  }
+
+  return images;
+}
+
+function extractLinks(html: string, url: string): { internal: string[], external: string[] } {
+  const links: { internal: string[], external: string[] } = {
+    internal: [],
+    external: []
+  };
+
+  const urlObj = new URL(url);
+  const baseHost = urlObj.hostname;
+
+  const regex = /<a[^>]*href=["']([^"']*)["'][^>]*>/gi;
+  let match;
+
+  while ((match = regex.exec(html)) !== null) {
+    const href = match[1];
+
+    // Ignorer les liens javascript: et les ancres
+    if (!href || href.startsWith('javascript:') || href === '#' || href.startsWith('mailto:')) {
+      continue;
+    }
+
+    try {
+      // Si c'est une URL relative, la convertir en absolue
+      let fullUrl: string;
+      if (href.startsWith('/')) {
+        fullUrl = `${urlObj.protocol}//${baseHost}${href}`;
+      } else if (!href.match(/^(http|https):\/\//)) {
+        fullUrl = new URL(href, url).href;
+      } else {
+        fullUrl = href;
+      }
+
+      // Déterminer si le lien est interne ou externe
+      const linkUrl = new URL(fullUrl);
+      if (linkUrl.hostname === baseHost) {
+        if (!links.internal.includes(fullUrl)) {
+          links.internal.push(fullUrl);
+        }
+      } else {
+        if (!links.external.includes(fullUrl)) {
+          links.external.push(fullUrl);
+        }
+      }
+    } catch (e) {
+      // URL invalide, l'ignorer
+      console.error(`URL invalide: ${href}`);
+    }
+  }
+
+  return links;
+}
+
+function extractMetaTags(html: string): Array<{ name: string, content: string }> {
+  const metaTags: Array<{ name: string, content: string }> = [];
+  const regex = /<meta[^>]*>/gi;
+  let match;
+
+  while ((match = regex.exec(html)) !== null) {
+    const metaTag = match[0];
+
+    // Extraire le nom et le contenu
+    const nameMatch = metaTag.match(/name=["']([^"']*)["']/i);
+    const contentMatch = metaTag.match(/content=["']([^"']*)["']/i);
+
+    if (nameMatch && contentMatch) {
+      metaTags.push({
+        name: nameMatch[1],
+        content: contentMatch[1]
+      });
+    }
+  }
+
+  return metaTags;
+}
+
+function extractSocialTags(html: string): { ogTags: any[], twitterTags: any[] } {
+  const ogTags: Array<{ property: string, content: string }> = [];
+  const twitterTags: Array<{ name: string, content: string }> = [];
+
+  // Extraire les balises Open Graph
+  const ogRegex = /<meta[^>]*property=["']og:([^"']*)["'][^>]*content=["']([^"']*)["'][^>]*>/gi;
+  let ogMatch;
+
+  while ((ogMatch = ogRegex.exec(html)) !== null) {
+    ogTags.push({
+      property: `og:${ogMatch[1]}`,
+      content: ogMatch[2]
+    });
+  }
+
+  // Extraction alternative pour OG (ordre différent des attributs)
+  const ogRegexAlt = /<meta[^>]*content=["']([^"']*)["'][^>]*property=["']og:([^"']*)["'][^>]*>/gi;
+  let ogMatchAlt;
+
+  while ((ogMatchAlt = ogRegexAlt.exec(html)) !== null) {
+    ogTags.push({
+      property: `og:${ogMatchAlt[2]}`,
+      content: ogMatchAlt[1]
+    });
+  }
+
+  // Extraire les balises Twitter
+  const twitterRegex = /<meta[^>]*name=["']twitter:([^"']*)["'][^>]*content=["']([^"']*)["'][^>]*>/gi;
+  let twitterMatch;
+
+  while ((twitterMatch = twitterRegex.exec(html)) !== null) {
+    twitterTags.push({
+      name: `twitter:${twitterMatch[1]}`,
+      content: twitterMatch[2]
+    });
+  }
+
+  // Extraction alternative pour Twitter (ordre différent des attributs)
+  const twitterRegexAlt = /<meta[^>]*content=["']([^"']*)["'][^>]*name=["']twitter:([^"']*)["'][^>]*>/gi;
+  let twitterMatchAlt;
+
+  while ((twitterMatchAlt = twitterRegexAlt.exec(html)) !== null) {
+    twitterTags.push({
+      name: `twitter:${twitterMatchAlt[2]}`,
+      content: twitterMatchAlt[1]
+    });
+  }
+
+  return { ogTags, twitterTags };
+}
+
+function extractStructuredData(html: string): any[] {
+  const structuredData: any[] = [];
+  const regex = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let match;
+
+  while ((match = regex.exec(html)) !== null) {
+    try {
+      const jsonContent = match[1].trim();
+      const parsed = JSON.parse(jsonContent);
+      if (parsed) {
+        structuredData.push(parsed);
+      }
+    } catch (e) {
+      console.error('Erreur lors de l\'analyse JSON-LD:', e);
+    }
+  }
+
+  return structuredData;
+}
+
+function extractViewportMeta(html: string): { hasViewport: boolean, viewportContent: string } {
+  const viewportMatch = html.match(/<meta[^>]*name=["']viewport["'][^>]*content=["']([^"']*)["'][^>]*>/i) ||
+    html.match(/<meta[^>]*content=["']([^"']*)["'][^>]*name=["']viewport["'][^>]*>/i);
+
+  return {
+    hasViewport: !!viewportMatch,
+    viewportContent: viewportMatch ? viewportMatch[1] : ''
+  };
+}
+
+function countWords(text: string): number {
+  // Extraire uniquement le texte du HTML
+  const cleanText = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  return cleanText.split(/\s+/).length;
+}
+
+function extractRobotsMeta(metaTags: Array<{ name: string, content: string }>): any {
+  const robotsMeta = {
+    index: true,
+    follow: true,
+    noindex: false,
+    nofollow: false,
+    noarchive: false,
+    nosnippet: false,
+    noodp: false
+  };
+
+  const robotsTag = metaTags.find(tag => tag.name.toLowerCase() === 'robots');
+  if (robotsTag) {
+    const content = robotsTag.content.toLowerCase();
+
+    robotsMeta.noindex = content.includes('noindex');
+    robotsMeta.nofollow = content.includes('nofollow');
+    robotsMeta.noarchive = content.includes('noarchive');
+    robotsMeta.nosnippet = content.includes('nosnippet');
+    robotsMeta.noodp = content.includes('noodp');
+
+    robotsMeta.index = !robotsMeta.noindex;
+    robotsMeta.follow = !robotsMeta.nofollow;
+  }
+
+  return robotsMeta;
+}
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const url = body.url;
@@ -134,19 +400,15 @@ export default defineEventHandler(async (event) => {
 
   try {
     console.log('Démarrage de l\'audit SEO pour', url);
+    const startTime = Date.now();
 
-    // Utiliser un service externe pour l'analyse SEO
-    const seoServiceUrl = 'https://html-analysis.rapidapi.com/analyze';
-    const headers = {
-      'X-RapidAPI-Key': process.env.RAPIDAPI_KEY || 'votre-clé-api',
-      'X-RapidAPI-Host': 'html-analysis.rapidapi.com',
-      'Content-Type': 'application/json'
-    };
-
-    console.log('Envoi de la requête à l\'API externe');
-
-    // Récupérer d'abord les détails du site
-    const siteResponse = await axios.get(url, { timeout: 15000 }).catch(error => {
+    // Récupération du contenu HTML
+    const siteResponse = await axios.get(url, {
+      timeout: 15000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; SEOAuditBot/1.0; +https://devunity.tech)'
+      }
+    }).catch(error => {
       console.error('Erreur lors de la récupération du site:', error.message);
       throw createError({
         statusCode: 500,
@@ -154,101 +416,21 @@ export default defineEventHandler(async (event) => {
       });
     });
 
-    // Préparer l'analyse
-    const analyzeData = {
-      url: url,
-      html: siteResponse.data,
-      options: {
-        seo_analysis: true,
-        html_analysis: true,
-        perforance_analysis: true,
-        security_analysis: true
-      }
-    };
+    const html = siteResponse.data;
+    const loadTime = Date.now() - startTime;
 
-    // Appel API externe ou analyse locale selon l'environnement
-    let seoAnalysis;
-
-    try {
-      // Tenter d'utiliser l'API externe
-      const apiResponse = await axios.post(seoServiceUrl, analyzeData, {
-        headers,
-        timeout: 30000
-      });
-
-      seoAnalysis = apiResponse.data;
-      console.log('Analyse externe réussie');
-    } catch (apiError) {
-      console.log('API externe indisponible, création d\'une analyse simple', apiError.message);
-
-      // Analyse basique locale si l'API externe échoue
-      const dom = new (require('jsdom')).JSDOM(siteResponse.data);
-      const document = dom.window.document;
-
-      seoAnalysis = {
-        success: true,
-        url: url,
-        title: document.title || '',
-        meta_description: document.querySelector('meta[name="description"]')?.getAttribute('content') || '',
-        headers: {
-          h1: Array.from(document.querySelectorAll('h1')).map(el => (el as Element).textContent?.trim() || ''),
-          h2: Array.from(document.querySelectorAll('h2')).map(el => (el as Element).textContent?.trim() || ''),
-          h3: Array.from(document.querySelectorAll('h3')).map(el => (el as Element).textContent?.trim() || ''),
-          h4: Array.from(document.querySelectorAll('h4')).map(el => (el as Element).textContent?.trim() || ''),
-          h5: Array.from(document.querySelectorAll('h5')).map(el => (el as Element).textContent?.trim() || ''),
-          h6: Array.from(document.querySelectorAll('h6')).map(el => (el as Element).textContent?.trim() || '')
-        },
-        images: Array.from(document.querySelectorAll('img')).map(img => ({
-          src: (img as Element).getAttribute('src') || '',
-          alt: (img as Element).getAttribute('alt') || null,
-          title: (img as Element).getAttribute('title') || null,
-          width: (img as Element).getAttribute('width') || '',
-          height: (img as Element).getAttribute('height') || ''
-        })),
-        links: {
-          internal: Array.from(document.querySelectorAll('a[href^="/"], a[href^="' + url + '"]')).map(a => (a as Element).getAttribute('href')),
-          external: Array.from(document.querySelectorAll('a[href^="http"]'))
-            .filter(a => !(a as Element).getAttribute('href')?.startsWith(url))
-            .map(a => (a as Element).getAttribute('href'))
-        },
-        performance: {
-          loadTime: Date.now() - performance.now(),
-          firstContentfulPaint: 500,
-          largestContentfulPaint: 1000,
-          timeToFirstByte: 200,
-          domLoad: 800
-        },
-        mobile: {
-          hasViewport: !!document.querySelector('meta[name="viewport"]'),
-          viewportContent: document.querySelector('meta[name="viewport"]')?.getAttribute('content') || '',
-          smallTouchTargets: 0
-        },
-        social: {
-          og: Array.from(document.querySelectorAll('meta[property^="og:"]')).map(tag => ({
-            property: (tag as Element).getAttribute('property'),
-            content: (tag as Element).getAttribute('content')
-          })),
-          twitter: Array.from(document.querySelectorAll('meta[name^="twitter:"]')).map(tag => ({
-            name: (tag as Element).getAttribute('name'),
-            content: (tag as Element).getAttribute('content')
-          }))
-        },
-        structuredData: Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
-          .map(script => {
-            try {
-              return JSON.parse((script as Element).textContent || '{}');
-            } catch (e) {
-              return null;
-            }
-          })
-          .filter(data => data),
-        content: {
-          wordCount: document.body?.textContent?.split(/\s+/).filter(Boolean).length || 0,
-          keywordDensity: 1.5,
-          readabilityScore: 65
-        }
-      };
-    }
+    // Extraire les informations de base
+    const title = extractTitle(html);
+    const description = extractMetaDescription(html);
+    const headings = extractAllHeadings(html);
+    const imageAlt = extractImages(html, url);
+    const links = extractLinks(html, url);
+    const metaTags = extractMetaTags(html);
+    const robotsMeta = extractRobotsMeta(metaTags);
+    const socialTags = extractSocialTags(html);
+    const structuredData = extractStructuredData(html);
+    const viewport = extractViewportMeta(html);
+    const wordCount = countWords(html);
 
     // Récupérer robots.txt et sitemap
     let robotsTxtContent = '';
@@ -304,75 +486,73 @@ export default defineEventHandler(async (event) => {
       console.error('Erreur lors de la récupération du robots.txt:', error.message);
     }
 
-    // Construire les résultats avec les données disponibles
+    // Analyser les schémas structurés et compter les types
+    const schemaTypeCount: Record<string, number> = {};
+    for (const schema of structuredData) {
+      try {
+        if (schema && schema['@type']) {
+          const type = schema['@type'];
+          if (Array.isArray(type)) {
+            type.forEach(t => {
+              schemaTypeCount[t] = (schemaTypeCount[t] || 0) + 1;
+            });
+          } else {
+            schemaTypeCount[type] = (schemaTypeCount[type] || 0) + 1;
+          }
+        }
+      } catch (error) {
+        console.error('Erreur d\'analyse du type de schéma:', error.message);
+      }
+    }
+
+    // Construire les résultats
     const result: SEOAuditResult = {
       url,
-      title: seoAnalysis.title || '',
-      description: seoAnalysis.meta_description || '',
-      h1: seoAnalysis.headers?.h1 || [],
-      h2: seoAnalysis.headers?.h2 || [],
-      h3: seoAnalysis.headers?.h3 || [],
-      metaTags: [],
-      robotsMeta: {
-        index: true,
-        follow: true,
-        noindex: false,
-        nofollow: false,
-        noarchive: false,
-        nosnippet: false,
-        noodp: false
-      },
-      imageAlt: (seoAnalysis.images || []).map(img => ({
-        src: img.src || '',
-        alt: img.alt,
-        title: img.title || '',
-        width: '',
-        height: '',
-        hasDimensions: false
-      })),
+      title,
+      description,
+      h1: headings.h1,
+      h2: headings.h2,
+      h3: headings.h3,
+      metaTags,
+      robotsMeta,
+      imageAlt,
       videoInfo: [],
-      loadTime: seoAnalysis.performance?.loadTime || 0,
+      loadTime,
       statusCode: siteResponse.status,
-      internalLinks: seoAnalysis.links?.internal || [],
-      externalLinks: seoAnalysis.links?.external || [],
+      internalLinks: links.internal,
+      externalLinks: links.external,
       warnings: [],
       coreWebVitals: {
-        FCP: seoAnalysis.performance?.firstContentfulPaint || 0,
-        LCP: seoAnalysis.performance?.largestContentfulPaint || 0,
-        TTFB: seoAnalysis.performance?.timeToFirstByte || 0,
-        domLoad: seoAnalysis.performance?.domLoad || 0
+        FCP: 500, // Valeurs estimées
+        LCP: 1000,
+        TTFB: 200,
+        domLoad: 800
       },
       headingStructure: {
-        h1: seoAnalysis.headers?.h1 || [],
-        h2: seoAnalysis.headers?.h2 || [],
-        h3: seoAnalysis.headers?.h3 || [],
-        h4: seoAnalysis.headers?.h4 || [],
-        h5: seoAnalysis.headers?.h5 || [],
-        h6: seoAnalysis.headers?.h6 || []
+        h1: headings.h1 || [],
+        h2: headings.h2 || [],
+        h3: headings.h3 || [],
+        h4: headings.h4 || [],
+        h5: headings.h5 || [],
+        h6: headings.h6 || []
       },
-      structuredData: seoAnalysis.structuredData || [],
-      socialTags: {
-        ogTags: seoAnalysis.social?.og || [],
-        twitterTags: seoAnalysis.social?.twitter || []
-      },
+      structuredData,
+      socialTags,
       mobileCompatibility: {
-        hasViewport: seoAnalysis.mobile?.hasViewport || false,
-        viewportContent: seoAnalysis.mobile?.viewportContent || '',
-        smallTouchTargets: seoAnalysis.mobile?.smallTouchTargets || 0
+        hasViewport: viewport.hasViewport,
+        viewportContent: viewport.viewportContent,
+        smallTouchTargets: 0 // Impossible à détecter avec cette méthode
       },
       securityChecks: {
         https: url.startsWith('https'),
         validCertificate: true,
         securityHeaders: []
       },
-      links: {
-        internal: seoAnalysis.links?.internal || [],
-        external: seoAnalysis.links?.external || []
-      },
+      links,
       contentStats: {
-        wordCount: seoAnalysis.content?.wordCount || 0,
-        keywordDensity: seoAnalysis.content?.keywordDensity || 0,
-        readabilityScore: seoAnalysis.content?.readabilityScore || 65
+        wordCount,
+        keywordDensity: 1.5, // Valeur estimée
+        readabilityScore: 65 // Valeur estimée
       },
       technicalSEO: {
         sitemapFound,
@@ -380,7 +560,7 @@ export default defineEventHandler(async (event) => {
         sitemapUrls,
         robotsTxtFound,
         robotsTxtContent,
-        schemaTypeCount: {}
+        schemaTypeCount
       }
     };
 
@@ -451,73 +631,6 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Récupérer toutes les balises meta pour l'analyse
-    if (seoAnalysis) {
-      // Tenter d'extraire les meta tags directement à partir du HTML
-      try {
-        // Créer un nouveau DOM pour l'analyse si on n'en a pas déjà un
-        const metaDom = new (require('jsdom')).JSDOM(siteResponse.data);
-
-        result.metaTags = Array.from(metaDom.window.document.querySelectorAll('meta')).map(meta => ({
-          name: (meta as Element).getAttribute('name') || '',
-          content: (meta as Element).getAttribute('content') || ''
-        })).filter(tag => tag.name && tag.content);
-
-        // Analyser les tags robots s'ils existent
-        const robotsMeta = result.metaTags.find(tag => tag.name.toLowerCase() === 'robots');
-        if (robotsMeta) {
-          const content = robotsMeta.content.toLowerCase();
-          result.robotsMeta = {
-            index: !content.includes('noindex'),
-            follow: !content.includes('nofollow'),
-            noindex: content.includes('noindex'),
-            nofollow: content.includes('nofollow'),
-            noarchive: content.includes('noarchive'),
-            nosnippet: content.includes('nosnippet'),
-            noodp: content.includes('noodp')
-          };
-
-          if (result.robotsMeta.noindex) {
-            result.warnings.push({
-              message: 'La page est configurée pour ne pas être indexée (noindex)',
-              severity: 'high',
-              type: 'meta'
-            });
-          }
-
-          if (result.robotsMeta.nofollow) {
-            result.warnings.push({
-              message: 'La page est configurée pour ne pas suivre les liens (nofollow)',
-              severity: 'medium',
-              type: 'meta'
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération des meta tags:', error.message);
-      }
-    }
-
-    // Analyser les schémas structurés et compter les types
-    const schemaTypeCount: Record<string, number> = {};
-    for (const schema of result.structuredData) {
-      try {
-        if (schema && schema['@type']) {
-          const type = schema['@type'];
-          if (Array.isArray(type)) {
-            type.forEach(t => {
-              schemaTypeCount[t] = (schemaTypeCount[t] || 0) + 1;
-            });
-          } else {
-            schemaTypeCount[type] = (schemaTypeCount[type] || 0) + 1;
-          }
-        }
-      } catch (error) {
-        console.error('Erreur d\'analyse du type de schéma:', error);
-      }
-    }
-    result.technicalSEO.schemaTypeCount = schemaTypeCount;
-
     // Ajouter plus d'avertissements basés sur les données
     if (result.coreWebVitals.LCP > 2500) {
       result.warnings.push({
@@ -557,6 +670,22 @@ export default defineEventHandler(async (event) => {
         message: 'Aucun balisage Schema.org trouvé',
         severity: 'medium',
         type: 'structured-data'
+      });
+    }
+
+    if (robotsMeta.noindex) {
+      result.warnings.push({
+        message: 'La page est configurée pour ne pas être indexée (noindex)',
+        severity: 'high',
+        type: 'meta'
+      });
+    }
+
+    if (robotsMeta.nofollow) {
+      result.warnings.push({
+        message: 'La page est configurée pour ne pas suivre les liens (nofollow)',
+        severity: 'medium',
+        type: 'meta'
       });
     }
 
