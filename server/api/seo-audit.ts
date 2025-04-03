@@ -233,24 +233,13 @@ export default defineEventHandler(async (event) => {
       chromium.setHeadlessMode = true;
       chromium.setGraphicsMode = false;
 
-      // Utilisation de la version précompilée de Chrome pour AWS Lambda
-      const executablePath = await chromium.executablePath('https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-linux-x64.tar.gz');
-      console.log('Utilisation de Chromium depuis:', executablePath);
+      const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
+      console.log('Utilisation de Chromium depuis:', chromiumPath);
 
       browser = await puppeteer.launch({
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
-          '--no-zygote',
-          '--single-process',
-          '--disable-extensions',
-          '--disable-software-rasterizer',
-          '--headless=new'
-        ],
+        args: chromium.args,
         defaultViewport: chromium.defaultViewport,
-        executablePath,
+        executablePath: await chromium.executablePath(chromiumPath),
         ignoreHTTPSErrors: true
       });
     } else {
