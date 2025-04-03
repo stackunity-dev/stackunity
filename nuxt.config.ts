@@ -27,7 +27,15 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    '@pinia/nuxt', '@nuxtjs/plausible',
+    '@pinia/nuxt',
+    ['@nuxtjs/plausible', {
+      domain: "devunity.tech",
+      apiHost: "https://plausible.io",
+      trackLocalhost: true,
+      hashMode: true,
+      enableAutoOutboundTracking: true,
+      enableAutoFileDownloadsTracking: true,
+    }],
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
         // @ts-expect-error
@@ -35,10 +43,6 @@ export default defineNuxtConfig({
       })
     },
   ],
-  plausible: {
-    // Prevent tracking on localhost
-    ignoredHostnames: ['localhost'],
-  },
 
   runtimeConfig: {
     public: {
