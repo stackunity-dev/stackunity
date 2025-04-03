@@ -325,15 +325,44 @@ export default defineEventHandler(async (event) => {
         } catch (fallbackError) {
           console.error('Échec de toutes les méthodes de lancement de Chromium:', fallbackError);
 
-          // Dernière tentative - utiliser chrome-aws-lambda si disponible
+          // Dernière tentative sans utiliser require dynamique
           try {
-            console.log('Dernière tentative avec chrome-aws-lambda si disponible...');
-            const chromeAwsLambda = require('chrome-aws-lambda');
+            console.log('Dernière tentative avec une configuration minimale...');
+
+            // Utilisation du chemin le plus probable sans dépendre de bibliothèques externes
+            const possiblePaths = [
+              '/tmp/chromium',
+              '/tmp/chromium-executable/chromium',
+              process.env.CHROME_BIN,
+              process.platform === 'win32'
+                ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+                : '/usr/bin/google-chrome'
+            ];
+
+            // Trouver le premier chemin qui existe
+            let executablePath: string | null = null;
+            for (const path of possiblePaths) {
+              if (path && fs.existsSync(path)) {
+                executablePath = path;
+                console.log(`Chemin Chrome trouvé: ${executablePath}`);
+                break;
+              }
+            }
+
+            if (!executablePath) {
+              throw new Error('Aucun exécutable Chrome trouvé dans les chemins standards');
+            }
 
             browser = await puppeteer.launch({
-              args: chromeAwsLambda.args,
-              executablePath: await chromeAwsLambda.executablePath,
-              headless: chromeAwsLambda.headless,
+              args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+              ],
+              executablePath,
+              ignoreHTTPSErrors: true,
+              headless: true
             });
 
           } catch (finalError) {
