@@ -1,4 +1,4 @@
-import chromium from '@sparticuz/chromium';
+import chromium from '@sparticuz/chromium-min';
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { createError, defineEventHandler, readBody } from 'h3';
@@ -229,23 +229,15 @@ export default defineEventHandler(async (event) => {
 
     if (process.env.NODE_ENV === 'production') {
       browser = await puppeteer.launch({
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--single-process',
-          '--no-zygote'
-        ],
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
-        headless: true,
-        defaultViewport: {
-          width: 1920,
-          height: 1080
-        }
+        headless: true as const,
+        ignoreHTTPSErrors: true
       });
     } else {
       browser = await puppeteer.launch({
-        headless: true,
+        headless: true as const,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox'
