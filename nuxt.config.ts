@@ -40,7 +40,8 @@ export default defineNuxtConfig({
     public: {
       stripe: {
         publishableKey: 'pk_test_TYooMQauvdEDq54NiTphI7jx',
-      }
+      },
+      CHROMIUM_PATH: process.env.NODE_ENV === 'production' ? '/tmp/chromium' : undefined
     }
   },
 

@@ -1,5 +1,5 @@
 const { join } = require('path');
-const puppeteer = require('puppeteer');
+const chromium = require('@sparticuz/chromium-min');
 
 /**
  * @type {import("puppeteer").Configuration}
@@ -22,6 +22,6 @@ module.exports = {
     ]
   },
   executablePath: process.env.NODE_ENV === 'production'
-    ? '/tmp/chromium'
-    : puppeteer.executablePath()
+    ? chromium.executablePath
+    : undefined
 }; 
