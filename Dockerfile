@@ -38,11 +38,21 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Création et configuration du répertoire pour Chromium
+# Création et configuration du répertoire pour Chromium avec permissions plus larges
 RUN mkdir -p /tmp/chromium-pack/lib \
-    && chmod -R 777 /tmp/chromium-pack \
-    && ln -s /usr/lib/x86_64-linux-gnu/libnss3.so /tmp/chromium-pack/lib/libnss3.so \
+    && chmod -R 1777 /tmp/chromium-pack \
+    && mkdir -p /tmp/chromium \
+    && chmod -R 1777 /tmp/chromium \
+    && mkdir -p /tmp/swiftshader \
+    && chmod -R 1777 /tmp/swiftshader
+
+# Liens symboliques pour les bibliothèques nécessaires
+RUN ln -s /usr/lib/x86_64-linux-gnu/libnss3.so /tmp/chromium-pack/lib/libnss3.so \
     && ln -s /usr/lib/x86_64-linux-gnu/libnspr4.so /tmp/chromium-pack/lib/libnspr4.so
+
+# Vérification des bibliothèques présentes
+RUN ls -la /usr/lib/x86_64-linux-gnu/libnss3* || echo "libnss3 not found" \
+    && ls -la /usr/lib/x86_64-linux-gnu/libnspr4* || echo "libnspr4 not found"
 
 # Configuration des variables d'environnement
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
@@ -63,14 +73,19 @@ RUN npm install
 RUN curl -L -o chromium-pack.tar https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar \
     && tar xf chromium-pack.tar -C /tmp/chromium-pack \
     && rm chromium-pack.tar \
-    && curl -L -o swiftshader.tar https://devroid.lon1.digitaloceanspaces.com/swiftshader.tar \
-    && tar xf swiftshader.tar -C /tmp/chromium-pack \
-    && rm swiftshader.tar \
     && chmod -R 755 /tmp/chromium-pack
+
+# Ajustement des permissions pour chromium
+RUN if [ -f /tmp/chromium-pack/chromium ]; then \
+    chmod 755 /tmp/chromium-pack/chromium; \
+    fi
 
 # Build de l'application
 RUN npm run build
 
 EXPOSE 3000
+
+# Vérification finale des dépendances
+RUN ldd /tmp/chromium-pack/chromium || echo "chromium not found or cannot be checked"
 
 CMD ["node", ".output/server/index.mjs"] 

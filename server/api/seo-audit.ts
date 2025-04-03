@@ -233,15 +233,58 @@ export default defineEventHandler(async (event) => {
       chromium.setHeadlessMode = true;
       chromium.setGraphicsMode = false;
 
-      const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
-      console.log('Utilisation de Chromium depuis:', chromiumPath);
+      // Récupérer le chemin de Chromium depuis les variables d'environnement
+      const chromiumBinaryPath = process.env.CHROMIUM_PATH ? `${process.env.CHROMIUM_PATH}/chromium` : '/tmp/chromium-pack/chromium';
+      console.log('Chemin vers le binaire Chromium:', chromiumBinaryPath);
 
-      browser = await puppeteer.launch({
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(chromiumPath),
-        ignoreHTTPSErrors: true
-      });
+      try {
+        // Vérifier l'existence du fichier
+        try {
+          const fs = require('fs');
+          if (fs.existsSync(chromiumBinaryPath)) {
+            console.log('Le fichier Chromium existe à l\'emplacement spécifié');
+          } else {
+            console.warn(`AVERTISSEMENT: Le fichier Chromium n'existe pas à ${chromiumBinaryPath}`);
+            // Tenter de trouver où il pourrait être
+            const possibleLocations = [
+              '/tmp/chromium-pack/chromium',
+              '/tmp/chromium/chromium',
+              '/app/node_modules/.cache/@sparticuz/chromium/chromium'
+            ];
+            for (const loc of possibleLocations) {
+              if (fs.existsSync(loc)) {
+                console.log(`Chromium trouvé à: ${loc}`);
+              }
+            }
+          }
+        } catch (fsError) {
+          console.error('Erreur lors de la vérification du fichier:', fsError);
+        }
+
+        // Lister tous les fichiers dans le dossier parent
+        try {
+          const { execSync } = require('child_process');
+          const parentDir = chromiumBinaryPath.substring(0, chromiumBinaryPath.lastIndexOf('/'));
+          console.log(`Contenu de ${parentDir}:`);
+          const lsOutput = execSync(`ls -la ${parentDir}`).toString();
+          console.log(lsOutput);
+        } catch (execError) {
+          console.error('Erreur lors de la liste des fichiers:', execError);
+        }
+
+        const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
+        console.log('Utilisation de Chromium depuis:', chromiumPath);
+
+        browser = await puppeteer.launch({
+          args: chromium.args,
+          defaultViewport: chromium.defaultViewport,
+          executablePath: await chromium.executablePath(chromiumPath),
+          ignoreHTTPSErrors: true
+        });
+      } catch (error) {
+        console.error('Erreur lors du lancement de Chromium:', error);
+        throw error;
+      }
     } else {
       const executablePath = process.platform === 'win32'
         ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
