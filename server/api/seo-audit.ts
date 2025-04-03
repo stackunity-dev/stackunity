@@ -241,17 +241,31 @@ export default defineEventHandler(async (event) => {
       try {
         // Vérifier si un fichier .br existe dans /tmp/chromium-pack et le décompresser
         if (fs.existsSync('/tmp/chromium-pack/chromium.br')) {
-          console.log('Fichier chromium.br trouvé, décompression en cours...');
+          console.log('Fichier chromium.br trouvé, mais brotli peut ne pas être installé. Utilisation d\'une méthode alternative...');
           try {
-            // S'assurer que le répertoire /tmp/chromium existe
-            execSync('mkdir -p /tmp/chromium');
-            // Décompresser le fichier avec brotli
-            execSync('brotli -d /tmp/chromium-pack/chromium.br -o /tmp/chromium/chromium');
-            // Donner les permissions d'exécution
-            execSync('chmod 755 /tmp/chromium/chromium');
-            console.log('Décompression de chromium.br terminée avec succès');
+            // Utiliser le binaire directement depuis le package @sparticuz/chromium-min
+            console.log('Tentative d\'utilisation du binaire inclus dans @sparticuz/chromium-min...');
+
+            // Vérifier si le binaire de secours existe
+            if (fs.existsSync('/tmp/chromium-pack.tar')) {
+              console.log('Archive tar trouvée, extraction en cours...');
+              execSync('mkdir -p /tmp/chromium');
+              execSync('tar -xf /tmp/chromium-pack.tar -C /tmp');
+
+              if (fs.existsSync('/tmp/chromium/chromium')) {
+                execSync('chmod 755 /tmp/chromium/chromium');
+                console.log('Extraction et permissions réussies pour /tmp/chromium/chromium');
+              } else {
+                console.log('Vérification du contenu de l\'archive tar:');
+                console.log(execSync('tar -tvf /tmp/chromium-pack.tar').toString());
+                console.log('Contenu du répertoire /tmp après extraction:');
+                console.log(execSync('ls -la /tmp').toString());
+              }
+            } else {
+              console.log('Archive tar non trouvée, téléchargement en cours...');
+            }
           } catch (error) {
-            console.error('Erreur pendant la décompression de chromium.br:', error);
+            console.error('Erreur pendant le traitement du fichier chromium.br:', error);
           }
         }
 
@@ -286,11 +300,48 @@ export default defineEventHandler(async (event) => {
             execSync('mkdir -p /tmp/chromium');
             execSync('curl -L https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar -o /tmp/chromium-pack.tar');
             execSync('tar -xf /tmp/chromium-pack.tar -C /tmp');
-            execSync('chmod 755 /tmp/chromium/chromium');
-            console.log('Chromium téléchargé et extrait avec succès');
-            foundLocation = '/tmp/chromium/chromium';
+
+            // Vérifier si le binaire a été correctement extrait
+            const tarContents = execSync('tar -tvf /tmp/chromium-pack.tar').toString();
+            console.log('Contenu de l\'archive tar:', tarContents);
+
+            if (fs.existsSync('/tmp/chromium/chromium')) {
+              execSync('chmod 755 /tmp/chromium/chromium');
+              console.log('Chromium téléchargé et extrait avec succès');
+              foundLocation = '/tmp/chromium/chromium';
+            } else {
+              // Chercher le binaire dans l'archive
+              console.log('Contenu du répertoire /tmp après extraction:');
+              console.log(execSync('ls -la /tmp').toString());
+              console.log('Recherche du binaire chromium dans les sous-répertoires:');
+              console.log(execSync('find /tmp -name "chromium" -type f').toString());
+
+              const chromiumBinPath = execSync('find /tmp -name "chromium" -type f').toString().trim().split('\n')[0];
+              if (chromiumBinPath) {
+                execSync(`chmod 755 ${chromiumBinPath}`);
+                console.log(`Binaire trouvé et permissions mises à jour: ${chromiumBinPath}`);
+                foundLocation = chromiumBinPath;
+              } else {
+                throw new Error('Binaire chromium introuvable après extraction');
+              }
+            }
           } catch (error) {
             console.error('Erreur lors du téléchargement/extraction de Chromium:', error);
+
+            // Tentative de fallback sur le binaire fourni par @sparticuz/chromium-min
+            try {
+              console.log('Tentative de fallback sur le binaire fourni par @sparticuz/chromium-min');
+              const execPath = await chromium.executablePath();
+              console.log(`Chemin d'exécution fourni par chromium-min: ${execPath}`);
+              if (fs.existsSync(execPath)) {
+                execSync(`chmod 755 ${execPath}`);
+                console.log(`Permissions mises à jour pour: ${execPath}`);
+                foundLocation = execPath;
+                executableFound = true;
+              }
+            } catch (fallbackError) {
+              console.error('Erreur lors du fallback sur chromium-min:', fallbackError);
+            }
           }
         }
 
@@ -319,7 +370,8 @@ export default defineEventHandler(async (event) => {
           args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
           defaultViewport: chromium.defaultViewport,
           executablePath: foundLocation || await chromium.executablePath(),
-          ignoreHTTPSErrors: true
+          ignoreHTTPSErrors: true,
+          headless: "new"  // Utiliser la nouvelle API headless
         });
       } catch (error) {
         console.error('Erreur lors du lancement de Chromium:', error);
