@@ -228,16 +228,25 @@ export default defineEventHandler(async (event) => {
     console.log('Lancement du navigateur pour l\'audit SEO...');
 
     if (process.env.NODE_ENV === 'production') {
+      const executablePath = await chromium.executablePath();
+      console.log('Chemin de Chromium en production:', executablePath);
+
       browser = await puppeteer.launch({
-        args: chromium.args,
+        args: [
+          ...chromium.args,
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu'
+        ],
         defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
-        headless: true as const,
+        executablePath,
+        headless: true,
         ignoreHTTPSErrors: true
       });
     } else {
       browser = await puppeteer.launch({
-        headless: true as const,
+        headless: true,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox'

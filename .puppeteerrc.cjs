@@ -1,4 +1,5 @@
 const { join } = require('path');
+const puppeteer = require('puppeteer');
 
 /**
  * @type {import("puppeteer").Configuration}
@@ -19,5 +20,8 @@ module.exports = {
       '--no-zygote',
       '--single-process'
     ]
-  }
+  },
+  executablePath: process.env.NODE_ENV === 'production'
+    ? '/tmp/chromium'
+    : puppeteer.executablePath()
 }; 
