@@ -70,6 +70,7 @@
     "pdfkit": "^0.16.0",
     "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",
+    "pupeteer": "^0.0.1",
     "puppeteer": "21.9.0",
     "puppeteer-core": "^21.9.0",
     "resend": "^4.1.2",

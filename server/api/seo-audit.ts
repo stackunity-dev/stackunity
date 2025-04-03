@@ -233,22 +233,37 @@ export default defineEventHandler(async (event) => {
       chromium.setHeadlessMode = true;
       chromium.setGraphicsMode = false;
 
-      const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
-      console.log('Utilisation de Chromium depuis:', chromiumPath);
-
       browser = await puppeteer.launch({
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(chromiumPath),
+        args: [
+          ...chromium.args,
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--no-zygote',
+          '--single-process',
+          '--disable-gpu'
+        ],
+        executablePath: await chromium.executablePath(),
+        headless: true,
         ignoreHTTPSErrors: true
       });
     } else {
+      const executablePath = process.platform === 'win32'
+        ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+        : process.platform === 'darwin'
+          ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+          : '/usr/bin/google-chrome';
+
       browser = await puppeteer.launch({
         headless: "new",
         args: [
           '--no-sandbox',
-          '--disable-setuid-sandbox'
-        ]
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage'
+        ],
+        executablePath: executablePath
       });
     }
 
