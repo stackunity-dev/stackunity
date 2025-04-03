@@ -227,37 +227,24 @@ export default defineEventHandler(async (event) => {
   try {
     console.log('Lancement du navigateur pour l\'audit SEO...');
 
-    // Essayer d'utiliser puppeteer standard
-    try {
+    if (process.env.NODE_ENV === 'production') {
       browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-        headless: true
-      });
-      console.log('Navigateur lancé avec succès via puppeteer standard');
-    } catch (browserError) {
-      console.log('Échec avec puppeteer standard, tentative avec @sparticuz/chromium...');
-
-      // Utiliser @sparticuz/chromium comme alternative
-      const execPath = await chromium.executablePath();
-      console.log('Chemin d\'exécutable de Chromium:', execPath);
-
-      browser = await puppeteer.launch({
-        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        args: chromium.args,
         defaultViewport: chromium.defaultViewport,
-        executablePath: execPath,
-        headless: true
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless as boolean,
+        ignoreDefaultArgs: false
       });
-      console.log('Navigateur lancé avec succès via @sparticuz/chromium');
+    } else {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox'
+        ]
+      });
     }
-  } catch (error) {
-    console.error('Erreur lors du lancement du navigateur:', error);
-    throw createError({
-      statusCode: 500,
-      message: `Erreur lors du lancement du navigateur: ${error.message}. Vérifiez l'installation de Chromium ou les droits d'accès.`
-    });
-  }
 
-  try {
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(TIMEOUT);
     await page.setRequestInterception(true);
