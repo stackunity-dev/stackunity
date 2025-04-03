@@ -9,39 +9,49 @@ const __dirname = path.dirname(__filename);
 
 async function downloadChromiumPack() {
   const version = '121.0.0';
-  const url = `https://github.com/Sparticuz/chromium/releases/download/v${version}/chromium-v${version}-pack.tar`;
-  const outputPath = path.join(__dirname, '../chromium-pack.tar');
-
-  console.log('Téléchargement de Chromium depuis GitHub...');
-  console.log('URL:', url);
-  
-  try {
-    const response = await axios({
-      url,
-      method: 'GET',
-      responseType: 'stream',
-      maxRedirects: 5,
-      validateStatus: (status) => status === 200
-    });
-
-    if (response.status !== 200) {
-      throw new Error(`Erreur lors du téléchargement. Status: ${response.status}`);
+  const files = [
+    {
+      url: `https://github.com/Sparticuz/chromium/releases/download/v${version}/chromium-v${version}-pack.tar`,
+      outputPath: path.join(__dirname, '../chromium-pack.tar')
+    },
+    {
+      url: `https://github.com/Sparticuz/chromium/releases/download/v${version}/swiftshader.tar`,
+      outputPath: path.join(__dirname, '../swiftshader.tar')
     }
+  ];
 
-    const writer = fs.createWriteStream(outputPath);
-    response.data.pipe(writer);
-
-    return new Promise((resolve, reject) => {
-      writer.on('finish', () => {
-        console.log('Téléchargement terminé');
-        resolve(outputPath);
+  for (const file of files) {
+    console.log(`Téléchargement depuis ${file.url}...`);
+    
+    try {
+      const response = await axios({
+        url: file.url,
+        method: 'GET',
+        responseType: 'stream',
+        maxRedirects: 5,
+        validateStatus: (status) => status === 200
       });
-      writer.on('error', reject);
-    });
-  } catch (error) {
-    console.error('Erreur lors du téléchargement:', error.message);
-    throw error;
+
+      if (response.status !== 200) {
+        throw new Error(`Erreur lors du téléchargement. Status: ${response.status}`);
+      }
+
+      const writer = fs.createWriteStream(file.outputPath);
+      response.data.pipe(writer);
+
+      await new Promise((resolve, reject) => {
+        writer.on('finish', () => resolve(true));
+        writer.on('error', reject);
+      });
+
+      console.log(`Téléchargement terminé pour ${path.basename(file.outputPath)}`);
+    } catch (error) {
+      console.error(`Erreur lors du téléchargement de ${file.url}:`, error.message);
+      throw error;
+    }
   }
+
+  return path.join(__dirname, '../chromium-pack.tar');
 }
 
 async function uploadChromium() {
@@ -55,35 +65,52 @@ async function uploadChromium() {
   });
 
   let chromiumPath = path.join(__dirname, '../chromium-pack.tar');
+  let swiftshaderPath = path.join(__dirname, '../swiftshader.tar');
   
-  // Si le fichier n'existe pas localement, on le télécharge
-  if (!fs.existsSync(chromiumPath)) {
-    console.log('Le fichier chromium-pack.tar n\'existe pas localement, téléchargement...');
+  // Si les fichiers n'existent pas localement, on les télécharge
+  if (!fs.existsSync(chromiumPath) || !fs.existsSync(swiftshaderPath)) {
+    console.log('Téléchargement des fichiers nécessaires...');
     chromiumPath = await downloadChromiumPack();
   }
 
-  console.log('Upload du fichier vers DigitalOcean Spaces...');
-  const fileBuffer = fs.readFileSync(chromiumPath);
+  // Upload des fichiers vers DigitalOcean Spaces
+  const files = [
+    {
+      path: chromiumPath,
+      key: 'chromium-pack.tar',
+      contentType: 'application/x-tar'
+    },
+    {
+      path: swiftshaderPath,
+      key: 'swiftshader.tar',
+      contentType: 'application/x-tar'
+    }
+  ];
 
-  const command = new PutObjectCommand({
-    Bucket: 'devroid',
-    Key: 'chromium-pack.tar',
-    Body: fileBuffer,
-    ACL: 'public-read',
-    ContentType: 'application/x-tar'
-  });
+  for (const file of files) {
+    console.log(`Upload de ${file.key} vers DigitalOcean Spaces...`);
+    const fileBuffer = fs.readFileSync(file.path);
 
-  try {
-    const result = await client.send(command);
-    console.log('Upload de Chromium réussi:', result);
-    console.log('URL:', 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar');
+    const command = new PutObjectCommand({
+      Bucket: 'devroid',
+      Key: file.key,
+      Body: fileBuffer,
+      ACL: 'public-read',
+      ContentType: file.contentType
+    });
 
-    // Nettoyage du fichier local
-    fs.unlinkSync(chromiumPath);
-    console.log('Fichier local supprimé');
-  } catch (error) {
-    console.error('Erreur lors de l\'upload de Chromium:', error);
-    process.exit(1);
+    try {
+      const result = await client.send(command);
+      console.log(`Upload de ${file.key} réussi:`, result);
+      console.log('URL:', `https://devroid.lon1.digitaloceanspaces.com/${file.key}`);
+
+      // Nettoyage du fichier local
+      fs.unlinkSync(file.path);
+      console.log(`Fichier local ${file.key} supprimé`);
+    } catch (error) {
+      console.error(`Erreur lors de l'upload de ${file.key}:`, error);
+      process.exit(1);
+    }
   }
 }
 

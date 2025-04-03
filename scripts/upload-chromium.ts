@@ -51,7 +51,6 @@ async function uploadChromium() {
     },
   });
 
-  // Vérifie si le fichier existe déjà sur DigitalOcean
   const exists = await checkIfExists(client, 'chromium-pack.tar');
   if (exists) {
     console.log('Le fichier chromium-pack.tar existe déjà sur DigitalOcean Spaces');
@@ -61,7 +60,6 @@ async function uploadChromium() {
 
   let chromiumPath = path.join(__dirname, '../chromium-pack.tar');
 
-  // Si le fichier n'existe pas localement, on le télécharge
   if (!fs.existsSync(chromiumPath)) {
     console.log('Le fichier chromium-pack.tar n\'existe pas localement, téléchargement...');
     chromiumPath = await downloadChromiumPack() as string;
@@ -83,7 +81,6 @@ async function uploadChromium() {
     console.log('Upload de Chromium réussi:', result);
     console.log('URL:', 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar');
 
-    // Nettoyage du fichier local
     fs.unlinkSync(chromiumPath);
     console.log('Fichier local supprimé');
   } catch (error: any) {

@@ -237,10 +237,23 @@ export default defineEventHandler(async (event) => {
       console.log('Utilisation de Chromium depuis:', chromiumPath);
 
       browser = await puppeteer.launch({
-        args: chromium.args,
+        args: [
+          ...chromium.args,
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--no-zygote',
+          '--single-process',
+          '--disable-extensions'
+        ],
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(chromiumPath),
-        ignoreHTTPSErrors: true
+        ignoreHTTPSErrors: true,
+        env: {
+          ...process.env,
+          LD_LIBRARY_PATH: '/tmp/chromium-pack'
+        }
       });
     } else {
       browser = await puppeteer.launch({

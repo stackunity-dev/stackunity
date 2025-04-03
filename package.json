@@ -15,6 +15,7 @@
     "start": "node .output/server/index.mjs",
     "upload-chromium": "node scripts/upload-chromium.js",
     "git": "git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
+    "git-remove": "git add . && git reset /server/api/newsletter && git commit -m 'nothing here now' && git push origin main",
     "clean": "rmdir /s /q node_modules .nuxt .output && del package-lock.json && npm install --legacy-peer-deps"
   },
   "config": {
