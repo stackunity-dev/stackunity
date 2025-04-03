@@ -244,57 +244,98 @@ export default defineEventHandler(async (event) => {
           console.log(`Répertoire créé: ${chromiumDir}`);
         }
 
-        // URL du binaire pré-compilé pour Lambda
-        const chromiumURL = 'https://devroid.lon1.digitaloceanspaces.com/chromium-aws-lambda';
-        const chromiumPath = `${chromiumDir}/chromium`;
-
-        if (!fs.existsSync(chromiumPath)) {
-          console.log(`Téléchargement du binaire depuis: ${chromiumURL}`);
-          execSync(`curl -L ${chromiumURL} -o ${chromiumPath}`);
-          console.log('Téléchargement terminé');
-        }
-
-        // S'assurer que le binaire est exécutable
-        execSync(`chmod 755 ${chromiumPath}`);
-
-        // Vérification des permissions et de l'existence
-        if (fs.existsSync(chromiumPath)) {
-          const stats = fs.statSync(chromiumPath);
-          console.log('Informations binaire:', {
-            taille: stats.size,
-            permissions: (stats.mode & parseInt('777', 8)).toString(8),
-            utilisateur: execSync(`ls -la ${chromiumPath}`).toString()
-          });
-        } else {
-          console.error(`Le binaire n'existe pas à: ${chromiumPath}`);
-        }
-
-        // Tester si le fichier peut être exécuté
         try {
-          console.log('Test d\'exécution du binaire...');
-          execSync(`${chromiumPath} --version`, { timeout: 5000 });
-          console.log('Test d\'exécution réussi');
-        } catch (execError) {
-          console.log(`Erreur d'exécution du test: ${execError.message}`);
-          // Continuer malgré l'erreur car certains environnements ne permettent pas l'exécution directe
-        }
+          // Utiliser directement chromium-min qui gère l'installation et les permissions
+          console.log("Utilisation de @sparticuz/chromium-min pour l'environnement serverless");
 
-        // Lancement de Puppeteer avec tous les arguments requis
-        browser = await puppeteer.launch({
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--single-process',
-            '--no-zygote',
-            '--disable-gpu',
-            '--no-first-run',
-            '--disable-extensions'
-          ],
-          executablePath: chromiumPath,
-          ignoreHTTPSErrors: true,
-          headless: 'new'
-        });
+          // Configurer les aspects critiques
+          chromium.setGraphicsMode = false;
+          chromium.setHeadlessMode = true;
+
+          // Forcer la régénération/redécompression du binaire si nécessaire
+          await chromium.font('/tmp/fonts');
+
+          // Obtenir le chemin d'exécution et appliquer les permissions correctes
+          const execPath = await chromium.executablePath();
+          if (fs.existsSync(execPath)) {
+            console.log(`Vérification des permissions sur ${execPath}`);
+            // S'assurer que tous les répertoires parents sont accessibles
+            const pathParts = execPath.split('/').filter(Boolean);
+            let currentPath = '';
+
+            for (const part of pathParts) {
+              currentPath += '/' + part;
+              try {
+                const stats = fs.statSync(currentPath);
+                const mode = stats.mode & parseInt('777', 8);
+                console.log(`Permissions de ${currentPath}: ${mode.toString(8)}`);
+
+                if ((mode & parseInt('111', 8)) !== parseInt('111', 8)) {
+                  console.log(`Ajout des permissions d'exécution pour ${currentPath}`);
+                  execSync(`chmod a+x ${currentPath}`);
+                }
+              } catch (e) {
+                console.log(`Impossible de vérifier ${currentPath}: ${e.message}`);
+              }
+            }
+
+            // Assurer que le binaire est exécutable
+            execSync(`chmod 755 ${execPath}`);
+            console.log(`Permissions du binaire chromium mises à jour: ${execPath}`);
+          }
+
+          // Tenter le lancement avec les options recommandées
+          browser = await puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: execPath,
+            headless: chromium.headless
+          });
+
+          console.log("Navigateur lancé avec succès via chromium-min");
+
+        } catch (chromeError) {
+          console.error(`Erreur avec chromium-min: ${chromeError.message}`);
+
+          // Solution de secours - utiliser un navigateur compatible WSL ou autre
+          console.log("Tentative alternative avec configuration manuelle...");
+
+          // Vérifier différents emplacements de Chrome
+          const possiblePaths = [
+            '/usr/bin/chromium',
+            '/usr/bin/chromium-browser',
+            '/usr/bin/google-chrome',
+            '/usr/bin/google-chrome-stable',
+            '/bin/chromium',
+            '/bin/chromium-browser'
+          ];
+
+          let executablePath: string | null = null;
+          for (const path of possiblePaths) {
+            if (fs.existsSync(path)) {
+              executablePath = path;
+              console.log(`Chrome trouvé à: ${executablePath}`);
+              execSync(`chmod 755 ${executablePath}`);
+              break;
+            }
+          }
+
+          if (executablePath) {
+            browser = await puppeteer.launch({
+              args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--single-process'
+              ],
+              executablePath,
+              ignoreHTTPSErrors: true,
+              headless: true
+            });
+          } else {
+            throw new Error("Impossible de trouver un binaire Chrome utilisable");
+          }
+        }
 
       } catch (error) {
         console.error('Erreur lors du lancement personnalisé de Chromium:', error);
