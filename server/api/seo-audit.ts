@@ -239,77 +239,86 @@ export default defineEventHandler(async (event) => {
       console.log('Chemin vers le binaire Chromium:', chromiumBinaryPath);
 
       try {
-        try {
-          if (fs.existsSync(chromiumBinaryPath)) {
-            console.log('Le fichier Chromium existe à l\'emplacement spécifié');
-            try {
-              execSync(`chmod 755 ${chromiumBinaryPath}`);
-              console.log('Permissions mises à jour pour:', chromiumBinaryPath);
-            } catch (chmodError) {
-              console.error('Erreur lors de la modification des permissions:', chmodError);
-            }
-          } else {
-            console.warn(`AVERTISSEMENT: Le fichier Chromium n'existe pas à ${chromiumBinaryPath}`);
-            const possibleLocations = [
-              '/tmp/chromium-pack/chromium',
-              '/tmp/chromium/chromium',
-              '/app/node_modules/.cache/@sparticuz/chromium/chromium'
-            ];
-            let foundLocation: string | null = null;
-            for (const loc of possibleLocations) {
-              if (fs.existsSync(loc)) {
-                console.log(`Chromium trouvé à: ${loc}`);
-                foundLocation = loc;
-                try {
-                  execSync(`chmod 755 ${loc}`);
-                  console.log(`Permissions mises à jour pour: ${loc}`);
-                  break;
-                } catch (chmodError) {
-                  console.error(`Erreur lors de la modification des permissions pour ${loc}:`, chmodError);
-                }
-              }
-            }
-
-            if (foundLocation && foundLocation !== chromiumBinaryPath) {
-              try {
-                const parentDir = chromiumBinaryPath.substring(0, chromiumBinaryPath.lastIndexOf('/'));
-                execSync(`mkdir -p ${parentDir}`);
-                execSync(`cp ${foundLocation} ${chromiumBinaryPath}`);
-                execSync(`chmod 755 ${chromiumBinaryPath}`);
-                console.log(`Chromium copié de ${foundLocation} vers ${chromiumBinaryPath}`);
-              } catch (copyError) {
-                console.error('Erreur lors de la copie du fichier:', copyError);
-              }
-            }
-          }
-
+        // Vérifier si un fichier .br existe dans /tmp/chromium-pack et le décompresser
+        if (fs.existsSync('/tmp/chromium-pack/chromium.br')) {
+          console.log('Fichier chromium.br trouvé, décompression en cours...');
           try {
-            const parentDir = chromiumBinaryPath.substring(0, chromiumBinaryPath.lastIndexOf('/'));
-            console.log(`Contenu de ${parentDir}:`);
-            const lsOutput = execSync(`ls -la ${parentDir}`).toString();
-            console.log(lsOutput);
-          } catch (execError) {
-            console.error('Erreur lors de la liste des fichiers:', execError);
+            // S'assurer que le répertoire /tmp/chromium existe
+            execSync('mkdir -p /tmp/chromium');
+            // Décompresser le fichier avec brotli
+            execSync('brotli -d /tmp/chromium-pack/chromium.br -o /tmp/chromium/chromium');
+            // Donner les permissions d'exécution
+            execSync('chmod 755 /tmp/chromium/chromium');
+            console.log('Décompression de chromium.br terminée avec succès');
+          } catch (error) {
+            console.error('Erreur pendant la décompression de chromium.br:', error);
           }
-        } catch (fsError) {
-          console.error('Erreur lors de la vérification du fichier:', fsError);
         }
 
-        const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
-        console.log('Utilisation de Chromium depuis:', chromiumPath);
+        const possibleLocations = [
+          '/tmp/chromium/chromium',
+          '/tmp/chromium-pack/chromium',
+          '/app/node_modules/.cache/@sparticuz/chromium/chromium'
+        ];
 
-        try {
-          execSync('mkdir -p /tmp/chromium');
-          execSync('chmod 1777 /tmp/chromium');
-          execSync('chmod -R 755 /tmp/chromium-pack 2>/dev/null || true');
-        } catch (e) {
-          console.error('Erreur lors de la préparation des répertoires:', e);
+        let executableFound = false;
+        let foundLocation: string | null = null;
+
+        for (const loc of possibleLocations) {
+          if (fs.existsSync(loc)) {
+            console.log(`Chromium trouvé à: ${loc}`);
+            foundLocation = loc;
+            try {
+              execSync(`chmod 755 ${loc}`);
+              console.log(`Permissions mises à jour pour: ${loc}`);
+              executableFound = true;
+              break;
+            } catch (chmodError) {
+              console.error(`Erreur lors de la modification des permissions pour ${loc}:`, chmodError);
+            }
+          }
+        }
+
+        if (!executableFound) {
+          console.log('Téléchargement du binary Chromium depuis le CDN...');
+          try {
+            // Télécharger et extraire chromium-pack.tar
+            execSync('mkdir -p /tmp/chromium');
+            execSync('curl -L https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar -o /tmp/chromium-pack.tar');
+            execSync('tar -xf /tmp/chromium-pack.tar -C /tmp');
+            execSync('chmod 755 /tmp/chromium/chromium');
+            console.log('Chromium téléchargé et extrait avec succès');
+            foundLocation = '/tmp/chromium/chromium';
+          } catch (error) {
+            console.error('Erreur lors du téléchargement/extraction de Chromium:', error);
+          }
+        }
+
+        // Afficher les informations sur le fichier Chromium
+        if (foundLocation) {
+          try {
+            const stats = execSync(`ls -la ${foundLocation}`).toString();
+            console.log(`Information sur le fichier Chromium: ${stats}`);
+
+            const permissions = execSync(`stat -c '%a' ${foundLocation}`).toString().trim();
+            console.log(`Permissions actuelles: ${permissions}`);
+
+            if (permissions !== "755") {
+              execSync(`chmod 755 ${foundLocation}`);
+              console.log('Permissions corrigées à 755');
+            }
+          } catch (error) {
+            console.error('Erreur lors de la vérification des permissions:', error);
+          }
+        } else {
+          console.error('Aucun binaire Chromium trouvé après les tentatives de récupération');
+          throw new Error('Impossible de trouver un binaire Chromium valide');
         }
 
         browser = await puppeteer.launch({
-          args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
+          args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
           defaultViewport: chromium.defaultViewport,
-          executablePath: await chromium.executablePath(chromiumPath),
+          executablePath: foundLocation || await chromium.executablePath(),
           ignoreHTTPSErrors: true
         });
       } catch (error) {

@@ -27,7 +27,7 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    '@pinia/nuxt',
+    '@pinia/nuxt', '@nuxtjs/plausible',
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
         // @ts-expect-error
@@ -35,6 +35,10 @@ export default defineNuxtConfig({
       })
     },
   ],
+  plausible: {
+    // Prevent tracking on localhost
+    ignoredHostnames: ['localhost'],
+  },
 
   runtimeConfig: {
     public: {

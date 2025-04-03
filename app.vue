@@ -14,10 +14,19 @@ import CookieBanner from './components/cookie-banner.vue';
 import { useCookieStore } from './stores/cookieStore';
 import { useUserStore } from './stores/userStore';
 import { TokenUtils } from './utils/token';
+import { usePlausible } from './utils/usePlausible';
 
 const router = useRouter();
 const userStore = useUserStore();
 const cookieStore = useCookieStore();
+const plausible = usePlausible();
+
+plausible('page_view', {
+  props: {
+    page: 'app_initialization',
+    user_type: userStore.isAuthenticated ? 'authenticated' : 'guest'
+  }
+});
 
 onErrorCaptured((err, instance, info) => {
   if (

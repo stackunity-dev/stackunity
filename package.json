@@ -28,6 +28,7 @@
     "@mdi/font": "^7.4.47",
     "@mdi/js": "^7.4.47",
     "@nuxt/content": "^3.2.2",
+    "@nuxtjs/plausible": "^1.2.0",
     "@pinia/nuxt": "^0.10.1",
     "@sentry/nuxt": "^9.8.0",
     "@sentry/vue": "^9.8.0",
