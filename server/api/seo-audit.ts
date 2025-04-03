@@ -236,6 +236,10 @@ export default defineEventHandler(async (event) => {
       const chromiumPath = 'https://devroid.lon1.digitaloceanspaces.com/chromium-pack.tar';
       console.log('Utilisation de Chromium depuis:', chromiumPath);
 
+      process.env.LD_LIBRARY_PATH = '/tmp/chromium-pack/lib';
+      process.env.FONTCONFIG_PATH = '/tmp/chromium-pack/etc/fonts';
+      process.env.CHROME_DEVEL_SANDBOX = '/tmp/chromium-pack/chrome-sandbox';
+
       browser = await puppeteer.launch({
         args: [
           ...chromium.args,
@@ -245,14 +249,16 @@ export default defineEventHandler(async (event) => {
           '--disable-gpu',
           '--no-zygote',
           '--single-process',
-          '--disable-extensions'
+          '--disable-extensions',
+          '--disable-software-rasterizer'
         ],
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(chromiumPath),
         ignoreHTTPSErrors: true,
         env: {
           ...process.env,
-          LD_LIBRARY_PATH: '/tmp/chromium-pack'
+          FONTCONFIG_PATH: '/tmp/chromium-pack/etc/fonts',
+          LD_LIBRARY_PATH: '/tmp/chromium-pack/lib'
         }
       });
     } else {
