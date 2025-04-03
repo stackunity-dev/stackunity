@@ -18,7 +18,6 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     console.log('[LOGIN] Tentative de connexion pour:', body.email);
 
-    // Vérifier les champs requis
     if (!body.email || !body.password) {
       console.log('[LOGIN] Champs manquants');
       return {
@@ -64,7 +63,6 @@ export default defineEventHandler(async (event) => {
     });
 
     try {
-      // Conversion explicite des valeurs numériques en booléens
       const isPremiumValue = user.isPremium === 1;
       const isAdminValue = user.isAdmin === 1;
 

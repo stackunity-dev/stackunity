@@ -1,13 +1,7 @@
-/**
- * Service de gestion des tokens de rafraîchissement côté serveur
- */
 import { pool } from '../api/db';
 import { RefreshToken } from './TokenManager';
 
 export class TokenService {
-  /**
-   * Enregistre un token de rafraîchissement dans la base de données
-   */
   static async saveRefreshToken(tokenId: string, userId: number): Promise<boolean> {
     try {
       await pool.execute(
@@ -21,9 +15,6 @@ export class TokenService {
     }
   }
 
-  /**
-   * Vérifie si un token de rafraîchissement existe et est valide
-   */
   static async verifyRefreshTokenInDb(tokenId: string, userId: number): Promise<boolean> {
     try {
       const [rows] = await pool.execute<RefreshToken[]>(
@@ -37,9 +28,6 @@ export class TokenService {
     }
   }
 
-  /**
-   * Révoque un token de rafraîchissement
-   */
   static async revokeRefreshToken(tokenId: string): Promise<boolean> {
     try {
       await pool.execute(
@@ -53,9 +41,6 @@ export class TokenService {
     }
   }
 
-  /**
-   * Remplace un token de rafraîchissement par un nouveau
-   */
   static async rotateRefreshToken(oldTokenId: string, newTokenId: string): Promise<boolean> {
     try {
       await pool.execute(

@@ -8,27 +8,18 @@ import {
 import { TokenPayload } from './TokenManager';
 
 export class ServerTokenManager {
-  /**
-   * Génère un token d'accès
-   */
   static generateAccessToken(payload: TokenPayload): string {
-    return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
+    return jwt.sign(payload, ACCESS_TOKEN_SECRET as string, { expiresIn: ACCESS_TOKEN_EXPIRY });
   }
 
-  /**
-   * Génère un token de rafraîchissement
-   */
   static generateRefreshToken(payload: { userId: number, tokenId: string }): string {
-    return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY });
+    return jwt.sign(payload, REFRESH_TOKEN_SECRET as string, { expiresIn: REFRESH_TOKEN_EXPIRY });
   }
 
-  /**
-   * Vérifie un token d'accès
-   */
   static verifyAccessToken(token: string): TokenPayload | null {
     try {
       console.log('[ServerTokenManager] Vérification du token:', token.substring(0, 20) + '...');
-      const result = jwt.verify(token, ACCESS_TOKEN_SECRET) as TokenPayload;
+      const result = jwt.verify(token, ACCESS_TOKEN_SECRET as string) as TokenPayload;
       console.log('[ServerTokenManager] Token décodé avec succès');
       return result;
     } catch (error) {
@@ -37,12 +28,10 @@ export class ServerTokenManager {
     }
   }
 
-  /**
-   * Vérifie un token de rafraîchissement
-   */
+
   static verifyRefreshToken(token: string): { userId: number, tokenId: string } | null {
     try {
-      return jwt.verify(token, REFRESH_TOKEN_SECRET) as { userId: number, tokenId: string };
+      return jwt.verify(token, REFRESH_TOKEN_SECRET as string) as { userId: number, tokenId: string };
     } catch (error) {
       console.error('Erreur de vérification du token de rafraîchissement:', error);
       return null;

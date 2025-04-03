@@ -1,6 +1,3 @@
-/**
- * Gestionnaire de tokens pour l'application
- */
 import { RowDataPacket } from 'mysql2';
 
 export interface TokenPayload {
@@ -24,18 +21,12 @@ export interface RefreshToken extends RowDataPacket {
 }
 
 export class TokenManager {
-  /**
-   * Stocke le token d'accès (côté client)
-   */
   static storeToken(token: string): void {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('access_token', token);
     }
   }
 
-  /**
-   * Récupère le token d'accès (côté client)
-   */
   static retrieveToken(): string | null {
     if (typeof localStorage !== 'undefined') {
       return localStorage.getItem('access_token');
@@ -43,9 +34,6 @@ export class TokenManager {
     return null;
   }
 
-  /**
-   * Supprime le token d'accès (côté client)
-   */
   static removeToken(): void {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('access_token');
