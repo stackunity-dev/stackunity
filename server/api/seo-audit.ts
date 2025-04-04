@@ -1,5 +1,5 @@
 import axios from 'axios';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import { XMLParser } from 'fast-xml-parser';
 import { createError, defineEventHandler, readBody } from 'h3';
 import https from 'https';
@@ -61,6 +61,7 @@ export interface SEOAuditResult {
     interactiveScore?: number;
     totalBlockingTimeScore?: number;
     cumulativeLayoutShiftScore?: number;
+    serverResponseTime?: number;
   };
   headingStructure: HeadingStructure;
   structuredData: any[];
@@ -729,14 +730,16 @@ async function analyzePageStandard(url: string, timeout: number = 30000): Promis
       throw new Error('Impossible de récupérer l\'analyse SEO de base');
     }
 
+    const ttfb = pageMetrics?.timeToFirstByte || 0;
+
     // Créer le résultat de l'audit
     const result: SEOAuditResult = {
       url,
       title: basicAnalysis.title.content,
       description: basicAnalysis.meta_description.content,
       h1: basicAnalysis.headings.h1.content ? [basicAnalysis.headings.h1.content] : [],
-      h2: [], // Sera rempli à partir des données détaillées
-      h3: [], // Sera rempli à partir des données détaillées
+      h2: [],
+      h3: [],
       metaTags: [
         { name: 'viewport', content: basicAnalysis.metadata.viewport },
         { name: 'robots', content: basicAnalysis.metadata.robots }
@@ -745,10 +748,10 @@ async function analyzePageStandard(url: string, timeout: number = 30000): Promis
       imageAlt: basicAnalysis.images.data.map(img => ({
         src: img.src,
         alt: img.alt,
-        hasDimensions: false // Les dimensions ne sont pas fournies par cette API
+        hasDimensions: false
       })),
       videoInfo: [],
-      loadTime: parseFloat(basicAnalysis.http.responseTime) * 1000, // Convertir en millisecondes
+      loadTime: parseFloat(basicAnalysis.http.responseTime) * 1000,
       statusCode: basicAnalysis.http.status,
       internalLinks: basicAnalysis.links.data
         .filter(link => link.href && !link.href.startsWith('http'))
@@ -760,21 +763,22 @@ async function analyzePageStandard(url: string, timeout: number = 30000): Promis
       coreWebVitals: {
         FCP: pageMetrics?.firstContentfulPaint || 0,
         LCP: pageMetrics?.largestContentfulPaint || 0,
-        TTFB: pageMetrics?.timeToFirstByte || 0,
+        TTFB: ttfb,
         domLoad: pageMetrics?.timeToInteractive || 0,
-        speedIndex: pageMetrics?.speedIndex || 0,
-        timeToInteractive: pageMetrics?.timeToInteractive || 0,
-        totalBlockingTime: pageMetrics?.totalBlockingTime || 0,
-        cumulativeLayoutShift: pageMetrics?.cumulativeLayoutShift || 0,
-        bootupTime: pageMetrics?.bootupTime || 0,
-        mainThreadWork: pageMetrics?.mainThreadWork || 0,
-        performanceScore: pageMetrics?.performanceScore || 0,
-        firstContentfulPaintScore: pageMetrics?.firstContentfulPaintScore || 0,
-        speedIndexScore: pageMetrics?.speedIndexScore || 0,
-        largestContentfulPaintScore: pageMetrics?.largestContentfulPaintScore || 0,
-        interactiveScore: pageMetrics?.interactiveScore || 0,
-        totalBlockingTimeScore: pageMetrics?.totalBlockingTimeScore || 0,
-        cumulativeLayoutShiftScore: pageMetrics?.cumulativeLayoutShiftScore || 0
+        speedIndex: pageMetrics?.speedIndex,
+        timeToInteractive: pageMetrics?.timeToInteractive,
+        totalBlockingTime: pageMetrics?.totalBlockingTime,
+        cumulativeLayoutShift: pageMetrics?.cumulativeLayoutShift,
+        bootupTime: pageMetrics?.bootupTime,
+        mainThreadWork: pageMetrics?.mainThreadWork,
+        performanceScore: pageMetrics?.performanceScore,
+        firstContentfulPaintScore: pageMetrics?.firstContentfulPaintScore,
+        speedIndexScore: Math.round((pageMetrics?.firstContentfulPaintScore || 0 + pageMetrics?.largestContentfulPaintScore || 0) / 2),
+        largestContentfulPaintScore: pageMetrics?.largestContentfulPaintScore,
+        interactiveScore: pageMetrics?.interactiveScore,
+        totalBlockingTimeScore: Math.round((100 - (pageMetrics?.totalBlockingTime || 0) / 10)),
+        cumulativeLayoutShiftScore: pageMetrics?.cumulativeLayoutShiftScore,
+        serverResponseTime: pageMetrics?.serverResponseTime
       },
       headingStructure: {
         h1: basicAnalysis.headings.h1.content ? [basicAnalysis.headings.h1.content] : [],
