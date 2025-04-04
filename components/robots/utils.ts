@@ -1,8 +1,8 @@
-import type { CrawlReport, SEOAuditResult } from '../../server/api/seo-audit';
+import type { WebsiteAnalysisResult } from '../../server/api/analyzer-types';
 import { RobotsConfig, SchemaConfig, SiteConfig } from './types';
 
 // Utilisation de types partiels au lieu d'héritage pour éviter les erreurs
-type ExtendedSEOResult = Partial<SEOAuditResult> & {
+type ExtendedSEOResult = Partial<WebsiteAnalysisResult> & {
   structuredData?: any[];
   robotsMeta?: Partial<{
     index: boolean;
@@ -15,7 +15,7 @@ type ExtendedSEOResult = Partial<SEOAuditResult> & {
   }>;
 };
 
-type ExtendedCrawlReport = Partial<CrawlReport> & {
+type ExtendedCrawlReport = Partial<WebsiteAnalysisResult> & {
   seoResults?: Record<string, ExtendedSEOResult>;
 };
 
@@ -23,7 +23,7 @@ type ExtendedCrawlReport = Partial<CrawlReport> & {
  * Remplit les configurations à partir des données d'audit SEO
  */
 export const fillConfigsFromAudit = (
-  report: CrawlReport,
+  report: WebsiteAnalysisResult,
   siteConfig: SiteConfig,
   schemaConfig: SchemaConfig,
   robotsConfig: RobotsConfig

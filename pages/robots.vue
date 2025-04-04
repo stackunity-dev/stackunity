@@ -196,7 +196,6 @@ import RobotsConfigComponent from '../components/robots/RobotsConfig.vue';
 import SchemaConfigComponent from '../components/robots/SchemaConfig.vue';
 import { RobotsConfig, RobotsPreviewLine, SchemaConfig, SiteConfig } from '../components/robots/types';
 import { fillConfigsFromAudit, generateRobotsContent, generateSchemaContent } from '../components/robots/utils';
-import type { CrawlReport } from '../server/api/seo-audit';
 import { useUserStore } from '../stores/userStore';
 
 // Définir les métadonnées de la page
@@ -213,7 +212,7 @@ const userStore = useUserStore();
 const configTab = ref('robots');
 const isLoading = ref(false);
 const error = ref('');
-const report = ref<CrawlReport | null>(null);
+const report = ref(null);
 const generatedContent = ref('');
 
 const siteConfig = ref<SiteConfig>({

@@ -969,7 +969,6 @@ const sitemapPreview = ref('');
 const sitemapPreviewTab = ref('code');
 
 const userStore = useUserStore();
-const seoStore = useSeoStore();
 const url = ref('');
 const loading = ref(false);
 const showAdvancedOptions = ref(false);
