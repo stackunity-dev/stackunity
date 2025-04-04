@@ -64,7 +64,11 @@ export interface SEOAuditResult {
     serverResponseTime?: number;
   };
   headingStructure: HeadingStructure;
-  structuredData: any[];
+  structuredData: {
+    data: any[];
+    count: number;
+    types: Record<string, number>;
+  };
   socialTags: {
     ogTags: Array<{ property: string | null; content: string | null }>;
     twitterTags: Array<{ name: string | null; content: string | null }>;
@@ -376,22 +380,158 @@ function extractSocialTags(html: string): { ogTags: any[], twitterTags: any[] } 
 
 function extractStructuredData(html: string): any[] {
   const structuredData: any[] = [];
-  const regex = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
-  let match;
 
-  while ((match = regex.exec(html)) !== null) {
-    try {
-      const jsonContent = match[1].trim();
-      const parsed = JSON.parse(jsonContent);
-      if (parsed) {
-        structuredData.push(parsed);
+  try {
+    // Recherche des balises script de type application/ld+json
+    const $ = cheerio.load(html);
+    $('script[type="application/ld+json"]').each((_, element) => {
+      try {
+        const jsonContent = $(element).html();
+        if (jsonContent) {
+          const parsed = JSON.parse(jsonContent.trim());
+          if (parsed) {
+            // Si c'est un tableau, ajouter chaque élément
+            if (Array.isArray(parsed)) {
+              structuredData.push(...parsed);
+            } else {
+              structuredData.push(parsed);
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Erreur lors du parsing JSON-LD:', e);
       }
-    } catch (e) {
-      console.error('Erreur lors de l\'analyse JSON-LD:', e);
+    });
+
+    // Recherche des microdonnées
+    const microdata = extractMicrodata(html);
+    if (microdata.length > 0) {
+      structuredData.push(...microdata);
     }
+
+    // Recherche des données RDFa
+    const rdfa = extractRDFa(html);
+    if (rdfa.length > 0) {
+      structuredData.push(...rdfa);
+    }
+
+  } catch (e) {
+    console.error('Erreur lors de l\'extraction des données structurées:', e);
   }
 
   return structuredData;
+}
+
+function extractMicrodata(html: string): any[] {
+  const microdata: any[] = [];
+  const $ = cheerio.load(html);
+
+  try {
+    // Recherche des éléments avec itemtype
+    $('[itemscope][itemtype]').each((_, element) => {
+      const $element = $(element);
+      const type = $element.attr('itemtype');
+      const properties: Record<string, any> = {};
+
+      // Extraire les propriétés
+      $element.find('[itemprop]').each((_, prop) => {
+        const $prop = $(prop);
+        const propName = $prop.attr('itemprop');
+        if (propName) {
+          let value;
+
+          // Déterminer la valeur selon le type d'élément
+          if ($prop.is('meta')) {
+            value = $prop.attr('content');
+          } else if ($prop.is('img')) {
+            value = $prop.attr('src');
+          } else if ($prop.is('a')) {
+            value = $prop.attr('href');
+          } else if ($prop.is('time')) {
+            value = $prop.attr('datetime') || $prop.text();
+          } else {
+            value = $prop.text();
+          }
+
+          // Gérer les propriétés multiples
+          if (properties[propName]) {
+            if (Array.isArray(properties[propName])) {
+              properties[propName].push(value);
+            } else {
+              properties[propName] = [properties[propName], value];
+            }
+          } else {
+            properties[propName] = value;
+          }
+        }
+      });
+
+      if (Object.keys(properties).length > 0) {
+        microdata.push({
+          '@type': type?.split('/').pop() || 'Unknown',
+          '@context': 'https://schema.org',
+          ...properties
+        });
+      }
+    });
+  } catch (e) {
+    console.error('Erreur lors de l\'extraction des microdonnées:', e);
+  }
+
+  return microdata;
+}
+
+function extractRDFa(html: string): any[] {
+  const rdfa: any[] = [];
+  const $ = cheerio.load(html);
+
+  try {
+    // Recherche des éléments avec typeof
+    $('[typeof]').each((_, element) => {
+      const $element = $(element);
+      const type = $element.attr('typeof');
+      const properties: Record<string, any> = {};
+
+      // Extraire les propriétés
+      $element.find('[property]').each((_, prop) => {
+        const $prop = $(prop);
+        const propName = $prop.attr('property')?.split(':').pop();
+        if (propName) {
+          let value;
+
+          if ($prop.attr('content')) {
+            value = $prop.attr('content');
+          } else if ($prop.attr('resource')) {
+            value = $prop.attr('resource');
+          } else {
+            value = $prop.text();
+          }
+
+          if (properties[propName]) {
+            if (Array.isArray(properties[propName])) {
+              properties[propName].push(value);
+            } else {
+              properties[propName] = [properties[propName], value];
+            }
+          } else {
+            properties[propName] = value;
+          }
+        }
+      });
+
+      if (Object.keys(properties).length > 0) {
+        rdfa.push({
+          '@type': type?.split(':').pop() || 'Unknown',
+          '@context': 'https://schema.org',
+          ...properties
+        });
+      }
+    });
+  } catch (e) {
+    console.error('Erreur lors de l\'extraction des données RDFa:', e);
+  }
+
+  return rdfa;
 }
 
 function extractViewportMeta(html: string): { hasViewport: boolean; viewportContent: string; smallTouchTargets: number; } {
@@ -788,7 +928,11 @@ async function analyzePageStandard(url: string, timeout: number = 30000): Promis
         h5: [], // L'API ne fournit que le compte, pas le contenu
         h6: []  // L'API ne fournit que le compte, pas le contenu
       },
-      structuredData: [], // Non fourni par cette API
+      structuredData: {
+        data: [],
+        count: 0,
+        types: {}
+      },
       socialTags: {
         ogTags: [], // Non fourni par cette API
         twitterTags: [] // Non fourni par cette API
@@ -828,6 +972,26 @@ async function analyzePageStandard(url: string, timeout: number = 30000): Promis
 
     // Générer les avertissements
     generateStandardWarnings(result);
+
+    // Extraire les données structurées
+    const structuredDataResults = extractStructuredData(basicAnalysis.html);
+    result.structuredData = {
+      data: structuredDataResults,
+      count: structuredDataResults.length,
+      types: structuredDataResults.reduce((acc: Record<string, number>, schema: any) => {
+        const type = schema['@type'];
+        if (type) {
+          if (Array.isArray(type)) {
+            type.forEach(t => {
+              acc[t] = (acc[t] || 0) + 1;
+            });
+          } else {
+            acc[type] = (acc[type] || 0) + 1;
+          }
+        }
+        return acc;
+      }, {})
+    };
 
     return result;
   } catch (error) {
@@ -1026,7 +1190,7 @@ function calculateSummaryStats(seoResults: Record<string, SEOAuditResult>): Craw
     totalLCP += page.coreWebVitals.LCP;
     totalTTFB += page.coreWebVitals.TTFB;
 
-    if (page.structuredData.length > 0) pagesWithStructuredData++;
+    if (page.structuredData.data.length > 0) pagesWithStructuredData++;
     if (page.socialTags.ogTags.length > 0 || page.socialTags.twitterTags.length > 0) pagesWithSocialTags++;
     if (page.mobileCompatibility.hasViewport) mobileCompatiblePages++;
     if (page.securityChecks.https) securePages++;
@@ -1410,7 +1574,7 @@ async function performRapidApiAudit(url: string): Promise<CrawlReport> {
       averageFCP: result.coreWebVitals.FCP,
       averageLCP: result.coreWebVitals.LCP,
       averageTTFB: result.coreWebVitals.TTFB,
-      pagesWithStructuredData: result.structuredData.length > 0 ? 1 : 0,
+      pagesWithStructuredData: result.structuredData.data.length > 0 ? 1 : 0,
       pagesWithSocialTags: (result.socialTags.ogTags.length > 0 || result.socialTags.twitterTags.length > 0) ? 1 : 0,
       mobileCompatiblePages: result.mobileCompatibility.hasViewport ? 1 : 0,
       securePages: result.securityChecks.https ? 1 : 0
@@ -1714,7 +1878,6 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
         if (statusCode === 429) {
           console.log('Limite de requêtes atteinte, utilisation de l\'analyse HTML directe');
           try {
-            // Analyse HTML directe avec axios comme fallback
             const response = await axios.get(url, {
               timeout: 10000,
               headers: {
@@ -1725,16 +1888,60 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
             const html = response.data;
             const $ = cheerio.load(html);
 
-            // Analyse HTML basique
-            const title = $('title').text();
-            const metaDescription = $('meta[name="description"]').attr('content') || '';
-            const h1s = $('h1').map((_, el) => $(el).text()).get();
-            const links = $('a').map((_, el) => $(el).attr('href')).get();
-            const images = $('img').map((_, el) => ({
-              src: $(el).attr('src'),
-              alt: $(el).attr('alt'),
-              title: $(el).attr('title')
-            })).get();
+            // Analyse des images améliorée
+            const images = $('img').map((_, el) => {
+              const $img = $(el);
+              const src = $img.attr('src');
+              const alt = $img.attr('alt');
+              const title = $img.attr('title');
+              const width = $img.attr('width');
+              const height = $img.attr('height');
+
+              // Construction de l'URL complète pour l'image
+              let fullSrc = src;
+              try {
+                if (src) {
+                  if (src.startsWith('//')) {
+                    fullSrc = `https:${src}`;
+                  } else if (src.startsWith('/')) {
+                    const urlObj = new URL(url);
+                    fullSrc = `${urlObj.protocol}//${urlObj.hostname}${src}`;
+                  } else if (!src.startsWith('http')) {
+                    fullSrc = new URL(src, url).href;
+                  }
+                }
+              } catch (e) {
+                console.error('Erreur lors de la construction de l\'URL de l\'image:', e);
+                fullSrc = src;
+              }
+
+              return {
+                src: fullSrc,
+                alt: alt || '',
+                title: title || '',
+                width: width || '',
+                height: height || '',
+                hasDimensions: !!(width && height)
+              };
+            }).get();
+
+            // Extraire les données structurées
+            const structuredData = extractStructuredData(html);
+
+            // Analyser les types de schémas présents
+            const schemaTypes = structuredData.reduce((acc: Record<string, number>, schema: any) => {
+              const type = schema['@type'];
+              if (type) {
+                if (Array.isArray(type)) {
+                  type.forEach(t => {
+                    acc[t] = (acc[t] || 0) + 1;
+                  });
+                } else {
+                  acc[type] = (acc[type] || 0) + 1;
+                }
+              }
+              return acc;
+            }, {});
 
             resolve({
               http: {
@@ -1743,12 +1950,12 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
                 responseTime: '1'
               },
               title: {
-                content: title,
-                length: title.length
+                content: $('title').text(),
+                length: $('title').text().length
               },
               meta_description: {
-                content: metaDescription,
-                length: metaDescription.length
+                content: $('meta[name="description"]').attr('content') || '',
+                length: ($('meta[name="description"]').attr('content') || '').length
               },
               metadata: {
                 charset: $('meta[charset]').attr('charset') || 'UTF-8',
@@ -1758,7 +1965,7 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
                 robots: $('meta[name="robots"]').attr('content') || 'index, follow'
               },
               headings: {
-                h1: { count: h1s.length, content: h1s[0] || '' },
+                h1: { count: $('h1').length, content: $('h1').first().text() || '' },
                 h2: { count: $('h2').length },
                 h3: { count: $('h3').length },
                 h4: { count: $('h4').length },
@@ -1766,11 +1973,13 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
                 h6: { count: $('h6').length }
               },
               links: {
-                total: links.length,
-                external: links.filter(l => l && l.startsWith('http')).length,
-                internal: links.filter(l => l && !l.startsWith('http')).length,
+                total: $('a').length,
+                external: $('a[href^="http"]').length,
+                internal: $('a:not([href^="http"])').length,
                 nofollow: $('a[rel="nofollow"]').length,
-                data: links.map(href => ({ href }))
+                data: $('a').map((_, el) => ({
+                  href: $(el).attr('href') || ''
+                })).get()
               },
               images: {
                 total: images.length,
@@ -1779,9 +1988,14 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
                 data: images
               },
               content: {
-                wordCount: $('body').text().split(/\s+/).length,
-                anchorTextWords: $('a').text().split(/\s+/).length,
+                wordCount: $('body').text().split(/\s+/).filter(Boolean).length,
+                anchorTextWords: $('a').text().split(/\s+/).filter(Boolean).length,
                 anchorPercentage: 0
+              },
+              structuredData: {
+                data: structuredData,
+                count: structuredData.length,
+                types: schemaTypes
               }
             });
           } catch (fallbackError) {
@@ -1806,6 +2020,60 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
           }
 
           const result = data.result;
+
+          // Traitement amélioré des images depuis l'API
+          const processedImages = (result.images_analysis?.data || []).map((img: any) => {
+            let imgSrc = '';
+            if (typeof img === 'string') {
+              imgSrc = img;
+            } else {
+              imgSrc = img.src || img.url || '';
+            }
+
+            // Construction de l'URL complète pour l'image
+            try {
+              if (imgSrc) {
+                if (imgSrc.startsWith('//')) {
+                  imgSrc = `https:${imgSrc}`;
+                } else if (imgSrc.startsWith('/')) {
+                  const urlObj = new URL(url);
+                  imgSrc = `${urlObj.protocol}//${urlObj.hostname}${imgSrc}`;
+                } else if (!imgSrc.startsWith('http')) {
+                  imgSrc = new URL(imgSrc, url).href;
+                }
+              }
+            } catch (e) {
+              console.error('Erreur lors de la construction de l\'URL de l\'image:', e);
+            }
+
+            return {
+              src: imgSrc,
+              alt: (typeof img === 'object' && img.alt) || '',
+              title: (typeof img === 'object' && img.title) || '',
+              width: (typeof img === 'object' && img.width) || '',
+              height: (typeof img === 'object' && img.height) || '',
+              hasDimensions: !!(typeof img === 'object' && img.width && img.height)
+            };
+          });
+
+          // Extraire les données structurées
+          const structuredData = extractStructuredData(result.html);
+
+          // Analyser les types de schémas présents
+          const schemaTypes = structuredData.reduce((acc: Record<string, number>, schema: any) => {
+            const type = schema['@type'];
+            if (type) {
+              if (Array.isArray(type)) {
+                type.forEach(t => {
+                  acc[t] = (acc[t] || 0) + 1;
+                });
+              } else {
+                acc[type] = (acc[type] || 0) + 1;
+              }
+            }
+            return acc;
+          }, {});
+
           resolve({
             http: {
               status: result.http.status,
@@ -1846,12 +2114,17 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
               total: result.images_analysis.summary.total,
               noSrc: result.images_analysis.summary['No src tag'],
               noAlt: result.images_analysis.summary['No alt tag'],
-              data: result.images_analysis.data
+              data: processedImages
             },
             content: {
               wordCount: result.word_count.total,
               anchorTextWords: result.word_count['Anchor text words'],
               anchorPercentage: result.word_count['Anchor Percentage']
+            },
+            structuredData: {
+              data: structuredData,
+              count: structuredData.length,
+              types: schemaTypes
             }
           });
         } catch (error) {
@@ -1866,7 +2139,6 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
       resolve(null);
     });
 
-    // Définir un timeout de 10 secondes
     req.setTimeout(10000, () => {
       req.destroy();
       console.error('Timeout de la requête');
