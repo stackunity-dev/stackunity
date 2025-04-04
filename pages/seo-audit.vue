@@ -223,15 +223,17 @@
                                         }}s</v-list-item-subtitle>
                                       </v-list-item>
                                       <v-list-item v-for="(vital, name) in result.coreWebVitals" :key="name">
-                                        <v-list-item-title>{{ getCoreWebVitalName(name) }}</v-list-item-title>
-                                        <v-list-item-subtitle>
-                                          {{ (vital / 1000).toFixed(2) }}s
-                                          <v-chip size="x-small"
-                                            :color="getCoreWebVitalColor(vital, getCoreWebVitalThresholds(name).good, getCoreWebVitalThresholds(name).poor)">
-                                            {{ getCoreWebVitalStatus(vital, getCoreWebVitalThresholds(name).good,
-                                              getCoreWebVitalThresholds(name).poor) }}
-                                          </v-chip>
-                                        </v-list-item-subtitle>
+                                        <template v-if="isDisplayableVital(name)">
+                                          <v-list-item-title>{{ getCoreWebVitalName(name) }}</v-list-item-title>
+                                          <v-list-item-subtitle>
+                                            {{ formatVitalValue(vital, name) }}
+                                            <v-chip size="x-small"
+                                              :color="getVitalScoreColor(result.coreWebVitals[name + 'Score'])"
+                                              v-if="result.coreWebVitals[name + 'Score']">
+                                              {{ result.coreWebVitals[name + 'Score'] }}%
+                                            </v-chip>
+                                          </v-list-item-subtitle>
+                                        </template>
                                       </v-list-item>
                                     </v-list>
                                   </v-card-text>
@@ -856,7 +858,23 @@ import { definePageMeta, useHead } from '#imports';
 import { onBeforeUnmount, ref } from 'vue';
 import type { CrawlReport } from '../server/api/seo-audit';
 import { useUserStore } from '../stores/userStore';
-import { calculateOverallScore, getActionItems, getCoreWebVitalColor, getCoreWebVitalName, getCoreWebVitalStatus, getCoreWebVitalThresholds, getCriticalIssues, getMobileScore, getPerformanceColor, getPerformanceScore, getRankingImpactColor, getRankingImpactDescription, getRankingImpactIcon, getRankingImpactTitle, getRobotsMeta, getSEOScore, getScoreColor, getScoreDescription, getScoreStatus, getWarningImpactDescription, getWarningSeverityColor, getWarningSeverityIcon, parseUrl } from '../utils/seoAuditUtils';
+import {
+  getCriticalIssues,
+  getMobileScore,
+  getPerformanceColor,
+  getRankingImpactColor,
+  getRankingImpactDescription,
+  getRankingImpactIcon,
+  getRankingImpactTitle,
+  getRobotsMeta,
+  getScoreColor,
+  getScoreDescription,
+  getScoreStatus,
+  getWarningImpactDescription,
+  getWarningSeverityColor,
+  getWarningSeverityIcon,
+  parseUrl
+} from '../utils/seoAuditUtils';
 
 useHead({
   title: 'SEO Audit Tool',
@@ -1182,6 +1200,162 @@ const showRobotsTxtDialog = (content: string) => {
   robotsTxtContent.value = content || 'No content available';
   robotsTxtDialog.value = true;
 };
+
+function isDisplayableVital(name: string): boolean {
+  const displayableVitals = [
+    'FCP', 'LCP', 'TTFB', 'speedIndex', 'timeToInteractive',
+    'totalBlockingTime', 'cumulativeLayoutShift', 'performanceScore'
+  ];
+  return displayableVitals.includes(name);
+}
+
+function formatVitalValue(value: number | undefined, name: string): string {
+  if (value === undefined || value === 0) return 'N/A';
+
+  if (name === 'cumulativeLayoutShift') {
+    return value.toFixed(3);
+  }
+  return (value / 1000).toFixed(2) + 's';
+}
+
+function getVitalScoreColor(score: number | undefined): string {
+  if (!score) return 'grey';
+  if (score >= 90) return 'success';
+  if (score >= 50) return 'warning';
+  return 'error';
+}
+
+function getCoreWebVitalName(name: string): string {
+  const names: Record<string, string> = {
+    FCP: 'First Contentful Paint',
+    LCP: 'Largest Contentful Paint',
+    TTFB: 'Time to First Byte',
+    speedIndex: 'Speed Index',
+    timeToInteractive: 'Time to Interactive',
+    totalBlockingTime: 'Total Blocking Time',
+    cumulativeLayoutShift: 'Cumulative Layout Shift',
+    performanceScore: 'Performance Score'
+  };
+  return names[name] || name;
+}
+
+function calculateOverallScore(result: any): number {
+  if (!result) return 0;
+
+  const performanceScore = result.coreWebVitals?.performanceScore || 0;
+  const contentScore = result.contentStats?.wordCount > 300 ? 100 : (result.contentStats?.wordCount / 3);
+  const technicalScore = result.securityChecks?.https ? 100 : 50;
+
+  return Math.round((performanceScore + contentScore + technicalScore) / 3);
+}
+
+function getPerformanceScore(result: any): number {
+  if (!result?.coreWebVitals) return 0;
+  return result.coreWebVitals.performanceScore || 0;
+}
+
+function getSEOScore(result: any): number {
+  if (!result) return 0;
+
+  let score = 100;
+
+  // Réduire le score en fonction des problèmes trouvés
+  if (!result.title) score -= 20;
+  if (!result.description) score -= 15;
+  if (!result.h1 || result.h1.length === 0) score -= 15;
+  if (result.imageAlt.some(img => !img.alt)) score -= 10;
+  if (!result.mobileCompatibility.hasViewport) score -= 10;
+  if (!result.securityChecks.https) score -= 15;
+
+  // Réduire le score en fonction du nombre d'avertissements
+  score -= Math.min(result.warnings.length * 5, 30);
+
+  return Math.max(0, score);
+}
+
+function getActionItems(result: any): { high: any[], medium: any[] } {
+  if (!result) return { high: [], medium: [] };
+
+  const actionItems = {
+    high: [] as any[],
+    medium: [] as any[]
+  };
+
+  // Vérification du titre
+  if (!result.title) {
+    actionItems.high.push({
+      title: 'Titre manquant',
+      description: 'Ajoutez un titre unique et descriptif à votre page',
+      icon: 'mdi-format-title'
+    });
+  } else if (result.title.length < 30 || result.title.length > 60) {
+    actionItems.medium.push({
+      title: 'Optimisation du titre',
+      description: 'Le titre devrait faire entre 30 et 60 caractères',
+      icon: 'mdi-format-title'
+    });
+  }
+
+  // Vérification de la méta description
+  if (!result.description) {
+    actionItems.high.push({
+      title: 'Meta description manquante',
+      description: 'Ajoutez une meta description pertinente',
+      icon: 'mdi-text-box'
+    });
+  } else if (result.description.length < 120 || result.description.length > 160) {
+    actionItems.medium.push({
+      title: 'Optimisation de la meta description',
+      description: 'La meta description devrait faire entre 120 et 160 caractères',
+      icon: 'mdi-text-box'
+    });
+  }
+
+  // Vérification des images
+  const imagesWithoutAlt = result.imageAlt.filter((img: any) => !img.alt);
+  if (imagesWithoutAlt.length > 0) {
+    actionItems.high.push({
+      title: 'Images sans attribut alt',
+      description: `${imagesWithoutAlt.length} image(s) n'ont pas d'attribut alt`,
+      icon: 'mdi-image'
+    });
+  }
+
+  // Vérification de la structure des titres
+  if (!result.h1 || result.h1.length === 0) {
+    actionItems.high.push({
+      title: 'H1 manquant',
+      description: 'Ajoutez un titre H1 principal à votre page',
+      icon: 'mdi-format-header-1'
+    });
+  } else if (result.h1.length > 1) {
+    actionItems.medium.push({
+      title: 'Multiple H1',
+      description: 'Une page ne devrait avoir qu\'un seul titre H1',
+      icon: 'mdi-format-header-1'
+    });
+  }
+
+  // Vérification HTTPS
+  if (!result.securityChecks.https) {
+    actionItems.high.push({
+      title: 'HTTPS non activé',
+      description: 'Activez HTTPS pour sécuriser votre site',
+      icon: 'mdi-shield'
+    });
+  }
+
+  // Vérification mobile
+  if (!result.mobileCompatibility.hasViewport) {
+    actionItems.high.push({
+      title: 'Viewport meta manquant',
+      description: 'Ajoutez une balise viewport pour l\'affichage mobile',
+      icon: 'mdi-cellphone'
+    });
+  }
+
+  return actionItems;
+}
 
 onBeforeUnmount(() => {
   if (auditing.value) {

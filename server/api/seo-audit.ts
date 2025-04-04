@@ -1,4 +1,5 @@
 import axios from 'axios';
+import cheerio from 'cheerio';
 import { XMLParser } from 'fast-xml-parser';
 import { createError, defineEventHandler, readBody } from 'h3';
 
@@ -46,15 +47,21 @@ export interface SEOAuditResult {
     LCP: number;
     TTFB: number;
     domLoad: number;
+    speedIndex?: number;
+    timeToInteractive?: number;
+    totalBlockingTime?: number;
+    cumulativeLayoutShift?: number;
+    bootupTime?: number;
+    mainThreadWork?: number;
+    performanceScore?: number;
+    firstContentfulPaintScore?: number;
+    speedIndexScore?: number;
+    largestContentfulPaintScore?: number;
+    interactiveScore?: number;
+    totalBlockingTimeScore?: number;
+    cumulativeLayoutShiftScore?: number;
   };
-  headingStructure: {
-    h1: string[];
-    h2: string[];
-    h3: string[];
-    h4: string[];
-    h5: string[];
-    h6: string[];
-  };
+  headingStructure: HeadingStructure;
   structuredData: any[];
   socialTags: {
     ogTags: Array<{ property: string | null; content: string | null }>;
@@ -128,6 +135,15 @@ interface ImageData {
   hasDimensions: boolean;
 }
 
+interface HeadingStructure {
+  h1: string[];
+  h2: string[];
+  h3: string[];
+  h4: string[];
+  h5: string[];
+  h6: string[];
+}
+
 // Fonctions d'extraction HTML par regex
 function extractTitle(html: string): string {
   const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
@@ -140,22 +156,16 @@ function extractMetaDescription(html: string): string {
   return metaMatch ? metaMatch[1].trim() : '';
 }
 
-function extractAllHeadings(html: string): { [key: string]: string[] } {
-  const headings: { [key: string]: string[] } = {
-    h1: [], h2: [], h3: [], h4: [], h5: [], h6: []
+function extractAllHeadings(html: string): HeadingStructure {
+  const $ = cheerio.load(html);
+  return {
+    h1: $('h1').map((_, el) => $(el).text().trim()).get(),
+    h2: $('h2').map((_, el) => $(el).text().trim()).get(),
+    h3: $('h3').map((_, el) => $(el).text().trim()).get(),
+    h4: $('h4').map((_, el) => $(el).text().trim()).get(),
+    h5: $('h5').map((_, el) => $(el).text().trim()).get(),
+    h6: $('h6').map((_, el) => $(el).text().trim()).get()
   };
-
-  for (let i = 1; i <= 6; i++) {
-    const regex = new RegExp(`<h${i}[^>]*>(.*?)<\/h${i}>`, 'gi');
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-      // Nettoyer les balises HTML à l'intérieur du titre
-      const content = match[1].replace(/<[^>]*>/g, '').trim();
-      headings[`h${i}`].push(content);
-    }
-  }
-
-  return headings;
 }
 
 function extractImages(html: string, baseUrl: string): any[] {
@@ -382,13 +392,13 @@ function extractStructuredData(html: string): any[] {
   return structuredData;
 }
 
-function extractViewportMeta(html: string): { hasViewport: boolean, viewportContent: string } {
-  const viewportMatch = html.match(/<meta[^>]*name=["']viewport["'][^>]*content=["']([^"']*)["'][^>]*>/i) ||
-    html.match(/<meta[^>]*content=["']([^"']*)["'][^>]*name=["']viewport["'][^>]*>/i);
-
+function extractViewportMeta(html: string): { hasViewport: boolean; viewportContent: string; smallTouchTargets: number; } {
+  const $ = cheerio.load(html);
+  const viewportMeta = $('meta[name="viewport"]');
   return {
-    hasViewport: !!viewportMatch,
-    viewportContent: viewportMatch ? viewportMatch[1] : ''
+    hasViewport: viewportMeta.length > 0,
+    viewportContent: viewportMeta.attr('content') || '',
+    smallTouchTargets: 0 // Cette valeur devrait être calculée en analysant les éléments cliquables
   };
 }
 
@@ -704,170 +714,121 @@ async function performMultiPageAudit(
 /**
  * Analyse une page individuelle avec la méthode standard (sans RapidAPI)
  */
-async function analyzePageStandard(url: string, timeout: number): Promise<SEOAuditResult> {
-  console.log(`Analyse standard de la page: ${url}`);
-  const startTime = Date.now();
-
-  // Récupération du contenu HTML
-  const siteResponse = await axios.get(url, {
-    timeout,
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; SEOAuditBot/1.0; +https://devunity.tech)'
-    }
-  });
-
-  const html = siteResponse.data;
-  const loadTime = Date.now() - startTime;
-
-  // Extraire les informations de base avec les fonctions existantes
-  const title = extractTitle(html);
-  const description = extractMetaDescription(html);
-  const headings = extractAllHeadings(html);
-  const imageAlt = extractImages(html, url);
-  const links = extractLinks(html, url);
-  const metaTags = extractMetaTags(html);
-  const robotsMeta = extractRobotsMeta(metaTags);
-  const socialTags = extractSocialTags(html);
-  const structuredData = extractStructuredData(html);
-  const viewport = extractViewportMeta(html);
-  const wordCount = countWords(html);
-
-  // Récupérer robots.txt et sitemap
-  let robotsTxtContent = '';
-  let robotsTxtFound = false;
-  let sitemapFound = false;
-  let sitemapUrl = '';
-  let sitemapUrls = 0;
-
+async function analyzePageStandard(url: string, timeout: number = 30000): Promise<SEOAuditResult> {
   try {
-    const urlObj = new URL(url);
-    const baseUrl = `${urlObj.protocol}//${urlObj.hostname}`;
-    const robotsUrl = `${baseUrl}/robots.txt`;
+    // Récupérer les métriques de performance
+    const pageMetrics = await getPerformanceMetrics(url);
+    console.log('Métriques de performance récupérées:', pageMetrics);
 
-    const robotsResponse = await axios.get(robotsUrl, { timeout: 5000 });
-    if (robotsResponse.status === 200) {
-      robotsTxtContent = robotsResponse.data;
-      robotsTxtFound = true;
+    // Récupérer l'analyse SEO de base
+    const basicAnalysis = await getBasicSeoAnalysis(url);
+    console.log('Analyse SEO de base récupérée:', basicAnalysis);
 
-      // Extraire l'URL du sitemap du robots.txt
-      const sitemapMatches = robotsTxtContent.match(/Sitemap:\s*(.+)/gi);
-      if (sitemapMatches && sitemapMatches.length > 0) {
-        const sitemapLine = sitemapMatches[0];
-        sitemapUrl = sitemapLine.replace(/Sitemap:\s*/i, '').trim();
-        sitemapFound = true;
-
-        // Récupérer le contenu du sitemap
-        try {
-          const sitemapResponse = await axios.get(sitemapUrl, { timeout: 10000 });
-          if (sitemapResponse.status === 200) {
-            const xmlData = sitemapResponse.data;
-            const parser = new XMLParser({ ignoreAttributes: false });
-            const parsedXml = parser.parse(xmlData);
-
-            if (parsedXml.sitemapindex && parsedXml.sitemapindex.sitemap) {
-              const sitemaps = Array.isArray(parsedXml.sitemapindex.sitemap)
-                ? parsedXml.sitemapindex.sitemap
-                : [parsedXml.sitemapindex.sitemap];
-              sitemapUrls = sitemaps.length;
-            }
-            else if (parsedXml.urlset && parsedXml.urlset.url) {
-              const urls = Array.isArray(parsedXml.urlset.url)
-                ? parsedXml.urlset.url
-                : [parsedXml.urlset.url];
-              sitemapUrls = urls.length;
-            }
-          }
-        } catch (error) {
-          console.error('Erreur lors de l\'analyse du sitemap:', error);
-        }
-      }
+    if (!basicAnalysis) {
+      throw new Error('Impossible de récupérer l\'analyse SEO de base');
     }
+
+    // Créer le résultat de l'audit
+    const result: SEOAuditResult = {
+      url,
+      title: basicAnalysis.title.content,
+      description: basicAnalysis.meta_description.content,
+      h1: basicAnalysis.headings.h1.content ? [basicAnalysis.headings.h1.content] : [],
+      h2: [], // Sera rempli à partir des données détaillées
+      h3: [], // Sera rempli à partir des données détaillées
+      metaTags: [
+        { name: 'viewport', content: basicAnalysis.metadata.viewport },
+        { name: 'robots', content: basicAnalysis.metadata.robots }
+      ],
+      robotsMeta: extractRobotsMeta([{ name: 'robots', content: basicAnalysis.metadata.robots }]),
+      imageAlt: basicAnalysis.images.data.map(img => ({
+        src: img.src,
+        alt: img.alt,
+        hasDimensions: false // Les dimensions ne sont pas fournies par cette API
+      })),
+      videoInfo: [],
+      loadTime: parseFloat(basicAnalysis.http.responseTime) * 1000, // Convertir en millisecondes
+      statusCode: basicAnalysis.http.status,
+      internalLinks: basicAnalysis.links.data
+        .filter(link => link.href && !link.href.startsWith('http'))
+        .map(link => new URL(link.href, url).href),
+      externalLinks: basicAnalysis.links.data
+        .filter(link => link.href && link.href.startsWith('http'))
+        .map(link => link.href),
+      warnings: [],
+      coreWebVitals: {
+        FCP: pageMetrics?.firstContentfulPaint || 0,
+        LCP: pageMetrics?.largestContentfulPaint || 0,
+        TTFB: pageMetrics?.timeToFirstByte || 0,
+        domLoad: pageMetrics?.timeToInteractive || 0,
+        speedIndex: pageMetrics?.speedIndex || 0,
+        timeToInteractive: pageMetrics?.timeToInteractive || 0,
+        totalBlockingTime: pageMetrics?.totalBlockingTime || 0,
+        cumulativeLayoutShift: pageMetrics?.cumulativeLayoutShift || 0,
+        bootupTime: pageMetrics?.bootupTime || 0,
+        mainThreadWork: pageMetrics?.mainThreadWork || 0,
+        performanceScore: pageMetrics?.performanceScore || 0,
+        firstContentfulPaintScore: pageMetrics?.firstContentfulPaintScore || 0,
+        speedIndexScore: pageMetrics?.speedIndexScore || 0,
+        largestContentfulPaintScore: pageMetrics?.largestContentfulPaintScore || 0,
+        interactiveScore: pageMetrics?.interactiveScore || 0,
+        totalBlockingTimeScore: pageMetrics?.totalBlockingTimeScore || 0,
+        cumulativeLayoutShiftScore: pageMetrics?.cumulativeLayoutShiftScore || 0
+      },
+      headingStructure: {
+        h1: basicAnalysis.headings.h1.content ? [basicAnalysis.headings.h1.content] : [],
+        h2: [], // L'API ne fournit que le compte, pas le contenu
+        h3: [], // L'API ne fournit que le compte, pas le contenu
+        h4: [], // L'API ne fournit que le compte, pas le contenu
+        h5: [], // L'API ne fournit que le compte, pas le contenu
+        h6: []  // L'API ne fournit que le compte, pas le contenu
+      },
+      structuredData: [], // Non fourni par cette API
+      socialTags: {
+        ogTags: [], // Non fourni par cette API
+        twitterTags: [] // Non fourni par cette API
+      },
+      mobileCompatibility: {
+        hasViewport: !!basicAnalysis.metadata.viewport,
+        viewportContent: basicAnalysis.metadata.viewport || '',
+        smallTouchTargets: 0
+      },
+      securityChecks: {
+        https: basicAnalysis.http.using_https,
+        validCertificate: true, // Supposé vrai si la requête a réussi
+        securityHeaders: []
+      },
+      links: {
+        internal: basicAnalysis.links.data
+          .filter(link => link.href && !link.href.startsWith('http'))
+          .map(link => new URL(link.href, url).href),
+        external: basicAnalysis.links.data
+          .filter(link => link.href && link.href.startsWith('http'))
+          .map(link => link.href)
+      },
+      contentStats: {
+        wordCount: basicAnalysis.content.wordCount,
+        keywordDensity: 0, // Non fourni par cette API
+        readabilityScore: 0 // Non fourni par cette API
+      },
+      technicalSEO: {
+        sitemapFound: false,
+        sitemapUrl: '',
+        sitemapUrls: 0,
+        robotsTxtFound: false,
+        robotsTxtContent: '',
+        schemaTypeCount: {}
+      }
+    };
+
+    // Générer les avertissements
+    generateStandardWarnings(result);
+
+    return result;
   } catch (error) {
-    console.error('Erreur lors de la récupération du robots.txt:', error);
+    console.error(`Erreur lors de l'analyse de ${url}:`, error);
+    throw error;
   }
-
-  // Analyser les schémas structurés et compter les types
-  const schemaTypeCount: Record<string, number> = {};
-  for (const schema of structuredData) {
-    try {
-      if (schema && schema['@type']) {
-        const type = schema['@type'];
-        if (Array.isArray(type)) {
-          type.forEach(t => {
-            schemaTypeCount[t] = (schemaTypeCount[t] || 0) + 1;
-          });
-        } else {
-          schemaTypeCount[type] = (schemaTypeCount[type] || 0) + 1;
-        }
-      }
-    } catch (error) {
-      console.error('Erreur d\'analyse du type de schéma:', error);
-    }
-  }
-
-  // Construire le résultat
-  const result: SEOAuditResult = {
-    url,
-    title,
-    description,
-    h1: headings.h1,
-    h2: headings.h2,
-    h3: headings.h3,
-    metaTags,
-    robotsMeta,
-    imageAlt,
-    videoInfo: [],
-    loadTime,
-    statusCode: siteResponse.status,
-    internalLinks: links.internal,
-    externalLinks: links.external,
-    warnings: [],
-    coreWebVitals: {
-      FCP: 0,
-      LCP: 0,
-      TTFB: 0,
-      domLoad: loadTime
-    },
-    headingStructure: {
-      h1: headings.h1 || [],
-      h2: headings.h2 || [],
-      h3: headings.h3 || [],
-      h4: headings.h4 || [],
-      h5: headings.h5 || [],
-      h6: headings.h6 || []
-    },
-    structuredData,
-    socialTags,
-    mobileCompatibility: {
-      hasViewport: viewport.hasViewport,
-      viewportContent: viewport.viewportContent,
-      smallTouchTargets: 0
-    },
-    securityChecks: {
-      https: url.startsWith('https'),
-      validCertificate: true,
-      securityHeaders: []
-    },
-    links,
-    contentStats: {
-      wordCount,
-      keywordDensity: calculateKeywordDensity(html),
-      readabilityScore: calculateReadabilityScore(html)
-    },
-    technicalSEO: {
-      sitemapFound,
-      sitemapUrl,
-      sitemapUrls,
-      robotsTxtFound,
-      robotsTxtContent,
-      schemaTypeCount
-    }
-  };
-
-  // Générer les avertissements
-  generateStandardWarnings(result);
-
-  return result;
 }
 
 function calculateKeywordDensity(html: string): number {
@@ -1185,7 +1146,7 @@ async function performRapidApiAudit(url: string): Promise<CrawlReport> {
   const rapidApiKey = process.env.RAPID_API_KEY || '2308627ad7msh84971507d0dce82p1e637fjsn1ee2a06e6776';
 
   // Obtenir les métriques de performance avec la première API
-  const performanceMetrics = await getPerformanceMetrics(url, rapidApiKey);
+  const performanceMetrics = await getPerformanceMetrics(url);
   console.log(`Métriques de performance récupérées: FCP=${performanceMetrics?.firstContentfulPaint || 'N/A'}`);
 
   // Obtenir l'analyse SEO complète avec la deuxième API
@@ -1202,7 +1163,20 @@ async function performRapidApiAudit(url: string): Promise<CrawlReport> {
       FCP: performanceMetrics?.firstContentfulPaint ? parseInt(performanceMetrics.firstContentfulPaint) : standardResult.coreWebVitals.FCP,
       LCP: performanceMetrics?.largestContentfulPaint ? parseInt(performanceMetrics.largestContentfulPaint) : standardResult.coreWebVitals.LCP,
       TTFB: performanceMetrics?.serverResponseTime ? parseInt(performanceMetrics.serverResponseTime) : standardResult.coreWebVitals.TTFB,
-      domLoad: performanceMetrics?.domContentLoadedTime ? parseInt(performanceMetrics.domContentLoadedTime) : standardResult.coreWebVitals.domLoad
+      domLoad: performanceMetrics?.timeToInteractive || standardResult.coreWebVitals.domLoad,
+      speedIndex: performanceMetrics?.speedIndex,
+      timeToInteractive: performanceMetrics?.timeToInteractive,
+      totalBlockingTime: performanceMetrics?.totalBlockingTime,
+      cumulativeLayoutShift: performanceMetrics?.cumulativeLayoutShift,
+      bootupTime: performanceMetrics?.bootupTime,
+      mainThreadWork: performanceMetrics?.mainThreadWork,
+      performanceScore: performanceMetrics?.performanceScore,
+      firstContentfulPaintScore: performanceMetrics?.firstContentfulPaintScore,
+      speedIndexScore: performanceMetrics?.speedIndexScore,
+      largestContentfulPaintScore: performanceMetrics?.largestContentfulPaintScore,
+      interactiveScore: performanceMetrics?.interactiveScore,
+      totalBlockingTimeScore: performanceMetrics?.totalBlockingTimeScore,
+      cumulativeLayoutShiftScore: performanceMetrics?.cumulativeLayoutShiftScore
     },
     contentStats: {
       ...standardResult.contentStats,
@@ -1520,47 +1494,93 @@ async function scrapeDomainAndAnalyze(
 
     } catch (error) {
       console.error(`Erreur lors de l'analyse de ${currentUrl}:`, error);
-      // Continuer avec l'URL suivante
+      // Même en cas d'erreur, considérer l'URL comme visitée
+      if (!visitedURLs.includes(currentUrl)) {
+        visitedURLs.push(currentUrl);
+      }
     }
   }
 
-  console.log(`Analyse du domaine terminée: ${analyzedCount} pages analysées`);
+  console.log(`Analyse terminée: ${analyzedCount} pages analysées sur ${visitedURLs.length} URLs visitées`);
+
+  // Si aucune page n'a été analysée avec succès, analyser au moins la page de départ
+  if (Object.keys(seoResults).length === 0) {
+    console.log("Aucune page analysée avec succès, analyse de la page de départ");
+    try {
+      const result = await analyzePageStandard(startUrl, timeout);
+      seoResults[startUrl] = result;
+      urlMap[startUrl] = result.internalLinks;
+    } catch (error) {
+      console.error(`Erreur lors de l'analyse de la page de départ:`, error);
+    }
+  }
 
   // Calculer les statistiques globales
   const summary = calculateSummaryStats(seoResults);
 
-  // Générer le sitemap
+  // Générer un sitemap XML
   const generatedSitemap = generateSitemapXML(Object.keys(seoResults));
 
-  return {
+  const report: CrawlReport = {
     urlMap,
     visitedURLs,
     seoResults,
     summary,
     generatedSitemap
   };
+
+  console.log(`Audit SEO avec RapidAPI terminé avec succès`);
+  return report;
 }
 
 /**
  * Récupère les métriques de performance depuis l'API SEO Master
  */
-async function getPerformanceMetrics(url: string, rapidApiKey: string): Promise<any> {
+async function getPerformanceMetrics(url: string): Promise<any> {
   try {
-    const response = await axios({
+    const options = {
       method: 'POST',
-      url: 'https://seo-master-scan-website-analysis-performance-reporting.p.rapidapi.com/analyze?noqueue=1',
+      url: 'https://seo-master-scan-website-analysis-performance-reporting.p.rapidapi.com/analyze',
       headers: {
         'content-type': 'application/json',
-        'X-RapidAPI-Key': rapidApiKey,
+        'X-RapidAPI-Key': '2308627ad7msh84971507d0dce82p1e637fjsn1ee2a06e6776',
         'X-RapidAPI-Host': 'seo-master-scan-website-analysis-performance-reporting.p.rapidapi.com'
       },
       data: {
-        url,
-        sections: ['performanceMetrics']
+        url: url,
+        sections: ['performanceMetrics', 'coreWebVitals']
       }
-    });
+    };
 
-    return response.data.content.performanceMetrics;
+    const response = await axios(options);
+
+    if (!response.data || !response.data.content || !response.data.content.performanceMetrics) {
+      console.error('Réponse API invalide:', response.data);
+      return null;
+    }
+
+    const metrics = response.data.content.performanceMetrics;
+    const webVitals = response.data.content.coreWebVitals || {};
+
+    return {
+      firstContentfulPaint: parseInt(webVitals.FCP || metrics.firstContentfulPaint) || 0,
+      largestContentfulPaint: parseInt(webVitals.LCP || metrics.largestContentfulPaint) || 0,
+      timeToFirstByte: parseInt(webVitals.TTFB || metrics.serverResponseTime) || 0,
+      speedIndex: parseInt(metrics.speedIndex) || 0,
+      timeToInteractive: parseInt(metrics.timeToInteractive) || 0,
+      totalBlockingTime: parseInt(metrics.totalBlockingTime) || 0,
+      cumulativeLayoutShift: parseFloat(webVitals.CLS || metrics.cumulativeLayoutShift) || 0,
+      bootupTime: parseInt(metrics.bootupTime) || 0,
+      mainThreadWork: parseInt(metrics.mainThreadWork) || 0,
+      performanceScore: parseInt(metrics.performanceScore) || 0,
+      firstContentfulPaintScore: parseInt(metrics.firstContentfulPaintScore) || 0,
+      speedIndexScore: parseInt(metrics.speedIndexScore) || 0,
+      largestContentfulPaintScore: parseInt(metrics.largestContentfulPaintScore) || 0,
+      interactiveScore: parseInt(metrics.interactiveScore) || 0,
+      totalBlockingTimeScore: parseInt(metrics.totalBlockingTimeScore) || 0,
+      cumulativeLayoutShiftScore: parseInt(metrics.cumulativeLayoutShiftScore) || 0,
+      serverResponseTime: parseInt(metrics.serverResponseTime) || 0
+    };
   } catch (error) {
     console.error('Erreur lors de la récupération des métriques de performance:', error);
     return null;
@@ -1572,21 +1592,131 @@ async function getPerformanceMetrics(url: string, rapidApiKey: string): Promise<
  */
 async function getSeoAnalysis(url: string, rapidApiKey: string): Promise<any> {
   try {
-    // Retirer le protocole (http:// ou https://) de l'URL
-    const domain = url.replace(/^https?:\/\//, '');
-
-    const response = await axios({
+    const options = {
       method: 'GET',
-      url: `https://website-analyze-and-seo-audit-pro.p.rapidapi.com/onpage.php?website=${domain}`,
+      url: 'https://website-analyze-and-seo-audit-pro.p.rapidapi.com/onpage.php',
+      params: {
+        website: url.replace(/^https?:\/\//, '')
+      },
       headers: {
         'X-RapidAPI-Key': rapidApiKey,
         'X-RapidAPI-Host': 'website-analyze-and-seo-audit-pro.p.rapidapi.com'
       }
-    });
+    };
 
-    return response.data;
+    const response = await axios(options);
+
+    if (!response.data || !response.data.basic) {
+      console.error('Réponse API invalide:', response.data);
+      return null;
+    }
+
+    const data = response.data;
+    const basic = data.basic;
+
+    return {
+      basic: {
+        webtitle: basic.webtitle || { title: '' },
+        metadescription: basic.metadescription || { description: '' },
+        metakeywords: basic.metakeywords || { keywords: '' },
+        headings: {
+          h1: { headings: basic.headings?.h1?.headings || [] },
+          h2: { headings: basic.headings?.h2?.headings || [] },
+          h3: { headings: basic.headings?.h3?.headings || [] },
+          h4: { headings: basic.headings?.h4?.headings || [] },
+          h5: { headings: basic.headings?.h5?.headings || [] },
+          h6: { headings: basic.headings?.h6?.headings || [] }
+        },
+        images: {
+          data: basic.images?.data || []
+        },
+        links: {
+          data: basic.links?.data || []
+        },
+        ogdata: basic.ogdata || {},
+        twitterdata: basic.twitterdata || {},
+        favicon: basic.favicon || '',
+        sitemap_robots: basic.sitemap_robots || [],
+        iframe: basic.iframe || { count: 0 }
+      }
+    };
   } catch (error) {
     console.error('Erreur lors de la récupération de l\'analyse SEO:', error);
-    return {};
+    return null;
   }
-} 
+}
+
+async function getBasicSeoAnalysis(url: string): Promise<any> {
+  try {
+    const options = {
+      method: 'GET',
+      url: 'https://website-seo-analyzer.p.rapidapi.com/seo/seo-audit-basic',
+      params: { url },
+      headers: {
+        'x-rapidapi-key': '2308627ad7msh84971507d0dce82p1e637fjsn1ee2a06e6776',
+        'x-rapidapi-host': 'website-seo-analyzer.p.rapidapi.com'
+      }
+    };
+
+    const response = await axios(options);
+
+    if (!response.data || !response.data.success) {
+      console.error('Réponse API invalide:', response.data);
+      return null;
+    }
+
+    const result = response.data.result;
+
+    return {
+      http: {
+        status: result.http.status,
+        using_https: result.http.using_https,
+        responseTime: result.responseTime
+      },
+      title: {
+        content: result.title.data,
+        length: result.title.length
+      },
+      meta_description: {
+        content: result.meta_description.data,
+        length: result.meta_description.length
+      },
+      metadata: {
+        charset: result.metadata_info.charset,
+        canonical: result.metadata_info.canonical,
+        favicon: result.metadata_info.favicon,
+        viewport: result.metadata_info.viewport,
+        robots: result.metadata_info.robots
+      },
+      headings: {
+        h1: { count: result['Page Headings summary'].H1, content: result['H1 Content'] },
+        h2: { count: result['Page Headings summary'].H2 },
+        h3: { count: result['Page Headings summary'].H3 },
+        h4: { count: result['Page Headings summary'].H4 },
+        h5: { count: result['Page Headings summary'].H5 },
+        h6: { count: result['Page Headings summary'].H6 }
+      },
+      links: {
+        total: result.links_summary['Total links'],
+        external: result.links_summary['External links'],
+        internal: result.links_summary.Internal,
+        nofollow: result.links_summary['Nofollow count'],
+        data: result.links
+      },
+      images: {
+        total: result.images_analysis.summary.total,
+        noSrc: result.images_analysis.summary['No src tag'],
+        noAlt: result.images_analysis.summary['No alt tag'],
+        data: result.images_analysis.data
+      },
+      content: {
+        wordCount: result.word_count.total,
+        anchorTextWords: result.word_count['Anchor text words'],
+        anchorPercentage: result.word_count['Anchor Percentage']
+      }
+    };
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'analyse SEO de base:', error);
+    return null;
+  }
+}

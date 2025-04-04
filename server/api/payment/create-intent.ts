@@ -1,24 +1,24 @@
 import Stripe from 'stripe';
 import { readBody, defineEventHandler } from 'h3';
-// Table des taux de TVA par pays
+
 const TAX_RATES: { [key: string]: number } = {
-  'FR': 0.20, // France
-  'DE': 0.19, // Germany
-  'IT': 0.22, // Italy
-  'ES': 0.21, // Spain
-  'GB': 0.20, // United Kingdom
-  'BE': 0.21, // Belgium
-  'NL': 0.21, // Netherlands
-  'LU': 0.17, // Luxembourg
-  'AT': 0.20, // Austria
-  'US': 0.0,  // United States (may vary by state)
-  'CA': 0.05, // Canada (may vary by province)
-  'CH': 0.077, // Switzerland
-  'PT': 0.23, // Portugal
-  'DK': 0.25, // Denmark
-  'SE': 0.25, // Sweden
-  'NO': 0.25, // Norway
-  'FI': 0.24, // Finland
+  'FR': 0.20,
+  'DE': 0.19,
+  'IT': 0.22,
+  'ES': 0.21,
+  'GB': 0.20,
+  'BE': 0.21,
+  'NL': 0.21,
+  'LU': 0.17,
+  'AT': 0.20,
+  'US': 0.0,
+  'CA': 0.05,
+  'CH': 0.077,
+  'PT': 0.23,
+  'DK': 0.25,
+  'SE': 0.25,
+  'NO': 0.25,
+  'FI': 0.24,
 };
 
 function getTaxRate(countryCode: string): number {

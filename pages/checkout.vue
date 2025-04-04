@@ -120,8 +120,10 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '~/stores/userStore';
+import { useUserStore } from '../stores/userStore';
+// @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+
 definePageMeta({
   layout: 'empty'
 });

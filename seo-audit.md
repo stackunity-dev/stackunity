@@ -1,93 +1,20 @@
-Probleme : le seo-audit na analyse que une page
-On va simplifier ca avec des API et le rendre + complet (toute page...)
-// API 1 
+REMPLACER L'API de base qui recupere les donnee globales 
 
-Le snippet de rapid api : 
-
-const http = require('https');
-
-const options = {
-	method: 'POST',
-	hostname: 'seo-master-scan-website-analysis-performance-reporting.p.rapidapi.com',
-	port: null,
-	path: '/analyze?noqueue=1',
-	headers: {
-		'x-rapidapi-key': '2308627ad7msh84971507d0dce82p1e637fjsn1ee2a06e6776',
-		'x-rapidapi-host': 'seo-master-scan-website-analysis-performance-reporting.p.rapidapi.com',
-		'Content-Type': 'application/json'
-	}
-};
-
-const req = http.request(options, function (res) {
-	const chunks = [];
-
-	res.on('data', function (chunk) {
-		chunks.push(chunk);
-	});
-
-	res.on('end', function () {
-		const body = Buffer.concat(chunks);
-		console.log(body.toString());
-	});
-});
-
-req.write(JSON.stringify({
-  url: 'https://example.com',
-  sections: [
-    'performanceMetrics'
-  ]
-}));
-req.end();
-
-la reponse : 
-
-Text
-JSON
-Raw
-Copy
-Collapse All
-content:performanceMetrics:
-firstContentfulPaint:"207ms"
-largestContentfulPaint:"207ms"
-firstMeaningfulPaint:"N/A"
-speedIndex:"207ms"
-timeToInteractive:"207ms"
-totalBlockingTime:"0ms"
-cumulativeLayoutShift:"0"
-domSize:5
-serverResponseTime:"126ms"
-bootupTime:"0ms"
-mainThreadWork:"31ms"
-resourceSize:"949B"
-performanceScore:"100%"
-firstContentfulPaintScore:"100%"
-speedIndexScore:"100%"
-largestContentfulPaintScore:"100%"
-interactiveScore:"100%"
-totalBlockingTimeScore:"100%"
-cumulativeLayoutShiftScore:"100%"
-cacheTime:1742749817064
-url:"https://example.com"
-settings:sections:
-0:"performanceMetrics"
-time:1743717320925
-status:"success"
-message:"Data retrieve
-
-// API 2 
-
-snipept : 
+snippet Target:
+Node.js
+Client:
+HTTP
 
 const http = require('https');
 
 const options = {
 	method: 'GET',
-	hostname: 'website-analyze-and-seo-audit-pro.p.rapidapi.com',
+	hostname: 'website-seo-analyzer.p.rapidapi.com',
 	port: null,
-	path: '/onpage.php?website=codeconia.com',
+	path: '/seo/seo-audit-basic?url=https%3A%2F%2Flearnwithhasan.com',
 	headers: {
 		'x-rapidapi-key': '2308627ad7msh84971507d0dce82p1e637fjsn1ee2a06e6776',
-		'x-rapidapi-host': 'website-analyze-and-seo-audit-pro.p.rapidapi.com'
+		'x-rapidapi-host': 'website-seo-analyzer.p.rapidapi.com'
 	}
 };
 
@@ -104,389 +31,261 @@ const req = http.request(options, function (res) {
 	});
 });
 
-req.end(); 
+req.end();
 
-le resultat : basic:
-websiteurl:"codeconia.com"
-title:"Codeconia -Learn Programming"
-favicon:"http://www.google.com/s2/favicons?domain=codeconia.com"
-webtitle:
-title:"Codeconia -Learn Programming"
-length:28
-metadescription:
-description:"Programmer Guide"
-length:16
-metakeywords:
+ resultat possible 
+
+ success:true
+message:"Report Generated Successfully"
+result:Input:
+URL:"https://learnwithhasan.com"
+Input type:"Domain"
+http:
+status:200
+using_https:true
+contentSize:
+bytes:132263
+kb:129.16
+headers:
+Date:"Fri, 04 Apr 2025 05:01:52 GMT"
+Content-Type:"text/html; charset=UTF-8"
+Transfer-Encoding:"chunked"
+Connection:"keep-alive"
+CF-Ray:"92ae40112f9a30e3-SEA"
+CF-Cache-Status:"HIT"
+Age:"35990"
+Cache-Control:"max-age=14400"
+Last-Modified:"Thu, 03 Apr 2025 17:58:57 GMT"
+Link:"<https://learnwithhasan.com/wp-json/>; rel="https://api.w.org/", <https://learnwithhasan.com/wp-json/wp/v2/pages/68099>; rel="alternate"; title="JSON"; type="application/json", <https://learnwithhasan.com/>; rel=shortlink"
+Vary:"Accept-Encoding"
+cf-apo-via:"tcache"
+cf-edge-cache:"cache,platform=wordpress"
+x-powered-by:"PHP/8.3.19, PleskLin"
+Report-To:"{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=NlWWRgA81bsakmmjpJIk31e22193EjvCP7%2FxM9WtEt%2FnePIDxyAcAjj00IVmNuChTbSOmqBbKDfOjoVSISjZ4nfl2TAYe7kGWp51qm%2Bf7C85N7Wd96GCjcxOPlrbxx%2BgRkcIaw%3D%3D"}],"group":"cf-nel","max_age":604800}"
+NEL:"{"success_fraction":0,"report_to":"cf-nel","max_age":604800}"
+Server:"cloudflare"
+Content-Encoding:"gzip"
+server-timing:"cfL4;desc="?proto=TCP&rtt=1539&min_rtt=1441&rtt_var=478&sent=4&recv=7&lost=0&retrans=0&sent_bytes=2859&recv_bytes=757&delivery_rate=1769089&cwnd=251&unsent_bytes=0&cid=036d39b0975b1a49&ts=34&x=0""
+redirections:false
+responseTime:"0.091713 seconds"
+title:
+found:"Found"
+data:"Become a Successful Digital Entrepreneur - LearnWithHasan"
+length:57
+characters:57
+words:7
+charPerWord:8.14
+tag number:1
+meta_description:
+found:"Found"
+data:"Master digital entrepreneurship with proven strategies. Build automated online businesses, create SaaS products, and scale your income."
+length:135
+characters:135
+words:17
+charPerWord:7.94
+number:1
+metadata_info:
+charset:"UTF-8"
+canonical:"https://learnwithhasan.com/"
+favicon:"https://learnwithhasan.com/wp-content/uploads/2024/10/cropped-hasan-homepage-32x32.webp"
+viewport:"width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=1"
 keywords:null
-counts:2
-headings:h1:headings:
-0:" Web Development Tutorials & Codes "
-count:1
-h2:headings:
-count:0
-h3:headings:
-count:0
-h4:headings:
-count:0
-h5:headings:
-0:"Google Auth in android and ios with React native Expo Managed workflow"
-1:"Web Hosting Server: When and Why It’s the Right Choice"
-2:"Web Hosting for Small Businesses: A Mid-Range Solution for Growing Businesses"
-3:"Reseller Hosting: Benefits and Considerations"
-4:"Drag and Drop with Swapy and PHP"
-5:"How To Generate A PDF from HTML in Laravel 11"
-6:"How to get the next value of an array and loop it in the array in PHP"
-7:"New Open Source CRM for project Management and Invoicing"
-8:"Post View Counts WordPress plugin (Documentation)"
-9:"How to create Laravel Flash Messages"
-10:"How to make Custom Artisan Command in Laravel"
-11:"Tips for Laravel migrations"
-12:"Tricks and tips for Laravel blade templating"
-13:"How To display JSON data in a Laravel blade template"
-14:"HTML to PDF Conversion easiest way using JavaScript"
-15:"How to create a Girlfriend by using AI and javascript"
-16:"Send message to a Telegram channel using PHP"
-17:"How to create Instagram Bot with InstaPy"
-18:"PHP Contact form send email – Website integration ✔️"
-19:"How to Host Laravel project in cPanel easiest way ✔️"
-20:"HTML Form to Email Using JavaScript and SMTP server 🚀"
-21:"HTML to PDF Conversion easiest way using JavaScript"
-22:"How to create a photo gallery in php without a database"
-23:"PHP Contact form send email – Website integration ✔️"
-24:"Digital Marketing Toolkit"
-count:25
-h6:headings:
-count:0
-sitemap_robots:
-0:"robots.txt"
-1:"sitemap.xml"
-iframe:
-count:0
-underscoreurl:null
-urlrewrite:null
-images:data:
-0:"https://codeconia.com/wp-content/themes/codeconia/images/blackpng.png"
-1:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-2:"https://codeconia.com/wp-content/uploads/2024/10/https___dev-to-uploads.s3.amazonaws.com_uploads_articles_fhfhj2t2bbjtzg6s9ccc.avif"
-3:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-4:"https://codeconia.com/wp-content/uploads/2024/09/Web-Hosting-Server_-When-and-Why-Its-the-Right-Choice-300x167.png"
-5:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-6:"https://codeconia.com/wp-content/uploads/2024/09/Web-Hosting-for-Small-Businesses_-A-Mid-Range-Solution-for-Growing-Businesses-300x167.png"
-7:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-8:"https://codeconia.com/wp-content/uploads/2024/09/Reseller-Hosting_-Benefits-and-Considerations-300x167.png"
-9:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-10:"https://codeconia.com/wp-content/uploads/2024/09/Marielle-Price-1-300x169.jpg"
-11:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-12:"https://codeconia.com/wp-content/uploads/2024/06/Marielle-Price-300x169.jpg"
-13:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-14:"https://codeconia.com/wp-content/uploads/2023/07/Marielle-Price-300x169.png"
-15:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-16:"https://codeconia.com/wp-content/uploads/2022/12/preview-xl-1-300x150.jpg"
-17:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-18:"https://codeconia.com/wp-content/uploads/2022/12/Copy-of-HTML-CONTACT-FORM-TO-EMAIL-5-300x169.jpg"
-19:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-20:"https://codeconia.com/wp-content/uploads/2022/12/Copy-of-HTML-CONTACT-FORM-TO-EMAIL-4-300x169.jpg"
-21:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-22:"https://codeconia.com/wp-content/uploads/2022/12/Copy-of-HTML-CONTACT-FORM-TO-EMAIL-3-300x169.jpg"
-23:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-24:"https://codeconia.com/wp-content/uploads/2022/12/Copy-of-HTML-CONTACT-FORM-TO-EMAIL-2-300x169.jpg"
-25:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-26:"https://codeconia.com/wp-content/uploads/2022/12/Copy-of-HTML-CONTACT-FORM-TO-EMAIL-1-300x169.jpg"
-27:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-28:"https://codeconia.com/wp-content/uploads/2022/12/Copy-of-HTML-CONTACT-FORM-TO-EMAIL-300x169.jpg"
-29:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-30:"https://codeconia.com/wp-content/uploads/2021/09/Marielle-Price-300x169.png"
-31:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-32:"https://codeconia.com/wp-content/uploads/2021/07/Copy-of-HTML-CONTACT-FORM-TO-EMAIL-300x169.png"
-33:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-34:"https://codeconia.com/wp-content/uploads/2021/05/Most-popular-Telegram-bots-300x187.jpg"
-35:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-36:"https://codeconia.com/wp-content/uploads/2021/03/maxresdefault-1-300x169.jpg"
-37:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-38:"https://codeconia.com/wp-content/uploads/2021/01/HTML-CONTACT-FORM-TO-EMAIL-300x169.gif"
-39:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-40:"https://codeconia.com/wp-content/uploads/2020/11/upload-laravel-to-shared-hosting-300x118.jpg"
-41:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-42:"https://codeconia.com/wp-content/uploads/2021/09/Javascript-300x169.gif"
-43:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-44:"https://codeconia.com/wp-content/uploads/2021/09/Marielle-Price-300x169.png"
-45:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-46:"https://codeconia.com/wp-content/uploads/2021/06/wordpress-photo-gallery-plugins1-300x150.png"
-47:"//codeconia.com/wp-content/plugins/a3-lazy-load/assets/images/lazy_placeholder.gif"
-48:"https://codeconia.com/wp-content/uploads/2021/01/HTML-CONTACT-FORM-TO-EMAIL-300x169.gif"
-49:"https://www.awltovhc.com/image-100477035-15022370"
-50:"https://codeconia.com/wp-content/themes/codeconia/images/digitalprokit.jpg"
-51:"https://www.awltovhc.com/image-100477035-14347998"
-count:52
-links:data:0:
-link:"/"
-title:" "
+locale:"en_US"
+contentType:"website"
+site_name:"LearnWithHasan"
+site_image:null
+robots:"index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+hreflangs:
+Page Headings summary:
+H1:2
+H2:4
+H3:4
+H4:3
+H5:0
+H6:0
+H1 count:2
+H1 Content:"Home Page"
+word_count:
+total:477
+Corrected word count:477
+Anchor text words:60
+Anchor Percentage:12.58
+links_summary:
+Total links:47
+External links:29
+Internal:18
+Nofollow count:0
+links:0:
+href:"#"
+text:""
 1:
-link:"/"
-title:"Home"
+href:"https://learnwithhasan.com/"
+text:""
 2:
-link:"/latest-posts"
-title:"Latest 🚀"
+href:"https://learnwithhasan.com/learn/"
+text:"Learn"
 3:
-link:"/category/php/"
-title:"PHP"
+href:"https://learnwithhasan.com/community/"
+text:"Community"
 4:
-link:"/category/javascript/"
-title:"Javascript"
+href:"#"
+text:"Resources"
 5:
-link:"/category/updates/"
-title:"Updates/Reviews 🌟"
+href:"https://learnwithhasan.com/blog/"
+text:"Blog"
 6:
-link:"https://store.codeconia.com/"
-title:"Scripts"
+href:"/forum/"
+text:"Forums"
 7:
-link:"https://www.youtube.com/channel/UC_klOvl59ySlBnXH4tKr5Og"
-title:"Youtube"
+href:"https://learnwithhasan.com/newsletter/"
+text:"Newsletter"
 8:
-link:"/community"
-title:"Forum 🥂"
+href:"https://learnwithhasan.com/tools-i-use/"
+text:"Tools I use"
 9:
-link:"https://www.youtube.com/channel/UC_klOvl59ySlBnXH4tKr5Og"
-title:" "
+href:"#"
+text:"Power Section"
 10:
-link:"https://twitter.com/ajith_jojo"
-title:" "
+href:"https://learnwithhasan.com/roadmap/"
+text:"Roadmap"
 11:
-link:"https://github.com/ajithjojo"
-title:" "
+href:"#"
+text:"Tools"
 12:
-link:"https://codeconia.com/google-auth-in-android-and-ios-with-react-native-expo-managed-workflow/"
-title:" "
+href:"https://learnwithhasan.com/llm-playground/"
+text:"LLM Playground"
 13:
-link:"https://codeconia.com/google-auth-in-android-and-ios-with-react-native-expo-managed-workflow/"
-title:" Google Auth in android and ios with React native Expo Managed workflow"
+href:"https://learnwithhasan.com/fastapi-monitoring-tool/"
+text:"API Monitoring"
 14:
-link:"https://codeconia.com/web-hosting-server-when-and-why-its-the-right-choice/"
-title:" "
+href:"#"
+text:"Data"
 15:
-link:"https://codeconia.com/web-hosting-server-when-and-why-its-the-right-choice/"
-title:" Web Hosting Server: When and Why It’s the Right Choice"
+href:"https://learnwithhasan.com/niche-database/"
+text:"Niche Database"
 16:
-link:"https://codeconia.com/web-hosting-for-small-businesses-a-mid-range-solution-for-growing-businesses/"
-title:" "
+href:"https://learnwithhasan.com/prompts-library/"
+text:"Prompts Library"
 17:
-link:"https://codeconia.com/web-hosting-for-small-businesses-a-mid-range-solution-for-growing-businesses/"
-title:" Web Hosting for Small Businesses: A Mid-Range Solution for Growing Businesses"
+href:"https://learnwithhasan.com/codes-library/"
+text:"Codes Library"
 18:
-link:"https://codeconia.com/reseller-hosting-benefits-and-considerations/"
-title:" "
+href:"#"
+text:"Services"
 19:
-link:"https://codeconia.com/reseller-hosting-benefits-and-considerations/"
-title:" Reseller Hosting: Benefits and Considerations"
+href:"/access-shortlinks-io/"
+text:"Shorter Links"
 20:
-link:"https://codeconia.com/drag-and-drop-with-swapy-and-php/"
-title:" "
+href:"/updow-service-access/"
+text:"UpDown Monitor"
 21:
-link:"https://codeconia.com/drag-and-drop-with-swapy-and-php/"
-title:" Drag and Drop with Swapy and PHP"
+href:"/website-monitor-service-access/"
+text:"Website Analytics"
 22:
-link:"https://codeconia.com/how-to-generate-a-pdf-from-html-in-laravel-11/"
-title:" "
+href:"#"
+text:""
 23:
-link:"https://codeconia.com/how-to-generate-a-pdf-from-html-in-laravel-11/"
-title:" How To Generate A PDF from HTML in Laravel 11"
+href:"https://learnwithhasan.com/user-login/"
+text:"Sign in"
 24:
-link:"https://codeconia.com/how-to-get-the-next-value-of-an-array-and-loop-it-in-the-array-in-php/"
-title:" "
+href:"https://learnwithhasan.com/signup/"
+text:"Sign up"
 25:
-link:"https://codeconia.com/how-to-get-the-next-value-of-an-array-and-loop-it-in-the-array-in-php/"
-title:" How to get the next value of an array and loop it in the array in PHP"
+href:"#"
+text:""
 26:
-link:"https://codeconia.com/new-open-source-crm-for-project-management-and-invoicing/"
-title:" "
+href:"https://learnwithhasan.com/"
+text:""
 27:
-link:"https://codeconia.com/new-open-source-crm-for-project-management-and-invoicing/"
-title:" New Open Source CRM for project Management and Invoicing"
+href:"#"
+text:""
 28:
-link:"https://codeconia.com/post-view-counts-wordpress-plugin-documentation/"
-title:" "
+href:"https://learnwithhasan.com/"
+text:""
 29:
-link:"https://codeconia.com/post-view-counts-wordpress-plugin-documentation/"
-title:" Post View Counts WordPress plugin (Documentation)"
+href:"#"
+text:""
 30:
-link:"https://codeconia.com/how-to-create-laravel-flash-messages/"
-title:" "
+href:"/learn/"
+text:"Learn"
 31:
-link:"https://codeconia.com/how-to-create-laravel-flash-messages/"
-title:" How to create Laravel Flash Messages"
+href:"https://learnwithhasan.com/community/"
+text:"Community"
 32:
-link:"https://codeconia.com/how-to-make-custom-artisan-command-in-laravel/"
-title:" "
+href:"https://learnwithhasan.com/blog/"
+text:"Blog"
 33:
-link:"https://codeconia.com/how-to-make-custom-artisan-command-in-laravel/"
-title:" How to make Custom Artisan Command in Laravel"
+href:"https://learnwithhasan.com/forum/"
+text:"Forums"
 34:
-link:"https://codeconia.com/tips-for-laravel-migrations/"
-title:" "
+href:"https://learnwithhasan.com/user-login/"
+text:"Log In"
 35:
-link:"https://codeconia.com/tips-for-laravel-migrations/"
-title:" Tips for Laravel migrations"
+href:"/about-me"
+text:"Learn More About My Journey"
 36:
-link:"https://codeconia.com/tricks-and-tips-for-laravel-blade-templating/"
-title:" "
+href:"#get-free-kit"
+text:"Get The Free Kit"
 37:
-link:"https://codeconia.com/tricks-and-tips-for-laravel-blade-templating/"
-title:" Tricks and tips for Laravel blade templating"
+href:"/membership-levels/"
+text:"Join the Community"
 38:
-link:"https://codeconia.com/how-to-display-json-data-in-a-laravel-blade-template/"
-title:" "
+href:"https://learnwithhasan.com/privacy-policy/"
+text:"Privacy Policy"
 39:
-link:"https://codeconia.com/how-to-display-json-data-in-a-laravel-blade-template/"
-title:" How To display JSON data in a Laravel blade template"
+href:"https://learnwithhasan.com/refund-policy/"
+text:"Refund Policy"
 40:
-link:"https://codeconia.com/html-to-pdf-convertor-easiest-way-using-javascript/"
-title:" "
+href:"https://learnwithhasan.com/terms/"
+text:"Terms"
 41:
-link:"https://codeconia.com/html-to-pdf-convertor-easiest-way-using-javascript/"
-title:" "
+href:"https://learnwithhasan.com/contact-us/"
+text:"Contact Us"
 42:
-link:"https://codeconia.com/html-to-pdf-convertor-easiest-way-using-javascript/"
-title:" HTML to PDF Conversion easiest way using JavaScript"
+href:"https://www.youtube.com/@hasanaboulhasan"
+text:""
 43:
-link:"https://codeconia.com/how-to-create-a-girlfriend-by-using-ai-and-javascript/"
-title:" "
+href:"https://www.linkedin.com/in/h-educate/"
+text:""
 44:
-link:"https://codeconia.com/how-to-create-a-girlfriend-by-using-ai-and-javascript/"
-title:" "
+href:"https://hasanaboulhasan.medium.com/"
+text:""
 45:
-link:"https://codeconia.com/how-to-create-a-girlfriend-by-using-ai-and-javascript/"
-title:" How to create a Girlfriend by using AI and javascript"
+href:"https://github.com/hassancs91?tab=repositories"
+text:""
 46:
-link:"https://codeconia.com/send-message-to-a-telegram-channel-using-php/"
-title:" "
-47:
-link:"https://codeconia.com/send-message-to-a-telegram-channel-using-php/"
-title:" "
-48:
-link:"https://codeconia.com/send-message-to-a-telegram-channel-using-php/"
-title:" Send message to a Telegram channel using PHP"
-49:
-link:"https://codeconia.com/how-to-create-instagram-bot-with-instapy/"
-title:" "
-50:
-link:"https://codeconia.com/how-to-create-instagram-bot-with-instapy/"
-title:" "
-51:
-link:"https://codeconia.com/how-to-create-instagram-bot-with-instapy/"
-title:" How to create Instagram Bot with InstaPy"
-52:
-link:"https://codeconia.com/contact-form-with-phpmail-for-your-website/"
-title:" "
-53:
-link:"https://codeconia.com/contact-form-with-phpmail-for-your-website/"
-title:" "
-54:
-link:"https://codeconia.com/contact-form-with-phpmail-for-your-website/"
-title:" PHP Contact form send email – Website integration ✔️"
-55:
-link:"https://codeconia.com/host-laravel-8-project-on-cpanel-easiest-way/"
-title:" "
-56:
-link:"https://codeconia.com/host-laravel-8-project-on-cpanel-easiest-way/"
-title:" "
-57:
-link:"https://codeconia.com/host-laravel-8-project-on-cpanel-easiest-way/"
-title:" How to Host Laravel project in cPanel easiest way ✔️"
-58:
-link:"https://codeconia.com/html-form-to-email-using-javascript-and-smtp-server/"
-title:" "
-59:
-link:"https://codeconia.com/html-form-to-email-using-javascript-and-smtp-server/"
-title:" HTML Form to Email Using JavaScript and SMTP server 🚀"
-60:
-link:"https://codeconia.com/html-to-pdf-convertor-easiest-way-using-javascript/"
-title:" "
-61:
-link:"https://codeconia.com/html-to-pdf-convertor-easiest-way-using-javascript/"
-title:" HTML to PDF Conversion easiest way using JavaScript"
-62:
-link:"https://codeconia.com/how-to-create-a-gallery-without-a-database-using-php/"
-title:" "
-63:
-link:"https://codeconia.com/how-to-create-a-gallery-without-a-database-using-php/"
-title:" How to create a photo gallery in php without a database"
-64:
-link:"https://codeconia.com/contact-form-with-phpmail-for-your-website/"
-title:" "
-65:
-link:"https://codeconia.com/contact-form-with-phpmail-for-your-website/"
-title:" PHP Contact form send email – Website integration ✔️"
-66:
-link:"https://codeconia.com/category/php/"
-title:"PHP"
-67:
-link:"https://codeconia.com/category/php/laravel/"
-title:"Laravel"
-68:
-link:"https://codeconia.com/category/javascript/"
-title:"Javascript"
-69:
-link:"https://codeconia.com/category/javascript/react/"
-title:"React"
-70:
-link:"https://codeconia.com/category/python/"
-title:"Python"
-71:
-link:"https://codeconia.com/category/arduino/"
-title:"Arduino"
-72:
-link:"https://codeconia.com/category/tips/"
-title:"Tips"
-73:
-link:"https://codeconia.com/category/web-design/"
-title:"Web Design"
-74:
-link:"https://codeconia.com/category/updates/"
-title:"Updates"
-75:
-link:"https://codeconia.com/category/tech-updates/"
-title:"Tech Updates"
-76:
-link:"https://codeconia.com/guest-posting-codeconia/"
-title:"Guest Posting 🥂"
-77:
-link:"https://www.tkqlhce.com/click-100477035-15022370"
-title:" "
-78:
-link:"http://digitalprokit.com/"
-title:" "
-79:
-link:"http://digitalprokit.com/"
-title:"Get Free Access Now"
-80:
-link:"https://www.anrdoezrs.net/click-100477035-14347998"
-title:" "
-81:
-link:"#!"
-title:""
-82:
-link:"#!"
-title:""
-83:
-link:"#!"
-title:""
-84:
-link:"#!"
-title:""
-85:
-link:"#!"
-title:""
-86:
-link:"#!"
-title:""
-87:
-link:"https://codeconia.com/"
-title:"codeconia.com"
-88:
-link:"https://www.dpbolvw.net/click-100477035-12454592"
-title:"Contabo "
-count:89
-
-Donc integre ces 2 api allege le code met a jour seo.vue en fonction et maintient un max de fonctionnaliter
-
-CHAQUE PAGE DOIT ETRE ANALYSER ET NE PAS OUBLIER LA GENERATION DU SITEMAP
+href:"https://x.com/hasan_ab_hasan"
+text:""
+images_analysis:summary:
+total:10
+No src tag:0
+No alt tag:0
+data:0:
+src:"https://learnwithhasan.com/wp-content/uploads/2024/09/learnwithhasan-logo-1.png"
+alt:"learnwithhasan-logo"
+1:
+src:"https://learnwithhasan.com/wp-content/uploads/2024/10/learnwithhasanDark.png"
+alt:"learnwithhasan Dark"
+2:
+src:"https://learnwithhasan.com/wp-content/uploads/2024/09/learnwithhasan-logo-1.png"
+alt:"learnwithhasan-logo"
+3:
+src:"https://learnwithhasan.com/wp-content/uploads/2024/10/learnwithhasanDark.png"
+alt:"learnwithhasan Dark"
+4:
+src:"https://learnwithhasan.com/wp-content/uploads/2024/09/learnwithhasan-logo-1.png"
+alt:"learnwithhasan-logo"
+5:
+src:"/wp-content/uploads/2024/10/hasan-homepage.webp"
+alt:"Digital Entrepreneurship Guide"
+6:
+src:"https://learnwithhasan.com/wp-content/uploads/2024/10/omar-review-150x150.jpg"
+alt:"Omar"
+7:
+src:"https://learnwithhasan.com/wp-content/uploads/2024/10/bob-review-150x150.png"
+alt:"Bob Truesdale"
+8:
+src:"https://learnwithhasan.com/wp-content/uploads/2024/10/james-review.jpg"
+alt:"James Ruff"
+9:
+src:"/wp-content/uploads/20
