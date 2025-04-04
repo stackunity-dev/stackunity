@@ -22,7 +22,12 @@ type ExtendedCrawlReport = Partial<CrawlReport> & {
 /**
  * Remplit les configurations à partir des données d'audit SEO
  */
-export const fillConfigsFromAudit = (report: CrawlReport, schemaConfig: SchemaConfig, robotsConfig: RobotsConfig) => {
+export const fillConfigsFromAudit = (
+  report: CrawlReport,
+  siteConfig: SiteConfig,
+  schemaConfig: SchemaConfig,
+  robotsConfig: RobotsConfig
+) => {
   const extReport = report as unknown as ExtendedCrawlReport;
 
   // Extraction des chemins à interdire basée sur les meta robots
@@ -109,6 +114,17 @@ export const fillConfigsFromAudit = (report: CrawlReport, schemaConfig: SchemaCo
       }
     }
 
+    // Mettre à jour le domaine et le protocole si disponibles
+    if (mainUrl) {
+      try {
+        const urlObj = new URL(mainUrl);
+        siteConfig.domain = urlObj.hostname;
+        siteConfig.protocol = urlObj.protocol.replace(':', '');
+      } catch (e) {
+        console.error('Erreur lors de l\'extraction du domaine et protocole:', e);
+      }
+    }
+
     // Récupérer les chemins détectés pour le sitemap
     // Recherche simple pour trouver un possible sitemap
     if (mainUrl && extReport.seoResults) {
@@ -126,7 +142,7 @@ export const fillConfigsFromAudit = (report: CrawlReport, schemaConfig: SchemaCo
     }
   }
 
-  return { schemaConfig, robotsConfig };
+  return { schemaConfig, robotsConfig, siteConfig };
 };
 
 /**

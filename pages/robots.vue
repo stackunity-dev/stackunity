@@ -152,7 +152,7 @@
 
                 <div class="d-flex justify-end mt-4">
                   <v-btn color="primary" size="large" prepend-icon="mdi-play" :loading="isLoading"
-                    @click="generateCode">
+                    @click="analyzeWebsite">
                     {{ isLoading ? 'Analysing...' : 'Generate Content' }}
                   </v-btn>
                 </div>
@@ -342,56 +342,74 @@ const fullUrl = computed(() => {
   return `${siteConfig.value.protocol}://${siteConfig.value.domain}`;
 });
 
-const generateCode = async () => {
+const analyzeWebsite = async () => {
+  if (!siteConfig.value.domain) {
+    error.value = 'Veuillez entrer un domaine valide';
+    return;
+  }
+
+  const url = `${siteConfig.value.protocol}://${siteConfig.value.domain}`;
+  error.value = '';
+  isLoading.value = true;
+
+  try {
+    // Utiliser notre nouvelle API pour l'analyse
+    console.log('Analyse du site:', url);
+    const options = {
+      maxDepth: 1,
+      sameDomainOnly: true,
+      timeout: 30000,
+      useRapidApi: false, // Utiliser notre nouvelle API
+      maxUrlsToAnalyze: 1
+    };
+
+    report.value = await userStore.auditSEO(url, options);
+
+    if (report.value) {
+      // Mise à jour automatique des configurations à partir des résultats de l'analyse
+      fillConfigsFromAudit(report.value, siteConfig.value, robotsConfig.value, schemaConfig.value);
+
+      // Générer automatiquement le contenu
+      generateCode();
+    }
+  } catch (err: any) {
+    error.value = err.message || 'Une erreur est survenue pendant l\'analyse';
+    console.error('Erreur d\'analyse:', err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const generateCode = () => {
   try {
     isLoading.value = true;
     error.value = '';
 
-    if (!siteConfig.value.domain) {
-      error.value = 'Please enter a domain name';
-      isLoading.value = false;
-      return;
+    // Si un rapport d'analyse existe et que nous n'avons pas encore généré de contenu, utilisez-le
+    if (report.value && !generatedContent.value) {
+      const result = fillConfigsFromAudit(report.value, siteConfig.value, robotsConfig.value, schemaConfig.value);
+      // Mettre à jour les configurations avec les résultats
+      Object.assign(robotsConfig.value, result.robotsConfig);
+      Object.assign(schemaConfig.value, result.schemaConfig);
+      Object.assign(siteConfig.value, result.siteConfig);
     }
 
-    // Tenter l'audit SEO, mais continuer même en cas d'échec
-    try {
-      console.log('Démarrage de l\'audit SEO pour:', fullUrl.value);
-      report.value = await userStore.auditSEO(fullUrl.value);
-      console.log('Résultats de l\'audit SEO:', report.value);
-
-      // Utiliser les données d'audit pour mettre à jour les configurations
-      if (report.value) {
-        const { schemaConfig: updatedSchema, robotsConfig: updatedRobots } =
-          fillConfigsFromAudit(report.value, schemaConfig.value, robotsConfig.value);
-
-        // Mettre à jour les références avec les valeurs enrichies
-        schemaConfig.value = updatedSchema;
-        robotsConfig.value = updatedRobots;
-      }
-    } catch (auditError) {
-      console.error('Erreur lors de l\'audit SEO:', auditError);
-      // Continuer sans l'audit, utiliser les données déjà configurées
-    }
-
-    // Générer le contenu en fonction de l'onglet actif
     if (configTab.value === 'robots') {
       generatedContent.value = generateRobotsContent(siteConfig.value, robotsConfig.value);
-    } else {
+
+      // Mettre à jour les lignes d'aperçu pour l'affichage
+      robotsPreviewLines.value = generatedContent.value.split('\n').filter(line => line.trim() !== '').map(line => ({
+        text: line,
+        bold: line.startsWith('User-agent:') || line.startsWith('Sitemap:') || line.startsWith('Host:'),
+        comment: line.startsWith('#')
+      }));
+    } else if (configTab.value === 'schema') {
       generatedContent.value = generateSchemaContent(siteConfig.value, schemaConfig.value);
     }
-
-    // Mettre à jour les lignes d'aperçu pour l'affichage
-    robotsPreviewLines.value = generatedContent.value.split('\n').filter(line => line.trim() !== '').map(line => ({
-      text: line,
-      bold: line.startsWith('User-agent:') || line.startsWith('Sitemap:') || line.startsWith('Host:'),
-      comment: line.startsWith('#')
-    }));
-
-    isLoading.value = false;
-
   } catch (e: any) {
-    console.error('Error generating content', e);
-    error.value = e.message || 'An error occurred';
+    error.value = e.message || 'Error generating content';
+    console.error('Error generating content:', e);
+  } finally {
     isLoading.value = false;
   }
 };

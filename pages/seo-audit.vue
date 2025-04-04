@@ -855,8 +855,7 @@
 <script setup lang="ts">
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
-import { onBeforeUnmount, ref } from 'vue';
-import type { CrawlReport } from '../server/api/seo-audit';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useUserStore } from '../stores/userStore';
 import {
   getCriticalIssues,
@@ -893,14 +892,91 @@ definePageMeta({
   requiresPremium: true
 });
 
+interface SEOResult {
+  warnings: Array<string | { severity: string; message: string }>;
+  loadTime: number;
+  description: string;
+  coreWebVitals: Record<string, any>;
+  mobileCompatibility: {
+    hasViewport: boolean;
+    smallTouchTargets: number;
+  };
+  technicalSEO: {
+    sitemapFound: boolean;
+    sitemapUrl?: string;
+    sitemapUrls?: number;
+    robotsTxtFound: boolean;
+    robotsTxtContent?: string;
+    schemaTypeCount: Record<string, number>;
+  };
+  headingStructure: {
+    h1: string[];
+    h2: string[];
+    h3: string[];
+  };
+  socialTags: {
+    ogTags: Array<{ property: string; content: string }>;
+    twitterTags: Array<{ name: string; content: string }>;
+  };
+  securityChecks: {
+    https: boolean;
+    securityHeaders: Array<{ name: string; value: string }>;
+  };
+  imageAlt: Array<{
+    alt?: string;
+    src?: string;
+    title?: string;
+    width?: number;
+    height?: number;
+  }>;
+  videoInfo?: Array<{
+    src: string;
+    length?: number;
+    thumbnail?: string;
+    title?: string;
+    description?: string;
+    width?: number;
+    height?: number;
+  }>;
+}
+
+interface SEOReport {
+  seoResults: Record<string, SEOResult>;
+  summary?: {
+    totalPages: number;
+    averageLoadTime: number;
+    totalWarnings: number;
+    missingTitles: number;
+    missingDescriptions: number;
+    missingAltTags: number;
+    averageFCP: number;
+    averageLCP: number;
+    averageTTFB: number;
+    pagesWithStructuredData: number;
+    pagesWithSocialTags: number;
+    mobileCompatiblePages: number;
+    securePages: number;
+  };
+  visitedURLs: string[];
+}
+
+const report = ref<SEOReport | null>(null);
 const targetUrl = ref('');
 const auditing = ref(false);
-const report = ref<CrawlReport | null>(null);
-const userStore = useUserStore();
 const error = ref<string | null>(null);
 const showSitemapPreview = ref(false);
 const sitemapPreview = ref('');
 const sitemapPreviewTab = ref('code');
+
+const userStore = useUserStore();
+const seoStore = useSeoStore();
+const url = ref('');
+const loading = ref(false);
+const showAdvancedOptions = ref(false);
+const depthLevel = ref(1);
+const maxUrls = ref(20);
+const sameDomainOnly = ref(true);
+const useAdvancedApi = ref(true);
 
 interface AuditOptions {
   maxDepth: number;
@@ -1093,22 +1169,23 @@ const downloadSitemap = () => {
 
 const generateSitemap = downloadSitemap;
 
-const getTotalImagesInSitemap = () => {
+const getTotalImagesInSitemap = (): number => {
   if (!report.value) return 0;
-  return Object.values(report.value.seoResults).reduce((total, page) => total + page.imageAlt.length, 0);
+  return Object.values(report.value.seoResults).reduce((total, page: SEOResult) =>
+    total + (page.imageAlt?.length || 0), 0);
 };
 
-const getMissingAltImagesCount = () => {
+const getMissingAltImagesCount = (): number => {
   if (!report.value) return 0;
-  return Object.values(report.value.seoResults).reduce((total, page) => {
-    return total + page.imageAlt.filter(img => !img.alt).length;
+  return Object.values(report.value.seoResults).reduce((total, page: SEOResult) => {
+    return total + (page.imageAlt?.filter(img => !img.alt)?.length || 0);
   }, 0);
 };
 
-const getTotalVideosInSitemap = () => {
+const getTotalVideosInSitemap = (): number => {
   if (!report.value) return 0;
-  return Object.values(report.value.seoResults).reduce((total, page) => {
-    return total + (page.videoInfo ? page.videoInfo.length : 0);
+  return Object.values(report.value.seoResults).reduce((total, page: SEOResult) => {
+    return total + (page.videoInfo?.length || 0);
   }, 0);
 };
 
@@ -1367,6 +1444,36 @@ onBeforeUnmount(() => {
 
   robotsTxtDialog.value = false;
   showSitemapPreview.value = false;
+});
+
+async function analyzeSite() {
+  if (!url.value) {
+    error.value = 'Veuillez entrer une URL valide';
+    return;
+  }
+
+  error.value = '';
+  loading.value = true;
+
+  try {
+    // Utiliser notre nouvelle API au lieu de l'API RapidAPI
+    if (!useAdvancedApi.value) {
+      // Utiliser notre nouvelle API avec les fonctionnalités améliorées
+      await seoStore.analyzeSiteWithLocalApi(url.value);
+    } else {
+      // Utiliser l'analyse multi-pages existante si nécessaire
+      await seoStore.analyzeSitePages(url.value, depthLevel.value, sameDomainOnly.value, maxUrls.value);
+    }
+  } catch (err: any) {
+    error.value = err.message || 'Une erreur est survenue pendant l\'analyse';
+    console.error('Erreur d\'analyse:', err);
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(() => {
+  // Code existant
 });
 </script>
 
