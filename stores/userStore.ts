@@ -1212,47 +1212,45 @@ export const useUserStore = defineStore('user', {
 
     // Fonction pour convertir le format de notre nouvelle API au format attendu par l'interface
     formatAnalyzerResponse(response: any, url: string) {
-      // Créer un objet de résultat compatible avec l'interface existante
       const seoResults: Record<string, any> = {};
 
-      // Convertir l'analyse en format compatible
       seoResults[url] = {
         url,
         title: response.seo.title,
-        description: response.seo.metaDescription,
+        description: response.seo.description,
         h1: response.seo.headings.h1,
         h2: response.seo.headings.h2,
         h3: response.seo.headings.h3,
-        metaTags: Object.entries(response.seo.socialTags.openGraph).map(([name, content]) => ({
+        metaTags: Object.entries(response.seo.meta.og || {}).map(([name, content]) => ({
           name,
           content: content as string
         })),
         robotsMeta: {
-          index: !response.seo.metaDescription.includes('noindex'),
-          follow: !response.seo.metaDescription.includes('nofollow'),
-          noindex: response.seo.metaDescription.includes('noindex'),
-          nofollow: response.seo.metaDescription.includes('nofollow'),
-          noarchive: response.seo.metaDescription.includes('noarchive'),
-          nosnippet: response.seo.metaDescription.includes('nosnippet'),
-          noodp: response.seo.metaDescription.includes('noodp')
+          index: !response.seo.meta.robots?.includes('noindex'),
+          follow: !response.seo.meta.robots?.includes('nofollow'),
+          noindex: response.seo.meta.robots?.includes('noindex') || false,
+          nofollow: response.seo.meta.robots?.includes('nofollow') || false,
+          noarchive: response.seo.meta.robots?.includes('noarchive') || false,
+          nosnippet: response.seo.meta.robots?.includes('nosnippet') || false,
+          noodp: response.seo.meta.robots?.includes('noodp') || false
         },
-        imageAlt: response.seo.images.map((img: any) => ({
+        imageAlt: response.seo.images.data.map((img: any) => ({
           src: img.src,
-          alt: img.alt,
-          title: img.title,
-          width: img.width,
-          height: img.height,
-          hasDimensions: !!img.width && !!img.height
+          alt: img.alt || '',
+          title: img.title || '',
+          width: img.dimensions?.width,
+          height: img.dimensions?.height,
+          hasDimensions: !!(img.dimensions?.width && img.dimensions?.height)
         })),
         videoInfo: [],
         loadTime: response.performance.loadTime,
-        statusCode: 200, // Supposons un code 200 par défaut
+        statusCode: response.technical.statusCode,
         internalLinks: response.seo.links.internal,
         externalLinks: response.seo.links.external,
         warnings: response.issues.map((issue: any) => ({
           message: issue.message,
-          severity: issue.priority === 'high' ? 'critical' : issue.priority === 'medium' ? 'high' : 'medium',
-          type: issue.category
+          severity: issue.type === 'error' ? 'critical' : issue.type === 'warning' ? 'high' : 'medium',
+          type: issue.code
         })),
         coreWebVitals: {
           FCP: response.performance.fcp,
@@ -1272,48 +1270,27 @@ export const useUserStore = defineStore('user', {
           cumulativeLayoutShiftScore: Math.round(100 - (response.performance.cls * 100)),
           serverResponseTime: response.performance.ttfb
         },
-        headingStructure: {
-          h1: response.seo.headings.h1,
-          h2: response.seo.headings.h2,
-          h3: response.seo.headings.h3,
-          h4: response.seo.headings.h4,
-          h5: response.seo.headings.h5,
-          h6: response.seo.headings.h6
-        },
-        structuredData: {
-          data: response.schemaOrg.existing,
-          count: response.schemaOrg.existing.length,
-          types: response.schemaOrg.existing.reduce((acc: Record<string, number>, schema: any) => {
-            const type = schema['@type'];
-            if (type) {
-              if (Array.isArray(type)) {
-                type.forEach(t => { acc[t] = (acc[t] || 0) + 1; });
-              } else {
-                acc[type] = (acc[type] || 0) + 1;
-              }
-            }
-            return acc;
-          }, {})
-        },
+        headingStructure: response.seo.headings,
+        structuredData: response.seo.structuredData,
         socialTags: {
-          ogTags: Object.entries(response.seo.socialTags.openGraph).map(([property, content]) => ({
+          ogTags: Object.entries(response.seo.meta.og || {}).map(([property, content]) => ({
             property,
             content
           })),
-          twitterTags: Object.entries(response.seo.socialTags.twitter).map(([name, content]) => ({
+          twitterTags: Object.entries(response.seo.meta.twitter || {}).map(([name, content]) => ({
             name,
             content
           }))
         },
         mobileCompatibility: {
-          hasViewport: response.technical.mobile.viewport !== '',
-          viewportContent: response.technical.mobile.viewport,
-          smallTouchTargets: response.technical.mobile.touchTargets ? 0 : 5 // Estimation
+          hasViewport: !!response.technical.mobile.viewport,
+          viewportContent: response.technical.mobile.viewport || '',
+          smallTouchTargets: 0
         },
         securityChecks: {
-          https: response.technical.security.https,
-          validCertificate: true, // Supposons que c'est valide
-          securityHeaders: Object.entries(response.technical.security.securityHeaders).map(([name, value]) => ({
+          https: response.technical.https,
+          validCertificate: response.technical.security.certificate,
+          securityHeaders: Object.entries(response.technical.security.headers || {}).map(([name, value]) => ({
             name,
             value: value as string
           }))
@@ -1324,36 +1301,19 @@ export const useUserStore = defineStore('user', {
         },
         contentStats: {
           wordCount: response.seo.wordCount,
-          keywordDensity: Object.values(response.seo.keywordDensity) as number[],
+          keywordDensity: Object.values(response.seo.keywordDensity || {}),
           readabilityScore: response.seo.readabilityScore
         },
         technicalSEO: {
-          sitemapFound: response.sitemap.exists,
-          sitemapUrl: response.sitemap.existingUrl || '',
-          sitemapUrls: response.sitemap.urls.length,
-          robotsTxtFound: response.robots.exists,
-          robotsTxtContent: response.robots.content,
-          schemaTypeCount: response.schemaOrg.existing.reduce((acc: Record<string, number>, schema: any) => {
-            const type = schema['@type'];
-            if (type) {
-              if (Array.isArray(type)) {
-                type.forEach(t => { acc[t] = (acc[t] || 0) + 1; });
-              } else {
-                acc[type] = (acc[type] || 0) + 1;
-              }
-            }
-            return acc;
-          }, {})
+          sitemapFound: false,
+          sitemapUrl: '',
+          sitemapUrls: 0,
+          robotsTxtFound: false,
+          robotsTxtContent: '',
+          schemaTypeCount: response.seo.structuredData?.types || {}
         }
       };
 
-      // Fix for the content stats keywordDensity calculation
-      const keywordDensityValues = Object.values(response.seo.keywordDensity) as number[];
-      const keywordDensity = keywordDensityValues.length > 0
-        ? keywordDensityValues.reduce((a: number, b: number) => a + b, 0) / keywordDensityValues.length
-        : 0;
-
-      // Créer un objet de rapport compatible avec l'interface
       return {
         urlMap: { [url]: [] },
         visitedURLs: [url],
@@ -1362,19 +1322,19 @@ export const useUserStore = defineStore('user', {
           totalPages: 1,
           averageLoadTime: response.performance.loadTime,
           totalWarnings: response.issues.length,
-          missingTitles: response.seo.title ? 0 : 1,
-          missingDescriptions: response.seo.metaDescription ? 0 : 1,
-          missingAltTags: response.seo.images.filter((img: any) => !img.alt).length,
+          missingTitles: !response.seo.title ? 1 : 0,
+          missingDescriptions: !response.seo.description ? 1 : 0,
+          missingAltTags: response.seo.images.withoutAlt,
           averageFCP: response.performance.fcp,
           averageLCP: response.performance.lcp,
           averageTTFB: response.performance.ttfb,
-          pagesWithStructuredData: response.schemaOrg.existing.length > 0 ? 1 : 0,
-          pagesWithSocialTags: Object.keys(response.seo.socialTags.openGraph).length +
-            Object.keys(response.seo.socialTags.twitter).length > 0 ? 1 : 0,
-          mobileCompatiblePages: response.technical.mobile.viewport !== '' ? 1 : 0,
-          securePages: response.technical.security.https ? 1 : 0
+          pagesWithStructuredData: response.seo.structuredData?.count || 0,
+          pagesWithSocialTags: Object.keys(response.seo.meta.og || {}).length +
+            Object.keys(response.seo.meta.twitter || {}).length > 0 ? 1 : 0,
+          mobileCompatiblePages: response.technical.mobile.viewport ? 1 : 0,
+          securePages: response.technical.https ? 1 : 0
         },
-        generatedSitemap: response.sitemap.generated,
+        generatedSitemap: '',
         rankedUrls: [url]
       };
     },

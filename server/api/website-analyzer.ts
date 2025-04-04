@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { CheerioAPI as CheerioAPIType, load as cheerioLoad } from 'cheerio';
+import { load as cheerioLoad } from 'cheerio';
 import * as dns from 'dns';
 import { createError, defineEventHandler, H3Event, readBody } from 'h3';
 import { performance } from 'perf_hooks';
 import type { Page } from 'puppeteer';
 import { promisify } from 'util';
-import { WebsiteAnalysisResult } from './analyzer-types';
+import type { CheerioSelector, ExtendedResponse, WebsiteAnalysisResult } from './analyzer-types';
 
 const dnsResolve = promisify(dns.resolve);
 const dnsReverse = promisify(dns.reverse);
@@ -253,12 +253,7 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
   };
 }
 
-interface ExtendedResponse {
-  headers: Record<string, string | string[] | undefined>;
-  status?: number;
-}
-
-async function analyzeTechnical(url: string, response: ExtendedResponse, $: CheerioAPIType, html: string): Promise<WebsiteAnalysisResult['technical']> {
+async function analyzeTechnical(url: string, response: ExtendedResponse, $: CheerioSelector, html: string): Promise<WebsiteAnalysisResult['technical']> {
   const headers = response.headers;
 
   return {
@@ -266,7 +261,7 @@ async function analyzeTechnical(url: string, response: ExtendedResponse, $: Chee
     https: url.startsWith('https'),
     mobile: {
       viewport: $('meta[name="viewport"]').length > 0,
-      responsive: true
+      responsive: checkResponsiveness($)
     },
     security: {
       headers: headers as Record<string, string>,
@@ -296,98 +291,173 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
   const html = response.data;
   const $ = cheerioLoad(html);
 
-  const result: WebsiteAnalysisResult = {
-    url,
-    performance: {
-      ttfb: loadTime * 0.2,
-      fcp: loadTime * 0.4,
-      lcp: loadTime * 0.6,
-      cls: 0.1,
-      speedIndex: loadTime * 0.5,
-      totalBlockingTime: loadTime * 0.3,
-      loadTime,
-      resourceLoadTimes: {
-        total: loadTime,
-        html: loadTime * 0.1,
-        css: loadTime * 0.2,
-        js: loadTime * 0.3,
-        images: loadTime * 0.2,
-        other: loadTime * 0.2
-      },
-      resourceSizes: {
-        total: response.data.length,
-        html: response.data.length,
-        css: 0,
-        js: 0,
-        images: 0,
-        other: 0
-      }
+  // Analyser les performances
+  const performanceData = {
+    ttfb: loadTime * 0.2,
+    fcp: loadTime * 0.4,
+    lcp: loadTime * 0.6,
+    cls: 0.1,
+    speedIndex: loadTime * 0.5,
+    totalBlockingTime: loadTime * 0.3,
+    loadTime,
+    resourceLoadTimes: {
+      total: loadTime,
+      html: loadTime * 0.1,
+      css: loadTime * 0.2,
+      js: loadTime * 0.3,
+      images: loadTime * 0.2,
+      other: loadTime * 0.2
     },
-    seo: {
-      title: $('title').text().trim(),
-      description: $('meta[name="description"]').attr('content') || '',
-      headings: {
-        h1: $('h1').map((_, el) => $(el).text().trim()).get(),
-        h2: $('h2').map((_, el) => $(el).text().trim()).get(),
-        h3: $('h3').map((_, el) => $(el).text().trim()).get(),
-        h4: $('h4').map((_, el) => $(el).text().trim()).get(),
-        h5: $('h5').map((_, el) => $(el).text().trim()).get(),
-        h6: $('h6').map((_, el) => $(el).text().trim()).get()
-      },
-      images: {
-        total: $('img').length,
-        withAlt: $('img[alt]').length,
-        withoutAlt: $('img:not([alt])').length,
-        data: $('img').map((_, el) => ({
-          src: $(el).attr('src') || '',
-          alt: $(el).attr('alt'),
-          title: $(el).attr('title'),
-          dimensions: {
-            width: parseInt($(el).attr('width') || '0'),
-            height: parseInt($(el).attr('height') || '0')
-          }
-        })).get()
-      },
-      links: {
-        internal: [],
-        external: [],
-        broken: [],
-        nofollow: []
-      },
-      structuredData: {
-        data: [],
-        count: 0,
-        types: {}
-      },
-      meta: {
-        viewport: $('meta[name="viewport"]').attr('content') || false,
-        robots: $('meta[name="robots"]').attr('content'),
-        canonical: $('link[rel="canonical"]').attr('href'),
-        og: {},
-        twitter: {}
-      }
-    },
-    technical: {
-      statusCode: response.status,
-      https: url.startsWith('https'),
-      mobile: {
-        viewport: $('meta[name="viewport"]').length > 0,
-        responsive: true
-      },
-      security: {
-        headers: response.headers as Record<string, string>,
-        certificate: url.startsWith('https')
-      }
-    },
-    content: {
-      ...analyzeContent($),
-      readabilityScore: calculateReadabilityScore($('body').text())
-    },
-    issues: []
+    resourceSizes: {
+      total: response.data.length,
+      html: response.data.length,
+      css: 0,
+      js: 0,
+      images: 0,
+      other: 0
+    }
   };
 
-  result.issues = generateIssues(result);
-  return result;
+  // Analyser le SEO
+  const seoData = {
+    title: $('title').text().trim(),
+    description: $('meta[name="description"]').attr('content') || '',
+    headings: {
+      h1: $('h1').map((_, el) => $(el).text().trim()).get(),
+      h2: $('h2').map((_, el) => $(el).text().trim()).get(),
+      h3: $('h3').map((_, el) => $(el).text().trim()).get(),
+      h4: $('h4').map((_, el) => $(el).text().trim()).get(),
+      h5: $('h5').map((_, el) => $(el).text().trim()).get(),
+      h6: $('h6').map((_, el) => $(el).text().trim()).get()
+    },
+    images: {
+      total: $('img').length,
+      withAlt: $('img[alt]').length,
+      withoutAlt: $('img:not([alt])').length,
+      data: $('img').map((_, el) => ({
+        src: $(el).attr('src') || '',
+        alt: $(el).attr('alt'),
+        title: $(el).attr('title'),
+        dimensions: {
+          width: parseInt($(el).attr('width') || '0') || undefined,
+          height: parseInt($(el).attr('height') || '0') || undefined
+        }
+      })).get()
+    },
+    links: {
+      internal: [] as string[],
+      external: [] as string[],
+      broken: [] as string[],
+      nofollow: [] as string[]
+    },
+    meta: {
+      viewport: $('meta[name="viewport"]').attr('content') || false,
+      robots: $('meta[name="robots"]').attr('content'),
+      canonical: $('link[rel="canonical"]').attr('href'),
+      og: {} as Record<string, string>,
+      twitter: {} as Record<string, string>
+    },
+    wordCount: $('body').text().trim().split(/\s+/).length,
+    readabilityScore: calculateReadabilityScore($('body').text()),
+    keywordDensity: calculateKeywordDensity($('body').text()),
+    structuredData: {
+      data: [] as any[],
+      count: 0,
+      types: {} as Record<string, number>
+    }
+  };
+
+  // Extraire les balises Open Graph et Twitter
+  $('meta').each((_, el) => {
+    const $meta = $(el);
+    const property = $meta.attr('property');
+    const name = $meta.attr('name');
+    const content = $meta.attr('content');
+
+    if (property?.startsWith('og:') && content) {
+      seoData.meta.og[property.replace('og:', '')] = content;
+    } else if (name?.startsWith('twitter:') && content) {
+      seoData.meta.twitter[name.replace('twitter:', '')] = content;
+    }
+  });
+
+  // Analyser les données structurées
+  $('script[type="application/ld+json"]').each((_, el) => {
+    try {
+      const data = JSON.parse($(el).html() || '');
+      seoData.structuredData.data.push(data);
+      seoData.structuredData.count++;
+      if (data['@type']) {
+        const type = data['@type'];
+        if (Array.isArray(type)) {
+          type.forEach(t => {
+            seoData.structuredData.types[t] = (seoData.structuredData.types[t] || 0) + 1;
+          });
+        } else {
+          seoData.structuredData.types[type] = (seoData.structuredData.types[type] || 0) + 1;
+        }
+      }
+    } catch (e) {
+      console.error('Erreur parsing JSON-LD:', e);
+    }
+  });
+
+  // Analyser les aspects techniques
+  const technicalData = {
+    statusCode: response.status,
+    https: url.startsWith('https'),
+    mobile: {
+      viewport: $('meta[name="viewport"]').length > 0,
+      responsive: checkResponsiveness($)
+    },
+    security: {
+      headers: response.headers as Record<string, string>,
+      certificate: url.startsWith('https')
+    }
+  };
+
+  // Générer les problèmes
+  const issues: WebsiteAnalysisResult['issues'] = [];
+
+  if (!seoData.title) {
+    issues.push({
+      type: 'error',
+      message: 'Titre manquant',
+      code: 'NO_TITLE'
+    });
+  }
+
+  if (!seoData.description) {
+    issues.push({
+      type: 'warning',
+      message: 'Description meta manquante',
+      code: 'NO_META_DESC'
+    });
+  }
+
+  if (seoData.images.withoutAlt > 0) {
+    issues.push({
+      type: 'warning',
+      message: `${seoData.images.withoutAlt} image(s) sans attribut alt`,
+      code: 'MISSING_ALT'
+    });
+  }
+
+  if (performanceData.loadTime > 3000) {
+    issues.push({
+      type: 'warning',
+      message: 'Temps de chargement élevé',
+      code: 'HIGH_LOAD_TIME'
+    });
+  }
+
+  return {
+    url,
+    performance: performanceData,
+    seo: seoData,
+    technical: technicalData,
+    issues
+  };
 }
 
 function analyzeImages($: cheerio.CheerioAPI) {
@@ -409,27 +479,29 @@ function analyzeImages($: cheerio.CheerioAPI) {
   };
 }
 
-function analyzeLinks($: cheerio.CheerioAPI, baseUrl: string) {
+function analyzeLinks($: CheerioSelector, baseUrl: string) {
   const internal: string[] = [];
   const external: string[] = [];
 
   $('a[href]').each((_, el) => {
-    const href = $(el).attr('href') || '';
-    if (href.startsWith('http')) {
-      if (href.includes(new URL(baseUrl).hostname)) {
-        internal.push(href);
-      } else {
-        external.push(href);
+    const href = $(el).attr('href');
+    if (href) {
+      if (href.startsWith('http')) {
+        if (href.includes(new URL(baseUrl).hostname)) {
+          internal.push(href);
+        } else {
+          external.push(href);
+        }
+      } else if (href.startsWith('/')) {
+        internal.push(new URL(href, baseUrl).href);
       }
-    } else if (href.startsWith('/')) {
-      internal.push(new URL(href, baseUrl).href);
     }
   });
 
   return { internal, external };
 }
 
-function extractStructuredData($: cheerio.CheerioAPI) {
+function extractStructuredData($: CheerioSelector) {
   const data: any[] = [];
   const types: Record<string, number> = {};
 
@@ -438,7 +510,14 @@ function extractStructuredData($: cheerio.CheerioAPI) {
       const content = JSON.parse($(el).html() || '');
       data.push(content);
       if (content['@type']) {
-        types[content['@type']] = (types[content['@type']] || 0) + 1;
+        const type = content['@type'];
+        if (Array.isArray(type)) {
+          type.forEach(t => {
+            types[t] = (types[t] || 0) + 1;
+          });
+        } else {
+          types[type] = (types[type] || 0) + 1;
+        }
       }
     } catch (e) {
       console.error('Erreur parsing JSON-LD:', e);
@@ -452,9 +531,9 @@ function extractStructuredData($: cheerio.CheerioAPI) {
   };
 }
 
-function extractMetaTags($: cheerio.CheerioAPI) {
+function extractMetaTags($: CheerioSelector) {
   return {
-    viewport: $('meta[name="viewport"]').attr('content'),
+    viewport: $('meta[name="viewport"]').attr('content') || false,
     robots: $('meta[name="robots"]').attr('content'),
     canonical: $('link[rel="canonical"]').attr('href'),
     og: extractSocialTags($, 'og'),
@@ -462,7 +541,7 @@ function extractMetaTags($: cheerio.CheerioAPI) {
   };
 }
 
-function extractSocialTags($: cheerio.CheerioAPI, prefix: string) {
+function extractSocialTags($: CheerioSelector, prefix: string) {
   const tags: Record<string, string> = {};
   $(`meta[property^="${prefix}:"]`).each((_, el) => {
     const property = $(el).attr('property')?.replace(`${prefix}:`, '');
@@ -473,7 +552,7 @@ function extractSocialTags($: cheerio.CheerioAPI, prefix: string) {
   return tags;
 }
 
-function analyzeContent($: CheerioAPI) {
+function analyzeContent($: CheerioSelector) {
   const text = $('body').text().trim();
   const words = text.split(/\s+/);
   const wordCount = words.length;
@@ -596,12 +675,12 @@ async function getImageSize(url: string): Promise<number> {
   }
 }
 
-function checkResponsiveness($: ReturnType<typeof cheerioLoad>): boolean {
+function checkResponsiveness($: CheerioSelector): boolean {
   return $('meta[name="viewport"]').length > 0 &&
     $('img[srcset], picture, source[srcset]').length > 0;
 }
 
-function checkTouchTargets($: ReturnType<typeof cheerioLoad>): boolean {
+function checkTouchTargets($: CheerioSelector): boolean {
   // Vérifier la taille des éléments cliquables
   const minSize = 44; // Recommandation WCAG
   let validTargets = true;
@@ -620,7 +699,7 @@ function checkTouchTargets($: ReturnType<typeof cheerioLoad>): boolean {
   return validTargets;
 }
 
-function checkFontSizes($: ReturnType<typeof cheerioLoad>): boolean {
+function checkFontSizes($: CheerioSelector): boolean {
   const minFontSize = 16; // Taille minimale recommandée en pixels
   let validFonts = true;
 
@@ -637,7 +716,7 @@ function checkFontSizes($: ReturnType<typeof cheerioLoad>): boolean {
   return validFonts;
 }
 
-function checkAriaLabels($: ReturnType<typeof cheerioLoad>): boolean {
+function checkAriaLabels($: CheerioSelector): boolean {
   const interactiveElements = $('button, a, input, select, textarea, [role]');
   let hasLabels = true;
 
@@ -652,7 +731,7 @@ function checkAriaLabels($: ReturnType<typeof cheerioLoad>): boolean {
   return hasLabels;
 }
 
-function checkAltTexts($: ReturnType<typeof cheerioLoad>): boolean {
+function checkAltTexts($: CheerioSelector): boolean {
   const images = $('img');
   let hasAlt = true;
 
@@ -667,17 +746,17 @@ function checkAltTexts($: ReturnType<typeof cheerioLoad>): boolean {
   return hasAlt;
 }
 
-function checkContrast($: ReturnType<typeof cheerioLoad>): boolean {
+function checkContrast($: CheerioSelector): boolean {
   // Implémentation simplifiée - une vérification plus précise nécessiterait
   // une analyse des couleurs avec puppeteer
   return true;
 }
 
-function checkKeyboardNav($: ReturnType<typeof cheerioLoad>): boolean {
+function checkKeyboardNav($: CheerioSelector): boolean {
   return $('[tabindex="-1"]').length === 0;
 }
 
-function calculateAccessibilityScore($: ReturnType<typeof cheerioLoad>): number {
+function calculateAccessibilityScore($: CheerioSelector): number {
   let score = 100;
 
   if (!checkAriaLabels($)) score -= 25;
@@ -694,7 +773,7 @@ async function validateHtml(html: string): Promise<boolean> {
   return true;
 }
 
-function findDeprecatedTags($: ReturnType<typeof cheerioLoad>): string[] {
+function findDeprecatedTags($: CheerioSelector): string[] {
   const deprecatedTags = ['font', 'center', 'strike', 'marquee', 'frame', 'frameset'];
   const found: string[] = [];
 
@@ -712,7 +791,7 @@ function getDoctype(html: string): string {
   return match ? match[0] : 'No DOCTYPE found';
 }
 
-function getEncoding($: ReturnType<typeof cheerioLoad>): string {
+function getEncoding($: CheerioSelector): string {
   return $('meta[charset]').attr('charset') ||
     $('meta[http-equiv="Content-Type"]').attr('content')?.match(/charset=([^;]*)/)?.[1] ||
     'Unknown';

@@ -1,3 +1,5 @@
+import { load } from 'cheerio';
+
 export interface WebsiteAnalysisResult {
   url: string;
   performance: {
@@ -45,8 +47,8 @@ export interface WebsiteAnalysisResult {
         alt?: string;
         title?: string;
         dimensions?: {
-          width: number;
-          height: number;
+          width?: number;
+          height?: number;
         };
       }>;
     };
@@ -56,17 +58,20 @@ export interface WebsiteAnalysisResult {
       broken: string[];
       nofollow: string[];
     };
+    meta: {
+      viewport: string | false;
+      robots?: string;
+      canonical?: string;
+      og: Record<string, string>;
+      twitter: Record<string, string>;
+    };
+    wordCount: number;
+    readabilityScore: number;
+    keywordDensity: Record<string, number>;
     structuredData: {
       data: any[];
       count: number;
       types: Record<string, number>;
-    };
-    meta: {
-      viewport?: string | boolean;
-      robots?: string | null;
-      canonical?: string | null;
-      og: Record<string, string>;
-      twitter: Record<string, string>;
     };
   };
   technical: {
@@ -81,19 +86,16 @@ export interface WebsiteAnalysisResult {
       certificate: boolean;
     };
   };
-  content: {
-    wordCount: number;
-    textHtmlRatio: number;
-    readabilityScore: number;
-    keywords: Array<{
-      word: string;
-      count: number;
-      density: number;
-    }>;
-  };
   issues: Array<{
     type: 'error' | 'warning' | 'info';
     message: string;
     code: string;
   }>;
-} 
+}
+
+export interface ExtendedResponse {
+  headers: Record<string, string | string[] | undefined>;
+  status?: number;
+}
+
+export type CheerioSelector = ReturnType<typeof load>; 
