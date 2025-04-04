@@ -2,6 +2,7 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import { XMLParser } from 'fast-xml-parser';
 import { createError, defineEventHandler, readBody } from 'h3';
+import https from 'https';
 
 export interface SEOAuditResult {
   url: string;
@@ -1683,155 +1684,191 @@ async function getSeoAnalysis(url: string, rapidApiKey: string): Promise<any> {
 }
 
 async function getBasicSeoAnalysis(url: string): Promise<any> {
-  try {
+  return new Promise((resolve, reject) => {
     const options = {
       method: 'GET',
-      url: 'https://website-seo-analyzer.p.rapidapi.com/seo/seo-audit-basic',
-      params: { url },
+      hostname: 'website-seo-analyzer.p.rapidapi.com',
+      port: null,
+      path: `/seo/seo-audit-basic?url=${encodeURIComponent(url)}`,
       headers: {
         'x-rapidapi-key': '2308627ad7msh84971507d0dce82p1e637fjsn1ee2a06e6776',
         'x-rapidapi-host': 'website-seo-analyzer.p.rapidapi.com'
-      },
-      timeout: 10000 // 10 secondes de timeout
-    };
-
-    const response = await axios(options);
-
-    if (!response.data || !response.data.success) {
-      throw new Error('Réponse API invalide');
-    }
-
-    const result = response.data.result;
-    return {
-      http: {
-        status: result.http.status,
-        using_https: result.http.using_https,
-        responseTime: result.responseTime
-      },
-      title: {
-        content: result.title.data,
-        length: result.title.length
-      },
-      meta_description: {
-        content: result.meta_description.data,
-        length: result.meta_description.length
-      },
-      metadata: {
-        charset: result.metadata_info.charset,
-        canonical: result.metadata_info.canonical,
-        favicon: result.metadata_info.favicon,
-        viewport: result.metadata_info.viewport,
-        robots: result.metadata_info.robots
-      },
-      headings: {
-        h1: { count: result['Page Headings summary'].H1, content: result['H1 Content'] },
-        h2: { count: result['Page Headings summary'].H2 },
-        h3: { count: result['Page Headings summary'].H3 },
-        h4: { count: result['Page Headings summary'].H4 },
-        h5: { count: result['Page Headings summary'].H5 },
-        h6: { count: result['Page Headings summary'].H6 }
-      },
-      links: {
-        total: result.links_summary['Total links'],
-        external: result.links_summary['External links'],
-        internal: result.links_summary.Internal,
-        nofollow: result.links_summary['Nofollow count'],
-        data: result.links
-      },
-      images: {
-        total: result.images_analysis.summary.total,
-        noSrc: result.images_analysis.summary['No src tag'],
-        noAlt: result.images_analysis.summary['No alt tag'],
-        data: result.images_analysis.data
-      },
-      content: {
-        wordCount: result.word_count.total,
-        anchorTextWords: result.word_count['Anchor text words'],
-        anchorPercentage: result.word_count['Anchor Percentage']
       }
     };
-  } catch (error: any) {
-    console.error('Erreur lors de la récupération de l\'analyse SEO de base:', error);
 
-    // Si l'erreur est 429 (Too Many Requests), utiliser l'analyse HTML directe
-    if (error.response?.status === 429) {
-      try {
-        const response = await axios.get(url, {
-          timeout: 10000,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    const req = https.request(options, function (res) {
+      const chunks: Buffer[] = [];
+
+      res.on('data', function (chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on('end', async function () {
+        const body = Buffer.concat(chunks);
+        const statusCode = res.statusCode || 500;
+
+        if (statusCode === 429) {
+          console.log('Limite de requêtes atteinte, utilisation de l\'analyse HTML directe');
+          try {
+            // Analyse HTML directe avec axios comme fallback
+            const response = await axios.get(url, {
+              timeout: 10000,
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+              }
+            });
+
+            const html = response.data;
+            const $ = cheerio.load(html);
+
+            // Analyse HTML basique
+            const title = $('title').text();
+            const metaDescription = $('meta[name="description"]').attr('content') || '';
+            const h1s = $('h1').map((_, el) => $(el).text()).get();
+            const links = $('a').map((_, el) => $(el).attr('href')).get();
+            const images = $('img').map((_, el) => ({
+              src: $(el).attr('src'),
+              alt: $(el).attr('alt'),
+              title: $(el).attr('title')
+            })).get();
+
+            resolve({
+              http: {
+                status: response.status,
+                using_https: url.startsWith('https'),
+                responseTime: '1'
+              },
+              title: {
+                content: title,
+                length: title.length
+              },
+              meta_description: {
+                content: metaDescription,
+                length: metaDescription.length
+              },
+              metadata: {
+                charset: $('meta[charset]').attr('charset') || 'UTF-8',
+                canonical: $('link[rel="canonical"]').attr('href') || url,
+                favicon: $('link[rel="icon"]').attr('href') || '',
+                viewport: $('meta[name="viewport"]').attr('content') || '',
+                robots: $('meta[name="robots"]').attr('content') || 'index, follow'
+              },
+              headings: {
+                h1: { count: h1s.length, content: h1s[0] || '' },
+                h2: { count: $('h2').length },
+                h3: { count: $('h3').length },
+                h4: { count: $('h4').length },
+                h5: { count: $('h5').length },
+                h6: { count: $('h6').length }
+              },
+              links: {
+                total: links.length,
+                external: links.filter(l => l && l.startsWith('http')).length,
+                internal: links.filter(l => l && !l.startsWith('http')).length,
+                nofollow: $('a[rel="nofollow"]').length,
+                data: links.map(href => ({ href }))
+              },
+              images: {
+                total: images.length,
+                noSrc: images.filter(img => !img.src).length,
+                noAlt: images.filter(img => !img.alt).length,
+                data: images
+              },
+              content: {
+                wordCount: $('body').text().split(/\s+/).length,
+                anchorTextWords: $('a').text().split(/\s+/).length,
+                anchorPercentage: 0
+              }
+            });
+          } catch (fallbackError) {
+            console.error('Erreur lors de l\'analyse HTML directe:', fallbackError);
+            resolve(null);
           }
-        });
+          return;
+        }
 
-        const html = response.data;
-        const $ = cheerio.load(html);
+        if (statusCode !== 200) {
+          console.error(`Erreur API (${statusCode}):`, body.toString());
+          resolve(null);
+          return;
+        }
 
-        // Analyse HTML basique
-        const title = $('title').text();
-        const metaDescription = $('meta[name="description"]').attr('content') || '';
-        const h1s = $('h1').map((_, el) => $(el).text()).get();
-        const links = $('a').map((_, el) => $(el).attr('href')).get();
-        const images = $('img').map((_, el) => ({
-          src: $(el).attr('src'),
-          alt: $(el).attr('alt'),
-          title: $(el).attr('title')
-        })).get();
-
-        // Retourner un objet avec la même structure
-        return {
-          http: {
-            status: response.status,
-            using_https: url.startsWith('https'),
-            responseTime: '1'
-          },
-          title: {
-            content: title,
-            length: title.length
-          },
-          meta_description: {
-            content: metaDescription,
-            length: metaDescription.length
-          },
-          metadata: {
-            charset: $('meta[charset]').attr('charset') || 'UTF-8',
-            canonical: $('link[rel="canonical"]').attr('href') || url,
-            favicon: $('link[rel="icon"]').attr('href') || '',
-            viewport: $('meta[name="viewport"]').attr('content') || '',
-            robots: $('meta[name="robots"]').attr('content') || 'index, follow'
-          },
-          headings: {
-            h1: { count: h1s.length, content: h1s[0] || '' },
-            h2: { count: $('h2').length },
-            h3: { count: $('h3').length },
-            h4: { count: $('h4').length },
-            h5: { count: $('h5').length },
-            h6: { count: $('h6').length }
-          },
-          links: {
-            total: links.length,
-            external: links.filter(l => l && l.startsWith('http')).length,
-            internal: links.filter(l => l && !l.startsWith('http')).length,
-            nofollow: $('a[rel="nofollow"]').length,
-            data: links.map(href => ({ href }))
-          },
-          images: {
-            total: images.length,
-            noSrc: images.filter(img => !img.src).length,
-            noAlt: images.filter(img => !img.alt).length,
-            data: images
-          },
-          content: {
-            wordCount: $('body').text().split(/\s+/).length,
-            anchorTextWords: $('a').text().split(/\s+/).length,
-            anchorPercentage: 0
+        try {
+          const data = JSON.parse(body.toString());
+          if (!data || !data.success) {
+            console.error('Réponse API invalide:', data);
+            resolve(null);
+            return;
           }
-        };
-      } catch (fallbackError) {
-        console.error('Erreur lors de l\'analyse HTML directe:', fallbackError);
-        return null;
-      }
-    }
 
-    return null;
-  }
+          const result = data.result;
+          resolve({
+            http: {
+              status: result.http.status,
+              using_https: result.http.using_https,
+              responseTime: result.responseTime
+            },
+            title: {
+              content: result.title.data,
+              length: result.title.length
+            },
+            meta_description: {
+              content: result.meta_description.data,
+              length: result.meta_description.length
+            },
+            metadata: {
+              charset: result.metadata_info.charset,
+              canonical: result.metadata_info.canonical,
+              favicon: result.metadata_info.favicon,
+              viewport: result.metadata_info.viewport,
+              robots: result.metadata_info.robots
+            },
+            headings: {
+              h1: { count: result['Page Headings summary'].H1, content: result['H1 Content'] },
+              h2: { count: result['Page Headings summary'].H2 },
+              h3: { count: result['Page Headings summary'].H3 },
+              h4: { count: result['Page Headings summary'].H4 },
+              h5: { count: result['Page Headings summary'].H5 },
+              h6: { count: result['Page Headings summary'].H6 }
+            },
+            links: {
+              total: result.links_summary['Total links'],
+              external: result.links_summary['External links'],
+              internal: result.links_summary.Internal,
+              nofollow: result.links_summary['Nofollow count'],
+              data: result.links
+            },
+            images: {
+              total: result.images_analysis.summary.total,
+              noSrc: result.images_analysis.summary['No src tag'],
+              noAlt: result.images_analysis.summary['No alt tag'],
+              data: result.images_analysis.data
+            },
+            content: {
+              wordCount: result.word_count.total,
+              anchorTextWords: result.word_count['Anchor text words'],
+              anchorPercentage: result.word_count['Anchor Percentage']
+            }
+          });
+        } catch (error) {
+          console.error('Erreur lors du parsing de la réponse:', error);
+          resolve(null);
+        }
+      });
+    });
+
+    req.on('error', function (error) {
+      console.error('Erreur de requête:', error);
+      resolve(null);
+    });
+
+    // Définir un timeout de 10 secondes
+    req.setTimeout(10000, () => {
+      req.destroy();
+      console.error('Timeout de la requête');
+      resolve(null);
+    });
+
+    req.end();
+  });
 }
