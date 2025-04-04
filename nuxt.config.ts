@@ -31,7 +31,7 @@ export default defineNuxtConfig({
     ['@nuxtjs/plausible', {
       domain: "devunity.tech",
       apiHost: "https://plausible.io",
-      trackLocalhost: true,
+      ignoredHostnames: ['localhost'],
       hashMode: true,
       enableAutoOutboundTracking: true,
       enableAutoFileDownloadsTracking: true,
