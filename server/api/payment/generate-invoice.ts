@@ -1,6 +1,8 @@
 import { defineEventHandler, readBody } from 'h3';
+import { RowDataPacket } from 'mysql2/promise';
 import PDFDocument from 'pdfkit';
 import { Resend } from 'resend';
+import { pool } from '../db';
 
 interface InvoiceData {
   paymentId: string;
@@ -20,15 +22,33 @@ interface InvoiceData {
 export default defineEventHandler(async (event) => {
   try {
     const user = event.context.user;
-    if (!user || !user.userId) {
-      return {
-        success: false,
-        error: 'Utilisateur non authentifié'
-      };
-    }
+    let userId = user?.userId;
 
     const body = await readBody(event);
-    const invoiceData: InvoiceData = body;
+    let invoiceData: InvoiceData = body;
+
+    if (userId) {
+      try {
+        const [rows] = await pool.execute<RowDataPacket[]>(
+          'SELECT email, username FROM users WHERE id = ?',
+          [userId]
+        );
+
+        if (rows.length > 0) {
+          if (!invoiceData.customerName || invoiceData.customerName.trim() === '') {
+            invoiceData.customerName = rows[0].username || 'Client DevUnity';
+          }
+
+          if (!invoiceData.customerEmail || invoiceData.customerEmail.trim() === '') {
+            invoiceData.customerEmail = rows[0].email;
+          }
+
+          console.log(`Informations utilisateur récupérées depuis la base de données: ${rows[0].username} (${rows[0].email})`);
+        }
+      } catch (dbError) {
+        console.error('Erreur lors de la récupération des informations utilisateur:', dbError);
+      }
+    }
 
     if (!invoiceData.customerEmail || !invoiceData.customerName) {
       return {

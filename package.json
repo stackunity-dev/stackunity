@@ -14,7 +14,8 @@
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
     "upload-chromium": "node scripts/upload-chromium.js",
-    "git": "git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main"
+    "git": "git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
+    "git-remove": "git rm -r --cached server/api/payment server/api/seo-audit.pdf.post.ts pages/seo-audit.vue pages/databricks.vue components/seo components/database pages/checkout.vue components/premium && git add . && git commit -m 'Remove premium features from git tracking' && git push origin main"
   },
   "config": {
     "rollup": {

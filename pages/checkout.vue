@@ -418,13 +418,13 @@ const processPayment = async () => {
       if (response.success) {
         showSnackbar.value = true;
         snackbarColor.value = 'success';
-        snackbarText.value = 'Payment successful! Premium access activated.';
+        snackbarText.value = 'Payment successful! Premium access activated and invoice sent to your email.';
       } else {
         showSnackbar.value = true;
-        snackbarColor.value = 'error';
-        snackbarText.value = 'Error generating invoice';
+        snackbarColor.value = 'warning';
+        snackbarText.value = 'Payment successful, but invoice generation failed. Contact support if needed.';
+        console.error('Invoice generation error:', response.error);
       }
-
 
       setTimeout(() => {
         router.push('/dashboard');

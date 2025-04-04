@@ -109,7 +109,6 @@ export default defineEventHandler(async (event) => {
       try {
         taxCalculation = await stripe.tax.calculations.create({
           currency,
-          customer: customer.id,
           line_items: [
             {
               amount: baseAmount,
