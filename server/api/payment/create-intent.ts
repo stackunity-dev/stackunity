@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
     let stripe;
     try {
       stripe = new Stripe(stripeSecretKey, {
-        apiVersion: '2024-09-30.acacia',
+        apiVersion: '2025-03-31.basil',
       });
     } catch (stripeInitError) {
       console.error('Failed to initialize Stripe:', stripeInitError);
@@ -159,7 +159,6 @@ export default defineEventHandler(async (event) => {
         amount: taxCalculation.amount_total,
         currency,
         customer: customer.id,
-        automatic_tax: { enabled: true },
         metadata: {
           customer_name: customer_name || 'Unidentified client',
           country_code,
