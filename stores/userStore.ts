@@ -1179,55 +1179,27 @@ export const useUserStore = defineStore('user', {
         this.seoData = null;
 
         let response;
+        // Nouvelle API d'analyse personnalisée
+        response = await fetch('/api/website-analyzer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ url })
+        });
 
-        if (options.useRapidApi) {
-          // API RapidAPI existante (laisser la logique existante)
-          response = await fetch('/api/seo-audit', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${this.token}`
-            },
-            body: JSON.stringify({
-              url,
-              maxDepth: options.maxDepth,
-              sameDomainOnly: options.sameDomainOnly,
-              timeout: options.timeout,
-              useRapidApi: options.useRapidApi,
-              maxUrlsToAnalyze: options.maxUrlsToAnalyze
-            })
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(`Erreur ${response.status}: ${errorData.message || response.statusText}`);
-          }
-
-          const data = await response.json();
-          this.seoData = data;
-          return data;
-        } else {
-          // Nouvelle API d'analyse personnalisée
-          response = await fetch('/api/website-analyzer', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${this.token}`
-            },
-            body: JSON.stringify({ url })
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(`Erreur ${response.status}: ${errorData.message || response.statusText}`);
-          }
-
-          const data = await response.json();
-          // Adapter la réponse pour qu'elle corresponde au format attendu par l'interface
-          const formattedData = this.formatAnalyzerResponse(data, url);
-          this.seoData = formattedData;
-          return formattedData;
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`Erreur ${response.status}: ${errorData.message || response.statusText}`);
         }
+
+        const data = await response.json();
+        // Adapter la réponse pour qu'elle corresponde au format attendu par l'interface
+        const formattedData = this.formatAnalyzerResponse(data, url);
+        this.seoData = formattedData;
+        return formattedData;
+
       } catch (error: any) {
         console.error('Erreur lors de l\'audit SEO:', error);
         this.seoError = error.message || 'Une erreur est survenue';
