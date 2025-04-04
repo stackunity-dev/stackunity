@@ -1,5 +1,11 @@
 import { load } from 'cheerio';
 
+export interface StructuredData {
+  '@type': string;
+  '@context'?: string;
+  [key: string]: any;
+}
+
 export interface WebsiteAnalysisResult {
   url: string;
   performance: {
@@ -69,7 +75,7 @@ export interface WebsiteAnalysisResult {
     readabilityScore: number;
     keywordDensity: Record<string, number>;
     structuredData: {
-      data: any[];
+      data: StructuredData[];
       count: number;
       types: Record<string, number>;
     };
@@ -98,4 +104,27 @@ export interface ExtendedResponse {
   status?: number;
 }
 
-export type CheerioSelector = ReturnType<typeof load>; 
+export type CheerioSelector = ReturnType<typeof load>;
+
+export interface SiteAnalysisResult {
+  urlMap: Record<string, string[]>;
+  visitedURLs: string[];
+  seoResults: Record<string, WebsiteAnalysisResult>;
+  summary: {
+    totalPages: number;
+    averageLoadTime: number;
+    totalWarnings: number;
+    missingTitles: number;
+    missingDescriptions: number;
+    missingAltTags: number;
+    averageFCP: number;
+    averageLCP: number;
+    averageTTFB: number;
+    pagesWithStructuredData: number;
+    pagesWithSocialTags: number;
+    mobileCompatiblePages: number;
+    securePages: number;
+  };
+  generatedSitemap: string;
+  rankedUrls: string[];
+} 

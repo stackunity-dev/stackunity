@@ -365,10 +365,7 @@ const analyzeWebsite = async () => {
     report.value = await userStore.auditSEO(url, options);
 
     if (report.value) {
-      // Mise à jour automatique des configurations à partir des résultats de l'analyse
       fillConfigsFromAudit(report.value, siteConfig.value, robotsConfig.value, schemaConfig.value);
-
-      // Générer automatiquement le contenu
       generateCode();
     }
   } catch (err: any) {

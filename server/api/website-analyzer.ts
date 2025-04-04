@@ -5,7 +5,7 @@ import { createError, defineEventHandler, H3Event, readBody } from 'h3';
 import { performance } from 'perf_hooks';
 import type { Page } from 'puppeteer';
 import { promisify } from 'util';
-import type { CheerioSelector, ExtendedResponse, WebsiteAnalysisResult } from './analyzer-types';
+import type { CheerioSelector, ExtendedResponse, SiteAnalysisResult, StructuredData, WebsiteAnalysisResult } from './analyzer-types';
 
 const dnsResolve = promisify(dns.resolve);
 const dnsReverse = promisify(dns.reverse);
@@ -270,9 +270,9 @@ async function analyzeTechnical(url: string, response: ExtendedResponse, $: Chee
   };
 }
 
-// Fonction principale d'analyse
-export default defineEventHandler(async (event: H3Event) => {
-  const { url } = await readBody(event);
+// Modifier le handler principal
+export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisResult> => {
+  const { url, maxPages = 50 } = await readBody(event);
   if (!url) {
     throw createError({
       statusCode: 400,
@@ -280,8 +280,78 @@ export default defineEventHandler(async (event: H3Event) => {
     });
   }
 
-  const $ = cheerioLoad(await (await axios.get(url)).data);
-  return await analyzeWebsite(url);
+  try {
+    // Crawler le site pour obtenir toutes les URLs
+    const urls = await crawlWebsite(url, maxPages);
+    console.log(`Analyse de ${urls.length} pages...`);
+
+    // Analyser chaque page
+    const results: Record<string, WebsiteAnalysisResult> = {};
+    let totalLoadTime = 0;
+    let totalWarnings = 0;
+    let missingTitles = 0;
+    let missingDescriptions = 0;
+    let missingAltTags = 0;
+    let totalFCP = 0;
+    let totalLCP = 0;
+    let totalTTFB = 0;
+    let pagesWithStructuredData = 0;
+    let pagesWithSocialTags = 0;
+    let mobileCompatiblePages = 0;
+    let securePages = 0;
+
+    for (const pageUrl of urls) {
+      const result = await analyzeWebsite(pageUrl);
+      results[pageUrl] = result;
+
+      // Mettre à jour les statistiques globales
+      totalLoadTime += result.performance.loadTime;
+      totalWarnings += result.issues.length;
+      if (!result.seo.title) missingTitles++;
+      if (!result.seo.description) missingDescriptions++;
+      missingAltTags += result.seo.images.withoutAlt;
+      totalFCP += result.performance.fcp;
+      totalLCP += result.performance.lcp;
+      totalTTFB += result.performance.ttfb;
+      if (result.seo.structuredData.count > 0) pagesWithStructuredData++;
+      if (Object.keys(result.seo.meta.og).length > 0 || Object.keys(result.seo.meta.twitter).length > 0) {
+        pagesWithSocialTags++;
+      }
+      if (result.technical.mobile.viewport) mobileCompatiblePages++;
+      if (result.technical.https) securePages++;
+    }
+
+    const pageCount = urls.length;
+
+    return {
+      urlMap: { [url]: urls },
+      visitedURLs: urls,
+      seoResults: results,
+      summary: {
+        totalPages: pageCount,
+        averageLoadTime: totalLoadTime / pageCount,
+        totalWarnings,
+        missingTitles,
+        missingDescriptions,
+        missingAltTags,
+        averageFCP: totalFCP / pageCount,
+        averageLCP: totalLCP / pageCount,
+        averageTTFB: totalTTFB / pageCount,
+        pagesWithStructuredData,
+        pagesWithSocialTags,
+        mobileCompatiblePages,
+        securePages
+      },
+      generatedSitemap: generateSitemap(urls),
+      rankedUrls: rankPages(results)
+    };
+  } catch (error) {
+    console.error('Erreur lors de l\'analyse:', error);
+    throw createError({
+      statusCode: 500,
+      message: 'Erreur lors de l\'analyse du site'
+    });
+  }
 });
 
 async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
@@ -323,12 +393,12 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     title: $('title').text().trim(),
     description: $('meta[name="description"]').attr('content') || '',
     headings: {
-      h1: $('h1').map((_, el) => $(el).text().trim()).get(),
-      h2: $('h2').map((_, el) => $(el).text().trim()).get(),
-      h3: $('h3').map((_, el) => $(el).text().trim()).get(),
-      h4: $('h4').map((_, el) => $(el).text().trim()).get(),
-      h5: $('h5').map((_, el) => $(el).text().trim()).get(),
-      h6: $('h6').map((_, el) => $(el).text().trim()).get()
+      h1: $('h1').map((_, el) => $(el).text().trim()).get() as string[],
+      h2: $('h2').map((_, el) => $(el).text().trim()).get() as string[],
+      h3: $('h3').map((_, el) => $(el).text().trim()).get() as string[],
+      h4: $('h4').map((_, el) => $(el).text().trim()).get() as string[],
+      h5: $('h5').map((_, el) => $(el).text().trim()).get() as string[],
+      h6: $('h6').map((_, el) => $(el).text().trim()).get() as string[]
     },
     images: {
       total: $('img').length,
@@ -361,7 +431,7 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     readabilityScore: calculateReadabilityScore($('body').text()),
     keywordDensity: calculateKeywordDensity($('body').text()),
     structuredData: {
-      data: [] as any[],
+      data: [] as StructuredData[],
       count: 0,
       types: {} as Record<string, number>
     }
@@ -384,11 +454,13 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
   // Analyser les données structurées
   $('script[type="application/ld+json"]').each((_, el) => {
     try {
-      const data = JSON.parse($(el).html() || '');
-      seoData.structuredData.data.push(data);
-      seoData.structuredData.count++;
-      if (data['@type']) {
-        const type = data['@type'];
+      const content = $(el).html() || '{}';
+      const data = JSON.parse(content);
+      if (data && typeof data === 'object' && '@type' in data) {
+        const structuredData = data as StructuredData;
+        seoData.structuredData.data.push(structuredData);
+        seoData.structuredData.count++;
+        const type = structuredData['@type'];
         if (Array.isArray(type)) {
           type.forEach(t => {
             seoData.structuredData.types[t] = (seoData.structuredData.types[t] || 0) + 1;
@@ -502,12 +574,12 @@ function analyzeLinks($: CheerioSelector, baseUrl: string) {
 }
 
 function extractStructuredData($: CheerioSelector) {
-  const data: any[] = [];
+  const data: Record<string, any>[] = [];
   const types: Record<string, number> = {};
 
   $('script[type="application/ld+json"]').each((_, el) => {
     try {
-      const content = JSON.parse($(el).html() || '');
+      const content = JSON.parse($(el).html() || '{}');
       data.push(content);
       if (content['@type']) {
         const type = content['@type'];
@@ -532,8 +604,9 @@ function extractStructuredData($: CheerioSelector) {
 }
 
 function extractMetaTags($: CheerioSelector) {
+  const viewport = $('meta[name="viewport"]').attr('content');
   return {
-    viewport: $('meta[name="viewport"]').attr('content') || false,
+    viewport: viewport || false,
     robots: $('meta[name="robots"]').attr('content'),
     canonical: $('link[rel="canonical"]').attr('href'),
     og: extractSocialTags($, 'og'),
@@ -901,4 +974,84 @@ function calculateKeywordDensity(text: string): Record<string, number> {
   });
 
   return density;
+}
+
+async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<string[]> {
+  const visited = new Set<string>();
+  const toVisit = new Set<string>([baseUrl]);
+  const baseUrlObj = new URL(baseUrl);
+
+  while (toVisit.size > 0 && visited.size < maxPages) {
+    const url = Array.from(toVisit)[0];
+    toVisit.delete(url);
+
+    if (visited.has(url)) continue;
+
+    try {
+      const response = await axios.get(url);
+      visited.add(url);
+
+      const $ = cheerioLoad(response.data);
+      $('a[href]').each((_, el) => {
+        const href = $(el).attr('href');
+        if (!href) return;
+
+        try {
+          const fullUrl = new URL(href, url);
+          // Ne visiter que les URLs du même domaine
+          if (fullUrl.hostname === baseUrlObj.hostname && !visited.has(fullUrl.href)) {
+            toVisit.add(fullUrl.href);
+          }
+        } catch (e) {
+          console.error('URL invalide:', href);
+        }
+      });
+    } catch (e) {
+      console.error('Erreur lors du crawl de', url, ':', e);
+    }
+  }
+
+  return Array.from(visited);
+}
+
+function generateSitemap(urls: string[]): string {
+  const date = new Date().toISOString();
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls.map(url => `
+  <url>
+    <loc>${url}</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join('')}
+</urlset>`;
+}
+
+function rankPages(results: Record<string, WebsiteAnalysisResult>): string[] {
+  return Object.entries(results)
+    .sort(([, a], [, b]) => {
+      // Score basé sur plusieurs facteurs
+      const getScore = (result: WebsiteAnalysisResult) => {
+        let score = 0;
+        // Performance
+        score += (1000 - result.performance.loadTime) / 10;
+        score += (100 - result.performance.ttfb) / 2;
+
+        // SEO
+        if (result.seo.title) score += 10;
+        if (result.seo.description) score += 10;
+        score += result.seo.images.withAlt * 2;
+        score -= result.issues.length * 5;
+
+        // Contenu
+        score += result.seo.wordCount / 100;
+        score += Object.keys(result.seo.structuredData.types).length * 5;
+
+        return score;
+      };
+
+      return getScore(b) - getScore(a);
+    })
+    .map(([url]) => url);
 }
