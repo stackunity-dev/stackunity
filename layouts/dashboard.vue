@@ -88,6 +88,9 @@
           </v-list-group>
         </client-only>
 
+        <v-list-item v-if="!userStore.user.isPremium" to="/checkout" prepend-icon="mdi-credit-card-outline"
+          title="Premium" rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer" />
+
         <v-list-item to="/settings" prepend-icon="mdi-cog-outline" title="Settings" rounded="lg" class="mb-1"
           color="primary" nuxt @click="closeDrawer" />
 
@@ -180,6 +183,9 @@
               class="ml-4" color="primary" nuxt @click="closeDrawer" />
           </v-list-group>
         </client-only>
+
+        <v-list-item v-if="!userStore.user.isPremium" to="/checkout" prepend-icon="mdi-credit-card-outline"
+          title="Premium" rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer" />
 
         <v-list-item to="/settings" prepend-icon="mdi-cog-outline" title="Settings" rounded="lg" class="mb-1"
           color="primary" nuxt @click="closeDrawer" />

@@ -137,12 +137,7 @@
       </v-row>
     </v-container>
 
-    <v-snackbar v-model="showSnackbar" :color="snackbarColor" :timeout="3000">
-      {{ snackbarText }}
-      <template v-slot:actions>
-        <v-btn icon="mdi-close" @click="showSnackbar = false"></v-btn>
-      </template>
-    </v-snackbar>
+    <snackBar v-model="showSnackbar" :color="snackbarColor" :text="snackbarText" :timeout="3000" />
   </section>
 </template>
 
@@ -151,6 +146,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/userStore';
+import snackBar from '../components/snackBar.vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 
@@ -405,9 +401,30 @@ const processPayment = async () => {
     if (paymentIntent.status === 'succeeded') {
       await userStore.updatePremiumStatus(true);
 
-      showSnackbar.value = true;
-      snackbarColor.value = 'success';
-      snackbarText.value = 'Payment successful! Premium access activated.';
+      const response = await userStore.generateInvoice(
+        paymentIntent.id,
+        cardholderName.value,
+        userStore.user?.email || '',
+        vatNumber.value,
+        billingCountry.value,
+        isBusinessCustomer.value,
+        taxDetails.value.baseAmount,
+        taxDetails.value.taxAmount,
+        taxDetails.value.totalAmount,
+        taxDetails.value.taxPercentage,
+        taxDetails.value.isVatExempt
+      );
+
+      if (response.success) {
+        showSnackbar.value = true;
+        snackbarColor.value = 'success';
+        snackbarText.value = 'Payment successful! Premium access activated.';
+      } else {
+        showSnackbar.value = true;
+        snackbarColor.value = 'error';
+        snackbarText.value = 'Error generating invoice';
+      }
+
 
       setTimeout(() => {
         router.push('/dashboard');

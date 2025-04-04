@@ -1852,6 +1852,58 @@ export const useUserStore = defineStore('user', {
         console.error('[STORE] Erreur lors du chargement des composants:', error);
         throw error;
       }
+    },
+
+    async generateInvoice(
+      paymentId: string,
+      customerName: string,
+      customerEmail: string,
+      vatNumber: string,
+      country: string,
+      isBusinessCustomer: boolean,
+      baseAmount: number,
+      taxAmount: number,
+      totalAmount: number,
+      taxPercentage: number,
+      isVatExempt: boolean
+    ): Promise<{ success: boolean; error?: string }> {
+      try {
+        const response = await $fetch('/api/payment/generate-invoice', {
+          method: 'POST',
+          body: {
+            paymentId,
+            customerName,
+            customerEmail,
+            vatNumber,
+            country,
+            isBusinessCustomer,
+            baseAmount,
+            taxAmount,
+            totalAmount,
+            taxPercentage,
+            isVatExempt,
+            date: new Date().toLocaleDateString('fr-FR')
+          }
+        });
+
+        if (response && typeof response === 'object' && 'success' in response) {
+          return {
+            success: response.success as boolean,
+            error: 'error' in response ? response.error as string : undefined
+          };
+        }
+
+        return {
+          success: false,
+          error: 'Réponse du serveur invalide'
+        };
+      } catch (error) {
+        console.error('Error generating invoice:', error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Erreur inconnue lors de la génération de la facture'
+        };
+      }
     }
   },
   persist: {
