@@ -1172,11 +1172,12 @@ async function performRapidApiAudit(url: string): Promise<CrawlReport> {
       mainThreadWork: performanceMetrics?.mainThreadWork,
       performanceScore: performanceMetrics?.performanceScore,
       firstContentfulPaintScore: performanceMetrics?.firstContentfulPaintScore,
-      speedIndexScore: performanceMetrics?.speedIndexScore,
+      speedIndexScore: Math.round((performanceMetrics?.firstContentfulPaintScore || 0 + performanceMetrics?.largestContentfulPaintScore || 0) / 2),
       largestContentfulPaintScore: performanceMetrics?.largestContentfulPaintScore,
       interactiveScore: performanceMetrics?.interactiveScore,
-      totalBlockingTimeScore: performanceMetrics?.totalBlockingTimeScore,
-      cumulativeLayoutShiftScore: performanceMetrics?.cumulativeLayoutShiftScore
+      totalBlockingTimeScore: Math.round((100 - (performanceMetrics?.totalBlockingTime || 0) / 10)),
+      cumulativeLayoutShiftScore: performanceMetrics?.cumulativeLayoutShiftScore,
+      serverResponseTime: performanceMetrics?.serverResponseTime
     },
     contentStats: {
       ...standardResult.contentStats,
@@ -1690,18 +1691,17 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
       headers: {
         'x-rapidapi-key': '2308627ad7msh84971507d0dce82p1e637fjsn1ee2a06e6776',
         'x-rapidapi-host': 'website-seo-analyzer.p.rapidapi.com'
-      }
+      },
+      timeout: 10000 // 10 secondes de timeout
     };
 
     const response = await axios(options);
 
     if (!response.data || !response.data.success) {
-      console.error('Réponse API invalide:', response.data);
-      return null;
+      throw new Error('Réponse API invalide');
     }
 
     const result = response.data.result;
-
     return {
       http: {
         status: result.http.status,
@@ -1750,8 +1750,88 @@ async function getBasicSeoAnalysis(url: string): Promise<any> {
         anchorPercentage: result.word_count['Anchor Percentage']
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erreur lors de la récupération de l\'analyse SEO de base:', error);
+
+    // Si l'erreur est 429 (Too Many Requests), utiliser l'analyse HTML directe
+    if (error.response?.status === 429) {
+      try {
+        const response = await axios.get(url, {
+          timeout: 10000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          }
+        });
+
+        const html = response.data;
+        const $ = cheerio.load(html);
+
+        // Analyse HTML basique
+        const title = $('title').text();
+        const metaDescription = $('meta[name="description"]').attr('content') || '';
+        const h1s = $('h1').map((_, el) => $(el).text()).get();
+        const links = $('a').map((_, el) => $(el).attr('href')).get();
+        const images = $('img').map((_, el) => ({
+          src: $(el).attr('src'),
+          alt: $(el).attr('alt'),
+          title: $(el).attr('title')
+        })).get();
+
+        // Retourner un objet avec la même structure
+        return {
+          http: {
+            status: response.status,
+            using_https: url.startsWith('https'),
+            responseTime: '1'
+          },
+          title: {
+            content: title,
+            length: title.length
+          },
+          meta_description: {
+            content: metaDescription,
+            length: metaDescription.length
+          },
+          metadata: {
+            charset: $('meta[charset]').attr('charset') || 'UTF-8',
+            canonical: $('link[rel="canonical"]').attr('href') || url,
+            favicon: $('link[rel="icon"]').attr('href') || '',
+            viewport: $('meta[name="viewport"]').attr('content') || '',
+            robots: $('meta[name="robots"]').attr('content') || 'index, follow'
+          },
+          headings: {
+            h1: { count: h1s.length, content: h1s[0] || '' },
+            h2: { count: $('h2').length },
+            h3: { count: $('h3').length },
+            h4: { count: $('h4').length },
+            h5: { count: $('h5').length },
+            h6: { count: $('h6').length }
+          },
+          links: {
+            total: links.length,
+            external: links.filter(l => l && l.startsWith('http')).length,
+            internal: links.filter(l => l && !l.startsWith('http')).length,
+            nofollow: $('a[rel="nofollow"]').length,
+            data: links.map(href => ({ href }))
+          },
+          images: {
+            total: images.length,
+            noSrc: images.filter(img => !img.src).length,
+            noAlt: images.filter(img => !img.alt).length,
+            data: images
+          },
+          content: {
+            wordCount: $('body').text().split(/\s+/).length,
+            anchorTextWords: $('a').text().split(/\s+/).length,
+            anchorPercentage: 0
+          }
+        };
+      } catch (fallbackError) {
+        console.error('Erreur lors de l\'analyse HTML directe:', fallbackError);
+        return null;
+      }
+    }
+
     return null;
   }
 }
