@@ -1178,15 +1178,24 @@ export const useUserStore = defineStore('user', {
         this.seoError = '';
         this.seoData = null;
 
-        let response;
-        // Nouvelle API d'analyse personnalisée
-        response = await fetch('/api/website-analyzer', {
+        if (!url) {
+          throw new Error('URL non spécifiée');
+        }
+
+        // Vérifier si l'URL est valide
+        try {
+          new URL(url);
+        } catch (e) {
+          throw new Error('URL invalide');
+        }
+
+        const response = await fetch('/api/website-analyzer', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${this.token}`
           },
-          body: JSON.stringify({ url })
+          body: JSON.stringify({ url, options })
         });
 
         if (!response.ok) {
@@ -1195,6 +1204,11 @@ export const useUserStore = defineStore('user', {
         }
 
         const data = await response.json();
+
+        if (!data || typeof data !== 'object') {
+          throw new Error('Réponse invalide du serveur');
+        }
+
         // Adapter la réponse pour qu'elle corresponde au format attendu par l'interface
         const formattedData = this.formatAnalyzerResponse(data, url);
         this.seoData = formattedData;
@@ -1202,8 +1216,7 @@ export const useUserStore = defineStore('user', {
 
       } catch (error: any) {
         console.error('Erreur lors de l\'audit SEO:', error);
-        this.seoError = error.message || 'Une erreur est survenue';
-
+        this.seoError = error.message || 'Une erreur est survenue lors de l\'analyse SEO';
         throw error;
       } finally {
         this.isSeoLoading = false;
@@ -1212,30 +1225,34 @@ export const useUserStore = defineStore('user', {
 
     // Fonction pour convertir le format de notre nouvelle API au format attendu par l'interface
     formatAnalyzerResponse(response: any, url: string) {
+      if (!response || !response.seo) {
+        throw new Error('Réponse invalide de l\'analyseur');
+      }
+
       const seoResults: Record<string, any> = {};
 
       seoResults[url] = {
         url,
-        title: response.seo.title,
-        description: response.seo.description,
-        h1: response.seo.headings.h1,
-        h2: response.seo.headings.h2,
-        h3: response.seo.headings.h3,
-        metaTags: Object.entries(response.seo.meta.og || {}).map(([name, content]) => ({
+        title: response.seo?.title || '',
+        description: response.seo?.description || '',
+        h1: response.seo?.headings?.h1 || [],
+        h2: response.seo?.headings?.h2 || [],
+        h3: response.seo?.headings?.h3 || [],
+        metaTags: Object.entries(response.seo?.meta?.og || {}).map(([name, content]) => ({
           name,
           content: content as string
         })),
         robotsMeta: {
-          index: !response.seo.meta.robots?.includes('noindex'),
-          follow: !response.seo.meta.robots?.includes('nofollow'),
-          noindex: response.seo.meta.robots?.includes('noindex') || false,
-          nofollow: response.seo.meta.robots?.includes('nofollow') || false,
-          noarchive: response.seo.meta.robots?.includes('noarchive') || false,
-          nosnippet: response.seo.meta.robots?.includes('nosnippet') || false,
-          noodp: response.seo.meta.robots?.includes('noodp') || false
+          index: !response.seo?.meta?.robots?.includes('noindex'),
+          follow: !response.seo?.meta?.robots?.includes('nofollow'),
+          noindex: response.seo?.meta?.robots?.includes('noindex') || false,
+          nofollow: response.seo?.meta?.robots?.includes('nofollow') || false,
+          noarchive: response.seo?.meta?.robots?.includes('noarchive') || false,
+          nosnippet: response.seo?.meta?.robots?.includes('nosnippet') || false,
+          noodp: response.seo?.meta?.robots?.includes('noodp') || false
         },
-        imageAlt: response.seo.images.data.map((img: any) => ({
-          src: img.src,
+        imageAlt: (response.seo?.images?.data || []).map((img: any) => ({
+          src: img.src || '',
           alt: img.alt || '',
           title: img.title || '',
           width: img.dimensions?.width,
@@ -1243,66 +1260,77 @@ export const useUserStore = defineStore('user', {
           hasDimensions: !!(img.dimensions?.width && img.dimensions?.height)
         })),
         videoInfo: [],
-        loadTime: response.performance.loadTime,
-        statusCode: response.technical.statusCode,
-        internalLinks: response.seo.links.internal,
-        externalLinks: response.seo.links.external,
-        warnings: response.issues.map((issue: any) => ({
-          message: issue.message,
+        loadTime: response.performance?.loadTime || 0,
+        statusCode: response.technical?.statusCode || 200,
+        internalLinks: response.seo?.links?.internal || [],
+        externalLinks: response.seo?.links?.external || [],
+        warnings: (response.issues || []).map((issue: any) => ({
+          message: issue.message || '',
           severity: issue.type === 'error' ? 'critical' : issue.type === 'warning' ? 'high' : 'medium',
-          type: issue.code
+          type: issue.code || 'unknown'
         })),
         coreWebVitals: {
-          FCP: response.performance.fcp,
-          LCP: response.performance.lcp,
-          TTFB: response.performance.ttfb,
-          domLoad: response.performance.totalBlockingTime,
-          speedIndex: response.performance.speedIndex,
-          timeToInteractive: response.performance.totalBlockingTime + response.performance.fcp,
-          totalBlockingTime: response.performance.totalBlockingTime,
-          cumulativeLayoutShift: response.performance.cls,
-          performanceScore: Math.round((100 - (response.performance.ttfb / 5) - (response.performance.lcp / 40)) * 0.6),
-          firstContentfulPaintScore: Math.round(100 - (response.performance.fcp / 25)),
-          speedIndexScore: Math.round(100 - (response.performance.speedIndex / 40)),
-          largestContentfulPaintScore: Math.round(100 - (response.performance.lcp / 40)),
-          interactiveScore: Math.round(100 - (response.performance.totalBlockingTime / 30)),
-          totalBlockingTimeScore: Math.round(100 - (response.performance.totalBlockingTime / 30)),
-          cumulativeLayoutShiftScore: Math.round(100 - (response.performance.cls * 100)),
-          serverResponseTime: response.performance.ttfb
+          FCP: response.performance?.fcp || 0,
+          LCP: response.performance?.lcp || 0,
+          TTFB: response.performance?.ttfb || 0,
+          domLoad: response.performance?.totalBlockingTime || 0,
+          speedIndex: response.performance?.speedIndex || 0,
+          timeToInteractive: (response.performance?.totalBlockingTime || 0) + (response.performance?.fcp || 0),
+          totalBlockingTime: response.performance?.totalBlockingTime || 0,
+          cumulativeLayoutShift: response.performance?.cls || 0,
+          performanceScore: Math.round((100 - ((response.performance?.ttfb || 0) / 5) - ((response.performance?.lcp || 0) / 40)) * 0.6),
+          firstContentfulPaintScore: Math.round(100 - ((response.performance?.fcp || 0) / 25)),
+          speedIndexScore: Math.round(100 - ((response.performance?.speedIndex || 0) / 40)),
+          largestContentfulPaintScore: Math.round(100 - ((response.performance?.lcp || 0) / 40)),
+          interactiveScore: Math.round(100 - ((response.performance?.totalBlockingTime || 0) / 30)),
+          totalBlockingTimeScore: Math.round(100 - ((response.performance?.totalBlockingTime || 0) / 30)),
+          cumulativeLayoutShiftScore: Math.round(100 - ((response.performance?.cls || 0) * 100)),
+          serverResponseTime: response.performance?.ttfb || 0
         },
-        headingStructure: response.seo.headings,
-        structuredData: response.seo.structuredData,
+        headingStructure: response.seo?.headings || {
+          h1: [],
+          h2: [],
+          h3: [],
+          h4: [],
+          h5: [],
+          h6: []
+        },
+        structuredData: response.seo?.structuredData || {
+          data: [],
+          count: 0,
+          types: {}
+        },
         socialTags: {
-          ogTags: Object.entries(response.seo.meta.og || {}).map(([property, content]) => ({
+          ogTags: Object.entries(response.seo?.meta?.og || {}).map(([property, content]) => ({
             property,
             content
           })),
-          twitterTags: Object.entries(response.seo.meta.twitter || {}).map(([name, content]) => ({
+          twitterTags: Object.entries(response.seo?.meta?.twitter || {}).map(([name, content]) => ({
             name,
             content
           }))
         },
         mobileCompatibility: {
-          hasViewport: !!response.technical.mobile.viewport,
-          viewportContent: response.technical.mobile.viewport || '',
+          hasViewport: !!response.technical?.mobile?.viewport,
+          viewportContent: response.technical?.mobile?.viewport || '',
           smallTouchTargets: 0
         },
         securityChecks: {
-          https: response.technical.https,
-          validCertificate: response.technical.security.certificate,
-          securityHeaders: Object.entries(response.technical.security.headers || {}).map(([name, value]) => ({
+          https: response.technical?.https || false,
+          validCertificate: response.technical?.security?.certificate || false,
+          securityHeaders: Object.entries(response.technical?.security?.headers || {}).map(([name, value]) => ({
             name,
             value: value as string
           }))
         },
         links: {
-          internal: response.seo.links.internal,
-          external: response.seo.links.external
+          internal: response.seo?.links?.internal || [],
+          external: response.seo?.links?.external || []
         },
         contentStats: {
-          wordCount: response.seo.wordCount,
-          keywordDensity: Object.values(response.seo.keywordDensity || {}),
-          readabilityScore: response.seo.readabilityScore
+          wordCount: response.seo?.wordCount || 0,
+          keywordDensity: Object.values(response.seo?.keywordDensity || {}),
+          readabilityScore: response.seo?.readabilityScore || 0
         },
         technicalSEO: {
           sitemapFound: false,
@@ -1310,7 +1338,7 @@ export const useUserStore = defineStore('user', {
           sitemapUrls: 0,
           robotsTxtFound: false,
           robotsTxtContent: '',
-          schemaTypeCount: response.seo.structuredData?.types || {}
+          schemaTypeCount: response.seo?.structuredData?.types || {}
         }
       };
 
@@ -1320,19 +1348,19 @@ export const useUserStore = defineStore('user', {
         seoResults,
         summary: {
           totalPages: 1,
-          averageLoadTime: response.performance.loadTime,
-          totalWarnings: response.issues.length,
-          missingTitles: !response.seo.title ? 1 : 0,
-          missingDescriptions: !response.seo.description ? 1 : 0,
-          missingAltTags: response.seo.images.withoutAlt,
-          averageFCP: response.performance.fcp,
-          averageLCP: response.performance.lcp,
-          averageTTFB: response.performance.ttfb,
-          pagesWithStructuredData: response.seo.structuredData?.count || 0,
-          pagesWithSocialTags: Object.keys(response.seo.meta.og || {}).length +
-            Object.keys(response.seo.meta.twitter || {}).length > 0 ? 1 : 0,
-          mobileCompatiblePages: response.technical.mobile.viewport ? 1 : 0,
-          securePages: response.technical.https ? 1 : 0
+          averageLoadTime: response.performance?.loadTime || 0,
+          totalWarnings: response.issues?.length || 0,
+          missingTitles: !response.seo?.title ? 1 : 0,
+          missingDescriptions: !response.seo?.description ? 1 : 0,
+          missingAltTags: response.seo?.images?.withoutAlt || 0,
+          averageFCP: response.performance?.fcp || 0,
+          averageLCP: response.performance?.lcp || 0,
+          averageTTFB: response.performance?.ttfb || 0,
+          pagesWithStructuredData: response.seo?.structuredData?.count || 0,
+          pagesWithSocialTags: (Object.keys(response.seo?.meta?.og || {}).length +
+            Object.keys(response.seo?.meta?.twitter || {}).length > 0) ? 1 : 0,
+          mobileCompatiblePages: response.technical?.mobile?.viewport ? 1 : 0,
+          securePages: response.technical?.https ? 1 : 0
         },
         generatedSitemap: '',
         rankedUrls: [url]
