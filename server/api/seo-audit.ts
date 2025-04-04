@@ -119,6 +119,15 @@ export interface CrawlReport {
   rankedUrls?: string[];
 }
 
+interface ImageData {
+  src: string;
+  alt: string | null;
+  title?: string;
+  width?: string;
+  height?: string;
+  hasDimensions: boolean;
+}
+
 // Fonctions d'extraction HTML par regex
 function extractTitle(html: string): string {
   const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
@@ -161,6 +170,12 @@ function extractImages(html: string, baseUrl: string): any[] {
   const regex = /<img[^>]*>/gi;
   let match;
 
+  // Créer un objet URL pour le baseUrl
+  const baseUrlObj = new URL(baseUrl);
+  const baseHostname = baseUrlObj.hostname;
+  const baseProtocol = baseUrlObj.protocol;
+  const basePath = baseUrlObj.pathname.replace(/\/[^/]*$/, '/');
+
   while ((match = regex.exec(html)) !== null) {
     const imgTag = match[0];
 
@@ -171,16 +186,42 @@ function extractImages(html: string, baseUrl: string): any[] {
     const heightMatch = imgTag.match(/height=["']([^"']*)["']/i);
 
     const src = srcMatch ? srcMatch[1] : '';
+    if (!src) continue; // Ignorer les images sans src
 
-    // Construire l'URL complète si nécessaire
+    // Construire l'URL complète
     let fullSrc = src;
-    if (src && !src.startsWith('data:') && !src.match(/^(http|https):\/\//)) {
-      if (src.startsWith('/')) {
-        const urlObj = new URL(baseUrl);
-        fullSrc = `${urlObj.protocol}//${urlObj.hostname}${src}`;
+    try {
+      if (src.startsWith('data:')) {
+        // Garder les images en base64 telles quelles
+        fullSrc = src;
+      } else if (src.match(/^(http|https):\/\//)) {
+        // URL absolue, la garder telle quelle
+        fullSrc = src;
+      } else if (src.startsWith('//')) {
+        // URL protocol-relative
+        fullSrc = `${baseProtocol}${src}`;
+      } else if (src.startsWith('/')) {
+        // URL root-relative
+        fullSrc = `${baseProtocol}//${baseHostname}${src}`;
+      } else if (src.startsWith('../')) {
+        // URL relative avec ../ - remonter dans l'arborescence
+        let tempPath = basePath;
+        let tempSrc = src;
+        while (tempSrc.startsWith('../')) {
+          tempPath = tempPath.replace(/[^/]+\/$/, '');
+          tempSrc = tempSrc.substring(3);
+        }
+        fullSrc = `${baseProtocol}//${baseHostname}${tempPath}${tempSrc}`;
       } else {
-        fullSrc = new URL(src, baseUrl).href;
+        // URL relative simple
+        fullSrc = `${baseProtocol}//${baseHostname}${basePath}${src}`;
       }
+
+      // Vérifier que l'URL est valide
+      new URL(fullSrc);
+    } catch (e) {
+      console.error(`URL d'image invalide: ${src} (base: ${baseUrl})`);
+      continue; // Ignorer les URLs invalides
     }
 
     images.push({
@@ -1194,16 +1235,74 @@ async function performRapidApiAudit(url: string): Promise<CrawlReport> {
       result.h3 = result.headingStructure.h3;
     }
 
-    // Mise à jour des images
+    // Mise à jour des images avec une meilleure gestion
     if (seoAnalysis.basic.images?.data) {
-      result.imageAlt = seoAnalysis.basic.images.data.map((src: string) => ({
-        src,
-        alt: null,
-        title: undefined,
-        width: '',
-        height: '',
-        hasDimensions: false
-      }));
+      const images = seoAnalysis.basic.images.data;
+      const enhancedImages: ImageData[] = [];
+
+      for (const imgData of images) {
+        try {
+          let imgSrc = '';
+          let imgAlt: string | null = null;
+          let imgTitle: string | undefined;
+          let imgWidth = '';
+          let imgHeight = '';
+
+          // Gérer différents formats de données d'image possibles
+          if (typeof imgData === 'string') {
+            imgSrc = imgData;
+          } else if (typeof imgData === 'object' && imgData !== null) {
+            const img = imgData as any;
+            imgSrc = img.src || img.url || img.source || '';
+            imgAlt = img.alt || img.alternative || null;
+            imgTitle = img.title;
+            imgWidth = img.width?.toString() || '';
+            imgHeight = img.height?.toString() || '';
+          }
+
+          // Vérifier et nettoyer l'URL de l'image
+          if (imgSrc) {
+            try {
+              // Construire l'URL complète si nécessaire
+              if (!imgSrc.match(/^(http|https|data):/)) {
+                const urlObj = new URL(url);
+                if (imgSrc.startsWith('//')) {
+                  imgSrc = `${urlObj.protocol}${imgSrc}`;
+                } else if (imgSrc.startsWith('/')) {
+                  imgSrc = `${urlObj.protocol}//${urlObj.hostname}${imgSrc}`;
+                } else {
+                  imgSrc = new URL(imgSrc, url).href;
+                }
+              }
+
+              // Vérifier que l'URL est valide
+              new URL(imgSrc);
+
+              // Ajouter l'image au résultat
+              const imageData: ImageData = {
+                src: imgSrc,
+                alt: imgAlt,
+                hasDimensions: !!(imgWidth && imgHeight)
+              };
+
+              if (imgTitle) imageData.title = imgTitle;
+              if (imgWidth) imageData.width = imgWidth;
+              if (imgHeight) imageData.height = imgHeight;
+
+              enhancedImages.push(imageData);
+            } catch (e) {
+              console.error(`URL d'image invalide ignorée: ${imgSrc}`);
+            }
+          }
+        } catch (e) {
+          console.error('Erreur lors du traitement d\'une image:', e);
+        }
+      }
+
+      // Fusionner avec les images trouvées par l'analyse standard
+      const existingUrls = new Set(result.imageAlt.map(img => img.src));
+      const newImages = enhancedImages.filter(img => !existingUrls.has(img.src));
+      result.imageAlt = [...result.imageAlt, ...newImages];
     }
 
     // Mise à jour des liens
