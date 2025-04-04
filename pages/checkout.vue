@@ -137,7 +137,7 @@
       </v-row>
     </v-container>
 
-    <snackBar v-model="showSnackbar" :color="snackbarColor" :text="snackbarText" :timeout="3000" />
+    <snackbar v-model="showSnackbar" :color="snackbarColor" :text="snackbarText" :timeout="3000" />
   </section>
 </template>
 
@@ -145,8 +145,8 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
-import snackBar from '../components/snackBar.vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 

@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
     if (!invoiceData.customerEmail || !invoiceData.customerName) {
       return {
         success: false,
-        error: 'Doincomplètesnnées client '
+        error: 'Données client incomplètes'
       };
     }
 

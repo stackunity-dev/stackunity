@@ -315,13 +315,12 @@
       </v-card>
     </v-dialog>
 
-    <snackBar v-model="snackbar" :text="snackbarText" :color="snackbarColor" :icon="snackbarIcon" :timeout="2000" />
+    <snackbar v-model="snackbar" :text="snackbarText" :color="snackbarColor" :icon="snackbarIcon" :timeout="2000" />
   </v-app>
 </template>
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
-import snackBar from '../components/snackBar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';

@@ -1,46 +1,33 @@
 <template>
-  <v-snackbar v-model="show" color="grey-darken-4" :timeout="timeout" location="top right" elevation="4"
-    :transition="'slide-x-reverse-transition'">
-    <div class="d-flex align-center">
-      <v-icon :color="iconColor" :icon="icon" class="mr-2" />
-      {{ text }}
-    </div>
+  <v-snackbar v-model="modelValue" :color="color" :timeout="timeout">
+    {{ text }}
+    <template v-slot:actions>
+      <v-btn icon="mdi-close" @click="$emit('update:modelValue', false)"></v-btn>
+    </template>
   </v-snackbar>
 </template>
 
-<script lang="ts" setup>
-import { computed } from 'vue';
-
-const props = defineProps<{
-  modelValue: boolean;
-  text: string;
-  color?: string;
-  timeout?: number;
-}>();
-
-const emit = defineEmits(['update:modelValue']);
-
-const show = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
-});
-
-const iconColor = computed(() => props.color || 'info');
-
-const icon = computed(() => {
-  switch (props.color) {
-    case 'success':
-      return 'mdi-check-circle';
-    case 'error':
-      return 'mdi-alert-circle';
-    case 'warning':
-      return 'mdi-alert';
-    case 'info':
-      return 'mdi-information';
-    default:
-      return 'mdi-bell';
+<script setup lang="ts">
+defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true
+  },
+  color: {
+    type: String,
+    default: 'info'
+  },
+  text: {
+    type: String,
+    required: true
+  },
+  timeout: {
+    type: Number,
+    default: 3000
   }
 });
+
+defineEmits(['update:modelValue']);
 </script>
 
 <style scoped>
