@@ -92,6 +92,14 @@ export interface WebsiteAnalysisResult {
       certificate: boolean;
     };
   };
+  technicalSEO?: {
+    sitemapFound: boolean;
+    sitemapUrl?: string;
+    sitemapUrls?: number;
+    robotsTxtFound: boolean;
+    robotsTxtContent?: string;
+    schemaTypeCount: Record<string, number>;
+  };
   issues: Array<{
     type: 'error' | 'warning' | 'info';
     message: string;

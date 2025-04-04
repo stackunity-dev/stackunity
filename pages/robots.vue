@@ -198,7 +198,6 @@ import { RobotsConfig, RobotsPreviewLine, SchemaConfig, SiteConfig } from '../co
 import { fillConfigsFromAudit, generateRobotsContent, generateSchemaContent } from '../components/robots/utils';
 import { useUserStore } from '../stores/userStore';
 
-// Définir les métadonnées de la page
 definePageMeta({
   title: 'Robots.txt & Schema.org Generator',
   description: 'Generate robots.txt files and Schema.org structured data for your website',
@@ -337,9 +336,6 @@ const removeAllowedPath = (index: number) => {
   robotsConfig.value.allowedPaths.splice(index, 1);
 };
 
-const fullUrl = computed(() => {
-  return `${siteConfig.value.protocol}://${siteConfig.value.domain}`;
-});
 
 const analyzeWebsite = async () => {
   if (!siteConfig.value.domain) {
@@ -352,25 +348,88 @@ const analyzeWebsite = async () => {
   isLoading.value = true;
 
   try {
-    // Utiliser notre nouvelle API pour l'analyse
     console.log('Analyse du site:', url);
     const options = {
       maxDepth: 1,
       sameDomainOnly: true,
       timeout: 30000,
-      useRapidApi: false, // Utiliser notre nouvelle API
-      maxUrlsToAnalyze: 1
+      checkSitemap: true,
+      checkRobotsTxt: true,
+      maxUrlsToAnalyze: 5
     };
 
     report.value = await userStore.auditSEO(url, options);
+    console.log('Rapport reçu:', report.value);
 
     if (report.value) {
-      fillConfigsFromAudit(report.value, siteConfig.value, robotsConfig.value, schemaConfig.value);
+      // Extraire les données technicalSEO pour sitemap et robots.txt
+      const reportData = report.value as any;
+      if (reportData.seoResults && Object.keys(reportData.seoResults).length > 0) {
+        const mainUrl = Object.keys(reportData.seoResults)[0];
+        const mainResult = reportData.seoResults[mainUrl];
+
+        if (mainResult && mainResult.technicalSEO) {
+          console.log('Données techniques SEO trouvées:', mainResult.technicalSEO);
+
+          if (mainResult.technicalSEO.sitemapFound && mainResult.technicalSEO.sitemapUrl) {
+            try {
+              const sitemapUrl = new URL(mainResult.technicalSEO.sitemapUrl);
+              robotsConfig.value.sitemapUrl = sitemapUrl.pathname;
+              console.log('Sitemap trouvé:', robotsConfig.value.sitemapUrl);
+            } catch (e) {
+              robotsConfig.value.sitemapUrl = '/sitemap.xml';
+            }
+          }
+
+          if (mainResult.technicalSEO.robotsTxtFound && mainResult.technicalSEO.robotsTxtContent) {
+            console.log('Robots.txt trouvé:', mainResult.technicalSEO.robotsTxtContent);
+            const robotsContent = mainResult.technicalSEO.robotsTxtContent;
+
+            const disallowMatches = robotsContent.match(/Disallow:\s*([^\n]+)/g);
+            if (disallowMatches) {
+              const disallowedPaths = disallowMatches.map(line => {
+                const path = line.replace(/Disallow:\s*/, '').trim();
+                return path;
+              });
+
+              if (disallowedPaths.length > 0) {
+                robotsConfig.value.disallowedPaths = [...new Set([...robotsConfig.value.disallowedPaths, ...disallowedPaths])];
+              }
+            }
+
+            const allowMatches = robotsContent.match(/Allow:\s*([^\n]+)/g);
+            if (allowMatches) {
+              const allowedPaths = allowMatches.map(line => {
+                const path = line.replace(/Allow:\s*/, '').trim();
+                return path;
+              });
+
+              if (allowedPaths.length > 0) {
+                robotsConfig.value.allowedPaths = [...new Set([...robotsConfig.value.allowedPaths, ...allowedPaths])];
+              }
+            }
+          }
+        }
+      }
+
+      const updatedConfigs = fillConfigsFromAudit(
+        reportData,
+        siteConfig.value,
+        schemaConfig.value,
+        robotsConfig.value
+      );
+
+      if (updatedConfigs) {
+        Object.assign(schemaConfig.value, updatedConfigs.schemaConfig);
+        Object.assign(siteConfig.value, updatedConfigs.siteConfig);
+      }
+
       generateCode();
     }
   } catch (err: any) {
     error.value = err.message || 'Une erreur est survenue pendant l\'analyse';
     console.error('Erreur d\'analyse:', err);
+    generateCode();
   } finally {
     isLoading.value = false;
   }
@@ -381,19 +440,20 @@ const generateCode = () => {
     isLoading.value = true;
     error.value = '';
 
-    // Si un rapport d'analyse existe et que nous n'avons pas encore généré de contenu, utilisez-le
+
     if (report.value && !generatedContent.value) {
-      const result = fillConfigsFromAudit(report.value, siteConfig.value, robotsConfig.value, schemaConfig.value);
-      // Mettre à jour les configurations avec les résultats
-      Object.assign(robotsConfig.value, result.robotsConfig);
-      Object.assign(schemaConfig.value, result.schemaConfig);
-      Object.assign(siteConfig.value, result.siteConfig);
+      const reportData = report.value as any;
+      const result = fillConfigsFromAudit(reportData, siteConfig.value, schemaConfig.value, robotsConfig.value);
+
+      if (result) {
+        Object.assign(schemaConfig.value, result.schemaConfig);
+        Object.assign(siteConfig.value, result.siteConfig);
+      }
     }
 
     if (configTab.value === 'robots') {
       generatedContent.value = generateRobotsContent(siteConfig.value, robotsConfig.value);
 
-      // Mettre à jour les lignes d'aperçu pour l'affichage
       robotsPreviewLines.value = generatedContent.value.split('\n').filter(line => line.trim() !== '').map(line => ({
         text: line,
         bold: line.startsWith('User-agent:') || line.startsWith('Sitemap:') || line.startsWith('Host:'),
@@ -410,7 +470,6 @@ const generateCode = () => {
   }
 };
 
-// Fonction pour récupérer l'icône du type de schéma
 const getSchemaIcon = () => {
   const icons: Record<string, { icon: string; color: string }> = {
     Organization: { icon: 'mdi-office-building', color: 'blue' },

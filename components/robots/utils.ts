@@ -19,20 +19,17 @@ type ExtendedCrawlReport = Partial<WebsiteAnalysisResult> & {
   seoResults?: Record<string, ExtendedSEOResult>;
 };
 
-/**
- * Remplit les configurations à partir des données d'audit SEO
- */
 export const fillConfigsFromAudit = (
-  report: WebsiteAnalysisResult,
+  report: any,
   siteConfig: SiteConfig,
   schemaConfig: SchemaConfig,
   robotsConfig: RobotsConfig
 ) => {
   const extReport = report as unknown as ExtendedCrawlReport;
 
-  // Extraction des chemins à interdire basée sur les meta robots
   if (extReport && extReport.seoResults) {
-    const disallowedPaths = new Set<string>();
+    const disallowedPaths = new Set<string>(robotsConfig.disallowedPaths);
+
     Object.entries(extReport.seoResults).forEach(([url, result]: [string, any]) => {
       if (result.robotsMeta && result.robotsMeta.noindex) {
         try {
@@ -42,26 +39,70 @@ export const fillConfigsFromAudit = (
           console.error('Erreur lors du parsing de l\'URL:', url);
         }
       }
+
+      // Utiliser les données technicalSEO pour sitemap et robots.txt
+      if (result.technicalSEO) {
+        // Si un sitemap est trouvé, mettre à jour le chemin
+        if (result.technicalSEO.sitemapFound && result.technicalSEO.sitemapUrl) {
+          try {
+            const sitemapUrl = new URL(result.technicalSEO.sitemapUrl);
+            robotsConfig.sitemapUrl = sitemapUrl.pathname;
+          } catch (e) {
+            // Si l'URL n'est pas valide, utiliser le chemin direct
+            robotsConfig.sitemapUrl = '/sitemap.xml';
+          }
+        }
+
+        // Si un robots.txt est trouvé, extraire les règles
+        if (result.technicalSEO.robotsTxtFound && result.technicalSEO.robotsTxtContent) {
+          const robotsContent = result.technicalSEO.robotsTxtContent;
+
+          // Extraire l'agent utilisateur (User-agent)
+          const userAgentMatch = robotsContent.match(/User-agent:\s*([^\n]+)/);
+          if (userAgentMatch && userAgentMatch[1]) {
+            const userAgent = userAgentMatch[1].trim();
+            if (userAgent === '*') {
+              robotsConfig.userAgent = 'All robots';
+            } else if (['Googlebot', 'Bingbot', 'Slurp', 'Baiduspider'].includes(userAgent)) {
+              robotsConfig.userAgent = {
+                'Googlebot': 'Google',
+                'Bingbot': 'Bing',
+                'Slurp': 'Yahoo',
+                'Baiduspider': 'Baidu'
+              }[userAgent] || 'Custom';
+            } else {
+              robotsConfig.userAgent = 'Custom';
+              robotsConfig.customUserAgent = userAgent;
+            }
+          }
+
+          // Extraire le délai de crawl
+          const crawlDelayMatch = robotsContent.match(/Crawl-delay:\s*([^\n]+)/);
+          if (crawlDelayMatch && crawlDelayMatch[1]) {
+            robotsConfig.crawlDelay = crawlDelayMatch[1].trim();
+          }
+        }
+      }
     });
 
-    // Ajouter ces chemins à ceux déjà configurés
+    // Mettre à jour les chemins à interdire
     if (disallowedPaths.size > 0) {
-      robotsConfig.disallowedPaths = [...new Set([...robotsConfig.disallowedPaths, ...Array.from(disallowedPaths)])];
+      robotsConfig.disallowedPaths = Array.from(disallowedPaths);
     }
   }
 
   // Exemples de champs à auto-remplir à partir de la page d'accueil
-  const mainUrl = extReport.urlMap ? Object.keys(extReport.urlMap)[0] : '';
+  const mainUrl = extReport.seoResults ? Object.keys(extReport.seoResults)[0] : '';
   const homeData = extReport.seoResults?.[mainUrl];
 
   if (homeData) {
     // Remplir le schéma avec les données du site
-    if (homeData.title) {
-      schemaConfig.name = homeData.title;
+    if (homeData.seo?.title) {
+      schemaConfig.name = homeData.seo.title;
     }
 
-    if (homeData.description) {
-      schemaConfig.description = homeData.description;
+    if (homeData.seo?.description) {
+      schemaConfig.description = homeData.seo.description;
     }
 
     // Extraire les informations structurées déjà présentes
@@ -70,7 +111,11 @@ export const fillConfigsFromAudit = (
         const existingSchema = homeData.structuredData[0];
 
         if (existingSchema['@type']) {
-          schemaConfig.type = existingSchema['@type'];
+          // Vérifier si le type est pris en charge
+          const supportedTypes = ['Organization', 'Person', 'Product', 'Article', 'LocalBusiness', 'WebSite', 'Event', 'Restaurant'];
+          if (supportedTypes.includes(existingSchema['@type'])) {
+            schemaConfig.type = existingSchema['@type'];
+          }
         }
 
         if (existingSchema.name) {
@@ -87,6 +132,8 @@ export const fillConfigsFromAudit = (
 
         if (existingSchema.logo && existingSchema.logo.url) {
           schemaConfig.logo = existingSchema.logo.url;
+        } else if (existingSchema.logo && typeof existingSchema.logo === 'string') {
+          schemaConfig.logo = existingSchema.logo;
         }
 
         if (existingSchema.image) {
@@ -102,15 +149,30 @@ export const fillConfigsFromAudit = (
         if (existingSchema.email) {
           schemaConfig.email = existingSchema.email;
         }
+
+        // Extraire plus d'informations en fonction du type
+        if (existingSchema['@type'] === 'Organization' || existingSchema['@type'] === 'LocalBusiness') {
+          if (existingSchema.address && existingSchema.address.streetAddress) {
+            schemaConfig.address = existingSchema.address.streetAddress;
+            schemaConfig.city = existingSchema.address.addressLocality || '';
+            schemaConfig.region = existingSchema.address.addressRegion || '';
+            schemaConfig.postalCode = existingSchema.address.postalCode || '';
+            schemaConfig.country = existingSchema.address.addressCountry || 'FR';
+          }
+
+          if (existingSchema.sameAs && Array.isArray(existingSchema.sameAs)) {
+            schemaConfig.socialProfiles = existingSchema.sameAs;
+          }
+        }
       } catch (e) {
         console.error('Erreur lors de l\'extraction des données structurées:', e);
       }
     }
 
     // Extraire d'autres informations utiles
-    if (homeData.h1 && homeData.h1.length > 0) {
+    if (homeData.seo?.headings && homeData.seo.headings.h1 && homeData.seo.headings.h1.length > 0) {
       if (!schemaConfig.name) {
-        schemaConfig.name = homeData.h1[0];
+        schemaConfig.name = homeData.seo.headings.h1[0];
       }
     }
 
@@ -122,22 +184,6 @@ export const fillConfigsFromAudit = (
         siteConfig.protocol = urlObj.protocol.replace(':', '');
       } catch (e) {
         console.error('Erreur lors de l\'extraction du domaine et protocole:', e);
-      }
-    }
-
-    // Récupérer les chemins détectés pour le sitemap
-    // Recherche simple pour trouver un possible sitemap
-    if (mainUrl && extReport.seoResults) {
-      // Vérifier si une URL contenant sitemap est mentionnée
-      try {
-        const urlObj = new URL(mainUrl);
-        const domain = urlObj.hostname;
-        if (domain) {
-          const possibleSitemapUrl = `/sitemap.xml`;
-          robotsConfig.sitemapUrl = possibleSitemapUrl;
-        }
-      } catch (e) {
-        console.error('Erreur lors de la recherche du sitemap:', e);
       }
     }
   }

@@ -14,26 +14,6 @@
                 <v-text-field v-model="targetUrl" label="Website URL" variant="outlined" prepend-inner-icon="mdi-web"
                   placeholder="https://example.com" class="mb-4"></v-text-field>
 
-                <v-alert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = null">
-                  <div class="d-flex flex-column">
-                    <div class="text-subtitle-1 font-weight-bold mb-1">
-                      Erreur lors de l'audit SEO
-                    </div>
-                    <div>{{ error }}</div>
-                    <div v-if="error && error.includes('Chrome') || error.includes('chromium')"
-                      class="mt-2 text-caption">
-                      <v-divider class="my-2"></v-divider>
-                      <div class="font-weight-bold">Solutions possibles :</div>
-                      <ul>
-                        <li>Vérifiez que Google Chrome est installé sur le serveur dans un des chemins standards</li>
-                        <li>Sur Windows, Chrome doit être installé dans "C:\Program
-                          Files\Google\Chrome\Application\chrome.exe"</li>
-                        <li>L'utilisateur du serveur doit avoir les droits d'accès au fichier chrome.exe</li>
-                      </ul>
-                    </div>
-                  </div>
-                </v-alert>
-
                 <v-expansion-panels variant="accordion">
                   <v-expansion-panel>
                     <v-expansion-panel-title>
@@ -48,19 +28,6 @@
 
                       <v-switch v-model="options.sameDomainOnly" label="Same Domain Only" color="primary" hide-details
                         class="mb-4"></v-switch>
-
-                      <v-switch v-model="options.analyzeMultiplePages" label="Analyze Multiple Pages" color="primary"
-                        hide-details class="mb-4"></v-switch>
-
-                      <v-switch v-model="options.scrapeAllUrls" label="Analyze Entire Domain" color="primary"
-                        hide-details class="mb-4"></v-switch>
-
-                      <v-switch v-model="options.useRapidApi" label="Use Advanced Analysis (RapidAPI)" color="primary"
-                        hide-details class="mb-4"></v-switch>
-
-                      <v-text-field v-model="options.maxUrlsToAnalyze" type="number" label="Max URLs to Analyze"
-                        variant="outlined" density="comfortable" class="mb-2" hide-details
-                        :disabled="!options.scrapeAllUrls && !options.analyzeMultiplePages"></v-text-field>
 
                       <v-text-field v-model="options.timeout" type="number" label="Timeout (ms)" variant="outlined"
                         density="comfortable" class="mb-2" hide-details></v-text-field>
@@ -94,7 +61,7 @@
                   </template>
                 </v-list>
                 <v-alert v-else type="info" class="mt-2">
-                  Chargement du résumé...
+                  Resume loading...
                 </v-alert>
 
                 <v-btn color="primary" block class="mt-4" prepend-icon="mdi-file-pdf-box" @click="generatePDFReport">
@@ -125,25 +92,22 @@
 
                 <template v-else-if="report">
                   <v-expansion-panels>
-                    <v-expansion-panel v-for="(result, url) in report.seoResults" :key="url"
-                      :class="result.warnings.length === 0 ? 'result-success' : result.warnings.length < 3 ? 'result-warning' : 'result-error'">
+                    <v-expansion-panel v-for="(_, url) in report.seoResults" :key="url">
                       <v-expansion-panel-title>
                         <div class="d-flex align-center">
-                          <v-icon
-                            :color="result.warnings.length === 0 ? 'success' : result.warnings.length < 3 ? 'warning' : 'error'"
-                            class="mr-2">
-                            {{ result.warnings.length === 0 ? 'mdi-check-circle' : result.warnings.length < 3
-                              ? 'mdi-alert' : 'mdi-alert-circle' }} </v-icon>
-                              <div>
-                                <div class="text-subtitle-1">{{ parseUrl(url).pathname }}</div>
-                                <div class="text-caption text-grey">{{ parseUrl(url).host }}</div>
-                              </div>
-                              <v-spacer></v-spacer>
-                              <v-chip
-                                :color="result.warnings.length === 0 ? 'success' : result.warnings.length < 3 ? 'warning' : 'error'"
-                                size="small" class="ml-2">
-                                {{ result.warnings.length }} issue(s)
-                              </v-chip>
+                          <!-- Utiliser le cache pour éviter les variations de comptage -->
+                          <v-icon :color="getResultStatus(getResultFromCache(url) || {}).color" class="mr-2">
+                            {{ getResultStatus(getResultFromCache(url) || {}).icon }}
+                          </v-icon>
+                          <div>
+                            <div class="text-subtitle-1">{{ parseUrl(url).pathname }}</div>
+                            <div class="text-caption text-grey">{{ parseUrl(url).host }}</div>
+                          </div>
+                          <v-spacer></v-spacer>
+                          <v-chip :color="getResultStatus(getResultFromCache(url) || {}).color" size="small"
+                            class="ml-2">
+                            {{ computeWarningCounts(getResultFromCache(url) || {}).total }} issue(s)
+                          </v-chip>
                         </div>
                       </v-expansion-panel-title>
                       <v-expansion-panel-text>
@@ -152,14 +116,15 @@
                             <v-icon start>{{ tab.icon }}</v-icon>
                             {{ tab.label }}
                             <v-chip
-                              v-if="(tab.value === 'warnings' || tab.value === 'overview') && result.warnings?.length"
+                              v-if="(tab.value === 'warnings' || tab.value === 'overview') && getResultFromCache(url)?.warnings?.length"
                               size="x-small" class="ml-1" :color="tab.value === 'warnings' ? 'error' : 'primary'">
-                              {{ result.warnings.length }}
+                              {{ getResultFromCache(url)?.warnings?.length || 0 }}
                             </v-chip>
                           </v-tab>
                         </v-tabs>
 
                         <v-window v-model="activeTab">
+                          <!-- Utiliser partout la fonction getResultFromCache pour accéder au résultat stable -->
                           <v-window-item value="overview">
                             <v-row>
                               <v-col cols="12" md="6">
@@ -170,14 +135,20 @@
                                   </v-card-title>
                                   <v-card-text>
                                     <div class="d-flex align-center">
-                                      <v-progress-circular :model-value="calculateOverallScore(result)"
-                                        :color="getScoreColor(calculateOverallScore(result))" size="64" class="mr-4">
-                                        {{ calculateOverallScore(result) }}%
+                                      <v-progress-circular
+                                        :model-value="calculateOverallScore(getResultFromCache(url) || {})"
+                                        :color="getScoreColor(calculateOverallScore(getResultFromCache(url) || {}))"
+                                        size="64" class="mr-4">
+                                        {{ calculateOverallScore(getResultFromCache(url) || {}) }}%
                                       </v-progress-circular>
                                       <div>
-                                        <div class="text-h6">{{ getScoreStatus(calculateOverallScore(result)) }}</div>
-                                        <div class="text-caption text-grey">{{
-                                          getScoreDescription(calculateOverallScore(result)) }}</div>
+                                        <div class="text-h6">
+                                          {{ getScoreStatus(calculateOverallScore(getResultFromCache(url) || {})) }}
+                                        </div>
+                                        <div class="text-caption text-grey">
+                                          {{ getScoreDescription(calculateOverallScore(getResultFromCache(url) || {}))
+                                          }}
+                                        </div>
                                       </div>
                                     </div>
                                   </v-card-text>
@@ -190,9 +161,11 @@
                                     Critical Issues
                                   </v-card-title>
                                   <v-card-text>
-                                    <v-list density="compact" v-if="getCriticalIssues(result).length > 0">
-                                      <v-list-item v-for="(critical, index) in getCriticalIssues(result)" :key="index"
-                                        :color="critical.severity">
+                                    <v-list density="compact"
+                                      v-if="getCriticalIssues(getResultFromCache(url) || {}).length > 0">
+                                      <v-list-item
+                                        v-for="(critical, index) in getCriticalIssues(getResultFromCache(url) || {})"
+                                        :key="index" :color="critical.severity">
                                         <v-list-item-title>{{ critical.title }}</v-list-item-title>
                                         <v-list-item-subtitle>{{ critical.description }}</v-list-item-subtitle>
                                       </v-list-item>
@@ -219,22 +192,33 @@
                                     <v-list density="compact">
                                       <v-list-item>
                                         <v-list-item-title>Loading Time</v-list-item-title>
-                                        <v-list-item-subtitle>{{ (result.loadTime / 1000).toFixed(2)
+                                        <v-list-item-subtitle>{{ ((getResultFromCache(url)?.loadTime ?? 0) /
+                                          1000).toFixed(2)
                                         }}s</v-list-item-subtitle>
                                       </v-list-item>
-                                      <v-list-item v-for="(vital, name) in result.coreWebVitals" :key="name">
-                                        <template v-if="isDisplayableVital(name)">
-                                          <v-list-item-title>{{ getCoreWebVitalName(name) }}</v-list-item-title>
-                                          <v-list-item-subtitle>
-                                            {{ formatVitalValue(vital, name) }}
-                                            <v-chip size="x-small"
-                                              :color="getVitalScoreColor(result.coreWebVitals[name + 'Score'])"
-                                              v-if="result.coreWebVitals[name + 'Score']">
-                                              {{ result.coreWebVitals[name + 'Score'] }}%
-                                            </v-chip>
-                                          </v-list-item-subtitle>
-                                        </template>
-                                      </v-list-item>
+                                      <template v-if="getResultFromCache(url)?.coreWebVitals">
+                                        <v-list-item v-for="(vital, name) in getResultFromCache(url)?.coreWebVitals"
+                                          :key="name">
+                                          <template v-if="isDisplayableVital(name)">
+                                            <v-list-item-title>{{ getCoreWebVitalName(name) }}</v-list-item-title>
+                                            <v-list-item-subtitle>
+                                              {{ formatVitalValue(vital, name) }}
+                                              <v-chip size="x-small"
+                                                :color="getVitalScoreColor(getResultFromCache(url)?.coreWebVitals[name + 'Score'])"
+                                                v-if="getResultFromCache(url)?.coreWebVitals[name + 'Score']">
+                                                {{ getResultFromCache(url)?.coreWebVitals[name + 'Score'] }}%
+                                              </v-chip>
+                                            </v-list-item-subtitle>
+                                          </template>
+                                        </v-list-item>
+                                      </template>
+                                      <template v-else>
+                                        <v-list-item>
+                                          <v-list-item-title class="text-center text-grey">
+                                            Aucune donnée de performance disponible
+                                          </v-list-item-title>
+                                        </v-list-item>
+                                      </template>
                                     </v-list>
                                   </v-card-text>
                                 </v-card>
@@ -250,22 +234,28 @@
                                       <v-list-item>
                                         <v-list-item-title>Viewport</v-list-item-title>
                                         <v-list-item-subtitle>
-                                          {{ result.mobileCompatibility.hasViewport ? 'Present' : 'Missing' }}
+                                          {{ getResultFromCache(url)?.mobileCompatibility?.hasViewport ? 'Present' :
+                                            'Missing' }}
                                           <v-chip size="x-small"
-                                            :color="result.mobileCompatibility.hasViewport ? 'success' : 'error'"
+                                            :color="getResultFromCache(url)?.mobileCompatibility?.hasViewport ? 'success' : 'error'"
                                             class="ml-2">
-                                            {{ result.mobileCompatibility.hasViewport ? 'OK' : 'Fix Required' }}
+                                            {{ getResultFromCache(url)?.mobileCompatibility?.hasViewport ? 'OK' :
+                                              'Fix required' }}
                                           </v-chip>
                                         </v-list-item-subtitle>
                                       </v-list-item>
                                       <v-list-item>
                                         <v-list-item-title>Touch Targets</v-list-item-title>
                                         <v-list-item-subtitle>
-                                          {{ result.mobileCompatibility.smallTouchTargets }} small touch areas
+                                          {{ getResultFromCache(url)?.mobileCompatibility?.smallTouchTargets ?? 0 }}
+                                          small touch areas
                                           <v-chip size="x-small"
-                                            :color="result.mobileCompatibility.smallTouchTargets === 0 ? 'success' : 'warning'"
-                                            class="ml-2">{{ result.mobileCompatibility.smallTouchTargets === 0 ? 'OK' :
-                                              'Needs Improvement' }}</v-chip>
+                                            :color="(getResultFromCache(url)?.mobileCompatibility?.smallTouchTargets ?? 0) === 0 ? 'success' : 'warning'"
+                                            class="ml-2">{{
+                                              (getResultFromCache(url)?.mobileCompatibility?.smallTouchTargets ?? 0) === 0
+                                                ?
+                                                'OK' :
+                                                'Needs Improvement' }}</v-chip>
                                         </v-list-item-subtitle>
                                       </v-list-item>
                                     </v-list>
@@ -286,28 +276,32 @@
                                           <v-list-item>
                                             <v-list-item-title>Sitemap</v-list-item-title>
                                             <v-list-item-subtitle>
-                                              {{ result.technicalSEO?.sitemapFound ? 'Found' : 'Not found' }}
+                                              {{ getResultFromCache(url)?.technicalSEO?.sitemapFound ? 'Found' :
+                                                'Not found' }}
                                               <v-chip size="x-small"
-                                                :color="result.technicalSEO?.sitemapFound ? 'success' : 'warning'"
+                                                :color="getResultFromCache(url)?.technicalSEO?.sitemapFound ? 'success' : 'warning'"
                                                 class="ml-2">
-                                                {{ result.technicalSEO?.sitemapFound ? 'OK' : 'Missing' }}
+                                                {{ getResultFromCache(url)?.technicalSEO?.sitemapFound ? 'OK' :
+                                                  'Missing' }}
                                               </v-chip>
                                             </v-list-item-subtitle>
                                           </v-list-item>
-                                          <v-list-item v-if="result.technicalSEO?.sitemapFound">
+                                          <v-list-item
+                                            v-if="getResultFromCache(url)?.technicalSEO?.sitemapFound && getResultFromCache(url)?.technicalSEO?.sitemapUrl">
                                             <v-list-item-title>Sitemap URL</v-list-item-title>
                                             <v-list-item-subtitle>
-                                              <a :href="result.technicalSEO?.sitemapUrl" target="_blank"
-                                                class="text-decoration-none">
-                                                {{ result.technicalSEO?.sitemapUrl }}
+                                              <a :href="getResultFromCache(url)?.technicalSEO?.sitemapUrl"
+                                                target="_blank" class="text-decoration-none">
+                                                {{ getResultFromCache(url)?.technicalSEO?.sitemapUrl }}
                                                 <v-icon size="x-small">mdi-open-in-new</v-icon>
                                               </a>
                                             </v-list-item-subtitle>
                                           </v-list-item>
-                                          <v-list-item v-if="result.technicalSEO?.sitemapFound">
+                                          <v-list-item
+                                            v-if="getResultFromCache(url)?.technicalSEO?.sitemapFound && getResultFromCache(url)?.technicalSEO?.sitemapUrls !== undefined">
                                             <v-list-item-title>URLs in sitemap</v-list-item-title>
                                             <v-list-item-subtitle>
-                                              {{ result.technicalSEO?.sitemapUrls || 'Unknown' }}
+                                              {{ getResultFromCache(url)?.technicalSEO?.sitemapUrls || 'Unknown' }}
                                             </v-list-item-subtitle>
                                           </v-list-item>
                                         </v-list>
@@ -317,33 +311,38 @@
                                           <v-list-item>
                                             <v-list-item-title>Meta Description</v-list-item-title>
                                             <v-list-item-subtitle>
-                                              {{ result.description ? result.description.length + ' characters' :
+                                              {{ getResultFromCache(url)?.description ?
+                                                getResultFromCache(url)?.description.length + ' characters' :
                                                 'Not defined' }}
                                               <v-chip size="x-small"
-                                                :color="!result.description ? 'error' : (result.description.length < 50) ? 'warning' : (result.description.length > 160) ? 'warning' : 'success'"
+                                                :color="!getResultFromCache(url)?.description ? 'error' : (getResultFromCache(url)?.description.length < 50) ? 'warning' : (getResultFromCache(url)?.description.length > 160) ? 'warning' : 'success'"
                                                 class="ml-2">
-                                                {{ !result.description ? 'Missing' : (result.description.length < 50)
-                                                  ? 'Too short' : (result.description.length > 160) ? 'Too long' :
-                                                    'Optimal' }}
+                                                {{ !getResultFromCache(url)?.description ? 'Missing' :
+                                                  (getResultFromCache(url)?.description.length < 50) ? 'Too short' :
+                                                    (getResultFromCache(url)?.description.length > 160) ? 'Too long' :
+                                                      'Optimal' }}
                                               </v-chip>
                                             </v-list-item-subtitle>
                                           </v-list-item>
                                           <v-list-item>
                                             <v-list-item-title>Robots.txt</v-list-item-title>
                                             <v-list-item-subtitle>
-                                              {{ result.technicalSEO?.robotsTxtFound ? 'Found' : 'Not found' }}
+                                              {{ getResultFromCache(url)?.technicalSEO?.robotsTxtFound ? 'Found' :
+                                                'Not found' }}
                                               <v-chip size="x-small"
-                                                :color="result.technicalSEO?.robotsTxtFound ? 'success' : 'warning'"
+                                                :color="getResultFromCache(url)?.technicalSEO?.robotsTxtFound ? 'success' : 'warning'"
                                                 class="ml-2">
-                                                {{ result.technicalSEO?.robotsTxtFound ? 'OK' : 'Missing' }}
+                                                {{ getResultFromCache(url)?.technicalSEO?.robotsTxtFound ? 'OK' :
+                                                  'Missing' }}
                                               </v-chip>
                                             </v-list-item-subtitle>
                                           </v-list-item>
-                                          <v-list-item v-if="result.technicalSEO?.robotsTxtFound">
+                                          <v-list-item
+                                            v-if="getResultFromCache(url)?.technicalSEO?.robotsTxtFound && getResultFromCache(url)?.technicalSEO?.robotsTxtContent">
                                             <v-list-item-title>Content</v-list-item-title>
                                             <v-list-item-subtitle class="d-flex align-center">
                                               <v-btn size="x-small" variant="text" color="primary" class="pa-0"
-                                                @click="showRobotsTxtDialog(result.technicalSEO?.robotsTxtContent)">
+                                                @click="showRobotsTxtDialog(getResultFromCache(url)?.technicalSEO?.robotsTxtContent || '')">
                                                 View content
                                                 <v-icon size="small" end>mdi-eye</v-icon>
                                               </v-btn>
@@ -356,17 +355,20 @@
                                           <v-list-item>
                                             <v-list-item-title>Schema.org</v-list-item-title>
                                             <v-list-item-subtitle>
-                                              {{ Object.keys(result.technicalSEO?.schemaTypeCount || {}).length > 0 ?
+                                              {{ Object.keys(getResultFromCache(url)?.technicalSEO?.schemaTypeCount ||
+                                                {}).length > 0 ?
                                                 'Found' : 'Not found' }}
                                               <v-chip size="x-small"
-                                                :color="Object.keys(result.technicalSEO?.schemaTypeCount || {}).length > 0 ? 'success' : 'warning'"
+                                                :color="Object.keys(getResultFromCache(url)?.technicalSEO?.schemaTypeCount || {}).length > 0 ? 'success' : 'warning'"
                                                 class="ml-2">
-                                                {{ Object.keys(result.technicalSEO?.schemaTypeCount || {}).length > 0 ?
+                                                {{ Object.keys(getResultFromCache(url)?.technicalSEO?.schemaTypeCount ||
+                                                  {}).length > 0 ?
                                                   'OK' : 'Missing' }}
                                               </v-chip>
                                             </v-list-item-subtitle>
                                           </v-list-item>
-                                          <v-list-item v-for="(count, type) in result.technicalSEO?.schemaTypeCount"
+                                          <v-list-item
+                                            v-for="(count, type) in getResultFromCache(url)?.technicalSEO?.schemaTypeCount || {}"
                                             :key="type">
                                             <v-list-item-title>{{ type }}</v-list-item-title>
                                             <v-list-item-subtitle>
@@ -392,18 +394,35 @@
                                   </v-card-title>
                                   <v-card-text>
                                     <v-list density="compact">
-                                      <v-list-item v-for="(h1, index) in result.headingStructure.h1" :key="index">
-                                        <v-list-item-title>H1 {{ index + 1 }}</v-list-item-title>
-                                        <v-list-item-subtitle>{{ h1 }}</v-list-item-subtitle>
-                                      </v-list-item>
-                                      <v-list-item v-for="(h2, index) in result.headingStructure.h2" :key="index">
-                                        <v-list-item-title>H2 {{ index + 1 }}</v-list-item-title>
-                                        <v-list-item-subtitle>{{ h2 }}</v-list-item-subtitle>
-                                      </v-list-item>
-                                      <v-list-item v-for="(h3, index) in result.headingStructure.h3" :key="index">
-                                        <v-list-item-title>H3 {{ index + 1 }}</v-list-item-title>
-                                        <v-list-item-subtitle>{{ h3 }}</v-list-item-subtitle>
-                                      </v-list-item>
+                                      <template v-if="getResultFromCache(url)?.headingStructure?.h1?.length">
+                                        <v-list-item v-for="(h1, index) in getResultFromCache(url)?.headingStructure.h1"
+                                          :key="'h1-' + index">
+                                          <v-list-item-title>H1 {{ index + 1 }}</v-list-item-title>
+                                          <v-list-item-subtitle>{{ h1 }}</v-list-item-subtitle>
+                                        </v-list-item>
+                                      </template>
+                                      <template v-if="getResultFromCache(url)?.headingStructure?.h2?.length">
+                                        <v-list-item v-for="(h2, index) in getResultFromCache(url)?.headingStructure.h2"
+                                          :key="'h2-' + index">
+                                          <v-list-item-title>H2 {{ index + 1 }}</v-list-item-title>
+                                          <v-list-item-subtitle>{{ h2 }}</v-list-item-subtitle>
+                                        </v-list-item>
+                                      </template>
+                                      <template v-if="getResultFromCache(url)?.headingStructure?.h3?.length">
+                                        <v-list-item v-for="(h3, index) in getResultFromCache(url)?.headingStructure.h3"
+                                          :key="'h3-' + index">
+                                          <v-list-item-title>H3 {{ index + 1 }}</v-list-item-title>
+                                          <v-list-item-subtitle>{{ h3 }}</v-list-item-subtitle>
+                                        </v-list-item>
+                                      </template>
+                                      <template
+                                        v-if="!getResultFromCache(url)?.headingStructure?.h1?.length && !getResultFromCache(url)?.headingStructure?.h2?.length && !getResultFromCache(url)?.headingStructure?.h3?.length">
+                                        <v-list-item>
+                                          <v-list-item-title class="text-center text-grey">
+                                            Aucune structure de titres trouvée
+                                          </v-list-item-title>
+                                        </v-list-item>
+                                      </template>
                                     </v-list>
                                   </v-card-text>
                                 </v-card>
@@ -415,8 +434,10 @@
                                     Images
                                   </v-card-title>
                                   <v-card-text>
-                                    <v-list density="compact" v-if="result.imageAlt && result.imageAlt.length > 0">
-                                      <v-list-item v-for="(img, index) in result.imageAlt" :key="index">
+                                    <v-list density="compact"
+                                      v-if="getResultFromCache(url)?.imageAlt && getResultFromCache(url)?.imageAlt.length > 0">
+                                      <v-list-item v-for="(img, index) in getResultFromCache(url)?.imageAlt"
+                                        :key="index">
                                         <v-list-item-title>Image {{ index + 1 }}</v-list-item-title>
                                         <v-list-item-subtitle>
                                           {{ img.alt || 'No alt text' }}
@@ -451,20 +472,26 @@
                                       <v-list-item>
                                         <v-list-item-title>Indexing</v-list-item-title>
                                         <v-list-item-subtitle>
-                                          {{ getRobotsMeta(result).index ? 'Allowed' : 'Forbidden' }}
+                                          {{ getRobotsMeta(getResultFromCache(url) || {}).index ? 'Allowed' :
+                                            'Forbidden' }}
                                           <v-chip size="x-small"
-                                            :color="getRobotsMeta(result).index ? 'success' : 'warning'" class="ml-2">
-                                            {{ getRobotsMeta(result).index ? 'OK' : 'Check Required' }}
+                                            :color="getRobotsMeta(getResultFromCache(url) || {}).index ? 'success' : 'warning'"
+                                            class="ml-2">
+                                            {{ getRobotsMeta(getResultFromCache(url) || {}).index ? 'OK' :
+                                              'Check required' }}
                                           </v-chip>
                                         </v-list-item-subtitle>
                                       </v-list-item>
                                       <v-list-item>
                                         <v-list-item-title>Link Following</v-list-item-title>
                                         <v-list-item-subtitle>
-                                          {{ getRobotsMeta(result).follow ? 'Allowed' : 'Forbidden' }}
+                                          {{ getRobotsMeta(getResultFromCache(url) || {}).follow ? 'Allowed' :
+                                            'Forbidden' }}
                                           <v-chip size="x-small"
-                                            :color="getRobotsMeta(result).follow ? 'success' : 'warning'" class="ml-2">
-                                            {{ getRobotsMeta(result).follow ? 'OK' : 'Check Required' }}
+                                            :color="getRobotsMeta(getResultFromCache(url) || {}).follow ? 'success' : 'warning'"
+                                            class="ml-2">
+                                            {{ getRobotsMeta(getResultFromCache(url) || {}).follow ? 'OK' :
+                                              'Check required' }}
                                           </v-chip>
                                         </v-list-item-subtitle>
                                       </v-list-item>
@@ -480,16 +507,30 @@
                                   </v-card-title>
                                   <v-card-text>
                                     <v-list density="compact">
-                                      <v-list-item v-for="(tag, tagIndex) in result.socialTags.ogTags"
-                                        :key="'og-' + tagIndex">
-                                        <v-list-item-title>{{ tag.property || 'og:tag' }}</v-list-item-title>
-                                        <v-list-item-subtitle>{{ tag.content || '-' }}</v-list-item-subtitle>
-                                      </v-list-item>
-                                      <v-list-item v-for="(tag, tagIndex) in result.socialTags.twitterTags"
-                                        :key="'twitter-' + tagIndex">
-                                        <v-list-item-title>{{ tag.name || 'twitter:tag' }}</v-list-item-title>
-                                        <v-list-item-subtitle>{{ tag.content || '-' }}</v-list-item-subtitle>
-                                      </v-list-item>
+                                      <template v-if="getResultFromCache(url)?.socialTags?.ogTags?.length">
+                                        <v-list-item
+                                          v-for="(tag, tagIndex) in getResultFromCache(url)?.socialTags.ogTags"
+                                          :key="'og-' + tagIndex">
+                                          <v-list-item-title>{{ tag.property || 'og:tag' }}</v-list-item-title>
+                                          <v-list-item-subtitle>{{ tag.content || '-' }}</v-list-item-subtitle>
+                                        </v-list-item>
+                                      </template>
+                                      <template v-if="getResultFromCache(url)?.socialTags?.twitterTags?.length">
+                                        <v-list-item
+                                          v-for="(tag, tagIndex) in getResultFromCache(url)?.socialTags.twitterTags"
+                                          :key="'twitter-' + tagIndex">
+                                          <v-list-item-title>{{ tag.name || 'twitter:tag' }}</v-list-item-title>
+                                          <v-list-item-subtitle>{{ tag.content || '-' }}</v-list-item-subtitle>
+                                        </v-list-item>
+                                      </template>
+                                      <template
+                                        v-if="!getResultFromCache(url)?.socialTags?.ogTags?.length && !getResultFromCache(url)?.socialTags?.twitterTags?.length">
+                                        <v-list-item>
+                                          <v-list-item-title class="text-center text-grey">
+                                            Aucun tag social trouvé
+                                          </v-list-item-title>
+                                        </v-list-item>
+                                      </template>
                                     </v-list>
                                   </v-card-text>
                                 </v-card>
@@ -510,18 +551,31 @@
                                       <v-list-item>
                                         <v-list-item-title>HTTPS</v-list-item-title>
                                         <v-list-item-subtitle>
-                                          {{ result.securityChecks.https ? 'Active' : 'Not active' }}
+                                          {{ getResultFromCache(url)?.securityChecks?.https ? 'Active' : 'Not active' }}
                                           <v-chip size="x-small"
-                                            :color="result.securityChecks.https ? 'success' : 'error'" class="ml-2">
-                                            {{ result.securityChecks.https ? 'OK' : 'Activation Required' }}
+                                            :color="getResultFromCache(url)?.securityChecks?.https ? 'success' : 'error'"
+                                            class="ml-2">
+                                            {{ getResultFromCache(url)?.securityChecks?.https ? 'OK' :
+                                              'Activation required' }}
                                           </v-chip>
                                         </v-list-item-subtitle>
                                       </v-list-item>
-                                      <v-list-item v-for="header in result.securityChecks.securityHeaders"
-                                        :key="header.name">
-                                        <v-list-item-title>{{ header.name }}</v-list-item-title>
-                                        <v-list-item-subtitle>{{ header.value }}</v-list-item-subtitle>
-                                      </v-list-item>
+                                      <template v-if="getResultFromCache(url)?.securityChecks?.securityHeaders?.length">
+                                        <v-list-item
+                                          v-for="header in getResultFromCache(url)?.securityChecks.securityHeaders"
+                                          :key="header.name">
+                                          <v-list-item-title>{{ header.name }}</v-list-item-title>
+                                          <v-list-item-subtitle>{{ header.value }}</v-list-item-subtitle>
+                                        </v-list-item>
+                                      </template>
+                                      <template
+                                        v-else-if="!getResultFromCache(url)?.securityChecks?.securityHeaders?.length">
+                                        <v-list-item>
+                                          <v-list-item-title class="text-grey text-center">
+                                            Aucun en-tête de sécurité trouvé
+                                          </v-list-item-title>
+                                        </v-list-item>
+                                      </template>
                                     </v-list>
                                   </v-card-text>
                                 </v-card>
@@ -535,11 +589,33 @@
                                 <v-card variant="outlined" class="mb-4">
                                   <v-card-title class="text-subtitle-1">
                                     <v-icon start>mdi-alert-circle</v-icon>
-                                    Warnings List
+                                    Résumé des problèmes
                                   </v-card-title>
                                   <v-card-text>
-                                    <v-list v-if="result.warnings && result.warnings.length > 0">
-                                      <v-list-item v-for="(warning, index) in result.warnings" :key="index">
+                                    <v-row>
+                                      <v-col cols="12" sm="6" md="3"
+                                        v-for="(type, index) in ['critical', 'high', 'medium', 'low']" :key="index">
+                                        <v-card :color="computeWarningCounts(getResultFromCache(url) || {})[type] > 0 ?
+                                          (type === 'critical' || type === 'high' ? 'error' :
+                                            type === 'medium' ? 'warning' : 'info') : undefined" variant="outlined">
+                                          <v-card-text class="text-center">
+                                            <div class="text-h4">{{ computeWarningCounts(getResultFromCache(url) ||
+                                              {})[type] }}</div>
+                                            <div class="text-caption">Issues {{
+                                              type === 'critical' ? 'Critiques' :
+                                                type === 'high' ? 'Importantes' :
+                                                  type === 'medium' ? 'Moyennes' : 'Mineures'
+                                            }}</div>
+                                          </v-card-text>
+                                        </v-card>
+                                      </v-col>
+                                    </v-row>
+
+                                    <v-divider class="my-4"></v-divider>
+
+                                    <v-list v-if="getResultFromCache(url)?.warnings?.length">
+                                      <v-list-item v-for="(warning, index) in getResultFromCache(url)?.warnings"
+                                        :key="index">
                                         <template v-slot:prepend>
                                           <v-icon
                                             :color="typeof warning === 'string' ? 'warning' : getWarningSeverityColor(warning.severity)"
@@ -550,94 +626,18 @@
                                         </template>
                                         <v-list-item-title>{{ typeof warning === 'string' ? warning : warning.message
                                         }}</v-list-item-title>
-                                        <v-list-item-subtitle>{{ typeof warning === 'string' ? 'General warning' :
-                                          getWarningImpactDescription(warning.type)
-                                        }}</v-list-item-subtitle>
+                                        <v-list-item-subtitle>
+                                          {{ typeof warning === 'string' ? 'Avertissement général' :
+                                            `Impact: ${warning.severity.charAt(0).toUpperCase() +
+                                            warning.severity.slice(1)}` }}
+                                        </v-list-item-subtitle>
                                       </v-list-item>
                                     </v-list>
                                     <div v-else class="text-center pa-4">
                                       <v-icon size="48" color="success">mdi-check-circle</v-icon>
-                                      <div class="text-h6 mt-2">No warnings detected</div>
-                                      <div class="text-body-2 text-grey">This page appears to be well optimized</div>
+                                      <div class="text-h6 mt-2">Aucun problème détecté</div>
+                                      <div class="text-body-2 text-grey">Cette page semble bien optimisée</div>
                                     </div>
-                                  </v-card-text>
-                                </v-card>
-
-                                <v-card variant="outlined" class="mb-4">
-                                  <v-card-title class="text-subtitle-2 d-flex align-center">
-                                    <v-icon start color="primary">mdi-chart-bar</v-icon>
-                                    Performance Analysis
-                                  </v-card-title>
-                                  <v-card-text>
-                                    <v-row>
-                                      <v-col cols="12">
-                                        <v-card class="mb-3">
-                                          <v-card-text>
-                                            <div class="d-flex justify-space-around flex-wrap">
-                                              <div class="text-center pa-2">
-                                                <div class="text-subtitle-2 mb-2">Overall Performance</div>
-                                                <v-progress-circular :model-value="getPerformanceScore(result)"
-                                                  :color="getPerformanceColor(getPerformanceScore(result))" size="100"
-                                                  width="10" class="mb-2">
-                                                  <template v-slot:default>
-                                                    <strong class="text-h5">{{ Math.round(getPerformanceScore(result))
-                                                    }}%</strong>
-                                                  </template>
-                                                </v-progress-circular>
-                                                <div class="text-caption mt-2">
-                                                  <v-chip size="x-small"
-                                                    :color="getPerformanceColor(getPerformanceScore(result))">
-                                                    {{ getPerformanceScore(result) >= 90 ? 'Excellent' :
-                                                      getPerformanceScore(result) >= 70 ? 'Good' :
-                                                        getPerformanceScore(result) >= 50 ? 'Average' : 'Poor' }}
-                                                  </v-chip>
-                                                </div>
-                                              </div>
-
-                                              <div class="text-center pa-2">
-                                                <div class="text-subtitle-2 mb-2">Mobile Optimization</div>
-                                                <v-progress-circular :model-value="getMobileScore(result)"
-                                                  :color="getPerformanceColor(getMobileScore(result))" size="100"
-                                                  width="10" class="mb-2">
-                                                  <template v-slot:default>
-                                                    <strong class="text-h5">{{ Math.round(getMobileScore(result))
-                                                    }}%</strong>
-                                                  </template>
-                                                </v-progress-circular>
-                                                <div class="text-caption mt-2">
-                                                  <v-chip size="x-small"
-                                                    :color="getPerformanceColor(getMobileScore(result))">
-                                                    {{ getMobileScore(result) >= 90 ? 'Excellent' :
-                                                      getMobileScore(result) >= 70 ? 'Good' :
-                                                        getMobileScore(result) >= 50 ? 'Average' : 'Poor' }}
-                                                  </v-chip>
-                                                </div>
-                                              </div>
-
-                                              <div class="text-center pa-2">
-                                                <div class="text-subtitle-2 mb-2">SEO Optimization</div>
-                                                <v-progress-circular :model-value="getSEOScore(result)"
-                                                  :color="getPerformanceColor(getSEOScore(result))" size="100"
-                                                  width="10" class="mb-2">
-                                                  <template v-slot:default>
-                                                    <strong class="text-h5">{{ Math.round(getSEOScore(result))
-                                                    }}%</strong>
-                                                  </template>
-                                                </v-progress-circular>
-                                                <div class="text-caption mt-2">
-                                                  <v-chip size="x-small"
-                                                    :color="getPerformanceColor(getSEOScore(result))">
-                                                    {{ getSEOScore(result) >= 90 ? 'Excellent' : getSEOScore(result) >=
-                                                      70 ? 'Good' :
-                                                      getSEOScore(result) >= 50 ? 'Average' : 'Poor' }}
-                                                  </v-chip>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </v-card-text>
-                                        </v-card>
-                                      </v-col>
-                                    </v-row>
                                   </v-card-text>
                                 </v-card>
                               </v-col>
@@ -656,9 +656,10 @@
                                   Priority Recommendations
                                 </v-card-subtitle>
 
-                                <div v-if="getActionItems(result).high.length > 0">
+                                <div v-if="getActionItems(getResultFromCache(url) || {}).high.length > 0">
                                   <v-timeline density="compact" align="start">
-                                    <v-timeline-item v-for="(item, i) in getActionItems(result).high" :key="i"
+                                    <v-timeline-item
+                                      v-for="(item, i) in getActionItems(getResultFromCache(url) || {}).high" :key="i"
                                       size="small" dot-color="error">
                                       <div class="d-flex">
                                         <div class="flex-grow-1">
@@ -689,9 +690,10 @@
                                   Recommended Improvements
                                 </v-card-subtitle>
 
-                                <div v-if="getActionItems(result).medium.length > 0">
+                                <div v-if="getActionItems(getResultFromCache(url) || {}).medium.length > 0">
                                   <v-list density="compact">
-                                    <v-list-item v-for="(item, i) in getActionItems(result).medium" :key="i"
+                                    <v-list-item
+                                      v-for="(item, i) in getActionItems(getResultFromCache(url) || {}).medium" :key="i"
                                       :prepend-icon="item.icon || 'mdi-alert'" :title="item.title"
                                       :subtitle="item.description" lines="two">
                                       <template v-slot:append>
@@ -716,12 +718,15 @@
 
                                 <v-card outlined class="pa-3 mb-3 ranking-impact">
                                   <div class="d-flex align-center">
-                                    <v-icon :color="getRankingImpactColor(result)" size="large" class="mr-3">{{
-                                      getRankingImpactIcon(result)
-                                    }}</v-icon>
+                                    <v-icon :color="getRankingImpactColor(getResultFromCache(url) || {})" size="large"
+                                      class="mr-3">{{
+                                        getRankingImpactIcon(getResultFromCache(url) || {})
+                                      }}</v-icon>
                                     <div>
-                                      <div class="text-h6">{{ getRankingImpactTitle(result) }}</div>
-                                      <div class="text-body-2">{{ getRankingImpactDescription(result) }}</div>
+                                      <div class="text-h6">{{ getRankingImpactTitle(getResultFromCache(url) || {}) }}
+                                      </div>
+                                      <div class="text-body-2">{{ getRankingImpactDescription(getResultFromCache(url) ||
+                                        {}) }}</div>
                                     </div>
                                   </div>
                                 </v-card>
@@ -855,12 +860,10 @@
 <script setup lang="ts">
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useUserStore } from '../stores/userStore';
 import {
   getCriticalIssues,
-  getMobileScore,
-  getPerformanceColor,
   getRankingImpactColor,
   getRankingImpactDescription,
   getRankingImpactIcon,
@@ -869,7 +872,6 @@ import {
   getScoreColor,
   getScoreDescription,
   getScoreStatus,
-  getWarningImpactDescription,
   getWarningSeverityColor,
   getWarningSeverityIcon,
   parseUrl
@@ -893,13 +895,15 @@ definePageMeta({
 });
 
 interface SEOResult {
-  warnings: Array<string | { severity: string; message: string }>;
+  title?: string;
+  warnings: Array<string | { severity: string; message: string; type?: string }>;
   loadTime: number;
   description: string;
   coreWebVitals: Record<string, any>;
   mobileCompatibility: {
     hasViewport: boolean;
     smallTouchTargets: number;
+    viewportContent?: string;
   };
   technicalSEO: {
     sitemapFound: boolean;
@@ -928,6 +932,7 @@ interface SEOResult {
     title?: string;
     width?: number;
     height?: number;
+    hasDimensions?: boolean;
   }>;
   videoInfo?: Array<{
     src: string;
@@ -938,6 +943,12 @@ interface SEOResult {
     width?: number;
     height?: number;
   }>;
+  contentStats?: {
+    readabilityScore?: number;
+    wordCount?: number;
+    keywordDensity?: number;
+  };
+  structuredData?: any[];
 }
 
 interface SEOReport {
@@ -1012,6 +1023,9 @@ const tabs = [
 const robotsTxtDialog = ref(false);
 const robotsTxtContent = ref('');
 
+const resultCache = ref(new Map<string, any>());
+const isClient = ref(false);
+
 const startAudit = async () => {
   if (!targetUrl.value) {
     error.value = 'Please enter a URL';
@@ -1022,19 +1036,20 @@ const startAudit = async () => {
     error.value = null;
     auditing.value = true;
     report.value = null;
+    resultCache.value.clear();
 
-    console.log('Démarrage de l\'audit SEO pour:', targetUrl.value);
+    console.log('Starting SEO audit for:', targetUrl.value);
     console.log('Options:', options.value);
-    console.log('Token disponible:', !!userStore.token);
+    console.log('Token available:', !!userStore.token);
 
-    report.value = await userStore.auditSEO(targetUrl.value, options.value);
-    console.log('Audit SEO terminé, résultat:', !!report.value);
-    if (report.value) {
-      console.log('Pages analysées:', report.value.summary?.totalPages || 'N/A');
-    }
-  } catch (err: any) {
-    error.value = err.message || 'An error occurred during the audit';
-    console.error('Error during audit:', err);
+    const rawReport = await userStore.auditSEO(targetUrl.value, options.value);
+    console.log('Raw data received:', rawReport);
+
+    report.value = adaptSEOResults(rawReport);
+    console.log('Processed report:', report.value);
+  } catch (e: any) {
+    console.error('Error during SEO audit:', e);
+    error.value = e.message || 'An error occurred during analysis';
   } finally {
     auditing.value = false;
   }
@@ -1272,9 +1287,338 @@ const summaryItems = [
   }
 ];
 
+const getResultStatus = (result: SEOResult) => {
+  if (!result) return { class: '', color: 'grey', icon: 'mdi-help-circle' };
+
+  const counts = computeWarningCounts(result);
+
+  if (counts.critical > 0 || counts.high > 0) {
+    return { class: 'result-error', color: 'error', icon: 'mdi-alert-circle' };
+  }
+  if (counts.medium > 0) {
+    return { class: 'result-warning', color: 'warning', icon: 'mdi-alert' };
+  }
+  return { class: 'result-success', color: 'success', icon: 'mdi-check-circle' };
+};
+
+const safeString = (value: any): string => {
+  return value !== undefined && value !== null ? String(value) : '';
+};
+
+const safeNumber = (value: any): number => {
+  return value !== undefined && value !== null && !isNaN(Number(value)) ? Number(value) : 0;
+};
+
 const showRobotsTxtDialog = (content: string) => {
   robotsTxtContent.value = content || 'No content available';
   robotsTxtDialog.value = true;
+};
+
+// Fonction pour adapter les données du nouveau format d'API au format attendu par l'UI
+const adaptSEOData = (data: any): SEOResult => {
+  if (!data) return {
+    title: '',
+    description: '',
+    loadTime: 0,
+    headingStructure: { h1: [], h2: [], h3: [] },
+    imageAlt: [],
+    coreWebVitals: {},
+    mobileCompatibility: { hasViewport: false, smallTouchTargets: 0 },
+    securityChecks: { https: false, securityHeaders: [] },
+    socialTags: { ogTags: [], twitterTags: [] },
+    technicalSEO: { sitemapFound: false, robotsTxtFound: false, schemaTypeCount: {} },
+    structuredData: [],
+    warnings: [],
+    contentStats: { readabilityScore: 0, wordCount: 0, keywordDensity: 0 }
+  };
+
+  // Construire le tableau d'images à partir des données d'images ou créer une entrée par défaut si aucune
+  let imageAlt: Array<{ alt?: string; src?: string; title?: string; width?: number; height?: number; hasDimensions?: boolean }> = [];
+  if (data.seo?.images?.data && Array.isArray(data.seo.images.data) && data.seo.images.data.length > 0) {
+    imageAlt = data.seo.images.data.map((img: any) => ({
+      alt: img.alt || '',
+      src: img.src || '',
+      title: img.title || '',
+      width: img.width || 0,
+      height: img.height || 0,
+      hasDimensions: !!(img.width && img.height)
+    }));
+  } else if (data.seo?.images?.total > 0 || data.seo?.images?.withoutAlt > 0) {
+    // Créer des entrées factices basées sur les statistiques si nous n'avons pas les données détaillées
+    const totalImages = data.seo?.images?.total || 0;
+    const withoutAlt = data.seo?.images?.withoutAlt || 0;
+
+    for (let i = 0; i < withoutAlt; i++) {
+      imageAlt.push({
+        alt: '',
+        src: '#',
+        title: `Image sans alt ${i + 1}`,
+        width: 0,
+        height: 0,
+        hasDimensions: false
+      });
+    }
+
+    for (let i = 0; i < (totalImages - withoutAlt); i++) {
+      imageAlt.push({
+        alt: `Alt text ${i + 1}`,
+        src: '#',
+        title: `Image avec alt ${i + 1}`,
+        width: 0,
+        height: 0,
+        hasDimensions: false
+      });
+    }
+  }
+
+  // Extraire keywordDensity en tant que nombre
+  let keywordDensity = 0;
+  if (data.seo?.keywordDensity && typeof data.seo.keywordDensity === 'object') {
+    const values = Object.values(data.seo.keywordDensity);
+    if (values.length > 0 && typeof values[0] === 'number') {
+      keywordDensity = values[0];
+    }
+  }
+
+  return {
+    title: data.seo?.title || '',
+    description: data.seo?.description || '',
+    loadTime: data.performance?.loadTime || 0,
+    headingStructure: {
+      h1: data.seo?.headings?.h1 || [],
+      h2: data.seo?.headings?.h2 || [],
+      h3: data.seo?.headings?.h3 || [],
+    },
+    imageAlt: imageAlt,
+    coreWebVitals: {
+      FCP: data.performance?.fcp || 0,
+      LCP: data.performance?.lcp || 0,
+      TTFB: data.performance?.ttfb || 0,
+      performanceScore: Math.round((data.performance?.speedIndex || 0) / 10) || 0,
+    },
+    mobileCompatibility: {
+      hasViewport: data.technical?.mobile?.viewport || false,
+      smallTouchTargets: 0,
+      viewportContent: data.seo?.meta?.viewport || '',
+    },
+    securityChecks: {
+      https: data.technical?.https || false,
+      securityHeaders: Object.entries(data.technical?.security?.headers || {}).map(([name, value]) => ({
+        name,
+        value: String(value)
+      }))
+    },
+    socialTags: {
+      ogTags: Object.entries(data.seo?.meta?.og || {}).map(([property, content]) => ({
+        property: `og:${property}`,
+        content: String(content)
+      })),
+      twitterTags: Object.entries(data.seo?.meta?.twitter || {}).map(([name, content]) => ({
+        name: `twitter:${name}`,
+        content: String(content)
+      }))
+    },
+    technicalSEO: {
+      sitemapFound: false,
+      robotsTxtFound: false,
+      schemaTypeCount: data.seo?.structuredData?.types || {}
+    },
+    structuredData: data.seo?.structuredData?.data || [],
+    warnings: [],
+    contentStats: {
+      readabilityScore: data.seo?.readabilityScore || 0,
+      wordCount: data.seo?.wordCount || 0,
+      keywordDensity: keywordDensity
+    }
+  };
+};
+
+// Génération automatique des avertissements avec comptage stable
+const generateWarnings = (data: any): Array<{ severity: string; message: string; type: string }> => {
+  const warnings: Array<{ severity: string; message: string; type: string }> = [];
+  const warningSet = new Set(); // To avoid duplicates
+
+  // Utility function to add a unique warning
+  const addWarning = (severity: string, message: string, type: string) => {
+    const key = `${severity}:${type}:${message}`;
+    if (!warningSet.has(key)) {
+      warningSet.add(key);
+      warnings.push({ severity, message, type });
+    }
+  };
+
+  // Missing or too short title
+  if (!data.seo?.title) {
+    addWarning('high', 'Missing page title', 'title');
+  } else if (data.seo.title.length < 30) {
+    addWarning('medium', 'Title too short (< 30 characters)', 'title');
+  } else if (data.seo.title.length > 60) {
+    addWarning('medium', 'Title too long (> 60 characters)', 'title');
+  }
+
+  // Missing or too short description
+  if (!data.seo?.description) {
+    addWarning('high', 'Missing meta description', 'description');
+  } else if (data.seo.description.length < 120) {
+    addWarning('medium', 'Meta description too short (< 120 characters)', 'description');
+  } else if (data.seo.description.length > 160) {
+    addWarning('medium', 'Meta description too long (> 160 characters)', 'description');
+  }
+
+  // Missing H1
+  if (!data.seo?.headings?.h1 || data.seo.headings.h1.length === 0) {
+    addWarning('high', 'Missing H1 tag', 'h1');
+  } else if (data.seo.headings.h1.length > 1) {
+    addWarning('medium', 'Multiple H1 tags detected', 'h1');
+  }
+
+  // Missing image alt attributes
+  if (data.seo?.images?.withoutAlt > 0) {
+    addWarning('medium', `${data.seo.images.withoutAlt} image(s) without alt attribute`, 'image');
+  }
+
+  // Mobile viewport
+  if (!data.technical?.mobile?.viewport) {
+    addWarning('high', 'Missing meta viewport for mobile version', 'mobile');
+  }
+
+  // HTTPS
+  if (!data.technical?.https) {
+    addWarning('high', 'Site is not using HTTPS', 'security');
+  }
+
+  // Performance
+  if ((data.performance?.lcp || 0) > 2500) {
+    addWarning('medium', `High LCP (${Math.round(data.performance.lcp)}ms) - Optimize content loading`, 'performance');
+  }
+
+  if ((data.performance?.ttfb || 0) > 600) {
+    addWarning('medium', `High TTFB (${Math.round(data.performance.ttfb)}ms) - Optimize server response time`, 'performance');
+  }
+
+  return warnings;
+};
+
+// Fonction pour adapter les résultats complets
+const adaptSEOResults = (apiResponse: any): SEOReport => {
+  if (!apiResponse) return { seoResults: {}, visitedURLs: [], summary: undefined };
+
+  const visitedURLs = apiResponse.visitedURLs || [];
+  const seoResults: Record<string, SEOResult> = {};
+
+  // Transformation des résultats par URL
+  Object.entries(apiResponse.seoResults || {}).forEach(([url, data]) => {
+    const adaptedData = adaptSEOData(data as any);
+    adaptedData.warnings = generateWarnings(data as any);
+
+    // S'assurer que technicalSEO est correctement propagé
+    if ((data as any).technicalSEO) {
+      console.log(`technicalSEO trouvé pour ${url}:`, (data as any).technicalSEO);
+      adaptedData.technicalSEO = (data as any).technicalSEO;
+    } else if (url === visitedURLs[0]) {
+      // Pour l'URL principale, si technicalSEO n'est pas défini mais existe dans apiResponse
+      console.log("URL principale sans technicalSEO, vérification au niveau global");
+      if (apiResponse.technicalSEO) {
+        console.log("Propagation de technicalSEO depuis la réponse globale");
+        adaptedData.technicalSEO = apiResponse.technicalSEO;
+      } else {
+        console.log("Initialisation d'un technicalSEO par défaut");
+        adaptedData.technicalSEO = {
+          sitemapFound: false,
+          robotsTxtFound: false,
+          schemaTypeCount: {}
+        };
+      }
+    } else {
+      // Pour les autres URLs, initialiser avec des valeurs par défaut
+      console.log(`Initialisation d'un technicalSEO par défaut pour ${url}`);
+      adaptedData.technicalSEO = {
+        sitemapFound: false,
+        robotsTxtFound: false,
+        schemaTypeCount: {}
+      };
+    }
+
+    seoResults[url] = adaptedData;
+  });
+
+  // Calcul automatique du résumé
+  const summary = calculateSummary(seoResults, visitedURLs);
+
+  return {
+    seoResults,
+    visitedURLs,
+    summary
+  };
+};
+
+// Fonction pour calculer le résumé
+const calculateSummary = (seoResults: Record<string, SEOResult>, visitedURLs: string[]): any => {
+  const results = Object.values(seoResults);
+  const totalPages = results.length;
+
+  if (totalPages === 0) return undefined;
+
+  let totalLoadTime = 0;
+  let totalFCP = 0;
+  let totalLCP = 0;
+  let totalTTFB = 0;
+  let totalWarnings = 0;
+  let missingTitles = 0;
+  let missingDescriptions = 0;
+  let missingAltTags = 0;
+  let pagesWithStructuredData = 0;
+  let pagesWithSocialTags = 0;
+  let mobileCompatiblePages = 0;
+  let securePages = 0;
+
+  results.forEach(result => {
+    totalLoadTime += result.loadTime || 0;
+    totalFCP += result.coreWebVitals?.FCP || 0;
+    totalLCP += result.coreWebVitals?.LCP || 0;
+    totalTTFB += result.coreWebVitals?.TTFB || 0;
+    totalWarnings += result.warnings?.length || 0;
+
+    if (!result.title) missingTitles++;
+    if (!result.description) missingDescriptions++;
+
+    // Images sans alt
+    if (result.imageAlt) {
+      missingAltTags += result.imageAlt.filter(img => !img.alt).length;
+    }
+
+    // Structured data
+    if (result.structuredData && result.structuredData.length > 0) {
+      pagesWithStructuredData++;
+    }
+
+    // Social tags
+    if ((result.socialTags?.ogTags?.length > 0) || (result.socialTags?.twitterTags?.length > 0)) {
+      pagesWithSocialTags++;
+    }
+
+    // Mobile compatibility
+    if (result.mobileCompatibility?.hasViewport) mobileCompatiblePages++;
+
+    // Security
+    if (result.securityChecks?.https) securePages++;
+  });
+
+  return {
+    totalPages,
+    averageLoadTime: totalLoadTime / totalPages,
+    totalWarnings,
+    missingTitles,
+    missingDescriptions,
+    missingAltTags,
+    averageFCP: totalFCP / totalPages,
+    averageLCP: totalLCP / totalPages,
+    averageTTFB: totalTTFB / totalPages,
+    pagesWithStructuredData: Math.round((pagesWithStructuredData / totalPages) * 100),
+    pagesWithSocialTags: Math.round((pagesWithSocialTags / totalPages) * 100),
+    mobileCompatiblePages: Math.round((mobileCompatiblePages / totalPages) * 100),
+    securePages: Math.round((securePages / totalPages) * 100)
+  };
 };
 
 function isDisplayableVital(name: string): boolean {
@@ -1319,7 +1663,7 @@ function calculateOverallScore(result: any): number {
   if (!result) return 0;
 
   const performanceScore = result.coreWebVitals?.performanceScore || 0;
-  const contentScore = result.contentStats?.wordCount > 300 ? 100 : (result.contentStats?.wordCount / 3);
+  const contentScore = result.contentStats?.wordCount ? (result.contentStats.wordCount > 300 ? 100 : (result.contentStats.wordCount / 3)) : 50;
   const technicalScore = result.securityChecks?.https ? 100 : 50;
 
   return Math.round((performanceScore + contentScore + technicalScore) / 3);
@@ -1338,13 +1682,14 @@ function getSEOScore(result: any): number {
   // Réduire le score en fonction des problèmes trouvés
   if (!result.title) score -= 20;
   if (!result.description) score -= 15;
-  if (!result.h1 || result.h1.length === 0) score -= 15;
-  if (result.imageAlt.some(img => !img.alt)) score -= 10;
-  if (!result.mobileCompatibility.hasViewport) score -= 10;
-  if (!result.securityChecks.https) score -= 15;
+  if (!result.headingStructure?.h1 || result.headingStructure.h1.length === 0) score -= 15;
+  if (result.imageAlt?.some(img => !img.alt)) score -= 10;
+  if (!result.mobileCompatibility?.hasViewport) score -= 10;
+  if (!result.securityChecks?.https) score -= 15;
 
   // Réduire le score en fonction du nombre d'avertissements
-  score -= Math.min(result.warnings.length * 5, 30);
+  const warningsCount = result.warnings?.length || 0;
+  score -= Math.min(warningsCount * 5, 30);
 
   return Math.max(0, score);
 }
@@ -1357,75 +1702,75 @@ function getActionItems(result: any): { high: any[], medium: any[] } {
     medium: [] as any[]
   };
 
-  // Vérification du titre
+  // Title check
   if (!result.title) {
     actionItems.high.push({
-      title: 'Titre manquant',
-      description: 'Ajoutez un titre unique et descriptif à votre page',
+      title: 'Missing title',
+      description: 'Add a unique and descriptive title to your page',
       icon: 'mdi-format-title'
     });
   } else if (result.title.length < 30 || result.title.length > 60) {
     actionItems.medium.push({
-      title: 'Optimisation du titre',
-      description: 'Le titre devrait faire entre 30 et 60 caractères',
+      title: 'Title optimization',
+      description: 'Title should be between 30 and 60 characters',
       icon: 'mdi-format-title'
     });
   }
 
-  // Vérification de la méta description
+  // Meta description check
   if (!result.description) {
     actionItems.high.push({
-      title: 'Meta description manquante',
-      description: 'Ajoutez une meta description pertinente',
+      title: 'Missing meta description',
+      description: 'Add a relevant meta description',
       icon: 'mdi-text-box'
     });
   } else if (result.description.length < 120 || result.description.length > 160) {
     actionItems.medium.push({
-      title: 'Optimisation de la meta description',
-      description: 'La meta description devrait faire entre 120 et 160 caractères',
+      title: 'Meta description optimization',
+      description: 'Meta description should be between 120 and 160 characters',
       icon: 'mdi-text-box'
     });
   }
 
-  // Vérification des images
-  const imagesWithoutAlt = result.imageAlt.filter((img: any) => !img.alt);
+  // Images without alt check
+  const imagesWithoutAlt = result.imageAlt?.filter((img: any) => !img.alt) || [];
   if (imagesWithoutAlt.length > 0) {
     actionItems.high.push({
-      title: 'Images sans attribut alt',
-      description: `${imagesWithoutAlt.length} image(s) n'ont pas d'attribut alt`,
+      title: 'Images without alt attribute',
+      description: `${imagesWithoutAlt.length} image(s) without alt attribute`,
       icon: 'mdi-image'
     });
   }
 
-  // Vérification de la structure des titres
-  if (!result.h1 || result.h1.length === 0) {
+  // H1 tag check
+  if (!result.headingStructure?.h1 || result.headingStructure.h1.length === 0) {
     actionItems.high.push({
-      title: 'H1 manquant',
-      description: 'Ajoutez un titre H1 principal à votre page',
+      title: 'Missing H1 tag',
+      description: 'Add an H1 tag to your page',
       icon: 'mdi-format-header-1'
     });
-  } else if (result.h1.length > 1) {
+  } else if (result.headingStructure?.h1.length > 1) {
     actionItems.medium.push({
-      title: 'Multiple H1',
-      description: 'Une page ne devrait avoir qu\'un seul titre H1',
+      title: 'Multiple H1 tags',
+      description: 'Only one H1 tag is allowed per page',
       icon: 'mdi-format-header-1'
     });
   }
 
-  // Vérification HTTPS
-  if (!result.securityChecks.https) {
+  // HTTPS check
+  if (!result.securityChecks?.https) {
     actionItems.high.push({
-      title: 'HTTPS non activé',
-      description: 'Activez HTTPS pour sécuriser votre site',
+      title: 'HTTPS not enabled',
+      description: 'Enable HTTPS for secure communication',
       icon: 'mdi-shield'
     });
   }
 
-  // Vérification mobile
-  if (!result.mobileCompatibility.hasViewport) {
+  // Mobile viewport check
+  if (!result.mobileCompatibility?.hasViewport) {
     actionItems.high.push({
-      title: 'Viewport meta manquant',
-      description: 'Ajoutez une balise viewport pour l\'affichage mobile',
+      title: 'Missing mobile viewport',
+      description: 'Add a viewport meta tag for mobile display',
       icon: 'mdi-cellphone'
     });
   }
@@ -1433,46 +1778,128 @@ function getActionItems(result: any): { high: any[], medium: any[] } {
   return actionItems;
 }
 
-onBeforeUnmount(() => {
-  if (auditing.value) {
-    stopAudit();
-  }
+const computeWarningCounts = (result: SEOResult) => {
+  if (!result?.warnings) return { critical: 0, high: 0, medium: 0, low: 0, total: 0 };
 
-  report.value = null;
-  error.value = null;
+  // On utilise une Map pour regrouper les avertissements par type et sévérité
+  // Cela évite de compter plusieurs fois le même type d'avertissement
+  const warningMap = new Map<string, { severity: string, count: number }>();
 
-  robotsTxtDialog.value = false;
-  showSitemapPreview.value = false;
-});
+  result.warnings.forEach(warning => {
+    let type = '';
+    let severity = '';
 
-async function analyzeSite() {
-  if (!url.value) {
-    error.value = 'Veuillez entrer une URL valide';
-    return;
-  }
-
-  error.value = '';
-  loading.value = true;
-
-  try {
-    // Utiliser notre nouvelle API au lieu de l'API RapidAPI
-    if (!useAdvancedApi.value) {
-      // Utiliser notre nouvelle API avec les fonctionnalités améliorées
-      await seoStore.analyzeSiteWithLocalApi(url.value);
+    if (typeof warning === 'string') {
+      // Par défaut, les avertissements sous forme de chaîne sont considérés comme "medium"
+      type = 'general';
+      severity = 'medium';
     } else {
-      // Utiliser l'analyse multi-pages existante si nécessaire
-      await seoStore.analyzeSitePages(url.value, depthLevel.value, sameDomainOnly.value, maxUrls.value);
+      type = warning.type || 'general';
+      severity = warning.severity || 'medium';
     }
-  } catch (err: any) {
-    error.value = err.message || 'Une erreur est survenue pendant l\'analyse';
-    console.error('Erreur d\'analyse:', err);
-  } finally {
-    loading.value = false;
+
+    const key = `${type}:${severity}`;
+    if (warningMap.has(key)) {
+      warningMap.get(key)!.count++;
+    } else {
+      warningMap.set(key, { severity, count: 1 });
+    }
+  });
+
+  // Compter les avertissements par sévérité
+  const counts = {
+    critical: 0,
+    high: 0,
+    medium: 0,
+    low: 0,
+    total: 0
+  };
+
+  warningMap.forEach(item => {
+    counts.total += item.count;
+
+    switch (item.severity) {
+      case 'critical':
+        counts.critical += item.count;
+        break;
+      case 'high':
+        counts.high += item.count;
+        break;
+      case 'medium':
+        counts.medium += item.count;
+        break;
+      case 'low':
+        counts.low += item.count;
+        break;
+      default:
+        // Si severity n'est pas défini, on considère comme "medium"
+        counts.medium += item.count;
+    }
+  });
+
+  return counts;
+};
+
+// Fonction pour récupérer les résultats du cache pour éviter les recalculs
+const getResultFromCache = (url: string): SEOResult => {
+  if (resultCache.value.has(url)) {
+    const cachedResult = resultCache.value.get(url) as SEOResult;
+
+    // S'assurer que technicalSEO existe dans le résultat mis en cache
+    if (!cachedResult.technicalSEO && report.value?.seoResults[url]?.technicalSEO) {
+      console.log(`Ajout de technicalSEO au résultat mis en cache pour ${url}`);
+      cachedResult.technicalSEO = report.value.seoResults[url].technicalSEO;
+      resultCache.value.set(url, cachedResult);
+    }
+
+    return cachedResult;
   }
-}
+
+  if (report.value?.seoResults[url]) {
+    const result = { ...report.value.seoResults[url] };
+
+    // S'assurer que technicalSEO est initialisé s'il n'existe pas
+    if (!result.technicalSEO) {
+      console.log(`Initialisation de technicalSEO pour ${url} depuis le cache`);
+
+      // Pour l'URL principale, utiliser les données de l'analyse racine si disponibles
+      if (url === targetUrl.value && report.value.seoResults[targetUrl.value]?.technicalSEO) {
+        result.technicalSEO = report.value.seoResults[targetUrl.value].technicalSEO;
+      } else {
+        result.technicalSEO = {
+          sitemapFound: false,
+          robotsTxtFound: false,
+          schemaTypeCount: {}
+        };
+      }
+    }
+
+    resultCache.value.set(url, result);
+    return result;
+  }
+
+  // Renvoyer un objet vide mais correctement typé
+  const emptyResult: SEOResult = {
+    title: '',
+    description: '',
+    loadTime: 0,
+    headingStructure: { h1: [], h2: [], h3: [] },
+    imageAlt: [],
+    coreWebVitals: {},
+    mobileCompatibility: { hasViewport: false, smallTouchTargets: 0 },
+    securityChecks: { https: false, securityHeaders: [] },
+    socialTags: { ogTags: [], twitterTags: [] },
+    warnings: [],
+    technicalSEO: { sitemapFound: false, robotsTxtFound: false, schemaTypeCount: {} }
+  };
+
+  return emptyResult;
+};
+
 
 onMounted(() => {
-  // Code existant
+  isClient.value = true;
+  // Initialize client-side elements here if needed
 });
 </script>
 

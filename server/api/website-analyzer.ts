@@ -63,7 +63,6 @@ async function analyzePerformance(url: string, page: Page): Promise<WebsiteAnaly
     };
   });
 
-  // Calculer le CLS
   const cls = await page.evaluate(() => {
     let clsValue = 0;
     let firstFrame = true;
@@ -126,7 +125,7 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
     h6: $('h6').map((_, el) => $(el).text().trim()).get()
   };
 
-  // Analyser les images
+  // Analyser les images - version améliorée avec les méthodes de traversing de Cheerio
   const images = {
     total: $('img').length,
     withAlt: $('img[alt]').length,
@@ -135,9 +134,22 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
       const $img = $(el);
       const src = $img.attr('src') || '';
       const size = await getImageSize(src);
+      console.log("HEREEEEEE", size);
+
+      // Trouver le lien parent (information additionnelle qui n'est pas dans l'interface)
+      const parentElement = $img.closest('a');
+      const parentLink = parentElement.length ? parentElement.attr('href') : '';
+
+      console.log("HEREEEEEE", parentLink);
+      console.log("HEREEEEEE", $img);
+      console.log("HEREEEEEE", $img.attr('alt'));
+      console.log("HEREEEEEE", $img.attr('title'));
+      console.log("HEREEEEEE", $img.attr('width'));
+      console.log("HEREEEEEE", $img.attr('height'));
 
       return {
         src,
+        size,
         alt: $img.attr('alt') || '',
         title: $img.attr('title') || '',
         dimensions: {
@@ -148,12 +160,20 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
     }).get())
   };
 
-  // Analyser les liens
+  console.log("HEREEEEEE", images);
+
+  // Analyser les liens - version adaptée qui maintient la compatibilité avec le typage existant
   const links = {
     internal: [] as string[],
     external: [] as string[],
     broken: [] as string[],
     nofollow: [] as string[]
+  };
+
+  // Stocker les informations enrichies des liens pour une utilisation future
+  const enhancedLinks = {
+    internal: [] as Array<{ href: string, text: string, hasImage: boolean }>,
+    external: [] as Array<{ href: string, text: string, hasImage: boolean }>
   };
 
   const urlObj = new URL(url);
@@ -163,15 +183,21 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
     const $link = $(el);
     const href = $link.attr('href');
     const rel = $link.attr('rel');
+    const text = $link.text().trim();
+    const hasImage = $link.find('img').length > 0;
 
     if (href) {
       try {
         const linkUrl = new URL(href, url);
+
         if (linkUrl.hostname === baseHost) {
           links.internal.push(href);
+          enhancedLinks.internal.push({ href, text: text || (hasImage ? '[Image]' : ''), hasImage });
         } else {
           links.external.push(href);
+          enhancedLinks.external.push({ href, text: text || (hasImage ? '[Image]' : ''), hasImage });
         }
+
         if (rel?.includes('nofollow')) {
           links.nofollow.push(href);
         }
@@ -201,7 +227,6 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
     }
   });
 
-  // Extraire les balises sociales
   const socialTags = {
     openGraph: {} as Record<string, string>,
     twitter: {} as Record<string, string>
@@ -220,17 +245,13 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
     }
   });
 
-  // Calculer le ratio texte/HTML
   const text = $('body').text().trim();
   const textToHtmlRatio = text.length / html.length;
 
-  // Compter les mots
   const wordCount = text.split(/\s+/).length;
 
-  // Calculer le score de lisibilité
   const readabilityScore = calculateReadabilityScore(text);
 
-  // Calculer la densité des mots-clés
   const keywordDensity = calculateKeywordDensity(text);
 
   return {
@@ -388,6 +409,12 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     }
   };
 
+  // Analyser les images en utilisant la fonction dédiée
+  const imagesData = analyzeImages($);
+
+  // Analyser les liens en utilisant la fonction dédiée
+  const linksData = analyzeLinks($, url);
+
   // Analyser le SEO
   const seoData = {
     title: $('title').text().trim(),
@@ -400,23 +427,10 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
       h5: $('h5').map((_, el) => $(el).text().trim()).get() as string[],
       h6: $('h6').map((_, el) => $(el).text().trim()).get() as string[]
     },
-    images: {
-      total: $('img').length,
-      withAlt: $('img[alt]').length,
-      withoutAlt: $('img:not([alt])').length,
-      data: $('img').map((_, el) => ({
-        src: $(el).attr('src') || '',
-        alt: $(el).attr('alt'),
-        title: $(el).attr('title'),
-        dimensions: {
-          width: parseInt($(el).attr('width') || '0') || undefined,
-          height: parseInt($(el).attr('height') || '0') || undefined
-        }
-      })).get()
-    },
+    images: imagesData,
     links: {
-      internal: [] as string[],
-      external: [] as string[],
+      internal: linksData.internal,
+      external: linksData.external,
       broken: [] as string[],
       nofollow: [] as string[]
     },
@@ -448,6 +462,14 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
       seoData.meta.og[property.replace('og:', '')] = content;
     } else if (name?.startsWith('twitter:') && content) {
       seoData.meta.twitter[name.replace('twitter:', '')] = content;
+    }
+  });
+
+  // Récupérer les liens nofollow
+  $('a[rel*="nofollow"]').each((_, el) => {
+    const href = $(el).attr('href');
+    if (href) {
+      seoData.links.nofollow.push(href);
     }
   });
 
@@ -488,6 +510,30 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     }
   };
 
+  // Vérifier le sitemap et robots.txt (seulement pour l'URL racine)
+  const urlObj = new URL(url);
+  const isRootUrl = urlObj.pathname === '/' || urlObj.pathname === '';
+  let technicalSEO: WebsiteAnalysisResult['technicalSEO'] | undefined = undefined;
+
+  if (isRootUrl) {
+    const baseUrl = `${urlObj.protocol}//${urlObj.hostname}`;
+
+    // Vérifier le sitemap
+    const sitemapStatus = await checkSitemap(baseUrl);
+
+    // Vérifier le robots.txt
+    const robotsTxtStatus = await checkRobotsTxt(baseUrl);
+
+    technicalSEO = {
+      sitemapFound: sitemapStatus.found,
+      sitemapUrl: sitemapStatus.url,
+      sitemapUrls: sitemapStatus.urls,
+      robotsTxtFound: robotsTxtStatus.found,
+      robotsTxtContent: robotsTxtStatus.content,
+      schemaTypeCount: seoData.structuredData.types
+    };
+  }
+
   // Générer les problèmes
   const issues: WebsiteAnalysisResult['issues'] = [];
 
@@ -523,30 +569,57 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     });
   }
 
-  return {
+  const result: WebsiteAnalysisResult = {
     url,
     performance: performanceData,
     seo: seoData,
     technical: technicalData,
     issues
   };
+
+  if (technicalSEO) {
+    result.technicalSEO = technicalSEO;
+  }
+
+  return result;
 }
 
 function analyzeImages($: cheerio.CheerioAPI) {
-  const images = $('img').map((_, el) => ({
-    src: $(el).attr('src') || '',
-    alt: $(el).attr('alt'),
-    title: $(el).attr('title'),
-    dimensions: {
-      width: parseInt($(el).attr('width') || '0'),
-      height: parseInt($(el).attr('height') || '0')
-    }
-  })).get();
+  console.log("Analyzing images...");
+  const images = $('img').map((_, el) => {
+    const $img = $(el);
+    const src = $img.attr('src') || '';
+    const alt = $img.attr('alt');
+    const title = $img.attr('title');
+    const widthAttr = $img.attr('width');
+    const heightAttr = $img.attr('height');
+
+    console.log(`Image found: ${src}, alt: ${alt}, dimensions: ${widthAttr}x${heightAttr}`);
+
+    const width = widthAttr ? parseInt(widthAttr) : undefined;
+    const height = heightAttr ? parseInt(heightAttr) : undefined;
+
+    return {
+      src,
+      alt,
+      title,
+      dimensions: {
+        width,
+        height
+      },
+      hasDimensions: !!(width || height)
+    };
+  }).get();
+
+  const withAlt = images.filter(img => !!img.alt).length;
+  const withoutAlt = images.filter(img => !img.alt).length;
+
+  console.log(`Total images: ${images.length}, with alt: ${withAlt}, without alt: ${withoutAlt}`);
 
   return {
     total: images.length,
-    withAlt: images.filter(img => !!img.alt).length,
-    withoutAlt: images.filter(img => !img.alt).length,
+    withAlt,
+    withoutAlt,
     data: images
   };
 }
@@ -742,6 +815,7 @@ function generateIssues(result: WebsiteAnalysisResult) {
 async function getImageSize(url: string): Promise<number> {
   try {
     const response = await axios.head(url);
+    console.log("HEREEEEEE", response.headers['content-length'], response);
     return parseInt(response.headers['content-length'] || '0');
   } catch {
     return 0;
@@ -817,33 +891,6 @@ function checkAltTexts($: CheerioSelector): boolean {
   });
 
   return hasAlt;
-}
-
-function checkContrast($: CheerioSelector): boolean {
-  // Implémentation simplifiée - une vérification plus précise nécessiterait
-  // une analyse des couleurs avec puppeteer
-  return true;
-}
-
-function checkKeyboardNav($: CheerioSelector): boolean {
-  return $('[tabindex="-1"]').length === 0;
-}
-
-function calculateAccessibilityScore($: CheerioSelector): number {
-  let score = 100;
-
-  if (!checkAriaLabels($)) score -= 25;
-  if (!checkAltTexts($)) score -= 25;
-  if (!checkKeyboardNav($)) score -= 25;
-  if (!checkTouchTargets($)) score -= 25;
-
-  return Math.max(0, score);
-}
-
-async function validateHtml(html: string): Promise<boolean> {
-  // Implémentation simplifiée - une validation complète nécessiterait
-  // l'utilisation d'un validateur HTML
-  return true;
 }
 
 function findDeprecatedTags($: CheerioSelector): string[] {
@@ -974,6 +1021,75 @@ function calculateKeywordDensity(text: string): Record<string, number> {
   });
 
   return density;
+}
+
+// Fonction pour vérifier la présence et la validité du sitemap
+async function checkSitemap(baseUrl: string): Promise<{ found: boolean; url?: string; content?: string; urls?: number }> {
+  try {
+    // Essayer avec les emplacements courants
+    const possibleLocations = [
+      '/sitemap.xml',
+      '/sitemap_index.xml',
+      '/sitemap/',
+      '/sitemap.php',
+      '/sitemap.txt'
+    ];
+
+    for (const location of possibleLocations) {
+      try {
+        const url = new URL(location, baseUrl).href;
+        const response = await axios.get(url, { timeout: 5000 });
+
+        if (response.status === 200 && response.data) {
+          const content = response.data;
+
+          // Vérifier si c'est un XML valide contenant des balises urlset ou sitemapindex
+          if (typeof content === 'string' &&
+            (content.includes('<urlset') || content.includes('<sitemapindex'))) {
+
+            // Compter le nombre d'URLs
+            const $ = cheerioLoad(content);
+            const urlCount = $('url').length;
+
+            return {
+              found: true,
+              url,
+              content,
+              urls: urlCount
+            };
+          }
+        }
+      } catch (error) {
+        // Continuer à vérifier les autres emplacements possibles
+        console.log(`Sitemap non trouvé à ${location}: ${error.message}`);
+      }
+    }
+
+    return { found: false };
+  } catch (error) {
+    console.error('Erreur lors de la vérification du sitemap:', error);
+    return { found: false };
+  }
+}
+
+// Fonction pour vérifier la présence et le contenu du robots.txt
+async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean; content?: string }> {
+  try {
+    const robotsUrl = new URL('/robots.txt', baseUrl).href;
+    const response = await axios.get(robotsUrl, { timeout: 5000 });
+
+    if (response.status === 200 && response.data) {
+      return {
+        found: true,
+        content: response.data
+      };
+    }
+
+    return { found: false };
+  } catch (error) {
+    console.error('Erreur lors de la vérification du robots.txt:', error);
+    return { found: false };
+  }
 }
 
 async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<string[]> {

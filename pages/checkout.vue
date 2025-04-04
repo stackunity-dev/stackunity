@@ -35,21 +35,33 @@
             <div class="mb-6 px-3 py-4 bg-surface-variant rounded-lg">
               <div class="d-flex justify-space-between align-center mb-3">
                 <span class="text-subtitle-1 font-weight-medium">Lifetime Premium Access</span>
-                <span class="text-h6 font-weight-bold">{{ taxDetails.baseAmount }}€</span>
+                <span class="text-h6 font-weight-bold">{{ taxDetails.baseAmount }}€ HT</span>
               </div>
               <v-divider class="mb-3"></v-divider>
               <div class="d-flex justify-space-between align-center mb-1">
                 <span class="text-body-2 text-medium-emphasis">Subtotal</span>
-                <span class="text-body-2">{{ taxDetails.baseAmount }}€</span>
+                <span class="text-body-2">{{ taxDetails.baseAmount }}€ HT</span>
               </div>
-              <div class="d-flex justify-space-between align-center">
-                <span class="text-body-2 text-medium-emphasis">VAT ({{ taxDetails.taxPercentage }}%)</span>
+              <div v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0"
+                class="d-flex justify-space-between align-center">
+                <span class="text-body-2 text-medium-emphasis">TVA ({{ taxDetails.taxPercentage }}%)</span>
                 <span class="text-body-2">{{ taxDetails.taxAmount }}€</span>
               </div>
               <v-divider class="my-3"></v-divider>
               <div class="d-flex justify-space-between align-center">
                 <span class="text-subtitle-1 font-weight-medium">Total</span>
-                <span class="text-h6 font-weight-bold">{{ taxDetails.totalAmount }}€</span>
+                <span class="text-h6 font-weight-bold">{{ taxDetails.totalAmount }}€
+                  <template v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0">TTC</template>
+                  <template v-else>HT</template>
+                </span>
+              </div>
+              <div v-if="taxDetails.isVatExempt && taxDetails.vatNumber" class="mt-2 text-caption text-medium-emphasis">
+                TVA non applicable, Art. 283-2 du CGI - Autoliquidation de la TVA
+                <div>Numéro de TVA : {{ taxDetails.vatNumber }}</div>
+              </div>
+              <div v-else-if="billingCountry !== 'FR' && !isInEU(billingCountry)"
+                class="mt-2 text-caption text-medium-emphasis">
+                Exportation hors UE - TVA non applicable
               </div>
             </div>
 
@@ -69,17 +81,33 @@
                     </div>
                   </div>
 
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field v-model="cardholderName" label="Cardholder Name" variant="outlined"
-                        prepend-inner-icon="mdi-account-outline" class="mb-4"
-                        :rules="[(v: any) => !!v || 'Name required']" hide-details="auto"></v-text-field>
-                    </v-col>
-
+                  <v-row dense class="mb-4">
                     <v-col cols="12">
                       <v-select v-model="billingCountry" :items="countries" item-title="name" item-value="code"
-                        label="Billing Country" variant="outlined" prepend-inner-icon="mdi-earth"
-                        @update:model-value="updateTaxRates" class="mb-4" hide-details="auto"></v-select>
+                        label="Billing Country" variant="outlined" @update:model-value="updateTaxRates"></v-select>
+                    </v-col>
+                  </v-row>
+
+                  <v-row dense class="mb-4">
+                    <v-col cols="12">
+                      <v-checkbox v-model="isBusinessCustomer" label="I'm purchasing for a business"
+                        @update:model-value="updateTaxRates" hide-details></v-checkbox>
+                    </v-col>
+                  </v-row>
+
+                  <v-row dense v-if="isBusinessCustomer" class="mb-4">
+                    <v-col cols="12">
+                      <v-text-field v-model="vatNumber" label="VAT Number (for EU businesses)" variant="outlined"
+                        placeholder="e.g. FR12345678901"
+                        hint="Enter your VAT number to apply reverse charge if eligible" persistent-hint
+                        @update:model-value="updateTaxRates"></v-text-field>
+                    </v-col>
+                  </v-row>
+
+                  <v-row dense class="mb-4">
+                    <v-col cols="12">
+                      <v-text-field v-model="cardholderName" label="Cardholder Name" variant="outlined"
+                        placeholder="Name on card" required autofocus></v-text-field>
                     </v-col>
                   </v-row>
 
@@ -92,6 +120,8 @@
                 class="text-none font-weight-medium rounded-lg">
                 <v-icon start class="mr-2">mdi-credit-card-check-outline</v-icon>
                 Pay {{ taxDetails.totalAmount }}€
+                <template v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0">TTC</template>
+                <template v-else>HT</template>
                 <template v-slot:loader>
                   <v-progress-circular indeterminate></v-progress-circular>
                 </template>
@@ -133,7 +163,7 @@ useHead({
   meta: [
     { name: 'author', content: 'Nûr' },
     { name: 'description', content: 'Pay to access premium features of DevUnity' },
-    { name: 'robots', content: 'index,follow' },
+    { name: 'robots', content: 'nofollow, noindex' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { name: 'og:title', content: 'Payment - DevUnity' },
     { name: 'og:description', content: 'Pay to access premium features of DevUnity' },
@@ -157,6 +187,8 @@ const showSnackbar = ref(false);
 const snackbarColor = ref('');
 const snackbarText = ref('');
 const billingCountry = ref('FR');
+const isBusinessCustomer = ref(false);
+const vatNumber = ref('');
 
 const countries = [
   { code: 'FR', name: 'France' },
@@ -182,7 +214,9 @@ const taxDetails = ref({
   baseAmount: 300,
   taxAmount: 0,
   totalAmount: 300,
-  taxPercentage: 0
+  taxPercentage: 0,
+  isVatExempt: false,
+  vatNumber: ''
 });
 
 const features = ref([
@@ -211,20 +245,41 @@ const features = ref([
 const updateTaxRates = async () => {
   try {
     loading.value = true;
+    cardError.value = '';
 
-    const result = await userStore.checkout(cardholderName.value || 'Client', billingCountry.value);
+    const response = await userStore.checkout(
+      cardholderName.value,
+      billingCountry.value,
+      isBusinessCustomer.value,
+      vatNumber.value
+    );
 
-    if (result.success && result.taxDetails) {
-      taxDetails.value = result.taxDetails;
-      console.log('Tax rates updated for', billingCountry.value, ':', taxDetails.value);
+    if (response.success && response.taxDetails) {
+      taxDetails.value = {
+        baseAmount: response.taxDetails.baseAmount,
+        taxAmount: response.taxDetails.taxAmount,
+        totalAmount: response.taxDetails.totalAmount,
+        taxPercentage: response.taxDetails.taxPercentage,
+        isVatExempt: response.taxDetails.isVatExempt || false,
+        vatNumber: response.taxDetails.vatNumber || ''
+      };
+
+      if (taxDetails.value.isVatExempt) {
+        showSnackbar.value = true;
+        snackbarColor.value = 'success';
+        snackbarText.value = 'VAT reverse charge applied (0% VAT)';
+      }
     } else {
-      console.error('Error updating tax rates:', result.error);
+      console.error('Failed to update tax rates:', response.error);
       showSnackbar.value = true;
-      snackbarColor.value = 'warning';
-      snackbarText.value = 'Unable to update taxes for this country.';
+      snackbarColor.value = 'error';
+      snackbarText.value = response.error || 'Failed to calculate taxes';
     }
   } catch (error) {
     console.error('Error updating tax rates:', error);
+    showSnackbar.value = true;
+    snackbarColor.value = 'error';
+    snackbarText.value = 'Failed to calculate taxes';
   } finally {
     loading.value = false;
   }
@@ -232,9 +287,23 @@ const updateTaxRates = async () => {
 
 onMounted(async () => {
   try {
-    updateTaxRates();
+    if (window.location.protocol !== 'https:' && process.env.NODE_ENV === 'production') {
+      console.warn('Warning: Stripe requires HTTPS for live integrations. Please use a secure connection.');
+    }
 
-    stripe.value = await loadStripe(process.env.STRIPE_PUBLISHABLE_KEY || '');
+    await updateTaxRates();
+
+    const stripePublicKey = process.env.STRIPE_PUBLISHABLE_KEY || 'pk_live_51R8HEwL1ZwIYz99yojPngr0GNrqqLUQtGy1cYUWXVvjgeP7zKXCRwpKkCktaIQFOEskA3XnNbVuX60l2UwLP0SHv00o1udOfFO';
+
+    if (!stripePublicKey) {
+      console.error('Stripe public key is missing');
+      showSnackbar.value = true;
+      snackbarColor.value = 'error';
+      snackbarText.value = 'Payment configuration error. Please contact support.';
+      return;
+    }
+
+    stripe.value = await loadStripe(stripePublicKey);
 
     if (stripe.value) {
       elements.value = stripe.value.elements();
@@ -249,38 +318,35 @@ onMounted(async () => {
             fontWeight: '400',
             lineHeight: '1.5',
             '::placeholder': {
-              color: '#9e9e9e'
-            },
-            iconColor: '#bb86fc',
-            ':-webkit-autofill': {
-              color: '#e0e0e0',
+              color: '#a0a0a0',
             },
           },
           invalid: {
-            color: '#cf6679',
-            iconColor: '#cf6679'
-          }
-        }
+            color: '#fa755a',
+            iconColor: '#fa755a',
+          },
+        },
       });
 
-      setTimeout(() => {
-        if (cardElement.value) {
-          cardElementInstance.mount(cardElement.value);
-          cardElementInstance.on('change', (event: any) => {
-            cardError.value = event.error ? event.error.message : '';
-          });
+      cardElementInstance.mount(cardElement.value!);
+      cardElementInstance.on('change', (event: any) => {
+        if (event.error) {
+          cardError.value = event.error.message;
+        } else {
+          cardError.value = '';
         }
-      }, 100);
+      });
     } else {
+      console.error('Failed to initialize Stripe');
       showSnackbar.value = true;
       snackbarColor.value = 'error';
-      snackbarText.value = 'Unable to load Stripe. Please try again.';
+      snackbarText.value = 'Payment system unavailable. Please try again later.';
     }
   } catch (error) {
-    console.error('Error during initial loading:', error);
+    console.error('Error initializing payment form:', error);
     showSnackbar.value = true;
     snackbarColor.value = 'error';
-    snackbarText.value = 'Error during initial loading.';
+    snackbarText.value = 'Error initializing payment form. Please refresh the page.';
   }
 });
 
@@ -295,14 +361,26 @@ const processPayment = async () => {
   loading.value = true;
 
   try {
-    const result = await userStore.checkout(cardholderName.value, billingCountry.value);
+    const result = await userStore.checkout(
+      cardholderName.value,
+      billingCountry.value,
+      isBusinessCustomer.value,
+      vatNumber.value
+    );
 
     if (!result.success || !result.clientSecret) {
       throw new Error(result.error || 'Error creating payment intent');
     }
 
     if (result.taxDetails) {
-      taxDetails.value = result.taxDetails;
+      taxDetails.value = {
+        baseAmount: result.taxDetails.baseAmount,
+        taxAmount: result.taxDetails.taxAmount,
+        totalAmount: result.taxDetails.totalAmount,
+        taxPercentage: result.taxDetails.taxPercentage,
+        isVatExempt: result.taxDetails.isVatExempt || false,
+        vatNumber: result.taxDetails.vatNumber || ''
+      };
     }
 
     const { error, paymentIntent } = await stripe.value.confirmCardPayment(
@@ -345,6 +423,10 @@ const processPayment = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const isInEU = (countryCode: string): boolean => {
+  return countryCode.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/) !== null;
 };
 </script>
 

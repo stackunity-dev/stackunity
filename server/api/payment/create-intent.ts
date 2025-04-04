@@ -1,34 +1,16 @@
+import { defineEventHandler, readBody } from 'h3';
 import Stripe from 'stripe';
-import { readBody, defineEventHandler } from 'h3';
-
-const TAX_RATES: { [key: string]: number } = {
-  'FR': 0.20,
-  'DE': 0.19,
-  'IT': 0.22,
-  'ES': 0.21,
-  'GB': 0.20,
-  'BE': 0.21,
-  'NL': 0.21,
-  'LU': 0.17,
-  'AT': 0.20,
-  'US': 0.0,
-  'CA': 0.05,
-  'CH': 0.077,
-  'PT': 0.23,
-  'DK': 0.25,
-  'SE': 0.25,
-  'NO': 0.25,
-  'FI': 0.24,
-};
-
-function getTaxRate(countryCode: string): number {
-  return TAX_RATES[countryCode] || 0.20;
-}
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { currency, customer_name, country_code = 'FR' } = body;
+    const {
+      currency,
+      customer_name,
+      country_code = 'FR',
+      vat_number = '',
+      is_business = false
+    } = body;
 
     if (!currency) {
       return {
@@ -37,54 +19,179 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-      apiVersion: '2024-09-30.acacia',
-    });
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
+    if (!stripeSecretKey) {
+      console.error('Missing Stripe secret key configuration');
+      return {
+        success: false,
+        error: 'Payment system is not properly configured'
+      };
+    }
+
+    let stripe;
+    try {
+      stripe = new Stripe(stripeSecretKey, {
+        apiVersion: '2024-09-30.acacia',
+      });
+    } catch (stripeInitError) {
+      console.error('Failed to initialize Stripe:', stripeInitError);
+      return {
+        success: false,
+        error: 'Payment system initialization failed'
+      };
+    }
 
     const baseAmount = 30000;
 
-    const taxRate = getTaxRate(country_code);
-    const taxAmount = Math.round(baseAmount * taxRate);
-    const totalAmount = baseAmount + taxAmount;
+    if (process.env.NODE_ENV === 'development' && stripeSecretKey.startsWith('sk_test_')) {
+      console.log('Development mode: returning mock tax details without Stripe API call');
 
-    console.log(`Tax calculation for ${country_code}:`, {
-      baseAmount,
-      taxRate,
-      taxAmount,
-      totalAmount,
-      taxPercentage: Math.round(taxRate * 100)
-    });
+      let estimatedTaxRate = 0;
 
-    const customer = await stripe.customers.create({
-      name: customer_name || 'DevUnity Client',
-      address: {
-        country: country_code,
+      if (is_business && vat_number && country_code !== 'FR' && country_code.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/)) {
+        estimatedTaxRate = 0;
+      } else if (country_code === 'FR') {
+        estimatedTaxRate = 0.20;
+      } else if (country_code.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/)) {
+        estimatedTaxRate = 0.20;
+      } else if (country_code === 'CH') {
+        estimatedTaxRate = 0.077;
+      } else {
+        estimatedTaxRate = 0;
       }
-    });
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalAmount,
-      currency,
-      customer: customer.id,
-      metadata: {
-        customer_name: customer_name || 'Unidentified client',
-        country_code,
-        base_amount: baseAmount.toString(),
-        tax_amount: taxAmount.toString(),
-        tax_rate: `${Math.round(taxRate * 100)}%`
-      }
-    });
+      const estimatedTaxAmount = Math.round(baseAmount * estimatedTaxRate);
+      const estimatedTotalAmount = baseAmount + estimatedTaxAmount;
 
-    return {
-      success: true,
-      clientSecret: paymentIntent.client_secret,
-      taxDetails: {
-        baseAmount: baseAmount / 100,
-        taxAmount: taxAmount / 100,
-        totalAmount: totalAmount / 100,
-        taxPercentage: Math.round(taxRate * 100)
+      return {
+        success: true,
+        clientSecret: 'dev_mock_secret_' + Math.random().toString(36).substring(2),
+        taxDetails: {
+          baseAmount: baseAmount / 100,
+          taxAmount: estimatedTaxAmount / 100,
+          totalAmount: estimatedTotalAmount / 100,
+          taxPercentage: Math.round(estimatedTaxRate * 100),
+          isVatExempt: estimatedTaxRate === 0 && is_business && vat_number,
+          vatNumber: vat_number
+        }
+      };
+    }
+
+    try {
+      const customerData: any = {
+        name: customer_name || 'DevUnity Client',
+        address: {
+          country: country_code,
+        }
+      };
+
+      if (is_business && vat_number) {
+        customerData.tax = {
+          ip_address: event.node.req.headers['x-forwarded-for'] || event.node.req.socket.remoteAddress,
+        };
+
+        if (vat_number.substring(0, 2).toUpperCase() === country_code) {
+          customerData.tax.tax_id = {
+            type: 'eu_vat',
+            value: vat_number
+          };
+        } else if (country_code.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/)) {
+          customerData.tax.tax_id = {
+            type: 'eu_vat',
+            value: country_code + vat_number
+          };
+        }
       }
-    };
+
+      const customer = await stripe.customers.create(customerData);
+
+      let taxCalculation;
+      try {
+        taxCalculation = await stripe.tax.calculations.create({
+          currency,
+          customer: customer.id,
+          line_items: [
+            {
+              amount: baseAmount,
+              reference: 'premium_lifetime_access',
+              tax_behavior: 'exclusive',
+              tax_code: 'txcd_10103001', // Logiciel numérique
+            },
+          ],
+          customer_details: {
+            address: {
+              country: country_code,
+            },
+            address_source: 'billing',
+            tax_id: is_business && vat_number ? {
+              type: 'eu_vat',
+              value: vat_number
+            } : undefined,
+            tax_exempt: is_business && vat_number && country_code !== 'FR' ? 'reverse_charge' : undefined
+          },
+        });
+      } catch (taxError) {
+        console.warn('Stripe Tax calculation failed, falling back to manual calculation:', taxError);
+
+        let fallbackTaxRate = 0;
+
+        if (is_business && vat_number && country_code !== 'FR' && country_code.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/)) {
+          fallbackTaxRate = 0;
+        } else if (country_code === 'FR') {
+          fallbackTaxRate = 0.20;
+        } else if (country_code.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/)) {
+          fallbackTaxRate = 0.20;
+        } else if (country_code === 'CH') {
+          fallbackTaxRate = 0.077;
+        } else {
+          fallbackTaxRate = 0;
+        }
+
+        const fallbackTaxAmount = Math.round(baseAmount * fallbackTaxRate);
+        taxCalculation = {
+          amount_total: baseAmount + fallbackTaxAmount,
+          tax_amount_exclusive: fallbackTaxAmount,
+          tax_breakdown: [{ tax_rate_percentage: fallbackTaxRate * 100 }]
+        };
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: taxCalculation.amount_total,
+        currency,
+        customer: customer.id,
+        automatic_tax: { enabled: true },
+        metadata: {
+          customer_name: customer_name || 'Unidentified client',
+          country_code,
+          is_business: is_business ? 'true' : 'false',
+          vat_number: vat_number || 'none',
+          base_amount: baseAmount.toString(),
+          tax_amount: taxCalculation.tax_amount_exclusive.toString(),
+        }
+      });
+
+      const taxPercentage = taxCalculation.tax_breakdown?.[0]?.tax_rate_percentage || 0;
+      const isVatExempt = is_business && vat_number && country_code !== 'FR' && taxPercentage === 0;
+
+      return {
+        success: true,
+        clientSecret: paymentIntent.client_secret,
+        taxDetails: {
+          baseAmount: baseAmount / 100,
+          taxAmount: taxCalculation.tax_amount_exclusive / 100,
+          totalAmount: taxCalculation.amount_total / 100,
+          taxPercentage: taxPercentage,
+          isVatExempt: isVatExempt,
+          vatNumber: vat_number
+        }
+      };
+    } catch (stripeApiError: any) {
+      console.error('Stripe API error:', stripeApiError?.message || stripeApiError);
+      return {
+        success: false,
+        error: 'Payment processing error: ' + (stripeApiError?.message || 'Unknown Stripe error')
+      };
+    }
   } catch (error) {
     console.error('Error creating payment intent:', error);
 

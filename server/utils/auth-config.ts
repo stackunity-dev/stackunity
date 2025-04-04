@@ -14,4 +14,4 @@ export const REFRESH_TOKEN_COOKIE_OPTIONS = {
 };
 
 export const AUTO_REFRESH_THRESHOLD = 30 * 60;
-export const SESSION_MAX_AGE = 12 * 60 * 60; 
+export const SESSION_MAX_AGE = 12 * 60 * 60;

@@ -12,8 +12,8 @@
         </NuxtLink>
         <v-spacer></v-spacer>
 
-        <template v-if="$vuetify.display.smAndUp">
-          <div class="d-flex align-center custom-nav-menu">
+        <div v-show="isClient" class="d-flex align-center">
+          <div v-if="isClient && display.smAndUp.value" class="d-flex align-center custom-nav-menu">
             <div class="nav-links-wrapper">
               <v-btn v-for="item in menuItems" :key="item.href" class="nav-btn custom-btn" :href="item.href"
                 :class="{ 'active-nav-btn': activeSection === item.href.substring(1) }" variant="text">
@@ -29,10 +29,8 @@
               </v-btn>
             </div>
           </div>
-        </template>
 
-        <template v-else>
-          <div class="d-flex align-center">
+          <div v-else-if="isClient && !display.smAndUp.value" class="d-flex align-center">
             <v-btn color="primary" class="mr-2" to="/login" size="small" rounded="pill">
               <v-icon size="small" class="mr-1">mdi-login</v-icon>
               Login
@@ -45,7 +43,7 @@
               </div>
             </v-btn>
           </div>
-        </template>
+        </div>
       </v-container>
     </v-app-bar>
 
@@ -277,9 +275,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from '@/stores/userStore';
-import { defineAsyncComponent, ref } from 'vue';
-import Snackbar from '~/components/snackbar.vue';
+import { defineAsyncComponent, onMounted, ref } from 'vue';
+import { useDisplay } from 'vuetify';
+import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
+// @ts-ignore 
+import { definePageMeta, useHead } from '#imports';
 
 definePageMeta({
   layout: 'empty'
@@ -297,8 +298,8 @@ useHead({
   ]
 })
 
-const Pricing = defineAsyncComponent(() => import('@/components/pricing.vue'));
-const Faq = defineAsyncComponent(() => import('@/components/faq.vue'));
+const Pricing = defineAsyncComponent(() => import('../components/pricing.vue'));
+const Faq = defineAsyncComponent(() => import('../components/faq.vue'));
 
 const stats = [
   { value: '2x', label: 'Faster Development' },
@@ -409,8 +410,16 @@ const snackbarText = ref('');
 const snackbarColor = ref('');
 const snackbarTimeout = ref(2000);
 const loading = ref(false);
+const isClient = ref(false);
 
 const userStore = useUserStore();
+
+// Utiliser useDisplay pour les breakpoints Vuetify
+const display = useDisplay();
+
+onMounted(() => {
+  isClient.value = true;
+});
 
 const submitEmail = async () => {
   if (!email.value) {

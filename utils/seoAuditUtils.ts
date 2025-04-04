@@ -7,32 +7,99 @@ export interface WarningItem {
 export interface ActionItem {
   title: string;
   description: string;
-  code?: string;
-  icon?: string;
+  severity: 'high' | 'medium' | 'low' | 'error';
 }
 
+export interface Warning {
+  severity: string;
+  message: string;
+  type?: string;
+}
 
-export const calculateOverallScore = (result: any): number => {
+export interface SEOResult {
+  title?: string;
+  description?: string;
+  loadTime?: number;
+  headingStructure?: {
+    h1?: string[];
+    h2?: string[];
+    h3?: string[];
+  };
+  imageAlt?: Array<{
+    alt?: string;
+    src?: string;
+    title?: string;
+    width?: number;
+    height?: number;
+    hasDimensions?: boolean;
+  }>;
+  videoInfo?: Array<{
+    src: string;
+    length?: number;
+    thumbnail?: string;
+    title?: string;
+    description?: string;
+    width?: number;
+    height?: number;
+  }>;
+  coreWebVitals?: {
+    LCP?: number;
+    FCP?: number;
+    TTFB?: number;
+    performanceScore?: number;
+  };
+  mobileCompatibility?: {
+    hasViewport?: boolean;
+    smallTouchTargets?: number;
+    viewportContent?: string;
+  };
+  securityChecks?: {
+    https?: boolean;
+    securityHeaders?: Array<{ name: string; value: string }>;
+  };
+  socialTags?: {
+    ogTags?: Array<{ property: string; content: string }>;
+    twitterTags?: Array<{ name: string; content: string }>;
+  };
+  technicalSEO?: {
+    sitemapFound?: boolean;
+    sitemapUrl?: string;
+    sitemapUrls?: number;
+    robotsTxtFound?: boolean;
+    robotsTxtContent?: string;
+    schemaTypeCount?: Record<string, number>;
+  };
+  structuredData?: any[];
+  warnings?: Array<string | Warning>;
+  contentStats?: {
+    readabilityScore?: number;
+    wordCount?: number;
+    keywordDensity?: number;
+  };
+}
+
+export const calculateOverallScore = (result: SEOResult): number => {
+  if (!result) return 0;
   let score = 100;
 
   const warningCount = result.warnings?.length || 0;
   if (warningCount > 0) {
     score -= warningCount * 5;
 
-    result.warnings.forEach((warning: any) => {
+    result.warnings?.forEach((warning: Warning | string) => {
       if (typeof warning === 'string') return;
 
-      switch (warning.severity) {
-        case 'critical':
+      switch (warning?.severity) {
+        case 'high':
           score -= 15;
           break;
-        case 'high':
+        case 'medium':
           score -= 10;
           break;
-        case 'medium':
+        case 'low':
           score -= 5;
           break;
-        case 'low':
+        case 'error':
           score -= 2;
           break;
       }
@@ -41,12 +108,12 @@ export const calculateOverallScore = (result: any): number => {
 
   if (!result.title) score -= 20;
   if (!result.description) score -= 15;
-  if (result.headingStructure.h1.length === 0) score -= 15;
-  if (result.imageAlt.some((img: any) => !img.alt)) score -= 10;
+  if (!result.headingStructure?.h1?.length) score -= 15;
+  if (result.imageAlt?.some(img => !img?.alt)) score -= 10;
 
-  if (result.coreWebVitals.FCP > 3000) score -= 10;
-  if (result.coreWebVitals.LCP > 4000) score -= 10;
-  if (result.coreWebVitals.TTFB > 1500) score -= 10;
+  if ((result.coreWebVitals?.FCP || 0) > 3000) score -= 10;
+  if ((result.coreWebVitals?.LCP || 0) > 4000) score -= 10;
+  if ((result.coreWebVitals?.TTFB || 0) > 1500) score -= 10;
 
   if (score > 90) score = 90;
   if (warningCount > 5) score = Math.min(score, 70);
@@ -73,30 +140,52 @@ export const getScoreDescription = (score: number): string => {
   return 'Significant improvements are needed';
 };
 
-export const getCriticalIssues = (result: any): any[] => {
-  const issues = [];
+export const getCriticalIssues = (result: SEOResult): ActionItem[] => {
+  const issues: ActionItem[] = [];
 
+  // Check for missing title
   if (!result.title) {
-    issues.push({
+    const issue: ActionItem = {
       title: 'Missing title',
       description: 'The title tag is required for SEO',
-      severity: 'error'
+      severity: 'error' as const
+    };
+    issues.push(issue);
+    if (!result.warnings) result.warnings = [];
+    result.warnings.push({
+      type: 'title',
+      message: 'Missing title tag',
+      severity: 'high'
     });
   }
 
   if (!result.description) {
-    issues.push({
+    const issue: ActionItem = {
       title: 'Missing description',
       description: 'Meta description is important for SEO',
-      severity: 'error'
+      severity: 'error' as const
+    };
+    issues.push(issue);
+    if (!result.warnings) result.warnings = [];
+    result.warnings.push({
+      type: 'description',
+      message: 'Missing meta description',
+      severity: 'high'
     });
   }
 
-  if (result.headingStructure.h1.length === 0) {
-    issues.push({
+  if (result.headingStructure?.h1?.length === 0) {
+    const issue: ActionItem = {
       title: 'Missing H1',
       description: 'The page must have an H1 heading',
-      severity: 'error'
+      severity: 'error' as const
+    };
+    issues.push(issue);
+    if (!result.warnings) result.warnings = [];
+    result.warnings.push({
+      type: 'h1',
+      message: 'Missing H1 heading',
+      severity: 'high'
     });
   }
 
@@ -166,7 +255,9 @@ export const getKeywordDensityStatus = (density: number): string => {
   return 'Density too low';
 };
 
-export const getReadabilityScore = (result: any): number => {
+export const getReadabilityScore = (result: SEOResult): number => {
+  if (!result) return 0;
+
   if (!result.contentStats || result.contentStats.readabilityScore === undefined) {
     const content = result.description || '';
     const sentences = content.split(/[.!?]+/).filter((s: string) => s.trim().length > 0);
@@ -186,8 +277,8 @@ export const getReadabilityScore = (result: any): number => {
     if (longWordsPercentage > 20) score -= 20;
     else if (longWordsPercentage > 10) score -= 10;
 
-    if (result.headingStructure.h2.length > 0) score += 5;
-    if (result.headingStructure.h3.length > 0) score += 5;
+    if ((result.headingStructure?.h2?.length || 0) > 0) score += 5;
+    if ((result.headingStructure?.h3?.length || 0) > 0) score += 5;
 
     return Math.max(0, Math.min(100, score));
   }
@@ -265,7 +356,8 @@ export const getWarningImpactDescription = (type: string): string => {
   return impacts[type] || 'Impact on overall site quality';
 };
 
-export const getPerformanceScore = (result: any): number => {
+export const getPerformanceScore = (result: SEOResult): number => {
+  if (!result) return 0;
   let score = 0;
   let totalWeight = 0;
 
@@ -276,7 +368,7 @@ export const getPerformanceScore = (result: any): number => {
       description: 'Title presence'
     },
     {
-      value: result.title && result.title.length >= 30 && result.title.length <= 65,
+      value: result.title ? (result.title.length >= 30 && result.title.length <= 65) : false,
       weight: 5,
       description: 'Optimal title length'
     },
@@ -286,87 +378,82 @@ export const getPerformanceScore = (result: any): number => {
       description: 'Description presence'
     },
     {
-      value: result.description && result.description.length >= 70 && result.description.length <= 160,
+      value: result.description ? (result.description.length >= 70 && result.description.length <= 160) : false,
       weight: 5,
       description: 'Optimal description length'
     },
-
     {
       value: result.headingStructure?.h1?.length === 1,
       weight: 8,
       description: 'Single H1'
     },
     {
-      value: result.headingStructure?.h2?.length >= 2,
+      value: (result.headingStructure?.h2?.length || 0) >= 2,
       weight: 4,
       description: 'At least 2 H2s'
     },
     {
-      value: result.headingStructure?.h3?.length >= 1,
+      value: (result.headingStructure?.h3?.length || 0) >= 1,
       weight: 3,
       description: 'At least 1 H3'
     },
-
     {
-      value: !result.imageAlt.some((img: any) => !img.alt),
+      value: result.imageAlt?.every(img => img?.alt) ?? false,
       weight: 8,
       description: 'Images with alt'
     },
     {
-      value: result.imageAlt.some((img: any) => img.hasDimensions),
+      value: result.imageAlt?.some(img => img?.hasDimensions) ?? false,
       weight: 4,
       description: 'Images with dimensions'
     },
     {
-      value: result.videoInfo?.length > 0,
+      value: (result.videoInfo?.length || 0) > 0,
       weight: 3,
       description: 'Video content'
     },
-
     {
-      value: result.coreWebVitals.LCP <= 2500,
+      value: (result.coreWebVitals?.LCP ?? Infinity) <= 2500,
       weight: 6,
       description: 'Optimal LCP'
     },
     {
-      value: result.coreWebVitals.FCP <= 1000,
+      value: (result.coreWebVitals?.FCP ?? Infinity) <= 1000,
       weight: 4,
       description: 'Optimal FCP'
     },
     {
-      value: result.coreWebVitals.TTFB <= 500,
+      value: (result.coreWebVitals?.TTFB ?? Infinity) <= 500,
       weight: 5,
       description: 'Optimal TTFB'
     },
-
     {
-      value: result.mobileCompatibility.hasViewport,
+      value: result.mobileCompatibility?.hasViewport ?? false,
       weight: 4,
       description: 'Mobile viewport'
     },
     {
-      value: result.mobileCompatibility.smallTouchTargets === 0,
+      value: (result.mobileCompatibility?.smallTouchTargets ?? Infinity) === 0,
       weight: 3,
       description: 'Optimal touch targets'
     },
     {
-      value: result.securityChecks.https,
+      value: result.securityChecks?.https ?? false,
       weight: 3,
       description: 'HTTPS'
     },
-
     {
-      value: result.socialTags.ogTags.length > 0,
+      value: (result.socialTags?.ogTags?.length || 0) > 0,
       weight: 5,
       description: 'Open Graph tags'
     },
     {
-      value: result.socialTags.twitterTags.length > 0,
+      value: (result.socialTags?.twitterTags?.length || 0) > 0,
       weight: 5,
       description: 'Twitter tags'
     },
     {
-      value: result.structuredData.length > 0,
+      value: (result.structuredData?.length || 0) > 0,
       weight: 5,
       description: 'Structured data'
     }
@@ -385,41 +472,43 @@ export const getPerformanceScore = (result: any): number => {
     score = Math.max(0, score - warningPenalty);
   }
 
-  return Math.round((score / totalWeight) * 100);
+  return Math.round((score / (totalWeight || 1)) * 100);
 };
 
-export const getMobileScore = (result: any): number => {
+export const getMobileScore = (result: SEOResult): number => {
+  if (!result) return 0;
   let score = 0;
   let totalWeight = 0;
 
   const factors = [
     {
-      value: result.mobileCompatibility.hasViewport,
+      value: result.mobileCompatibility?.hasViewport || false,
       weight: 25,
       description: 'Mobile viewport'
     },
     {
-      value: result.mobileCompatibility.smallTouchTargets === 0,
+      value: (result.mobileCompatibility?.smallTouchTargets || 0) === 0,
       weight: 20,
       description: 'Optimal touch targets'
     },
     {
-      value: result.coreWebVitals.LCP <= 2500,
+      value: (result.coreWebVitals?.LCP || 0) <= 2500,
       weight: 15,
       description: 'Optimal LCP'
     },
     {
-      value: result.coreWebVitals.FCP <= 1000,
+      value: (result.coreWebVitals?.FCP || 0) <= 1000,
       weight: 15,
       description: 'Optimal FCP'
     },
     {
-      value: result.imageAlt.some((img: any) => img.hasDimensions),
+      value: result.imageAlt?.some(img => img?.hasDimensions) || false,
       weight: 15,
       description: 'Responsive images'
     },
     {
-      value: result.mobileCompatibility.viewportContent.includes('width=device-width'),
+      value: typeof result.mobileCompatibility?.viewportContent === 'string' &&
+        result.mobileCompatibility.viewportContent.includes('width=device-width'),
       weight: 10,
       description: 'Properly configured viewport'
     }
@@ -432,19 +521,18 @@ export const getMobileScore = (result: any): number => {
     }
   });
 
-  const mobileWarnings = result.warnings?.filter((w: any) =>
-    w.type === 'mobile'
-  ).length || 0;
+  const mobileWarnings = result.warnings?.filter((w: Warning | string) => typeof w === 'object' && w?.type === 'mobile').length || 0;
 
   if (mobileWarnings > 0) {
     const warningPenalty = Math.min(20, mobileWarnings * 4);
     score = Math.max(0, score - warningPenalty);
   }
 
-  return Math.round((score / totalWeight) * 100);
+  return Math.round((score / (totalWeight || 1)) * 100);
 };
 
-export const getSEOScore = (result: any): number => {
+export const getSEOScore = (result: SEOResult): number => {
+  if (!result) return 0;
   let score = 0;
   let totalWeight = 0;
 
@@ -469,83 +557,78 @@ export const getSEOScore = (result: any): number => {
       weight: 5,
       description: 'Optimal description length'
     },
-
     {
       value: result.headingStructure?.h1?.length === 1,
       weight: 8,
       description: 'Single H1'
     },
     {
-      value: result.headingStructure?.h2?.length >= 2,
+      value: (result.headingStructure?.h2?.length || 0) >= 2,
       weight: 4,
       description: 'At least 2 H2s'
     },
     {
-      value: result.headingStructure?.h3?.length >= 1,
+      value: (result.headingStructure?.h3?.length || 0) >= 1,
       weight: 3,
       description: 'At least 1 H3'
     },
-
     {
-      value: !result.imageAlt.some((img: any) => !img.alt),
+      value: !result.imageAlt?.some(img => !img?.alt),
       weight: 8,
       description: 'Images with alt'
     },
     {
-      value: result.imageAlt.some((img: any) => img.hasDimensions),
+      value: result.imageAlt?.some(img => img?.hasDimensions) || false,
       weight: 4,
       description: 'Images with dimensions'
     },
     {
-      value: result.videoInfo?.length > 0,
+      value: (result.videoInfo?.length || 0) > 0,
       weight: 3,
       description: 'Video content'
     },
-
     {
-      value: result.coreWebVitals.LCP <= 2500,
+      value: (result.coreWebVitals?.LCP || 0) <= 2500,
       weight: 6,
       description: 'Optimal LCP'
     },
     {
-      value: result.coreWebVitals.FCP <= 1000,
+      value: (result.coreWebVitals?.FCP || 0) <= 1000,
       weight: 4,
       description: 'Optimal FCP'
     },
     {
-      value: result.coreWebVitals.TTFB <= 500,
+      value: (result.coreWebVitals?.TTFB || 0) <= 500,
       weight: 5,
       description: 'Optimal TTFB'
     },
-
     {
-      value: result.mobileCompatibility.hasViewport,
+      value: result.mobileCompatibility?.hasViewport || false,
       weight: 4,
       description: 'Mobile viewport'
     },
     {
-      value: result.mobileCompatibility.smallTouchTargets === 0,
+      value: (result.mobileCompatibility?.smallTouchTargets || 0) === 0,
       weight: 3,
       description: 'Optimal touch targets'
     },
     {
-      value: result.securityChecks.https,
+      value: result.securityChecks?.https || false,
       weight: 3,
       description: 'HTTPS'
     },
-
     {
-      value: result.socialTags.ogTags.length > 0,
+      value: (result.socialTags?.ogTags?.length || 0) > 0,
       weight: 5,
       description: 'Open Graph tags'
     },
     {
-      value: result.socialTags.twitterTags.length > 0,
+      value: (result.socialTags?.twitterTags?.length || 0) > 0,
       weight: 5,
       description: 'Twitter tags'
     },
     {
-      value: result.structuredData.length > 0,
+      value: (result.structuredData?.length || 0) > 0,
       weight: 5,
       description: 'Structured data'
     }
@@ -564,87 +647,125 @@ export const getSEOScore = (result: any): number => {
     score = Math.max(0, score - warningPenalty);
   }
 
-  return Math.round((score / totalWeight) * 100);
+  return Math.round((score / (totalWeight || 1)) * 100);
 };
 
-export const getPerformanceColor = (score: number): string => {
-  if (score >= 80) return 'success';
-  if (score >= 50) return 'warning';
-  return 'error';
-};
+interface ActionItems {
+  high: ActionItem[];
+  medium: ActionItem[];
+  low: ActionItem[];
+}
 
-export const getActionItems = (result: any): { high: ActionItem[], medium: ActionItem[], low: ActionItem[] } => {
-  const actions = {
+export const getActionItems = (result: SEOResult): ActionItems => {
+  const actionItems: ActionItems = {
     high: [] as ActionItem[],
     medium: [] as ActionItem[],
     low: [] as ActionItem[]
   };
 
+  if (!result) return actionItems;
+
+  // Title checks
   if (!result.title) {
-    actions.high.push({
-      title: 'Add a title tag',
-      description: 'This page has no defined title, which is crucial for SEO and user experience.',
-      code: '<title>Descriptive title of your page (55-65 characters)</title>',
-      icon: 'mdi-format-title'
-    });
+    actionItems.high.push({
+      title: 'Missing Page Title',
+      description: 'Page title is missing. Add a descriptive title tag.',
+      severity: 'high'
+    } as ActionItem);
   } else if (result.title.length < 30 || result.title.length > 65) {
-    actions.medium.push({
-      title: 'Optimize title length',
-      description: `Your title is ${result.title.length} characters. The ideal length is between 30 and 65 characters.`,
-      icon: 'mdi-format-title'
-    });
+    actionItems.medium.push({
+      title: 'Suboptimal Title Length',
+      description: 'Page title should be between 30-65 characters for optimal display in search results.',
+      severity: 'medium'
+    } as ActionItem);
   }
 
+  // Description checks
   if (!result.description) {
-    actions.high.push({
-      title: 'Add a meta description',
-      description: 'This page has no meta description, which is important for click-through rates in search results.',
-      code: '<meta name="description" content="Concise and attractive description of your page (150-160 characters)">',
-      icon: 'mdi-text-box'
-    });
+    actionItems.high.push({
+      title: 'Missing Meta Description',
+      description: 'Meta description is missing. Add a compelling description to improve click-through rates.',
+      severity: 'high'
+    } as ActionItem);
   } else if (result.description.length < 70 || result.description.length > 160) {
-    actions.medium.push({
-      title: 'Optimize description length',
-      description: `Your description is ${result.description.length} characters. The ideal length is between 70 and 160 characters.`,
-      icon: 'mdi-text-box'
-    });
+    actionItems.medium.push({
+      title: 'Suboptimal Description Length',
+      description: 'Meta description should be between 70-160 characters for optimal display in search results.',
+      severity: 'medium'
+    } as ActionItem);
   }
 
-  if (result.headingStructure.h1.length === 0) {
-    actions.high.push({
-      title: 'Add an H1 heading',
-      description: 'This page has no H1 heading, which is essential for content hierarchy and SEO.',
-      code: '<h1>Main title of your page</h1>',
-      icon: 'mdi-format-header-1'
-    });
+  // Heading structure checks
+  if (!result.headingStructure?.h1 || result.headingStructure.h1.length === 0) {
+    actionItems.high.push({
+      title: 'Missing H1 Heading',
+      description: 'Page is missing a main H1 heading. Add one to improve content hierarchy.',
+      severity: 'high'
+    } as ActionItem);
   } else if (result.headingStructure.h1.length > 1) {
-    actions.medium.push({
-      title: 'Reduce the number of H1 headings',
-      description: `Your page has ${result.headingStructure.h1.length} H1 headings. Ideally, a page should have only one H1.`,
-      icon: 'mdi-format-header-1'
-    });
+    actionItems.medium.push({
+      title: 'Multiple H1 Headings',
+      description: 'Page has multiple H1 headings. Consider using only one main heading.',
+      severity: 'medium'
+    } as ActionItem);
   }
 
-  const imagesWithoutAlt = result.imageAlt.filter((img: any) => !img.alt);
-  if (imagesWithoutAlt.length > 0) {
-    actions.high.push({
-      title: `Add alt attributes to ${imagesWithoutAlt.length} image(s)`,
-      description: 'Images without alt attributes harm accessibility and SEO.',
-      code: `<img src="example.jpg" alt="Relevant description of the image">`,
-      icon: 'mdi-image'
-    });
+  // Image checks
+  if (result.imageAlt?.some(img => !img?.alt)) {
+    actionItems.medium.push({
+      title: 'Missing Alt Text',
+      description: 'Some images are missing alt text. Add descriptive alt text for accessibility and SEO.',
+      severity: 'medium'
+    } as ActionItem);
   }
 
-  if (!result.mobileCompatibility.hasViewport) {
-    actions.high.push({
-      title: 'Add a viewport meta tag',
-      description: 'Your page has no viewport tag, which is essential for mobile display.',
-      code: '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
-      icon: 'mdi-cellphone'
-    });
+  // Mobile compatibility checks
+  if (!result.mobileCompatibility?.hasViewport) {
+    actionItems.high.push({
+      title: 'Missing Viewport Meta Tag',
+      description: 'Page is missing viewport meta tag for mobile responsiveness.',
+      severity: 'high'
+    } as ActionItem);
   }
 
-  return actions;
+  // Performance checks
+  if ((result.coreWebVitals?.LCP ?? 0) > 2500) {
+    actionItems.medium.push({
+      title: 'Slow Largest Contentful Paint',
+      description: 'LCP is above 2.5 seconds. Optimize page loading performance.',
+      severity: 'medium'
+    } as ActionItem);
+  }
+
+  // Security checks
+  if (!result.securityChecks?.https) {
+    actionItems.high.push({
+      title: 'Missing HTTPS',
+      description: 'Site is not using HTTPS. Implement secure connection for better security and SEO.',
+      severity: 'high'
+    } as ActionItem);
+  }
+
+  // Social media checks
+  if (!result.socialTags?.ogTags?.length) {
+    actionItems.low.push({
+      title: 'Missing Open Graph Tags',
+      description: 'Add Open Graph tags to improve social media sharing.',
+      severity: 'low'
+    } as ActionItem);
+  }
+
+  // Add warnings as action items
+  result.warnings?.forEach((warning: Warning | string) => {
+    if (typeof warning === 'string') return;
+    actionItems.medium.push({
+      title: warning.type,
+      description: warning.message,
+      severity: 'medium'
+    } as ActionItem);
+  });
+
+  return actionItems;
 };
 
 export const getRankingImpactColor = (result: any): string => {
@@ -712,5 +833,11 @@ export const parseUrl = (url: string): { pathname: string; host: string } => {
 export const getPercentageColor = (percentage: number): string => {
   if (percentage >= 80) return 'success';
   if (percentage >= 50) return 'warning';
+  return 'error';
+};
+
+export const getPerformanceColor = (score: number): string => {
+  if (score >= 80) return 'success';
+  if (score >= 60) return 'warning';
   return 'error';
 }; 

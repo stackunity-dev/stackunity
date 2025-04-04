@@ -1189,7 +1189,11 @@ export const useUserStore = defineStore('user', {
           throw new Error('URL invalide');
         }
 
-        const response = await fetch('/api/website-analyzer', {
+        console.log('Démarrage de l\'audit SEO pour:', url);
+        console.log('Options:', JSON.stringify(options, null, 2));
+
+        // Première requête pour obtenir la liste des URLs
+        const initialResponse = await fetch('/api/website-analyzer', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1198,24 +1202,169 @@ export const useUserStore = defineStore('user', {
           body: JSON.stringify({ url, options })
         });
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(`Erreur ${response.status}: ${errorData.message || response.statusText}`);
+        console.log('Réponse initiale:', initialResponse);
+
+        if (!initialResponse.ok) {
+          const errorData = await initialResponse.json().catch(() => ({}));
+          throw new Error(`Erreur ${initialResponse.status}: ${errorData.message || initialResponse.statusText}`);
         }
 
-        const data = await response.json();
+        const initialData = await initialResponse.json();
+        const urlsToAnalyze = initialData.visitedURLs || [url];
+        console.log('URLs à analyser:', urlsToAnalyze);
 
-        if (!data || typeof data !== 'object') {
-          throw new Error('Réponse invalide du serveur');
-        }
+        // Analyser chaque URL individuellement
+        const allResults = await Promise.all(
+          urlsToAnalyze.map(async (pageUrl: string) => {
+            try {
+              const response = await fetch('/api/website-analyzer', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${this.token}`
+                },
+                body: JSON.stringify({
+                  url: pageUrl,
+                  options: {
+                    ...options,
+                    maxDepth: 0,
+                    sameDomainOnly: true
+                  }
+                })
+              });
 
-        // Adapter la réponse pour qu'elle corresponde au format attendu par l'interface
-        const formattedData = this.formatAnalyzerResponse(data, url);
+              if (!response.ok) {
+                console.error(`Erreur lors de l'analyse de ${pageUrl}:`, response.status);
+                return null;
+              }
+
+              const data = await response.json();
+              console.log("HEREEEEEE", data);
+              return {
+                url: pageUrl,
+                data
+              };
+            } catch (error) {
+              console.error(`Erreur lors de l'analyse de ${pageUrl}:`, error);
+              return null;
+            }
+          })
+        );
+
+        const validResults = allResults.filter(result => result !== null);
+        const mergedData = {
+          urlMap: initialData.urlMap || {},
+          visitedURLs: urlsToAnalyze,
+          seoResults: {},
+          summary: {
+            totalPages: urlsToAnalyze.length,
+            averageLoadTime: 0,
+            totalWarnings: 0,
+            missingTitles: 0,
+            missingDescriptions: 0,
+            missingAltTags: 0,
+            averageFCP: 0,
+            averageLCP: 0,
+            averageTTFB: 0,
+            pagesWithStructuredData: 0,
+            pagesWithSocialTags: 0,
+            mobileCompatiblePages: 0,
+            securePages: 0
+          },
+          generatedSitemap: initialData.generatedSitemap || '',
+          rankedUrls: urlsToAnalyze
+        };
+
+        // Calculer les statistiques globales
+        let totalLoadTime = 0;
+        let totalFCP = 0;
+        let totalLCP = 0;
+        let totalTTFB = 0;
+
+        validResults.forEach(result => {
+          if (!result?.data?.seoResults) {
+            console.log('Pas de seoResults dans:', result);
+            return;
+          }
+
+          const pageData = result.data.seoResults[result.url];
+          if (!pageData) {
+            console.log('Pas de pageData pour:', result.url);
+            return;
+          }
+
+          console.log('Traitement de la page:', result.url);
+          console.log('PageData:', pageData);
+
+          mergedData.seoResults[result.url] = pageData;
+
+          // Mettre à jour les statistiques globales
+          totalLoadTime += pageData.loadTime || 0;
+          totalFCP += pageData.coreWebVitals?.FCP || 0;
+          totalLCP += pageData.coreWebVitals?.LCP || 0;
+          totalTTFB += pageData.coreWebVitals?.TTFB || 0;
+
+          if (!pageData.title) {
+            console.log('Titre manquant pour:', result.url);
+            mergedData.summary.missingTitles++;
+          }
+          if (!pageData.description) {
+            console.log('Description manquante pour:', result.url);
+            mergedData.summary.missingDescriptions++;
+          }
+          if (pageData.imageAlt?.some(img => !img.alt)) {
+            const missingAltCount = pageData.imageAlt.filter(img => !img.alt).length;
+            console.log(`${missingAltCount} images sans alt pour:`, result.url);
+            mergedData.summary.missingAltTags += missingAltCount;
+          }
+
+          if (pageData.structuredData?.length > 0) {
+            console.log('Données structurées trouvées pour:', result.url);
+            mergedData.summary.pagesWithStructuredData++;
+          }
+          if ((pageData.socialTags?.ogTags?.length > 0) ||
+            (pageData.socialTags?.twitterTags?.length > 0)) {
+            console.log('Tags sociaux trouvés pour:', result.url);
+            mergedData.summary.pagesWithSocialTags++;
+          }
+          if (pageData.mobileCompatibility?.hasViewport) {
+            console.log('Viewport mobile trouvé pour:', result.url);
+            mergedData.summary.mobileCompatiblePages++;
+          }
+          if (pageData.securityChecks?.https) {
+            console.log('HTTPS trouvé pour:', result.url);
+            mergedData.summary.securePages++;
+          }
+
+          const warningsCount = pageData.warnings?.length || 0;
+          console.log(`${warningsCount} avertissements pour:`, result.url);
+          mergedData.summary.totalWarnings += warningsCount;
+        });
+
+        const validResultsCount = validResults.length || 1;
+        console.log('Nombre de résultats valides:', validResultsCount);
+        console.log('Résumé avant moyennes:', mergedData.summary);
+
+        mergedData.summary.averageLoadTime = totalLoadTime / validResultsCount;
+        mergedData.summary.averageFCP = totalFCP / validResultsCount;
+        mergedData.summary.averageLCP = totalLCP / validResultsCount;
+        mergedData.summary.averageTTFB = totalTTFB / validResultsCount;
+
+        // Convertir les compteurs en pourcentages
+        mergedData.summary.pagesWithStructuredData = (mergedData.summary.pagesWithStructuredData / validResultsCount) * 100;
+        mergedData.summary.pagesWithSocialTags = (mergedData.summary.pagesWithSocialTags / validResultsCount) * 100;
+        mergedData.summary.mobileCompatiblePages = (mergedData.summary.mobileCompatiblePages / validResultsCount) * 100;
+        mergedData.summary.securePages = (mergedData.summary.securePages / validResultsCount) * 100;
+
+        console.log('Résumé final:', mergedData.summary);
+
+        // Formater les données finales
+        const formattedData = this.formatAnalyzerResponse(mergedData, url);
         this.seoData = formattedData;
         return formattedData;
 
       } catch (error: any) {
-        console.error('Erreur lors de l\'audit SEO:', error);
+        console.error('Erreur détaillée lors de l\'audit SEO:', error);
         this.seoError = error.message || 'Une erreur est survenue lors de l\'analyse SEO';
         throw error;
       } finally {
@@ -1223,147 +1372,58 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    // Fonction pour convertir le format de notre nouvelle API au format attendu par l'interface
     formatAnalyzerResponse(response: any, url: string) {
-      if (!response || !response.seo) {
-        throw new Error('Réponse invalide de l\'analyseur');
+      console.log('Response reçue de l\'analyseur:', JSON.stringify(response, null, 2));
+
+      if (!response) {
+        throw new Error('Réponse vide de l\'analyseur');
       }
 
-      const seoResults: Record<string, any> = {};
+      // Vérifier si la réponse est un objet
+      if (typeof response !== 'object') {
+        throw new Error('La réponse de l\'analyseur n\'est pas un objet valide');
+      }
 
-      seoResults[url] = {
-        url,
-        title: response.seo?.title || '',
-        description: response.seo?.description || '',
-        h1: response.seo?.headings?.h1 || [],
-        h2: response.seo?.headings?.h2 || [],
-        h3: response.seo?.headings?.h3 || [],
-        metaTags: Object.entries(response.seo?.meta?.og || {}).map(([name, content]) => ({
-          name,
-          content: content as string
-        })),
-        robotsMeta: {
-          index: !response.seo?.meta?.robots?.includes('noindex'),
-          follow: !response.seo?.meta?.robots?.includes('nofollow'),
-          noindex: response.seo?.meta?.robots?.includes('noindex') || false,
-          nofollow: response.seo?.meta?.robots?.includes('nofollow') || false,
-          noarchive: response.seo?.meta?.robots?.includes('noarchive') || false,
-          nosnippet: response.seo?.meta?.robots?.includes('nosnippet') || false,
-          noodp: response.seo?.meta?.robots?.includes('noodp') || false
-        },
-        imageAlt: (response.seo?.images?.data || []).map((img: any) => ({
-          src: img.src || '',
-          alt: img.alt || '',
-          title: img.title || '',
-          width: img.dimensions?.width,
-          height: img.dimensions?.height,
-          hasDimensions: !!(img.dimensions?.width && img.dimensions?.height)
-        })),
-        videoInfo: [],
-        loadTime: response.performance?.loadTime || 0,
-        statusCode: response.technical?.statusCode || 200,
-        internalLinks: response.seo?.links?.internal || [],
-        externalLinks: response.seo?.links?.external || [],
-        warnings: (response.issues || []).map((issue: any) => ({
-          message: issue.message || '',
-          severity: issue.type === 'error' ? 'critical' : issue.type === 'warning' ? 'high' : 'medium',
-          type: issue.code || 'unknown'
-        })),
-        coreWebVitals: {
-          FCP: response.performance?.fcp || 0,
-          LCP: response.performance?.lcp || 0,
-          TTFB: response.performance?.ttfb || 0,
-          domLoad: response.performance?.totalBlockingTime || 0,
-          speedIndex: response.performance?.speedIndex || 0,
-          timeToInteractive: (response.performance?.totalBlockingTime || 0) + (response.performance?.fcp || 0),
-          totalBlockingTime: response.performance?.totalBlockingTime || 0,
-          cumulativeLayoutShift: response.performance?.cls || 0,
-          performanceScore: Math.round((100 - ((response.performance?.ttfb || 0) / 5) - ((response.performance?.lcp || 0) / 40)) * 0.6),
-          firstContentfulPaintScore: Math.round(100 - ((response.performance?.fcp || 0) / 25)),
-          speedIndexScore: Math.round(100 - ((response.performance?.speedIndex || 0) / 40)),
-          largestContentfulPaintScore: Math.round(100 - ((response.performance?.lcp || 0) / 40)),
-          interactiveScore: Math.round(100 - ((response.performance?.totalBlockingTime || 0) / 30)),
-          totalBlockingTimeScore: Math.round(100 - ((response.performance?.totalBlockingTime || 0) / 30)),
-          cumulativeLayoutShiftScore: Math.round(100 - ((response.performance?.cls || 0) * 100)),
-          serverResponseTime: response.performance?.ttfb || 0
-        },
-        headingStructure: response.seo?.headings || {
-          h1: [],
-          h2: [],
-          h3: [],
-          h4: [],
-          h5: [],
-          h6: []
-        },
-        structuredData: response.seo?.structuredData || {
-          data: [],
-          count: 0,
-          types: {}
-        },
-        socialTags: {
-          ogTags: Object.entries(response.seo?.meta?.og || {}).map(([property, content]) => ({
-            property,
-            content
-          })),
-          twitterTags: Object.entries(response.seo?.meta?.twitter || {}).map(([name, content]) => ({
-            name,
-            content
-          }))
-        },
-        mobileCompatibility: {
-          hasViewport: !!response.technical?.mobile?.viewport,
-          viewportContent: response.technical?.mobile?.viewport || '',
-          smallTouchTargets: 0
-        },
-        securityChecks: {
-          https: response.technical?.https || false,
-          validCertificate: response.technical?.security?.certificate || false,
-          securityHeaders: Object.entries(response.technical?.security?.headers || {}).map(([name, value]) => ({
-            name,
-            value: value as string
-          }))
-        },
-        links: {
-          internal: response.seo?.links?.internal || [],
-          external: response.seo?.links?.external || []
-        },
-        contentStats: {
-          wordCount: response.seo?.wordCount || 0,
-          keywordDensity: Object.values(response.seo?.keywordDensity || {}),
-          readabilityScore: response.seo?.readabilityScore || 0
-        },
-        technicalSEO: {
-          sitemapFound: false,
-          sitemapUrl: '',
-          sitemapUrls: 0,
-          robotsTxtFound: false,
-          robotsTxtContent: '',
-          schemaTypeCount: response.seo?.structuredData?.types || {}
-        }
-      };
+      // Vérifier et propager technicalSEO aux résultats
+      if (response.seoResults) {
+        Object.keys(response.seoResults).forEach(pageUrl => {
+          const result = response.seoResults[pageUrl];
+          // Si technicalSEO n'est pas déjà défini, initialiser avec les valeurs par défaut
+          if (!result.technicalSEO) {
+            console.log(`Initialisation de technicalSEO pour ${pageUrl}`);
+            result.technicalSEO = {
+              sitemapFound: false,
+              robotsTxtFound: false,
+              schemaTypeCount: {}
+            };
+          } else {
+            console.log(`technicalSEO existant pour ${pageUrl}:`, result.technicalSEO);
+          }
+        });
+      }
 
+      // Préserver la structure existante
       return {
-        urlMap: { [url]: [] },
-        visitedURLs: [url],
-        seoResults,
-        summary: {
-          totalPages: 1,
-          averageLoadTime: response.performance?.loadTime || 0,
-          totalWarnings: response.issues?.length || 0,
-          missingTitles: !response.seo?.title ? 1 : 0,
-          missingDescriptions: !response.seo?.description ? 1 : 0,
-          missingAltTags: response.seo?.images?.withoutAlt || 0,
-          averageFCP: response.performance?.fcp || 0,
-          averageLCP: response.performance?.lcp || 0,
-          averageTTFB: response.performance?.ttfb || 0,
-          pagesWithStructuredData: response.seo?.structuredData?.count || 0,
-          pagesWithSocialTags: (Object.keys(response.seo?.meta?.og || {}).length +
-            Object.keys(response.seo?.meta?.twitter || {}).length > 0) ? 1 : 0,
-          mobileCompatiblePages: response.technical?.mobile?.viewport ? 1 : 0,
-          securePages: response.technical?.https ? 1 : 0
+        seoResults: response.seoResults || {},
+        summary: response.summary || {
+          totalPages: 0,
+          averageLoadTime: 0,
+          totalWarnings: 0,
+          missingTitles: 0,
+          missingDescriptions: 0,
+          missingAltTags: 0,
+          averageFCP: 0,
+          averageLCP: 0,
+          averageTTFB: 0,
+          pagesWithStructuredData: 0,
+          pagesWithSocialTags: 0,
+          mobileCompatiblePages: 0,
+          securePages: 0
         },
-        generatedSitemap: '',
-        rankedUrls: [url]
+        visitedURLs: response.visitedURLs || [],
+        urlMap: response.urlMap || {},
+        generatedSitemap: response.generatedSitemap || '',
+        rankedUrls: response.rankedUrls || []
       };
     },
 
@@ -1590,7 +1650,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async checkout(cardholderName: string, countryCode: string = 'FR'): Promise<{
+    async checkout(cardholderName: string, countryCode: string = 'FR', isBusinessCustomer: boolean = false, vatNumber: string = ''): Promise<{
       success: boolean;
       clientSecret?: string;
       error?: string;
@@ -1599,6 +1659,8 @@ export const useUserStore = defineStore('user', {
         taxAmount: number;
         totalAmount: number;
         taxPercentage: number;
+        isVatExempt?: boolean;
+        vatNumber?: string;
       }
     }> {
       const currency = 'eur';
@@ -1608,7 +1670,9 @@ export const useUserStore = defineStore('user', {
           body: {
             currency,
             customer_name: cardholderName,
-            country_code: countryCode
+            country_code: countryCode,
+            is_business: isBusinessCustomer,
+            vat_number: vatNumber
           }
         });
 
@@ -1624,6 +1688,8 @@ export const useUserStore = defineStore('user', {
                 taxAmount: number;
                 totalAmount: number;
                 taxPercentage: number;
+                isVatExempt?: boolean;
+                vatNumber?: string;
               } | undefined
             };
           }
@@ -1650,13 +1716,11 @@ export const useUserStore = defineStore('user', {
       try {
         const token = TokenUtils.retrieveToken();
 
-        // Si pas de token, l'utilisateur n'est pas authentifié
         if (!token) {
           console.log('Aucun token trouvé');
           return { isAuthenticated: false };
         }
 
-        // Valider le token
         const validationResponse = await fetch('/api/auth/validate', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -1673,12 +1737,10 @@ export const useUserStore = defineStore('user', {
         console.log('Token validé avec succès');
         this.token = token;
 
-        // Charger les données utilisateur
         const result = await this.loadData();
 
         if (!result || !result.success) {
           console.log('Échec du chargement des données utilisateur:', result?.error);
-          // Ne pas déconnecter, retourner simplement false
           return { isAuthenticated: false };
         }
 
@@ -1687,7 +1749,6 @@ export const useUserStore = defineStore('user', {
         return { isAuthenticated: true, user: this.user };
       } catch (error) {
         console.error('Erreur lors de la vérification de l\'authentification:', error);
-        // Ne pas déconnecter, retourner simplement false
         return { isAuthenticated: false, error };
       }
     },
