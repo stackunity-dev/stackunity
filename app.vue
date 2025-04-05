@@ -88,7 +88,7 @@ onMounted(() => {
     userStore.validateToken();
   }
 
-  useRouter().beforeEach((to, from, next) => {
+  router.beforeEach((to, from, next) => {
     const token = TokenUtils.retrieveToken();
 
     if (token && !userStore.token) {
@@ -99,6 +99,17 @@ onMounted(() => {
     if (!token) {
       userStore.token = null;
       userStore.isAuthenticated = false;
+    }
+
+
+    if (to.path !== from.path) {
+      plausible('pageview', {
+        props: {
+          path: to.path,
+          referrer: from.path,
+          user_type: userStore.isAuthenticated ? (userStore.user?.isPremium ? 'premium' : 'free') : 'guest'
+        }
+      });
     }
 
     const premiumRoutes = ['/sql-generator', '/seo-audit', '/robots'];
@@ -114,11 +125,48 @@ onMounted(() => {
     const isPremium = userStore.user?.isPremium ?? false;
 
     if (isPremiumRoute && !isPremium) {
+
+      plausible('premium_access_attempt', {
+        props: {
+          route: to.path,
+          user_id: userStore.user?.id || 'guest'
+        }
+      });
+
       next('/subscription');
       return;
     }
 
     next();
   });
+
+  if (process.client) {
+    window.addEventListener('error', (e) => {
+      plausible('error', {
+        props: {
+          message: e.message,
+          source: e.filename,
+          line: e.lineno,
+          path: window.location.pathname
+        }
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+
+      if (target.closest('[data-plausible-feature]')) {
+        const featureElement = target.closest('[data-plausible-feature]') as HTMLElement;
+        const feature = featureElement.dataset.plausibleFeature;
+
+        plausible('feature_used', {
+          props: {
+            feature: feature,
+            path: window.location.pathname
+          }
+        });
+      }
+    });
+  }
 });
 </script>

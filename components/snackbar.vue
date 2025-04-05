@@ -1,6 +1,6 @@
 <template>
   <v-snackbar v-model="show" color="grey-darken-4" :timeout="timeout" location="top right" elevation="4"
-    :transition="'slide-x-reverse-transition'">
+    :transition="'slide-x-reverse-transition'" data-plausible-feature="snackbar">
     <div class="d-flex align-center">
       <v-icon :color="iconColor" :icon="icon" class="mr-2" />
       {{ text }}

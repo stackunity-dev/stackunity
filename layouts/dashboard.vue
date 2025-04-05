@@ -22,7 +22,8 @@
 
       <v-list density="compact" v-model:opened="open" nav class="px-2">
         <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard-outline" title="Dashboard" rounded="lg"
-          class="mb-1" color="primary" nuxt @click="closeDrawer" />
+          class="mb-1" color="primary" nuxt @click="closeDrawer" data-plausible-feature="dashboard_menu">
+        </v-list-item>
 
         <v-list-group value="Recent Projects" class="mb-1" prepend-icon="mdi-history">
           <template #activator="{ props }">
@@ -118,7 +119,8 @@
 
       <v-list density="compact" v-model:opened="open" nav class="px-2">
         <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard-outline" title="Dashboard" rounded="lg"
-          class="mb-1" color="primary" nuxt @click="closeDrawer" />
+          class="mb-1" color="primary" nuxt @click="closeDrawer" data-plausible-feature="dashboard_menu">
+        </v-list-item>
 
         <v-list-group value="Recent Projects" class="mb-1" prepend-icon="mdi-history">
           <template #activator="{ props }">
