@@ -1429,7 +1429,14 @@ export const useUserStore = defineStore('user', {
           return { success: false, error: 'user not found' };
         }
 
-        const userId = this.user.id;
+        const userId = this.user.id || this.user.userId;
+
+        if (!userId) {
+          console.error('ID utilisateur manquant pour la mise à jour du statut premium');
+          return { success: false, error: 'ID utilisateur manquant' };
+        }
+
+        console.log('Mise à jour du statut premium pour l\'utilisateur:', userId);
 
         const response = await fetch('/api/user/premium-status', {
           method: 'POST',

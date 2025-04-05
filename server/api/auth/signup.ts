@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { defineEventHandler, readBody, setCookie } from 'h3';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
-import { TokenManager } from '../../utils/TokenManager';
+import { ServerTokenManager } from '../../utils/ServerTokenManager';
 import { TokenService } from '../../utils/TokenService';
 import { REFRESH_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_OPTIONS } from '../../utils/auth-config';
 import { pool } from '../db.js';
@@ -18,7 +18,6 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // Vérifier si l'email existe déjà
     const [existingUsers] = await pool.execute<RowDataPacket[]>(
       'SELECT * FROM users WHERE email = ?',
       [body.email]
@@ -31,7 +30,6 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Vérifier si le nom d'utilisateur existe déjà
     const [existingUsernames] = await pool.execute<RowDataPacket[]>(
       'SELECT * FROM users WHERE username = ?',
       [body.username]
@@ -53,8 +51,8 @@ export default defineEventHandler(async (event) => {
 
     const userId = userRows.insertId;
 
-    // Générer un token d'accès
-    const accessToken = TokenManager.generateAccessToken({
+
+    const accessToken = ServerTokenManager.generateAccessToken({
       userId: userId,
       username: body.username,
       email: body.email,
@@ -62,17 +60,14 @@ export default defineEventHandler(async (event) => {
       isAdmin: false
     });
 
-    // Générer un token de rafraîchissement
     const refreshTokenId = uuidv4();
-    const refreshToken = TokenManager.generateRefreshToken({
+    const refreshToken = ServerTokenManager.generateRefreshToken({
       userId: userId,
       tokenId: refreshTokenId
     });
 
-    // Stocker le token de rafraîchissement dans la base de données
     await TokenService.saveRefreshToken(refreshTokenId, userId);
 
-    // Définir le cookie HttpOnly avec le token de rafraîchissement
     setCookie(event, REFRESH_TOKEN_COOKIE_NAME, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
     return {
