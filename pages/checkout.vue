@@ -148,7 +148,7 @@ import { useRouter } from 'vue-router';
 import snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
-import { definePageMeta, useHead } from '#imports';
+import { definePageMeta, useHead, navigateTo } from '#imports';
 
 definePageMeta({
   layout: 'empty'
@@ -416,7 +416,7 @@ const processPayment = async () => {
 
           setTimeout(() => {
             userStore.logout();
-            window.location.href = '/login?redirect=/dashboard&status=premium-updated';
+            navigateTo('/login');
           }, 2000);
           return;
         }
@@ -449,10 +449,8 @@ const processPayment = async () => {
           console.error('Invoice generation error:', response.error);
         }
 
-        // Redirection vers le dashboard après un court délai
         setTimeout(() => {
-          // Forcer le rechargement complet pour s'assurer que les changements sont appliqués
-          window.location.href = '/dashboard';
+          navigateTo('/login');
         }, 2000);
       } catch (error) {
         console.error('Error in post-payment process:', error);
@@ -460,9 +458,8 @@ const processPayment = async () => {
         snackbarColor.value = 'warning';
         snackbarText.value = 'Payment successful but some post-payment operations failed. Please refresh your page.';
 
-        // Quand même rediriger vers le dashboard
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          navigateTo('/login');
         }, 2000);
       }
     } else {
