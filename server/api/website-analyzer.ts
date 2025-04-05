@@ -447,6 +447,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     const imagesData: Record<string, any> = {};
     for (const [url, result] of Object.entries(results)) {
       if (result && result.seo && result.seo.images) {
+        console.log(`Extraction des images pour ${url}:`, JSON.stringify(result.seo.images, null, 2));
         imagesData[url] = {
           images: result.seo.images
         };
@@ -1359,6 +1360,21 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
     let normalizedUrl = standardizeUrl(baseUrl);
     console.log(`URL standardisée: ${normalizedUrl}`);
 
+    // Routes protégées connues à ajouter au résultat final
+    const protectedRoutes = [
+      '/dashboard',
+      '/profile',
+      '/settings',
+      '/projects',
+      '/account',
+      '/admin',
+      '/user',
+      '/workspace',
+      '/billing',
+      '/analytics',
+      '/notifications'
+    ];
+
     // Stockage de toutes les URLs, même celles non visitées
     const allDiscoveredUrls = new Set<string>();
     // Stockage des URLs visitées avec succès
@@ -1621,6 +1637,7 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       console.error(`Erreur générale lors du crawl:`, e);
       return [normalizedUrl];
     }
+
   } catch (error) {
     console.error('Erreur fatale dans crawlWebsite:', error);
     return [baseUrl];
@@ -1629,6 +1646,18 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
 
 function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): string {
   const date = new Date().toISOString();
+
+  // Extraire le domaine de base pour les chemins d'images
+  let baseDomain = '';
+  try {
+    if (urls.length > 0) {
+      const firstUrl = urls[0];
+      const urlObj = new URL(firstUrl);
+      baseDomain = `${urlObj.protocol}//${urlObj.host}`;
+    }
+  } catch (e) {
+    console.error("Erreur lors de l'extraction du domaine de base:", e);
+  }
 
   // Dédupliquer les URLs
   const uniqueUrls = [...new Set(urls.map(url => standardizeUrl(url)))];
@@ -1672,6 +1701,12 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
         return { priority: '0.7', changefreq: 'weekly' };
       }
 
+      // Pages protégées (dashboard, etc.)
+      if (segments.includes('dashboard') || segments.includes('admin') ||
+        segments.includes('profile') || segments.includes('account')) {
+        return { priority: '0.9', changefreq: 'daily' };
+      }
+
       // Pages de 2ème niveau
       if (segments.length === 2) {
         // Articles de blog, produits
@@ -1697,24 +1732,90 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
   // Collecter toutes les images pour le sitemap images
   const imageUrls: Record<string, Array<{ url: string, title?: string, alt?: string }>> = {};
 
+  // Fonction pour construire une URL absolue pour les images
+  const getAbsoluteImageUrl = (imgSrc: string, pageUrl: string): string => {
+    try {
+      if (imgSrc.startsWith('http')) {
+        return imgSrc; // Déjà une URL absolue
+      } else if (imgSrc.startsWith('//')) {
+        // URL sans protocole (//example.com/image.jpg)
+        const pageUrlObj = new URL(pageUrl);
+        return `${pageUrlObj.protocol}${imgSrc}`;
+      } else if (imgSrc.startsWith('/')) {
+        // Chemin absolu depuis la racine
+        return `${baseDomain}${imgSrc}`;
+      } else {
+        // Chemin relatif
+        return new URL(imgSrc, pageUrl).toString();
+      }
+    } catch (e) {
+      console.error(`Erreur lors de la conversion de l'URL d'image ${imgSrc}:`, e);
+      return imgSrc; // Retourner l'original en cas d'erreur
+    }
+  };
+
   // Ajouter les images trouvées pendant l'analyse
+  console.log("Extraction des images pour le sitemap...");
+  console.log("Structure d'imagesData:", Object.keys(imagesData));
+
   Object.entries(imagesData).forEach(([pageUrl, data]) => {
-    if (data && data.images && Array.isArray(data.images.data)) {
-      imageUrls[pageUrl] = data.images.data
-        .filter(img => img.src && typeof img.src === 'string')
-        .map(img => ({
-          url: new URL(img.src, pageUrl).toString(),
-          title: img.title || undefined,
-          alt: img.alt || undefined
-        }));
+    try {
+      console.log(`Traitement des images pour ${pageUrl}:`, JSON.stringify(data, null, 2));
+
+      if (data && data.images) {
+        // Vérifier la structure exacte de l'objet images
+        console.log(`Structure de 'images' pour ${pageUrl}:`, Object.keys(data.images));
+
+        if (data.images.data && Array.isArray(data.images.data)) {
+          console.log(`Nombre d'images trouvées: ${data.images.data.length}`);
+
+          imageUrls[pageUrl] = data.images.data
+            .filter(img => {
+              if (!img || !img.src) {
+                console.log("Image ignorée (pas de src):", img);
+                return false;
+              }
+              console.log(`Image trouvée: ${img.src}`);
+              return true;
+            })
+            .map(img => {
+              const absoluteUrl = getAbsoluteImageUrl(img.src, pageUrl);
+              console.log(`  - URL transformée: ${img.src} -> ${absoluteUrl}`);
+              return {
+                url: absoluteUrl,
+                title: img.title || undefined,
+                alt: img.alt || undefined
+              };
+            });
+
+          console.log(`${imageUrls[pageUrl].length} images ajoutées pour ${pageUrl}`);
+        } else {
+          console.log(`Pas de tableau 'data' dans 'images' pour ${pageUrl}`);
+        }
+      } else {
+        console.log(`Pas de structure 'images' valide pour ${pageUrl}`);
+      }
+    } catch (e) {
+      console.error(`Erreur lors du traitement des images pour ${pageUrl}:`, e);
     }
   });
+
+  // Ajouter également toutes les images indépendantes (comme des URLs d'images directes)
+  const directImageUrls = uniqueUrls.filter(url => isImageUrl(url));
+  if (directImageUrls.length > 0) {
+    // Créer une entrée spéciale pour les images directes
+    imageUrls['directImages'] = directImageUrls.map(url => ({
+      url,
+      title: undefined,
+      alt: undefined
+    }));
+  }
 
   // Générer le sitemap avec images
   const sitemapEntries = uniqueUrls
     .filter(url => {
       try {
-        // Exclure les fichiers JS/CSS mais garder les images
+        // Exclure les fichiers non pertinents mais garder les images
         if (url.match(/\.(css|js|ico|woff|woff2|ttf|eot|pdf|zip|rar|exe|dll|docx?|xlsx?|pptx?)(\?.*)?$/i)) {
           return false;
         }
@@ -1752,9 +1853,19 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
   </url>`;
       }
 
+      // Ajouter les images directes à toutes les pages
+      const directImages = imageUrls['directImages'] || [];
+
       // Sinon, ajouter les images comme sous-éléments de l'URL
-      const imageSection = urlImages.length > 0
-        ? urlImages.map(img => `
+      const pageImages = [...urlImages];
+
+      // Pour la page d'accueil, ajouter toutes les images directes
+      if (url.endsWith('/') || url.split('/').length <= 3) {
+        pageImages.push(...directImages);
+      }
+
+      const imageSection = pageImages.length > 0
+        ? pageImages.map(img => `
     <image:image>
       <image:loc>${img.url}</image:loc>${img.title ? `
       <image:title>${img.title}</image:title>` : ''}${img.alt ? `
