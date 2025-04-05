@@ -5,9 +5,11 @@ import { pool } from '../db';
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const userId = body.userId;
+  console.log('Mise à jour premium - Corps de la requête:', body);
   console.log('Mise à jour premium pour userId:', userId);
 
   if (!userId) {
+    console.error('Erreur: userId manquant dans la requête premium-status');
     return {
       success: false,
       error: 'User not authenticated'

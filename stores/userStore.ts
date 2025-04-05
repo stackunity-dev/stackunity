@@ -122,6 +122,7 @@ interface User {
   company?: string;
   website?: string;
   bio?: string;
+  userId?: number;
 }
 
 interface DeleteSnippetResponse {
@@ -357,9 +358,11 @@ export const useUserStore = defineStore('user', {
               isPremium: isPremiumValue,
               isAdmin: isAdminValue
             };
+            this.user.userId = this.user.id;
           } else {
             this.user.isPremium = isPremiumValue;
             this.user.isAdmin = isAdminValue;
+            this.user.userId = this.user.id;
           }
 
           console.log('[STORE] Valeurs après conversion dans setToken:', {
@@ -392,9 +395,9 @@ export const useUserStore = defineStore('user', {
         const userData = {
           user: {
             id: this.user?.id || 0,
+            userId: this.user?.id || 0,
             username: this.user?.username || '',
             email: this.user?.email || '',
-            // Toujours stocker comme des booléens explicites
             isAdmin: isAdminValue,
             isPremium: isPremiumValue
           },
@@ -431,6 +434,7 @@ export const useUserStore = defineStore('user', {
           const userData = JSON.parse(storedData);
           this.user = {
             id: userData.user.id || 0,
+            userId: userData.user.id || 0,
             username: userData.user.username || '',
             email: userData.user.email || '',
             isAdmin: userData.user.isAdmin || false,
@@ -474,6 +478,9 @@ export const useUserStore = defineStore('user', {
             isPremium: isPremiumValue,
             isAdmin: isAdminValue
           };
+
+          // Assurer que userId est défini pour rétrocompatibilité
+          this.user.userId = this.user.id;
 
           console.log("Données utilisateur après conversion:", {
             user: this.user,
@@ -1611,13 +1618,16 @@ export const useUserStore = defineStore('user', {
       try {
         console.log('Début mise à jour statut premium, userId:', this.user?.id);
 
+        const userId = this.user?.id;
+        console.log('ID utilisé pour la requête premium-status:', userId);
+
         const response = await fetch('/api/user/premium-status', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token}`
           },
-          body: JSON.stringify({ userId: this.user?.id })
+          body: JSON.stringify({ userId })
         });
 
         if (!response.ok) {
@@ -1801,6 +1811,7 @@ export const useUserStore = defineStore('user', {
               isPremium: isPremiumValue,
               isAdmin: isAdminValue
             };
+            this.user.userId = this.user.id;
 
             this.isPremium = isPremiumValue;
             this.isAdmin = isAdminValue;
