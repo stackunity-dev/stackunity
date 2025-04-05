@@ -228,7 +228,7 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://devunity.com/logo/devunity.png" alt="DevUnity Logo" style="max-width: 200px;" />
+            <img src="https://devunity.com/logo/devunity-title.png" alt="DevUnity Logo" style="max-width: 200px;" />
           </div>
           
           <h2 style="color: #333;">Thank you for your purchase!</h2>

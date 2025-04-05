@@ -233,7 +233,7 @@
               <v-btn icon variant="text" class="mr-3" href="https://twitter.com" target="_blank">
                 <v-icon>mdi-twitter</v-icon>
               </v-btn>
-              <v-btn icon variant="text" class="mr-3" href="https://github.com" target="_blank">
+              <v-btn icon variant="text" class="mr-3" href="https://github.com/nurdjedidi/devunity" target="_blank">
                 <v-icon>mdi-github</v-icon>
               </v-btn>
               <v-btn icon variant="text" class="mr-3" href="https://linkedin.com" target="_blank">
