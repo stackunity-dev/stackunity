@@ -2,9 +2,9 @@
   <v-app class="landing-screen">
     <v-app-bar app :elevation="2" :color="'surface'" class="px-0 nav-bar" v-model="showAppBar">
       <v-container class="d-flex align-center py-0 my-0">
-        <NuxtLink to="/logo/devunity-title.png" class="text-decoration-none">
+        <NuxtLink to="/login" class="text-decoration-none">
           <div class="d-flex align-center brand-container">
-            <img src="" alt="StackUnity title" width="150" class="logo-image">
+            <img src="/logo/devunity-title.png" alt="StackUnity title" width="150" class="logo-image">
             <div class="brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left">
               <span class="text-caption font-weight-medium text-gradient">PROPULSE YOUR CODE</span>
             </div>
