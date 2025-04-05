@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    const baseAmount = 19999;
+    const baseAmount = 19;
 
     if (process.env.NODE_ENV === 'development' && stripeSecretKey.startsWith('sk_test_')) {
       console.log('Development mode: returning mock tax details without Stripe API call');

@@ -50,18 +50,16 @@
               <v-divider class="my-3"></v-divider>
               <div class="d-flex justify-space-between align-center">
                 <span class="text-subtitle-1 font-weight-medium">Total</span>
-                <span class="text-h6 font-weight-bold">{{ taxDetails.totalAmount }}€
-                  <template v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0">TTC</template>
-                  <template v-else>HT</template>
+                <span class="text-h6 font-weight-bold">{{ taxDetails.totalAmount }}€ TTC
                 </span>
               </div>
               <div v-if="taxDetails.isVatExempt && taxDetails.vatNumber" class="mt-2 text-caption text-medium-emphasis">
-                TVA non applicable, Art. 283-2 du CGI - Autoliquidation de la TVA
-                <div>Numéro de TVA : {{ taxDetails.vatNumber }}</div>
+                TVA not applicable, Art. 283-2 du CGI - Autoliquidation of the TVA
+                <div>VAT number : {{ taxDetails.vatNumber }}</div>
               </div>
               <div v-else-if="billingCountry !== 'FR' && !isInEU(billingCountry)"
                 class="mt-2 text-caption text-medium-emphasis">
-                Exportation hors UE - TVA non applicable
+                Exportation outside the EU - VAT not applicable
               </div>
             </div>
 
