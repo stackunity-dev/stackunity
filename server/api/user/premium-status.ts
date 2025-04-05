@@ -1,9 +1,10 @@
 import { pool } from '../db';
 import { RowDataPacket } from 'mysql2/promise';
-import { defineEventHandler } from 'h3';
+import { defineEventHandler, readBody } from 'h3';
 
 export default defineEventHandler(async (event) => {
-  const userId = event.context.user.userId;
+  const body = await readBody(event);
+  const userId = body.userId;
 
   if (!userId) {
     return {

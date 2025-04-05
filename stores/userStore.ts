@@ -1900,10 +1900,14 @@ export const useUserStore = defineStore('user', {
 
     async getPremiumStatus() {
       try {
+        const userId = this.user.id;
         const response = await $fetch('/api/user/premium-status', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${this.token}`
+          },
+          body: {
+            userId
           }
         });
 
