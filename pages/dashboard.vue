@@ -185,7 +185,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead, useRouter } from '#imports';
@@ -404,111 +404,48 @@ onMounted(async () => {
   console.log("userStore.user", userStore.user);
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    if (!userStore.token && !TokenUtils.retrieveToken()) {
-      console.log('Aucun token trouvé, redirection vers login...');
+    const token = TokenUtils.retrieveToken();
+    if (!token) {
       router.push('/login');
       return;
     }
 
-    console.log('Vérification de l\'authentification...');
-    const authResult = await userStore.checkAuthentication();
+    const isAuthenticated = await userStore.checkAuthenticated();
 
-    if (!authResult || !authResult.isAuthenticated) {
-      console.log('Échec de l\'authentification, redirection vers login');
+    if (!isAuthenticated) {
       router.push('/login');
       return;
     }
 
-    console.log('Authentification réussie, chargement des données...');
     const result = await userStore.loadData();
-
-    if (!result || !result.success) {
-      console.log('Impossible de charger les données utilisateur:', result?.error || 'Erreur inconnue');
+    if (result && result.error) {
       router.push('/login');
       return;
     }
 
-    console.log('[DEBUG] Statut premium de l\'utilisateur:', userStore.user?.isPremium);
+    // Charger les données avec plusieurs tentatives si nécessaire
+    await loadWithRetries('snippets', () => userStore.loadSnippets());
+    await loadWithRetries('sqlSchemas', () => userStore.loadSQLSchemas());
 
-    setTimeout(async () => {
-      if (userStore.isUserAuthenticated) {
-        try {
-          const loadWithRetry = async (fn: () => Promise<any>, name: string, retries = 1) => {
-            for (let i = 0; i <= retries; i++) {
-              try {
-                console.log(`Tentative de chargement ${name} (${i + 1}/${retries + 1})...`);
-                const result = await fn();
-                console.log(`Chargement de ${name} réussi`);
-                return result;
-              } catch (err) {
-                console.error(`Erreur lors du chargement de ${name}:`, err);
-                if (i < retries) {
-                  await new Promise(resolve => setTimeout(resolve, 1000));
-                }
-              }
-            }
-            console.warn(`Échec du chargement de ${name} après ${retries + 1} tentatives`);
-            return null;
-          };
-
-          await loadWithRetry(() => userStore.loadSQLSchemas(), 'schémas SQL', 2);
-
-          await loadWithRetry(() => userStore.loadSnippets(), 'snippets', 2);
-
-          await loadWithRetry(() => userStore.getMonitoringData(), 'monitoring', 1);
-        } catch (err) {
-          console.error('Erreur globale lors du chargement des données:', err);
-        }
-      }
-    }, 1000);
-
-    let monitoringInterval: number | null = null;
-    const startMonitoring = () => {
-      if (monitoringInterval) clearInterval(monitoringInterval);
-
-      monitoringInterval = window.setInterval(async () => {
-        if (userStore.isUserAuthenticated) {
-          try {
-            await userStore.getMonitoringData();
-          } catch (err) {
-            console.warn('Erreur de monitoring, l\'intervalle continue...', err);
-          }
-        } else if (monitoringInterval) {
-          clearInterval(monitoringInterval);
-          monitoringInterval = null;
-        }
-      }, 15000);
-    };
-
-    setTimeout(() => {
-      if (userStore.isUserAuthenticated) {
-        startMonitoring();
-      }
-    }, 5000);
-
-    onUnmounted(() => {
-      if (monitoringInterval) {
-        clearInterval(monitoringInterval);
-        monitoringInterval = null;
-      }
-    });
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const status = urlParams.get('status');
-
-    if (status === 'premium-updated') {
-      showSuccessDialog.value = true;
-
-      const cleanUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, cleanUrl);
-    }
   } catch (error) {
     console.error('[Dashboard] Erreur d\'initialisation:', error);
     router.push('/login');
   }
 });
+
+// Fonction pour charger des données avec plusieurs tentatives
+async function loadWithRetries(name: string, loadFunction: () => Promise<any>, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      await loadFunction();
+      break;
+    } catch (err) {
+      if (i === retries) {
+        console.error(`Erreur lors du chargement de ${name}:`, err);
+      }
+    }
+  }
+}
 
 const getSnippetDate = (snippet: any): string => {
   if (snippet && (snippet.date || snippet.snippet_date)) {

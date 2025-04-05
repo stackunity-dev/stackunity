@@ -81,14 +81,11 @@ onErrorCaptured((err, instance, info) => {
 
 onMounted(() => {
   userStore.initializeStore();
-  console.log('User store initialized:', userStore.isAuthenticated);
 
   if (process.client) {
     cookieStore.initCookieConsent();
 
-    userStore.validateToken().then(result => {
-      console.log('Validation du token au démarrage:', result.valid ? 'Valide' : 'Invalide');
-    });
+    userStore.validateToken();
   }
 
   useRouter().beforeEach((to, from, next) => {
@@ -117,7 +114,6 @@ onMounted(() => {
     const isPremium = userStore.user?.isPremium ?? false;
 
     if (isPremiumRoute && !isPremium) {
-      console.log(`Access denied to premium route (global protection): ${to.path}`);
       next('/subscription');
       return;
     }

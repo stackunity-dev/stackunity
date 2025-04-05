@@ -76,6 +76,7 @@ import Snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+import { TokenUtils } from '../utils/token';
 
 definePageMeta({
   layout: 'empty'
@@ -130,34 +131,21 @@ const snackbarColor = ref('');
 const snackbarText = ref('');
 
 onMounted(async () => {
-  console.log('[Login] Vérification de l\'état de connexion...');
-  loading.value = true;
-
-  if (localStorage.getItem('auth_token')) {
-    try {
-      const token = localStorage.getItem('auth_token');
-      if (!token || token.split('.').length !== 3) {
-        localStorage.removeItem('auth_token');
-        console.log('[Login] Token invalide supprimé');
-      }
-    } catch (err) {
-      console.error('[Login] Erreur lors de la vérification du token:', err);
-    }
-  }
-
   try {
-    const authResult = await userStore.checkAuthentication();
+    const token = TokenUtils.retrieveToken();
 
-    if (authResult && authResult.isAuthenticated) {
-      console.log('[Login] Utilisateur déjà authentifié, redirection vers le dashboard');
-      router.push('/dashboard');
-    } else {
-      console.log('[Login] Utilisateur non authentifié, affichage du formulaire de connexion');
+    if (token) {
+      const validation = await userStore.validateToken();
+      if (!validation.valid) {
+        TokenUtils.removeToken();
+      }
+    }
+
+    if (userStore.isAuthenticated) {
+      handleRedirection();
     }
   } catch (err) {
     console.error('[Login] Erreur lors de la vérification de l\'authentification:', err);
-  } finally {
-    loading.value = false;
   }
 });
 
@@ -210,6 +198,9 @@ const handleSignin = async () => {
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
+
+async function handleRedirection() {
+}
 </script>
 
 <style scoped>

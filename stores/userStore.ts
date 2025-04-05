@@ -271,37 +271,22 @@ export const useUserStore = defineStore('user', {
 
     async logout() {
       try {
-        console.log('Déconnexion en cours...');
-
-        if (this.isAuthenticated) {
-          try {
-            await fetch('/api/auth/logout', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.token}`
-              }
-            });
-          } catch (error) {
-            console.error('Erreur lors de l\'appel à l\'API de déconnexion:', error);
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}`
           }
-        }
+        });
 
-        TokenUtils.removeToken();
-
-        this.user = null;
         this.token = null;
+        this.user = null;
         this.isAuthenticated = false;
-        this.isPremium = false;
-        this.isAdmin = false;
+        TokenUtils.removeToken();
+        this.persistData();
 
-        if (typeof localStorage !== 'undefined') {
-          localStorage.removeItem('user_data');
-        }
-
-        console.log('Déconnexion réussie');
       } catch (error) {
-        console.error('Erreur lors de la déconnexion:', error);
+        console.error('Erreur lors de l\'appel à l\'API de déconnexion:', error);
       }
     },
 
@@ -315,10 +300,9 @@ export const useUserStore = defineStore('user', {
       this.token = token;
       this.isAuthenticated = true;
 
-      // Stocker le token pour une utilisation ultérieure
+
       TokenUtils.storeToken(token);
 
-      // Décoder le token pour obtenir les informations de base
       try {
         const decodedData = TokenUtils.decodeToken(token);
 
@@ -332,7 +316,7 @@ export const useUserStore = defineStore('user', {
             }
           });
 
-          // Vérifier les différentes valeurs possibles avec assertions de type
+
           let isPremiumValue = false;
           if (decodedData.isPremium !== undefined) {
             isPremiumValue = decodedData.isPremium === true ||
@@ -377,9 +361,9 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    persistUserData() {
+    persistData() {
       try {
-        // S'assurer que les valeurs sont des booléens explicites avant de persister
+
         let isAdminValue = false;
         if (this.user?.isAdmin !== undefined) {
           isAdminValue = this.user.isAdmin === true ||
@@ -496,7 +480,7 @@ export const useUserStore = defineStore('user', {
           this.isPremium = isPremiumValue;
           this.isAdmin = isAdminValue;
 
-          this.persistUserData();
+          this.persistData();
           await this.loadData();
 
           this.loading = false;
@@ -582,7 +566,7 @@ export const useUserStore = defineStore('user', {
           this.isAdmin = data.user.isAdmin;
 
           // Persister les données utilisateur
-          this.persistUserData();
+          this.persistData();
 
           this.loading = false;
           return { success: true };
@@ -734,7 +718,7 @@ export const useUserStore = defineStore('user', {
               }
             });
 
-            this.persistUserData();
+            this.persistData();
             console.log('Données chargées avec succès via validate:', this.user.id);
             return { success: true, user: this.user };
           }
@@ -778,7 +762,7 @@ export const useUserStore = defineStore('user', {
           this.isAdmin = isAdminValue;
           this.error = null;
 
-          this.persistUserData();
+          this.persistData();
           console.log('Données chargées avec succès via session:', this.user.id);
           return { success: true, user: this.user };
         }
@@ -841,7 +825,7 @@ export const useUserStore = defineStore('user', {
                   this.isAuthenticated = true;
                   this.isPremium = !!refreshData.user.isPremium;
                   this.isAdmin = !!refreshData.user.isAdmin;
-                  this.persistUserData();
+                  this.persistData();
                 }
 
                 return this.loadSnippets(retryCount + 1);
@@ -932,7 +916,7 @@ export const useUserStore = defineStore('user', {
                   this.isAuthenticated = true;
                   this.isPremium = !!refreshData.user.isPremium;
                   this.isAdmin = !!refreshData.user.isAdmin;
-                  this.persistUserData();
+                  this.persistData();
                 }
 
                 return this.loadSQLSchemas(retryCount + 1);
@@ -1616,54 +1600,42 @@ export const useUserStore = defineStore('user', {
 
     async updatePremiumStatus() {
       try {
-        console.log('Début mise à jour statut premium, userId:', this.user.userId);
+        if (!this.user) {
+          return { success: false, error: 'user not found' };
+        }
 
-        const userId = this.user.userId;
-        console.log('ID utilisé pour la requête premium-status:', userId);
+        const userId = this.user.id;
 
-        const response = await $fetch('/api/user/premium-status', {
+        const response = await fetch('/api/user/premium-status', {
           method: 'POST',
           headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token}`
           },
-          body: {
-            userId
-          }
+          body: JSON.stringify({ userId })
         });
 
-        console.log('Réponse API premium-status:', response);
+        if (!response.ok) {
+          return { success: false, error: `Erreur serveur: ${response.status}` };
+        }
 
-        if (response.success) {
-          console.log('Mise à jour réussie, passage premium:', response.isPremium);
-          if (this.user && response.user) {
-            // Mettre à jour toutes les propriétés de l'utilisateur
+        const data = await response.json();
+
+        if (data.success) {
+          if (this.user) {
             this.user.isPremium = true;
-            this.user.id = response.user.id;
-            this.user.userId = response.user.id; // Garder userId synchronisé
-            this.user.username = response.user.username;
-            this.user.email = response.user.email;
-            this.user.isAdmin = response.user.isAdmin;
-
-            this.persistUserData();
-            console.log('Données utilisateur mises à jour et persistées:', this.user);
-          } else {
-            if (this.user) {
-              this.user.isPremium = true;
-              this.persistUserData();
-            }
-            console.log('Mise à jour manuelle du statut premium réussie');
+            this.isPremium = true;
+            this.persistData();
           }
-          return {
-            success: true,
-            requireRelogin: response.requireRelogin || false
-          };
+
+          return { success: true, isPremium: true };
         } else {
-          console.error('Échec mise à jour premium:', response.error);
-          return { success: false, error: response.error || 'Erreur lors de la mise à jour du statut premium' };
+          console.error('Échec mise à jour premium:', data.error);
+          return { success: false, error: data.error };
         }
       } catch (error) {
         console.error('Exception lors de la mise à jour du statut premium:', error);
-        return { success: false, error: 'Erreur lors de la mise à jour du statut premium' };
+        return { success: false, error: 'Erreur technique' };
       }
     },
 
@@ -1834,7 +1806,7 @@ export const useUserStore = defineStore('user', {
               isAdminConverti: isAdminValue
             });
 
-            this.persistUserData();
+            this.persistData();
           }
         }
 
