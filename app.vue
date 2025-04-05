@@ -14,7 +14,37 @@ import CookieBanner from './components/cookie-banner.vue';
 import { useCookieStore } from './stores/cookieStore';
 import { useUserStore } from './stores/userStore';
 import { TokenUtils } from './utils/token';
+// @ts-ignore
 import { usePlausible } from './utils/usePlausible';
+// @ts-ignore
+import { useHead } from '#imports';
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "DevUnity",
+        "description": "DevUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.",
+        "url": "https://devunity.tech/",
+        "email": "support@devunity.tech",
+        "foundingDate": "2025-04-05",
+        "legalName": "DevUnity",
+        "numberOfEmployees": {
+          "@type": "QuantitativeValue",
+          "value": "1"
+        },
+        "potentialAction": {
+          "@type": "ContactAction",
+          "name": "Contact",
+          "target": "mailto:support@devunity.tech"
+        }
+      })
+    }
+  ]
+});
 
 const router = useRouter();
 const userStore = useUserStore();

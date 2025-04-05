@@ -1,1 +1,13 @@
+User-agent: *
+Disallow: /admin
+Disallow: /robots
+Disallow: /seo-audit
+Disallow: /checkout
+Disallow: /sql-generator
+Disallow: /wp-admin
+Disallow: /login
+Disallow: /cgi-bin
 
+Sitemap: https://devunity.tech/sitemap.xml
+
+Host: https://devunity.tech

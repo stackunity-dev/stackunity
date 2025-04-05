@@ -854,6 +854,88 @@
       </v-card>
     </v-dialog>
 
+    <v-row class="mt-4" v-if="isSitemapDialog">
+      <v-col cols="12">
+        <v-card class="rounded-lg elevation-2">
+          <v-card-title class="text-h6">
+            <v-icon start color="primary">mdi-map-marker-path</v-icon>
+            Sitemap Preview
+          </v-card-title>
+          <v-card-text class="py-3">
+            <div class="mb-4">
+              <div class="d-flex align-center mb-2">
+                <v-icon color="primary" class="mr-2">mdi-link</v-icon>
+                <span class="text-subtitle-1 font-weight-bold">URLs in sitemap: {{ getTotalUrlsInSitemap() }}</span>
+              </div>
+              <div class="d-flex align-center mb-2">
+                <v-icon color="primary" class="mr-2">mdi-image</v-icon>
+                <span class="text-subtitle-1 font-weight-bold">Images in sitemap: {{ getTotalImagesInSitemap() }}</span>
+              </div>
+              <v-divider class="my-3"></v-divider>
+
+              <div class="sitemap-preview-container">
+                <v-tabs v-model="sitemapTab" color="primary">
+                  <v-tab value="code">XML Code</v-tab>
+                  <v-tab value="urls">URLs</v-tab>
+                  <v-tab value="images">Images</v-tab>
+                </v-tabs>
+
+                <v-window v-model="sitemapTab">
+                  <v-window-item value="code">
+                    <pre class="sitemap-code pa-4 rounded-lg"><code>{{ sitemapPreview }}</code></pre>
+                  </v-window-item>
+
+                  <v-window-item value="urls">
+                    <v-list lines="two" class="rounded-lg">
+                      <v-list-item v-for="(url, index) in extractUrlsFromSitemap()" :key="index">
+                        <v-list-item-title>
+                          <v-chip color="primary" size="small" class="mr-2">{{ index + 1 }}</v-chip>
+                          {{ url }}
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item v-if="extractUrlsFromSitemap().length === 0">
+                        <v-alert type="warning" density="compact">
+                          No URLs found in the sitemap
+                        </v-alert>
+                      </v-list-item>
+                    </v-list>
+                  </v-window-item>
+
+                  <v-window-item value="images">
+                    <v-list lines="two" class="rounded-lg">
+                      <template v-for="(urlImages, url) in extractImagesFromSitemap()" :key="url">
+                        <v-list-subheader class="text-primary">
+                          {{ url }}
+                        </v-list-subheader>
+                        <v-list-item v-for="(image, imgIndex) in urlImages" :key="`${url}-${imgIndex}`">
+                          <template v-slot:prepend>
+                            <v-avatar size="64" class="mr-3">
+                              <v-img :src="image.url" :alt="image.title || 'Image'" contain></v-img>
+                            </v-avatar>
+                          </template>
+                          <v-list-item-title>
+                            {{ image.title || image.url.split('/').pop() || 'Image' }}
+                          </v-list-item-title>
+                          <v-list-item-subtitle>
+                            {{ image.url }}
+                          </v-list-item-subtitle>
+                        </v-list-item>
+                      </template>
+                      <v-list-item v-if="Object.keys(extractImagesFromSitemap()).length === 0">
+                        <v-alert type="warning" density="compact">
+                          No images found in the sitemap
+                        </v-alert>
+                      </v-list-item>
+                    </v-list>
+                  </v-window-item>
+                </v-window>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
   </v-app>
 </template>
 
@@ -1096,73 +1178,103 @@ const generatePDFReport = async () => {
   }
 };
 
-const generateSitemapXML = () => {
+const generateSitemapXML = (): string => {
   if (!report.value) return '';
 
-  const urls = Object.keys(report.value.seoResults);
+  const urls = report.value.visitedURLs || [];
+  if (!urls || urls.length === 0) return '';
+
   const today = new Date().toISOString().split('T')[0];
 
+  // Extraire le domaine de base pour les chemins d'images
+  let baseDomain = '';
+  try {
+    if (urls.length > 0) {
+      const firstUrl = urls[0];
+      const urlObj = new URL(firstUrl);
+      baseDomain = `${urlObj.protocol}//${urlObj.host}`;
+    }
+  } catch (e) {
+    console.error("Erreur lors de l'extraction du domaine de base:", e);
+  }
+
+  // Récupérer les images pour chaque URL
+  const imagesByUrl: Record<string, Array<{ url: string, title?: string, alt?: string }>> = {};
+
+  // Parcourir tous les résultats pour extraire les données d'images
+  console.log("Structure de report.value:", Object.keys(report.value));
+  console.log("Structure de seoResults:", Object.keys(report.value.seoResults));
+
+  // Parcourir la première URL pour voir la structure détaillée
+  const firstUrl = Object.keys(report.value.seoResults)[0];
+  console.log(`Structure détaillée pour ${firstUrl}:`, JSON.stringify(report.value.seoResults[firstUrl], null, 2));
+
+  Object.entries(report.value.seoResults).forEach(([url, result]) => {
+    console.log(`Traitement de l'URL: ${url}`);
+    console.log(`Structure du résultat:`, Object.keys(result));
+
+    const resultData = result as any;
+    if (resultData && resultData.imageAlt && Array.isArray(resultData.imageAlt)) {
+      console.log(`Images trouvées via result.imageAlt:`, resultData.imageAlt.length);
+      imagesByUrl[url] = resultData.imageAlt
+        .filter(img => img && img.src && !img.src.startsWith('data:'))
+        .map(img => {
+          let imgUrl = img.src;
+          if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('//')) {
+            try {
+              const urlObj = new URL(url);
+              imgUrl = imgUrl.startsWith('/')
+                ? `${urlObj.protocol}//${urlObj.host}${imgUrl}`
+                : `${urlObj.protocol}//${urlObj.host}/${imgUrl}`;
+            } catch (e) {
+              console.error("Erreur lors de la normalisation de l'URL de l'image:", e);
+            }
+          }
+
+          return {
+            url: imgUrl,
+            title: img.title || img.alt || undefined,
+            alt: img.alt || undefined
+          };
+        });
+
+      console.log(`Sitemap: ${imagesByUrl[url].length} images trouvées pour ${url}`, imagesByUrl[url]);
+    }
+  });
+
+  console.log("Images totales extraites pour le sitemap:", Object.keys(imagesByUrl).length, imagesByUrl);
+
+  // Générer le sitemap XML avec les images
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
-  ${urls.map(url => {
-    const pageData = report.value!.seoResults[url];
-
-    const imageXML = pageData.imageAlt.length > 0
-      ? pageData.imageAlt.map(img => {
-        if (!img.src || img.src.startsWith('data:') || !img.src.match(/^(http|https):\/\//)) {
-          return '';
-        }
-        return `
-    <image:image>
-      <image:loc>${img.src}</image:loc>
-      ${img.title ? `<image:title><![CDATA[${img.title}]]></image:title>` : img.alt ? `<image:title><![CDATA[${img.alt}]]></image:title>` : ''}
-      ${img.width && img.height ? `<image:caption>Image size: ${img.width}x${img.height}</image:caption>` : ''}
-    </image:image>`;
-      }).join('')
-      : '';
-
-    const videoXML = pageData.videoInfo && pageData.videoInfo.length > 0
-      ? pageData.videoInfo.map(video => {
-        if (!video.src || !video.src.match(/^(http|https):\/\//)) {
-          return '';
-        }
-
-        return `
-    <video:video>
-      <video:thumbnail_loc>${video.thumbnail || url}</video:thumbnail_loc>
-      <video:title>${video.title || 'Video'}</video:title>
-      <video:description>${video.description || 'Video content'}</video:description>
-      <video:content_loc>${video.src}</video:content_loc>
-      ${video.width && video.height ? `<video:width>${video.width}</video:width>
-      <video:height>${video.height}</video:height>` : ''}
-      <video:family_friendly>yes</video:family_friendly>
-    </video:video>`;
-      }).join('')
-      : '';
-
-    const ogTitle = pageData.socialTags.ogTags.find(tag => tag.property === 'og:title')?.content;
-    const ogDesc = pageData.socialTags.ogTags.find(tag => tag.property === 'og:description')?.content;
-
-    const urlDepth = (url.match(/\//g) || []).length - 2;
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${urls.map(url => {
+    // Calculer la priorité en fonction de la profondeur de l'URL
+    const urlDepth = url.split('/').length - 3; // -3 pour tenir compte de http://domain.com/
     const priority = Math.max(0.1, url === targetUrl.value ? 1.0 : 1.0 - (urlDepth * 0.2)).toFixed(1);
+
+    // Récupérer les images pour cette URL
+    const images = imagesByUrl[url] || [];
+
+    // Générer les balises image si présentes
+    const imageXML = images.length > 0
+      ? images.map(img => `
+    <image:image>
+      <image:loc>${img.url}</image:loc>${img.title ? `
+      <image:title>${img.title}</image:title>` : ''}${img.alt ? `
+      <image:caption>${img.alt}</image:caption>` : ''}
+    </image:image>`).join('')
+      : '';
 
     return `
   <url>
     <loc>${url}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>${priority}</priority>${imageXML}${videoXML}
+    <priority>${priority}</priority>${imageXML}
   </url>`;
   }).join('')}
 </urlset>`;
-};
-
-const previewSitemap = () => {
-  sitemapPreview.value = generateSitemapXML();
-  showSitemapPreview.value = true;
 };
 
 const downloadSitemap = () => {
@@ -1181,26 +1293,61 @@ const downloadSitemap = () => {
   }
 };
 
-const generateSitemap = downloadSitemap;
+const previewSitemap = () => {
+  sitemapPreview.value = generateSitemapXML();
+  showSitemapPreview.value = true;
+};
 
+// Extrait les URLs d'images du sitemap XML
+const extractImageUrlsFromSitemap = (): string[] => {
+  if (!sitemapPreview.value) return [];
+
+  try {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(sitemapPreview.value, "text/xml");
+    const imageElements = xmlDoc.getElementsByTagName("image:loc");
+
+    const urls: string[] = [];
+    for (let i = 0; i < imageElements.length; i++) {
+      const url = imageElements[i].textContent;
+      if (url) urls.push(url);
+    }
+
+    console.log(`Extraction: ${urls.length} images trouvées dans le sitemap`);
+    return urls;
+  } catch (e) {
+    console.error("Erreur lors de l'extraction des URLs d'images:", e);
+    return [];
+  }
+};
+
+// Extrait le nom de fichier d'une URL d'image
+const getImageName = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split('/');
+    return pathParts[pathParts.length - 1] || 'image';
+  } catch (e) {
+    // Si l'URL n'est pas valide, extraire le dernier segment après le dernier /
+    const parts = url.split('/');
+    return parts[parts.length - 1] || 'image';
+  }
+};
+
+// Fonctions pour compter les images et vidéos dans le sitemap
 const getTotalImagesInSitemap = (): number => {
-  if (!report.value) return 0;
-  return Object.values(report.value.seoResults).reduce((total, page: SEOResult) =>
-    total + (page.imageAlt?.length || 0), 0);
+  return extractImageUrlsFromSitemap().length;
 };
 
 const getMissingAltImagesCount = (): number => {
   if (!report.value) return 0;
-  return Object.values(report.value.seoResults).reduce((total, page: SEOResult) => {
-    return total + (page.imageAlt?.filter(img => !img.alt)?.length || 0);
+  return Object.values(report.value.seoResults).reduce((total: number, page: any) => {
+    return total + ((page.images?.withoutAlt) || 0);
   }, 0);
 };
 
 const getTotalVideosInSitemap = (): number => {
-  if (!report.value) return 0;
-  return Object.values(report.value.seoResults).reduce((total, page: SEOResult) => {
-    return total + (page.videoInfo?.length || 0);
-  }, 0);
+  return 0; // Pas de support vidéo pour le moment
 };
 
 const summaryItems = [
@@ -1896,11 +2043,94 @@ const getResultFromCache = (url: string): SEOResult => {
   return emptyResult;
 };
 
+// Ajouter cette ligne
+const generateSitemap = downloadSitemap;
 
 onMounted(() => {
   isClient.value = true;
   // Initialize client-side elements here if needed
 });
+
+const extractImagesFromSitemap = (): Record<string, Array<{ url: string, title?: string, alt?: string }>> => {
+  if (!sitemapPreview.value) return {};
+
+  const imagesByUrl: Record<string, Array<{ url: string, title?: string, alt?: string }>> = {};
+
+  try {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(sitemapPreview.value, "text/xml");
+
+    const urlElements = xmlDoc.getElementsByTagName("url");
+
+    for (let i = 0; i < urlElements.length; i++) {
+      const urlElement = urlElements[i];
+      const locElement = urlElement.getElementsByTagName("loc")[0];
+
+      if (locElement && locElement.textContent) {
+        const pageUrl = locElement.textContent;
+        const imageElements = urlElement.getElementsByTagNameNS("http://www.google.com/schemas/sitemap-image/1.1", "image");
+
+        if (imageElements.length > 0) {
+          imagesByUrl[pageUrl] = [];
+
+          for (let j = 0; j < imageElements.length; j++) {
+            const imageElement = imageElements[j];
+            const imageLoc = imageElement.getElementsByTagNameNS("http://www.google.com/schemas/sitemap-image/1.1", "loc")[0]?.textContent || "";
+            const imageTitle = imageElement.getElementsByTagNameNS("http://www.google.com/schemas/sitemap-image/1.1", "title")[0]?.textContent;
+            const imageCaption = imageElement.getElementsByTagNameNS("http://www.google.com/schemas/sitemap-image/1.1", "caption")[0]?.textContent;
+
+            if (imageLoc) {
+              imagesByUrl[pageUrl].push({
+                url: imageLoc,
+                title: imageTitle || undefined,
+                alt: imageCaption || undefined
+              });
+            }
+          }
+        }
+      }
+    }
+    console.log("Images extraites du sitemap:", imagesByUrl);
+    return imagesByUrl;
+  } catch (e) {
+    console.error("Erreur lors de l'extraction des images du sitemap:", e);
+    return {};
+  }
+};
+
+const isSitemapDialog = ref(false);
+const sitemapTab = ref('code');
+
+const extractUrlsFromSitemap = (): string[] => {
+  if (!sitemapPreview.value) return [];
+
+  try {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(sitemapPreview.value, "text/xml");
+
+    // Récupérer toutes les URLs
+    const urls: string[] = [];
+    const urlElements = xmlDoc.getElementsByTagName("url");
+
+    for (let i = 0; i < urlElements.length; i++) {
+      const urlElement = urlElements[i];
+      const locElement = urlElement.getElementsByTagName("loc")[0];
+
+      if (locElement && locElement.textContent) {
+        urls.push(locElement.textContent);
+      }
+    }
+
+    return urls;
+  } catch (e) {
+    console.error("Erreur lors de l'extraction des URLs du sitemap:", e);
+    return [];
+  }
+};
+
+const getTotalUrlsInSitemap = (): number => {
+  return extractUrlsFromSitemap().length;
+};
 </script>
 
 <style>
