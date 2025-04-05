@@ -17,30 +17,46 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const [result] = await pool.execute<ResultSetHeader>(
+    const [updateResult] = await pool.execute<ResultSetHeader>(
       'UPDATE users SET isPremium = 1 WHERE id = ?',
       [userId]
     );
 
-    console.log('Résultat UPDATE:', result);
+    console.log('Résultat UPDATE:', updateResult);
 
-    if (result.affectedRows > 0) {
+    if (updateResult.affectedRows > 0) {
       const [userRows] = await pool.execute<RowDataPacket[]>(
-        'SELECT isPremium FROM users WHERE id = ?',
+        'SELECT id, username, email, isPremium, isAdmin FROM users WHERE id = ?',
         [userId]
       );
 
-      return {
-        success: true,
-        isPremium: userRows[0]?.isPremium || true
-      };
+      if (userRows.length > 0) {
+        console.log('Utilisateur récupéré après mise à jour:', userRows[0]);
+        return {
+          success: true,
+          isPremium: true,
+          user: {
+            id: userRows[0].id,
+            username: userRows[0].username,
+            email: userRows[0].email,
+            isPremium: true,
+            isAdmin: userRows[0].isAdmin === 1
+          }
+        };
+      } else {
+        console.error('Utilisateur introuvable après mise à jour:', userId);
+        return {
+          success: false,
+          error: 'User not found after update'
+        };
+      }
     } else {
+      console.error('Aucune ligne affectée pour userId:', userId);
       return {
         success: false,
         error: 'Aucun utilisateur mis à jour'
       };
     }
-
   } catch (error) {
     console.error('Error updating premium status:', error);
     return {

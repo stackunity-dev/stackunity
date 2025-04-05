@@ -399,37 +399,59 @@ const processPayment = async () => {
     }
 
     if (paymentIntent.status === 'succeeded') {
-      await userStore.updatePremiumStatus();
+      try {
+        const updateResult = await userStore.updatePremiumStatus();
+        if (!updateResult.success) {
+          console.error('Erreur lors de la mise à jour du statut premium:', updateResult.error);
+          showSnackbar.value = true;
+          snackbarColor.value = 'warning';
+          snackbarText.value = 'Payment successful but premium status update failed. Please refresh the page.';
+        }
 
-      const response = await userStore.generateInvoice(
-        paymentIntent.id,
-        cardholderName.value,
-        userStore.user?.email || '',
-        vatNumber.value,
-        billingCountry.value,
-        isBusinessCustomer.value,
-        taxDetails.value.baseAmount,
-        taxDetails.value.taxAmount,
-        taxDetails.value.totalAmount,
-        taxDetails.value.taxPercentage,
-        taxDetails.value.isVatExempt
-      );
+        await userStore.loadData();
+        console.log('Statut premium après paiement:', userStore.user?.isPremium);
 
-      if (response.success) {
-        showSnackbar.value = true;
-        snackbarColor.value = 'success';
-        snackbarText.value = 'Payment successful! Premium access activated and invoice sent to your email.';
-        await userStore.updatePremiumStatus();
-      } else {
+        const response = await userStore.generateInvoice(
+          paymentIntent.id,
+          cardholderName.value,
+          userStore.user?.email || '',
+          vatNumber.value,
+          billingCountry.value,
+          isBusinessCustomer.value,
+          taxDetails.value.baseAmount,
+          taxDetails.value.taxAmount,
+          taxDetails.value.totalAmount,
+          taxDetails.value.taxPercentage,
+          taxDetails.value.isVatExempt
+        );
+
+        if (response.success) {
+          showSnackbar.value = true;
+          snackbarColor.value = 'success';
+          snackbarText.value = 'Payment successful! Premium access activated and invoice sent to your email.';
+        } else {
+          showSnackbar.value = true;
+          snackbarColor.value = 'warning';
+          snackbarText.value = 'Payment successful, but invoice generation failed. Contact support if needed.';
+          console.error('Invoice generation error:', response.error);
+        }
+
+        // Redirection vers le dashboard après un court délai
+        setTimeout(() => {
+          // Forcer le rechargement complet pour s'assurer que les changements sont appliqués
+          window.location.href = '/dashboard';
+        }, 2000);
+      } catch (error) {
+        console.error('Error in post-payment process:', error);
         showSnackbar.value = true;
         snackbarColor.value = 'warning';
-        snackbarText.value = 'Payment successful, but invoice generation failed. Contact support if needed.';
-        console.error('Invoice generation error:', response.error);
-      }
+        snackbarText.value = 'Payment successful but some post-payment operations failed. Please refresh your page.';
 
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 2000);
+        // Quand même rediriger vers le dashboard
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 2000);
+      }
     } else {
       throw new Error('Payment was not completed');
     }

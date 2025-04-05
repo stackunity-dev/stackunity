@@ -16,7 +16,6 @@ interface UserRow extends RowDataPacket {
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    console.log('[LOGIN] Tentative de connexion pour:', body.email);
 
     if (!body.email || !body.password) {
       console.log('[LOGIN] Champs manquants');
@@ -26,7 +25,6 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    console.log('[LOGIN] Recherche de l\'utilisateur dans la base de données');
     const [rows] = await pool.execute<UserRow[]>('SELECT id, username, email, password, isPremium, isAdmin FROM users WHERE email = ?', [body.email]);
 
     if (!rows || rows.length === 0) {
@@ -38,7 +36,6 @@ export default defineEventHandler(async (event) => {
     }
 
     const user = rows[0];
-    console.log(user);
 
     const validPassword = await bcrypt.compare(body.password, user.password);
     if (!validPassword) {
@@ -52,6 +49,7 @@ export default defineEventHandler(async (event) => {
     try {
       const isPremiumValue = user.isPremium === 1;
       const isAdminValue = user.isAdmin === 1;
+      console.log(isPremiumValue, isAdminValue);
 
       const accessToken = ServerTokenManager.generateAccessToken({
         userId: user.id,

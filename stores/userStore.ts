@@ -1616,7 +1616,7 @@ export const useUserStore = defineStore('user', {
 
     async updatePremiumStatus() {
       try {
-        console.log('Début mise à jour statut premium, userId:', this.user.id, this.user.userId);
+        console.log('Début mise à jour statut premium, userId:', this.user?.id);
 
         const userId = this.user?.id;
         console.log('ID utilisé pour la requête premium-status:', userId);
@@ -1635,15 +1635,29 @@ export const useUserStore = defineStore('user', {
 
         if (response.success) {
           console.log('Mise à jour réussie, passage premium:', response.isPremium);
-          if (this.user) {
+          if (this.user && response.user) {
+            // Mettre à jour toutes les propriétés de l'utilisateur
             this.user.isPremium = true;
+            this.user.id = response.user.id;
+            this.user.userId = response.user.id; // Garder userId synchronisé
+            this.user.username = response.user.username;
+            this.user.email = response.user.email;
+            this.user.isAdmin = response.user.isAdmin;
+
             this.persistUserData();
-            console.log('Données utilisateur mises à jour et persistées');
+            console.log('Données utilisateur mises à jour et persistées:', this.user);
+          } else {
+            // Fallback si l'API ne renvoie pas d'utilisateur
+            if (this.user) {
+              this.user.isPremium = true;
+              this.persistUserData();
+            }
+            console.log('Mise à jour manuelle du statut premium réussie');
           }
           return { success: true };
         } else {
           console.error('Échec mise à jour premium:', response.error);
-          throw new Error(response.error || 'Erreur lors de la mise à jour du statut premium');
+          return { success: false, error: response.error || 'Erreur lors de la mise à jour du statut premium' };
         }
       } catch (error) {
         console.error('Exception lors de la mise à jour du statut premium:', error);
