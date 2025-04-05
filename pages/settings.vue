@@ -251,16 +251,16 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Settings - DevUnity',
+  title: 'Settings - StackUnity',
   meta: [
     { name: 'description', content: 'Manage your account settings and preferences' },
-    { name: 'keywords', content: 'DevUnity, settings, preferences, account, user settings' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'keywords', content: 'StackUnity, settings, preferences, account, user settings' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Settings - DevUnity' },
+    { name: 'og:title', content: 'Settings - StackUnity' },
     { name: 'og:description', content: 'Manage your account settings and preferences' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ]
 });
 

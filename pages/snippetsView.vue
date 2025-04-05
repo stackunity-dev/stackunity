@@ -166,19 +166,19 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Snippet - DevUnity',
+  title: 'Snippet - StackUnity',
   meta: [
     { name: 'description', content: 'View and edit your snippets' },
     { name: 'keywords', content: 'snippet, code snippet, code, snippets, edit, view' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Snippet - DevUnity' },
+    { name: 'og:title', content: 'Snippet - StackUnity' },
     { name: 'og:description', content: 'View and edit your snippets' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [
-    { rel: 'canonical', href: 'https://devunity.com/snippets' }
+    { rel: 'canonical', href: 'https://stackunity.com/snippets' }
   ]
 });
 

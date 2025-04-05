@@ -29,8 +29,8 @@
 
 const faqItems = [
   {
-    question: 'What is DevUnity?',
-    answer: 'DevUnity is an all-in-one platform for developers who want to create, manage and optimize their web projects. It combines development tools, monitoring, SEO audit and much more.'
+    question: 'What is StackUnity?',
+    answer: 'StackUnity is an all-in-one platform for developers who want to create, manage and optimize their web projects. It combines development tools, monitoring, SEO audit and much more.'
   },
   {
     question: 'Is there a freemium model?',

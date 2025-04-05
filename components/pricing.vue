@@ -38,7 +38,7 @@
           <h2 class="text-h5 font-weight-bold mb-4">Lifetime subscription</h2>
 
           <p class="text-medium-emphasis mb-4">
-            Maximize your productivity with DevUnity. This limited-time offer won't be available
+            Maximize your productivity with StackUnity. This limited-time offer won't be available
             in the future. Get access to all current and future features, including full
             access to all development components and tools.
           </p>

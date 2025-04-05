@@ -4,7 +4,7 @@
       <v-container class="d-flex align-center py-0 my-0">
         <NuxtLink to="/" class="text-decoration-none">
           <div class="d-flex align-center">
-            <img src="/logo/devunity-title.png" alt="DevUnity title" width="150">
+            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
           </div>
         </NuxtLink>
         <v-spacer></v-spacer>
@@ -64,7 +64,7 @@
       <v-container>
         <div class="text-center">
           <p class="text-body-2 text-medium-emphasis">
-            &copy; {{ new Date().getFullYear() }} DevUnity. All rights reserved.
+            &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
           </p>
         </div>
       </v-container>
@@ -88,16 +88,16 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Contact Us - DevUnity',
+  title: 'Contact Us - StackUnity',
   meta: [
-    { name: 'description', content: 'Contact the DevUnity team for any questions, suggestions or support requests. We are here to help you.' },
-    { name: 'keywords', content: 'DevUnity, contact, support, questions, suggestions, feedback, help, contact us, support request, contact form, contact us form, contact us page, contact us page design, contact us page development' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'description', content: 'Contact the StackUnity team for any questions, suggestions or support requests. We are here to help you.' },
+    { name: 'keywords', content: 'StackUnity, contact, support, questions, suggestions, feedback, help, contact us, support request, contact form, contact us form, contact us page, contact us page design, contact us page development' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Contact Us - DevUnity' },
-    { name: 'og:description', content: 'Contact the DevUnity team for any questions, suggestions or support requests. We are here to help you.' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:title', content: 'Contact Us - StackUnity' },
+    { name: 'og:description', content: 'Contact the StackUnity team for any questions, suggestions or support requests. We are here to help you.' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ]
 });
 

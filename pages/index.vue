@@ -4,7 +4,7 @@
       <v-container class="d-flex align-center py-0 my-0">
         <NuxtLink to="/" class="text-decoration-none">
           <div class="d-flex align-center brand-container">
-            <img src="/logo/devunity-title.png" alt="DevUnity title" width="150" class="logo-image">
+            <img src="" alt="StackUnity title" width="150" class="logo-image">
             <div class="brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left">
               <span class="text-caption font-weight-medium text-gradient">PROPULSE YOUR CODE</span>
             </div>
@@ -50,7 +50,7 @@
     <v-navigation-drawer v-model="drawer" location="right" temporary
       class="v-theme--dark mobile-nav-drawer d-md-none pa-6">
       <div class="drawer-header mb-8 d-flex justify-space-between align-center">
-        <img src="/logo/devunity-title.png" alt="DevUnity title" width="120">
+        <img src="/logo/devunity-title.png" alt="StackUnity title" width="120">
         <v-btn icon variant="text" @click="drawer = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -84,7 +84,7 @@
           <v-row class="align-center justify-center">
             <v-col cols="12" md="6" class="text-center text-md-left">
               <v-responsive>
-                <h1 class="text-h2 font-weight-bold mb-4">Develop faster with DevUnity</h1>
+                <h1 class="text-h2 font-weight-bold mb-4">Develop faster with StackUnity</h1>
                 <p class="text-subtitle-1 text-medium-emphasis mb-8">
                   The all-in-one platform for developers who want to create, manage and optimize their web projects
                   with unparalleled speed and efficiency.
@@ -261,11 +261,11 @@
 
         <div class="d-flex flex-column flex-sm-row justify-space-between align-center">
           <div class="text-body-2 text-medium-emphasis mb-3 mb-sm-0">
-            &copy; {{ new Date().getFullYear() }} DevUnity. All rights reserved.
+            &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
           </div>
           <div class="d-flex align-center">
-            <a href="mailto:contact@devunity.com"
-              class="text-body-2 text-decoration-none text-medium-emphasis">contact@devunity.com</a>
+            <a href="mailto:contact@stackunity.com"
+              class="text-body-2 text-decoration-none text-medium-emphasis">support@stackunity.com</a>
           </div>
         </div>
       </v-container>
@@ -288,14 +288,14 @@ definePageMeta({
 })
 
 useHead({
-  title: 'DevUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects.',
+  title: 'StackUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects.',
   meta: [
-    { name: 'description', content: 'DevUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
-    { name: 'keywords', content: 'DevUnity, web development, all-in-one platform, web applications, web application platform, web application development tools, web application development framework, web application development platform' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { name: 'keywords', content: 'StackUnity, web development, all-in-one platform, web applications, web application platform, web application development tools, web application development framework, web application development platform' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'DevUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { name: 'og:title', content: 'StackUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects.' },
   ]
 })
 

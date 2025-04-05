@@ -85,18 +85,18 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Create Account - DevUnity',
+  title: 'Create Account - StackUnity',
   meta: [
     { name: 'author', content: 'Nûr' },
-    { name: 'description', content: 'Create your DevUnity account to access all features' },
+    { name: 'description', content: 'Create your StackUnity account to access all features' },
     { name: 'robots', content: 'index,follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Create Account - DevUnity' },
-    { name: 'og:description', content: 'Create your DevUnity account to access all features' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:title', content: 'Create Account - StackUnity' },
+    { name: 'og:description', content: 'Create your StackUnity account to access all features' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [
-    { rel: 'canonical', href: 'https://devunity.com/signup' }
+    { rel: 'canonical', href: 'https://stackunity.com/signup' }
   ]
 })
 

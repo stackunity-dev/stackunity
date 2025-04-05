@@ -3,7 +3,7 @@
     <v-container>
       <div class="d-flex flex-column align-center mb-6">
         <NuxtLink to="/" class="mb-4">
-          <img src="/logo/devunity-title.png" alt="DevUnity title" width="150">
+          <img src="" alt="StackUnity title" width="150">
         </NuxtLink>
         <h1 class="text-h3 font-weight-bold text-center">Terms of Service</h1>
       </div>
@@ -12,7 +12,7 @@
         <div class="terms-content">
           <h2 class="text-h5 font-weight-bold mb-4">1. Acceptance of Terms</h2>
           <p class="mb-4">
-            Welcome to DevUnity. By accessing or using our platform, you agree to be bound by these
+            Welcome to StackUnity. By accessing or using our platform, you agree to be bound by these
             Terms of Service. If you do not agree to these terms, please do not use our services.
           </p>
 
@@ -104,20 +104,23 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
+import { useHead } from '#imports';
+
 useHead({
-  title: 'Terms of Service - DevUnity',
+  title: 'Terms of Service - StackUnity',
   meta: [
-    { name: 'description', content: 'Read the Terms of Service for the DevUnity platform. By using our services, you agree to be bound by these terms.' },
-    { name: 'author', content: 'DevUnity' },
-    { name: 'keywords', content: 'DevUnity, terms of service, usage, services, bound, terms' },
+    { name: 'description', content: 'Read the Terms of Service for the StackUnity platform. By using our services, you agree to be bound by these terms.' },
+    { name: 'author', content: 'StackUnity' },
+    { name: 'keywords', content: 'StackUnity, terms of service, usage, services, bound, terms' },
     { name: 'robots', content: 'index,follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Terms of Service - DevUnity' },
+    { name: 'og:title', content: 'Terms of Service - StackUnity' },
     { name: 'og:description', content: 'Read the Terms of Service for the DevUnity platform. By using our services, you agree to be bound by these terms.' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [
-    { rel: 'canonical', href: 'https://devunity.com/terms' }
+    { rel: 'canonical', href: 'https://stackunity.com/terms' }
   ]
 })
 </script>

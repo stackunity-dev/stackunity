@@ -158,15 +158,15 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Studio - DevUnity',
+  title: 'Studio - StackUnity',
   meta: [
     { name: 'description', content: 'Create and customize components with the Studio' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'noindex, nofollow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Studio - DevUnity' },
+    { name: 'og:title', content: 'Studio - StackUnity' },
     { name: 'og:description', content: 'Create and customize components with the Studio' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ]
 })
 

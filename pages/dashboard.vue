@@ -153,10 +153,10 @@
           <div v-if="userStore.user?.isPremium">
             <p class="text-body-1 mb-4">
               Your premium status has been activated successfully! You now have access to all advanced features of
-              DevUnity.
+              StackUnity.
             </p>
             <p class="text-body-1">
-              Enjoy this new experience and discover all that DevUnity can offer you.
+              Enjoy this new experience and discover all that StackUnity can offer you.
             </p>
           </div>
           <div v-else>
@@ -196,16 +196,16 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Dashboard - DevUnity',
+  title: 'Dashboard - StackUnity',
   meta: [
-    { name: 'description', content: 'Dashboard for DevUnity' },
-    { name: 'keywords', content: 'DevUnity, dashboard, tools, snippets, SQL, Studio, Sitemaps' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'description', content: 'Dashboard for StackUnity' },
+    { name: 'keywords', content: 'StackUnity, dashboard, tools, snippets, SQL, Studio, Sitemaps' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Dashboard - DevUnity' },
-    { name: 'og:description', content: 'Dashboard for DevUnity' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:title', content: 'Dashboard - StackUnity' },
+    { name: 'og:description', content: 'Dashboard for StackUnity' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ]
 })
 

@@ -197,6 +197,9 @@ import { ref } from 'vue';
 import { useUserStore } from '~/stores/userStore';
 import premiumFeatures from '@/components/PremiumFeature.vue';
 
+// @ts-ignore
+import { useHead, definePageMeta } from '#imports';
+
 const userStore = useUserStore();
 
 definePageMeta({
@@ -204,16 +207,16 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Accessibility - DevUnity',
+  title: 'Accessibility - StackUnity',
   meta: [
     { name: 'description', content: 'Accessibility tools for web developers' },
     { name: 'keywords', content: 'accessibility, web accessibility, web accessibility tools, accessibility testing, web accessibility testing, accessibility guidelines, web accessibility guidelines, accessibility best practices, web accessibility best practices' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Accessibility - DevUnity' },
+    { name: 'og:title', content: 'Accessibility - StackUnity' },
     { name: 'og:description', content: 'Accessibility tools for web developers' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ]
 });
 

@@ -1,5 +1,5 @@
+import { defineEventHandler, readBody } from 'h3';
 import { Resend } from 'resend';
-import { readBody, defineEventHandler } from 'h3';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_55555555555555555555555555555555');
 
@@ -12,8 +12,8 @@ export default defineEventHandler(async (event) => {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Devunity Support <support@devunity.tech>',
-      to: 'support@devunity.tech',
+      from: 'StackUnity Support <support@stackunity.tech>',
+      to: 'support@stackunity.tech',
       subject: subject,
       html: `
         <p>Name: ${name}</p>
@@ -33,5 +33,3 @@ export default defineEventHandler(async (event) => {
     return { success: false, error: 'Erreur lors de l\'envoi du message de contact' };
   }
 });
-
-

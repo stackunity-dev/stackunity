@@ -330,16 +330,16 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Snippets',
+  title: 'Snippets - StackUnity',
   meta: [
     { name: 'description', content: 'Deploy and use numerous snippets across the world' },
     { name: 'robots', content: 'index,follow' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'keywords', content: 'snippets, code snippets, code, snippets, deploy, use, across, world' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Snippets' },
+    { name: 'og:title', content: 'Snippets - StackUnity' },
     { name: 'og:description', content: 'Deploy and use numerous snippets across the world' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ]
 })
 

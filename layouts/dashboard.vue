@@ -9,7 +9,7 @@
             <img src="/logo/devunity-letter.png" alt="DevUnity" class="logo-devunity" />
           </div>
           <div>
-            <div class="text-h6 font-weight-bold">DevUnity</div>
+            <div class="text-h6 font-weight-bold">StackUnity</div>
             <div class="text-caption text-medium-emphasis">v1.0.0</div>
           </div>
         </div>
@@ -106,7 +106,7 @@
             <img src="/logo/devunity-letter.png" alt="DevUnity" class="logo-devunity" />
           </div>
           <div>
-            <div class="text-h6 font-weight-bold">DevUnity</div>
+            <div class="text-h6 font-weight-bold">StackUnity</div>
             <div class="text-caption text-medium-emphasis">v1.0.0</div>
           </div>
         </div>

@@ -36,7 +36,7 @@ export const emailTemplates: Record<string, EmailTemplate> = {
     font: 'Arial',
     darkMode: false,
     logoUrl: 'https://via.placeholder.com/150x50?text=Logo',
-    companyName: 'DevUnity',
+    companyName: 'StackUnity',
     companyAddress: '86000 Poitiers, France'
   },
   update: {

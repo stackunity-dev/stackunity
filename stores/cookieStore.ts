@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useUserStore } from './userStore';
 
 interface CookiePreferences {
   essential: boolean;
@@ -42,7 +41,7 @@ export const useCookieStore = defineStore('cookie', {
       if (typeof document === 'undefined' || !process.client) return false;
       return document.cookie
         .split('; ')
-        .some(row => row.startsWith('devunity_cookie_consent='));
+        .some(row => row.startsWith('stackunity_cookie_consent='));
     },
     isMarketingEnabled: (state) => state.preferences.marketing
   },
@@ -56,7 +55,7 @@ export const useCookieStore = defineStore('cookie', {
     initCookieConsent() {
       if (!process.client) return;
 
-      const consentCookie = this.getCookie('devunity_cookie_consent');
+      const consentCookie = this.getCookie('stackunity_cookie_consent');
 
       if (consentCookie) {
         try {
@@ -121,7 +120,7 @@ export const useCookieStore = defineStore('cookie', {
         secure: process.env.NODE_ENV === 'production'
       };
 
-      document.cookie = `devunity_cookie_consent=${encodeURIComponent(cookieValue)}; path=${cookieOptions.path}; max-age=${cookieOptions.maxAge}; samesite=${cookieOptions.sameSite}${cookieOptions.secure ? '; secure' : ''}`;
+      document.cookie = `stackunity_cookie_consent=${encodeURIComponent(cookieValue)}; path=${cookieOptions.path}; max-age=${cookieOptions.maxAge}; samesite=${cookieOptions.sameSite}${cookieOptions.secure ? '; secure' : ''}`;
     },
 
     resetConsent() {
@@ -136,7 +135,7 @@ export const useCookieStore = defineStore('cookie', {
       this.consentGiven = false;
       this.showBanner = true;
 
-      document.cookie = 'devunity_cookie_consent=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'stackunity_cookie_consent=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     },
 
     applyPreferences() {
@@ -158,7 +157,7 @@ export const useCookieStore = defineStore('cookie', {
       const prefsExpiryDate = new Date();
       prefsExpiryDate.setMonth(prefsExpiryDate.getMonth() + 6);
 
-      document.cookie = `devunity_preferences=${encodeURIComponent(JSON.stringify(userPreferences))}; path=/; expires=${prefsExpiryDate.toUTCString()}; SameSite=Lax;`;
+      document.cookie = `stackunity_preferences=${encodeURIComponent(JSON.stringify(userPreferences))}; path=/; expires=${prefsExpiryDate.toUTCString()}; SameSite=Lax;`;
     },
 
     setCookie(name: string, value: string, expiryDays: number = 30, options: { httpOnly?: boolean, secure?: boolean, sameSite?: 'Strict' | 'Lax' | 'None' } = {}) {
@@ -193,7 +192,7 @@ export const useCookieStore = defineStore('cookie', {
     debugCookieState() {
       if (!process.client) return;
 
-      console.group('État des cookies DevUnity');
+      console.group('État des cookies StackUnity');
       console.log('Préférences:', this.preferences);
       console.log('Consentement donné:', this.hasGivenConsent);
       console.log('Cookie présent dans le navigateur:', this.hasCookieInBrowser);

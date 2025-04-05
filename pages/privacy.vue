@@ -127,6 +127,9 @@
 </template>
 
 <script lang="ts" setup>
+// @ts-ignore
+import { useHead, definePageMeta } from '#imports';
+
 definePageMeta({
   layout: 'default'
 });

@@ -17,7 +17,7 @@
         <v-container>
           <v-row justify="center">
             <v-col cols="12" md="10" lg="8" class="text-center">
-              <h1 class="text-h2 font-weight-bold mb-4 text-white">About DevUnity</h1>
+              <h1 class="text-h2 font-weight-bold mb-4 text-white">About StackUnity</h1>
             </v-col>
           </v-row>
         </v-container>
@@ -30,7 +30,7 @@
               <section class="mb-12">
                 <h2 class="text-h4 font-weight-bold mb-6 primary--text">Our Mission</h2>
                 <p class="text-body-1 mb-4">
-                  At DevUnity, our mission is to empower developers by providing them with the tools
+                  At StackUnity, our mission is to empower developers by providing them with the tools
                   they need to create exceptional web applications, while reducing complexity
                   and development time.
                 </p>
@@ -104,21 +104,24 @@
 </template>
 
 <script lang="ts" setup>
+// @ts-ignore
+import { useHead, definePageMeta } from '#imports';
+
 definePageMeta({
   layout: 'default'
 });
 
 useHead({
-  title: 'About - DevUnity',
+  title: 'About - StackUnity',
   meta: [
-    { name: 'description', content: 'Discover the mission and values behind DevUnity, the all-in-one platform for web developers.' },
-    { name: 'keywords', content: 'DevUnity, web development, all-in-one platform, web applications, web application platform, web application development tools, web application development framework, web application development platform' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'description', content: 'Discover the mission and values behind StackUnity, the all-in-one platform for web developers.' },
+    { name: 'keywords', content: 'StackUnity, web development, all-in-one platform, web applications, web application platform, web application development tools, web application development framework, web application development platform' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'About - DevUnity' },
-    { name: 'og:description', content: 'Discover the mission and values behind DevUnity, the all-in-one platform for web developers.' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:title', content: 'About - StackUnity' },
+    { name: 'og:description', content: 'Discover the mission and values behind StackUnity, the all-in-one platform for web developers.' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ]
 });
 
