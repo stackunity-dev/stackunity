@@ -1616,43 +1616,38 @@ export const useUserStore = defineStore('user', {
 
     async updatePremiumStatus() {
       try {
-        console.log('Début mise à jour statut premium, userId:', this.user?.id);
+        console.log('Début mise à jour statut premium, userId:', this.user.id, this.user.userId);
 
         const userId = this.user?.id;
         console.log('ID utilisé pour la requête premium-status:', userId);
 
-        const response = await fetch('/api/user/premium-status', {
+        const response = await $fetch('/api/user/premium-status', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token}`
           },
-          body: JSON.stringify({ userId })
+          body: {
+            userId
+          }
         });
 
-        if (!response.ok) {
-          console.error('Réponse serveur non OK:', response.status, response.statusText);
-          throw new Error('Erreur lors de la mise à jour du statut premium');
-        }
+        console.log('Réponse API premium-status:', response);
 
-        const result = await response.json();
-        console.log('Réponse API premium-status:', result);
-
-        if (result.success) {
-          console.log('Mise à jour réussie, passage premium:', result.isPremium);
+        if (response.success) {
+          console.log('Mise à jour réussie, passage premium:', response.isPremium);
           if (this.user) {
             this.user.isPremium = true;
             this.persistUserData();
             console.log('Données utilisateur mises à jour et persistées');
           }
-          return true;
+          return { success: true };
         } else {
-          console.error('Échec mise à jour premium:', result.error);
-          throw new Error(result.error || 'Erreur lors de la mise à jour du statut premium');
+          console.error('Échec mise à jour premium:', response.error);
+          throw new Error(response.error || 'Erreur lors de la mise à jour du statut premium');
         }
       } catch (error) {
         console.error('Exception lors de la mise à jour du statut premium:', error);
-        throw new Error('Erreur lors de la mise à jour du statut premium');
+        return { success: false, error: 'Erreur lors de la mise à jour du statut premium' };
       }
     },
 
@@ -1910,32 +1905,6 @@ export const useUserStore = defineStore('user', {
           success: false,
           error: error instanceof Error ? error.message : 'Erreur inconnue lors de la génération de la facture'
         };
-      }
-    },
-
-    async getPremiumStatus() {
-      try {
-        const userId = this.user.userId;
-        const response = await $fetch('/api/user/premium-status', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${this.token}`
-          },
-          body: {
-            userId
-          }
-        });
-
-        if (response.success && response.isPremium) {
-          this.user.isPremium = response.isPremium;
-          this.persistUserData();
-          return { success: true };
-        } else {
-          return { success: false, error: 'Réponse du serveur invalide' };
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération du statut premium:', error);
-        return { success: false, error: 'Erreur lors de la récupération du statut premium' };
       }
     }
   },

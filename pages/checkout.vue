@@ -419,7 +419,7 @@ const processPayment = async () => {
         showSnackbar.value = true;
         snackbarColor.value = 'success';
         snackbarText.value = 'Payment successful! Premium access activated and invoice sent to your email.';
-        await userStore.getPremiumStatus();
+        await userStore.updatePremiumStatus();
       } else {
         showSnackbar.value = true;
         snackbarColor.value = 'warning';
