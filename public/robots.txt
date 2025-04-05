@@ -7,6 +7,10 @@ Disallow: /sql-generator
 Disallow: /wp-admin
 Disallow: /login
 Disallow: /cgi-bin
+Disallow: /premium
+Disallow: /subscription
+Disallow: /admin/newsletter-admin
+Disallow: /settings
 
 Sitemap: https://devunity.tech/sitemap.xml
 
