@@ -1904,6 +1904,27 @@ export const useUserStore = defineStore('user', {
           error: error instanceof Error ? error.message : 'Erreur inconnue lors de la génération de la facture'
         };
       }
+    },
+
+    async getPremiumStatus() {
+      try {
+        const response = await $fetch('/api/user/premium-status', {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+
+        if (response && typeof response === 'object' && 'success' in response) {
+          this.user.isPremium = response.isPremium;
+          this.persistUserData();
+          return { success: true };
+        } else {
+          return { success: false, error: 'Réponse du serveur invalide' };
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération du statut premium:', error);
+        return { success: false, error: 'Erreur lors de la récupération du statut premium' };
+      }
     }
   },
   persist: {

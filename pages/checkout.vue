@@ -426,6 +426,10 @@ const processPayment = async () => {
         console.error('Invoice generation error:', response.error);
       }
 
+      if (response.success) {
+        await userStore.getPremiumStatus();
+      }
+
       setTimeout(() => {
         router.push('/dashboard');
       }, 2000);

@@ -92,7 +92,7 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
       doc.text('75001 Paris, France');
       doc.text('Email: contact@devunity.com');
       doc.text('SIRET: 123 456 789 00012');
-      doc.text('TVA: FR12345678900');
+      doc.text('TVA Intracommunautaire: FR12345678900');
       doc.moveDown(2);
 
       doc.fontSize(12).font('Helvetica-Bold').text('Facturé à:', { align: 'left' });
@@ -200,7 +200,7 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
       }
 
       doc.moveDown(2);
-      doc.fontSize(8).text('DevUnity SAS - Capital social: 1 000€ - SIRET: 123 456 789 00012 - RCS Paris - TVA: FR12345678900', { align: 'center' });
+      doc.fontSize(8).text('DevUnity SAS - Capital social: 1 000€ - SIRET: 123 456 789 00012 - RCS Paris - TVA Intracommunautaire: FR12345678900', { align: 'center' });
       doc.text('Paiement effectué par carte bancaire via Stripe', { align: 'center' });
       doc.moveDown();
       doc.text(`Facture générée le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, { align: 'center' });
@@ -257,7 +257,7 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #777; text-align: center;">
             <p>DevUnity SAS - 123 Avenue de la Tech, 75001 Paris, France</p>
-            <p>SIRET: 123 456 789 00012 - TVA: FR12345678900</p>
+            <p>SIRET: 123 456 789 00012 - TVA Intracommunautaire: FR12345678900</p>
           </div>
         </div>
       `,

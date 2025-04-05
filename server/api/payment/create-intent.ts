@@ -114,7 +114,7 @@ export default defineEventHandler(async (event) => {
               amount: baseAmount,
               reference: 'premium_lifetime_access',
               tax_behavior: 'exclusive',
-              tax_code: 'txcd_10103001', // Logiciel numérique
+              tax_code: 'txcd_10103001',
             },
           ],
           customer_details: {
