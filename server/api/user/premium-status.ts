@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const [rows] = await pool.execute<RowDataPacket[]>(
-      'UPDATE users SET is_premium = 1 WHERE id = ?',
+      'UPDATE users SET isPremium = 1 WHERE id = ?',
       [userId]
     );
 
