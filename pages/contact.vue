@@ -4,7 +4,7 @@
       <v-container class="d-flex align-center py-0 my-0">
         <NuxtLink to="/" class="text-decoration-none">
           <div class="d-flex align-center">
-            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
+            <img src="/logo/devunity-title.png" alt="StackUnity title" width="150">
           </div>
         </NuxtLink>
         <v-spacer></v-spacer>

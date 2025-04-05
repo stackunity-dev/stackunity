@@ -193,9 +193,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { useUserStore } from '~/stores/userStore';
-import premiumFeatures from '@/components/PremiumFeature.vue';
+import { ref, onMounted } from 'vue';
+import { useUserStore } from '../stores/userStore';
+import premiumFeatures from '../components/PremiumFeature.vue';
 
 // @ts-ignore
 import { useHead, definePageMeta } from '#imports';
