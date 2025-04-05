@@ -1,5 +1,5 @@
 import { defineEventHandler, deleteCookie, getCookie } from 'h3';
-import { TokenManager } from '../../utils/TokenManager';
+import { ServerTokenManager } from '../../utils/ServerTokenManager';
 import { TokenService } from '../../utils/TokenService';
 import { REFRESH_TOKEN_COOKIE_NAME } from '../../utils/auth-config';
 
@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     const refreshToken = getCookie(event, REFRESH_TOKEN_COOKIE_NAME);
 
     if (refreshToken) {
-      const decodedRefreshToken = TokenManager.verifyRefreshToken(refreshToken);
+      const decodedRefreshToken = ServerTokenManager.verifyRefreshToken(refreshToken);
 
       if (decodedRefreshToken) {
         await TokenService.revokeRefreshToken(decodedRefreshToken.tokenId);

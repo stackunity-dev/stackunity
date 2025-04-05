@@ -1647,14 +1647,16 @@ export const useUserStore = defineStore('user', {
             this.persistUserData();
             console.log('Données utilisateur mises à jour et persistées:', this.user);
           } else {
-            // Fallback si l'API ne renvoie pas d'utilisateur
             if (this.user) {
               this.user.isPremium = true;
               this.persistUserData();
             }
             console.log('Mise à jour manuelle du statut premium réussie');
           }
-          return { success: true };
+          return {
+            success: true,
+            requireRelogin: response.requireRelogin || false
+          };
         } else {
           console.error('Échec mise à jour premium:', response.error);
           return { success: false, error: response.error || 'Erreur lors de la mise à jour du statut premium' };

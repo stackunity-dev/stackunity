@@ -408,6 +408,19 @@ const processPayment = async () => {
           snackbarText.value = 'Payment successful but premium status update failed. Please refresh the page.';
         }
 
+        if (updateResult.requireRelogin) {
+          console.log('Reconnexion requise suite à la mise à jour du statut premium');
+          showSnackbar.value = true;
+          snackbarColor.value = 'info';
+          snackbarText.value = 'Your premium status has been updated. Please log in again to access your premium features.';
+
+          setTimeout(() => {
+            userStore.logout();
+            window.location.href = '/login?redirect=/dashboard&status=premium-updated';
+          }, 2000);
+          return;
+        }
+
         await userStore.loadData();
         console.log('Statut premium après paiement:', userStore.user?.isPremium);
 
