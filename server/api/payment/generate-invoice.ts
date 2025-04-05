@@ -222,9 +222,9 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
     const resend = new Resend(resendApiKey);
 
     const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'DevUnity <factures@devunity.tech>',
+      from: process.env.RESEND_FROM_EMAIL || 'StackUnity <factures@stackunity.tech>',
       to: invoiceData.customerEmail,
-      subject: 'Your DevUnity invoice',
+      subject: 'Your StackUnity invoice',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 20px;">
@@ -235,7 +235,7 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
           
           <p>Hello ${invoiceData.customerName},</p>
           
-          <p>Thank you for your purchase of the lifetime Premium DevUnity subscription. You will find attached your invoice.</p>
+          <p>Thank you for your purchase of the lifetime Premium StackUnity subscription. You will find attached your invoice.</p>
           
           <div style="background-color: #f5f5f5; border-radius: 5px; padding: 15px; margin: 20px 0;">
             <p><strong>Montant total:</strong> ${invoiceData.totalAmount.toFixed(2)}€ ${!invoiceData.isVatExempt && invoiceData.taxPercentage > 0 ? 'TTC' : 'HT'}</p>
@@ -255,14 +255,14 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
           <p>Best regards,<br />The DevUnity team</p>
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #777; text-align: center;">
-            <p>DevUnity SAS - 86000 Poitiers, France</p>
+            <p>StackUnity SAS - 86000 Poitiers, France</p>
             <p>SIRET: 93872035600014 - TVA Intracommunautaire: FR44938720356</p>
           </div>
         </div>
       `,
       attachments: [
         {
-          filename: `facture-devunity-${new Date().toISOString().split('T')[0]}.pdf`,
+          filename: `facture-stackunity-${new Date().toISOString().split('T')[0]}.pdf`,
           content: pdfBuffer.toString('base64')
         }
       ]
@@ -300,11 +300,21 @@ function getCountryName(countryCode: string): string {
     'SE': 'Suède',
     'NO': 'Norvège',
     'FI': 'Finlande',
+    'PL': 'Pologne',
+    'RO': 'Roumanie',
+    'SK': 'Slovaquie',
+    'SI': 'Slovénie',
+    'CZ': 'République tchèque',
+    'HU': 'Hongrie',
+    'IE': 'Irlande',
+    'LV': 'Lettonie',
+    'LT': 'Lituanie',
+    'MT': 'Malte'
   };
 
   return countries[countryCode] || countryCode;
 }
 
 function isInEU(countryCode: string): boolean {
-  return countryCode.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/) !== null;
+  return countryCode.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE|CH|GB|US|CA|BE|CH|LU|NL|PT|AT|DK|SE|NO|FI|PL|RO|SK|SI)$/) !== null;
 } 

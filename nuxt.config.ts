@@ -26,7 +26,7 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     ['@nuxtjs/plausible', {
-      domain: "devunity.tech",
+      domain: "stackunity.tech",
       apiHost: "https://plausible.io",
       ignoredHostnames: ['localhost'],
       hashMode: true,
