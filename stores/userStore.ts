@@ -1364,13 +1364,12 @@ export const useUserStore = defineStore('user', {
 
         console.log('Résumé final:', mergedData.summary);
 
-        // Formater les données finales
         const formattedData = this.formatAnalyzerResponse(mergedData, url);
         this.seoData = formattedData;
         return formattedData;
 
       } catch (error: any) {
-        console.error('Erreur détaillée lors de l\'audit SEO:', error);
+        console.error('Erreur détaillée lors de l\'audit SEO:', error.stack ? error.stack : error);
         this.seoError = error.message || 'Une erreur est survenue lors de l\'analyse SEO';
         throw error;
       } finally {

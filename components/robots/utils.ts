@@ -26,229 +26,162 @@ type ExtendedCrawlReport = Partial<WebsiteAnalysisResult> & {
   seoResults?: Record<string, ExtendedSEOResult>;
 };
 
-export const fillConfigsFromAudit = (
+export function fillConfigsFromAudit(
   report: any,
   siteConfig: SiteConfig,
   schemaConfig: SchemaConfig,
   robotsConfig: RobotsConfig
-) => {
-  const extReport = report as unknown as ExtendedCrawlReport;
+): { siteConfig: SiteConfig; schemaConfig: SchemaConfig; robotsConfig: RobotsConfig } {
 
-  if (extReport && extReport.seoResults) {
-    const disallowedPaths = new Set<string>(robotsConfig.disallowedPaths);
+  // Cloner les configs pour éviter la modification directe
+  const newSiteConfig = { ...siteConfig };
+  const newSchemaConfig = { ...schemaConfig };
+  const newRobotsConfig = { ...robotsConfig };
 
-    Object.entries(extReport.seoResults).forEach(([url, result]: [string, any]) => {
-      if (result.robotsMeta && result.robotsMeta.noindex) {
+  try {
+    if (!report || !report.seoResults) {
+      console.log('Rapport invalide ou vide');
+      return { siteConfig: newSiteConfig, schemaConfig: newSchemaConfig, robotsConfig: newRobotsConfig };
+    }
+
+    // Trouver la page principale dans les résultats (généralement la première)
+    const urls = Object.keys(report.seoResults);
+    if (urls.length === 0) {
+      console.log('Aucune URL analysée dans le rapport');
+      return { siteConfig: newSiteConfig, schemaConfig: newSchemaConfig, robotsConfig: newRobotsConfig };
+    }
+
+    // Utiliser uniquement la page principale comme source de données
+    const mainUrl = urls[0];
+    const mainPageData = report.seoResults[mainUrl];
+    console.log('Analyse des données de la page principale:', mainUrl);
+
+    if (!mainPageData) {
+      console.log('Données non trouvées pour', mainUrl);
+      return { siteConfig: newSiteConfig, schemaConfig: newSchemaConfig, robotsConfig: newRobotsConfig };
+    }
+
+    // Récupérer les données de sitemap et robots.txt de la page principale uniquement
+    if (mainPageData.technicalSEO) {
+      console.log('Données techniques SEO trouvées pour', mainUrl);
+
+      // Sitemap
+      if (mainPageData.technicalSEO.sitemapFound && mainPageData.technicalSEO.sitemapUrl) {
         try {
-          const urlObj = new URL(url);
-          disallowedPaths.add(urlObj.pathname);
+          const sitemapUrl = new URL(mainPageData.technicalSEO.sitemapUrl);
+          newRobotsConfig.sitemapUrl = sitemapUrl.pathname;
+          console.log('Sitemap trouvé:', newRobotsConfig.sitemapUrl);
         } catch (e) {
-          console.error('Erreur lors du parsing de l\'URL:', url);
+          console.error('Erreur lors du parsing de l\'URL du sitemap:', e);
+          // Utiliser le chemin par défaut
+          newRobotsConfig.sitemapUrl = '/sitemap.xml';
         }
       }
 
-      // Utiliser les données technicalSEO pour sitemap et robots.txt
-      if (result.technicalSEO) {
-        // Si un sitemap est trouvé, mettre à jour le chemin
-        if (result.technicalSEO.sitemapFound && result.technicalSEO.sitemapUrl) {
-          try {
-            const sitemapUrl = new URL(result.technicalSEO.sitemapUrl);
-            robotsConfig.sitemapUrl = sitemapUrl.pathname;
-          } catch (e) {
-            // Si l'URL n'est pas valide, utiliser le chemin direct
-            robotsConfig.sitemapUrl = '/sitemap.xml';
+      // Robots.txt
+      if (mainPageData.technicalSEO.robotsTxtFound && mainPageData.technicalSEO.robotsTxtContent) {
+        console.log('Robots.txt trouvé pour', mainUrl);
+        const robotsContent = mainPageData.technicalSEO.robotsTxtContent;
+
+        // Extraire les chemins Disallow
+        const disallowMatches = robotsContent.match(/Disallow:\s*([^\n]+)/g);
+        if (disallowMatches) {
+          const disallowedPaths = disallowMatches.map(line => {
+            const path = line.replace(/Disallow:\s*/, '').trim();
+            return path;
+          }).filter(Boolean); // Filtrer les valeurs vides
+
+          if (disallowedPaths.length > 0) {
+            // Fusionner avec les chemins existants et supprimer les doublons
+            newRobotsConfig.disallowedPaths = [...new Set([
+              ...newRobotsConfig.disallowedPaths,
+              ...disallowedPaths
+            ])];
           }
         }
 
-        // Si un robots.txt est trouvé, extraire les règles
-        if (result.technicalSEO.robotsTxtFound && result.technicalSEO.robotsTxtContent) {
-          const robotsContent = result.technicalSEO.robotsTxtContent;
+        // Extraire les chemins Allow
+        const allowMatches = robotsContent.match(/Allow:\s*([^\n]+)/g);
+        if (allowMatches) {
+          const allowedPaths = allowMatches.map(line => {
+            const path = line.replace(/Allow:\s*/, '').trim();
+            return path;
+          }).filter(Boolean); // Filtrer les valeurs vides
 
-          // Extraire l'agent utilisateur (User-agent)
-          const userAgentMatch = robotsContent.match(/User-agent:\s*([^\n]+)/);
-          if (userAgentMatch && userAgentMatch[1]) {
-            const userAgent = userAgentMatch[1].trim();
-            if (userAgent === '*') {
-              robotsConfig.userAgent = 'All robots';
-            } else if (['Googlebot', 'Bingbot', 'Slurp', 'Baiduspider'].includes(userAgent)) {
-              robotsConfig.userAgent = {
-                'Googlebot': 'Google',
-                'Bingbot': 'Bing',
-                'Slurp': 'Yahoo',
-                'Baiduspider': 'Baidu'
-              }[userAgent] || 'Custom';
-            } else {
-              robotsConfig.userAgent = 'Custom';
-              robotsConfig.customUserAgent = userAgent;
-            }
-          }
-
-          // Extraire le délai de crawl
-          const crawlDelayMatch = robotsContent.match(/Crawl-delay:\s*([^\n]+)/);
-          if (crawlDelayMatch && crawlDelayMatch[1]) {
-            robotsConfig.crawlDelay = crawlDelayMatch[1].trim();
+          if (allowedPaths.length > 0) {
+            // Fusionner avec les chemins existants et supprimer les doublons
+            newRobotsConfig.allowedPaths = [...new Set([
+              ...newRobotsConfig.allowedPaths,
+              ...allowedPaths
+            ])];
           }
         }
       }
-    });
-
-    // Mettre à jour les chemins à interdire
-    if (disallowedPaths.size > 0) {
-      robotsConfig.disallowedPaths = Array.from(disallowedPaths);
     }
+
+    // Configuration du Schema.org
+    if (mainPageData.seo) {
+      // Titre du site
+      if (mainPageData.seo.title && !newSchemaConfig.name) {
+        // Extraire un nom raisonnable du titre
+        const title = mainPageData.seo.title;
+        // Si le titre contient un séparateur, prendre la première partie
+        const separators = ['-', '|', ':', '•', '·', '—'];
+        let name = title;
+
+        for (const separator of separators) {
+          if (title.includes(separator)) {
+            const parts = title.split(separator);
+            name = parts[0].trim();
+            break;
+          }
+        }
+
+        newSchemaConfig.name = name;
+      }
+
+      // Description
+      if (mainPageData.seo.description && !newSchemaConfig.description) {
+        newSchemaConfig.description = mainPageData.seo.description;
+      }
+
+      // URL
+      if (!newSchemaConfig.url) {
+        newSchemaConfig.url = mainUrl;
+      }
+
+      // Extraire des données pour Schema.org si disponibles
+      if (mainPageData.schemaOrg && mainPageData.schemaOrg.contactInfo) {
+        const contactInfo = mainPageData.schemaOrg.contactInfo;
+
+        if (contactInfo.telephone && !newSchemaConfig.telephone) {
+          newSchemaConfig.telephone = contactInfo.telephone;
+        }
+
+        if (contactInfo.email && !newSchemaConfig.email) {
+          newSchemaConfig.email = contactInfo.email;
+        }
+
+        if (contactInfo.address && !newSchemaConfig.address) {
+          newSchemaConfig.address = contactInfo.address;
+        }
+      }
+    }
+
+    return {
+      siteConfig: newSiteConfig,
+      schemaConfig: newSchemaConfig,
+      robotsConfig: newRobotsConfig
+    };
+  } catch (error) {
+    console.error('Erreur lors du remplissage des configurations à partir de l\'audit:', error);
+    return {
+      siteConfig: siteConfig,
+      schemaConfig: schemaConfig,
+      robotsConfig: robotsConfig
+    };
   }
-
-  // Exemples de champs à auto-remplir à partir de la page d'accueil
-  const mainUrl = extReport.seoResults ? Object.keys(extReport.seoResults)[0] : '';
-  const homeData = extReport.seoResults?.[mainUrl];
-
-  if (homeData) {
-    // Remplir le schéma avec les données du site
-    if (homeData.seo?.title) {
-      schemaConfig.name = homeData.seo.title;
-    }
-
-    if (homeData.seo?.description) {
-      schemaConfig.description = homeData.seo.description;
-    }
-
-    // Intégrer les informations de SchemaOrg si disponibles
-    if (homeData.schemaOrg && homeData.schemaOrg.suggestions && homeData.schemaOrg.suggestions.length > 0) {
-      try {
-        // Parcourir les suggestions pour trouver les plus pertinentes
-        const organization = homeData.schemaOrg.suggestions.find((s: any) => s.type === 'Organization');
-        const localBusiness = homeData.schemaOrg.suggestions.find((s: any) => s.type === 'LocalBusiness');
-        const website = homeData.schemaOrg.suggestions.find((s: any) => s.type === 'WebSite');
-
-        // Prioriser LocalBusiness, puis Organization, puis WebSite
-        const bestSuggestion = localBusiness || organization || website;
-
-        if (bestSuggestion) {
-          const props = bestSuggestion.properties;
-
-          // Adapter le type de schéma
-          schemaConfig.type = bestSuggestion.type;
-
-          // Appliquer les propriétés de base
-          if (props.name) schemaConfig.name = props.name;
-          if (props.description) schemaConfig.description = props.description;
-          if (props.url) schemaConfig.url = props.url;
-
-          // Informations de contact
-          if (props.telephone) schemaConfig.telephone = props.telephone;
-          if (props.email) schemaConfig.email = props.email;
-
-          // Adresse
-          if (props.address && props.address.streetAddress) {
-            schemaConfig.address = props.address.streetAddress;
-          }
-
-          if (props.logo) {
-            if (typeof props.logo === 'string') {
-              schemaConfig.logo = props.logo;
-            } else if (props.logo.url) {
-              schemaConfig.logo = props.logo.url;
-            }
-          }
-
-          if (props.image) {
-            if (typeof props.image === 'string') {
-              schemaConfig.image = props.image;
-            } else if (props.image.url) {
-              schemaConfig.image = props.image.url;
-            }
-          }
-        }
-      } catch (e) {
-        console.error('Erreur lors de l\'intégration des données SchemaOrg:', e);
-      }
-    }
-
-    // Extraire les informations structurées déjà présentes
-    if (homeData.structuredData && homeData.structuredData.length > 0) {
-      try {
-        const existingSchema = homeData.structuredData[0];
-
-        if (existingSchema['@type']) {
-          // Vérifier si le type est pris en charge
-          const supportedTypes = ['Organization', 'Person', 'Product', 'Article', 'LocalBusiness', 'WebSite', 'Event', 'Restaurant'];
-          if (supportedTypes.includes(existingSchema['@type'])) {
-            schemaConfig.type = existingSchema['@type'];
-          }
-        }
-
-        if (existingSchema.name) {
-          schemaConfig.name = existingSchema.name;
-        }
-
-        if (existingSchema.description) {
-          schemaConfig.description = existingSchema.description;
-        }
-
-        if (existingSchema.url) {
-          schemaConfig.url = existingSchema.url;
-        }
-
-        if (existingSchema.logo && existingSchema.logo.url) {
-          schemaConfig.logo = existingSchema.logo.url;
-        } else if (existingSchema.logo && typeof existingSchema.logo === 'string') {
-          schemaConfig.logo = existingSchema.logo;
-        }
-
-        if (existingSchema.image) {
-          schemaConfig.image = typeof existingSchema.image === 'string'
-            ? existingSchema.image
-            : existingSchema.image.url || '';
-        }
-
-        if (existingSchema.telephone) {
-          schemaConfig.telephone = existingSchema.telephone;
-        }
-
-        if (existingSchema.email) {
-          schemaConfig.email = existingSchema.email;
-        }
-
-        // Extraire plus d'informations en fonction du type
-        if (existingSchema['@type'] === 'Organization' || existingSchema['@type'] === 'LocalBusiness') {
-          if (existingSchema.address && existingSchema.address.streetAddress) {
-            schemaConfig.address = existingSchema.address.streetAddress;
-            schemaConfig.city = existingSchema.address.addressLocality || '';
-            schemaConfig.region = existingSchema.address.addressRegion || '';
-            schemaConfig.postalCode = existingSchema.address.postalCode || '';
-            schemaConfig.country = existingSchema.address.addressCountry || 'FR';
-          }
-
-          if (existingSchema.sameAs && Array.isArray(existingSchema.sameAs)) {
-            schemaConfig.socialProfiles = existingSchema.sameAs;
-          }
-        }
-      } catch (e) {
-        console.error('Erreur lors de l\'extraction des données structurées:', e);
-      }
-    }
-
-    // Extraire d'autres informations utiles
-    if (homeData.seo?.headings && homeData.seo.headings.h1 && homeData.seo.headings.h1.length > 0) {
-      if (!schemaConfig.name) {
-        schemaConfig.name = homeData.seo.headings.h1[0];
-      }
-    }
-
-    // Mettre à jour le domaine et le protocole si disponibles
-    if (mainUrl) {
-      try {
-        const urlObj = new URL(mainUrl);
-        siteConfig.domain = urlObj.hostname;
-        siteConfig.protocol = urlObj.protocol.replace(':', '');
-      } catch (e) {
-        console.error('Erreur lors de l\'extraction du domaine et protocole:', e);
-      }
-    }
-  }
-
-  return { schemaConfig, robotsConfig, siteConfig };
-};
+}
 
 /**
  * Génère le contenu du fichier robots.txt

@@ -22,11 +22,11 @@
             <div v-if="error && (error.includes('Chrome') || error.includes('chromium'))" class="mt-2 text-caption">
               <v-divider class="my-2"></v-divider>
               <div class="font-weight-bold">Information :</div>
-              <p>L'audit SEO a échoué, mais vous pouvez toujours générer du contenu avec les données actuelles.</p>
-              <div class="font-weight-bold mt-1">Solutions possibles pour l'audit :</div>
+              <p>The SEO audit failed, but you can still generate content with the current data.</p>
+              <div class="font-weight-bold mt-1">Possible solutions for the audit:</div>
               <ul>
-                <li>Vérifiez que Google Chrome est installé sur le serveur</li>
-                <li>L'utilisateur du serveur doit avoir les droits d'accès au fichier chrome.exe</li>
+                <li>Check that Google Chrome is installed on the server</li>
+                <li>The server user must have access to the chrome.exe file</li>
               </ul>
             </div>
           </div>
@@ -51,6 +51,10 @@
 
                 <v-select v-model="siteConfig.protocol" :items="['https', 'http']" label="Protocol" variant="outlined"
                   density="comfortable" prepend-inner-icon="mdi-shield-lock" class="mb-4"></v-select>
+
+                <v-switch v-model="skipApiAnalysis" label="Generate without site analysis (use only input data)"
+                  color="primary" hint="Enable this option if the site analysis fails" persistent-hint class="mb-4">
+                </v-switch>
 
                 <v-tabs v-model="configTab" color="primary" align-tabs="center" class="mb-4 rounded-lg">
                   <v-tab value="robots" class="py-3 px-4">
@@ -190,7 +194,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 // @ts-ignore
-import { definePageMeta } from '#imports';
+import { definePageMeta, useHead } from '#imports';
 import CodePreview from '../components/robots/CodePreview.vue';
 import RobotsConfigComponent from '../components/robots/RobotsConfig.vue';
 import SchemaConfigComponent from '../components/robots/SchemaConfig.vue';
@@ -200,21 +204,25 @@ import { fillConfigsFromAudit, generateRobotsContent, generateSchemaContent } fr
 import { useUserStore } from '../stores/userStore';
 
 definePageMeta({
-  title: 'Robots.txt & Schema.org Generator',
-  description: 'Generate robots.txt files and Schema.org structured data for your website',
   middleware: 'premium',
   layout: 'dashboard',
   requiresPremium: true
 });
 
-// Ajouter un gestionnaire global pour les erreurs de chargement des scripts
+useHead({
+  title: 'Robots.txt & Schema.org Generator',
+  meta: [
+    { name: 'description', content: 'Generate robots.txt files and Schema.org structured data for your website' },
+    { name: 'robots', content: 'noindex, nofollow' }
+  ]
+});
+
 if (process.client) {
   window.addEventListener('error', (event) => {
     if (event.target && (event.target as HTMLElement).tagName === 'SCRIPT') {
       const src = (event.target as HTMLScriptElement).src || '';
       if (src.includes('plausible') || src.includes('analytics')) {
         console.warn('Analytics script blocked by adblocker:', src);
-        // Empêcher l'erreur de s'afficher dans la console
         event.preventDefault();
       }
     }
@@ -229,6 +237,7 @@ const isLoading = ref(false);
 const error = ref('');
 const report = ref(null);
 const generatedContent = ref('');
+const skipApiAnalysis = ref(false);
 
 const siteConfig = ref<SiteConfig>({
   domain: '',
@@ -352,9 +361,46 @@ const removeAllowedPath = (index: number) => {
   robotsConfig.value.allowedPaths.splice(index, 1);
 };
 
+const fillDefaultConfigs = () => {
+  if (!siteConfig.value.domain) {
+    return;
+  }
+
+  try {
+    const domain = siteConfig.value.domain.replace(/^www\./, '');
+
+    if (!schemaConfig.value.name) {
+      schemaConfig.value.name = domain;
+    }
+
+    if (!schemaConfig.value.description) {
+      schemaConfig.value.description = `Site officiel de ${domain}`;
+    }
+
+    if (!schemaConfig.value.url) {
+      schemaConfig.value.url = `${siteConfig.value.protocol}://${siteConfig.value.domain}`;
+    }
+
+    const commonDisallowedPaths = ['/admin', '/wp-admin', '/login', '/private', '/cgi-bin', '/wp-includes', '/backend'];
+    commonDisallowedPaths.forEach(path => {
+      if (!robotsConfig.value.disallowedPaths.includes(path)) {
+        robotsConfig.value.disallowedPaths.push(path);
+      }
+    });
+
+    if (!robotsConfig.value.sitemapUrl) {
+      robotsConfig.value.sitemapUrl = '/sitemap.xml';
+    }
+
+    console.log('Default configurations applied');
+  } catch (e) {
+    console.error('Error applying default configurations:', e);
+  }
+};
+
 const analyzeWebsite = async () => {
   if (!siteConfig.value.domain) {
-    error.value = 'Veuillez saisir un domaine valide.';
+    error.value = 'Please enter a valid domain.';
     return;
   }
 
@@ -362,12 +408,11 @@ const analyzeWebsite = async () => {
   const generationType = configTab.value === 'robots' ? 'robots.txt' : 'schema.org';
 
   try {
-
     isLoading.value = true;
     error.value = '';
 
     const url = `${siteConfig.value.protocol}://${siteConfig.value.domain}`;
-    console.log('URL à analyser:', url);
+    console.log('URL to analyze:', url);
 
     const options = {
       maxDepth: 1,
@@ -378,85 +423,118 @@ const analyzeWebsite = async () => {
       maxUrlsToAnalyze: 5
     };
 
-    try {
-      report.value = await userStore.auditSEO(url, options);
-      console.log('Rapport reçu:', report.value);
-    } catch (auditError) {
-      console.error('Erreur lors de l\'audit SEO:', auditError);
-      // Continuer l'exécution même en cas d'erreur d'audit
-      // pour permettre la génération de contenu avec les valeurs actuelles
-    }
+    if (!skipApiAnalysis.value) {
+      try {
+        report.value = await userStore.auditSEO(url, options);
+        console.log('Report received:', report.value);
 
-    if (report.value) {
-      const reportData = report.value as any;
-      if (reportData.seoResults && Object.keys(reportData.seoResults).length > 0) {
-        const mainUrl = Object.keys(reportData.seoResults)[0];
-        const mainResult = reportData.seoResults[mainUrl];
+        if (report.value) {
+          const reportData = report.value as any;
+          if (reportData.seoResults && Object.keys(reportData.seoResults).length > 0) {
+            const mainUrl = Object.keys(reportData.seoResults)[0];
+            const mainResult = reportData.seoResults[mainUrl];
 
-        if (mainResult && mainResult.technicalSEO) {
-          console.log('Données techniques SEO trouvées:', mainResult.technicalSEO);
+            if (mainResult && mainResult.technicalSEO) {
+              console.log('Technical SEO data found:', mainResult.technicalSEO);
 
-          if (mainResult.technicalSEO.sitemapFound && mainResult.technicalSEO.sitemapUrl) {
-            try {
-              const sitemapUrl = new URL(mainResult.technicalSEO.sitemapUrl);
-              robotsConfig.value.sitemapUrl = sitemapUrl.pathname;
-              console.log('Sitemap trouvé:', robotsConfig.value.sitemapUrl);
-            } catch (e) {
-              robotsConfig.value.sitemapUrl = '/sitemap.xml';
+              if (mainResult.technicalSEO.sitemapFound && mainResult.technicalSEO.sitemapUrl) {
+                try {
+                  const sitemapUrl = new URL(mainResult.technicalSEO.sitemapUrl);
+                  robotsConfig.value.sitemapUrl = sitemapUrl.pathname;
+                  console.log('Sitemap found:', robotsConfig.value.sitemapUrl);
+                } catch (e) {
+                  robotsConfig.value.sitemapUrl = '/sitemap.xml';
+                }
+              }
+
+              if (mainResult.technicalSEO.robotsTxtFound && mainResult.technicalSEO.robotsTxtContent) {
+                console.log('Robots.txt found:', mainResult.technicalSEO.robotsTxtContent);
+                const robotsContent = mainResult.technicalSEO.robotsTxtContent;
+
+                const disallowMatches = robotsContent.match(/Disallow:\s*([^\n]+)/g);
+                if (disallowMatches) {
+                  const disallowedPaths = disallowMatches.map(line => {
+                    const path = line.replace(/Disallow:\s*/, '').trim();
+                    return path;
+                  });
+
+                  if (disallowedPaths.length > 0) {
+                    robotsConfig.value.disallowedPaths = [...new Set([...robotsConfig.value.disallowedPaths, ...disallowedPaths])];
+                  }
+                }
+
+                const allowMatches = robotsContent.match(/Allow:\s*([^\n]+)/g);
+                if (allowMatches) {
+                  const allowedPaths = allowMatches.map(line => {
+                    const path = line.replace(/Allow:\s*/, '').trim();
+                    return path;
+                  });
+
+                  if (allowedPaths.length > 0) {
+                    robotsConfig.value.allowedPaths = [...new Set([...robotsConfig.value.allowedPaths, ...allowedPaths])];
+                  }
+                }
+              }
             }
           }
 
-          if (mainResult.technicalSEO.robotsTxtFound && mainResult.technicalSEO.robotsTxtContent) {
-            console.log('Robots.txt trouvé:', mainResult.technicalSEO.robotsTxtContent);
-            const robotsContent = mainResult.technicalSEO.robotsTxtContent;
+          const { schemaConfig: newSchemaConfig, robotsConfig: newRobotsConfig, siteConfig: newSiteConfig } =
+            fillConfigsFromAudit(report.value, siteConfig.value, schemaConfig.value, robotsConfig.value);
 
-            const disallowMatches = robotsContent.match(/Disallow:\s*([^\n]+)/g);
-            if (disallowMatches) {
-              const disallowedPaths = disallowMatches.map(line => {
-                const path = line.replace(/Disallow:\s*/, '').trim();
-                return path;
-              });
+          schemaConfig.value = newSchemaConfig;
+          robotsConfig.value = newRobotsConfig;
+          siteConfig.value = newSiteConfig;
+        }
+      } catch (auditError: any) {
+        console.error('Error during SEO audit:', auditError);
 
-              if (disallowedPaths.length > 0) {
-                robotsConfig.value.disallowedPaths = [...new Set([...robotsConfig.value.disallowedPaths, ...disallowedPaths])];
-              }
-            }
+        let errorMessage = 'An error occurred during site analysis';
 
-            const allowMatches = robotsContent.match(/Allow:\s*([^\n]+)/g);
-            if (allowMatches) {
-              const allowedPaths = allowMatches.map(line => {
-                const path = line.replace(/Allow:\s*/, '').trim();
-                return path;
-              });
-
-              if (allowedPaths.length > 0) {
-                robotsConfig.value.allowedPaths = [...new Set([...robotsConfig.value.allowedPaths, ...allowedPaths])];
-              }
-            }
+        if (auditError.message) {
+          if (auditError.message.includes('500')) {
+            errorMessage = 'The analysis server encountered an error (500). This may be due to server overload or a problem with the site being analyzed.';
+          } else if (auditError.message.includes('404')) {
+            errorMessage = 'The requested site was not found (404). Check that the URL is correct and the site is accessible.';
+          } else if (auditError.message.includes('ERR_CONNECTION_REFUSED') || auditError.message.includes('Failed to fetch')) {
+            errorMessage = 'Impossible to connect to the site. Ensure the site is accessible and your internet connection is working.';
+          } else if (auditError.message.includes('TIMEOUT')) {
+            errorMessage = 'The analysis took too long and was interrupted. Try analyzing a smaller site or increase the timeout.';
+          } else {
+            errorMessage = `The site analysis failed: ${auditError.message}`;
           }
         }
+
+        error.value = `${errorMessage} You can still generate content with the current settings.`;
+
+        fillDefaultConfigs();
       }
-
-      const { schemaConfig: newSchemaConfig, robotsConfig: newRobotsConfig, siteConfig: newSiteConfig } =
-        fillConfigsFromAudit(report.value, siteConfig.value, schemaConfig.value, robotsConfig.value);
-
-      schemaConfig.value = newSchemaConfig;
-      robotsConfig.value = newRobotsConfig;
-      siteConfig.value = newSiteConfig;
+    } else {
+      console.log('API analysis disabled - using input data');
+      fillDefaultConfigs();
     }
 
     generatePreviewContent();
 
+    if (error.value && generatedContent.value) {
+      error.value = `Warning: ${error.value}`;
+    }
+
     const endTime = performance.now();
-
-
+    console.log(`The site analysis took ${Math.round(endTime - startTime)}ms`);
   } catch (e) {
-    console.error('Erreur lors de l\'analyse du site:', e);
-    error.value = e.message || 'Une erreur est survenue lors de l\'analyse du site.';
+    console.error('Error during site analysis:', e);
+    error.value = e.message || 'An error occurred during site analysis.';
 
-    generatePreviewContent();
+    fillDefaultConfigs();
+
+    try {
+      generatePreviewContent();
+    } catch (contentError) {
+      console.error('Impossible de générer le contenu:', contentError);
+    }
 
     const endTime = performance.now();
+    console.log(`Operation ended in ${Math.round(endTime - startTime)}ms with error`);
   } finally {
     isLoading.value = false;
   }

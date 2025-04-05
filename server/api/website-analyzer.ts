@@ -307,27 +307,56 @@ async function analyzeTechnical(url: string, response: ExtendedResponse, $: Chee
 }
 
 export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisResult> => {
-  const { url, maxPages = 50, focusOnContact = false } = await readBody(event);
-  if (!url) {
-    throw createError({
-      statusCode: 400,
-      message: 'URL requise'
-    });
-  }
-
   try {
-    const urls = await crawlWebsite(url, maxPages);
-    console.log(`Analyse de ${urls.length} pages...`);
+    const body = await readBody(event);
+    const { url, maxPages = 50, focusOnContact = false, checkSitemap = true, checkRobotsTxt = true } = body;
+
+    if (!url) {
+      throw createError({
+        statusCode: 400,
+        message: 'URL requise'
+      });
+    }
+
+    console.log(`Démarrage de l'analyse pour: ${url}, options:`, JSON.stringify({
+      maxPages,
+      focusOnContact,
+      checkSitemap,
+      checkRobotsTxt
+    }, null, 2));
+
+    try {
+      new URL(url);
+    } catch (urlError) {
+      throw createError({
+        statusCode: 400,
+        message: 'URL invalide'
+      });
+    }
+
+    let urls: string[] = [];
+    try {
+      urls = await crawlWebsite(url, maxPages);
+      console.log(`Analyse de ${urls.length} pages...`);
+    } catch (crawlError) {
+      console.error('Erreur lors du crawl:', crawlError);
+      urls = [url];
+    }
 
     let prioritizedUrls = [...urls];
     if (focusOnContact) {
       const contactKeywords = ['contact', 'about', 'nous', 'about-us', 'a-propos'];
       prioritizedUrls = urls.sort((a, b) => {
-        const aIsContact = contactKeywords.some(keyword => a.toLowerCase().includes(keyword));
-        const bIsContact = contactKeywords.some(keyword => b.toLowerCase().includes(keyword));
-        if (aIsContact && !bIsContact) return -1;
-        if (!aIsContact && bIsContact) return 1;
-        return 0;
+        try {
+          const aIsContact = contactKeywords.some(keyword => a.toLowerCase().includes(keyword));
+          const bIsContact = contactKeywords.some(keyword => b.toLowerCase().includes(keyword));
+          if (aIsContact && !bIsContact) return -1;
+          if (!aIsContact && bIsContact) return 1;
+          return 0;
+        } catch (e) {
+          console.error('Erreur lors du tri des URLs:', e);
+          return 0;
+        }
       });
 
       prioritizedUrls = prioritizedUrls.slice(0, Math.min(5, prioritizedUrls.length));
@@ -347,40 +376,74 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     let mobileCompatiblePages = 0;
     let securePages = 0;
 
-    for (const pageUrl of prioritizedUrls) {
-      const result = await analyzeWebsite(pageUrl);
-      results[pageUrl] = result;
+    // Limiter à 5 pages maximum pour éviter timeout et surcharge
+    const pagesToAnalyze = prioritizedUrls.slice(0, Math.min(5, prioritizedUrls.length));
+    console.log('Pages à analyser prioritairement:', pagesToAnalyze);
 
-      totalLoadTime += result.performance.loadTime;
-      totalWarnings += result.issues.length;
-      if (!result.seo.title) missingTitles++;
-      if (!result.seo.description) missingDescriptions++;
-      missingAltTags += result.seo.images.withoutAlt;
-      totalFCP += result.performance.fcp;
-      totalLCP += result.performance.lcp;
-      totalTTFB += result.performance.ttfb;
-      if (result.seo.structuredData.count > 0) pagesWithStructuredData++;
-      if (Object.keys(result.seo.meta.og).length > 0 || Object.keys(result.seo.meta.twitter).length > 0) {
-        pagesWithSocialTags++;
+    for (const pageUrl of pagesToAnalyze) {
+      try {
+        console.log(`Analyse de la page: ${pageUrl}`);
+        const result = await analyzeWebsite(pageUrl);
+        results[pageUrl] = result;
+
+        totalLoadTime += result.performance.loadTime;
+        totalWarnings += result.issues.length;
+        if (!result.seo.title) missingTitles++;
+        if (!result.seo.description) missingDescriptions++;
+        missingAltTags += result.seo.images.withoutAlt;
+        totalFCP += result.performance.fcp;
+        totalLCP += result.performance.lcp;
+        totalTTFB += result.performance.ttfb;
+        if (result.seo.structuredData.count > 0) pagesWithStructuredData++;
+        if (Object.keys(result.seo.meta.og).length > 0 || Object.keys(result.seo.meta.twitter).length > 0) {
+          pagesWithSocialTags++;
+        }
+        if (result.technical.mobile.viewport) mobileCompatiblePages++;
+        if (result.technical.https) securePages++;
+      } catch (pageError) {
+        console.error(`Erreur lors de l'analyse de ${pageUrl}:`, pageError);
+        // Continuer avec les autres pages
       }
-      if (result.technical.mobile.viewport) mobileCompatiblePages++;
-      if (result.technical.https) securePages++;
     }
 
-    const pageCount = urls.length;
+    // S'assurer qu'il y a au moins un résultat
+    if (Object.keys(results).length === 0) {
+      console.log('Aucun résultat d\'analyse disponible, création d\'un résultat de secours');
+      try {
+        // Créer un résultat minimal pour éviter l'erreur
+        const fallbackResult = await createFallbackResult(url);
+        results[url] = fallbackResult;
+      } catch (fallbackError) {
+        console.error('Erreur lors de la création du résultat de secours:', fallbackError);
+        throw createError({
+          statusCode: 500,
+          message: 'Impossible d\'analyser le site'
+        });
+      }
+    }
+
+    const pageCount = Object.keys(results).length || 1; // Éviter division par zéro
 
     let extractedContactInfo: Record<string, string> = {};
-    for (const pageUrl of prioritizedUrls) {
-      try {
-        const contactInfo = await findContactInfo(url, Object.keys(results));
-        if (Object.keys(contactInfo).length > 0) {
-          extractedContactInfo = contactInfo;
-          break;
+    try {
+      if (focusOnContact) {
+        for (const pageUrl of Object.keys(results).slice(0, 2)) {
+          try {
+            const contactInfo = await findContactInfo(url, Object.keys(results));
+            if (Object.keys(contactInfo).length > 0) {
+              extractedContactInfo = contactInfo;
+              break;
+            }
+          } catch (contactError) {
+            console.error(`Erreur lors de l'extraction des informations de contact de ${pageUrl}:`, contactError);
+          }
         }
-      } catch (error) {
-        console.error(`Erreur lors de l'extraction des informations de contact de ${pageUrl}:`, error);
       }
+    } catch (contactError) {
+      console.error('Erreur lors de l\'extraction des informations de contact:', contactError);
     }
+
+    const sitemap = checkSitemap ? generateSitemap(urls) : '';
 
     return {
       urlMap: { [url]: urls },
@@ -401,7 +464,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
         mobileCompatiblePages,
         securePages
       },
-      generatedSitemap: generateSitemap(urls),
+      generatedSitemap: sitemap,
       rankedUrls: rankPages(results),
       schemaOrg: {
         contactInfo: extractedContactInfo
@@ -411,7 +474,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     console.error('Erreur lors de l\'analyse:', error);
     throw createError({
       statusCode: 500,
-      message: 'Erreur lors de l\'analyse du site'
+      message: `Erreur lors de l'analyse du site: ${error.message || 'Erreur inconnue'}`
     });
   }
 });
@@ -990,93 +1053,118 @@ interface ExtendedWebsiteAnalysisResult extends WebsiteAnalysisResult {
   schemaOrg: SchemaOrg;
 }
 
-function analyzeSchemaOrg(
-  url: string,
-  html: string,
-  $: ReturnType<typeof cheerioLoad>,
-  seo: WebsiteAnalysisResult['seo'],
-  contactInfo?: Record<string, string>
-): SchemaOrg {
+function analyzeSchemaOrg(url: string, html: string, $: CheerioSelector, seo: any, contactInfo: Record<string, string> = {}): any {
   try {
     const existing = seo.structuredData || [];
     const suggestions: SchemaOrgSuggestion[] = [];
 
     const escapeJsonString = (str: string): string => {
       if (!str) return '';
-      return str
-        .replace(/\\/g, '\\\\')
-        .replace(/"/g, '\\"')
-        .replace(/\n/g, '\\n')
-        .replace(/\r/g, '\\r')
-        .replace(/\t/g, '\\t');
+      try {
+        return str
+          .replace(/\\/g, '\\\\')
+          .replace(/"/g, '\\"')
+          .replace(/\n/g, '\\n')
+          .replace(/\r/g, '\\r')
+          .replace(/\t/g, '\\t');
+      } catch (e) {
+        console.error('Erreur lors de l\'échappement de chaîne JSON:', e);
+        return '';
+      }
     };
 
-    if ($('body').text().toLowerCase().includes('entreprise') || $('body').text().toLowerCase().includes('société') || $('body').text().toLowerCase().includes('company')) {
-      let orgName = $('meta[property="og:site_name"]').attr('content') || '';
-      if (!orgName) {
-        orgName = seo.title.split('|')[1]?.trim() || seo.title.split('-')[1]?.trim() || '';
-      }
+    try {
+      if ($('body').text().toLowerCase().includes('entreprise') ||
+        $('body').text().toLowerCase().includes('société') ||
+        $('body').text().toLowerCase().includes('company')) {
 
-      if (contactInfo?.name && !orgName) {
-        orgName = contactInfo.name;
-      }
-
-      const logo = $('link[rel="icon"]').attr('href') || '';
-      let phone = $('body').text().match(/(\+\d{1,3}[-\.\s]??)?\(?\d{3}\)?[-\.\s]??\d{3}[-\.\s]??\d{4}/)?.[0] || '';
-
-      if (contactInfo?.telephone && !phone) {
-        phone = contactInfo.telephone;
-      }
-
-      const properties: Record<string, any> = {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": escapeJsonString(orgName),
-        "url": url
-      };
-
-      if (logo) {
+        let orgName = '';
         try {
-          properties.logo = new URL(logo, url).toString();
+          orgName = $('meta[property="og:site_name"]').attr('content') || '';
+
+          if (!orgName) {
+            const titleParts = seo.title ? seo.title.split(/[|,-]/) : [];
+            orgName = titleParts.length > 1 ? titleParts[1]?.trim() : '';
+          }
+
+          if (contactInfo?.name && !orgName) {
+            orgName = contactInfo.name;
+          }
         } catch (e) {
-          console.error('URL de logo invalide:', logo);
+          console.error('Erreur lors de l\'extraction du nom de l\'organisation:', e);
+        }
+
+        let logo = '';
+        try {
+          logo = $('link[rel="icon"]').attr('href') || '';
+        } catch (e) {
+          console.error('Erreur lors de l\'extraction du logo:', e);
+        }
+
+        let phone = '';
+        try {
+          const phoneMatch = $('body').text().match(/(\+\d{1,3}[-\.\s]??)?\(?\d{3}\)?[-\.\s]??\d{3}[-\.\s]??\d{4}/);
+          phone = phoneMatch ? phoneMatch[0] : '';
+
+          if (contactInfo?.telephone && !phone) {
+            phone = contactInfo.telephone;
+          }
+        } catch (e) {
+          console.error('Erreur lors de l\'extraction du téléphone:', e);
+        }
+
+        const properties: Record<string, any> = {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": escapeJsonString(orgName || 'Organisation'),
+          "url": url
+        };
+
+        if (logo) {
+          try {
+            properties.logo = new URL(logo, url).toString();
+          } catch (e) {
+            console.error('URL de logo invalide:', logo);
+          }
+        }
+
+        if (phone) {
+          properties.telephone = escapeJsonString(phone);
+        }
+
+        if (contactInfo?.email) {
+          properties.email = escapeJsonString(contactInfo.email);
+        }
+
+        if (contactInfo?.address) {
+          properties.address = {
+            "@type": "PostalAddress",
+            "streetAddress": escapeJsonString(contactInfo.address)
+          };
+        }
+
+        try {
+          const template = `<script type="application/ld+json">\n${JSON.stringify(properties, null, 2)}\n</script>`;
+
+          suggestions.push({
+            type: 'Organization',
+            properties,
+            template
+          });
+        } catch (e) {
+          console.error('Erreur lors de la génération du template JSON pour Organization:', e);
         }
       }
-
-      if (phone) {
-        properties.telephone = escapeJsonString(phone);
-      }
-
-      if (contactInfo?.email) {
-        properties.email = escapeJsonString(contactInfo.email);
-      }
-
-      if (contactInfo?.address) {
-        properties.address = {
-          "@type": "PostalAddress",
-          "streetAddress": escapeJsonString(contactInfo.address)
-        };
-      }
-
-      try {
-        const template = `<script type="application/ld+json">\n${JSON.stringify(properties, null, 2)}\n</script>`;
-
-        suggestions.push({
-          type: 'Organization',
-          properties,
-          template
-        });
-      } catch (e) {
-        console.error('Erreur lors de la génération du template JSON pour Organization:', e);
-      }
+    } catch (orgError) {
+      console.error('Erreur lors de l\'analyse des données Organization:', orgError);
     }
 
     try {
       const websiteProperties: Record<string, any> = {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": escapeJsonString(seo.title),
-        "description": escapeJsonString(seo.description),
+        "name": escapeJsonString(seo.title || 'Site web'),
+        "description": escapeJsonString(seo.description || ''),
         "url": url
       };
 
@@ -1095,13 +1183,13 @@ function analyzeSchemaOrg(
         properties: websiteProperties,
         template: websiteTemplate
       });
-    } catch (e) {
-      console.error('Erreur lors de la génération du template JSON pour WebSite:', e);
+    } catch (websiteError) {
+      console.error('Erreur lors de la génération du template JSON pour WebSite:', websiteError);
     }
 
-    if (contactInfo?.address && (contactInfo?.telephone || contactInfo?.email)) {
-      try {
-        const businessName = contactInfo.name || seo.title;
+    try {
+      if (contactInfo?.address && (contactInfo?.telephone || contactInfo?.email)) {
+        const businessName = contactInfo.name || seo.title || 'Entreprise locale';
         const businessProperties: Record<string, any> = {
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
@@ -1131,9 +1219,9 @@ function analyzeSchemaOrg(
           properties: businessProperties,
           template: localBusinessTemplate
         });
-      } catch (e) {
-        console.error('Erreur lors de la génération du template JSON pour LocalBusiness:', e);
       }
+    } catch (localBusinessError) {
+      console.error('Erreur lors de la génération du template JSON pour LocalBusiness:', localBusinessError);
     }
 
     return { suggestions };
@@ -1224,93 +1312,258 @@ async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean; conten
 async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<string[]> {
   console.log(`Démarrage du crawl de ${baseUrl}, limite de ${maxPages} pages`);
 
-  const visited = new Set<string>();
-  const queue: string[] = [baseUrl];
-  const baseUrlObj = new URL(baseUrl);
-  const baseHostname = baseUrlObj.hostname;
+  try {
 
-  const commonPaths = [
-    '/about', '/contact', '/services', '/products',
-    '/dashboard', '/login', '/signup', '/register',
-    '/blog', '/news', '/faq', '/help', '/support',
-    '/terms', '/privacy', '/sitemap'
-  ];
-
-  commonPaths.forEach(path => {
+    let normalizedUrl = baseUrl;
     try {
-      const commonUrl = new URL(path, baseUrl).toString();
-      if (!visited.has(commonUrl)) {
-        queue.push(commonUrl);
+      const urlObj = new URL(baseUrl);
+
+      if (urlObj.pathname !== "/" && urlObj.pathname.endsWith("/")) {
+        urlObj.pathname = urlObj.pathname.slice(0, -1);
+        normalizedUrl = urlObj.toString();
+        console.log(`URL normalisée: ${normalizedUrl} (slash final supprimé)`);
       }
     } catch (e) {
-      console.error(`URL invalide: ${path}`, e);
-    }
-  });
-
-  while (queue.length > 0 && visited.size < maxPages) {
-    const currentUrl = queue.shift() as string;
-
-    const normalizedUrl = currentUrl.split('#')[0];
-
-    if (visited.has(normalizedUrl)) {
-      continue;
+      console.error("Erreur lors de la normalisation de l'URL:", e);
     }
 
-    visited.add(normalizedUrl);
-    console.log(`Analyse de ${normalizedUrl} (${visited.size}/${maxPages})`);
-
+    let mainPageHtml = '';
     try {
-      const response = await axios.get(normalizedUrl, {
-        timeout: 10000,
-        maxRedirects: 5
-      });
-      const html = response.data;
-      const $ = cheerioLoad(html);
-
-      // Extraire tous les liens dans la page
-      $('a').each((_, element) => {
-        const href = $(element).attr('href');
-        if (!href) return;
-
-        try {
-          let nextUrl: string;
-
-          if (href.startsWith('http')) {
-            const hrefObj = new URL(href);
-            if (hrefObj.hostname !== baseHostname) return;
-            nextUrl = href;
-          } else if (href.startsWith('/')) {
-            nextUrl = new URL(href, baseUrl).toString();
-          } else if (!href.startsWith('#') && !href.startsWith('javascript:') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
-            nextUrl = new URL(href, normalizedUrl).toString();
-          } else {
-            return;
-          }
-
-          nextUrl = nextUrl.split('#')[0];
-
-          if (!visited.has(nextUrl) && !queue.includes(nextUrl) && queue.length + visited.size < maxPages) {
-            if (!nextUrl.includes('/cdn-cgi/') &&
-              !nextUrl.includes('/wp-admin/') &&
-              !nextUrl.endsWith('.jpg') &&
-              !nextUrl.endsWith('.jpeg') &&
-              !nextUrl.endsWith('.png') &&
-              !nextUrl.endsWith('.gif') &&
-              !nextUrl.endsWith('.pdf') &&
-              !nextUrl.endsWith('.zip')) {
-              queue.push(nextUrl);
-            }
-          }
-        } catch (urlError) {
-          console.error(`URL invalide: ${href}`, urlError);
+      const checkResponse = await axios.get(normalizedUrl, {
+        timeout: 5000,
+        maxRedirects: 3,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
       });
-    } catch (error) {
-      console.error(`Erreur lors de l'analyse de ${normalizedUrl}:`, error);
-    }
-  }
 
-  return Array.from(visited);
+      if (checkResponse.status !== 200) {
+        console.log(`URL principale inaccessible: ${normalizedUrl}, statut: ${checkResponse.status}`);
+        return [normalizedUrl];
+      }
+
+      mainPageHtml = checkResponse.data;
+    } catch (initialError) {
+      console.error(`URL principale inaccessible: ${normalizedUrl}`, initialError.message);
+      return [normalizedUrl];
+    }
+
+    const visited = new Set<string>();
+    visited.add(normalizedUrl);
+
+
+    try {
+      const urlObj = new URL(normalizedUrl);
+      if (urlObj.pathname === "/") {
+
+        const withoutSlash = normalizedUrl.replace(/\/$/, "");
+        if (withoutSlash !== normalizedUrl) {
+          visited.add(withoutSlash);
+          console.log(`Version alternative (sans slash) ajoutée: ${withoutSlash}`);
+        }
+      } else {
+
+        const withSlash = normalizedUrl + "/";
+        visited.add(withSlash);
+        console.log(`Version alternative (avec slash) ajoutée: ${withSlash}`);
+      }
+    } catch (e) {
+      console.error("Erreur lors de l'ajout des versions alternatives:", e);
+    }
+
+    const queue: string[] = [];
+
+    try {
+      const baseUrlObj = new URL(normalizedUrl);
+      const baseHostname = baseUrlObj.hostname;
+      const basePath = baseUrlObj.pathname;
+
+      // Fonction d'extraction des liens (réutilisable)
+      const extractLinks = ($: CheerioSelector, pageUrl: string): string[] => {
+        const links: string[] = [];
+
+        // 1. Liens standards <a href="...">
+        $('a[href]').each((_, element) => {
+          const href = $(element).attr('href');
+          if (href) {
+            try {
+              const url = normalizeUrl(href, pageUrl, baseUrlObj);
+              if (url) links.push(url);
+            } catch (e) {
+            }
+          }
+        });
+
+        // 2. Liens dans les frameworks SPA modernes 
+        // NuxtLink, RouterLink (Vue), Link (React Router), etc.
+        $('[to], [href], [data-href], [data-to], [routerlink]').each((_, element) => {
+          const $el = $(element);
+          if ($el.is('a')) return;
+
+          const linkAttr = $el.attr('to') || $el.attr('data-href') ||
+            $el.attr('data-to') || $el.attr('routerlink') ||
+            $el.attr('data-routerlink');
+
+          if (linkAttr) {
+            try {
+              const url = normalizeUrl(linkAttr, pageUrl, baseUrlObj);
+              if (url) links.push(url);
+            } catch (e) {
+            }
+          }
+        });
+
+        // 3. Extraire les liens des objets JSON dans le HTML (Next.js, Nuxt.js, etc.)
+        const scriptTags = $('script').filter((_, el) => {
+          const content = $(el).html() || '';
+          return (content.includes('__NUXT__') || content.includes('__NEXT_DATA__') ||
+            content.includes('window.__PRELOADED_STATE__') || content.includes('routes'));
+        });
+
+        scriptTags.each((_, script) => {
+          const content = $(script).html() || '';
+          const urlMatches = content.match(/"(\/[^"]*?)"/g) || [];
+          const httpMatches = content.match(/"(https?:\/\/[^"]*?)"/g) || [];
+
+          [...urlMatches, ...httpMatches].forEach(match => {
+            try {
+              const cleanMatch = match.replace(/^"|"$/g, '');
+              const url = normalizeUrl(cleanMatch, pageUrl, baseUrlObj);
+              if (url) links.push(url);
+            } catch (e) {
+            }
+          });
+        });
+
+        return [...new Set(links)];
+      };
+
+      // Fonction pour normaliser une URL
+      const normalizeUrl = (href: string, currentUrl: string, baseUrlObj: URL): string | null => {
+        if (!href) return null;
+
+        try {
+          let fullUrl: string;
+
+          if (href.startsWith('http')) {
+            const urlObj = new URL(href);
+            if (urlObj.hostname !== baseHostname) return null;
+            fullUrl = href;
+          } else if (href.startsWith('/')) {
+            fullUrl = new URL(href, baseUrl).toString();
+          } else if (!href.startsWith('#') && !href.startsWith('javascript:') &&
+            !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+            fullUrl = new URL(href, currentUrl).toString();
+          } else {
+            return null;
+          }
+
+          // Nettoyer l'URL de tout fragment
+          const cleanUrl = fullUrl.split('#')[0];
+
+          // Normaliser l'URL en supprimant le slash final (sauf pour les URLs racines)
+          const urlObj = new URL(cleanUrl);
+
+          // Supprimer le slash final pour uniformiser les URLs (sauf pour la racine)
+          if (urlObj.pathname !== '/' && urlObj.pathname.endsWith('/')) {
+            urlObj.pathname = urlObj.pathname.slice(0, -1);
+            fullUrl = urlObj.toString();
+          }
+
+          // Vérifier si c'est un fichier à ignorer
+          if (fullUrl.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js|svg|ico|woff|ttf|eot|webp)$/i)) {
+            return null;
+          }
+
+          // Ignorer les chemins admin ou cdn
+          if (fullUrl.includes('/cdn-cgi/') || fullUrl.includes('/wp-admin/')) {
+            return null;
+          }
+
+          return fullUrl;
+        } catch (e) {
+          return null;
+        }
+      };
+
+      // Extraction des liens de la page principale
+      if (mainPageHtml) {
+        const $ = cheerioLoad(mainPageHtml);
+        const mainPageLinks = extractLinks($, normalizedUrl);
+
+        mainPageLinks.forEach(link => {
+          if (!visited.has(link) && !queue.includes(link)) {
+            queue.push(link);
+          }
+        });
+
+        console.log(`${mainPageLinks.length} liens trouvés sur la page principale`);
+      }
+
+      const timeoutPromise = new Promise<string[]>((resolve) => {
+        setTimeout(() => {
+          console.log(`Timeout du crawl atteint après 15 secondes`);
+          resolve(Array.from(visited));
+        }, 15000);
+      });
+
+      const crawlPromise = new Promise<string[]>(async (resolve) => {
+        let crawlCount = 0;
+        const maxCrawlAttempts = Math.min(10, maxPages);
+
+        while (queue.length > 0 && visited.size < maxPages && crawlCount < maxCrawlAttempts) {
+          const currentUrl = queue.shift() as string;
+
+          if (visited.has(currentUrl)) {
+            continue;
+          }
+
+          crawlCount++;
+          console.log(`Analyse de ${currentUrl} (${visited.size}/${maxPages}, tentative ${crawlCount}/${maxCrawlAttempts})`);
+
+          try {
+            const response = await axios.get(currentUrl, {
+              timeout: 5000,
+              maxRedirects: 3,
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+              },
+              validateStatus: (status) => status === 200
+            });
+
+            const html = response.data;
+            if (!html) continue;
+
+            visited.add(currentUrl);
+
+            const $ = cheerioLoad(html);
+            const pageLinks = extractLinks($, currentUrl);
+
+            pageLinks.forEach(link => {
+              if (!visited.has(link) && !queue.includes(link) && queue.length + visited.size < maxPages) {
+                queue.push(link);
+              }
+            });
+
+            console.log(`${pageLinks.length} liens trouvés sur ${currentUrl}`);
+          } catch (error) {
+            console.error(`Erreur lors de l'analyse de ${currentUrl}: ${error.message}`);
+          }
+        }
+
+        resolve(Array.from(visited));
+      });
+
+      const result = await Promise.race([crawlPromise, timeoutPromise]);
+      return result.length > 0 ? result : [normalizedUrl];
+    } catch (e) {
+      console.error(`Erreur générale lors du crawl:`, e);
+      return [normalizedUrl];
+    }
+  } catch (error) {
+    console.error('Erreur fatale dans crawlWebsite:', error);
+    return [baseUrl];
+  }
 }
 
 function generateSitemap(urls: string[]): string {
@@ -1352,83 +1605,284 @@ function rankPages(results: Record<string, WebsiteAnalysisResult>): string[] {
 }
 
 async function findContactInfo(baseUrl: string, links: string[]): Promise<Record<string, string>> {
-  const contactInfo: Record<string, string> = {};
+  console.log('Recherche d\'informations de contact sur le site');
 
-  const filteredLinks = links.filter(link => {
-    const lowerLink = link.toLowerCase();
-    return !lowerLink.includes('/cdn-cgi/') &&
-      !lowerLink.includes('/terms') &&
-      !lowerLink.includes('/privacy') &&
-      !lowerLink.includes('/legal');
-  });
-
-  const contactPageKeywords = ['contact', 'nous-contacter', 'contactez-nous', 'about', 'about-us', 'a-propos'];
-  const contactLinks = filteredLinks.filter(link => {
-    const lowerLink = link.toLowerCase();
-    return contactPageKeywords.some(keyword => lowerLink.includes(keyword));
-  });
-
-  if (contactLinks.length === 0) {
-    return contactInfo;
+  if (!links || links.length === 0) {
+    console.log('Aucun lien fourni pour la recherche de contact');
+    return {};
   }
 
-  const pagesToCheck = contactLinks.slice(0, 2);
+  // Filtrer les liens pour éviter de traiter des liens non pertinents
+  console.log(`Filtrage des ${links.length} liens pour trouver des pages de contact potentielles`);
 
-  for (const link of pagesToCheck) {
-    try {
-      let contactUrl = link;
-      if (!link.startsWith('http')) {
-        contactUrl = new URL(link, baseUrl).toString();
-      }
+  try {
+    // Mots-clés pour identifier les pages de contact potentielles
+    const contactKeywords = ['contact', 'about', 'about-us', 'a-propos', 'qui-sommes-nous', 'equipe', 'team'];
 
-      const response = await fetch(contactUrl);
-      const html = await response.text();
-      const $ = cheerioLoad(html);
+    // Normaliser l'URL de base
+    const baseUrlObj = new URL(baseUrl);
+    const baseHostname = baseUrlObj.hostname;
 
-      if (!contactInfo.telephone) {
-        const phonePatterns = [
-          /(\+\d{1,3}[-\.\s]??)?\(?\d{3}\)?[-\.\s]??\d{3}[-\.\s]??\d{4}/,
-          /(\+\d{1,3}[-\.\s]??)?0\d{1}[-\.\s]??\d{2}[-\.\s]??\d{2}[-\.\s]??\d{2}[-\.\s]??\d{2}/,
-          /(\+\d{1,3}[-\.\s]??)?0\d[-\.\s]??\d{2}[-\.\s]??\d{2}[-\.\s]??\d{2}[-\.\s]??\d{2}/
-        ];
+    // Prioritiser les liens qui contiennent des mots-clés de contact
+    const prioritizedUrls: string[] = [];
 
-        for (const pattern of phonePatterns) {
-          const phoneMatch = $('body').text().match(pattern);
-          if (phoneMatch && phoneMatch[0]) {
-            contactInfo.telephone = phoneMatch[0];
-            break;
-          }
+    links.forEach(link => {
+      try {
+        const url = new URL(link);
+        // Vérifier que c'est le même domaine
+        if (url.hostname !== baseHostname) return;
+
+        const path = url.pathname.toLowerCase();
+        if (contactKeywords.some(keyword => path.includes(keyword))) {
+          prioritizedUrls.push(link);
         }
+      } catch (e) {
+        console.log(`URL invalide ignorée: ${link}`);
       }
+    });
 
-      if (!contactInfo.email) {
-        const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-        const emailMatch = $('body').text().match(emailPattern);
-        if (emailMatch && emailMatch[0]) {
-          contactInfo.email = emailMatch[0];
-        }
-      }
+    console.log(`${prioritizedUrls.length} liens potentiels de contact trouvés`);
 
-      if (!contactInfo.address) {
-        $('p, div, address').each((_, el) => {
-          const text = $(el).text().trim();
-          if ((text.match(/\d{5}/) || text.match(/\d{4}\s[A-Z]{2}/)) && text.length > 15 && text.length < 200) {
-            contactInfo.address = text;
-            return false;
+    if (prioritizedUrls.length === 0) {
+      // Si aucune page de contact trouvée, ajouter la page principale
+      prioritizedUrls.push(baseUrl);
+      console.log('Aucune page de contact trouvée, utilisation de la page principale');
+    }
+
+    // Résultats à retourner
+    const contactInfo: Record<string, string> = {};
+
+    // Limiter le nombre de pages à analyser
+    const pagesToCheck = prioritizedUrls.slice(0, 3);
+    console.log(`Analyse des ${pagesToCheck.length} pages les plus pertinentes`);
+
+    for (const url of pagesToCheck) {
+      try {
+        console.log(`Recherche d'informations de contact sur: ${url}`);
+
+        // Récupérer le contenu de la page
+        const response = await axios.get(url, {
+          timeout: 5000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
           }
         });
-      }
 
-      if (!contactInfo.name) {
-        const name = $('h1, h2').first().text().trim();
-        if (name && !contactPageKeywords.some(keyword => name.toLowerCase().includes(keyword))) {
-          contactInfo.name = name;
+        if (response.status !== 200) {
+          console.log(`Page inaccessible: ${url}, statut: ${response.status}`);
+          continue;
         }
-      }
-    } catch (error) {
-      console.error(`Erreur lors de l'analyse de la page de contact ${link}:`, error);
-    }
-  }
 
-  return contactInfo;
+        const html = response.data;
+        if (!html) continue;
+
+        const $ = cheerioLoad(html);
+
+        // 1. Recherche de numéros de téléphone
+        if (!contactInfo.telephone) {
+          // Recherche dans les attributs spécifiques (href="tel:")
+          $('a[href^="tel:"]').each((_, element) => {
+            const tel = $(element).attr('href')?.replace('tel:', '') || '';
+            if (tel && tel.length > 5) {
+              contactInfo.telephone = tel;
+              return false; // Arrêter l'itération
+            }
+          });
+
+          // Recherche dans le contenu HTML avec regex
+          if (!contactInfo.telephone) {
+            const phoneRegex = /(?:\+\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|(?:\+\d{1,3}[\s.-]?)?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}/g;
+            const bodyText = $('body').text();
+            const matches = bodyText.match(phoneRegex);
+
+            if (matches && matches.length > 0) {
+              // Prendre le premier numéro trouvé qui ressemble le plus à un numéro de téléphone
+              contactInfo.telephone = matches[0].replace(/\s+/g, ' ').trim();
+            }
+          }
+        }
+
+        // 2. Recherche d'adresses email
+        if (!contactInfo.email) {
+          // Recherche dans les liens mailto:
+          $('a[href^="mailto:"]').each((_, element) => {
+            const email = $(element).attr('href')?.replace('mailto:', '')?.split('?')[0] || '';
+            if (email && email.includes('@') && email.includes('.')) {
+              contactInfo.email = email;
+              return false; // Arrêter l'itération
+            }
+          });
+
+          // Recherche dans le contenu HTML avec regex
+          if (!contactInfo.email) {
+            const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+            const bodyText = $('body').text();
+            const matches = bodyText.match(emailRegex);
+
+            if (matches && matches.length > 0) {
+              // Prendre la première adresse email qui ne ressemble pas à une adresse d'exemple
+              const validEmail = matches.find(email =>
+                !email.includes('example') &&
+                !email.includes('nom@') &&
+                !email.includes('votre') &&
+                !email.includes('user')
+              );
+
+              if (validEmail) {
+                contactInfo.email = validEmail;
+              }
+            }
+          }
+        }
+
+        // 3. Recherche d'adresse physique
+        if (!contactInfo.address) {
+          // Vérifier les éléments avec des attributs d'adresse schema.org
+          $('[itemtype*="PostalAddress"], [itemprop="address"], [itemprop="streetAddress"], .address, .contact-address').each((_, element) => {
+            const addressText = $(element).text().trim();
+            if (addressText && addressText.length > 10) {
+              contactInfo.address = addressText.replace(/\s+/g, ' ');
+              return false; // Arrêter l'itération
+            }
+          });
+
+          // Rechercher des motifs d'adresse typiques
+          if (!contactInfo.address) {
+            // Recherche dans des éléments qui contiennent probablement une adresse
+            $('p, div').each((_, element) => {
+              const text = $(element).text().trim();
+              // Rechercher des motifs d'adresse (code postal, rue, etc.)
+              if (
+                (text.match(/\d{5}/) || text.match(/\d{2,4}\s+\w+/)) &&
+                (text.includes('rue') || text.includes('avenue') || text.includes('boulevard') ||
+                  text.includes('chemin') || text.includes('place') || text.includes('route'))
+              ) {
+                if (text.length > 10 && text.length < 200) {
+                  contactInfo.address = text.replace(/\s+/g, ' ');
+                  return false; // Arrêter l'itération
+                }
+              }
+            });
+          }
+        }
+
+        // 4. Recherche du nom de l'entreprise ou de la personne
+        if (!contactInfo.name) {
+          // Essayer de trouver le nom dans les microdonnées schema.org
+          $('[itemtype*="Organization"], [itemtype*="Person"]').each((_, element) => {
+            const nameEl = $(element).find('[itemprop="name"]');
+            if (nameEl.length > 0) {
+              contactInfo.name = nameEl.first().text().trim();
+              return false; // Arrêter l'itération
+            }
+          });
+
+          // Si pas trouvé, essayer le titre du site
+          if (!contactInfo.name) {
+            const siteName = $('title').text().split('|')[0].split('-')[0].trim();
+            if (siteName && siteName.length > 1) {
+              contactInfo.name = siteName;
+            }
+          }
+
+          // En dernier recours, utiliser le domaine
+          if (!contactInfo.name) {
+            contactInfo.name = baseHostname.replace('www.', '');
+          }
+        }
+
+        // Si toutes les informations sont trouvées, on arrête la recherche
+        if (contactInfo.telephone && contactInfo.email && contactInfo.address && contactInfo.name) {
+          break;
+        }
+      } catch (error) {
+        console.error(`Erreur lors de l'analyse de ${url} pour les contacts:`, error.message);
+      }
+    }
+
+    console.log('Informations de contact trouvées:', contactInfo);
+    return contactInfo;
+  } catch (error) {
+    console.error('Erreur générale lors de la recherche de contacts:', error);
+    return {};
+  }
+}
+
+// Fonction de secours pour créer un résultat minimal
+async function createFallbackResult(url: string): Promise<WebsiteAnalysisResult> {
+  try {
+    const urlObj = new URL(url);
+    const domain = urlObj.hostname;
+
+    return {
+      url,
+      performance: {
+        ttfb: 0,
+        fcp: 0,
+        lcp: 0,
+        cls: 0,
+        speedIndex: 0,
+        totalBlockingTime: 0,
+        loadTime: 0,
+        resourceLoadTimes: {
+          total: 0,
+          html: 0,
+          css: 0,
+          js: 0,
+          images: 0,
+          other: 0
+        },
+        resourceSizes: {
+          total: 0,
+          html: 0,
+          css: 0,
+          js: 0,
+          images: 0,
+          other: 0
+        }
+      },
+      seo: {
+        title: domain,
+        description: '',
+        headings: { h1: [], h2: [], h3: [], h4: [], h5: [], h6: [] },
+        images: { total: 0, withAlt: 0, withoutAlt: 0, data: [] as any[] },
+        links: { internal: [] as string[], external: [] as string[], broken: [] as string[], nofollow: [] as string[] },
+        structuredData: { data: [] as any[], count: 0, types: {} },
+        meta: {
+          viewport: false,
+          robots: '',
+          canonical: url,
+          og: {},
+          twitter: {}
+        },
+        wordCount: 0,
+        readabilityScore: 0,
+        keywordDensity: {}
+      },
+      technical: {
+        statusCode: 200,
+        https: url.startsWith('https'),
+        mobile: {
+          viewport: false,
+          responsive: false
+        },
+        security: {
+          headers: {},
+          certificate: url.startsWith('https')
+        }
+      },
+      technicalSEO: {
+        sitemapFound: false,
+        sitemapUrl: '',
+        sitemapUrls: 0,
+        robotsTxtFound: false,
+        robotsTxtContent: '',
+        schemaTypeCount: {}
+      },
+      issues: []
+    };
+  } catch (e) {
+    console.error('Erreur lors de la création du résultat de secours:', e);
+    throw e;
+  }
 }
