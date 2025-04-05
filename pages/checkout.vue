@@ -154,7 +154,7 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import snackBar from '../components/snackBar.vue';
+import snackBar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, navigateTo, useHead } from '#imports';
