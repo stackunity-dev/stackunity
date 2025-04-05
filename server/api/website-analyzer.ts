@@ -3,12 +3,18 @@ import { load as cheerioLoad } from 'cheerio';
 import * as dns from 'dns';
 import { createError, defineEventHandler, H3Event, readBody } from 'h3';
 import { performance } from 'perf_hooks';
-import type { Page } from 'puppeteer';
 import { promisify } from 'util';
 import type { CheerioSelector, ExtendedResponse, SiteAnalysisResult, StructuredData, WebsiteAnalysisResult } from './analyzer-types';
 
 const dnsResolve = promisify(dns.resolve);
 const dnsReverse = promisify(dns.reverse);
+
+// Définir le type Page plutôt que d'importer de puppeteer
+interface Page {
+  evaluateOnNewDocument: (fn: () => void) => Promise<void>;
+  goto: (url: string, options?: { waitUntil: string }) => Promise<any>;
+  evaluate: <T>(fn: () => T) => Promise<T>;
+}
 
 async function analyzePerformance(url: string, page: Page): Promise<WebsiteAnalysisResult['performance']> {
   const startTime = performance.now();
@@ -79,7 +85,7 @@ async function analyzePerformance(url: string, page: Page): Promise<WebsiteAnaly
     return clsValue;
   });
 
-  const totalSize = Object.values(performanceMetrics.resourceStats).reduce((acc, curr) => acc + curr.size, 0);
+  const totalSize = Object.values(performanceMetrics.resourceStats).reduce((acc, curr: any) => acc + curr.size, 0);
 
   return {
     ttfb: performanceMetrics.ttfb,
@@ -216,11 +222,20 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
 
   $('script[type="application/ld+json"]').each((_, el) => {
     try {
-      const data: any = JSON.parse($(el).html() || '');
-      structuredData.data.push(data);
-      structuredData.count++;
-      if (data['@type']) {
-        structuredData.types[data['@type']] = (structuredData.types[data['@type']] || 0) + 1;
+      const content = $(el).html() || '{}';
+      const data = JSON.parse(content);
+      if (data && typeof data === 'object' && '@type' in data) {
+        const structuredData = data as StructuredData;
+        (structuredData.data as StructuredData[]).push(structuredData);
+        structuredData.count++;
+        const type = structuredData['@type'];
+        if (Array.isArray(type)) {
+          type.forEach(t => {
+            structuredData.types[t] = (structuredData.types[t] || 0) + 1;
+          });
+        } else {
+          structuredData.types[type] = (structuredData.types[type] || 0) + 1;
+        }
       }
     } catch (e) {
       console.error('Erreur parsing JSON-LD:', e);
@@ -291,9 +306,8 @@ async function analyzeTechnical(url: string, response: ExtendedResponse, $: Chee
   };
 }
 
-// Modifier le handler principal
 export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisResult> => {
-  const { url, maxPages = 50 } = await readBody(event);
+  const { url, maxPages = 50, focusOnContact = false } = await readBody(event);
   if (!url) {
     throw createError({
       statusCode: 400,
@@ -302,11 +316,23 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
   }
 
   try {
-    // Crawler le site pour obtenir toutes les URLs
     const urls = await crawlWebsite(url, maxPages);
     console.log(`Analyse de ${urls.length} pages...`);
 
-    // Analyser chaque page
+    let prioritizedUrls = [...urls];
+    if (focusOnContact) {
+      const contactKeywords = ['contact', 'about', 'nous', 'about-us', 'a-propos'];
+      prioritizedUrls = urls.sort((a, b) => {
+        const aIsContact = contactKeywords.some(keyword => a.toLowerCase().includes(keyword));
+        const bIsContact = contactKeywords.some(keyword => b.toLowerCase().includes(keyword));
+        if (aIsContact && !bIsContact) return -1;
+        if (!aIsContact && bIsContact) return 1;
+        return 0;
+      });
+
+      prioritizedUrls = prioritizedUrls.slice(0, Math.min(5, prioritizedUrls.length));
+    }
+
     const results: Record<string, WebsiteAnalysisResult> = {};
     let totalLoadTime = 0;
     let totalWarnings = 0;
@@ -321,11 +347,10 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     let mobileCompatiblePages = 0;
     let securePages = 0;
 
-    for (const pageUrl of urls) {
+    for (const pageUrl of prioritizedUrls) {
       const result = await analyzeWebsite(pageUrl);
       results[pageUrl] = result;
 
-      // Mettre à jour les statistiques globales
       totalLoadTime += result.performance.loadTime;
       totalWarnings += result.issues.length;
       if (!result.seo.title) missingTitles++;
@@ -343,6 +368,19 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     }
 
     const pageCount = urls.length;
+
+    let extractedContactInfo: Record<string, string> = {};
+    for (const pageUrl of prioritizedUrls) {
+      try {
+        const contactInfo = await findContactInfo(url, Object.keys(results));
+        if (Object.keys(contactInfo).length > 0) {
+          extractedContactInfo = contactInfo;
+          break;
+        }
+      } catch (error) {
+        console.error(`Erreur lors de l'extraction des informations de contact de ${pageUrl}:`, error);
+      }
+    }
 
     return {
       urlMap: { [url]: urls },
@@ -364,7 +402,10 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
         securePages
       },
       generatedSitemap: generateSitemap(urls),
-      rankedUrls: rankPages(results)
+      rankedUrls: rankPages(results),
+      schemaOrg: {
+        contactInfo: extractedContactInfo
+      }
     };
   } catch (error) {
     console.error('Erreur lors de l\'analyse:', error);
@@ -382,7 +423,6 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
   const html = response.data;
   const $ = cheerioLoad(html);
 
-  // Analyser les performances
   const performanceData = {
     ttfb: loadTime * 0.2,
     fcp: loadTime * 0.4,
@@ -409,13 +449,10 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     }
   };
 
-  // Analyser les images en utilisant la fonction dédiée
   const imagesData = analyzeImages($);
 
-  // Analyser les liens en utilisant la fonction dédiée
   const linksData = analyzeLinks($, url);
 
-  // Analyser le SEO
   const seoData = {
     title: $('title').text().trim(),
     description: $('meta[name="description"]').attr('content') || '',
@@ -480,7 +517,7 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
       const data = JSON.parse(content);
       if (data && typeof data === 'object' && '@type' in data) {
         const structuredData = data as StructuredData;
-        seoData.structuredData.data.push(structuredData);
+        (seoData.structuredData.data as StructuredData[]).push(structuredData);
         seoData.structuredData.count++;
         const type = structuredData['@type'];
         if (Array.isArray(type)) {
@@ -569,22 +606,34 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     });
   }
 
-  const result: WebsiteAnalysisResult = {
+  // Récupérer des liens pour analyser les pages de contact
+  let contactInfo: Record<string, string> = {};
+  try {
+    contactInfo = await findContactInfo(url, linksData.internal);
+    console.log('Informations de contact trouvées:', contactInfo);
+  } catch (error) {
+    console.error('Erreur lors de la recherche des informations de contact:', error);
+  }
+
+  // Ajouter Schema.org suggestions
+  const schemaData = analyzeSchemaOrg(url, html, $, seoData as any, contactInfo);
+
+  const result: ExtendedWebsiteAnalysisResult = {
     url,
     performance: performanceData,
-    seo: seoData,
+    seo: seoData as any, // Utiliser un cast pour éviter l'erreur de type
     technical: technicalData,
+    technicalSEO: technicalSEO,
+    schemaOrg: schemaData,
     issues
   };
 
-  if (technicalSEO) {
-    result.technicalSEO = technicalSEO;
-  }
-
+  const endTime = performance.now();
+  console.log(`L'analyse du site a pris ${Math.round(endTime - startTime)}ms`);
   return result;
 }
 
-function analyzeImages($: cheerio.CheerioAPI) {
+function analyzeImages($: CheerioSelector) {
   console.log("Analyzing images...");
   const images = $('img').map((_, el) => {
     const $img = $(el);
@@ -945,7 +994,8 @@ function analyzeSchemaOrg(
   url: string,
   html: string,
   $: ReturnType<typeof cheerioLoad>,
-  seo: WebsiteAnalysisResult['seo']
+  seo: WebsiteAnalysisResult['seo'],
+  contactInfo?: Record<string, string>
 ): SchemaOrg {
   try {
     const existing = seo.structuredData || [];
@@ -958,48 +1008,202 @@ function analyzeSchemaOrg(
         orgName = seo.title.split('|')[1]?.trim() || seo.title.split('-')[1]?.trim() || '';
       }
 
-      const logo = $('link[rel="icon"]').attr('href') || '';
-      const phone = $('body').text().match(/(\+\d{1,3}[-\.\s]??)?\(?\d{3}\)?[-\.\s]??\d{3}[-\.\s]??\d{4}/)?.[0] || '';
+      // Utiliser les informations de contact récupérées si disponibles
+      if (contactInfo?.name && !orgName) {
+        orgName = contactInfo.name;
+      }
 
-      suggestions.push({
-        type: 'Organization',
-        properties: {
-          name: orgName,
-          url: url,
-          logo: new URL(logo, url).toString(),
-          telephone: phone
-        },
-        template: `<script type="application/ld+json">
+      const logo = $('link[rel="icon"]').attr('href') || '';
+      let phone = $('body').text().match(/(\+\d{1,3}[-\.\s]??)?\(?\d{3}\)?[-\.\s]??\d{3}[-\.\s]??\d{4}/)?.[0] || '';
+
+      // Utiliser le téléphone récupéré de la page de contact si disponible
+      if (contactInfo?.telephone && !phone) {
+        phone = contactInfo.telephone;
+      }
+
+      // Préparer les informations d'adresse si disponibles
+      let addressPart = '';
+      if (contactInfo?.address) {
+        addressPart = `,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "${contactInfo.address}"
+  }`;
+      }
+
+      const properties: Record<string, any> = {
+        name: orgName,
+        url: url
+      };
+
+      if (logo) {
+        try {
+          properties.logo = new URL(logo, url).toString();
+        } catch (e) {
+          console.error('URL de logo invalide:', logo);
+        }
+      }
+
+      if (phone) {
+        properties.telephone = phone;
+      }
+
+      if (contactInfo?.email) {
+        properties.email = contactInfo.email;
+      }
+
+      if (contactInfo?.address) {
+        properties.address = {
+          "@type": "PostalAddress",
+          "streetAddress": contactInfo.address
+        };
+      }
+
+      let template = `<script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "${orgName}",
-  "url": "${url}",
-  "logo": "${new URL(logo, url).toString()}",
-  "telephone": "${phone}"
+  "url": "${url}"`;
+
+      if (logo) {
+        try {
+          template += `,
+  "logo": "${new URL(logo, url).toString()}"`;
+        } catch (e) {
+          console.error('URL de logo invalide pour le template:', logo);
+        }
+      }
+
+      if (phone) {
+        template += `,
+  "telephone": "${phone}"`;
+      }
+
+      if (contactInfo?.email) {
+        template += `,
+  "email": "${contactInfo.email}"`;
+      }
+
+      if (contactInfo?.address) {
+        template += addressPart;
+      }
+
+      template += `
 }
-</script>`
+</script>`;
+
+      suggestions.push({
+        type: 'Organization',
+        properties,
+        template
       });
     }
 
-    // Suggestion de schéma WebSite
-    suggestions.push({
-      type: 'WebSite',
-      properties: {
-        name: seo.title,
-        description: seo.description,
-        url: url
-      },
-      template: `<script type="application/ld+json">
+    // Suggestion de schéma WebSite avec informations de contact 
+    const websiteProperties: Record<string, any> = {
+      name: seo.title,
+      description: seo.description,
+      url: url
+    };
+
+    // Ajouter potentialAction de type ContactAction si nous avons des informations de contact
+    if (contactInfo?.email || contactInfo?.telephone) {
+      websiteProperties.potentialAction = {
+        "@type": "ContactAction",
+        "name": "Contact",
+        "target": contactInfo?.email ? `mailto:${contactInfo.email}` : url
+      };
+    }
+
+    // Construire le template pour le WebSite
+    let websiteTemplate = `<script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "${seo.title}",
   "description": "${seo.description}",
-  "url": "${url}"
+  "url": "${url}"`;
+
+    if (contactInfo?.email || contactInfo?.telephone) {
+      websiteTemplate += `,
+  "potentialAction": {
+    "@type": "ContactAction",
+    "name": "Contact",
+    "target": "${contactInfo?.email ? `mailto:${contactInfo.email}` : url}"
+  }`;
+    }
+
+    websiteTemplate += `
 }
-</script>`
+</script>`;
+
+    suggestions.push({
+      type: 'WebSite',
+      properties: websiteProperties,
+      template: websiteTemplate
     });
+
+    // Ajouter un schema LocalBusiness si nous avons suffisamment d'informations de contact
+    if (contactInfo?.address && (contactInfo?.telephone || contactInfo?.email)) {
+      const businessName = contactInfo.name || seo.title;
+      const businessProperties: Record<string, any> = {
+        "@type": "LocalBusiness",
+        "name": businessName,
+        "url": url
+      };
+
+      if (contactInfo.telephone) {
+        businessProperties.telephone = contactInfo.telephone;
+      }
+
+      if (contactInfo.email) {
+        businessProperties.email = contactInfo.email;
+      }
+
+      if (contactInfo.address) {
+        businessProperties.address = {
+          "@type": "PostalAddress",
+          "streetAddress": contactInfo.address
+        };
+      }
+
+      // Construire le template pour LocalBusiness
+      let localBusinessTemplate = `<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "${businessName}",
+  "url": "${url}"`;
+
+      if (contactInfo.telephone) {
+        localBusinessTemplate += `,
+  "telephone": "${contactInfo.telephone}"`;
+      }
+
+      if (contactInfo.email) {
+        localBusinessTemplate += `,
+  "email": "${contactInfo.email}"`;
+      }
+
+      if (contactInfo.address) {
+        localBusinessTemplate += `,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "${contactInfo.address}"
+  }`;
+      }
+
+      localBusinessTemplate += `
+}
+</script>`;
+
+      suggestions.push({
+        type: 'LocalBusiness',
+        properties: businessProperties,
+        template: localBusinessTemplate
+      });
+    }
 
     return { suggestions };
   } catch (e) {
@@ -1023,10 +1227,8 @@ function calculateKeywordDensity(text: string): Record<string, number> {
   return density;
 }
 
-// Fonction pour vérifier la présence et la validité du sitemap
 async function checkSitemap(baseUrl: string): Promise<{ found: boolean; url?: string; content?: string; urls?: number }> {
   try {
-    // Essayer avec les emplacements courants
     const possibleLocations = [
       '/sitemap.xml',
       '/sitemap_index.xml',
@@ -1043,11 +1245,9 @@ async function checkSitemap(baseUrl: string): Promise<{ found: boolean; url?: st
         if (response.status === 200 && response.data) {
           const content = response.data;
 
-          // Vérifier si c'est un XML valide contenant des balises urlset ou sitemapindex
           if (typeof content === 'string' &&
             (content.includes('<urlset') || content.includes('<sitemapindex'))) {
 
-            // Compter le nombre d'URLs
             const $ = cheerioLoad(content);
             const urlCount = $('url').length;
 
@@ -1060,7 +1260,6 @@ async function checkSitemap(baseUrl: string): Promise<{ found: boolean; url?: st
           }
         }
       } catch (error) {
-        // Continuer à vérifier les autres emplacements possibles
         console.log(`Sitemap non trouvé à ${location}: ${error.message}`);
       }
     }
@@ -1072,7 +1271,6 @@ async function checkSitemap(baseUrl: string): Promise<{ found: boolean; url?: st
   }
 }
 
-// Fonction pour vérifier la présence et le contenu du robots.txt
 async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean; content?: string }> {
   try {
     const robotsUrl = new URL('/robots.txt', baseUrl).href;
@@ -1114,7 +1312,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
 
         try {
           const fullUrl = new URL(href, url);
-          // Ne visiter que les URLs du même domaine
           if (fullUrl.hostname === baseUrlObj.hostname && !visited.has(fullUrl.href)) {
             toVisit.add(fullUrl.href);
           }
@@ -1147,20 +1344,16 @@ function generateSitemap(urls: string[]): string {
 function rankPages(results: Record<string, WebsiteAnalysisResult>): string[] {
   return Object.entries(results)
     .sort(([, a], [, b]) => {
-      // Score basé sur plusieurs facteurs
       const getScore = (result: WebsiteAnalysisResult) => {
         let score = 0;
-        // Performance
         score += (1000 - result.performance.loadTime) / 10;
         score += (100 - result.performance.ttfb) / 2;
 
-        // SEO
         if (result.seo.title) score += 10;
         if (result.seo.description) score += 10;
         score += result.seo.images.withAlt * 2;
         score -= result.issues.length * 5;
 
-        // Contenu
         score += result.seo.wordCount / 100;
         score += Object.keys(result.seo.structuredData.types).length * 5;
 
@@ -1170,4 +1363,86 @@ function rankPages(results: Record<string, WebsiteAnalysisResult>): string[] {
       return getScore(b) - getScore(a);
     })
     .map(([url]) => url);
+}
+
+async function findContactInfo(baseUrl: string, links: string[]): Promise<Record<string, string>> {
+  const contactInfo: Record<string, string> = {};
+
+  const filteredLinks = links.filter(link => {
+    const lowerLink = link.toLowerCase();
+    return !lowerLink.includes('/cdn-cgi/') &&
+      !lowerLink.includes('/terms') &&
+      !lowerLink.includes('/privacy') &&
+      !lowerLink.includes('/legal');
+  });
+
+  const contactPageKeywords = ['contact', 'nous-contacter', 'contactez-nous', 'about', 'about-us', 'a-propos'];
+  const contactLinks = filteredLinks.filter(link => {
+    const lowerLink = link.toLowerCase();
+    return contactPageKeywords.some(keyword => lowerLink.includes(keyword));
+  });
+
+  if (contactLinks.length === 0) {
+    return contactInfo;
+  }
+
+  const pagesToCheck = contactLinks.slice(0, 2);
+
+  for (const link of pagesToCheck) {
+    try {
+      let contactUrl = link;
+      if (!link.startsWith('http')) {
+        contactUrl = new URL(link, baseUrl).toString();
+      }
+
+      const response = await fetch(contactUrl);
+      const html = await response.text();
+      const $ = cheerioLoad(html);
+
+      if (!contactInfo.telephone) {
+        const phonePatterns = [
+          /(\+\d{1,3}[-\.\s]??)?\(?\d{3}\)?[-\.\s]??\d{3}[-\.\s]??\d{4}/,
+          /(\+\d{1,3}[-\.\s]??)?0\d{1}[-\.\s]??\d{2}[-\.\s]??\d{2}[-\.\s]??\d{2}[-\.\s]??\d{2}/,
+          /(\+\d{1,3}[-\.\s]??)?0\d[-\.\s]??\d{2}[-\.\s]??\d{2}[-\.\s]??\d{2}[-\.\s]??\d{2}/
+        ];
+
+        for (const pattern of phonePatterns) {
+          const phoneMatch = $('body').text().match(pattern);
+          if (phoneMatch && phoneMatch[0]) {
+            contactInfo.telephone = phoneMatch[0];
+            break;
+          }
+        }
+      }
+
+      if (!contactInfo.email) {
+        const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+        const emailMatch = $('body').text().match(emailPattern);
+        if (emailMatch && emailMatch[0]) {
+          contactInfo.email = emailMatch[0];
+        }
+      }
+
+      if (!contactInfo.address) {
+        $('p, div, address').each((_, el) => {
+          const text = $(el).text().trim();
+          if ((text.match(/\d{5}/) || text.match(/\d{4}\s[A-Z]{2}/)) && text.length > 15 && text.length < 200) {
+            contactInfo.address = text;
+            return false;
+          }
+        });
+      }
+
+      if (!contactInfo.name) {
+        const name = $('h1, h2').first().text().trim();
+        if (name && !contactPageKeywords.some(keyword => name.toLowerCase().includes(keyword))) {
+          contactInfo.name = name;
+        }
+      }
+    } catch (error) {
+      console.error(`Erreur lors de l'analyse de la page de contact ${link}:`, error);
+    }
+  }
+
+  return contactInfo;
 }

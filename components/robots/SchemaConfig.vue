@@ -19,7 +19,6 @@
     <v-text-field v-model="schemaConfig.url" label="URL" variant="outlined" density="comfortable"
       prepend-inner-icon="mdi-link" class="mb-4"></v-text-field>
 
-    <!-- Propriétés communes -->
     <div class="d-flex align-center mb-2">
       <v-icon color="primary" class="mr-2">mdi-card-account-details</v-icon>
       <span class="text-subtitle-2 font-weight-medium">Common Properties</span>
@@ -44,7 +43,6 @@
     <v-text-field v-model="schemaConfig.logo" label="Logo URL" variant="outlined" density="comfortable"
       prepend-inner-icon="mdi-image" class="mb-4"></v-text-field>
 
-    <!-- Propriétés spécifiques par type -->
     <div v-if="typeProperties.length > 0" class="d-flex align-center mb-2">
       <v-icon :color="getTypeColor(schemaConfig.type)" class="mr-2">{{ getTypeIcon() }}</v-icon>
       <span class="text-subtitle-2 font-weight-medium">{{ schemaConfig.type }} Properties</span>

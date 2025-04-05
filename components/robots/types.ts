@@ -110,6 +110,22 @@ export interface RobotsPreviewLine {
   comment: boolean;
 }
 
+export interface SchemaOrgSuggestion {
+  type: string;
+  properties: Record<string, any>;
+  template: string;
+}
+
+export interface SchemaOrg {
+  suggestions: SchemaOrgSuggestion[];
+}
+
+export interface ExtendedSEOResult {
+  seo?: any;
+  schemaOrg?: SchemaOrg;
+  [key: string]: any;
+}
+
 export const typePropertiesConfig: Record<string, SchemaProperty[]> = {
   Organization: [
     { key: 'foundingDate', label: 'Date de fondation', icon: 'mdi-calendar', type: 'date' },

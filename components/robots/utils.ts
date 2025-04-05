@@ -13,6 +13,13 @@ type ExtendedSEOResult = Partial<WebsiteAnalysisResult> & {
     nosnippet: boolean;
     noodp: boolean;
   }>;
+  schemaOrg?: {
+    suggestions: Array<{
+      type: string;
+      properties: Record<string, any>;
+      template: string;
+    }>;
+  };
 };
 
 type ExtendedCrawlReport = Partial<WebsiteAnalysisResult> & {
@@ -103,6 +110,58 @@ export const fillConfigsFromAudit = (
 
     if (homeData.seo?.description) {
       schemaConfig.description = homeData.seo.description;
+    }
+
+    // Intégrer les informations de SchemaOrg si disponibles
+    if (homeData.schemaOrg && homeData.schemaOrg.suggestions && homeData.schemaOrg.suggestions.length > 0) {
+      try {
+        // Parcourir les suggestions pour trouver les plus pertinentes
+        const organization = homeData.schemaOrg.suggestions.find((s: any) => s.type === 'Organization');
+        const localBusiness = homeData.schemaOrg.suggestions.find((s: any) => s.type === 'LocalBusiness');
+        const website = homeData.schemaOrg.suggestions.find((s: any) => s.type === 'WebSite');
+
+        // Prioriser LocalBusiness, puis Organization, puis WebSite
+        const bestSuggestion = localBusiness || organization || website;
+
+        if (bestSuggestion) {
+          const props = bestSuggestion.properties;
+
+          // Adapter le type de schéma
+          schemaConfig.type = bestSuggestion.type;
+
+          // Appliquer les propriétés de base
+          if (props.name) schemaConfig.name = props.name;
+          if (props.description) schemaConfig.description = props.description;
+          if (props.url) schemaConfig.url = props.url;
+
+          // Informations de contact
+          if (props.telephone) schemaConfig.telephone = props.telephone;
+          if (props.email) schemaConfig.email = props.email;
+
+          // Adresse
+          if (props.address && props.address.streetAddress) {
+            schemaConfig.address = props.address.streetAddress;
+          }
+
+          if (props.logo) {
+            if (typeof props.logo === 'string') {
+              schemaConfig.logo = props.logo;
+            } else if (props.logo.url) {
+              schemaConfig.logo = props.logo.url;
+            }
+          }
+
+          if (props.image) {
+            if (typeof props.image === 'string') {
+              schemaConfig.image = props.image;
+            } else if (props.image.url) {
+              schemaConfig.image = props.image.url;
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Erreur lors de l\'intégration des données SchemaOrg:', e);
+      }
     }
 
     // Extraire les informations structurées déjà présentes

@@ -216,11 +216,9 @@ import { computed, markRaw, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
-import { useCookieStore } from '../stores/cookieStore';
 import { useUserStore } from '../stores/userStore';
 
 const userStore = useUserStore();
-const cookieStore = useCookieStore();
 const router = useRouter();
 const route = useRoute();
 const open = ref([]);

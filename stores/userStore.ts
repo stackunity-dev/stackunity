@@ -1199,7 +1199,14 @@ export const useUserStore = defineStore('user', {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${this.token}`
           },
-          body: JSON.stringify({ url, options })
+          body: JSON.stringify({
+            url,
+            maxPages: options?.maxUrlsToAnalyze || 10,
+            checkSitemap: options?.checkSitemap,
+            checkRobotsTxt: options?.checkRobotsTxt,
+            timeout: options?.timeout || 30000,
+            focusOnContact: options?.focusOnContact || false
+          })
         });
 
         console.log('Réponse initiale:', initialResponse);

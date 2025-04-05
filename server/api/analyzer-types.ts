@@ -1,7 +1,7 @@
 import { load } from 'cheerio';
 
 export interface StructuredData {
-  '@type': string;
+  '@type': string | string[];
   '@context'?: string;
   [key: string]: any;
 }
@@ -135,4 +135,22 @@ export interface SiteAnalysisResult {
   };
   generatedSitemap: string;
   rankedUrls: string[];
+  schemaOrg?: {
+    contactInfo?: Record<string, string>;
+    suggestions?: SchemaOrgSuggestion[];
+  };
+}
+
+export interface SchemaOrgSuggestion {
+  type: string;
+  properties: Record<string, any>;
+  template: string;
+}
+
+export interface SchemaOrg {
+  suggestions: SchemaOrgSuggestion[];
+}
+
+export interface ExtendedWebsiteAnalysisResult extends WebsiteAnalysisResult {
+  schemaOrg: SchemaOrg;
 } 

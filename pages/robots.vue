@@ -188,7 +188,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 // @ts-ignore
 import { definePageMeta } from '#imports';
 import CodePreview from '../components/robots/CodePreview.vue';
