@@ -446,7 +446,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async login(email: string, password: string) {
+    async login(email: string, password: string, rememberMe: boolean) {
       this.loading = true;
       this.error = null;
 
@@ -456,7 +456,7 @@ export const useUserStore = defineStore('user', {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, rememberMe }),
           credentials: 'include'
         });
 
@@ -466,7 +466,6 @@ export const useUserStore = defineStore('user', {
         if (data.success) {
           this.setToken(data.accessToken);
 
-          // Force conversion des valeurs en booléens
           const isPremiumValue = data.user.isPremium === true || data.user.isPremium === 1;
           const isAdminValue = data.user.isAdmin === true || data.user.isAdmin === 1;
 

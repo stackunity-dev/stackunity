@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {
-  ACCESS_TOKEN_EXPIRY,
+  ACCESS_TOKEN_EXPIRY_DEFAULT,
+  ACCESS_TOKEN_EXPIRY_REMEMBER,
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_EXPIRY,
   REFRESH_TOKEN_SECRET
@@ -8,8 +9,12 @@ import {
 import { TokenPayload } from './TokenManager';
 
 export class ServerTokenManager {
-  static generateAccessToken(payload: TokenPayload): string {
-    return jwt.sign(payload, ACCESS_TOKEN_SECRET as string, { expiresIn: ACCESS_TOKEN_EXPIRY });
+  static generateAccessToken(payload: TokenPayload & { isRememberMe?: boolean }): string {
+    const expiresIn = payload.isRememberMe ? ACCESS_TOKEN_EXPIRY_REMEMBER : ACCESS_TOKEN_EXPIRY_DEFAULT;
+
+    const { isRememberMe, ...tokenPayload } = payload;
+
+    return jwt.sign(tokenPayload, ACCESS_TOKEN_SECRET as string, { expiresIn });
   }
 
   static generateRefreshToken(payload: { userId: number, tokenId: string }): string {
@@ -18,9 +23,7 @@ export class ServerTokenManager {
 
   static verifyAccessToken(token: string): TokenPayload | null {
     try {
-      console.log('[ServerTokenManager] Vérification du token:', token.substring(0, 20) + '...');
       const result = jwt.verify(token, ACCESS_TOKEN_SECRET as string) as TokenPayload;
-      console.log('[ServerTokenManager] Token décodé avec succès');
       return result;
     } catch (error) {
       console.error('[ServerTokenManager] Erreur de vérification du token:', error);

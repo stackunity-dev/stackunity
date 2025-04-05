@@ -306,30 +306,36 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
     '@type': schemaConfig.type
   };
 
-  // Propriétés de base communes à tous les types
-  if (schemaConfig.name) schema.name = schemaConfig.name;
-  if (schemaConfig.description) schema.description = schemaConfig.description;
-  if (schemaConfig.url) schema.url = schemaConfig.url;
+  const sanitizeString = (str: string | undefined): string => {
+    if (!str) return '';
+    return str
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t');
+  };
+
+  if (schemaConfig.name) schema.name = sanitizeString(schemaConfig.name);
+  if (schemaConfig.description) schema.description = sanitizeString(schemaConfig.description);
+  if (schemaConfig.url) schema.url = sanitizeString(schemaConfig.url);
   else if (fullUrl) schema.url = fullUrl;
-  if (schemaConfig.image) schema.image = schemaConfig.image;
+  if (schemaConfig.image) schema.image = sanitizeString(schemaConfig.image);
 
-  // Coordonnées
-  if (schemaConfig.telephone) schema.telephone = schemaConfig.telephone;
-  if (schemaConfig.email) schema.email = schemaConfig.email;
+  if (schemaConfig.telephone) schema.telephone = sanitizeString(schemaConfig.telephone);
+  if (schemaConfig.email) schema.email = sanitizeString(schemaConfig.email);
 
-  // Adresse structurée
   if (schemaConfig.address || schemaConfig.city || schemaConfig.region) {
     schema.address = {
       '@type': 'PostalAddress',
-      'streetAddress': schemaConfig.address || '',
-      'addressLocality': schemaConfig.city || '',
-      'addressRegion': schemaConfig.region || '',
-      'postalCode': schemaConfig.postalCode || '',
-      'addressCountry': schemaConfig.country || 'FR'
+      'streetAddress': sanitizeString(schemaConfig.address) || '',
+      'addressLocality': sanitizeString(schemaConfig.city) || '',
+      'addressRegion': sanitizeString(schemaConfig.region) || '',
+      'postalCode': sanitizeString(schemaConfig.postalCode) || '',
+      'addressCountry': sanitizeString(schemaConfig.country) || 'FR'
     };
   }
 
-  // Données géographiques
   if (schemaConfig.latitude && schemaConfig.longitude) {
     schema.geo = {
       '@type': 'GeoCoordinates',
@@ -625,5 +631,24 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
       break;
   }
 
-  return JSON.stringify(schema, null, 2);
+  // Sérialisation JSON avec indentation et en s'assurant que les attributs spéciaux @context et @type sont bien formatés
+  try {
+    // Utiliser JSON.stringify pour une sérialisation correcte
+    const jsonSchema = JSON.stringify(schema, null, 2);
+
+    // Vérifier que le JSON est valide en le parsant à nouveau
+    JSON.parse(jsonSchema);
+
+    return jsonSchema;
+  } catch (error) {
+    console.error('Erreur lors de la génération du schema JSON-LD:', error);
+
+    // En cas d'erreur, retourner un schema minimal valide
+    return JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': schemaConfig.type,
+      'name': sanitizeString(schemaConfig.name) || 'Website',
+      'url': fullUrl
+    }, null, 2);
+  }
 }; 

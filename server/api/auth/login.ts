@@ -49,47 +49,17 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    console.log('[LOGIN] Mot de passe valide, génération du token');
-    console.log('[LOGIN] Données brutes de l\'utilisateur:', {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      isPremium: user.isPremium,
-      isAdmin: user.isAdmin,
-      types: {
-        isPremium: typeof user.isPremium,
-        isAdmin: typeof user.isAdmin
-      }
-    });
-
     try {
       const isPremiumValue = user.isPremium === 1;
       const isAdminValue = user.isAdmin === 1;
-
-      console.log('[LOGIN] Valeurs après conversion:', {
-        isPremiumValue,
-        isAdminValue,
-        originalValues: {
-          isPremium: user.isPremium,
-          isAdmin: user.isAdmin
-        }
-      });
 
       const accessToken = ServerTokenManager.generateAccessToken({
         userId: user.id,
         username: user.username,
         email: user.email,
         isPremium: isPremiumValue,
-        isAdmin: isAdminValue
-      });
-
-      console.log('[LOGIN] Token généré avec succès');
-      console.log('[LOGIN] Payload du token:', {
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        isPremium: isPremiumValue,
-        isAdmin: isAdminValue
+        isAdmin: isAdminValue,
+        isRememberMe: body.rememberMe || false
       });
 
       const userData = {
@@ -97,10 +67,11 @@ export default defineEventHandler(async (event) => {
         username: user.username,
         email: user.email,
         isPremium: isPremiumValue,
-        isAdmin: isAdminValue
+        isAdmin: isAdminValue,
+        isRememberMe: body.rememberMe || false
       };
 
-      console.log('[LOGIN] Données utilisateur finales:', userData);
+      console.log(`[LOGIN] Connexion réussie pour ${user.email}${body.rememberMe ? ' avec "Remember me" activé' : ''}`);
 
       return {
         success: true,

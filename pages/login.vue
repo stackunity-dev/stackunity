@@ -129,17 +129,13 @@ const showSnackbar = ref(false);
 const snackbarColor = ref('');
 const snackbarText = ref('');
 
-// Vérifier si l'utilisateur est déjà connecté
 onMounted(async () => {
   console.log('[Login] Vérification de l\'état de connexion...');
   loading.value = true;
 
-  // D'abord, nettoyer les éventuels tokens invalides
-  // pour éviter les problèmes de token invalide lors des vérifications
   if (localStorage.getItem('auth_token')) {
     try {
       const token = localStorage.getItem('auth_token');
-      // Vérifier rapidement si le token a un format valide
       if (!token || token.split('.').length !== 3) {
         localStorage.removeItem('auth_token');
         console.log('[Login] Token invalide supprimé');
@@ -150,7 +146,6 @@ onMounted(async () => {
   }
 
   try {
-    // Vérifier si l'utilisateur est déjà authentifié
     const authResult = await userStore.checkAuthentication();
 
     if (authResult && authResult.isAuthenticated) {
@@ -168,10 +163,9 @@ onMounted(async () => {
 
 const handleSignin = async () => {
   loading.value = true;
-  snackbarText.value = ''; // Réinitialiser le message d'erreur
+  snackbarText.value = '';
 
   try {
-    // Validation basique côté client
     if (!form.value.email || !form.value.email.includes('@')) {
       snackbarColor.value = 'error';
       snackbarText.value = 'Email invalide';
@@ -186,7 +180,7 @@ const handleSignin = async () => {
       return;
     }
 
-    const response = await userStore.login(form.value.email, form.value.password);
+    const response = await userStore.login(form.value.email, form.value.password, rememberMe.value);
     if (response.success) {
       router.push('/dashboard');
     } else {

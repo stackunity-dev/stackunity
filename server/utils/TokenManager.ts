@@ -8,6 +8,7 @@ export interface TokenPayload {
   isAdmin?: boolean | number;
   tokenId?: string;
   exp?: number;
+  isRememberMe?: boolean;
 }
 
 export interface RefreshToken extends RowDataPacket {

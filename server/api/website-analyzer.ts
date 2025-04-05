@@ -1001,14 +1001,22 @@ function analyzeSchemaOrg(
     const existing = seo.structuredData || [];
     const suggestions: SchemaOrgSuggestion[] = [];
 
-    // Suggestion de schéma Organization
+    const escapeJsonString = (str: string): string => {
+      if (!str) return '';
+      return str
+        .replace(/\\/g, '\\\\')
+        .replace(/"/g, '\\"')
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t');
+    };
+
     if ($('body').text().toLowerCase().includes('entreprise') || $('body').text().toLowerCase().includes('société') || $('body').text().toLowerCase().includes('company')) {
       let orgName = $('meta[property="og:site_name"]').attr('content') || '';
       if (!orgName) {
         orgName = seo.title.split('|')[1]?.trim() || seo.title.split('-')[1]?.trim() || '';
       }
 
-      // Utiliser les informations de contact récupérées si disponibles
       if (contactInfo?.name && !orgName) {
         orgName = contactInfo.name;
       }
@@ -1016,24 +1024,15 @@ function analyzeSchemaOrg(
       const logo = $('link[rel="icon"]').attr('href') || '';
       let phone = $('body').text().match(/(\+\d{1,3}[-\.\s]??)?\(?\d{3}\)?[-\.\s]??\d{3}[-\.\s]??\d{4}/)?.[0] || '';
 
-      // Utiliser le téléphone récupéré de la page de contact si disponible
       if (contactInfo?.telephone && !phone) {
         phone = contactInfo.telephone;
       }
 
-      // Préparer les informations d'adresse si disponibles
-      let addressPart = '';
-      if (contactInfo?.address) {
-        addressPart = `,
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "${contactInfo.address}"
-  }`;
-      }
-
       const properties: Record<string, any> = {
-        name: orgName,
-        url: url
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": escapeJsonString(orgName),
+        "url": url
       };
 
       if (logo) {
@@ -1045,164 +1044,96 @@ function analyzeSchemaOrg(
       }
 
       if (phone) {
-        properties.telephone = phone;
+        properties.telephone = escapeJsonString(phone);
       }
 
       if (contactInfo?.email) {
-        properties.email = contactInfo.email;
+        properties.email = escapeJsonString(contactInfo.email);
       }
 
       if (contactInfo?.address) {
         properties.address = {
           "@type": "PostalAddress",
-          "streetAddress": contactInfo.address
+          "streetAddress": escapeJsonString(contactInfo.address)
         };
       }
 
-      let template = `<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "${orgName}",
-  "url": "${url}"`;
+      try {
+        const template = `<script type="application/ld+json">\n${JSON.stringify(properties, null, 2)}\n</script>`;
 
-      if (logo) {
-        try {
-          template += `,
-  "logo": "${new URL(logo, url).toString()}"`;
-        } catch (e) {
-          console.error('URL de logo invalide pour le template:', logo);
-        }
+        suggestions.push({
+          type: 'Organization',
+          properties,
+          template
+        });
+      } catch (e) {
+        console.error('Erreur lors de la génération du template JSON pour Organization:', e);
       }
-
-      if (phone) {
-        template += `,
-  "telephone": "${phone}"`;
-      }
-
-      if (contactInfo?.email) {
-        template += `,
-  "email": "${contactInfo.email}"`;
-      }
-
-      if (contactInfo?.address) {
-        template += addressPart;
-      }
-
-      template += `
-}
-</script>`;
-
-      suggestions.push({
-        type: 'Organization',
-        properties,
-        template
-      });
     }
 
-    // Suggestion de schéma WebSite avec informations de contact 
-    const websiteProperties: Record<string, any> = {
-      name: seo.title,
-      description: seo.description,
-      url: url
-    };
-
-    // Ajouter potentialAction de type ContactAction si nous avons des informations de contact
-    if (contactInfo?.email || contactInfo?.telephone) {
-      websiteProperties.potentialAction = {
-        "@type": "ContactAction",
-        "name": "Contact",
-        "target": contactInfo?.email ? `mailto:${contactInfo.email}` : url
-      };
-    }
-
-    // Construire le template pour le WebSite
-    let websiteTemplate = `<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "${seo.title}",
-  "description": "${seo.description}",
-  "url": "${url}"`;
-
-    if (contactInfo?.email || contactInfo?.telephone) {
-      websiteTemplate += `,
-  "potentialAction": {
-    "@type": "ContactAction",
-    "name": "Contact",
-    "target": "${contactInfo?.email ? `mailto:${contactInfo.email}` : url}"
-  }`;
-    }
-
-    websiteTemplate += `
-}
-</script>`;
-
-    suggestions.push({
-      type: 'WebSite',
-      properties: websiteProperties,
-      template: websiteTemplate
-    });
-
-    // Ajouter un schema LocalBusiness si nous avons suffisamment d'informations de contact
-    if (contactInfo?.address && (contactInfo?.telephone || contactInfo?.email)) {
-      const businessName = contactInfo.name || seo.title;
-      const businessProperties: Record<string, any> = {
-        "@type": "LocalBusiness",
-        "name": businessName,
+    try {
+      const websiteProperties: Record<string, any> = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": escapeJsonString(seo.title),
+        "description": escapeJsonString(seo.description),
         "url": url
       };
 
-      if (contactInfo.telephone) {
-        businessProperties.telephone = contactInfo.telephone;
-      }
-
-      if (contactInfo.email) {
-        businessProperties.email = contactInfo.email;
-      }
-
-      if (contactInfo.address) {
-        businessProperties.address = {
-          "@type": "PostalAddress",
-          "streetAddress": contactInfo.address
+      if (contactInfo?.email || contactInfo?.telephone) {
+        websiteProperties.potentialAction = {
+          "@type": "ContactAction",
+          "name": "Contact",
+          "target": contactInfo?.email ? `mailto:${escapeJsonString(contactInfo.email)}` : url
         };
       }
 
-      // Construire le template pour LocalBusiness
-      let localBusinessTemplate = `<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "${businessName}",
-  "url": "${url}"`;
-
-      if (contactInfo.telephone) {
-        localBusinessTemplate += `,
-  "telephone": "${contactInfo.telephone}"`;
-      }
-
-      if (contactInfo.email) {
-        localBusinessTemplate += `,
-  "email": "${contactInfo.email}"`;
-      }
-
-      if (contactInfo.address) {
-        localBusinessTemplate += `,
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "${contactInfo.address}"
-  }`;
-      }
-
-      localBusinessTemplate += `
-}
-</script>`;
+      const websiteTemplate = `<script type="application/ld+json">\n${JSON.stringify(websiteProperties, null, 2)}\n</script>`;
 
       suggestions.push({
-        type: 'LocalBusiness',
-        properties: businessProperties,
-        template: localBusinessTemplate
+        type: 'WebSite',
+        properties: websiteProperties,
+        template: websiteTemplate
       });
+    } catch (e) {
+      console.error('Erreur lors de la génération du template JSON pour WebSite:', e);
+    }
+
+    if (contactInfo?.address && (contactInfo?.telephone || contactInfo?.email)) {
+      try {
+        const businessName = contactInfo.name || seo.title;
+        const businessProperties: Record<string, any> = {
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": escapeJsonString(businessName),
+          "url": url
+        };
+
+        if (contactInfo.telephone) {
+          businessProperties.telephone = escapeJsonString(contactInfo.telephone);
+        }
+
+        if (contactInfo.email) {
+          businessProperties.email = escapeJsonString(contactInfo.email);
+        }
+
+        if (contactInfo.address) {
+          businessProperties.address = {
+            "@type": "PostalAddress",
+            "streetAddress": escapeJsonString(contactInfo.address)
+          };
+        }
+
+        const localBusinessTemplate = `<script type="application/ld+json">\n${JSON.stringify(businessProperties, null, 2)}\n</script>`;
+
+        suggestions.push({
+          type: 'LocalBusiness',
+          properties: businessProperties,
+          template: localBusinessTemplate
+        });
+      } catch (e) {
+        console.error('Erreur lors de la génération du template JSON pour LocalBusiness:', e);
+      }
     }
 
     return { suggestions };
@@ -1291,36 +1222,91 @@ async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean; conten
 }
 
 async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<string[]> {
+  console.log(`Démarrage du crawl de ${baseUrl}, limite de ${maxPages} pages`);
+
   const visited = new Set<string>();
-  const toVisit = new Set<string>([baseUrl]);
+  const queue: string[] = [baseUrl];
   const baseUrlObj = new URL(baseUrl);
+  const baseHostname = baseUrlObj.hostname;
 
-  while (toVisit.size > 0 && visited.size < maxPages) {
-    const url = Array.from(toVisit)[0];
-    toVisit.delete(url);
+  const commonPaths = [
+    '/about', '/contact', '/services', '/products',
+    '/dashboard', '/login', '/signup', '/register',
+    '/blog', '/news', '/faq', '/help', '/support',
+    '/terms', '/privacy', '/sitemap'
+  ];
 
-    if (visited.has(url)) continue;
+  commonPaths.forEach(path => {
+    try {
+      const commonUrl = new URL(path, baseUrl).toString();
+      if (!visited.has(commonUrl)) {
+        queue.push(commonUrl);
+      }
+    } catch (e) {
+      console.error(`URL invalide: ${path}`, e);
+    }
+  });
+
+  while (queue.length > 0 && visited.size < maxPages) {
+    const currentUrl = queue.shift() as string;
+
+    const normalizedUrl = currentUrl.split('#')[0];
+
+    if (visited.has(normalizedUrl)) {
+      continue;
+    }
+
+    visited.add(normalizedUrl);
+    console.log(`Analyse de ${normalizedUrl} (${visited.size}/${maxPages})`);
 
     try {
-      const response = await axios.get(url);
-      visited.add(url);
+      const response = await axios.get(normalizedUrl, {
+        timeout: 10000,
+        maxRedirects: 5
+      });
+      const html = response.data;
+      const $ = cheerioLoad(html);
 
-      const $ = cheerioLoad(response.data);
-      $('a[href]').each((_, el) => {
-        const href = $(el).attr('href');
+      // Extraire tous les liens dans la page
+      $('a').each((_, element) => {
+        const href = $(element).attr('href');
         if (!href) return;
 
         try {
-          const fullUrl = new URL(href, url);
-          if (fullUrl.hostname === baseUrlObj.hostname && !visited.has(fullUrl.href)) {
-            toVisit.add(fullUrl.href);
+          let nextUrl: string;
+
+          if (href.startsWith('http')) {
+            const hrefObj = new URL(href);
+            if (hrefObj.hostname !== baseHostname) return;
+            nextUrl = href;
+          } else if (href.startsWith('/')) {
+            nextUrl = new URL(href, baseUrl).toString();
+          } else if (!href.startsWith('#') && !href.startsWith('javascript:') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+            nextUrl = new URL(href, normalizedUrl).toString();
+          } else {
+            return;
           }
-        } catch (e) {
-          console.error('URL invalide:', href);
+
+          nextUrl = nextUrl.split('#')[0];
+
+          if (!visited.has(nextUrl) && !queue.includes(nextUrl) && queue.length + visited.size < maxPages) {
+            if (!nextUrl.includes('/cdn-cgi/') &&
+              !nextUrl.includes('/wp-admin/') &&
+              !nextUrl.endsWith('.jpg') &&
+              !nextUrl.endsWith('.jpeg') &&
+              !nextUrl.endsWith('.png') &&
+              !nextUrl.endsWith('.gif') &&
+              !nextUrl.endsWith('.pdf') &&
+              !nextUrl.endsWith('.zip')) {
+              queue.push(nextUrl);
+            }
+          }
+        } catch (urlError) {
+          console.error(`URL invalide: ${href}`, urlError);
         }
       });
-    } catch (e) {
-      console.error('Erreur lors du crawl de', url, ':', e);
+    } catch (error) {
+      console.error(`Erreur lors de l'analyse de ${normalizedUrl}:`, error);
     }
   }
 
