@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     if (rows.length > 0) {
       return {
         success: true,
-        isPremium: rows[0].is_premium
+        isPremium: rows[0].isPremium
       };
     } else {
       return {
