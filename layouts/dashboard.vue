@@ -424,11 +424,6 @@ onMounted(() => {
   updatePageTitle();
 });
 
-
-watch(() => userStore.user?.isPremium, (newValue) => {
-  console.log('[DEBUG] Changement du statut premium détecté:', newValue);
-}, { immediate: true });
-
 function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string): any {
   if (userStore.user?.isPremium) {
     return {

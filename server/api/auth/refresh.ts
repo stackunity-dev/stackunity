@@ -1,7 +1,7 @@
 import { defineEventHandler, getCookie, setCookie } from 'h3';
 import { RowDataPacket } from 'mysql2/promise';
 import { v4 as uuidv4 } from 'uuid';
-import { TokenManager } from '../../utils/TokenManager';
+import { ServerTokenManager } from '../../utils/ServerTokenManager';
 import { TokenService } from '../../utils/TokenService';
 import {
   REFRESH_TOKEN_COOKIE_NAME,
@@ -11,15 +11,13 @@ import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   try {
-    // Récupérer le token de rafraîchissement depuis le cookie
     const refreshToken = getCookie(event, REFRESH_TOKEN_COOKIE_NAME);
 
     if (!refreshToken) {
       return { success: false, error: 'Aucun token de rafraîchissement trouvé' };
     }
 
-    // Vérifier le token de rafraîchissement
-    const decodedRefreshToken = TokenManager.verifyRefreshToken(refreshToken);
+    const decodedRefreshToken = ServerTokenManager.verifyRefreshToken(refreshToken);
 
     if (!decodedRefreshToken) {
       return { success: false, error: 'Token de rafraîchissement invalide' };
@@ -27,14 +25,12 @@ export default defineEventHandler(async (event) => {
 
     const { userId, tokenId } = decodedRefreshToken;
 
-    // Vérifier si le token existe en base de données et est valide
     const isValid = await TokenService.verifyRefreshTokenInDb(tokenId, userId);
 
     if (!isValid) {
       return { success: false, error: 'Token de rafraîchissement révoqué ou expiré' };
     }
 
-    // Récupérer les informations de l'utilisateur
     const [userRows] = await pool.execute<RowDataPacket[]>(
       'SELECT id, username, email, isAdmin, isPremium FROM users WHERE id = ?',
       [userId]
@@ -46,8 +42,7 @@ export default defineEventHandler(async (event) => {
 
     const user = userRows[0];
 
-    // Créer un nouveau token d'accès
-    const accessToken = TokenManager.generateAccessToken({
+    const accessToken = ServerTokenManager.generateAccessToken({
       userId: user.id,
       username: user.username,
       email: user.email,
@@ -55,18 +50,15 @@ export default defineEventHandler(async (event) => {
       isAdmin: user.isAdmin === 1
     });
 
-    // Rotation du token de rafraîchissement (sécurité)
     const newRefreshTokenId = uuidv4();
-    const newRefreshToken = TokenManager.generateRefreshToken({
+    const newRefreshToken = ServerTokenManager.generateRefreshToken({
       userId: user.id,
       tokenId: newRefreshTokenId
     });
 
-    // Mettre à jour la base de données
     await TokenService.rotateRefreshToken(tokenId, newRefreshTokenId);
     await TokenService.saveRefreshToken(newRefreshTokenId, user.id);
 
-    // Définir le nouveau cookie
     setCookie(event, REFRESH_TOKEN_COOKIE_NAME, newRefreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
     return {

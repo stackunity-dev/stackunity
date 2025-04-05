@@ -47,7 +47,8 @@
       </v-container>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" location="right" temporary class="mobile-nav-drawer d-md-none pa-6">
+    <v-navigation-drawer v-model="drawer" location="right" temporary
+      class="v-theme--dark mobile-nav-drawer d-md-none pa-6">
       <div class="drawer-header mb-8 d-flex justify-space-between align-center">
         <img src="/logo/devunity-title.png" alt="DevUnity title" width="120">
         <v-btn icon variant="text" @click="drawer = false">
@@ -388,7 +389,7 @@ const footerColumns = [
     links: [
       { title: 'About', to: '/about' },
       { title: 'Contact', to: '/contact' },
-      { title: 'Blog', to: '/blog' }
+      { title: 'Blog', to: '/' }
     ]
   },
   {
@@ -396,7 +397,7 @@ const footerColumns = [
     links: [
       { title: 'Privacy', to: '/privacy' },
       { title: 'Terms', to: '/terms' },
-      { title: 'Cookies', to: '/cookies' }
+      { title: 'Cookies', to: '/' }
     ]
   }
 ];
@@ -414,7 +415,6 @@ const isClient = ref(false);
 
 const userStore = useUserStore();
 
-// Utiliser useDisplay pour les breakpoints Vuetify
 const display = useDisplay();
 
 onMounted(() => {

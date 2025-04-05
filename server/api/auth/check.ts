@@ -1,13 +1,11 @@
 import { defineEventHandler, getRequestHeaders } from 'h3';
-import { TokenManager } from '../../utils/TokenManager';
+import { ServerTokenManager } from '../../utils/ServerTokenManager';
 
 export default defineEventHandler(async (event) => {
   try {
-    // Récupérer l'en-tête d'autorisation
     const authHeader = getRequestHeaders(event).authorization;
     const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-    console.log('[API CHECK] Vérification du token:', token ? 'Présent' : 'Absent');
 
     if (!token) {
       return {
@@ -16,8 +14,7 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Vérifier le token
-    const decodedToken = TokenManager.verifyAccessToken(token);
+    const decodedToken = ServerTokenManager.verifyAccessToken(token);
 
     if (!decodedToken) {
       return {

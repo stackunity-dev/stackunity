@@ -1,5 +1,4 @@
 import { createError, defineEventHandler, getRequestHeaders, H3Event } from 'h3'
-import { RowDataPacket } from 'mysql2'
 import { ServerTokenManager } from '../utils/ServerTokenManager'
 
 const publicRoutes = [
@@ -43,7 +42,6 @@ const premiumRoutes = [
 
 export default defineEventHandler(async (event: H3Event) => {
   const url = event.node.req.url || '';
-  console.log('[devunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Middleware auth - URL:', url);
 
   const isPublicRoute = (url: string): boolean => {
     if (url.startsWith('/api/Studio/')) {

@@ -401,7 +401,6 @@ const showSuccessDialog = ref(false);
 
 onMounted(async () => {
   const router = useRouter();
-  console.log("userStore.user", userStore.user);
 
   try {
     const token = TokenUtils.retrieveToken();
@@ -410,20 +409,49 @@ onMounted(async () => {
       return;
     }
 
-    const isAuthenticated = await userStore.checkAuthenticated();
+    try {
+      const isAuthenticated = await userStore.checkAuthentication();
+      if (!isAuthenticated) {
+        router.push('/login');
+        return;
+      }
+    } catch (authError) {
+      console.error('[Dashboard] Erreur d\'authentification:', authError);
+      try {
+        await userStore.logout();
+        await new Promise(resolve => setTimeout(resolve, 500));
+        router.push('/login');
+        return;
+      } catch (e) {
+        console.error('[Dashboard] Erreur lors de la déconnexion:', e);
+        router.push('/login');
+        return;
+      }
+    }
 
-    if (!isAuthenticated) {
+    try {
+      const result = await userStore.loadData();
+      if (result && result.error) {
+        router.push('/login');
+        return;
+      }
+    } catch (dataError) {
+      console.error('[Dashboard] Erreur de chargement des données:', dataError);
       router.push('/login');
       return;
     }
 
-    const result = await userStore.loadData();
-    if (result && result.error) {
-      router.push('/login');
-      return;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('status') === 'premium-updated') {
+      showSuccessDialog.value = true;
     }
 
-    // Charger les données avec plusieurs tentatives si nécessaire
+    try {
+      await userStore.getMonitoringData();
+    } catch (monitoringError) {
+      console.warn('[Dashboard] Erreur récupération données monitoring:', monitoringError);
+    }
+
     await loadWithRetries('snippets', () => userStore.loadSnippets());
     await loadWithRetries('sqlSchemas', () => userStore.loadSQLSchemas());
 
@@ -433,7 +461,6 @@ onMounted(async () => {
   }
 });
 
-// Fonction pour charger des données avec plusieurs tentatives
 async function loadWithRetries(name: string, loadFunction: () => Promise<any>, retries = 2) {
   for (let i = 0; i <= retries; i++) {
     try {

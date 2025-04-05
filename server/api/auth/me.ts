@@ -4,10 +4,8 @@ import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   try {
-    // Récupérer les informations de l'utilisateur depuis le contexte (middleware auth)
     const user = event.context.user;
 
-    console.log('[API ME] Contexte utilisateur:', JSON.stringify(user));
 
     if (!user || !user.userId) {
       return {
@@ -16,7 +14,6 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Récupérer les informations complètes de l'utilisateur depuis la base de données
     const [rows] = await pool.execute<RowDataPacket[]>(
       'SELECT id, username, email, isAdmin, isPremium, company, website, bio FROM users WHERE id = ?',
       [user.userId]

@@ -1,8 +1,7 @@
-import { pool } from '../db';
 import { Resend } from 'resend';
 import { readBody, defineEventHandler } from 'h3';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || 're_55555555555555555555555555555555');
 
 export default defineEventHandler(async (event) => {
   const { name, email, subject, message } = await readBody(event);

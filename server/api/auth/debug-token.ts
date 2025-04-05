@@ -4,11 +4,9 @@ import { ACCESS_TOKEN_SECRET } from '../../utils/auth-config';
 
 export default defineEventHandler(async (event) => {
   try {
-    // Récupérer l'en-tête d'autorisation
     const authHeader = getRequestHeaders(event).authorization;
     const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-    console.log('[DEBUG TOKEN] Token reçu:', token ? 'Présent' : 'Absent');
 
     if (!token) {
       return {
@@ -17,16 +15,11 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Décodage simple sans vérification de signature
     const decodedWithoutVerify = jwt.decode(token);
-    console.log('[DEBUG TOKEN] Décodage sans vérification:', decodedWithoutVerify);
 
-    // Vérifier le token avec la vérification complète
     try {
       const decodedWithVerify = jwt.verify(token, ACCESS_TOKEN_SECRET);
-      console.log('[DEBUG TOKEN] Décodage avec vérification:', decodedWithVerify);
 
-      // Comparer les valeurs
       return {
         success: true,
         tokenContent: {

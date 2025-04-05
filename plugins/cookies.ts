@@ -1,4 +1,6 @@
-import { useCookieStore } from '~/stores/cookieStore';
+import { defineNuxtPlugin } from 'nuxt/app';
+import { useCookieStore } from '../stores/cookieStore';
+import { useUserStore } from '../stores/userStore';
 
 export default defineNuxtPlugin({
   name: 'cookies-plugin',

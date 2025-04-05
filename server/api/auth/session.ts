@@ -6,7 +6,6 @@ export default defineEventHandler(async (event) => {
     const authHeader = getRequestHeaders(event).authorization;
     const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-    console.log('[API SESSION] Tentative d\'accès avec token:', token ? 'Présent' : 'Absent');
 
     if (!token) {
       return {

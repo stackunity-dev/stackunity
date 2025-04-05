@@ -3,11 +3,9 @@ import { ServerTokenManager } from '../../utils/ServerTokenManager';
 
 export default defineEventHandler(async (event) => {
   try {
-    // Récupérer l'en-tête d'autorisation
     const authHeader = getRequestHeaders(event).authorization;
     const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-    console.log('[API VALIDATE] Validation du token:', token ? 'Présent' : 'Absent');
 
     if (!token) {
       return {
@@ -16,7 +14,6 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Vérifier le token
     const decodedToken = ServerTokenManager.verifyAccessToken(token);
 
     if (!decodedToken) {
@@ -26,28 +23,8 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Log détaillé des valeurs dans le token
-    console.log('[API VALIDATE] Valeurs dans le token:', {
-      isPremium: decodedToken.isPremium,
-      isAdmin: decodedToken.isAdmin,
-      types: {
-        isPremium: typeof decodedToken.isPremium,
-        isAdmin: typeof decodedToken.isAdmin
-      }
-    });
-
-    // Convertir d'abord en nombre puis en booléen
     const isPremiumValue = Number(decodedToken.isPremium) === 1;
     const isAdminValue = Number(decodedToken.isAdmin) === 1;
-
-    console.log('[API VALIDATE] Valeurs après conversion:', {
-      isPremium: isPremiumValue,
-      isAdmin: isAdminValue,
-      originalValues: {
-        isPremium: decodedToken.isPremium,
-        isAdmin: decodedToken.isAdmin
-      }
-    });
 
     return {
       valid: true,

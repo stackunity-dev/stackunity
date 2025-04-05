@@ -195,31 +195,17 @@ export const useUserStore = defineStore('user', {
         if (storedData) {
           const parsedData = JSON.parse(storedData);
 
-          console.log('[STORE] Données brutes récupérées du localStorage:', {
-            isPremium: parsedData.user?.isPremium,
-            isAdmin: parsedData.user?.isAdmin,
-            types: {
-              isPremium: typeof parsedData.user?.isPremium,
-              isAdmin: typeof parsedData.user?.isAdmin
-            }
-          });
-
-          // Vérifier d'abord le token
           const token = TokenUtils.retrieveToken();
           if (!token) {
-            console.log('[STORE] Pas de token trouvé, mais données utilisateur présentes');
             return;
           }
 
-          // Valider le token avant de restaurer les données
           const validationResult = await this.validateToken();
           if (!validationResult.valid) {
-            console.log('[STORE] Token invalide, nettoyage des données');
             localStorage.removeItem('user_data');
             return;
           }
 
-          // Vérifier les différentes valeurs possibles avec assertions de type
           let isPremiumValue = false;
           if (parsedData.user?.isPremium !== undefined) {
             isPremiumValue = parsedData.user.isPremium === true ||
@@ -234,17 +220,6 @@ export const useUserStore = defineStore('user', {
               (typeof parsedData.user.isAdmin === 'string' && (parsedData.user.isAdmin === '1' || parsedData.user.isAdmin === 'true'));
           }
 
-          console.log('[STORE] Conversion des valeurs du localStorage:', {
-            original: {
-              isPremium: parsedData.user?.isPremium,
-              isAdmin: parsedData.user?.isAdmin
-            },
-            converted: {
-              isPremium: isPremiumValue,
-              isAdmin: isAdminValue
-            }
-          });
-
           this.user = {
             ...parsedData.user,
             isPremium: isPremiumValue,
@@ -254,13 +229,6 @@ export const useUserStore = defineStore('user', {
           this.isPremium = isPremiumValue;
           this.isAdmin = isAdminValue;
           this.token = token;
-
-          console.log('[STORE] Données utilisateur restaurées avec conversion explicite:', {
-            isPremium: this.isPremium,
-            isAdmin: this.isAdmin,
-            userPremium: this.user.isPremium,
-            userAdmin: this.user.isAdmin
-          });
 
           await this.loadData();
         }
@@ -307,14 +275,6 @@ export const useUserStore = defineStore('user', {
         const decodedData = TokenUtils.decodeToken(token);
 
         if (decodedData) {
-          console.log('[STORE] Données brutes du token:', {
-            isPremium: decodedData.isPremium,
-            isAdmin: decodedData.isAdmin,
-            types: {
-              isPremium: typeof decodedData.isPremium,
-              isAdmin: typeof decodedData.isAdmin
-            }
-          });
 
 
           let isPremiumValue = false;
@@ -348,13 +308,6 @@ export const useUserStore = defineStore('user', {
             this.user.isAdmin = isAdminValue;
             this.user.userId = this.user.id;
           }
-
-          console.log('[STORE] Valeurs après conversion dans setToken:', {
-            isPremium: this.isPremium,
-            isAdmin: this.isAdmin,
-            userPremium: this.user.isPremium,
-            userAdmin: this.user.isAdmin
-          });
         }
       } catch (error) {
         console.error('Erreur lors du décodage du token:', error);
@@ -387,23 +340,6 @@ export const useUserStore = defineStore('user', {
           },
           isAuthenticated: this.isAuthenticated
         };
-
-        console.log('[STORE] Données avant persistance:', {
-          user: this.user,
-          userType: {
-            isAdmin: typeof this.user?.isAdmin,
-            isPremium: typeof this.user?.isPremium
-          }
-        });
-
-        console.log('[STORE] Données persistées:', {
-          isAdmin: userData.user.isAdmin,
-          isPremium: userData.user.isPremium,
-          types: {
-            isAdmin: typeof userData.user.isAdmin,
-            isPremium: typeof userData.user.isPremium
-          }
-        });
 
         localStorage.setItem('user_data', JSON.stringify(userData));
       } catch (error) {
@@ -449,7 +385,6 @@ export const useUserStore = defineStore('user', {
         });
 
         const data = await response.json();
-        console.log('Réponse du serveur:', data);
 
         if (data.success) {
           this.setToken(data.accessToken);
@@ -463,18 +398,8 @@ export const useUserStore = defineStore('user', {
             isAdmin: isAdminValue
           };
 
-          // Assurer que userId est défini pour rétrocompatibilité
           this.user.userId = this.user.id;
 
-          console.log("Données utilisateur après conversion:", {
-            user: this.user,
-            isPremium: isPremiumValue,
-            isAdmin: isAdminValue,
-            originalValues: {
-              isPremium: data.user.isPremium,
-              isAdmin: data.user.isAdmin
-            }
-          });
 
           this.isAuthenticated = true;
           this.isPremium = isPremiumValue;
@@ -553,7 +478,7 @@ export const useUserStore = defineStore('user', {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ username, email, password }),
-          credentials: 'include' // Important pour recevoir les cookies
+          credentials: 'include'
         });
 
         const data = await response.json();
@@ -565,7 +490,6 @@ export const useUserStore = defineStore('user', {
           this.isPremium = data.user.isPremium;
           this.isAdmin = data.user.isAdmin;
 
-          // Persister les données utilisateur
           this.persistData();
 
           this.loading = false;
@@ -624,8 +548,6 @@ export const useUserStore = defineStore('user', {
         };
 
         const userId = this.user.userId;
-        console.log('userId', userId);
-        console.log('schemaData', schemaData);
 
         const response: any = await $fetch('/api/sql/saveSQLSchema', {
           method: 'POST',
@@ -655,7 +577,6 @@ export const useUserStore = defineStore('user', {
     async loadData() {
       try {
         this.loading = true;
-        console.log('Chargement des données utilisateur...');
 
         const token = this.token || TokenUtils.retrieveToken();
         if (!token) {
@@ -663,7 +584,6 @@ export const useUserStore = defineStore('user', {
           return { success: false, error: 'Token manquant' };
         }
 
-        console.log('Tentative avec /api/auth/validate');
         const validationResponse = await fetch('/api/auth/validate', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -673,25 +593,6 @@ export const useUserStore = defineStore('user', {
         if (validationResponse.ok) {
           const validationData = await validationResponse.json();
           if (validationData.valid && validationData.user) {
-            console.log('[STORE] Données brutes reçues dans loadData:', {
-              isPremium: validationData.user.isPremium,
-              isAdmin: validationData.user.isAdmin,
-              types: {
-                isPremium: typeof validationData.user.isPremium,
-                isAdmin: typeof validationData.user.isAdmin
-              },
-              valeurExacte: JSON.stringify(validationData.user)
-            });
-
-            console.log('[STORE] Tests de conversion:', {
-              "isPremium === true": validationData.user.isPremium === true,
-              "isPremium === 1": validationData.user.isPremium === 1,
-              "isPremium == true": validationData.user.isPremium == true,
-              "isPremium == 1": validationData.user.isPremium == 1,
-              "!!isPremium": !!validationData.user.isPremium,
-              "Boolean(isPremium)": Boolean(validationData.user.isPremium),
-              "Number(isPremium) === 1": Number(validationData.user.isPremium) === 1
-            });
 
             const isPremiumValue = validationData.user.isPremium === 1 || validationData.user.isPremium === true;
             const isAdminValue = validationData.user.isAdmin === 1 || validationData.user.isAdmin === true;
@@ -707,19 +608,7 @@ export const useUserStore = defineStore('user', {
             this.isAdmin = isAdminValue;
             this.error = null;
 
-            console.log('[STORE] Statut après conversion dans loadData:', {
-              isPremium: this.isPremium,
-              isAdmin: this.isAdmin,
-              userPremium: this.user.isPremium,
-              userAdmin: this.user.isAdmin,
-              conversions: {
-                isPremiumValue,
-                isAdminValue
-              }
-            });
-
             this.persistData();
-            console.log('Données chargées avec succès via validate:', this.user.id);
             return { success: true, user: this.user };
           }
         }
@@ -763,7 +652,6 @@ export const useUserStore = defineStore('user', {
           this.error = null;
 
           this.persistData();
-          console.log('Données chargées avec succès via session:', this.user.id);
           return { success: true, user: this.user };
         }
 
@@ -785,11 +673,9 @@ export const useUserStore = defineStore('user', {
       try {
         const token = TokenUtils.retrieveToken();
         if (!token) {
-          console.log('Aucun token trouvé pour loadSnippets');
           return { success: false, error: 'Authentification requise' };
         }
 
-        console.log('[STORE] Chargement des snippets avec token:', token.substring(0, 10) + '...');
 
         const response = await fetch('/api/snippets/loadSnippets', {
           headers: {
@@ -800,11 +686,9 @@ export const useUserStore = defineStore('user', {
         });
 
         if (response.status === 401 && retryCount < MAX_RETRIES) {
-          console.log('[STORE] Token expiré ou invalide pour loadSnippets, tentative de rafraîchissement...');
           try {
             const validationResult = await this.validateToken();
             if (validationResult.valid) {
-              console.log('[STORE] Token validé avec succès, nouvelle tentative');
               return this.loadSnippets(retryCount + 1);
             }
 
@@ -816,7 +700,6 @@ export const useUserStore = defineStore('user', {
             if (refreshResponse.ok) {
               const refreshData = await refreshResponse.json();
               if (refreshData.success && refreshData.accessToken) {
-                console.log('[STORE] Token rafraîchi avec succès, nouvelle tentative');
                 TokenUtils.storeToken(refreshData.accessToken);
                 this.token = refreshData.accessToken;
 
@@ -832,10 +715,8 @@ export const useUserStore = defineStore('user', {
               }
             }
 
-            console.log('[STORE] Échec du rafraîchissement du token');
             return { success: false, error: 'Échec du rafraîchissement du token' };
           } catch (refreshError) {
-            console.error('[STORE] Erreur lors du rafraîchissement du token:', refreshError);
             return { success: false, error: 'Erreur lors du rafraîchissement du token' };
           }
         }
@@ -846,7 +727,6 @@ export const useUserStore = defineStore('user', {
         }
 
         const data = await response.json();
-        console.log('[STORE] Résultat du chargement des snippets:', data.success ? 'Succès' : 'Échec');
 
         if (data.success) {
           this.personalSnippets = data.data.personalSnippets || [];
@@ -876,11 +756,9 @@ export const useUserStore = defineStore('user', {
       try {
         const token = TokenUtils.retrieveToken();
         if (!token) {
-          console.log('Aucun token trouvé pour loadSQLSchemas');
           return { success: false, error: 'Authentification requise' };
         }
 
-        console.log('[STORE] Chargement des schémas SQL avec token:', token.substring(0, 10) + '...');
 
         const response = await fetch('/api/sql/loadSQLSchemas', {
           headers: {
@@ -891,11 +769,9 @@ export const useUserStore = defineStore('user', {
         });
 
         if (response.status === 401 && retryCount < MAX_RETRIES) {
-          console.log('[STORE] Token expiré ou invalide pour loadSQLSchemas, tentative de rafraîchissement...');
           try {
             const validationResult = await this.validateToken();
             if (validationResult.valid) {
-              console.log('[STORE] Token validé avec succès, nouvelle tentative');
               return this.loadSQLSchemas(retryCount + 1);
             }
 
@@ -907,7 +783,6 @@ export const useUserStore = defineStore('user', {
             if (refreshResponse.ok) {
               const refreshData = await refreshResponse.json();
               if (refreshData.success && refreshData.accessToken) {
-                console.log('[STORE] Token rafraîchi avec succès, nouvelle tentative');
                 TokenUtils.storeToken(refreshData.accessToken);
                 this.token = refreshData.accessToken;
 
@@ -923,10 +798,8 @@ export const useUserStore = defineStore('user', {
               }
             }
 
-            console.log('[STORE] Échec du rafraîchissement du token');
             return { success: false, error: 'Échec du rafraîchissement du token' };
           } catch (refreshError) {
-            console.error('[STORE] Erreur lors du rafraîchissement du token:', refreshError);
             return { success: false, error: 'Erreur lors du rafraîchissement du token' };
           }
         }
@@ -937,7 +810,6 @@ export const useUserStore = defineStore('user', {
         }
 
         const data = await response.json();
-        console.log('[STORE] Schémas SQL chargés:', data.success ? 'Succès' : 'Échec');
         if (data && data.schemas) {
           this.sqlSchemas = data.schemas;
         }
@@ -1119,12 +991,24 @@ export const useUserStore = defineStore('user', {
 
     async getMonitoringData() {
       try {
+        if (!this.token) {
+          console.warn('Aucun token disponible pour getMonitoringData');
+          return;
+        }
+
         const response = await fetch('/api/monitoring/system', {
-          headers: this.getAuthHeader
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
         });
 
         if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des données système');
+          if (response.status === 401 || response.status === 403) {
+            console.warn('Session expirée ou non autorisée pour les données de monitoring');
+            return;
+          }
+          throw new Error(`Erreur ${response.status} lors de la récupération des données système`);
         }
 
         const data = await response.json();
@@ -1171,8 +1055,6 @@ export const useUserStore = defineStore('user', {
           throw new Error('URL invalide');
         }
 
-        console.log('Démarrage de l\'audit SEO pour:', url);
-        console.log('Options:', JSON.stringify(options, null, 2));
 
         const initialResponse = await fetch('/api/website-analyzer', {
           method: 'POST',
@@ -1190,8 +1072,6 @@ export const useUserStore = defineStore('user', {
           })
         });
 
-        console.log('Réponse initiale:', initialResponse);
-
         if (!initialResponse.ok) {
           const errorData = await initialResponse.json().catch(() => ({}));
           throw new Error(`Erreur ${initialResponse.status}: ${errorData.message || initialResponse.statusText}`);
@@ -1199,7 +1079,6 @@ export const useUserStore = defineStore('user', {
 
         const initialData = await initialResponse.json();
         const urlsToAnalyze = initialData.visitedURLs || [url];
-        console.log('URLs à analyser:', urlsToAnalyze);
 
         const allResults = await Promise.all(
           urlsToAnalyze.map(async (pageUrl: string) => {
@@ -1226,7 +1105,6 @@ export const useUserStore = defineStore('user', {
               }
 
               const data = await response.json();
-              console.log("HEREEEEEE", data);
               return {
                 url: pageUrl,
                 data
@@ -1269,18 +1147,13 @@ export const useUserStore = defineStore('user', {
 
         validResults.forEach(result => {
           if (!result?.data?.seoResults) {
-            console.log('Pas de seoResults dans:', result);
             return;
           }
 
           const pageData = result.data.seoResults[result.url];
           if (!pageData) {
-            console.log('Pas de pageData pour:', result.url);
             return;
           }
-
-          console.log('Traitement de la page:', result.url);
-          console.log('PageData:', pageData);
 
           mergedData.seoResults[result.url] = pageData;
 
@@ -1290,45 +1163,35 @@ export const useUserStore = defineStore('user', {
           totalTTFB += pageData.coreWebVitals?.TTFB || 0;
 
           if (!pageData.title) {
-            console.log('Titre manquant pour:', result.url);
             mergedData.summary.missingTitles++;
           }
           if (!pageData.description) {
-            console.log('Description manquante pour:', result.url);
             mergedData.summary.missingDescriptions++;
           }
           if (pageData.imageAlt?.some(img => !img.alt)) {
             const missingAltCount = pageData.imageAlt.filter(img => !img.alt).length;
-            console.log(`${missingAltCount} images sans alt pour:`, result.url);
             mergedData.summary.missingAltTags += missingAltCount;
           }
 
           if (pageData.structuredData?.length > 0) {
-            console.log('Données structurées trouvées pour:', result.url);
             mergedData.summary.pagesWithStructuredData++;
           }
           if ((pageData.socialTags?.ogTags?.length > 0) ||
             (pageData.socialTags?.twitterTags?.length > 0)) {
-            console.log('Tags sociaux trouvés pour:', result.url);
             mergedData.summary.pagesWithSocialTags++;
           }
           if (pageData.mobileCompatibility?.hasViewport) {
-            console.log('Viewport mobile trouvé pour:', result.url);
             mergedData.summary.mobileCompatiblePages++;
           }
           if (pageData.securityChecks?.https) {
-            console.log('HTTPS trouvé pour:', result.url);
             mergedData.summary.securePages++;
           }
 
           const warningsCount = pageData.warnings?.length || 0;
-          console.log(`${warningsCount} avertissements pour:`, result.url);
           mergedData.summary.totalWarnings += warningsCount;
         });
 
         const validResultsCount = validResults.length || 1;
-        console.log('Nombre de résultats valides:', validResultsCount);
-        console.log('Résumé avant moyennes:', mergedData.summary);
 
         mergedData.summary.averageLoadTime = totalLoadTime / validResultsCount;
         mergedData.summary.averageFCP = totalFCP / validResultsCount;
@@ -1340,7 +1203,6 @@ export const useUserStore = defineStore('user', {
         mergedData.summary.mobileCompatiblePages = (mergedData.summary.mobileCompatiblePages / validResultsCount) * 100;
         mergedData.summary.securePages = (mergedData.summary.securePages / validResultsCount) * 100;
 
-        console.log('Résumé final:', mergedData.summary);
 
         const formattedData = this.formatAnalyzerResponse(mergedData, url);
         this.seoData = formattedData;
@@ -1549,43 +1411,6 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async fetchSEOData(url: string) {
-      this.isSeoLoading = true;
-      this.seoError = '';
-
-      try {
-        const response = await $fetch('/api/seo-audit', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}`
-          },
-          body: JSON.stringify({
-            url,
-            options: {
-              maxDepth: 1,
-              sameDomainOnly: true,
-              timeout: 30000
-            }
-          })
-        });
-
-        // Vérifier si la réponse est valide
-        if (!response) {
-          throw new Error('Failed to fetch SEO data');
-        }
-
-        // Stocker la réponse complète (peut être soit un CrawlReport soit un SEOAuditResult)
-        this.seoData = response;
-        return this.seoData;
-      } catch (err) {
-        this.seoError = err instanceof Error ? err.message : 'An error occurred';
-        throw err;
-      } finally {
-        this.isSeoLoading = false;
-      }
-    },
-
     async forgotPassword(email: string) {
       try {
         const response = await $fetch('/api/auth/forgot-password', {
@@ -1628,7 +1453,7 @@ export const useUserStore = defineStore('user', {
             this.persistData();
           }
 
-          return { success: true, isPremium: true };
+          return { success: true, isPremium: true, requireRelogin: true };
         } else {
           console.error('Échec mise à jour premium:', data.error);
           return { success: false, error: data.error };
@@ -1700,7 +1525,6 @@ export const useUserStore = defineStore('user', {
     },
 
     async checkAuthentication() {
-      console.log('Vérification de l\'état d\'authentification...');
 
       try {
         const token = TokenUtils.retrieveToken();
@@ -1719,21 +1543,17 @@ export const useUserStore = defineStore('user', {
         const validationData = await validationResponse.json();
 
         if (!validationData.valid) {
-          console.log('Token invalide selon /api/auth/validate');
           return { isAuthenticated: false };
         }
 
-        console.log('Token validé avec succès');
         this.token = token;
 
         const result = await this.loadData();
 
         if (!result || !result.success) {
-          console.log('Échec du chargement des données utilisateur:', result?.error);
           return { isAuthenticated: false };
         }
 
-        console.log('Utilisateur authentifié avec succès');
         this.isAuthenticated = true;
         return { isAuthenticated: true, user: this.user };
       } catch (error) {
@@ -1747,7 +1567,6 @@ export const useUserStore = defineStore('user', {
         const token = this.token || TokenUtils.retrieveToken();
 
         if (!token) {
-          console.log('[STORE] Pas de token à valider');
           return { valid: false, message: 'Pas de token disponible' };
         }
 
@@ -1758,21 +1577,10 @@ export const useUserStore = defineStore('user', {
         });
 
         const data = await response.json();
-        console.log('[STORE] Résultat de la validation du token:', data.valid ? 'Valide' : 'Invalide');
-
-        if (data.valid && data.user) {
-          console.log('[STORE] Valeurs brutes reçues de validate:', {
-            isPremium: data.user.isPremium,
-            isAdmin: data.user.isAdmin,
-            type_isPremium: typeof data.user.isPremium,
-            type_isAdmin: typeof data.user.isAdmin
-          });
-        }
 
         if (data.valid) {
           this.isAuthenticated = true;
           if (data.user) {
-            // Vérifier les différentes valeurs possibles avec assertions de type
             let isPremiumValue = false;
             if (data.user.isPremium !== undefined) {
               isPremiumValue = data.user.isPremium === true ||
@@ -1799,13 +1607,6 @@ export const useUserStore = defineStore('user', {
             this.isPremium = isPremiumValue;
             this.isAdmin = isAdminValue;
 
-            console.log('[STORE] Conversion des valeurs:', {
-              isPremiumOriginal: data.user.isPremium,
-              isAdminOriginal: data.user.isAdmin,
-              isPremiumConverti: isPremiumValue,
-              isAdminConverti: isAdminValue
-            });
-
             this.persistData();
           }
         }
@@ -1819,7 +1620,6 @@ export const useUserStore = defineStore('user', {
 
     async loadStudioComponents() {
       try {
-        console.log('[STORE] Chargement des composants du studio');
         const response = await fetch('/api/studio/getComponent', {
           method: 'GET',
           headers: {
@@ -1834,7 +1634,6 @@ export const useUserStore = defineStore('user', {
         const data = await response.json();
         if (data.success) {
           this.studioComponents = data.components;
-          console.log('[STORE] Composants chargés:', this.studioComponents);
         } else {
           console.error('[STORE] Erreur lors du chargement des composants:', data.error);
         }

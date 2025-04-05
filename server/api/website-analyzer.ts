@@ -9,7 +9,6 @@ import type { CheerioSelector, ExtendedResponse, SiteAnalysisResult, StructuredD
 const dnsResolve = promisify(dns.resolve);
 const dnsReverse = promisify(dns.reverse);
 
-// Définir le type Page plutôt que d'importer de puppeteer
 interface Page {
   evaluateOnNewDocument: (fn: () => void) => Promise<void>;
   goto: (url: string, options?: { waitUntil: string }) => Promise<any>;
@@ -19,16 +18,13 @@ interface Page {
 async function analyzePerformance(url: string, page: Page): Promise<WebsiteAnalysisResult['performance']> {
   const startTime = performance.now();
 
-  // Activer la collecte des métriques de performance
   await page.evaluateOnNewDocument(() => {
     window.performance.setResourceTimingBufferSize(500);
   });
 
-  // Charger la page et collecter les métriques
   const response = await page.goto(url, { waitUntil: 'networkidle0' });
   const loadTime = performance.now() - startTime;
 
-  // Collecter les métriques de performance
   const performanceMetrics = await page.evaluate(() => {
     const navigation = performance.getEntriesByType('navigation' as any)[0];
     const paint = performance.getEntriesByType('paint' as any);
@@ -115,13 +111,11 @@ async function analyzePerformance(url: string, page: Page): Promise<WebsiteAnaly
 }
 
 async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheerioLoad>): Promise<WebsiteAnalysisResult['seo']> {
-  // Extraire les informations de base
   const title = $('title').text();
   const metaDescription = $('meta[name="description"]').attr('content') || '';
   const metaKeywords = $('meta[name="keywords"]').attr('content')?.split(',').map(k => k.trim()) || [];
   const canonicalUrl = $('link[rel="canonical"]').attr('href') || url;
 
-  // Extraire les headings
   const headings = {
     h1: $('h1').map((_, el) => $(el).text().trim()).get(),
     h2: $('h2').map((_, el) => $(el).text().trim()).get(),
@@ -131,7 +125,6 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
     h6: $('h6').map((_, el) => $(el).text().trim()).get()
   };
 
-  // Analyser les images - version améliorée avec les méthodes de traversing de Cheerio
   const images = {
     total: $('img').length,
     withAlt: $('img[alt]').length,
@@ -142,7 +135,6 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
       const size = await getImageSize(src);
       console.log("HEREEEEEE", size);
 
-      // Trouver le lien parent (information additionnelle qui n'est pas dans l'interface)
       const parentElement = $img.closest('a');
       const parentLink = parentElement.length ? parentElement.attr('href') : '';
 
@@ -168,7 +160,6 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
 
   console.log("HEREEEEEE", images);
 
-  // Analyser les liens - version adaptée qui maintient la compatibilité avec le typage existant
   const links = {
     internal: [] as string[],
     external: [] as string[],
@@ -176,7 +167,6 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
     nofollow: [] as string[]
   };
 
-  // Stocker les informations enrichies des liens pour une utilisation future
   const enhancedLinks = {
     internal: [] as Array<{ href: string, text: string, hasImage: boolean }>,
     external: [] as Array<{ href: string, text: string, hasImage: boolean }>
@@ -213,7 +203,6 @@ async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheeri
     }
   });
 
-  // Extraire les données structurées
   const structuredData = {
     data: [],
     count: 0,
@@ -376,7 +365,6 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     let mobileCompatiblePages = 0;
     let securePages = 0;
 
-    // Limiter à 5 pages maximum pour éviter timeout et surcharge
     const pagesToAnalyze = prioritizedUrls.slice(0, Math.min(5, prioritizedUrls.length));
     console.log('Pages à analyser prioritairement:', pagesToAnalyze);
 
@@ -402,15 +390,12 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
         if (result.technical.https) securePages++;
       } catch (pageError) {
         console.error(`Erreur lors de l'analyse de ${pageUrl}:`, pageError);
-        // Continuer avec les autres pages
       }
     }
 
-    // S'assurer qu'il y a au moins un résultat
     if (Object.keys(results).length === 0) {
       console.log('Aucun résultat d\'analyse disponible, création d\'un résultat de secours');
       try {
-        // Créer un résultat minimal pour éviter l'erreur
         const fallbackResult = await createFallbackResult(url);
         results[url] = fallbackResult;
       } catch (fallbackError) {
@@ -422,7 +407,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
       }
     }
 
-    const pageCount = Object.keys(results).length || 1; // Éviter division par zéro
+    const pageCount = Object.keys(results).length || 1;
 
     let extractedContactInfo: Record<string, string> = {};
     try {
@@ -443,7 +428,6 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
       console.error('Erreur lors de l\'extraction des informations de contact:', contactError);
     }
 
-    // Collecter les données d'images pour le sitemap
     const imagesData: Record<string, any> = {};
     for (const [url, result] of Object.entries(results)) {
       if (result && result.seo && result.seo.images) {
@@ -454,7 +438,6 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
       }
     }
 
-    // Modifier l'appel à generateSitemap pour passer les informations d'images
     const sitemap = checkSitemap ? generateSitemap(urls, imagesData) : '';
 
     return {
@@ -563,7 +546,6 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     }
   };
 
-  // Extraire les balises Open Graph et Twitter
   $('meta').each((_, el) => {
     const $meta = $(el);
     const property = $meta.attr('property');
@@ -577,7 +559,6 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     }
   });
 
-  // Récupérer les liens nofollow
   $('a[rel*="nofollow"]').each((_, el) => {
     const href = $(el).attr('href');
     if (href) {
@@ -585,7 +566,6 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     }
   });
 
-  // Analyser les données structurées
   $('script[type="application/ld+json"]').each((_, el) => {
     try {
       const content = $(el).html() || '{}';
@@ -608,7 +588,6 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     }
   });
 
-  // Analyser les aspects techniques
   const technicalData = {
     statusCode: response.status,
     https: url.startsWith('https'),
@@ -622,7 +601,6 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     }
   };
 
-  // Vérifier le sitemap et robots.txt (seulement pour l'URL racine)
   const urlObj = new URL(url);
   const isRootUrl = urlObj.pathname === '/' || urlObj.pathname === '';
   let technicalSEO: WebsiteAnalysisResult['technicalSEO'] | undefined = undefined;
@@ -630,10 +608,8 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
   if (isRootUrl) {
     const baseUrl = `${urlObj.protocol}//${urlObj.hostname}`;
 
-    // Vérifier le sitemap
     const sitemapStatus = await checkSitemap(baseUrl);
 
-    // Vérifier le robots.txt
     const robotsTxtStatus = await checkRobotsTxt(baseUrl);
 
     technicalSEO = {
@@ -646,7 +622,6 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     };
   }
 
-  // Générer les problèmes
   const issues: WebsiteAnalysisResult['issues'] = [];
 
   if (!seoData.title) {
@@ -681,7 +656,6 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     });
   }
 
-  // Récupérer des liens pour analyser les pages de contact
   let contactInfo: Record<string, string> = {};
   try {
     contactInfo = await findContactInfo(url, linksData.internal);
@@ -690,13 +664,12 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     console.error('Erreur lors de la recherche des informations de contact:', error);
   }
 
-  // Ajouter Schema.org suggestions
   const schemaData = analyzeSchemaOrg(url, html, $, seoData as any, contactInfo);
 
   const result: ExtendedWebsiteAnalysisResult = {
     url,
     performance: performanceData,
-    seo: seoData as any, // Utiliser un cast pour éviter l'erreur de type
+    seo: seoData as any,
     technical: technicalData,
     technicalSEO: technicalSEO,
     schemaOrg: schemaData,
@@ -704,7 +677,6 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
   };
 
   const endTime = performance.now();
-  console.log(`L'analyse du site a pris ${Math.round(endTime - startTime)}ms`);
   return result;
 }
 
@@ -717,8 +689,6 @@ function analyzeImages($: CheerioSelector) {
     const title = $img.attr('title');
     const widthAttr = $img.attr('width');
     const heightAttr = $img.attr('height');
-
-    console.log(`Image found: ${src}, alt: ${alt}, dimensions: ${widthAttr}x${heightAttr}`);
 
     const width = widthAttr ? parseInt(widthAttr) : undefined;
     const height = heightAttr ? parseInt(heightAttr) : undefined;
@@ -738,7 +708,6 @@ function analyzeImages($: CheerioSelector) {
   const withAlt = images.filter(img => !!img.alt).length;
   const withoutAlt = images.filter(img => !img.alt).length;
 
-  console.log(`Total images: ${images.length}, with alt: ${withAlt}, without alt: ${withoutAlt}`);
 
   return {
     total: images.length,
@@ -855,7 +824,6 @@ function calculateReadabilityScore(text: string): number {
   const words = text.split(/\s+/).length;
   const syllables = countSyllables(text);
 
-  // Flesch Reading Ease score
   return 206.835 - 1.015 * (words / sentences) - 84.6 * (syllables / words);
 }
 
@@ -875,7 +843,6 @@ function generateIssues(result: WebsiteAnalysisResult) {
     code: string;
   }> = [];
 
-  // Vérifications SEO
   if (!result.seo.title) {
     issues.push({
       type: 'error',
@@ -907,7 +874,6 @@ function generateIssues(result: WebsiteAnalysisResult) {
     });
   }
 
-  // Vérifications performance
   if (result.performance.loadTime > 3000) {
     issues.push({
       type: 'warning',
@@ -916,7 +882,6 @@ function generateIssues(result: WebsiteAnalysisResult) {
     });
   }
 
-  // Vérifications techniques
   if (!result.technical.https) {
     issues.push({
       type: 'warning',
@@ -935,7 +900,6 @@ function generateIssues(result: WebsiteAnalysisResult) {
   return issues;
 }
 
-// Fonctions utilitaires
 async function getImageSize(url: string): Promise<number> {
   try {
     const response = await axios.head(url);
@@ -952,8 +916,7 @@ function checkResponsiveness($: CheerioSelector): boolean {
 }
 
 function checkTouchTargets($: CheerioSelector): boolean {
-  // Vérifier la taille des éléments cliquables
-  const minSize = 44; // Recommandation WCAG
+  const minSize = 44;
   let validTargets = true;
 
   $('a, button, [role="button"], input, select, textarea').each((_, el) => {
@@ -971,7 +934,7 @@ function checkTouchTargets($: CheerioSelector): boolean {
 }
 
 function checkFontSizes($: CheerioSelector): boolean {
-  const minFontSize = 16; // Taille minimale recommandée en pixels
+  const minFontSize = 16;
   let validFonts = true;
 
   $('*').each((_, el) => {
@@ -1321,11 +1284,9 @@ async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean; conten
   }
 }
 
-// Fonction pour standardiser une URL (normaliser)
 function standardizeUrl(url: string): string {
   try {
     const urlObj = new URL(url);
-    // Normaliser le pathname (supprimer slash final sauf pour la racine)
     if (urlObj.pathname !== "/" && urlObj.pathname.endsWith("/")) {
       urlObj.pathname = urlObj.pathname.slice(0, -1);
     }
@@ -1335,15 +1296,12 @@ function standardizeUrl(url: string): string {
   }
 }
 
-// Fonction pour générer l'URL alternative avec/sans slash
 function toggleSlash(url: string): string | null {
   try {
     const urlObj = new URL(url);
     if (urlObj.pathname === "/") {
-      // Pour la racine, créer version sans slash
       return url.replace(/\/$/, "");
     } else if (!urlObj.pathname.endsWith("/")) {
-      // Pour les autres, ajouter un slash
       return url + "/";
     }
     return null;
@@ -1356,11 +1314,9 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
   console.log(`Démarrage du crawl de ${baseUrl}, limite de ${maxPages} pages`);
 
   try {
-    // Standardiser l'URL de base
     let normalizedUrl = standardizeUrl(baseUrl);
     console.log(`URL standardisée: ${normalizedUrl}`);
 
-    // Routes protégées connues à ajouter au résultat final
     const protectedRoutes = [
       '/dashboard',
       '/profile',
@@ -1375,15 +1331,12 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       '/notifications'
     ];
 
-    // Stockage de toutes les URLs, même celles non visitées
     const allDiscoveredUrls = new Set<string>();
-    // Stockage des URLs visitées avec succès
     const visited = new Set<string>();
 
     allDiscoveredUrls.add(normalizedUrl);
     visited.add(normalizedUrl);
 
-    // Ajouter les versions avec/sans slash pour éviter les doublons
     const alternateUrl = toggleSlash(normalizedUrl);
     if (alternateUrl) {
       allDiscoveredUrls.add(alternateUrl);
@@ -1419,13 +1372,11 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       const baseUrlObj = new URL(normalizedUrl);
       const baseHostname = baseUrlObj.hostname;
 
-      // Fonction pour déterminer si une URL doit être ajoutée aux résultats sans être visitée
       function shouldKeepWithoutVisiting(url: string): boolean {
         try {
           const urlObj = new URL(url);
           const path = urlObj.pathname.toLowerCase();
 
-          // Chemins qui sont souvent protégés par authentification
           const authProtectedPaths = [
             '/dashboard',
             '/admin',
@@ -1449,11 +1400,9 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
         }
       }
 
-      // Fonction d'extraction des liens (réutilisable)
       const extractLinks = ($: CheerioSelector, pageUrl: string): string[] => {
         const links: string[] = [];
 
-        // 1. Liens standards <a href="...">
         $('a[href]').each((_, element) => {
           const href = $(element).attr('href');
           if (href) {
@@ -1464,7 +1413,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
           }
         });
 
-        // 2. Liens dans les frameworks SPA modernes
         $('[to], [href], [data-href], [data-to], [routerlink]').each((_, element) => {
           const $el = $(element);
           if ($el.is('a')) return;
@@ -1481,7 +1429,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
           }
         });
 
-        // 3. Extraire les liens des objets JSON dans le HTML
         const scriptTags = $('script').filter((_, el) => {
           const content = $(el).html() || '';
           return (content.includes('__NUXT__') || content.includes('__NEXT_DATA__') ||
@@ -1502,7 +1449,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
           });
         });
 
-        // 4. Extraire les URLs des menus de navigation
         $('nav a, .nav a, .menu a, .navigation a, header a, footer a').each((_, element) => {
           const href = $(element).attr('href');
           if (href) {
@@ -1516,7 +1462,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
         return [...new Set(links)];
       };
 
-      // Fonction pour normaliser une URL
       const normalizeUrl = (href: string, currentUrl: string, baseUrlObj: URL): string | null => {
         if (!href) return null;
 
@@ -1536,17 +1481,14 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
             return null;
           }
 
-          // Nettoyer l'URL de tout fragment
           const cleanUrl = fullUrl.split('#')[0];
 
-          // Standardiser l'URL
           return standardizeUrl(cleanUrl);
         } catch (e) {
           return null;
         }
       };
 
-      // Extraction des liens de la page principale
       if (mainPageHtml) {
         const $ = cheerioLoad(mainPageHtml);
         const mainPageLinks = extractLinks($, normalizedUrl);
@@ -1569,7 +1511,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       const timeoutPromise = new Promise<string[]>((resolve) => {
         setTimeout(() => {
           console.log(`Timeout du crawl atteint après 15 secondes`);
-          // Retourner toutes les URLs découvertes, même non visitées
           return resolve([...Array.from(visited), ...skippedUrls]);
         }, 15000);
       });
@@ -1627,7 +1568,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
           }
         }
 
-        // Retourner toutes les URLs, y compris celles détectées mais non visitées
         resolve([...Array.from(visited), ...skippedUrls]);
       });
 
@@ -1649,7 +1589,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
 function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): string {
   const date = new Date().toISOString();
 
-  // Extraire le domaine de base pour les chemins d'images
   let baseDomain = '';
   try {
     if (urls.length > 0) {
@@ -1661,102 +1600,82 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
     console.error("Erreur lors de l'extraction du domaine de base:", e);
   }
 
-  // Dédupliquer les URLs
   const uniqueUrls = [...new Set(urls.map(url => standardizeUrl(url)))];
 
-  // Trier les URLs par niveau de hiérarchie (les plus courtes en premier)
   uniqueUrls.sort((a, b) => {
     try {
-      // Nombre de segments dans le chemin
       const segmentsA = new URL(a).pathname.split('/').filter(Boolean).length;
       const segmentsB = new URL(b).pathname.split('/').filter(Boolean).length;
 
       if (segmentsA !== segmentsB) {
-        return segmentsA - segmentsB; // Trier par profondeur d'abord
+        return segmentsA - segmentsB;
       }
 
-      // Si même profondeur, trier alphabétiquement
       return a.localeCompare(b);
     } catch (e) {
       return 0;
     }
   });
 
-  // Fonction pour déterminer la priorité et la fréquence de changement
   const getPriorityAndChangefreq = (url: string): { priority: string, changefreq: string } => {
     try {
       const urlObj = new URL(url);
       const path = urlObj.pathname;
       const segments = path.split('/').filter(Boolean);
 
-      // Page d'accueil
       if (path === '/' || path === '') {
         return { priority: '1.0', changefreq: 'daily' };
       }
 
-      // Pages principales (1er niveau)
       if (segments.length === 1) {
-        // Pages importantes
         if (['about', 'contact', 'services', 'products', 'blog'].includes(segments[0])) {
           return { priority: '0.8', changefreq: 'weekly' };
         }
         return { priority: '0.7', changefreq: 'weekly' };
       }
 
-      // Pages protégées (dashboard, etc.)
       if (segments.includes('dashboard') || segments.includes('admin') ||
         segments.includes('profile') || segments.includes('account')) {
         return { priority: '0.9', changefreq: 'daily' };
       }
 
-      // Pages de 2ème niveau
       if (segments.length === 2) {
-        // Articles de blog, produits
         if (segments[0] === 'blog' || segments[0] === 'products' || segments[0] === 'product') {
           return { priority: '0.6', changefreq: 'monthly' };
         }
         return { priority: '0.5', changefreq: 'monthly' };
       }
 
-      // Pages plus profondes
       return { priority: '0.3', changefreq: 'monthly' };
     } catch (e) {
-      // Valeurs par défaut
       return { priority: '0.5', changefreq: 'monthly' };
     }
   };
 
-  // Déterminer si une URL est une image
   const isImageUrl = (url: string): boolean => {
     return !!url.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i);
   };
 
-  // Collecter toutes les images pour le sitemap images
   const imageUrls: Record<string, Array<{ url: string, title?: string, alt?: string }>> = {};
 
-  // Fonction pour construire une URL absolue pour les images
   const getAbsoluteImageUrl = (imgSrc: string, pageUrl: string): string => {
     try {
       if (imgSrc.startsWith('http')) {
-        return imgSrc; // Déjà une URL absolue
+        return imgSrc;
       } else if (imgSrc.startsWith('//')) {
-        // URL sans protocole (//example.com/image.jpg)
         const pageUrlObj = new URL(pageUrl);
         return `${pageUrlObj.protocol}${imgSrc}`;
       } else if (imgSrc.startsWith('/')) {
-        // Chemin absolu depuis la racine
         return `${baseDomain}${imgSrc}`;
       } else {
-        // Chemin relatif
         return new URL(imgSrc, pageUrl).toString();
       }
     } catch (e) {
       console.error(`Erreur lors de la conversion de l'URL d'image ${imgSrc}:`, e);
-      return imgSrc; // Retourner l'original en cas d'erreur
+      return imgSrc;
     }
   };
 
-  // Ajouter les images trouvées pendant l'analyse
   console.log("Extraction des images pour le sitemap...");
   console.log("Structure d'imagesData:", Object.keys(imagesData));
 
@@ -1765,7 +1684,6 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
       console.log(`Traitement des images pour ${pageUrl}:`, JSON.stringify(data, null, 2));
 
       if (data && data.images) {
-        // Vérifier la structure exacte de l'objet images
         console.log(`Structure de 'images' pour ${pageUrl}:`, Object.keys(data.images));
 
         if (data.images.data && Array.isArray(data.images.data)) {
@@ -1802,10 +1720,8 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
     }
   });
 
-  // Ajouter également toutes les images indépendantes (comme des URLs d'images directes)
   const directImageUrls = uniqueUrls.filter(url => isImageUrl(url));
   if (directImageUrls.length > 0) {
-    // Créer une entrée spéciale pour les images directes
     imageUrls['directImages'] = directImageUrls.map(url => ({
       url,
       title: undefined,
@@ -1813,21 +1729,17 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
     }));
   }
 
-  // Générer le sitemap avec images
   const sitemapEntries = uniqueUrls
     .filter(url => {
       try {
-        // Exclure les fichiers non pertinents mais garder les images
         if (url.match(/\.(css|js|ico|woff|woff2|ttf|eot|pdf|zip|rar|exe|dll|docx?|xlsx?|pptx?)(\?.*)?$/i)) {
           return false;
         }
 
-        // Exclure les URLs d'API
         if (url.includes('/api/') || url.includes('/wp-json/')) {
           return false;
         }
 
-        // Exclure les pages d'erreur communes
         if (url.includes('/404') || url.includes('/500') || url.includes('/error')) {
           return false;
         }
@@ -1844,7 +1756,6 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
 
       console.log(`Génération du sitemap pour ${url}, nombre d'images: ${urlImages.length}`);
 
-      // Si c'est une image indépendante (pas sur une page), l'inclure comme URL normale
       if (isImage) {
         return `  <url>
     <loc>${url}</loc>
@@ -1857,26 +1768,20 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
   </url>`;
       }
 
-      // Ajouter les images directes à toutes les pages
       const directImages = imageUrls['directImages'] || [];
 
-      // Sinon, ajouter les images comme sous-éléments de l'URL
       const pageImages = [...urlImages];
 
-      // Pour la page d'accueil, ajouter toutes les images directes
       if (url.endsWith('/') || url.split('/').length <= 3) {
         pageImages.push(...directImages);
       }
 
-      // Ajouter les images de toutes les pages à toutes les URLs
-      // Cette approche garantit que les images apparaissent dans le sitemap
       for (const [pageUrl, imgs] of Object.entries(imageUrls)) {
         if (pageUrl !== 'directImages' && pageUrl !== url) {
           pageImages.push(...imgs);
         }
       }
 
-      // Supprimer les doublons d'images basés sur l'URL
       const uniquePageImages = pageImages.filter((img, index, self) =>
         index === self.findIndex(i => i.url === img.url)
       );
@@ -1903,7 +1808,6 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
   </url>`;
     }).join('\n');
 
-  // Construire la sortie finale
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
@@ -1939,31 +1843,24 @@ function rankPages(results: Record<string, WebsiteAnalysisResult>): string[] {
 }
 
 async function findContactInfo(baseUrl: string, links: string[]): Promise<Record<string, string>> {
-  console.log('Recherche d\'informations de contact sur le site');
 
   if (!links || links.length === 0) {
     console.log('Aucun lien fourni pour la recherche de contact');
     return {};
   }
 
-  // Filtrer les liens pour éviter de traiter des liens non pertinents
-  console.log(`Filtrage des ${links.length} liens pour trouver des pages de contact potentielles`);
 
   try {
-    // Mots-clés pour identifier les pages de contact potentielles
     const contactKeywords = ['contact', 'about', 'about-us', 'a-propos', 'qui-sommes-nous', 'equipe', 'team'];
 
-    // Normaliser l'URL de base
     const baseUrlObj = new URL(baseUrl);
     const baseHostname = baseUrlObj.hostname;
 
-    // Prioritiser les liens qui contiennent des mots-clés de contact
     const prioritizedUrls: string[] = [];
 
     links.forEach(link => {
       try {
         const url = new URL(link);
-        // Vérifier que c'est le même domaine
         if (url.hostname !== baseHostname) return;
 
         const path = url.pathname.toLowerCase();
@@ -1978,23 +1875,16 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
     console.log(`${prioritizedUrls.length} liens potentiels de contact trouvés`);
 
     if (prioritizedUrls.length === 0) {
-      // Si aucune page de contact trouvée, ajouter la page principale
       prioritizedUrls.push(baseUrl);
-      console.log('Aucune page de contact trouvée, utilisation de la page principale');
     }
 
-    // Résultats à retourner
     const contactInfo: Record<string, string> = {};
 
-    // Limiter le nombre de pages à analyser
     const pagesToCheck = prioritizedUrls.slice(0, 3);
-    console.log(`Analyse des ${pagesToCheck.length} pages les plus pertinentes`);
 
     for (const url of pagesToCheck) {
       try {
-        console.log(`Recherche d'informations de contact sur: ${url}`);
 
-        // Récupérer le contenu de la page
         const response = await axios.get(url, {
           timeout: 5000,
           headers: {
@@ -2012,49 +1902,41 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
 
         const $ = cheerioLoad(html);
 
-        // 1. Recherche de numéros de téléphone
         if (!contactInfo.telephone) {
-          // Recherche dans les attributs spécifiques (href="tel:")
           $('a[href^="tel:"]').each((_, element) => {
             const tel = $(element).attr('href')?.replace('tel:', '') || '';
             if (tel && tel.length > 5) {
               contactInfo.telephone = tel;
-              return false; // Arrêter l'itération
+              return false;
             }
           });
 
-          // Recherche dans le contenu HTML avec regex
           if (!contactInfo.telephone) {
             const phoneRegex = /(?:\+\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|(?:\+\d{1,3}[\s.-]?)?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}/g;
             const bodyText = $('body').text();
             const matches = bodyText.match(phoneRegex);
 
             if (matches && matches.length > 0) {
-              // Prendre le premier numéro trouvé qui ressemble le plus à un numéro de téléphone
               contactInfo.telephone = matches[0].replace(/\s+/g, ' ').trim();
             }
           }
         }
 
-        // 2. Recherche d'adresses email
         if (!contactInfo.email) {
-          // Recherche dans les liens mailto:
           $('a[href^="mailto:"]').each((_, element) => {
             const email = $(element).attr('href')?.replace('mailto:', '')?.split('?')[0] || '';
             if (email && email.includes('@') && email.includes('.')) {
               contactInfo.email = email;
-              return false; // Arrêter l'itération
+              return false;
             }
           });
 
-          // Recherche dans le contenu HTML avec regex
           if (!contactInfo.email) {
             const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
             const bodyText = $('body').text();
             const matches = bodyText.match(emailRegex);
 
             if (matches && matches.length > 0) {
-              // Prendre la première adresse email qui ne ressemble pas à une adresse d'exemple
               const validEmail = matches.find(email =>
                 !email.includes('example') &&
                 !email.includes('nom@') &&
@@ -2069,23 +1951,18 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
           }
         }
 
-        // 3. Recherche d'adresse physique
         if (!contactInfo.address) {
-          // Vérifier les éléments avec des attributs d'adresse schema.org
           $('[itemtype*="PostalAddress"], [itemprop="address"], [itemprop="streetAddress"], .address, .contact-address').each((_, element) => {
             const addressText = $(element).text().trim();
             if (addressText && addressText.length > 10) {
               contactInfo.address = addressText.replace(/\s+/g, ' ');
-              return false; // Arrêter l'itération
+              return false;
             }
           });
 
-          // Rechercher des motifs d'adresse typiques
           if (!contactInfo.address) {
-            // Recherche dans des éléments qui contiennent probablement une adresse
             $('p, div').each((_, element) => {
               const text = $(element).text().trim();
-              // Rechercher des motifs d'adresse (code postal, rue, etc.)
               if (
                 (text.match(/\d{5}/) || text.match(/\d{2,4}\s+\w+/)) &&
                 (text.includes('rue') || text.includes('avenue') || text.includes('boulevard') ||
@@ -2093,25 +1970,22 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
               ) {
                 if (text.length > 10 && text.length < 200) {
                   contactInfo.address = text.replace(/\s+/g, ' ');
-                  return false; // Arrêter l'itération
+                  return false;
                 }
               }
             });
           }
         }
 
-        // 4. Recherche du nom de l'entreprise ou de la personne
         if (!contactInfo.name) {
-          // Essayer de trouver le nom dans les microdonnées schema.org
           $('[itemtype*="Organization"], [itemtype*="Person"]').each((_, element) => {
             const nameEl = $(element).find('[itemprop="name"]');
             if (nameEl.length > 0) {
               contactInfo.name = nameEl.first().text().trim();
-              return false; // Arrêter l'itération
+              return false;
             }
           });
 
-          // Si pas trouvé, essayer le titre du site
           if (!contactInfo.name) {
             const siteName = $('title').text().split('|')[0].split('-')[0].trim();
             if (siteName && siteName.length > 1) {
@@ -2119,13 +1993,11 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
             }
           }
 
-          // En dernier recours, utiliser le domaine
           if (!contactInfo.name) {
             contactInfo.name = baseHostname.replace('www.', '');
           }
         }
 
-        // Si toutes les informations sont trouvées, on arrête la recherche
         if (contactInfo.telephone && contactInfo.email && contactInfo.address && contactInfo.name) {
           break;
         }
@@ -2142,7 +2014,6 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
   }
 }
 
-// Fonction de secours pour créer un résultat minimal
 async function createFallbackResult(url: string): Promise<WebsiteAnalysisResult> {
   try {
     const urlObj = new URL(url);

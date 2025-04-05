@@ -1,4 +1,5 @@
 import { pool } from '../db';
+import { defineEventHandler } from 'h3';
 
 export default defineEventHandler(async (event) => {
   const userId = event.context.user.id;

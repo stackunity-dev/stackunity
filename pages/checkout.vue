@@ -414,10 +414,13 @@ const processPayment = async () => {
           snackbarColor.value = 'info';
           snackbarText.value = 'Your premium status has been updated. Please log in again to access your premium features.';
 
-          setTimeout(() => {
-            userStore.logout();
-            window.location.href = '/login?redirect=/dashboard&status=premium-updated';
-          }, 2000);
+          await new Promise(resolve => {
+            setTimeout(() => {
+              userStore.logout();
+              window.location.href = '/login?redirect=/dashboard&status=premium-updated';
+              resolve(true);
+            }, 2000);
+          });
           return;
         }
 
