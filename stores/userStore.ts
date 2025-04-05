@@ -1901,12 +1901,13 @@ export const useUserStore = defineStore('user', {
     async getPremiumStatus() {
       try {
         const response = await $fetch('/api/user/premium-status', {
+          method: 'POST',
           headers: {
             'Authorization': `Bearer ${this.token}`
           }
         });
 
-        if (response && typeof response === 'object' && 'success' in response) {
+        if (response.success && response.isPremium) {
           this.user.isPremium = response.isPremium;
           this.persistUserData();
           return { success: true };
