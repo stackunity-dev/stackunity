@@ -28,7 +28,6 @@ export default defineNuxtConfig({
 
   modules: [
     '@pinia/nuxt',
-    'nuxt-schema-org',
     ['@nuxtjs/plausible', {
       domain: "devunity.tech",
       apiHost: "https://plausible.io",
