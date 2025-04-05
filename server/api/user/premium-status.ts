@@ -3,7 +3,7 @@ import { RowDataPacket } from 'mysql2/promise';
 import { defineEventHandler } from 'h3';
 
 export default defineEventHandler(async (event) => {
-  const userId = event.context.user?.userId;
+  const userId = event.context.user.userId;
 
   if (!userId) {
     return {
