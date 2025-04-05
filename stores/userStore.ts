@@ -632,7 +632,7 @@ export const useUserStore = defineStore('user', {
           }))
         };
 
-        const userId = this.user.id;
+        const userId = this.user.userId;
         console.log('userId', userId);
         console.log('schemaData', schemaData);
 
@@ -978,7 +978,7 @@ export const useUserStore = defineStore('user', {
 
     async addSnippets(title: string, description: string, framework: string, file: File, publishWorld: string, publishPersonal: string) {
       try {
-        const userId = this.user.id;
+        const userId = this.user.userId;
         const username = this.user?.username || '';
         const date = new Date().toISOString().slice(0, 10);
         const imageUrl = await this.uploadImage(file);
@@ -1018,7 +1018,7 @@ export const useUserStore = defineStore('user', {
 
     async updateSnippet(id: number, code: string, type: 'world' | 'personal') {
       try {
-        const userId = this.user.id;
+        const userId = this.user.userId;
         const response: any = await $fetch('/api/snippets/updateSnippet', {
           method: 'POST',
           headers: {
@@ -1040,7 +1040,7 @@ export const useUserStore = defineStore('user', {
     async deleteSnippet(id: number, type: 'world' | 'personal') {
       try {
         console.log(this.user);
-        const userId = this.user.id;
+        const userId = this.user.userId;
         console.log('[STORE] Suppression du snippet', id, 'pour l\'utilisateur', userId);
 
         const response = await $fetch<DeleteSnippetResponse>('/api/snippets/deleteSnippet', {
@@ -1067,7 +1067,7 @@ export const useUserStore = defineStore('user', {
 
     async addFavorite(snippetId: number, type: 'world' | 'personal') {
       try {
-        const userId = this.user.id;
+        const userId = this.user.userId;
         const response = await fetch('/api/snippets/addFavorite', {
           method: 'POST',
           headers: {
@@ -1086,7 +1086,7 @@ export const useUserStore = defineStore('user', {
 
     async removeFavorite(snippetId: number) {
       try {
-        const userId = this.user.id;
+        const userId = this.user.userId;
         const response = await fetch('/api/snippets/removeFavorite', {
           method: 'POST',
           headers: {
@@ -1105,7 +1105,7 @@ export const useUserStore = defineStore('user', {
 
     async deleteSQLSchema(databaseId: number) {
       try {
-        const userId = this.user.id;
+        const userId = this.user.userId;
         const response = await $fetch<DeleteResponse>(`/api/sql/${databaseId}`, {
           method: 'DELETE',
           headers: {
@@ -1421,7 +1421,7 @@ export const useUserStore = defineStore('user', {
 
     async saveTemplate(templateName: string, templateData: any, componentType: string) {
       try {
-        const userId = this.user.id;
+        const userId = this.user.userId;
         const response = await fetch('/api/studio/saveTemplate', {
           method: 'POST',
           headers: {
@@ -1451,7 +1451,7 @@ export const useUserStore = defineStore('user', {
           },
           body: JSON.stringify({
             templateId: templateId,
-            userId: this.user.id
+            userId: this.user.userId
           })
         });
 
@@ -1615,7 +1615,7 @@ export const useUserStore = defineStore('user', {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token}`
           },
-          body: JSON.stringify({ userId: this.user?.id })
+          body: JSON.stringify({ userId: this.user?.userId })
         });
 
         if (!response.ok) {
@@ -1893,7 +1893,7 @@ export const useUserStore = defineStore('user', {
 
     async getPremiumStatus() {
       try {
-        const userId = this.user.id;
+        const userId = this.user.userId;
         const response = await $fetch('/api/user/premium-status', {
           method: 'POST',
           headers: {
