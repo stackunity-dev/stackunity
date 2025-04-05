@@ -196,6 +196,7 @@ import RobotsConfigComponent from '../components/robots/RobotsConfig.vue';
 import SchemaConfigComponent from '../components/robots/SchemaConfig.vue';
 import { RobotsConfig, RobotsPreviewLine, SchemaConfig, SiteConfig } from '../components/robots/types';
 import { fillConfigsFromAudit, generateRobotsContent, generateSchemaContent } from '../components/robots/utils';
+
 import { useUserStore } from '../stores/userStore';
 
 definePageMeta({
@@ -206,7 +207,22 @@ definePageMeta({
   requiresPremium: true
 });
 
+// Ajouter un gestionnaire global pour les erreurs de chargement des scripts
+if (process.client) {
+  window.addEventListener('error', (event) => {
+    if (event.target && (event.target as HTMLElement).tagName === 'SCRIPT') {
+      const src = (event.target as HTMLScriptElement).src || '';
+      if (src.includes('plausible') || src.includes('analytics')) {
+        console.warn('Analytics script blocked by adblocker:', src);
+        // Empêcher l'erreur de s'afficher dans la console
+        event.preventDefault();
+      }
+    }
+  }, true);
+}
+
 const userStore = useUserStore();
+
 
 const configTab = ref('robots');
 const isLoading = ref(false);
@@ -336,19 +352,23 @@ const removeAllowedPath = (index: number) => {
   robotsConfig.value.allowedPaths.splice(index, 1);
 };
 
-
 const analyzeWebsite = async () => {
   if (!siteConfig.value.domain) {
-    error.value = 'Veuillez entrer un domaine valide';
+    error.value = 'Veuillez saisir un domaine valide.';
     return;
   }
 
-  const url = `${siteConfig.value.protocol}://${siteConfig.value.domain}`;
-  error.value = '';
-  isLoading.value = true;
+  const startTime = performance.now();
+  const generationType = configTab.value === 'robots' ? 'robots.txt' : 'schema.org';
 
   try {
-    console.log('Analyse du site:', url);
+
+    isLoading.value = true;
+    error.value = '';
+
+    const url = `${siteConfig.value.protocol}://${siteConfig.value.domain}`;
+    console.log('URL à analyser:', url);
+
     const options = {
       maxDepth: 1,
       sameDomainOnly: true,
@@ -358,11 +378,16 @@ const analyzeWebsite = async () => {
       maxUrlsToAnalyze: 5
     };
 
-    report.value = await userStore.auditSEO(url, options);
-    console.log('Rapport reçu:', report.value);
+    try {
+      report.value = await userStore.auditSEO(url, options);
+      console.log('Rapport reçu:', report.value);
+    } catch (auditError) {
+      console.error('Erreur lors de l\'audit SEO:', auditError);
+      // Continuer l'exécution même en cas d'erreur d'audit
+      // pour permettre la génération de contenu avec les valeurs actuelles
+    }
 
     if (report.value) {
-      // Extraire les données technicalSEO pour sitemap et robots.txt
       const reportData = report.value as any;
       if (reportData.seoResults && Object.keys(reportData.seoResults).length > 0) {
         const mainUrl = Object.keys(reportData.seoResults)[0];
@@ -412,61 +437,71 @@ const analyzeWebsite = async () => {
         }
       }
 
-      const updatedConfigs = fillConfigsFromAudit(
-        reportData,
-        siteConfig.value,
-        schemaConfig.value,
-        robotsConfig.value
-      );
+      const { schemaConfig: newSchemaConfig, robotsConfig: newRobotsConfig, siteConfig: newSiteConfig } =
+        fillConfigsFromAudit(report.value, siteConfig.value, schemaConfig.value, robotsConfig.value);
 
-      if (updatedConfigs) {
-        Object.assign(schemaConfig.value, updatedConfigs.schemaConfig);
-        Object.assign(siteConfig.value, updatedConfigs.siteConfig);
-      }
-
-      generateCode();
+      schemaConfig.value = newSchemaConfig;
+      robotsConfig.value = newRobotsConfig;
+      siteConfig.value = newSiteConfig;
     }
-  } catch (err: any) {
-    error.value = err.message || 'Une erreur est survenue pendant l\'analyse';
-    console.error('Erreur d\'analyse:', err);
-    generateCode();
+
+    generatePreviewContent();
+
+    const endTime = performance.now();
+
+
+  } catch (e) {
+    console.error('Erreur lors de l\'analyse du site:', e);
+    error.value = e.message || 'Une erreur est survenue lors de l\'analyse du site.';
+
+    generatePreviewContent();
+
+    const endTime = performance.now();
   } finally {
     isLoading.value = false;
   }
 };
 
-const generateCode = () => {
+const formatRobotsPreview = (content: string): RobotsPreviewLine[] => {
+  if (!content) return [];
+
+  return content.split('\n').map(line => {
+    const isUserAgent = line.startsWith('User-agent:');
+    const isDisallow = line.startsWith('Disallow:');
+    const isAllow = line.startsWith('Allow:');
+    const isSitemap = line.startsWith('Sitemap:');
+    const isCrawlDelay = line.startsWith('Crawl-delay:');
+    const isHost = line.startsWith('Host:');
+
+    let type = 'default';
+    if (isUserAgent) type = 'user-agent';
+    else if (isDisallow) type = 'disallow';
+    else if (isAllow) type = 'allow';
+    else if (isSitemap) type = 'sitemap';
+    else if (isCrawlDelay) type = 'crawl-delay';
+    else if (isHost) type = 'host';
+
+    return {
+      content: line,
+      type,
+      text: line,
+      bold: isUserAgent || isDisallow || isAllow || isSitemap || isCrawlDelay,
+      comment: line.trim().startsWith('#')
+    };
+  });
+};
+
+const generatePreviewContent = () => {
   try {
-    isLoading.value = true;
-    error.value = '';
-
-
-    if (report.value && !generatedContent.value) {
-      const reportData = report.value as any;
-      const result = fillConfigsFromAudit(reportData, siteConfig.value, schemaConfig.value, robotsConfig.value);
-
-      if (result) {
-        Object.assign(schemaConfig.value, result.schemaConfig);
-        Object.assign(siteConfig.value, result.siteConfig);
-      }
-    }
-
     if (configTab.value === 'robots') {
       generatedContent.value = generateRobotsContent(siteConfig.value, robotsConfig.value);
-
-      robotsPreviewLines.value = generatedContent.value.split('\n').filter(line => line.trim() !== '').map(line => ({
-        text: line,
-        bold: line.startsWith('User-agent:') || line.startsWith('Sitemap:') || line.startsWith('Host:'),
-        comment: line.startsWith('#')
-      }));
-    } else if (configTab.value === 'schema') {
+      robotsPreviewLines.value = formatRobotsPreview(generatedContent.value);
+    } else {
       generatedContent.value = generateSchemaContent(siteConfig.value, schemaConfig.value);
     }
-  } catch (e: any) {
-    error.value = e.message || 'Error generating content';
-    console.error('Error generating content:', e);
-  } finally {
-    isLoading.value = false;
+  } catch (e) {
+    console.error('Erreur lors de la génération de contenu:', e);
+    error.value = e.message || 'Une erreur est survenue lors de la génération du contenu.';
   }
 };
 

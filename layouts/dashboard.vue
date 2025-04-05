@@ -217,6 +217,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
 import { useUserStore } from '../stores/userStore';
+import { usePlausible } from '../utils/usePlausible';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -228,11 +229,19 @@ const mobileDrawer = ref(false);
 const desktopDrawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
 
-watch(() => route.path, () => {
+const plausible = usePlausible();
+
+watch(() => route.path, (newPath, oldPath) => {
   if (display.smAndDown.value) {
     mobileDrawer.value = false;
   }
   updatePageTitle();
+
+  plausible.trackPageView({
+    page: newPath,
+    deviceType: display.smAndDown.value ? 'mobile' : (display.mdAndDown.value ? 'tablet' : 'desktop'),
+    referrer: oldPath || document.referrer
+  });
 });
 
 watch(() => display.smAndDown.value, (isSmall) => {
@@ -420,7 +429,22 @@ onMounted(() => {
   userStore.loadSnippets();
   userStore.loadSQLSchemas();
   updatePageTitle();
+
+  plausible.trackPageView({
+    page: route.path,
+    deviceType: display.smAndDown.value ? 'mobile' : (display.mdAndDown.value ? 'tablet' : 'desktop')
+  });
+
+  setupClickTracking();
 });
+
+const setupClickTracking = () => {
+  plausible.setupClickTracking('v-list-item', 'navigation');
+
+  plausible.setupClickTracking('v-btn:not(.v-navigation-drawer__scrim)', 'action');
+
+  plausible.setupClickTracking('a[href^="http"]', 'external-link');
+};
 
 watch(() => userStore.user?.isPremium, (newValue) => {
   console.log('[DEBUG] Changement du statut premium détecté:', newValue);
