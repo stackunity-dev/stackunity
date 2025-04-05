@@ -1638,6 +1638,8 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       return [normalizedUrl];
     }
 
+
+
   } catch (error) {
     console.error('Erreur fatale dans crawlWebsite:', error);
     return [baseUrl];
@@ -1840,6 +1842,8 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
       const urlImages = imageUrls[url] || [];
       const isImage = isImageUrl(url);
 
+      console.log(`Génération du sitemap pour ${url}, nombre d'images: ${urlImages.length}`);
+
       // Si c'est une image indépendante (pas sur une page), l'inclure comme URL normale
       if (isImage) {
         return `  <url>
@@ -1864,13 +1868,31 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
         pageImages.push(...directImages);
       }
 
-      const imageSection = pageImages.length > 0
-        ? pageImages.map(img => `
+      // Ajouter les images de toutes les pages à toutes les URLs
+      // Cette approche garantit que les images apparaissent dans le sitemap
+      for (const [pageUrl, imgs] of Object.entries(imageUrls)) {
+        if (pageUrl !== 'directImages' && pageUrl !== url) {
+          pageImages.push(...imgs);
+        }
+      }
+
+      // Supprimer les doublons d'images basés sur l'URL
+      const uniquePageImages = pageImages.filter((img, index, self) =>
+        index === self.findIndex(i => i.url === img.url)
+      );
+
+      console.log(`Après fusion, nombre total d'images pour ${url}: ${uniquePageImages.length}`);
+
+      const imageSection = uniquePageImages.length > 0
+        ? uniquePageImages.map(img => {
+          console.log(`  - Ajout de l'image au sitemap: ${img.url}`);
+          return `
     <image:image>
       <image:loc>${img.url}</image:loc>${img.title ? `
       <image:title>${img.title}</image:title>` : ''}${img.alt ? `
       <image:caption>${img.alt}</image:caption>` : ''}
-    </image:image>`).join('')
+    </image:image>`;
+        }).join('')
         : '';
 
       return `  <url>
@@ -1882,11 +1904,14 @@ function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): 
     }).join('\n');
 
   // Construire la sortie finale
-  return `<?xml version="1.0" encoding="UTF-8"?>
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${sitemapEntries}
 </urlset>`;
+
+  console.log('Sitemap généré avec succès, contenant des références aux images');
+  return sitemap;
 }
 
 function rankPages(results: Record<string, WebsiteAnalysisResult>): string[] {
