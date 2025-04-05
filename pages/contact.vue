@@ -24,7 +24,7 @@
                 get back to you as soon as possible.
               </p>
 
-              <v-form @submit.prevent="submitForm" class="mb-8">
+              <v-form @submit.prevent="submitFormContact" class="mb-8">
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field v-model="form.name" label="Your name" variant="outlined"
@@ -77,9 +77,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 
+const userStore = useUserStore();
 
 definePageMeta({
   layout: 'default'
@@ -123,7 +125,7 @@ const snackbar = ref({
   timeout: 2000
 });
 
-const submitForm = async () => {
+const submitFormContact = async () => {
   loading.value = true;
 
   try {
@@ -137,7 +139,7 @@ const submitForm = async () => {
       };
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await userStore.submitFormContact(form.value);
 
     form.value = {
       name: '',

@@ -1616,9 +1616,9 @@ export const useUserStore = defineStore('user', {
 
     async updatePremiumStatus() {
       try {
-        console.log('Début mise à jour statut premium, userId:', this.user?.id);
+        console.log('Début mise à jour statut premium, userId:', this.user.userId);
 
-        const userId = this.user?.id;
+        const userId = this.user.userId;
         console.log('ID utilisé pour la requête premium-status:', userId);
 
         const response = await $fetch('/api/user/premium-status', {
@@ -1920,6 +1920,36 @@ export const useUserStore = defineStore('user', {
         return {
           success: false,
           error: error instanceof Error ? error.message : 'Erreur inconnue lors de la génération de la facture'
+        };
+      }
+    },
+
+    async submitFormContact(formData: any) {
+      try {
+        const response = await $fetch('/api/contact/submit', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          },
+          body: formData
+        });
+
+        if (response && typeof response === 'object' && 'success' in response) {
+          return {
+            success: response.success as boolean,
+            error: 'error' in response ? response.error as string : undefined
+          };
+        }
+
+        return {
+          success: false,
+          error: 'Réponse du serveur invalide'
+        };
+      } catch (error) {
+        console.error('Erreur lors de la soumission du formulaire de contact:', error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Erreur inconnue lors de la soumission du formulaire de contact'
         };
       }
     }
