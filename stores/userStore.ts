@@ -1609,28 +1609,39 @@ export const useUserStore = defineStore('user', {
 
     async updatePremiumStatus() {
       try {
+        console.log('Début mise à jour statut premium, userId:', this.user?.id);
+
         const response = await fetch('/api/user/premium-status', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token}`
           },
-          body: JSON.stringify({ userId: this.user?.userId })
+          body: JSON.stringify({ userId: this.user?.id })
         });
 
         if (!response.ok) {
+          console.error('Réponse serveur non OK:', response.status, response.statusText);
           throw new Error('Erreur lors de la mise à jour du statut premium');
         }
 
         const result = await response.json();
+        console.log('Réponse API premium-status:', result);
+
         if (result.success) {
-          this.user.isPremium = true;
+          console.log('Mise à jour réussie, passage premium:', result.isPremium);
+          if (this.user) {
+            this.user.isPremium = true;
+            this.persistUserData();
+            console.log('Données utilisateur mises à jour et persistées');
+          }
           return true;
         } else {
+          console.error('Échec mise à jour premium:', result.error);
           throw new Error(result.error || 'Erreur lors de la mise à jour du statut premium');
         }
       } catch (error) {
-        console.error('Erreur lors de la mise à jour du statut premium:', error);
+        console.error('Exception lors de la mise à jour du statut premium:', error);
         throw new Error('Erreur lors de la mise à jour du statut premium');
       }
     },

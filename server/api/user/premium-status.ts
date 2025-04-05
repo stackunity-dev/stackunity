@@ -1,10 +1,11 @@
-import { pool } from '../db';
-import { RowDataPacket } from 'mysql2/promise';
 import { defineEventHandler, readBody } from 'h3';
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const userId = body.userId;
+  console.log('Mise à jour premium pour userId:', userId);
 
   if (!userId) {
     return {
@@ -14,28 +15,35 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const [rows] = await pool.execute<RowDataPacket[]>(
+    const [result] = await pool.execute<ResultSetHeader>(
       'UPDATE users SET isPremium = 1 WHERE id = ?',
       [userId]
     );
 
-    if (rows.length > 0) {
+    console.log('Résultat UPDATE:', result);
+
+    if (result.affectedRows > 0) {
+      const [userRows] = await pool.execute<RowDataPacket[]>(
+        'SELECT isPremium FROM users WHERE id = ?',
+        [userId]
+      );
+
       return {
         success: true,
-        isPremium: rows[0].isPremium
+        isPremium: userRows[0]?.isPremium || true
       };
     } else {
       return {
         success: false,
-        error: 'Premium status not found'
+        error: 'Aucun utilisateur mis à jour'
       };
     }
 
   } catch (error) {
-    console.error('Error fetching premium status:', error);
+    console.error('Error updating premium status:', error);
     return {
       success: false,
-      error: 'Error fetching premium status'
+      error: 'Error updating premium status'
     };
   }
 });
