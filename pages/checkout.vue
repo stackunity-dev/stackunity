@@ -399,7 +399,7 @@ const processPayment = async () => {
     }
 
     if (paymentIntent.status === 'succeeded') {
-      await userStore.updatePremiumStatus(true);
+      await userStore.updatePremiumStatus();
 
       const response = await userStore.generateInvoice(
         paymentIntent.id,
