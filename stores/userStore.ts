@@ -632,7 +632,7 @@ export const useUserStore = defineStore('user', {
           }))
         };
 
-        const userId = this.user.userId;
+        const userId = this.user.id;
         console.log('userId', userId);
         console.log('schemaData', schemaData);
 
@@ -978,7 +978,7 @@ export const useUserStore = defineStore('user', {
 
     async addSnippets(title: string, description: string, framework: string, file: File, publishWorld: string, publishPersonal: string) {
       try {
-        const userId = this.user.userId;
+        const userId = this.user.id;
         const username = this.user?.username || '';
         const date = new Date().toISOString().slice(0, 10);
         const imageUrl = await this.uploadImage(file);
@@ -1018,7 +1018,7 @@ export const useUserStore = defineStore('user', {
 
     async updateSnippet(id: number, code: string, type: 'world' | 'personal') {
       try {
-        const userId = this.user.userId;
+        const userId = this.user.id;
         const response: any = await $fetch('/api/snippets/updateSnippet', {
           method: 'POST',
           headers: {
@@ -1040,7 +1040,7 @@ export const useUserStore = defineStore('user', {
     async deleteSnippet(id: number, type: 'world' | 'personal') {
       try {
         console.log(this.user);
-        const userId = this.user.userId;
+        const userId = this.user.id;
         console.log('[STORE] Suppression du snippet', id, 'pour l\'utilisateur', userId);
 
         const response = await $fetch<DeleteSnippetResponse>('/api/snippets/deleteSnippet', {
@@ -1067,7 +1067,7 @@ export const useUserStore = defineStore('user', {
 
     async addFavorite(snippetId: number, type: 'world' | 'personal') {
       try {
-        const userId = this.user.userId;
+        const userId = this.user.id;
         const response = await fetch('/api/snippets/addFavorite', {
           method: 'POST',
           headers: {
@@ -1086,7 +1086,7 @@ export const useUserStore = defineStore('user', {
 
     async removeFavorite(snippetId: number) {
       try {
-        const userId = this.user.userId;
+        const userId = this.user.id;
         const response = await fetch('/api/snippets/removeFavorite', {
           method: 'POST',
           headers: {
@@ -1105,7 +1105,7 @@ export const useUserStore = defineStore('user', {
 
     async deleteSQLSchema(databaseId: number) {
       try {
-        const userId = this.user.userId;
+        const userId = this.user.id;
         const response = await $fetch<DeleteResponse>(`/api/sql/${databaseId}`, {
           method: 'DELETE',
           headers: {
@@ -1421,7 +1421,7 @@ export const useUserStore = defineStore('user', {
 
     async saveTemplate(templateName: string, templateData: any, componentType: string) {
       try {
-        const userId = this.user.userId;
+        const userId = this.user.id;
         const response = await fetch('/api/studio/saveTemplate', {
           method: 'POST',
           headers: {
@@ -1451,7 +1451,7 @@ export const useUserStore = defineStore('user', {
           },
           body: JSON.stringify({
             templateId: templateId,
-            userId: this.user.userId
+            userId: this.user.id
           })
         });
 
@@ -1607,38 +1607,31 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async updatePremiumStatus(isPremium: boolean) {
+    async updatePremiumStatus() {
       try {
-        // Appel à l'API pour mettre à jour le statut premium
-        const response = await fetch('/api/users/update-premium', {
+        const response = await fetch('/api/user/premium-status', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...this.getAuthHeader
+            'Authorization': `Bearer ${this.token}`
           },
-          body: JSON.stringify({ isPremium }),
-          credentials: 'include'
+          body: JSON.stringify({ userId: this.user?.id })
         });
 
         if (!response.ok) {
           throw new Error('Erreur lors de la mise à jour du statut premium');
         }
 
-        const data = await response.json();
-
-        if (data.success) {
-          // Mise à jour du statut dans le store
-          if (this.user) {
-            this.user.isPremium = isPremium;
-          }
-          this.persistUserData();
-          return { success: true };
+        const result = await response.json();
+        if (result.success) {
+          this.user.isPremium = true;
+          return true;
         } else {
-          throw new Error(data.error || 'Erreur lors de la mise à jour du statut premium');
+          throw new Error(result.error || 'Erreur lors de la mise à jour du statut premium');
         }
       } catch (error) {
         console.error('Erreur lors de la mise à jour du statut premium:', error);
-        return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' };
+        throw new Error('Erreur lors de la mise à jour du statut premium');
       }
     },
 
