@@ -20,6 +20,14 @@ import { usePlausible } from './utils/usePlausible';
 import { useHead } from '#imports';
 
 useHead({
+  title: 'DevUnity - The all-in-one platform for developers',
+  meta: [
+    { name: 'description', content: 'DevUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { name: 'keywords', content: 'DevUnity, dashboard, tools, snippets, SQL, Studio, Sitemaps' },
+    { name: 'author', content: 'DevUnity' },
+    { name: 'robots', content: 'index, follow' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
+  ],
   script: [
     {
       type: 'application/ld+json',

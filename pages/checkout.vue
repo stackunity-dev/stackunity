@@ -148,7 +148,7 @@ import { useRouter } from 'vue-router';
 import snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
-import { definePageMeta, useHead, navigateTo } from '#imports';
+import { definePageMeta, navigateTo, useHead } from '#imports';
 
 definePageMeta({
   layout: 'empty'
@@ -416,7 +416,7 @@ const processPayment = async () => {
 
           setTimeout(() => {
             userStore.logout();
-            navigateTo('/login');
+            window.location.href = '/login?redirect=/dashboard&status=premium-updated';
           }, 2000);
           return;
         }

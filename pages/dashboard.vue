@@ -143,6 +143,43 @@
       </v-row>
     </v-main>
 
+    <v-dialog v-model="showSuccessDialog" max-width="500" persistent>
+      <v-card class="rounded-lg">
+        <v-card-title class="bg-primary text-h5 text-white pa-4 rounded-t-lg">
+          <v-icon class="mr-2" color="white">{{ userStore.user?.isPremium ? 'mdi-check-circle' : 'mdi-login' }}</v-icon>
+          {{ userStore.user?.isPremium ? 'Congratulations!' : 'Reconnection required' }}
+        </v-card-title>
+        <v-card-text class="pa-6">
+          <div v-if="userStore.user?.isPremium">
+            <p class="text-body-1 mb-4">
+              Your premium status has been activated successfully! You now have access to all advanced features of
+              DevUnity.
+            </p>
+            <p class="text-body-1">
+              Enjoy this new experience and discover all that DevUnity can offer you.
+            </p>
+          </div>
+          <div v-else>
+            <p class="text-body-1 mb-4">
+              Your account has been updated, but you need to reconnect to access all features.
+            </p>
+            <p class="text-body-1">
+              Click on "Reconnect" to be redirected to the login page.
+            </p>
+          </div>
+        </v-card-text>
+        <v-card-actions class="pa-4">
+          <v-spacer></v-spacer>
+          <v-btn v-if="userStore.user?.isPremium" color="primary" variant="elevated" @click="showSuccessDialog = false">
+            Start
+          </v-btn>
+          <v-btn v-else color="primary" variant="elevated" @click="handleReconnect">
+            Reconnect
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-app>
 
 </template>
@@ -360,6 +397,8 @@ const tips = ref([
   }
 ]);
 
+const showSuccessDialog = ref(false);
+
 onMounted(async () => {
   const router = useRouter();
   console.log("userStore.user", userStore.user);
@@ -455,6 +494,16 @@ onMounted(async () => {
         monitoringInterval = null;
       }
     });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+
+    if (status === 'premium-updated') {
+      showSuccessDialog.value = true;
+
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
   } catch (error) {
     console.error('[Dashboard] Erreur d\'initialisation:', error);
     router.push('/login');
@@ -466,6 +515,12 @@ const getSnippetDate = (snippet: any): string => {
     return formatDate(snippet.date || snippet.snippet_date);
   }
   return 'Date unknown';
+};
+
+const handleReconnect = () => {
+  showSuccessDialog.value = false;
+  userStore.logout();
+  window.location.href = '/login?redirect=/dashboard&status=premium-updated';
 };
 </script>
 

@@ -74,7 +74,7 @@ const handleError = () => {
 .error-message {
   font-size: 1.125rem;
   margin-bottom: 2rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--v-theme-on-surface));
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;

@@ -5,8 +5,6 @@ import { pool } from '../db';
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const userId = body.userId;
-  console.log('Mise à jour premium - Corps de la requête:', body);
-  console.log('Mise à jour premium pour userId:', userId);
 
   if (!userId) {
     console.error('Erreur: userId manquant dans la requête premium-status');
@@ -22,7 +20,6 @@ export default defineEventHandler(async (event) => {
       [userId]
     );
 
-    console.log('Résultat UPDATE:', updateResult);
 
     if (updateResult.affectedRows > 0) {
       const [userRows] = await pool.execute<RowDataPacket[]>(
@@ -31,7 +28,6 @@ export default defineEventHandler(async (event) => {
       );
 
       if (userRows.length > 0) {
-        console.log('Utilisateur récupéré après mise à jour:', userRows[0]);
         return {
           success: true,
           isPremium: true,

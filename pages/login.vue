@@ -182,6 +182,15 @@ const handleSignin = async () => {
 
     const response = await userStore.login(form.value.email, form.value.password, rememberMe.value);
     if (response.success) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectPath = urlParams.get('redirect');
+      const status = urlParams.get('status');
+
+      if (redirectPath && status) {
+        window.location.href = `${redirectPath}?status=${status}`;
+        return;
+      }
+
       router.push('/dashboard');
     } else {
       snackbarColor.value = 'error';
