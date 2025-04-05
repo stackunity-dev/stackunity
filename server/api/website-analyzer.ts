@@ -443,7 +443,18 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
       console.error('Erreur lors de l\'extraction des informations de contact:', contactError);
     }
 
-    const sitemap = checkSitemap ? generateSitemap(urls) : '';
+    // Collecter les données d'images pour le sitemap
+    const imagesData: Record<string, any> = {};
+    for (const [url, result] of Object.entries(results)) {
+      if (result && result.seo && result.seo.images) {
+        imagesData[url] = {
+          images: result.seo.images
+        };
+      }
+    }
+
+    // Modifier l'appel à generateSitemap pour passer les informations d'images
+    const sitemap = checkSitemap ? generateSitemap(urls, imagesData) : '';
 
     return {
       urlMap: { [url]: urls },
@@ -1309,22 +1320,59 @@ async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean; conten
   }
 }
 
+// Fonction pour standardiser une URL (normaliser)
+function standardizeUrl(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    // Normaliser le pathname (supprimer slash final sauf pour la racine)
+    if (urlObj.pathname !== "/" && urlObj.pathname.endsWith("/")) {
+      urlObj.pathname = urlObj.pathname.slice(0, -1);
+    }
+    return urlObj.toString();
+  } catch (e) {
+    return url;
+  }
+}
+
+// Fonction pour générer l'URL alternative avec/sans slash
+function toggleSlash(url: string): string | null {
+  try {
+    const urlObj = new URL(url);
+    if (urlObj.pathname === "/") {
+      // Pour la racine, créer version sans slash
+      return url.replace(/\/$/, "");
+    } else if (!urlObj.pathname.endsWith("/")) {
+      // Pour les autres, ajouter un slash
+      return url + "/";
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<string[]> {
   console.log(`Démarrage du crawl de ${baseUrl}, limite de ${maxPages} pages`);
 
   try {
+    // Standardiser l'URL de base
+    let normalizedUrl = standardizeUrl(baseUrl);
+    console.log(`URL standardisée: ${normalizedUrl}`);
 
-    let normalizedUrl = baseUrl;
-    try {
-      const urlObj = new URL(baseUrl);
+    // Stockage de toutes les URLs, même celles non visitées
+    const allDiscoveredUrls = new Set<string>();
+    // Stockage des URLs visitées avec succès
+    const visited = new Set<string>();
 
-      if (urlObj.pathname !== "/" && urlObj.pathname.endsWith("/")) {
-        urlObj.pathname = urlObj.pathname.slice(0, -1);
-        normalizedUrl = urlObj.toString();
-        console.log(`URL normalisée: ${normalizedUrl} (slash final supprimé)`);
-      }
-    } catch (e) {
-      console.error("Erreur lors de la normalisation de l'URL:", e);
+    allDiscoveredUrls.add(normalizedUrl);
+    visited.add(normalizedUrl);
+
+    // Ajouter les versions avec/sans slash pour éviter les doublons
+    const alternateUrl = toggleSlash(normalizedUrl);
+    if (alternateUrl) {
+      allDiscoveredUrls.add(alternateUrl);
+      visited.add(alternateUrl);
+      console.log(`Version alternative ajoutée: ${alternateUrl}`);
     }
 
     let mainPageHtml = '';
@@ -1348,35 +1396,42 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       return [normalizedUrl];
     }
 
-    const visited = new Set<string>();
-    visited.add(normalizedUrl);
-
-
-    try {
-      const urlObj = new URL(normalizedUrl);
-      if (urlObj.pathname === "/") {
-
-        const withoutSlash = normalizedUrl.replace(/\/$/, "");
-        if (withoutSlash !== normalizedUrl) {
-          visited.add(withoutSlash);
-          console.log(`Version alternative (sans slash) ajoutée: ${withoutSlash}`);
-        }
-      } else {
-
-        const withSlash = normalizedUrl + "/";
-        visited.add(withSlash);
-        console.log(`Version alternative (avec slash) ajoutée: ${withSlash}`);
-      }
-    } catch (e) {
-      console.error("Erreur lors de l'ajout des versions alternatives:", e);
-    }
-
     const queue: string[] = [];
+    const skippedUrls: string[] = [];
 
     try {
       const baseUrlObj = new URL(normalizedUrl);
       const baseHostname = baseUrlObj.hostname;
-      const basePath = baseUrlObj.pathname;
+
+      // Fonction pour déterminer si une URL doit être ajoutée aux résultats sans être visitée
+      function shouldKeepWithoutVisiting(url: string): boolean {
+        try {
+          const urlObj = new URL(url);
+          const path = urlObj.pathname.toLowerCase();
+
+          // Chemins qui sont souvent protégés par authentification
+          const authProtectedPaths = [
+            '/dashboard',
+            '/admin',
+            '/account',
+            '/profile',
+            '/user',
+            '/member',
+            '/login',
+            '/signin',
+            '/signup',
+            '/register',
+            '/checkout',
+            '/cart',
+            '/orders',
+            '/settings'
+          ];
+
+          return authProtectedPaths.some(protectedPath => path.includes(protectedPath));
+        } catch (e) {
+          return false;
+        }
+      }
 
       // Fonction d'extraction des liens (réutilisable)
       const extractLinks = ($: CheerioSelector, pageUrl: string): string[] => {
@@ -1389,13 +1444,11 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
             try {
               const url = normalizeUrl(href, pageUrl, baseUrlObj);
               if (url) links.push(url);
-            } catch (e) {
-            }
+            } catch (e) { }
           }
         });
 
-        // 2. Liens dans les frameworks SPA modernes 
-        // NuxtLink, RouterLink (Vue), Link (React Router), etc.
+        // 2. Liens dans les frameworks SPA modernes
         $('[to], [href], [data-href], [data-to], [routerlink]').each((_, element) => {
           const $el = $(element);
           if ($el.is('a')) return;
@@ -1408,12 +1461,11 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
             try {
               const url = normalizeUrl(linkAttr, pageUrl, baseUrlObj);
               if (url) links.push(url);
-            } catch (e) {
-            }
+            } catch (e) { }
           }
         });
 
-        // 3. Extraire les liens des objets JSON dans le HTML (Next.js, Nuxt.js, etc.)
+        // 3. Extraire les liens des objets JSON dans le HTML
         const scriptTags = $('script').filter((_, el) => {
           const content = $(el).html() || '';
           return (content.includes('__NUXT__') || content.includes('__NEXT_DATA__') ||
@@ -1430,9 +1482,19 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
               const cleanMatch = match.replace(/^"|"$/g, '');
               const url = normalizeUrl(cleanMatch, pageUrl, baseUrlObj);
               if (url) links.push(url);
-            } catch (e) {
-            }
+            } catch (e) { }
           });
+        });
+
+        // 4. Extraire les URLs des menus de navigation
+        $('nav a, .nav a, .menu a, .navigation a, header a, footer a').each((_, element) => {
+          const href = $(element).attr('href');
+          if (href) {
+            try {
+              const url = normalizeUrl(href, pageUrl, baseUrlObj);
+              if (url) links.push(url);
+            } catch (e) { }
+          }
         });
 
         return [...new Set(links)];
@@ -1461,26 +1523,8 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
           // Nettoyer l'URL de tout fragment
           const cleanUrl = fullUrl.split('#')[0];
 
-          // Normaliser l'URL en supprimant le slash final (sauf pour les URLs racines)
-          const urlObj = new URL(cleanUrl);
-
-          // Supprimer le slash final pour uniformiser les URLs (sauf pour la racine)
-          if (urlObj.pathname !== '/' && urlObj.pathname.endsWith('/')) {
-            urlObj.pathname = urlObj.pathname.slice(0, -1);
-            fullUrl = urlObj.toString();
-          }
-
-          // Vérifier si c'est un fichier à ignorer
-          if (fullUrl.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js|svg|ico|woff|ttf|eot|webp)$/i)) {
-            return null;
-          }
-
-          // Ignorer les chemins admin ou cdn
-          if (fullUrl.includes('/cdn-cgi/') || fullUrl.includes('/wp-admin/')) {
-            return null;
-          }
-
-          return fullUrl;
+          // Standardiser l'URL
+          return standardizeUrl(cleanUrl);
         } catch (e) {
           return null;
         }
@@ -1492,8 +1536,14 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
         const mainPageLinks = extractLinks($, normalizedUrl);
 
         mainPageLinks.forEach(link => {
-          if (!visited.has(link) && !queue.includes(link)) {
-            queue.push(link);
+          const standardizedLink = standardizeUrl(link);
+          allDiscoveredUrls.add(standardizedLink);
+
+          if (shouldKeepWithoutVisiting(standardizedLink)) {
+            skippedUrls.push(standardizedLink);
+            console.log(`URL protégée détectée (non visitée): ${standardizedLink}`);
+          } else if (!visited.has(standardizedLink) && !queue.includes(standardizedLink)) {
+            queue.push(standardizedLink);
           }
         });
 
@@ -1503,7 +1553,8 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       const timeoutPromise = new Promise<string[]>((resolve) => {
         setTimeout(() => {
           console.log(`Timeout du crawl atteint après 15 secondes`);
-          resolve(Array.from(visited));
+          // Retourner toutes les URLs découvertes, même non visitées
+          return resolve([...Array.from(visited), ...skippedUrls]);
         }, 15000);
       });
 
@@ -1540,8 +1591,17 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
             const pageLinks = extractLinks($, currentUrl);
 
             pageLinks.forEach(link => {
-              if (!visited.has(link) && !queue.includes(link) && queue.length + visited.size < maxPages) {
-                queue.push(link);
+              const standardizedLink = standardizeUrl(link);
+              allDiscoveredUrls.add(standardizedLink);
+
+              if (shouldKeepWithoutVisiting(standardizedLink)) {
+                if (!visited.has(standardizedLink) && !skippedUrls.includes(standardizedLink)) {
+                  skippedUrls.push(standardizedLink);
+                  console.log(`URL protégée détectée (non visitée): ${standardizedLink}`);
+                }
+              } else if (!visited.has(standardizedLink) && !queue.includes(standardizedLink) &&
+                queue.length + visited.size < maxPages) {
+                queue.push(standardizedLink);
               }
             });
 
@@ -1551,7 +1611,8 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
           }
         }
 
-        resolve(Array.from(visited));
+        // Retourner toutes les URLs, y compris celles détectées mais non visitées
+        resolve([...Array.from(visited), ...skippedUrls]);
       });
 
       const result = await Promise.race([crawlPromise, timeoutPromise]);
@@ -1566,17 +1627,154 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
   }
 }
 
-function generateSitemap(urls: string[]): string {
+function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): string {
   const date = new Date().toISOString();
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${urls.map(url => `
-  <url>
+
+  // Dédupliquer les URLs
+  const uniqueUrls = [...new Set(urls.map(url => standardizeUrl(url)))];
+
+  // Trier les URLs par niveau de hiérarchie (les plus courtes en premier)
+  uniqueUrls.sort((a, b) => {
+    try {
+      // Nombre de segments dans le chemin
+      const segmentsA = new URL(a).pathname.split('/').filter(Boolean).length;
+      const segmentsB = new URL(b).pathname.split('/').filter(Boolean).length;
+
+      if (segmentsA !== segmentsB) {
+        return segmentsA - segmentsB; // Trier par profondeur d'abord
+      }
+
+      // Si même profondeur, trier alphabétiquement
+      return a.localeCompare(b);
+    } catch (e) {
+      return 0;
+    }
+  });
+
+  // Fonction pour déterminer la priorité et la fréquence de changement
+  const getPriorityAndChangefreq = (url: string): { priority: string, changefreq: string } => {
+    try {
+      const urlObj = new URL(url);
+      const path = urlObj.pathname;
+      const segments = path.split('/').filter(Boolean);
+
+      // Page d'accueil
+      if (path === '/' || path === '') {
+        return { priority: '1.0', changefreq: 'daily' };
+      }
+
+      // Pages principales (1er niveau)
+      if (segments.length === 1) {
+        // Pages importantes
+        if (['about', 'contact', 'services', 'products', 'blog'].includes(segments[0])) {
+          return { priority: '0.8', changefreq: 'weekly' };
+        }
+        return { priority: '0.7', changefreq: 'weekly' };
+      }
+
+      // Pages de 2ème niveau
+      if (segments.length === 2) {
+        // Articles de blog, produits
+        if (segments[0] === 'blog' || segments[0] === 'products' || segments[0] === 'product') {
+          return { priority: '0.6', changefreq: 'monthly' };
+        }
+        return { priority: '0.5', changefreq: 'monthly' };
+      }
+
+      // Pages plus profondes
+      return { priority: '0.3', changefreq: 'monthly' };
+    } catch (e) {
+      // Valeurs par défaut
+      return { priority: '0.5', changefreq: 'monthly' };
+    }
+  };
+
+  // Déterminer si une URL est une image
+  const isImageUrl = (url: string): boolean => {
+    return !!url.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i);
+  };
+
+  // Collecter toutes les images pour le sitemap images
+  const imageUrls: Record<string, Array<{ url: string, title?: string, alt?: string }>> = {};
+
+  // Ajouter les images trouvées pendant l'analyse
+  Object.entries(imagesData).forEach(([pageUrl, data]) => {
+    if (data && data.images && Array.isArray(data.images.data)) {
+      imageUrls[pageUrl] = data.images.data
+        .filter(img => img.src && typeof img.src === 'string')
+        .map(img => ({
+          url: new URL(img.src, pageUrl).toString(),
+          title: img.title || undefined,
+          alt: img.alt || undefined
+        }));
+    }
+  });
+
+  // Générer le sitemap avec images
+  const sitemapEntries = uniqueUrls
+    .filter(url => {
+      try {
+        // Exclure les fichiers JS/CSS mais garder les images
+        if (url.match(/\.(css|js|ico|woff|woff2|ttf|eot|pdf|zip|rar|exe|dll|docx?|xlsx?|pptx?)(\?.*)?$/i)) {
+          return false;
+        }
+
+        // Exclure les URLs d'API
+        if (url.includes('/api/') || url.includes('/wp-json/')) {
+          return false;
+        }
+
+        // Exclure les pages d'erreur communes
+        if (url.includes('/404') || url.includes('/500') || url.includes('/error')) {
+          return false;
+        }
+
+        return true;
+      } catch (e) {
+        return true;
+      }
+    })
+    .map(url => {
+      const { priority, changefreq } = getPriorityAndChangefreq(url);
+      const urlImages = imageUrls[url] || [];
+      const isImage = isImageUrl(url);
+
+      // Si c'est une image indépendante (pas sur une page), l'inclure comme URL normale
+      if (isImage) {
+        return `  <url>
     <loc>${url}</loc>
     <lastmod>${date}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>`).join('')}
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+    <image:image>
+      <image:loc>${url}</image:loc>
+    </image:image>
+  </url>`;
+      }
+
+      // Sinon, ajouter les images comme sous-éléments de l'URL
+      const imageSection = urlImages.length > 0
+        ? urlImages.map(img => `
+    <image:image>
+      <image:loc>${img.url}</image:loc>${img.title ? `
+      <image:title>${img.title}</image:title>` : ''}${img.alt ? `
+      <image:caption>${img.alt}</image:caption>` : ''}
+    </image:image>`).join('')
+        : '';
+
+      return `  <url>
+    <loc>${url}</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>${imageSection}
+  </url>`;
+    }).join('\n');
+
+  // Construire la sortie finale
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${sitemapEntries}
 </urlset>`;
 }
 

@@ -76,7 +76,10 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import Snackbar from '~/components/snackbar.vue';
+import Snackbar from '../components/snackbar.vue';
+// @ts-ignore
+import { definePageMeta, useHead } from '#imports';
+
 
 definePageMeta({
   layout: 'default'

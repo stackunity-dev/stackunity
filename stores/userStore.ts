@@ -789,7 +789,6 @@ export const useUserStore = defineStore('user', {
     },
 
     async loadSnippets(retryCount = 0) {
-      // Limiter le nombre de tentatives pour éviter les boucles infinies
       const MAX_RETRIES = 2;
 
       try {
@@ -809,18 +808,15 @@ export const useUserStore = defineStore('user', {
           credentials: 'include'
         });
 
-        // Si 401, tentative explicite de rafraîchissement de token
         if (response.status === 401 && retryCount < MAX_RETRIES) {
           console.log('[STORE] Token expiré ou invalide pour loadSnippets, tentative de rafraîchissement...');
           try {
-            // Vérifier d'abord si nous pouvons valider le token sans rafraîchir
             const validationResult = await this.validateToken();
             if (validationResult.valid) {
               console.log('[STORE] Token validé avec succès, nouvelle tentative');
               return this.loadSnippets(retryCount + 1);
             }
 
-            // Si token invalide, essayer de le rafraîchir
             const refreshResponse = await fetch('/api/auth/refresh', {
               method: 'POST',
               credentials: 'include'
@@ -833,7 +829,6 @@ export const useUserStore = defineStore('user', {
                 TokenUtils.storeToken(refreshData.accessToken);
                 this.token = refreshData.accessToken;
 
-                // Mettre à jour les données utilisateur si présentes
                 if (refreshData.user) {
                   this.user = refreshData.user;
                   this.isAuthenticated = true;
@@ -842,12 +837,10 @@ export const useUserStore = defineStore('user', {
                   this.persistUserData();
                 }
 
-                // Rappeler avec le compteur incrémenté pour éviter la boucle infinie
                 return this.loadSnippets(retryCount + 1);
               }
             }
 
-            // Si le rafraîchissement échoue, ne pas réessayer
             console.log('[STORE] Échec du rafraîchissement du token');
             return { success: false, error: 'Échec du rafraîchissement du token' };
           } catch (refreshError) {
@@ -1181,7 +1174,6 @@ export const useUserStore = defineStore('user', {
           throw new Error('URL non spécifiée');
         }
 
-        // Vérifier si l'URL est valide
         try {
           new URL(url);
         } catch (e) {
@@ -1191,7 +1183,6 @@ export const useUserStore = defineStore('user', {
         console.log('Démarrage de l\'audit SEO pour:', url);
         console.log('Options:', JSON.stringify(options, null, 2));
 
-        // Première requête pour obtenir la liste des URLs
         const initialResponse = await fetch('/api/website-analyzer', {
           method: 'POST',
           headers: {
@@ -1219,7 +1210,6 @@ export const useUserStore = defineStore('user', {
         const urlsToAnalyze = initialData.visitedURLs || [url];
         console.log('URLs à analyser:', urlsToAnalyze);
 
-        // Analyser chaque URL individuellement
         const allResults = await Promise.all(
           urlsToAnalyze.map(async (pageUrl: string) => {
             try {
@@ -1281,7 +1271,6 @@ export const useUserStore = defineStore('user', {
           rankedUrls: urlsToAnalyze
         };
 
-        // Calculer les statistiques globales
         let totalLoadTime = 0;
         let totalFCP = 0;
         let totalLCP = 0;
@@ -1304,7 +1293,6 @@ export const useUserStore = defineStore('user', {
 
           mergedData.seoResults[result.url] = pageData;
 
-          // Mettre à jour les statistiques globales
           totalLoadTime += pageData.loadTime || 0;
           totalFCP += pageData.coreWebVitals?.FCP || 0;
           totalLCP += pageData.coreWebVitals?.LCP || 0;
@@ -1356,7 +1344,6 @@ export const useUserStore = defineStore('user', {
         mergedData.summary.averageLCP = totalLCP / validResultsCount;
         mergedData.summary.averageTTFB = totalTTFB / validResultsCount;
 
-        // Convertir les compteurs en pourcentages
         mergedData.summary.pagesWithStructuredData = (mergedData.summary.pagesWithStructuredData / validResultsCount) * 100;
         mergedData.summary.pagesWithSocialTags = (mergedData.summary.pagesWithSocialTags / validResultsCount) * 100;
         mergedData.summary.mobileCompatiblePages = (mergedData.summary.mobileCompatiblePages / validResultsCount) * 100;
