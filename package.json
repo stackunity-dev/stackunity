@@ -15,7 +15,7 @@
     "start": "node .output/server/index.mjs",
     "upload-chromium": "node scripts/upload-chromium.js",
     "git": "git add . && git reset .cursor .vscode && git commit -m 'build' && git push origin main",
-    "git-remove": "git rm --cached -r server/api/payment server/api/auth \"server/middleware/auth.ts\" \"server/utils/TokenManager.ts\" \"server/utils/ServerTokenManager.ts\" \"utils/token.ts\" \"server/api/seo-audit.pdf.post.ts\" \"server/api/payment/generate-invoice.ts\" \"server/website-analyzer.ts\" \"server/upload.ts\" \"pages/seo-audit.vue\" \"pages/databricks.vue\" \"components/seo\" \"components/database\" \"pages/checkout.vue\" \"pages/login.vue\" \"pages/subscription.vue\" \"stores/userStore.ts\" && git commit -m \"Remove premium features and authentication from git tracking\" && git push origin main"
+    "git-remove": "git rm --cached -r server/api/payment server/api/auth \"server/middleware/auth.ts\" \"server/utils/TokenManager.ts\" \"server/utils/ServerTokenManager.ts\" \"utils/token.ts\" \"server/api/seo-audit.pdf.post.ts\" \"server/api/payment/generate-invoice.ts\" \"server/api/website-analyzer.ts\" \"server/api/upload.ts\" \"pages/seo-audit.vue\" \"pages/sql-generator.vue\"  \"pages/checkout.vue\" \"pages/login.vue\" \"pages/subscription.vue\" \"stores/userStore.ts\" && git commit -m \"Remove premium features and authentication from git tracking\" && git push origin main"
   },
   "config": {
     "rollup": {
