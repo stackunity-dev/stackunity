@@ -43,6 +43,10 @@ The application includes a complete Stripe integration with:
 - Secure payment processing
 - Premium account activation
 
+## Premium 
+
+Note that only premium users that have subscribed can have access to the entire repository
+
 ## License
 
 See the [LICENSE](LICENSE) file for details. 

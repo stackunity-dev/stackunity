@@ -429,7 +429,7 @@ const footerColumns = [
     links: [
       { title: 'Privacy', to: '/privacy' },
       { title: 'Terms', to: '/terms' },
-      { title: 'Cookies', to: '/' }
+      { title: 'Notices', to: '/notices' }
     ]
   }
 ];

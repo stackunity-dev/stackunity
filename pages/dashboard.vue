@@ -186,7 +186,6 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
-import ToolCard from '../components/ToolCard.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead, useRouter } from '#imports';
