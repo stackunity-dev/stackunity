@@ -240,9 +240,9 @@
                                           <v-icon :color="critical.severity" class="mr-2">mdi-alert-circle</v-icon>
                                         </template>
                                         <v-list-item-title class="font-weight-medium text-wrap">{{ critical.title
-                                        }}</v-list-item-title>
+                                          }}</v-list-item-title>
                                         <v-list-item-subtitle class="text-wrap">{{ critical.description
-                                        }}</v-list-item-subtitle>
+                                          }}</v-list-item-subtitle>
                                       </v-list-item>
                                     </v-list>
                                     <div v-else class="d-flex flex-column align-center justify-center py-6">
@@ -431,7 +431,7 @@
                                         <v-list-item-subtitle class="text-wrap">{{ ((getResultFromCache(url)?.loadTime
                                           ?? 0) /
                                           1000).toFixed(2)
-                                        }}s</v-list-item-subtitle>
+                                          }}s</v-list-item-subtitle>
                                       </v-list-item>
                                       <template v-if="getResultFromCache(url)?.coreWebVitals">
                                         <v-list-item
@@ -439,7 +439,7 @@
                                           :key="index">
                                           <template v-if="isDisplayableVital(index)">
                                             <v-list-item-title class="text-wrap">{{ getCoreWebVitalName(index)
-                                            }}</v-list-item-title>
+                                              }}</v-list-item-title>
                                             <v-list-item-subtitle class="text-wrap d-flex align-center">
                                               <span>{{ formatVitalValue(vital, index) }}</span>
                                               <v-chip size="x-small"
@@ -489,7 +489,7 @@
                                         <v-list-item-title class="text-wrap">Touch Targets</v-list-item-title>
                                         <v-list-item-subtitle class="text-wrap d-flex align-center">
                                           <span>{{ getResultFromCache(url)?.mobileCompatibility?.smallTouchTargets ?? 0
-                                          }}
+                                            }}
                                             small touch areas</span>
                                           <v-chip size="x-small"
                                             :color="(getResultFromCache(url)?.mobileCompatibility?.smallTouchTargets ?? 0) === 0 ? 'success' : 'warning'"
@@ -952,6 +952,198 @@
                               </v-col>
                             </v-row>
                           </v-window-item>
+
+                          <v-window-item value="accessibility">
+                            <v-card-text>
+                              <div class="pa-4">
+                                <h3 class="text-h5 mb-4">Accessibility Analysis</h3>
+
+                                <v-row>
+                                  <v-col cols="12" md="6">
+                                    <v-card variant="outlined" class="mb-4">
+                                      <v-card-title class="text-h6">Accessibility Score</v-card-title>
+                                      <v-card-text>
+                                        <div class="d-flex justify-center align-center">
+                                          <v-progress-circular
+                                            :model-value="calculateAccessibilityScoreNormalized(getResultFromCache(url))"
+                                            :color="getAccessibilityScoreColor(calculateAccessibilityScoreNormalized(getResultFromCache(url)))"
+                                            size="100" width="12">
+                                            {{ calculateAccessibilityScoreNormalized(getResultFromCache(url)) }}%
+                                          </v-progress-circular>
+                                        </div>
+                                        <div class="text-center mt-4">
+                                          <p class="text-h6"
+                                            :class="`text-${getAccessibilityScoreColor(calculateAccessibilityScoreNormalized(getResultFromCache(url)))}`">
+                                            {{
+                                              getAccessibilityScoreLabel(calculateAccessibilityScoreNormalized(getResultFromCache(url)))
+                                            }}
+                                          </p>
+                                        </div>
+                                      </v-card-text>
+                                    </v-card>
+                                  </v-col>
+
+                                  <v-col cols="12" md="6">
+                                    <v-card variant="outlined" class="mb-4">
+                                      <v-card-title class="text-h6">Summary of issues</v-card-title>
+                                      <v-card-text>
+                                        <v-list density="compact">
+                                          <v-list-item prepend-icon="mdi-tag-text" density="compact">
+                                            <v-list-item-title>Missing ARIA attributes</v-list-item-title>
+                                            <v-list-item-subtitle class="d-flex align-center">
+                                              <v-chip class="ml-2" color="primary" size="small">
+                                                {{ getResultFromCache(url)?.accessibility?.missingAria || 0 }}
+                                              </v-chip>
+                                              <v-chip class="ml-2"
+                                                :color="getResultFromCache(url)?.accessibility?.missingAria ? 'error' : 'success'"
+                                                size="x-small">
+                                                {{ getResultFromCache(url)?.accessibility?.missingAria ? 'Problème' :
+                                                  'OK' }}
+                                              </v-chip>
+                                            </v-list-item-subtitle>
+                                          </v-list-item>
+
+                                          <v-list-item prepend-icon="mdi-image-off" density="compact">
+                                            <v-list-item-title>Images without alt attribute</v-list-item-title>
+                                            <v-list-item-subtitle class="d-flex align-center">
+                                              <v-chip class="ml-2" color="primary" size="small">
+                                                {{ getResultFromCache(url)?.accessibility?.missingAlt || 0 }}
+                                              </v-chip>
+                                              <v-chip class="ml-2"
+                                                :color="getResultFromCache(url)?.accessibility?.missingAlt ? 'error' : 'success'"
+                                                size="x-small">
+                                                {{ getResultFromCache(url)?.accessibility?.missingAlt ? 'Problème' :
+                                                  'OK' }}
+                                              </v-chip>
+                                            </v-list-item-subtitle>
+                                          </v-list-item>
+
+                                          <v-list-item prepend-icon="mdi-form-textbox" density="compact">
+                                            <v-list-item-title>Form fields without label</v-list-item-title>
+                                            <v-list-item-subtitle class="d-flex align-center">
+                                              <v-chip class="ml-2" color="primary" size="small">
+                                                {{ getResultFromCache(url)?.accessibility?.missingLabels || 0 }}
+                                              </v-chip>
+                                              <v-chip class="ml-2"
+                                                :color="getResultFromCache(url)?.accessibility?.missingLabels ? 'error' : 'success'"
+                                                size="x-small">
+                                                {{ getResultFromCache(url)?.accessibility?.missingLabels ? 'Problème' :
+                                                  'OK' }}
+                                              </v-chip>
+                                            </v-list-item-subtitle>
+                                          </v-list-item>
+
+                                          <v-list-item prepend-icon="mdi-contrast-box" density="compact">
+                                            <v-list-item-title>Contrast issues</v-list-item-title>
+                                            <v-list-item-subtitle class="d-flex align-center">
+                                              <v-chip class="ml-2" color="primary" size="small">
+                                                {{ getResultFromCache(url)?.accessibility?.contrastIssues || 0 }}
+                                              </v-chip>
+                                              <v-chip class="ml-2"
+                                                :color="getResultFromCache(url)?.accessibility?.contrastIssues ? 'error' : 'success'"
+                                                size="x-small">
+                                                {{ getResultFromCache(url)?.accessibility?.contrastIssues ? 'Problème' :
+                                                  'OK' }}
+                                              </v-chip>
+                                            </v-list-item-subtitle>
+                                          </v-list-item>
+                                        </v-list>
+                                      </v-card-text>
+                                    </v-card>
+                                  </v-col>
+                                </v-row>
+
+                                <v-expansion-panels v-if="hasAccessibilityIssues(url)">
+                                  <v-expansion-panel v-if="getResultFromCache(url)?.accessibility?.ariaIssues?.length">
+                                    <v-expansion-panel-title>
+                                      <v-icon color="warning" class="mr-2">mdi-tag-text</v-icon>
+                                      ARIA issues detected
+                                    </v-expansion-panel-title>
+                                    <v-expansion-panel-text>
+                                      <v-list>
+                                        <v-list-item
+                                          v-for="(issue, i) in getResultFromCache(url)?.accessibility?.ariaIssues"
+                                          :key="i">
+                                          <v-list-item-title>
+                                            <code>{{ issue.element }}</code>
+                                          </v-list-item-title>
+                                          <v-list-item-subtitle>
+                                            {{ issue.issue }}
+                                          </v-list-item-subtitle>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-expansion-panel-text>
+                                  </v-expansion-panel>
+
+                                  <v-expansion-panel v-if="getResultFromCache(url)?.accessibility?.inputIssues?.length">
+                                    <v-expansion-panel-title>
+                                      <v-icon color="warning" class="mr-2">mdi-form-textbox</v-icon>
+                                      Form issues
+                                    </v-expansion-panel-title>
+                                    <v-expansion-panel-text>
+                                      <v-list>
+                                        <v-list-item
+                                          v-for="(issue, i) in getResultFromCache(url)?.accessibility?.inputIssues"
+                                          :key="i">
+                                          <v-list-item-title>
+                                            <code>{{ issue.element }}</code>
+                                          </v-list-item-title>
+                                          <v-list-item-subtitle>
+                                            {{ issue.issue }}
+                                          </v-list-item-subtitle>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-expansion-panel-text>
+                                  </v-expansion-panel>
+                                </v-expansion-panels>
+
+                                <v-alert v-else color="success" icon="mdi-check-circle" class="mt-4">
+                                  No accessibility issues detected
+                                </v-alert>
+
+                                <h3 class="text-h6 mt-6 mb-3">Accessibility recommendations</h3>
+                                <v-card variant="outlined" class="mb-4">
+                                  <v-card-text>
+                                    <v-list>
+                                      <v-list-item prepend-icon="mdi-image"
+                                        v-if="getResultFromCache(url)?.accessibility?.missingAlt">
+                                        <v-list-item-title>Add alt attributes to images</v-list-item-title>
+                                        <v-list-item-subtitle>
+                                          All images must have an alt attribute describing their content for screen
+                                          readers.
+                                        </v-list-item-subtitle>
+                                      </v-list-item>
+
+                                      <v-list-item prepend-icon="mdi-tag"
+                                        v-if="getResultFromCache(url)?.accessibility?.missingAria">
+                                        <v-list-item-title>Improve ARIA attributes</v-list-item-title>
+                                        <v-list-item-subtitle>
+                                          Elements with ARIA roles must have the corresponding attributes
+                                          for better
+                                          accessibility.
+                                        </v-list-item-subtitle>
+                                      </v-list-item>
+
+                                      <v-list-item prepend-icon="mdi-form-select"
+                                        v-if="getResultFromCache(url)?.accessibility?.missingLabels">
+                                        <v-list-item-title>Associate labels to form fields</v-list-item-title>
+                                        <v-list-item-subtitle>
+                                          All form fields must have an associated label or an aria-label attribute.
+                                        </v-list-item-subtitle>
+                                      </v-list-item>
+
+                                      <v-list-item prepend-icon="mdi-check-circle" v-if="!hasAccessibilityIssues(url)">
+                                        <v-list-item-title>Excellent accessibility</v-list-item-title>
+                                        <v-list-item-subtitle>
+                                          Continue to maintain these accessibility practices.
+                                        </v-list-item-subtitle>
+                                      </v-list-item>
+                                    </v-list>
+                                  </v-card-text>
+                                </v-card>
+                              </div>
+                            </v-card-text>
+                          </v-window-item>
                         </v-window>
                       </v-expansion-panel-text>
                     </v-expansion-panel>
@@ -1248,6 +1440,7 @@ interface SEOResult {
     keywordDensity?: number;
   };
   structuredData?: any[];
+  accessibility?: AccessibilityData;
 }
 
 interface SEOReport {
@@ -1266,6 +1459,14 @@ interface SEOReport {
     pagesWithSocialTags: number;
     mobileCompatiblePages: number;
     securePages: number;
+    missingAria: number;
+    missingAlt: number;
+    missingLabels: number;
+    missingInputAttributes: number;
+    contrastIssues: number;
+    ariaIssues: Array<{ element: string, issue: string }>;
+    inputIssues: Array<{ element: string, issue: string }>;
+    accessibilityScore: number;
   };
   visitedURLs: string[];
 }
@@ -1276,6 +1477,16 @@ interface AuditOptions {
   timeout: number;
 }
 
+interface AccessibilityData {
+  missingAria: number;
+  missingAlt: number;
+  missingLabels: number;
+  missingInputAttributes: number;
+  contrastIssues: number;
+  ariaIssues: Array<{ element: string, issue: string }>;
+  inputIssues: Array<{ element: string, issue: string }>;
+  accessibilityScore: number;
+}
 
 const report = ref<SEOReport | null>(null);
 const targetUrl = ref('');
@@ -1298,13 +1509,14 @@ const options = ref<AuditOptions>({
 });
 
 const tabs = [
-  { value: 'overview', icon: 'mdi-view-dashboard', label: 'Overview' },
-  { value: 'technical', icon: 'mdi-tools', label: 'Technical Analysis' },
-  { value: 'content', icon: 'mdi-file-document', label: 'Content' },
-  { value: 'metatags', icon: 'mdi-tag-multiple', label: 'Meta Tags' },
-  { value: 'security', icon: 'mdi-shield', label: 'Security' },
-  { value: 'warnings', icon: 'mdi-alert', label: 'Warnings' },
-  { value: 'action', icon: 'mdi-checkbox-marked-circle-outline', label: 'SEO Action Plan' }
+  { value: 'overview', label: 'Vue d\'ensemble', icon: 'mdi-eye' },
+  { value: 'technical', label: 'Technique', icon: 'mdi-code-tags' },
+  { value: 'content', label: 'Contenu', icon: 'mdi-text' },
+  { value: 'metatags', label: 'Meta Tags', icon: 'mdi-tag-multiple' },
+  { value: 'accessibility', label: 'Accessibilité', icon: 'mdi-account-group' },
+  { value: 'security', label: 'Sécurité', icon: 'mdi-shield-check' },
+  { value: 'warnings', label: 'Problèmes', icon: 'mdi-alert' },
+  { value: 'action', label: 'Actions', icon: 'mdi-check-circle' }
 ];
 
 const startAudit = async () => {
@@ -1582,6 +1794,33 @@ const summaryGroups = [
         value: (report: any) => report?.summary?.mediumPriorityIssues ?? 0
       }
     ]
+  },
+  {
+    title: 'accessibility',
+    icon: 'mdi-account-group',
+    color: 'purple',
+    items: [
+      {
+        icon: 'mdi-tag-text',
+        title: 'missingAria',
+        value: (report: any) => report?.summary?.missingAria ?? 0
+      },
+      {
+        icon: 'mdi-image-off',
+        title: 'missingAlt',
+        value: (report: any) => report?.summary?.missingAlt ?? 0
+      },
+      {
+        icon: 'mdi-form-textbox',
+        title: 'missingLabels',
+        value: (report: any) => report?.summary?.missingLabels ?? 0
+      },
+      {
+        icon: 'mdi-contrast-box',
+        title: 'contrastIssues',
+        value: (report: any) => report?.summary?.contrastIssues ?? 0
+      }
+    ]
   }
 ];
 
@@ -1618,7 +1857,8 @@ const adaptSEOData = (data: any): SEOResult => {
     technicalSEO: { sitemapFound: false, robotsTxtFound: false, schemaTypeCount: {} },
     structuredData: [],
     warnings: [],
-    contentStats: { readabilityScore: 0, wordCount: 0, keywordDensity: 0 }
+    contentStats: { readabilityScore: 0, wordCount: 0, keywordDensity: 0 },
+    accessibility: { missingAria: 0, missingAlt: 0, missingLabels: 0, missingInputAttributes: 0, contrastIssues: 0, ariaIssues: [], inputIssues: [], accessibilityScore: 0 }
   };
 
   let imageAlt: Array<{ alt?: string; src?: string; title?: string; width?: number; height?: number; hasDimensions?: boolean }> = [];
@@ -1666,6 +1906,33 @@ const adaptSEOData = (data: any): SEOResult => {
     const values = Object.values(data.seo.keywordDensity);
     if (values.length > 0 && typeof values[0] === 'number') {
       keywordDensity = values[0];
+    }
+  }
+
+
+  let accessibility = {
+    missingAria: 0,
+    missingAlt: 0,
+    missingLabels: 0,
+    missingInputAttributes: 0,
+    contrastIssues: 0,
+    ariaIssues: [],
+    inputIssues: [],
+    accessibilityScore: 0
+  };
+
+  if (data.accessibility) {
+    accessibility = { ...data.accessibility };
+  } else if (data.seo?.accessibility) {
+    accessibility = { ...data.seo.accessibility };
+  } else {
+    accessibility.missingAlt = withoutAlt;
+    // Calculer un score d'accessibilité basique en fonction des images sans alt
+    if (totalImages > 0) {
+      const altRatio = 1 - (withoutAlt / totalImages);
+      accessibility.accessibilityScore = Math.round(altRatio * 100);
+    } else {
+      accessibility.accessibilityScore = 100; // Aucune image = pas de problème d'alt manquant
     }
   }
 
@@ -1718,7 +1985,8 @@ const adaptSEOData = (data: any): SEOResult => {
       readabilityScore: data.seo?.readabilityScore || 0,
       wordCount: data.seo?.wordCount || 0,
       keywordDensity: keywordDensity
-    }
+    },
+    accessibility: accessibility
   };
 };
 
@@ -1843,6 +2111,14 @@ const calculateSummary = (seoResults: Record<string, SEOResult>, visitedURLs: st
   let pagesWithSocialTags = 0;
   let mobileCompatiblePages = 0;
   let securePages = 0;
+  let missingAria = 0;
+  let missingAlt = 0;
+  let missingLabels = 0;
+  let missingInputAttributes = 0;
+  let contrastIssues = 0;
+  let ariaIssues: Array<{ element: string, issue: string }> = [];
+  let inputIssues: Array<{ element: string, issue: string }> = [];
+  let accessibilityScore = 0;
 
   results.forEach(result => {
     totalLoadTime += result.loadTime || 0;
@@ -1869,6 +2145,17 @@ const calculateSummary = (seoResults: Record<string, SEOResult>, visitedURLs: st
     if (result.mobileCompatibility?.hasViewport) mobileCompatiblePages++;
 
     if (result.securityChecks?.https) securePages++;
+
+    if (result.accessibility) {
+      missingAria += result.accessibility.missingAria;
+      missingAlt += result.accessibility.missingAlt;
+      missingLabels += result.accessibility.missingLabels;
+      missingInputAttributes += result.accessibility.missingInputAttributes;
+      contrastIssues += result.accessibility.contrastIssues;
+      ariaIssues = [...ariaIssues, ...result.accessibility.ariaIssues];
+      inputIssues = [...inputIssues, ...result.accessibility.inputIssues];
+      accessibilityScore = result.accessibility.accessibilityScore;
+    }
   });
 
   return {
@@ -1884,7 +2171,15 @@ const calculateSummary = (seoResults: Record<string, SEOResult>, visitedURLs: st
     pagesWithStructuredData: Math.round((pagesWithStructuredData / totalPages) * 100),
     pagesWithSocialTags: Math.round((pagesWithSocialTags / totalPages) * 100),
     mobileCompatiblePages: Math.round((mobileCompatiblePages / totalPages) * 100),
-    securePages: Math.round((securePages / totalPages) * 100)
+    securePages: Math.round((securePages / totalPages) * 100),
+    missingAria,
+    missingAlt,
+    missingLabels,
+    missingInputAttributes,
+    contrastIssues,
+    ariaIssues,
+    inputIssues,
+    accessibilityScore
   };
 };
 
@@ -2116,7 +2411,8 @@ const getResultFromCache = (url: string): SEOResult => {
     securityChecks: { https: false, securityHeaders: [] },
     socialTags: { ogTags: [], twitterTags: [] },
     warnings: [],
-    technicalSEO: { sitemapFound: false, robotsTxtFound: false, schemaTypeCount: {} }
+    technicalSEO: { sitemapFound: false, robotsTxtFound: false, schemaTypeCount: {} },
+    accessibility: { missingAria: 0, missingAlt: 0, missingLabels: 0, missingInputAttributes: 0, contrastIssues: 0, ariaIssues: [], inputIssues: [], accessibilityScore: 0 }
   };
 
   return emptyResult;
@@ -2319,6 +2615,52 @@ function calculateGlobalScore(): number {
   score = (titleScore + descScore + secureScore + mobileScore + structuredDataScore) / 5;
 
   return normalizePercentage(score);
+}
+
+function calculateAccessibilityScoreNormalized(result: SEOResult): number {
+  if (!result || !result.accessibility) return 0;
+
+  const accessibility = result.accessibility;
+  const totalIssues = accessibility.missingAria +
+    accessibility.missingAlt +
+    accessibility.missingLabels +
+    accessibility.missingInputAttributes +
+    accessibility.contrastIssues;
+
+  if (totalIssues === 0) return 100;
+
+  const score = Math.max(0, 100 - (totalIssues * 5));
+  return normalizePercentage(score);
+}
+
+function getAccessibilityScoreColor(score: number): string {
+  if (score >= 90) return 'success';
+  if (score >= 70) return 'info';
+  if (score >= 50) return 'warning';
+  return 'error';
+}
+
+function getAccessibilityScoreLabel(score: number): string {
+  if (score >= 90) return 'Excellent';
+  if (score >= 70) return 'Bon';
+  if (score >= 50) return 'Moyen';
+  return 'À améliorer';
+}
+
+// Ajouter cette nouvelle fonction pour vérifier si la page a des problèmes d'accessibilité
+function hasAccessibilityIssues(url: string): boolean {
+  const result = getResultFromCache(url);
+  if (!result || !result.accessibility) return false;
+
+  return (
+    (result.accessibility.ariaIssues && result.accessibility.ariaIssues.length > 0) ||
+    (result.accessibility.inputIssues && result.accessibility.inputIssues.length > 0) ||
+    result.accessibility.missingAria > 0 ||
+    result.accessibility.missingAlt > 0 ||
+    result.accessibility.missingLabels > 0 ||
+    result.accessibility.missingInputAttributes > 0 ||
+    result.accessibility.contrastIssues > 0
+  );
 }
 </script>
 

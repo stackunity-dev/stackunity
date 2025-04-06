@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery, H3Event, readBody } from 'h3';
-import { generateSitemap } from './website-analyzer';
+import { generateSitemap } from './analyze/website-analyzer';
 
 interface SitemapRequest {
   url: string;

@@ -132,8 +132,11 @@ const featureType = computed(() => {
     return 'robots';
   } else if (title.includes('studio')) {
     return 'studioComponents';
+  } else if (title.includes('accessibility')) {
+    return 'accessibility';
+  } else {
+    return 'default';
   }
-  return '';
 });
 
 type FeatureMap = {
@@ -141,6 +144,7 @@ type FeatureMap = {
   seoAudit: string[];
   robots: string[];
   studioComponents: string[];
+  accessibility: string[];
   default: string[];
 };
 
@@ -170,6 +174,12 @@ const features: FeatureMap = {
     "Form builder with validation",
     "Advanced UI utilities"
   ],
+  accessibility: [
+    "Accessibility audit",
+    "Semantic structure analysis",
+    "Metadata analysis",
+    "ARIA analysis"
+  ],
   default: [
     "Unlimited access to all features",
     "Priority support",
@@ -184,6 +194,7 @@ const getFeatures = (type: string): string[] => {
     case 'seoAudit': return features.seoAudit;
     case 'robots': return features.robots;
     case 'studioComponents': return features.studioComponents;
+    case 'accessibility': return features.accessibility;
     default: return features.default;
   }
 };
@@ -194,6 +205,7 @@ const getFeatureImage = (type: string): string => {
     case 'seoAudit': return '/images/premium/seo-audit.avif';
     case 'robots': return '/images/premium/robots.avif';
     case 'studioComponents': return '/images/premium/studio-preview.avif';
+    case 'accessibility': return '/images/premium/accessibility.avif';
     default: return '/images/preview-devunity.avif';
   }
 };

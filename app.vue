@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, onErrorCaptured, onMounted } from 'vue';
+import { onBeforeMount, onErrorCaptured, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import CookieBanner from './components/cookie-banner.vue';
 import { useCookieStore } from './stores/cookieStore';
@@ -19,6 +19,30 @@ import { usePlausible } from './utils/usePlausible';
 // @ts-ignore
 import { useHead } from '#imports';
 
+const router = useRouter();
+const userStore = useUserStore();
+const cookieStore = useCookieStore();
+const plausible = usePlausible();
+const isClient = typeof window !== 'undefined';
+const sessionRestorationAttempted = ref(false);
+const maxRestorationAttempts = 2;
+const restorationAttemptCount = ref(0);
+
+if (!userStore.user) {
+  userStore.user = {
+    id: 0,
+    username: '',
+    email: '',
+    isPremium: false,
+    isAdmin: false
+  };
+}
+
+// Valeurs par défaut pour éviter les erreurs de propriété null
+userStore.isPremium = userStore.isPremium || false;
+userStore.isAdmin = userStore.isAdmin || false;
+
+// Configuration SEO
 useHead({
   title: 'DevUnity - The all-in-one platform for developers',
   meta: [
@@ -54,13 +78,6 @@ useHead({
   ]
 });
 
-const router = useRouter();
-const userStore = useUserStore();
-const cookieStore = useCookieStore();
-const plausible = usePlausible();
-
-const isClient = typeof window !== 'undefined';
-
 plausible('page_view', {
   props: {
     page: 'app_initialization',
@@ -69,12 +86,17 @@ plausible('page_view', {
 });
 
 onErrorCaptured((err, instance, info) => {
+  console.log('Erreur capturée:', err.message);
+
+  // Ignorer les erreurs spécifiques au démontage de composants Vue
   if (
     err instanceof TypeError &&
     (err.message.includes("'parentNode'") ||
-      err.message.includes("'type' of 'vnode' as it is null"))
+      err.message.includes("'type' of 'vnode'") ||
+      err.message.includes("null") ||
+      err.message.includes("undefined"))
   ) {
-    console.warn('Vue component unmount error captured and handled:', err.message);
+    console.warn('Erreur Vue ignorée:', err.message);
     return false;
   }
 
@@ -84,162 +106,293 @@ onErrorCaptured((err, instance, info) => {
 async function restoreUserSession() {
   if (!isClient) return false;
 
-  const storedToken = TokenUtils.retrieveToken();
-  const storedUserData = localStorage.getItem('user_data');
-
-  if (!storedToken || !storedUserData) {
-    console.log('Aucun token ou données utilisateur trouvés dans le stockage local');
+  // Protéger contre les boucles infinies de restauration
+  if (restorationAttemptCount.value >= maxRestorationAttempts) {
+    console.log('Nombre maximal de tentatives de restauration atteint');
     return false;
+  }
+
+  // Incrémenter le compteur de tentatives
+  restorationAttemptCount.value++;
+  sessionRestorationAttempted.value = true;
+
+  try {
+    // Vérifier le token et les données utilisateur
+    const storedToken = TokenUtils.retrieveToken();
+    const storedUserData = localStorage.getItem('user_data');
+
+    console.log('Tentative de restauration de session:', !!storedToken, !!storedUserData);
+
+    // Si aucune donnée n'est disponible, arrêter la restauration
+    if (!storedToken || !storedUserData) {
+      console.log('Aucune donnée de session trouvée, arrêt de la restauration');
+      return false;
+    }
+
+    // S'assurer que l'utilisateur existe toujours
+    if (!userStore.user) {
+      userStore.user = {
+        id: 0,
+        username: '',
+        email: '',
+        isPremium: false,
+        isAdmin: false
+      };
+    }
+
+
+    try {
+      const userData = JSON.parse(storedUserData);
+      if (userData && userData.user) {
+
+        const restoreResult = await userStore.restoreUserData();
+        userStore.token = storedToken;
+
+        userStore.isPremium = Boolean(userStore.user?.isPremium) || Boolean(userStore.isPremium) || false;
+        userStore.isAdmin = Boolean(userStore.user?.isAdmin) || Boolean(userStore.isAdmin) || false;
+
+        try {
+          const validationResult = await userStore.validateToken();
+
+          if (validationResult && validationResult.valid) {
+            console.log('Token valide, chargement des données utilisateur');
+            await userStore.loadData();
+            userStore.isAuthenticated = true;
+
+            userStore.isPremium = Boolean(userStore.user?.isPremium) || Boolean(userStore.isPremium) || false;
+            userStore.isAdmin = Boolean(userStore.user?.isAdmin) || Boolean(userStore.isAdmin) || false;
+
+            return true;
+          }
+        } catch (validationError) {
+          console.error('Erreur lors de la validation du token:', validationError);
+        }
+
+
+        try {
+          const refreshResponse = await fetch('/api/auth/refresh', {
+            method: 'POST',
+            credentials: 'include'
+          });
+
+          if (!refreshResponse.ok) {
+            console.log('Échec du rafraîchissement du token');
+            return false;
+          }
+
+          const refreshData = await refreshResponse.json();
+
+          if (!refreshData.success || !refreshData.accessToken) {
+            console.log('Pas de token dans la réponse de rafraîchissement');
+            return false;
+          }
+
+          // Stocker le nouveau token
+          TokenUtils.storeToken(refreshData.accessToken);
+          userStore.setToken(refreshData.accessToken);
+
+          if (refreshData.user) {
+            userStore.user = {
+              ...refreshData.user,
+              isPremium: Boolean(refreshData.user.isPremium),
+              isAdmin: Boolean(refreshData.user.isAdmin)
+            };
+            userStore.isAuthenticated = true;
+            userStore.isPremium = Boolean(refreshData.user.isPremium);
+            userStore.isAdmin = Boolean(refreshData.user.isAdmin);
+            userStore.persistData();
+
+            console.log('Session restaurée par rafraîchissement', {
+              authenticated: userStore.isAuthenticated,
+              premium: userStore.isPremium,
+              admin: userStore.isAdmin
+            });
+
+            return true;
+          }
+        } catch (refreshError) {
+          console.error('Erreur lors du rafraîchissement du token:', refreshError);
+        }
+      }
+    } catch (restoreError) {
+      console.error('Erreur lors de la restauration des données utilisateur:', restoreError);
+    }
+  } catch (error) {
+    console.error('Erreur générale lors de la restauration de la session:', error);
   }
 
   try {
-    await userStore.restoreUserData();
-    userStore.token = storedToken;
-
-    const validationResult = await userStore.validateToken();
-
-    if (validationResult.valid) {
-      console.log('Token valide, chargement des données utilisateur');
-      await userStore.loadData();
-      userStore.isAuthenticated = true;
-      console.log('Session utilisateur restaurée avec succès');
-      return true;
+    if (!userStore.user) {
+      userStore.user = {
+        id: 0,
+        username: '',
+        email: '',
+        isPremium: false,
+        isAdmin: false
+      };
     }
 
-    console.log('Token invalide, tentative de rafraîchissement');
-    const refreshResponse = await fetch('/api/auth/refresh', {
-      method: 'POST',
-      credentials: 'include'
-    });
-
-    if (!refreshResponse.ok) {
-      console.log('Échec du rafraîchissement du token');
-      userStore.logout();
-      return false;
-    }
-
-    const refreshData = await refreshResponse.json();
-
-    if (!refreshData.success || !refreshData.accessToken) {
-      console.log('Pas de token dans la réponse de rafraîchissement');
-      userStore.logout();
-      return false;
-    }
-
-    TokenUtils.storeToken(refreshData.accessToken);
-    userStore.setToken(refreshData.accessToken);
-
-    if (refreshData.user) {
-      userStore.user = refreshData.user;
-      userStore.isAuthenticated = true;
-      userStore.isPremium = !!refreshData.user.isPremium;
-      userStore.isAdmin = !!refreshData.user.isAdmin;
-      userStore.persistData();
-    }
-
-    console.log('Session utilisateur restaurée via rafraîchissement');
-    return true;
-  } catch (error) {
-    console.error('Erreur lors de la restauration de la session:', error);
-    userStore.logout();
-    return false;
+    userStore.isPremium = userStore.isPremium || false;
+    userStore.isAdmin = userStore.isAdmin || false;
+  } catch (fallbackError) {
+    console.error('Erreur lors de la réinitialisation de secours:', fallbackError);
   }
+
+  return false;
 }
 
 onBeforeMount(async () => {
-  if (isClient) {
-    await restoreUserSession();
+  if (isClient && !sessionRestorationAttempted.value) {
+    try {
+      await restoreUserSession();
+    } catch (error) {
+      console.error('Erreur durant la restauration initiale:', error);
+    }
   }
 });
 
 onMounted(async () => {
   if (isClient) {
-    if (!userStore.isAuthenticated) {
-      await restoreUserSession();
+    // Essayer de restaurer la session une seule fois si nécessaire
+    if (!userStore.isAuthenticated && !sessionRestorationAttempted.value) {
+      try {
+        await restoreUserSession();
+      } catch (error) {
+        console.error('Erreur durant la restauration au montage:', error);
+      }
     }
 
+    // Initialiser les cookies
     cookieStore.initCookieConsent();
-  }
 
-  router.beforeEach((to, from, next) => {
-    const token = TokenUtils.retrieveToken();
-
-    if (token && !userStore.token) {
-      userStore.token = token;
-      userStore.loadData();
-    }
-
-    if (!token) {
-      userStore.token = null;
-      userStore.isAuthenticated = false;
-    }
-
-
-    if (to.path !== from.path) {
-      plausible('pageview', {
-        props: {
-          path: to.path,
-          referrer: from.path,
-          user_type: userStore.isAuthenticated ? (userStore.user?.isPremium ? 'premium' : 'free') : 'guest'
+    // Configuration de la navigation
+    router.beforeEach((to, from, next) => {
+      try {
+        // S'assurer que l'utilisateur existe toujours pour éviter les erreurs
+        if (!userStore.user) {
+          userStore.user = {
+            id: 0,
+            username: '',
+            email: '',
+            isPremium: false,
+            isAdmin: false
+          };
         }
-      });
-    }
 
-    const premiumRoutes = ['/sql-generator', '/seo-audit', '/robots'];
+        // Vérifier et utiliser le token si disponible
+        const token = TokenUtils.retrieveToken();
+        if (token && !userStore.token) {
+          userStore.token = token;
 
-    const normalizedPath = to.path.toLowerCase();
-
-    const isPremiumRoute = premiumRoutes.some(route => {
-      const normalizedRoute = route.toLowerCase();
-      return normalizedPath === normalizedRoute ||
-        normalizedPath.startsWith(`${normalizedRoute}/`);
-    });
-
-    const isPremium = userStore.user?.isPremium ?? false;
-
-    if (isPremiumRoute && !isPremium) {
-
-      plausible('premium_access_attempt', {
-        props: {
-          route: to.path,
-          user_id: userStore.user?.id || 'guest'
-        }
-      });
-
-      next('/subscription');
-      return;
-    }
-
-    next();
-  });
-
-  if (isClient) {
-    window.addEventListener('error', (e) => {
-      plausible('error', {
-        props: {
-          message: e.message,
-          source: e.filename,
-          line: e.lineno,
-          path: window.location.pathname
-        }
-      });
-    });
-
-    document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-
-      if (target.closest('[data-plausible-feature]')) {
-        const featureElement = target.closest('[data-plausible-feature]') as HTMLElement;
-        const feature = featureElement.dataset.plausibleFeature;
-
-        plausible('feature_used', {
-          props: {
-            feature: feature,
-            path: window.location.pathname
+          // Chargement des données en mode sécurisé
+          try {
+            userStore.loadData().catch(err => {
+              console.error('Erreur non critique lors du chargement des données:', err);
+            });
+          } catch (loadError) {
+            console.error('Exception lors du chargement des données:', loadError);
           }
+        }
+
+        // Réinitialiser si pas de token
+        if (!token) {
+          userStore.token = null;
+          userStore.isAuthenticated = false;
+        }
+
+        // Suivi analytics sécurisé
+        if (to.path !== from.path) {
+          try {
+            // Utilisation sécurisée avec valeurs par défaut
+            const userType = userStore.isAuthenticated
+              ? (userStore.user && Boolean(userStore.user.isPremium) ? 'premium' : 'free')
+              : 'guest';
+
+            plausible('pageview', {
+              props: {
+                path: to.path || '/',
+                referrer: from.path || '/',
+                user_type: userType
+              }
+            });
+          } catch (analyticsError) {
+            console.error('Erreur de suivi analytics:', analyticsError);
+          }
+        }
+
+        // Vérification des routes premium
+        const premiumRoutes = ['/sql-generator', '/seo-audit', '/robots'];
+        const normalizedPath = to.path.toLowerCase();
+
+        const isPremiumRoute = premiumRoutes.some(route => {
+          const normalizedRoute = route.toLowerCase();
+          return normalizedPath === normalizedRoute || normalizedPath.startsWith(`${normalizedRoute}/`);
         });
+
+        // Vérification de statut premium avec fallback
+        let isPremium = false;
+        try {
+          isPremium = (userStore.user && Boolean(userStore.user.isPremium)) || Boolean(userStore.isPremium) || false;
+        } catch (premiumError) {
+          console.error('Erreur de vérification premium:', premiumError);
+          isPremium = false;
+        }
+
+        // Redirection si route premium et utilisateur non premium
+        if (isPremiumRoute && !isPremium) {
+          return next('/pricing');
+        }
+
+        // Continuer la navigation
+        next();
+      } catch (routerError) {
+        console.error('Erreur critique dans la navigation:', routerError);
+        // Toujours continuer pour éviter de bloquer
+        next();
       }
     });
+
+    // Gestionnaires d'événements globaux
+    if (isClient) {
+      // Suivi des erreurs
+      window.addEventListener('error', (e) => {
+        try {
+          plausible('error', {
+            props: {
+              message: e.message || 'Unknown error',
+              source: e.filename || 'Unknown source',
+              line: e.lineno || 0,
+              path: window.location.pathname || '/'
+            }
+          });
+        } catch (error) {
+          console.error('Erreur de suivi d\'erreur:', error);
+        }
+      });
+
+      // Suivi des fonctionnalités
+      document.addEventListener('click', (e) => {
+        try {
+          const target = e.target as HTMLElement;
+          if (target && target.closest) {
+            const featureElement = target.closest('[data-plausible-feature]') as HTMLElement;
+            if (featureElement && featureElement.dataset) {
+              const feature = featureElement.dataset.plausibleFeature;
+              if (feature) {
+                plausible('feature_used', {
+                  props: {
+                    feature: feature,
+                    path: window.location.pathname || '/'
+                  }
+                });
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Erreur de suivi de clics:', error);
+        }
+      });
+    }
   }
 });
 </script>

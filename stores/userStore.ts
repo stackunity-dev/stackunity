@@ -390,14 +390,6 @@ export const useUserStore = defineStore('user', {
           this.isPremium = isPremiumValue;
           this.isAdmin = isAdminValue;
 
-          console.log('[STORE] Données utilisateur restaurées avec succès:', {
-            id: this.user.id,
-            username: this.user.username,
-            isAuthenticated: this.isAuthenticated,
-            isPremium: this.isPremium,
-            isAdmin: this.isAdmin
-          });
-
           return true;
         } else {
           console.log('[STORE] Aucune donnée utilisateur trouvée dans le localStorage');
@@ -1097,7 +1089,7 @@ export const useUserStore = defineStore('user', {
         }
 
 
-        const initialResponse = await fetch('/api/website-analyzer', {
+        const initialResponse = await fetch('/api/analyze/website-analyzer', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1124,7 +1116,7 @@ export const useUserStore = defineStore('user', {
         const allResults = await Promise.all(
           urlsToAnalyze.map(async (pageUrl: string) => {
             try {
-              const response = await fetch('/api/website-analyzer', {
+              const response = await fetch('/api/analyze/website-analyzer', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1156,6 +1148,8 @@ export const useUserStore = defineStore('user', {
             }
           })
         );
+
+        console.log("allResults", allResults);
 
         const validResults = allResults.filter(result => result !== null);
         const mergedData = {

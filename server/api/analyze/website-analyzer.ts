@@ -1,299 +1,8 @@
 import axios from 'axios';
 import { load as cheerioLoad } from 'cheerio';
-import * as dns from 'dns';
 import { createError, defineEventHandler, H3Event, readBody } from 'h3';
 import { performance } from 'perf_hooks';
-import { promisify } from 'util';
 import type { CheerioSelector, ExtendedResponse, SiteAnalysisResult, StructuredData, WebsiteAnalysisResult } from './analyzer-types';
-
-const dnsResolve = promisify(dns.resolve);
-const dnsReverse = promisify(dns.reverse);
-
-interface Page {
-  evaluateOnNewDocument: (fn: () => void) => Promise<void>;
-  goto: (url: string, options?: { waitUntil: string }) => Promise<any>;
-  evaluate: <T>(fn: () => T) => Promise<T>;
-}
-
-async function analyzePerformance(url: string, page: Page): Promise<WebsiteAnalysisResult['performance']> {
-  const startTime = performance.now();
-
-  await page.evaluateOnNewDocument(() => {
-    window.performance.setResourceTimingBufferSize(500);
-  });
-
-  const response = await page.goto(url, { waitUntil: 'networkidle0' });
-  const loadTime = performance.now() - startTime;
-
-  const performanceMetrics = await page.evaluate(() => {
-    const navigation = performance.getEntriesByType('navigation' as any)[0];
-    const paint = performance.getEntriesByType('paint' as any);
-    const resources = performance.getEntriesByType('resource' as any);
-
-    const resourceStats = {
-      html: { time: 0, size: 0 },
-      css: { time: 0, size: 0 },
-      js: { time: 0, size: 0 },
-      images: { time: 0, size: 0 },
-      other: { time: 0, size: 0 }
-    };
-
-    resources.forEach((resource) => {
-      const url = resource.name;
-      const duration = resource.duration;
-      const size = (resource as PerformanceResourceTiming).transferSize;
-
-      if (url.endsWith('.css')) {
-        resourceStats.css.time += duration;
-        resourceStats.css.size += size;
-      } else if (url.endsWith('.js')) {
-        resourceStats.js.time += duration;
-        resourceStats.js.size += size;
-      } else if (url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/)) {
-        resourceStats.images.time += duration;
-        resourceStats.images.size += size;
-      } else {
-        resourceStats.other.time += duration;
-        resourceStats.other.size += size;
-      }
-    });
-
-    return {
-      ttfb: (navigation as PerformanceNavigationTiming).responseStart - (navigation as PerformanceNavigationTiming).requestStart,
-      fcp: paint.find(p => p.name === 'first-contentful-paint')?.startTime || 0,
-      resourceStats
-    };
-  });
-
-  const cls = await page.evaluate(() => {
-    let clsValue = 0;
-    let firstFrame = true;
-
-    new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        if (!firstFrame) {
-          clsValue += (entry as any).value;
-        }
-        firstFrame = false;
-      }
-    }).observe({ entryTypes: ['layout-shift'] });
-
-    return clsValue;
-  });
-
-  const totalSize = Object.values(performanceMetrics.resourceStats).reduce((acc, curr: any) => acc + curr.size, 0);
-
-  return {
-    ttfb: performanceMetrics.ttfb,
-    fcp: performanceMetrics.fcp,
-    lcp: performanceMetrics.fcp * 1.5, // Estimation
-    cls,
-    speedIndex: performanceMetrics.fcp * 0.8, // Estimation
-    totalBlockingTime: loadTime - performanceMetrics.fcp,
-    loadTime,
-    resourceLoadTimes: {
-      total: loadTime,
-      html: performanceMetrics.resourceStats.html.time,
-      css: performanceMetrics.resourceStats.css.time,
-      js: performanceMetrics.resourceStats.js.time,
-      images: performanceMetrics.resourceStats.images.time,
-      other: performanceMetrics.resourceStats.other.time
-    },
-    resourceSizes: {
-      total: totalSize,
-      html: performanceMetrics.resourceStats.html.size,
-      css: performanceMetrics.resourceStats.css.size,
-      js: performanceMetrics.resourceStats.js.size,
-      images: performanceMetrics.resourceStats.images.size,
-      other: performanceMetrics.resourceStats.other.size
-    }
-  };
-}
-
-async function analyzeSEO(url: string, html: string, $: ReturnType<typeof cheerioLoad>): Promise<WebsiteAnalysisResult['seo']> {
-  const title = $('title').text();
-  const metaDescription = $('meta[name="description"]').attr('content') || '';
-  const metaKeywords = $('meta[name="keywords"]').attr('content')?.split(',').map(k => k.trim()) || [];
-  const canonicalUrl = $('link[rel="canonical"]').attr('href') || url;
-
-  const headings = {
-    h1: $('h1').map((_, el) => $(el).text().trim()).get(),
-    h2: $('h2').map((_, el) => $(el).text().trim()).get(),
-    h3: $('h3').map((_, el) => $(el).text().trim()).get(),
-    h4: $('h4').map((_, el) => $(el).text().trim()).get(),
-    h5: $('h5').map((_, el) => $(el).text().trim()).get(),
-    h6: $('h6').map((_, el) => $(el).text().trim()).get()
-  };
-
-  const images = {
-    total: $('img').length,
-    withAlt: $('img[alt]').length,
-    withoutAlt: $('img:not([alt])').length,
-    data: await Promise.all($('img').map(async (_, el) => {
-      const $img = $(el);
-      const src = $img.attr('src') || '';
-      const size = await getImageSize(src);
-      console.log("HEREEEEEE", size);
-
-      const parentElement = $img.closest('a');
-      const parentLink = parentElement.length ? parentElement.attr('href') : '';
-
-      console.log("HEREEEEEE", parentLink);
-      console.log("HEREEEEEE", $img);
-      console.log("HEREEEEEE", $img.attr('alt'));
-      console.log("HEREEEEEE", $img.attr('title'));
-      console.log("HEREEEEEE", $img.attr('width'));
-      console.log("HEREEEEEE", $img.attr('height'));
-
-      return {
-        src,
-        size,
-        alt: $img.attr('alt') || '',
-        title: $img.attr('title') || '',
-        dimensions: {
-          width: parseInt($img.attr('width') || '0'),
-          height: parseInt($img.attr('height') || '0')
-        }
-      };
-    }).get())
-  };
-
-  console.log("HEREEEEEE", images);
-
-  const links = {
-    internal: [] as string[],
-    external: [] as string[],
-    broken: [] as string[],
-    nofollow: [] as string[]
-  };
-
-  const enhancedLinks = {
-    internal: [] as Array<{ href: string, text: string, hasImage: boolean }>,
-    external: [] as Array<{ href: string, text: string, hasImage: boolean }>
-  };
-
-  const urlObj = new URL(url);
-  const baseHost = urlObj.hostname;
-
-  $('a').each((_, el) => {
-    const $link = $(el);
-    const href = $link.attr('href');
-    const rel = $link.attr('rel');
-    const text = $link.text().trim();
-    const hasImage = $link.find('img').length > 0;
-
-    if (href) {
-      try {
-        const linkUrl = new URL(href, url);
-
-        if (linkUrl.hostname === baseHost) {
-          links.internal.push(href);
-          enhancedLinks.internal.push({ href, text: text || (hasImage ? '[Image]' : ''), hasImage });
-        } else {
-          links.external.push(href);
-          enhancedLinks.external.push({ href, text: text || (hasImage ? '[Image]' : ''), hasImage });
-        }
-
-        if (rel?.includes('nofollow')) {
-          links.nofollow.push(href);
-        }
-      } catch (e) {
-        links.broken.push(href);
-      }
-    }
-  });
-
-  const structuredData = {
-    data: [],
-    count: 0,
-    types: {} as Record<string, number>
-  };
-
-  $('script[type="application/ld+json"]').each((_, el) => {
-    try {
-      const content = $(el).html() || '{}';
-      const data = JSON.parse(content);
-      if (data && typeof data === 'object' && '@type' in data) {
-        const structuredData = data as StructuredData;
-        (structuredData.data as StructuredData[]).push(structuredData);
-        structuredData.count++;
-        const type = structuredData['@type'];
-        if (Array.isArray(type)) {
-          type.forEach(t => {
-            structuredData.types[t] = (structuredData.types[t] || 0) + 1;
-          });
-        } else {
-          structuredData.types[type] = (structuredData.types[type] || 0) + 1;
-        }
-      }
-    } catch (e) {
-      console.error('Erreur parsing JSON-LD:', e);
-    }
-  });
-
-  const socialTags = {
-    openGraph: {} as Record<string, string>,
-    twitter: {} as Record<string, string>
-  };
-
-  $('meta').each((_, el) => {
-    const $meta = $(el);
-    const property = $meta.attr('property');
-    const name = $meta.attr('name');
-    const content = $meta.attr('content');
-
-    if (property?.startsWith('og:') && content) {
-      socialTags.openGraph[property.replace('og:', '')] = content;
-    } else if (name?.startsWith('twitter:') && content) {
-      socialTags.twitter[name.replace('twitter:', '')] = content;
-    }
-  });
-
-  const text = $('body').text().trim();
-  const textToHtmlRatio = text.length / html.length;
-
-  const wordCount = text.split(/\s+/).length;
-
-  const readabilityScore = calculateReadabilityScore(text);
-
-  const keywordDensity = calculateKeywordDensity(text);
-
-  return {
-    title,
-    description: metaDescription,
-    headings,
-    images,
-    links,
-    structuredData,
-    meta: {
-      viewport: $('meta[name="viewport"]').attr('content') || false,
-      robots: $('meta[name="robots"]').attr('content'),
-      canonical: canonicalUrl,
-      og: socialTags.openGraph,
-      twitter: socialTags.twitter
-    },
-    wordCount,
-    readabilityScore,
-    keywordDensity: {}
-  };
-}
-
-async function analyzeTechnical(url: string, response: ExtendedResponse, $: CheerioSelector, html: string): Promise<WebsiteAnalysisResult['technical']> {
-  const headers = response.headers;
-
-  return {
-    statusCode: response.status || 200,
-    https: url.startsWith('https'),
-    mobile: {
-      viewport: $('meta[name="viewport"]').length > 0,
-      responsive: checkResponsiveness($)
-    },
-    security: {
-      headers: headers as Record<string, string>,
-      certificate: url.startsWith('https')
-    }
-  };
-}
 
 export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisResult> => {
   try {
@@ -366,7 +75,6 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     let securePages = 0;
 
     const pagesToAnalyze = prioritizedUrls.slice(0, Math.min(5, prioritizedUrls.length));
-    console.log('Pages à analyser prioritairement:', pagesToAnalyze);
 
     for (const pageUrl of pagesToAnalyze) {
       try {
@@ -508,8 +216,8 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
   };
 
   const imagesData = analyzeImages($);
-
   const linksData = analyzeLinks($, url);
+  const accessibilityData = analyzeAccessibility($);
 
   const seoData = {
     title: $('title').text().trim(),
@@ -597,7 +305,18 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     },
     security: {
       headers: response.headers as Record<string, string>,
-      certificate: url.startsWith('https')
+      securityIssues: []
+    },
+    meta: {
+      charset: $('meta[charset]').attr('charset'),
+      language: $('html').attr('lang'),
+      viewport: $('meta[name="viewport"]').attr('content'),
+      themeColor: $('meta[name="theme-color"]').attr('content')
+    },
+    response: {
+      headers: response.headers as Record<string, string>,
+      size: html.length,
+      time: 0
     }
   };
 
@@ -622,43 +341,11 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     };
   }
 
-  const issues: WebsiteAnalysisResult['issues'] = [];
-
-  if (!seoData.title) {
-    issues.push({
-      type: 'error',
-      message: 'Titre manquant',
-      code: 'NO_TITLE'
-    });
-  }
-
-  if (!seoData.description) {
-    issues.push({
-      type: 'warning',
-      message: 'Description meta manquante',
-      code: 'NO_META_DESC'
-    });
-  }
-
-  if (seoData.images.withoutAlt > 0) {
-    issues.push({
-      type: 'warning',
-      message: `${seoData.images.withoutAlt} image(s) sans attribut alt`,
-      code: 'MISSING_ALT'
-    });
-  }
-
-  if (performanceData.loadTime > 3000) {
-    issues.push({
-      type: 'warning',
-      message: 'Temps de chargement élevé',
-      code: 'HIGH_LOAD_TIME'
-    });
-  }
+  const issues = generateSEOIssues(seoData, performanceData);
 
   let contactInfo: Record<string, string> = {};
   try {
-    contactInfo = await findContactInfo(url, linksData.internal);
+    contactInfo = await findContactInfo(url, linksData.internal.map(link => link.href));
     console.log('Informations de contact trouvées:', contactInfo);
   } catch (error) {
     console.error('Erreur lors de la recherche des informations de contact:', error);
@@ -673,6 +360,7 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     technical: technicalData,
     technicalSEO: technicalSEO,
     schemaOrg: schemaData,
+    accessibility: accessibilityData,
     issues
   };
 
@@ -718,37 +406,48 @@ function analyzeImages($: CheerioSelector) {
 }
 
 function analyzeLinks($: CheerioSelector, baseUrl: string) {
-  const internal: string[] = [];
-  const external: string[] = [];
+  const urlObj = new URL(baseUrl);
+  const baseHost = urlObj.hostname;
 
-  $('a[href]').each((_, el) => {
-    const href = $(el).attr('href');
+  const internal = $('a[href]').map((_, el) => {
+    const $link = $(el);
+    const href = $link.attr('href') || '';
+    const text = $link.text().trim();
+    const hasImage = $link.find('img').length > 0;
+
     if (href) {
-      if (href.startsWith('http')) {
-        if (href.includes(new URL(baseUrl).hostname)) {
-          internal.push(href);
-        } else {
-          external.push(href);
+      try {
+        const linkUrl = new URL(href, baseUrl);
+        if (linkUrl.hostname === baseHost) {
+          return { href, text, hasImage };
         }
-      } else if (href.startsWith('/')) {
-        internal.push(new URL(href, baseUrl).href);
+      } catch (e) {
+        // Ignorer les liens invalides
       }
     }
-  });
+    return null;
+  }).get().filter(Boolean);
+
+  const external = $('a[href]').map((_, el) => {
+    const $link = $(el);
+    const href = $link.attr('href') || '';
+    const text = $link.text().trim();
+    const hasImage = $link.find('img').length > 0;
+
+    if (href) {
+      try {
+        const linkUrl = new URL(href, baseUrl);
+        if (linkUrl.hostname !== baseHost) {
+          return { href, text, hasImage };
+        }
+      } catch (e) {
+        // Ignorer les liens invalides
+      }
+    }
+    return null;
+  }).get().filter(Boolean);
 
   return { internal, external };
-}
-
-
-function extractSocialTags($: CheerioSelector, prefix: string) {
-  const tags: Record<string, string> = {};
-  $(`meta[property^="${prefix}:"]`).each((_, el) => {
-    const property = $(el).attr('property')?.replace(`${prefix}:`, '');
-    if (property) {
-      tags[property] = $(el).attr('content') || '';
-    }
-  });
-  return tags;
 }
 
 function calculateReadabilityScore(text: string): number {
@@ -771,7 +470,6 @@ function countSyllables(text: string): number {
 async function getImageSize(url: string): Promise<number> {
   try {
     const response = await axios.head(url);
-    console.log("HEREEEEEE", response.headers['content-length'], response);
     return parseInt(response.headers['content-length'] || '0');
   } catch {
     return 0;
@@ -820,7 +518,7 @@ function analyzeSchemaOrg(url: string, html: string, $: CheerioSelector, seo: an
     try {
       if ($('body').text().toLowerCase().includes('entreprise') ||
         $('body').text().toLowerCase().includes('société') ||
-        $('body').text().toLowerCase().includes('company')) {
+        $('body').text().includes('company')) {
 
         let orgName = '';
         try {
@@ -1346,9 +1044,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       console.error(`Erreur générale lors du crawl:`, e);
       return [normalizedUrl];
     }
-
-
-
   } catch (error) {
     console.error('Erreur fatale dans crawlWebsite:', error);
     return [baseUrl];
@@ -1447,9 +1142,7 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
 
   Object.entries(imagesData).forEach(([pageUrl, data]) => {
     try {
-
       if (data && data.images) {
-
         if (data.images.data && Array.isArray(data.images.data)) {
           console.log(`Nombre d'images trouvées: ${data.images.data.length}`);
 
@@ -1601,12 +1294,10 @@ function rankPages(results: Record<string, WebsiteAnalysisResult>): string[] {
 }
 
 async function findContactInfo(baseUrl: string, links: string[]): Promise<Record<string, string>> {
-
   if (!links || links.length === 0) {
     console.log('Aucun lien fourni pour la recherche de contact');
     return {};
   }
-
 
   try {
     const contactKeywords = ['contact', 'about', 'about-us', 'a-propos', 'qui-sommes-nous', 'equipe', 'team'];
@@ -1642,7 +1333,6 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
 
     for (const url of pagesToCheck) {
       try {
-
         const response = await axios.get(url, {
           timeout: 5000,
           headers: {
@@ -1805,16 +1495,21 @@ async function createFallbackResult(url: string): Promise<WebsiteAnalysisResult>
         }
       },
       seo: {
-        title: domain,
+        title: '',
         description: '',
         headings: { h1: [], h2: [], h3: [], h4: [], h5: [], h6: [] },
         images: { total: 0, withAlt: 0, withoutAlt: 0, data: [] as any[] },
-        links: { internal: [] as string[], external: [] as string[], broken: [] as string[], nofollow: [] as string[] },
+        links: {
+          internal: [] as Array<{ href: string; text: string; hasImage: boolean }>,
+          external: [] as Array<{ href: string; text: string; hasImage: boolean }>,
+          broken: [] as string[],
+          nofollow: [] as string[]
+        },
         structuredData: { data: [] as any[], count: 0, types: {} },
         meta: {
           viewport: false,
           robots: '',
-          canonical: url,
+          canonical: '',
           og: {},
           twitter: {}
         },
@@ -1823,7 +1518,7 @@ async function createFallbackResult(url: string): Promise<WebsiteAnalysisResult>
         keywordDensity: {}
       },
       technical: {
-        statusCode: 200,
+        statusCode: 0,
         https: url.startsWith('https'),
         mobile: {
           viewport: false,
@@ -1831,15 +1526,33 @@ async function createFallbackResult(url: string): Promise<WebsiteAnalysisResult>
         },
         security: {
           headers: {},
-          certificate: url.startsWith('https')
+          securityIssues: []
+        },
+        meta: {
+          charset: '',
+          language: '',
+          viewport: '',
+          themeColor: ''
+        },
+        response: {
+          headers: {},
+          size: 0,
+          time: 0
         }
+      },
+      accessibility: {
+        missingAria: 0,
+        missingAlt: 0,
+        missingLabels: 0,
+        missingInputAttributes: 0,
+        contrastIssues: 0,
+        ariaIssues: [],
+        inputIssues: [],
+        accessibilityScore: 0
       },
       technicalSEO: {
         sitemapFound: false,
-        sitemapUrl: '',
-        sitemapUrls: 0,
         robotsTxtFound: false,
-        robotsTxtContent: '',
         schemaTypeCount: {}
       },
       issues: []
@@ -1848,4 +1561,629 @@ async function createFallbackResult(url: string): Promise<WebsiteAnalysisResult>
     console.error('Erreur lors de la création du résultat de secours:', e);
     throw e;
   }
+}
+
+function analyzeAccessibility($: CheerioSelector): {
+  missingAria: number;
+  missingAlt: number;
+  missingLabels: number;
+  missingInputAttributes: number;
+  contrastIssues: number;
+  ariaIssues: Array<{ element: string, issue: string }>;
+  inputIssues: Array<{ element: string, issue: string }>;
+  accessibilityScore: number;
+} {
+  // Vérifier les images sans attribut alt
+  const images = $('img');
+  const imagesWithoutAlt = $('img:not([alt])');
+  const missingAlt = imagesWithoutAlt.length;
+
+
+  const imagesWithoutAltDetails: Array<{ element: string, src: string }> = [];
+  imagesWithoutAlt.each((_, el) => {
+    const $el = $(el);
+    const src = $el.attr('src') || 'without source';
+    imagesWithoutAltDetails.push({
+      element: `<img src="${src}" ...>`,
+      src
+    });
+  });
+
+  const ariaElements = $('[role]');
+  let missingAria = 0;
+  const ariaIssues: Array<{ element: string, issue: string }> = [];
+
+
+  const ariaRoles = [
+    { role: 'button', requiredAttrs: ['aria-pressed', 'aria-expanded', 'aria-disabled'] },
+    { role: 'checkbox', requiredAttrs: ['aria-checked'] },
+    { role: 'combobox', requiredAttrs: ['aria-expanded', 'aria-controls'] },
+    { role: 'dialog', requiredAttrs: ['aria-labelledby', 'aria-describedby'] },
+    { role: 'menu', requiredAttrs: ['aria-labelledby'] },
+    { role: 'menuitem', requiredAttrs: ['aria-disabled'] },
+    { role: 'option', requiredAttrs: ['aria-selected'] },
+    { role: 'progressbar', requiredAttrs: ['aria-valuenow', 'aria-valuemin', 'aria-valuemax'] },
+    { role: 'scrollbar', requiredAttrs: ['aria-controls', 'aria-valuenow', 'aria-valuemin', 'aria-valuemax'] },
+    { role: 'slider', requiredAttrs: ['aria-valuenow', 'aria-valuemin', 'aria-valuemax'] },
+    { role: 'tab', requiredAttrs: ['aria-selected'] },
+    { role: 'tabpanel', requiredAttrs: ['aria-labelledby'] },
+    { role: 'textbox', requiredAttrs: ['aria-multiline', 'aria-readonly'] }
+  ];
+
+  ariaElements.each((_, el) => {
+    const $el = $(el);
+    const role = $el.attr('role');
+    const tagName = el.type === 'tag' ? el.tagName : 'div';
+
+    if (!role) return;
+
+    // Trouver le rôle correspondant dans notre liste
+    const ariaRole = ariaRoles.find(r => r.role === role);
+    if (ariaRole) {
+      // Vérifier que les attributs requis sont présents
+      const missingAttrs = ariaRole.requiredAttrs.filter(attr => !$el.attr(attr));
+      if (missingAttrs.length > 0) {
+        missingAria++;
+        ariaIssues.push({
+          element: `<${tagName} role="${role}"...>`,
+          issue: `Attributs manquants pour rôle "${role}": ${missingAttrs.join(', ')}`
+        });
+      }
+    }
+  });
+
+  // Vérifier les éléments avec des attributs ARIA mal utilisés
+  const ariaAttributes = [
+    'aria-activedescendant', 'aria-atomic', 'aria-autocomplete', 'aria-busy', 'aria-checked',
+    'aria-controls', 'aria-current', 'aria-describedby', 'aria-disabled', 'aria-dropeffect',
+    'aria-expanded', 'aria-flowto', 'aria-grabbed', 'aria-haspopup', 'aria-hidden',
+    'aria-invalid', 'aria-label', 'aria-labelledby', 'aria-level', 'aria-live',
+    'aria-multiline', 'aria-multiselectable', 'aria-orientation', 'aria-owns', 'aria-posinset',
+    'aria-pressed', 'aria-readonly', 'aria-relevant', 'aria-required', 'aria-selected',
+    'aria-setsize', 'aria-sort', 'aria-valuemax', 'aria-valuemin', 'aria-valuenow', 'aria-valuetext'
+  ];
+
+  // Vérifier les attributs aria qui nécessitent des rôles spécifiques
+  const ariaRoleMap = {
+    'aria-checked': ['checkbox', 'radio', 'menuitemcheckbox', 'menuitemradio', 'switch'],
+    'aria-expanded': ['button', 'combobox', 'document', 'link', 'menu', 'menuitem', 'select'],
+    'aria-selected': ['option', 'row', 'tab'],
+    'aria-pressed': ['button'],
+    'aria-valuemax': ['progressbar', 'scrollbar', 'slider', 'spinbutton'],
+    'aria-valuemin': ['progressbar', 'scrollbar', 'slider', 'spinbutton'],
+    'aria-valuenow': ['progressbar', 'scrollbar', 'slider', 'spinbutton'],
+    'aria-required': ['combobox', 'textbox', 'select', 'grid', 'listbox']
+  };
+
+  Object.entries(ariaRoleMap).forEach(([ariaAttr, validRoles]) => {
+    $(`[${ariaAttr}]`).each((_, el) => {
+      const $el = $(el);
+      const role = $el.attr('role');
+
+      if (!role || !validRoles.includes(role)) {
+        const tagName = el.type === 'tag' ? el.tagName : 'div';
+        missingAria++;
+        ariaIssues.push({
+          element: `<${tagName} ${ariaAttr}="..."...>`,
+          issue: `Attribut ${ariaAttr} utilisé sans rôle approprié: ${validRoles.join(', ')}`
+        });
+      }
+    });
+  });
+
+  // Vérifier les champs de formulaire sans label associé
+  const inputs = $('input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="tel"], textarea, select');
+  let missingLabels = 0;
+  const inputIssues: Array<{ element: string, issue: string }> = [];
+
+  inputs.each((_, el) => {
+    const $el = $(el);
+    const tagName = el.type === 'tag' ? el.tagName : 'input';
+    const id = $el.attr('id');
+
+    if (!id) {
+      // Vérifier si une autre méthode d'accessibilité est utilisée
+      const hasAriaLabel = $el.attr('aria-label');
+      const hasAriaLabelledby = $el.attr('aria-labelledby');
+
+      if (!hasAriaLabel && !hasAriaLabelledby) {
+        missingLabels++;
+        inputIssues.push({
+          element: `<${tagName}...>`,
+          issue: 'Champ sans attribut id, aria-label ou aria-labelledby pour l\'accessibilité'
+        });
+      }
+    } else {
+      const hasLabel = $(`label[for="${id}"]`).length > 0;
+      if (!hasLabel) {
+        missingLabels++;
+        inputIssues.push({
+          element: `<${tagName} id="${id}"...>`,
+          issue: 'Champ avec id mais sans label associé'
+        });
+      }
+    }
+  });
+
+  // Vérifier les attributs des champs de formulaire
+  let missingInputAttributes = 0;
+  inputs.each((_, el) => {
+    const $el = $(el);
+    const tagName = el.type === 'tag' ? el.tagName : 'input';
+    const type = $el.attr('type');
+
+    // Vérifier les attributs requis par type
+    if (!$el.attr('name')) {
+      missingInputAttributes++;
+      inputIssues.push({
+        element: `<${tagName}...>`,
+        issue: 'Champ sans attribut name'
+      });
+    }
+
+    // Vérifier les attributs d'accessibilité pour chaque type
+    if (type === 'text' || type === 'email' || type === 'password' || type === 'tel') {
+      const hasPlaceholder = $el.attr('placeholder');
+      const hasAriaLabel = $el.attr('aria-label');
+      const hasAriaLabelledby = $el.attr('aria-labelledby');
+      const hasId = $el.attr('id');
+      const hasAssociatedLabel = hasId && $(`label[for="${hasId}"]`).length > 0;
+
+      if (!hasPlaceholder && !hasAriaLabel && !hasAriaLabelledby && !hasAssociatedLabel) {
+        missingInputAttributes++;
+        inputIssues.push({
+          element: `<${tagName} type="${type}"...>`,
+          issue: 'Champ sans méthode d\'identification accessible (placeholder, aria-label, aria-labelledby, ou label associé)'
+        });
+      }
+    }
+  });
+
+  // Vérifier les éléments interactifs avec des problèmes d'accessibilité
+  const interactiveElements = $('button, a[href], [role="button"], [role="link"], [onclick]');
+  interactiveElements.each((_, el) => {
+    const $el = $(el);
+    const tagName = el.type === 'tag' ? el.tagName : 'div';
+
+    // Vérifier que les éléments interactifs ont un texte ou une alternative
+    const hasTextContent = $el.text().trim().length > 0;
+    const hasAriaLabel = $el.attr('aria-label');
+    const hasAriaLabelledby = $el.attr('aria-labelledby');
+    const hasTitle = $el.attr('title');
+
+    if (!hasTextContent && !hasAriaLabel && !hasAriaLabelledby && !hasTitle) {
+      missingAria++;
+      ariaIssues.push({
+        element: `<${tagName}...>`,
+        issue: 'Élément interactif sans texte ou alternative accessible (aria-label, aria-labelledby, title)'
+      });
+    }
+  });
+
+  // Vérifier les titres de niveau (h1-h6) pour la structure hiérarchique
+  let previousLevel = 0;
+  for (let i = 1; i <= 6; i++) {
+    const headings = $(`h${i}`);
+    if (i === 1 && headings.length === 0) {
+      ariaIssues.push({
+        element: '<h1>',
+        issue: 'Aucun titre h1 trouvé sur la page. Le niveau h1 est essentiel pour la structure de la page.'
+      });
+      missingAria++;
+    } else if (i > 1 && previousLevel === 0 && headings.length > 0) {
+      ariaIssues.push({
+        element: `<h${i}>`,
+        issue: `Titre h${i} utilisé sans h${i - 1} précédent. Les niveaux de titre doivent être utilisés dans l'ordre.`
+      });
+      missingAria++;
+    }
+
+    // Mettre à jour le niveau précédent s'il y a des titres à ce niveau
+    if (headings.length > 0) {
+      previousLevel = i;
+    }
+  }
+
+  // Pour l'analyse des contrastes, nous ne pouvons pas facilement le faire côté serveur
+  // car cela nécessite des informations CSS calculées. On met une valeur par défaut.
+  const contrastIssues = 0;
+
+  // Calculer un score d'accessibilité basé sur les problèmes trouvés
+  const totalIssues = missingAria + missingAlt + missingLabels + missingInputAttributes + contrastIssues;
+  const totalElements = Math.max(1, images.length + ariaElements.length + inputs.length + interactiveElements.length);
+
+  // Calcul du score d'accessibilité plus nuancé
+  let accessibilityScore = 100;
+
+  if (totalElements > 0 && totalIssues > 0) {
+    // Pénalités pour chaque type de problème
+    if (missingAlt > 0) {
+      // Plus grave pour les images sans alt
+      accessibilityScore -= Math.min(25, (missingAlt / Math.max(1, images.length)) * 100);
+    }
+
+    if (missingAria > 0) {
+      accessibilityScore -= Math.min(20, (missingAria / Math.max(1, ariaElements.length + interactiveElements.length)) * 100);
+    }
+
+    if (missingLabels > 0 || missingInputAttributes > 0) {
+      accessibilityScore -= Math.min(30, ((missingLabels + missingInputAttributes) / Math.max(1, inputs.length)) * 100);
+    }
+  }
+
+  // S'il n'y a aucun élément à vérifier, le score est parfait
+  if (totalElements <= 1 && totalIssues === 0) {
+    accessibilityScore = 100;
+  }
+
+  // Arrondir et s'assurer que le score est entre 0 et 100
+  accessibilityScore = Math.max(0, Math.min(100, Math.round(accessibilityScore)));
+
+  return {
+    missingAria,
+    missingAlt,
+    missingLabels,
+    missingInputAttributes,
+    contrastIssues,
+    ariaIssues,
+    inputIssues,
+    accessibilityScore
+  };
+}
+
+function generateSEOIssues(seoData: any, performanceData: any): Array<{ type: string; message: string; severity: 'critical' | 'high' | 'medium' | 'low' }> {
+  const issues: Array<{ type: string; message: string; severity: 'critical' | 'high' | 'medium' | 'low' }> = [];
+
+  if (!seoData.title) {
+    issues.push({
+      type: 'error',
+      message: 'Titre manquant',
+      severity: 'high'
+    });
+  }
+
+  if (!seoData.description) {
+    issues.push({
+      type: 'warning',
+      message: 'Description meta manquante',
+      severity: 'medium'
+    });
+  }
+
+  if (seoData.images && seoData.images.withoutAlt > 0) {
+    issues.push({
+      type: 'warning',
+      message: `${seoData.images.withoutAlt} image(s) sans attribut alt`,
+      severity: 'medium'
+    });
+  }
+
+  if (performanceData && performanceData.loadTime > 3000) {
+    issues.push({
+      type: 'warning',
+      message: 'Temps de chargement élevé',
+      severity: 'medium'
+    });
+  }
+
+  return issues;
+}
+
+
+export function analyzeMetaTags($: CheerioSelector, url: string): {
+  score: number;
+  essential: Array<{ name: string; present: boolean; content?: string }>;
+  social: Array<{ name: string; present: boolean; content?: string }>;
+  issues: Array<{ tagName: string; issue: string; recommendation: string; example?: string; severity: string }>;
+  metaHtml: string;
+} {
+  const metaTags = $('meta').toArray();
+  const title = $('title').text().trim();
+  const metaTagsHtml = metaTags.map(tag => $.html(tag)).join('\n');
+
+  // Check for essential meta tags
+  const essentialTags = [
+    { name: 'Title', present: title.length > 0, content: title },
+    { name: 'Description', present: $('meta[name="description"]').length > 0, content: $('meta[name="description"]').attr('content') || '' },
+    { name: 'Viewport', present: $('meta[name="viewport"]').length > 0, content: $('meta[name="viewport"]').attr('content') || '' },
+    { name: 'Charset', present: $('meta[charset]').length > 0 || $('meta[http-equiv="Content-Type"]').length > 0, content: $('meta[charset]').attr('charset') || $('meta[http-equiv="Content-Type"]').attr('content') || '' },
+    { name: 'Robots', present: $('meta[name="robots"]').length > 0, content: $('meta[name="robots"]').attr('content') || '' },
+    { name: 'Canonical', present: $('link[rel="canonical"]').length > 0, content: $('link[rel="canonical"]').attr('href') || '' },
+  ];
+
+  // Check for social media tags
+  const socialTags = [
+    { name: 'og:title', present: $('meta[property="og:title"]').length > 0, content: $('meta[property="og:title"]').attr('content') || '' },
+    { name: 'og:description', present: $('meta[property="og:description"]').length > 0, content: $('meta[property="og:description"]').attr('content') || '' },
+    { name: 'og:image', present: $('meta[property="og:image"]').length > 0, content: $('meta[property="og:image"]').attr('content') || '' },
+    { name: 'og:url', present: $('meta[property="og:url"]').length > 0, content: $('meta[property="og:url"]').attr('content') || '' },
+    { name: 'og:type', present: $('meta[property="og:type"]').length > 0, content: $('meta[property="og:type"]').attr('content') || '' },
+    { name: 'twitter:card', present: $('meta[name="twitter:card"]').length > 0, content: $('meta[name="twitter:card"]').attr('content') || '' },
+    { name: 'twitter:title', present: $('meta[name="twitter:title"]').length > 0, content: $('meta[name="twitter:title"]').attr('content') || '' },
+    { name: 'twitter:description', present: $('meta[name="twitter:description"]').length > 0, content: $('meta[name="twitter:description"]').attr('content') || '' },
+    { name: 'twitter:image', present: $('meta[name="twitter:image"]').length > 0, content: $('meta[name="twitter:image"]').attr('content') || '' },
+  ];
+
+  // Identify missing or problematic meta tags
+  const issues: Array<{ tagName: string, issue: string, recommendation: string, example?: string, severity: string }> = [];
+
+  if (!title || title.length < 10 || title.length > 60) {
+    issues.push({
+      tagName: 'title',
+      issue: 'Title tag is missing or has improper length',
+      recommendation: 'Add a descriptive title between 10-60 characters',
+      example: '<title>Your Descriptive Page Title | Brand Name</title>',
+      severity: 'critical'
+    });
+  }
+
+  const descriptionTag = $('meta[name="description"]');
+  if (!descriptionTag.length) {
+    issues.push({
+      tagName: 'meta description',
+      issue: 'Meta description is missing',
+      recommendation: 'Add a descriptive meta description between 50-160 characters',
+      example: '<meta name="description" content="A compelling description of your page content that includes relevant keywords">',
+      severity: 'high'
+    });
+  } else {
+    const descriptionContent = descriptionTag.attr('content') || '';
+    if (descriptionContent.length < 50 || descriptionContent.length > 160) {
+      issues.push({
+        tagName: 'meta description',
+        issue: 'Meta description has improper length',
+        recommendation: 'Meta description should be between 50-160 characters for optimal display in search results',
+        severity: 'medium'
+      });
+    }
+  }
+
+  if (!$('meta[name="viewport"]').length) {
+    issues.push({
+      tagName: 'meta viewport',
+      issue: 'Viewport meta tag is missing',
+      recommendation: 'Add a viewport meta tag for better mobile responsiveness',
+      example: '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+      severity: 'high'
+    });
+  }
+
+  if (!$('meta[charset]').length && !$('meta[http-equiv="Content-Type"]').length) {
+    issues.push({
+      tagName: 'meta charset',
+      issue: 'Character encoding meta tag is missing',
+      recommendation: 'Add a charset meta tag',
+      example: '<meta charset="UTF-8">',
+      severity: 'high'
+    });
+  }
+
+  if (!$('link[rel="canonical"]').length) {
+    issues.push({
+      tagName: 'canonical link',
+      issue: 'Canonical link is missing',
+      recommendation: 'Add a canonical link to prevent duplicate content issues',
+      example: `<link rel="canonical" href="${url}">`,
+      severity: 'medium'
+    });
+  }
+
+  // Calculate score based on essential and social tags presence
+  const essentialCount = essentialTags.filter(tag => tag.present).length;
+  const essentialScore = (essentialCount / essentialTags.length) * 100;
+
+  const socialCount = socialTags.filter(tag => tag.present).length;
+  const socialScore = (socialCount / socialTags.length) * 100;
+
+  const issuesScore = Math.max(0, 100 - (issues.length * 10));
+
+  const finalScore = Math.min(100, Math.round((essentialScore * 0.6) + (socialScore * 0.3) + (issuesScore * 0.1)));
+
+  return {
+    score: finalScore,
+    essential: essentialTags,
+    social: socialTags,
+    issues: issues,
+    metaHtml: metaTagsHtml
+  };
+}
+
+export function analyzeAriaAttributes($: CheerioSelector): {
+  score: number;
+  missingAriaCount: number;
+  missingLabels: number;
+  invalidAriaCount: number;
+  interactiveElementsCount: number;
+  interactiveElementsWithAriaPercent: number;
+  formElementsCount: number;
+  formElementsWithLabelsPercent: number;
+  issues: Array<{ element: string; issue: string; suggestion: string; code?: string; severity: string }>;
+} {
+  // Interactive elements that should have ARIA roles or attributes
+  const interactiveElements = $('button, a, input, select, textarea, [role="button"], [role="link"], [role="checkbox"], [role="radio"], [role="tab"], [role="menu"], [role="menuitem"], [role="listbox"], [role="option"]');
+  const interactiveElementsCount = interactiveElements.length;
+
+  // Form elements that should have labels
+  const formElements = $('input, select, textarea');
+  const formElementsCount = formElements.length;
+
+  let missingAriaCount = 0;
+  let invalidAriaCount = 0;
+  let missingLabels = 0;
+
+  const interactiveElementsWithAria = interactiveElements.filter(function () {
+    const element = $(this);
+    const tagName = element.prop('tagName')?.toLowerCase() || '';
+    const hasAriaRole = element.attr('role') !== undefined;
+    const hasAriaLabel = element.attr('aria-label') !== undefined || element.attr('aria-labelledby') !== undefined;
+
+    // Check if element has appropriate ARIA attributes
+    if (!hasAriaRole && !hasAriaLabel && tagName !== 'a' && tagName !== 'button') {
+      missingAriaCount++;
+      return false;
+    }
+
+    return true;
+  }).length;
+
+  const formElementsWithLabels = formElements.filter(function () {
+    const element = $(this);
+    const id = element.attr('id');
+    const hasExplicitLabel = id ? $(`label[for="${id}"]`).length > 0 : false;
+    const hasAriaLabel = element.attr('aria-label') !== undefined || element.attr('aria-labelledby') !== undefined;
+
+    if (!hasExplicitLabel && !hasAriaLabel) {
+      missingLabels++;
+      return false;
+    }
+
+    return true;
+  }).length;
+
+  // Check for elements with invalid ARIA attributes
+  $('[aria-labelledby]').each(function () {
+    const labelledby = $(this).attr('aria-labelledby');
+    if (labelledby && !labelledby.includes('{{') && !labelledby.includes('}}')) {
+      try {
+        // Utiliser une méthode plus sûre pour vérifier l'existence de l'élément
+        const idSelector = labelledby.split(' ').map(id => `#${id.replace(/['"\\]/g, '\\$&')}`).join(', ');
+        if (idSelector && $(idSelector).length === 0) {
+          invalidAriaCount++;
+        }
+      } catch (error) {
+        console.error('Erreur lors du traitement du sélecteur aria-labelledby:', error);
+      }
+    }
+  });
+
+  // Calculate percentages
+  const interactiveElementsWithAriaPercent = interactiveElementsCount > 0 ?
+    Math.round((interactiveElementsWithAria / interactiveElementsCount) * 100) : 100;
+
+  const formElementsWithLabelsPercent = formElementsCount > 0 ?
+    Math.round((formElementsWithLabels / formElementsCount) * 100) : 100;
+
+  // Collect issues
+  const issues: Array<{ element: string; issue: string; suggestion: string; code?: string; severity: string }> = [];
+
+  // Check for missing alt attributes on images
+  $('img').each(function () {
+    const img = $(this);
+    if (!img.attr('alt') && !img.attr('role') && !img.attr('aria-hidden')) {
+      issues.push({
+        element: '<img>',
+        issue: 'Image missing alt attribute',
+        suggestion: 'Add an alt attribute to provide alternative text for screen readers. Use empty alt="" for decorative images.',
+        code: $.html(this),
+        severity: 'critical'
+      });
+    }
+  });
+
+  // Check for form elements without labels
+  $('input, select, textarea').each(function () {
+    const element = $(this);
+    const id = element.attr('id');
+    const type = element.attr('type')?.toLowerCase();
+
+    // Skip hidden and submit inputs
+    if (type === 'hidden' || type === 'submit' || type === 'button') {
+      return;
+    }
+
+    const hasExplicitLabel = id ? $(`label[for="${id}"]`).length > 0 : false;
+    const hasAriaLabel = element.attr('aria-label') !== undefined || element.attr('aria-labelledby') !== undefined;
+
+    if (!hasExplicitLabel && !hasAriaLabel) {
+      issues.push({
+        element: `<${element.prop('tagName')?.toLowerCase() || 'input'}>`,
+        issue: 'Form control without a label',
+        suggestion: 'Add a proper label tag with a "for" attribute or an aria-label for this form control.',
+        code: $.html(this),
+        severity: 'critical'
+      });
+    }
+  });
+
+  // Check for anchor tags without href
+  $('a').each(function () {
+    if (!$(this).attr('href') && !$(this).attr('role')) {
+      issues.push({
+        element: '<a>',
+        issue: 'Anchor tag without href attribute',
+        suggestion: 'Add an href attribute or a role attribute for anchors used as buttons.',
+        code: $.html(this),
+        severity: 'warning'
+      });
+    }
+  });
+
+  // Check for buttons without text
+  $('button').each(function () {
+    const button = $(this);
+    const buttonText = button.text().trim();
+    const hasAriaLabel = button.attr('aria-label') !== undefined || button.attr('aria-labelledby') !== undefined;
+
+    if (buttonText === '' && !hasAriaLabel) {
+      issues.push({
+        element: '<button>',
+        issue: 'Button without text or ARIA label',
+        suggestion: 'Add text content or an aria-label attribute to the button.',
+        code: $.html(this),
+        severity: 'critical'
+      });
+    }
+  });
+
+  // Check for invalid ARIA references
+  $('[aria-labelledby]').each(function () {
+    const labelledby = $(this).attr('aria-labelledby');
+    if (labelledby && !labelledby.includes('{{') && !labelledby.includes('}}')) {
+      try {
+        // Utiliser une méthode plus sûre pour vérifier l'existence de l'élément
+        const idSelector = labelledby.split(' ').map(id => `#${id.replace(/['"\\]/g, '\\$&')}`).join(', ');
+        if (idSelector && $(idSelector).length === 0) {
+          issues.push({
+            element: $(this).prop('tagName')?.toLowerCase() || 'element',
+            issue: `Invalid aria-labelledby reference: #${labelledby} does not exist`,
+            suggestion: 'Ensure aria-labelledby references an existing element ID.',
+            code: $.html(this),
+            severity: 'critical'
+          });
+        }
+      } catch (error) {
+        console.error('Erreur lors du traitement du sélecteur aria-labelledby:', error);
+      }
+    }
+  });
+
+  // Calculate score
+  const missingAriaScore = interactiveElementsCount > 0 ?
+    Math.min(100, 100 - (missingAriaCount / interactiveElementsCount * 100)) : 100;
+
+  const missingLabelsScore = formElementsCount > 0 ?
+    Math.min(100, 100 - (missingLabels / formElementsCount * 100)) : 100;
+
+  const invalidAriaScore = Math.max(0, 100 - (invalidAriaCount * 10));
+
+  const issuesScore = Math.max(0, 100 - (issues.length * 5));
+
+  const finalScore = Math.round(
+    (missingAriaScore * 0.3) +
+    (missingLabelsScore * 0.3) +
+    (invalidAriaScore * 0.2) +
+    (issuesScore * 0.2)
+  );
+
+  return {
+    score: finalScore,
+    missingAriaCount,
+    missingLabels,
+    invalidAriaCount,
+    interactiveElementsCount,
+    interactiveElementsWithAriaPercent,
+    formElementsCount,
+    formElementsWithLabelsPercent,
+    issues
+  };
 }

@@ -3,16 +3,30 @@
     <div class="error-content">
       <img src="/logo/devunity.png" alt="DevUnity Logo" width="200" class="error-logo mb-8" />
 
-      <h1 class="error-title">{{ error?.statusCode === 404 ? 'Page not found' : 'An error occurred' }}</h1>
-      <p class="error-message mb-4">{{ 'We\'re sorry, but something went wrong.' }}</p>
+      <h1 class="error-title">
+        <template v-if="error?.statusCode === 404">Page not found</template>
+        <template v-else-if="isAuthError">Authentication error</template>
+        <template v-else>An error occurred</template>
+      </h1>
+
+      <p class="error-message mb-4">
+        <template v-if="isAuthError">Your session has expired or is no longer valid. Automatic reconnection attempt in
+          progress...</template>
+        <template v-else>{{ error?.message || "We're sorry, but something went wrong." }}</template>
+      </p>
+
+      <div v-if="isLoading" class="loading-section mb-4">
+        <v-progress-circular indeterminate color="primary" class="mb-2"></v-progress-circular>
+        <p class="loading-text">Attempting to restore your session... Please wait.</p>
+      </div>
 
       <div class="error-actions">
-        <v-btn color="primary" @click="handleError" size="large">
+        <v-btn color="primary" @click="handleError" size="large" :loading="isLoading">
           <v-icon start>mdi-refresh</v-icon>
           Try again
         </v-btn>
 
-        <v-btn color="secondary" variant="outlined" to="/" size="large">
+        <v-btn color="secondary" variant="outlined" to="/" size="large" :disabled="isLoading">
           <v-icon start>mdi-home</v-icon>
           Return to home
         </v-btn>
@@ -22,18 +36,42 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { computed, onMounted, ref } from 'vue';
 
-defineProps({
+const props = defineProps({
   error: Object
 });
 
-const router = useRouter();
-const showDetails = process.env.NODE_ENV === 'development';
+const isLoading = ref(false);
+const isAuthError = computed(() => {
+  if (!props.error) return false;
+  return props.error.statusCode === 401 ||
+    props.error.statusCode === 403 ||
+    (props.error.message && props.error.message.toLowerCase().includes('premium')) ||
+    (props.error.message && props.error.message.toLowerCase().includes('auth')) ||
+    (props.error.message && props.error.message.toLowerCase().includes('null')) ||
+    (props.error.message && props.error.message.toLowerCase().includes('undefined')) ||
+    (props.error.message && props.error.message.toLowerCase().includes('properties'));
+});
 
 const handleError = () => {
-  window.location.reload();
+  isLoading.value = true;
+  setTimeout(() => {
+    window.location.reload();
+  }, 1500);
 };
+
+onMounted(() => {
+  // Au chargement, vérifie si une erreur est liée à l'authentification
+  // et tente automatiquement de restaurer la session
+  if (isAuthError.value) {
+    console.log("Tentative de restauration de session pour erreur:", props.error);
+    isLoading.value = true;
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000);
+  }
+});
 </script>
 
 <style scoped>
@@ -78,6 +116,21 @@ const handleError = () => {
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.loading-text {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: rgb(var(--v-theme-primary));
+  font-weight: 500;
 }
 
 .error-code {

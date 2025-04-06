@@ -6,6 +6,12 @@ export interface StructuredData {
   [key: string]: any;
 }
 
+export interface SecurityIssue {
+  type: string;
+  description: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+}
+
 export interface WebsiteAnalysisResult {
   url: string;
   performance: {
@@ -50,22 +56,23 @@ export interface WebsiteAnalysisResult {
       withoutAlt: number;
       data: Array<{
         src: string;
-        alt?: string;
-        title?: string;
-        dimensions?: {
-          width?: number;
-          height?: number;
+        alt: string;
+        title: string;
+        size?: number;
+        dimensions: {
+          width: number;
+          height: number;
         };
       }>;
     };
     links: {
-      internal: string[];
-      external: string[];
+      internal: Array<{ href: string; text: string; hasImage: boolean }>;
+      external: Array<{ href: string; text: string; hasImage: boolean }>;
       broken: string[];
       nofollow: string[];
     };
     meta: {
-      viewport: string | false;
+      viewport: string | boolean;
       robots?: string;
       canonical?: string;
       og: Record<string, string>;
@@ -79,6 +86,34 @@ export interface WebsiteAnalysisResult {
       count: number;
       types: Record<string, number>;
     };
+    semanticStructure?: {
+      score: number;
+      issues: Array<{ element: string; issue: string; suggestion: string }>;
+      structure: {
+        hasHeader: boolean;
+        hasMain: boolean;
+        hasFooter: boolean;
+        hasNav: boolean;
+        hasArticle: boolean;
+        hasSection: boolean;
+        hasAside: boolean;
+        hasFigure: boolean;
+        validH1Usage: boolean;
+        validHeadingStructure: boolean;
+      };
+      headingStructure: Array<{ level: number; text: string; order: number }>;
+      readabilityAnalysis: {
+        score: number;
+        grade: string;
+        wordCount: number;
+        sentenceCount: number;
+        complexWordCount: number;
+        paragraphCount: number;
+        averageSentenceLength: number;
+        averageWordLength: number;
+        suggestion: string;
+      };
+    };
   };
   technical: {
     statusCode: number;
@@ -89,8 +124,29 @@ export interface WebsiteAnalysisResult {
     };
     security: {
       headers: Record<string, string>;
-      certificate: boolean;
+      securityIssues: SecurityIssue[];
     };
+    meta: {
+      charset?: string;
+      language?: string;
+      viewport?: string;
+      themeColor?: string;
+    };
+    response: {
+      headers: Record<string, string>;
+      size: number;
+      time: number;
+    };
+  };
+  accessibility: {
+    missingAria: number;
+    missingAlt: number;
+    missingLabels: number;
+    missingInputAttributes: number;
+    contrastIssues: number;
+    ariaIssues: Array<{ element: string, issue: string }>;
+    inputIssues: Array<{ element: string, issue: string }>;
+    accessibilityScore: number;
   };
   technicalSEO?: {
     sitemapFound: boolean;
@@ -101,9 +157,9 @@ export interface WebsiteAnalysisResult {
     schemaTypeCount: Record<string, number>;
   };
   issues: Array<{
-    type: 'error' | 'warning' | 'info';
+    type: string;
     message: string;
-    code: string;
+    severity: 'critical' | 'high' | 'medium' | 'low';
   }>;
 }
 
@@ -152,5 +208,13 @@ export interface SchemaOrg {
 }
 
 export interface ExtendedWebsiteAnalysisResult extends WebsiteAnalysisResult {
-  schemaOrg: SchemaOrg;
+  schemaOrg: {
+    suggestions?: SchemaOrgSuggestion[];
+    contactInfo?: Record<string, string>;
+  };
+  issues: Array<{
+    type: string;
+    message: string;
+    severity: 'critical' | 'high' | 'medium' | 'low';
+  }>;
 } 

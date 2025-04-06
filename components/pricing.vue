@@ -1,9 +1,9 @@
 <template>
   <v-container class="pa-md-12 pa-sm-6" fluid>
     <v-responsive class="text-center mx-auto mb-6 mb-md-12" max-width="700">
-      <h1 class="text-md-h4 font-weight-bold mb-4 text-sm-h5">
+      <h2 class="text-md-h4 font-weight-bold mb-4 text-sm-h5">
         Unlimited Access for One Price
-      </h1>
+      </h2>
 
       <p class="text-subtitle-1 text-medium-emphasis">
         Get access to all our premium development tools with a single payment.

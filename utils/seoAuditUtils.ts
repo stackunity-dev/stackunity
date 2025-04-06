@@ -76,6 +76,18 @@ export interface SEOResult {
     wordCount?: number;
     keywordDensity?: number;
   };
+  accessibility?: AccessibilityData;
+}
+
+export interface AccessibilityData {
+  missingAria: number;
+  missingAlt: number;
+  missingLabels: number;
+  missingInputAttributes: number;
+  contrastIssues: number;
+  ariaIssues: Array<{ element: string, issue: string }>;
+  inputIssues: Array<{ element: string, issue: string }>;
+  accessibilityScore: number;
 }
 
 export const calculateOverallScore = (result: SEOResult): number => {
@@ -115,11 +127,16 @@ export const calculateOverallScore = (result: SEOResult): number => {
   if ((result.coreWebVitals?.LCP || 0) > 4000) score -= 10;
   if ((result.coreWebVitals?.TTFB || 0) > 1500) score -= 10;
 
+  if (result.accessibility) {
+    const accessibilityScore = calculateAccessibilityScore(result);
+    score = (score * 0.8) + (accessibilityScore * 0.2);
+  }
+
   if (score > 90) score = 90;
   if (warningCount > 5) score = Math.min(score, 70);
   if (warningCount > 10) score = Math.min(score, 50);
 
-  return Math.max(0, Math.min(100, score));
+  return Math.max(0, Math.min(100, Math.round(score)));
 };
 
 export const getScoreColor = (score: number): string => {
@@ -840,4 +857,88 @@ export const getPerformanceColor = (score: number): string => {
   if (score >= 80) return 'success';
   if (score >= 60) return 'warning';
   return 'error';
+};
+
+export const calculateAccessibilityScore = (result: SEOResult): number => {
+  if (!result || !result.accessibility) return 0;
+
+  const accessibility = result.accessibility;
+  const totalIssues = accessibility.missingAria +
+    accessibility.missingAlt +
+    accessibility.missingLabels +
+    accessibility.missingInputAttributes +
+    accessibility.contrastIssues;
+
+  if (totalIssues === 0) return 100;
+
+  const score = Math.max(0, 100 - (totalIssues * 5));
+
+  return Math.min(Math.max(0, Math.round(score)), 100);
+};
+
+export const getAccessibilityScoreColor = (score: number): string => {
+  if (score >= 90) return 'success';
+  if (score >= 70) return 'info';
+  if (score >= 50) return 'warning';
+  return 'error';
+};
+
+export const getAccessibilityScoreLabel = (score: number): string => {
+  if (score >= 90) return 'Excellent';
+  if (score >= 70) return 'Bon';
+  if (score >= 50) return 'Moyen';
+  return 'À améliorer';
+};
+
+export const getAccessibilityIssues = (result: SEOResult): ActionItem[] => {
+  const issues: ActionItem[] = [];
+
+  if (!result || !result.accessibility) return issues;
+
+  // Vérifier les problèmes d'attributs ARIA
+  if (result.accessibility.missingAria > 0) {
+    issues.push({
+      title: `${result.accessibility.missingAria} attributs ARIA manquants`,
+      description: 'Ajouter des attributs ARIA pour améliorer l\'accessibilité',
+      severity: 'medium'
+    });
+  }
+
+  // Vérifier les images sans attribut alt
+  if (result.accessibility.missingAlt > 0) {
+    issues.push({
+      title: `${result.accessibility.missingAlt} images sans attribut alt`,
+      description: 'Ajouter des attributs alt descriptifs à toutes les images',
+      severity: 'high'
+    });
+  }
+
+  // Vérifier les champs de formulaire sans label
+  if (result.accessibility.missingLabels > 0) {
+    issues.push({
+      title: `${result.accessibility.missingLabels} champs sans label associé`,
+      description: 'Associer des labels à tous les champs de formulaire',
+      severity: 'high'
+    });
+  }
+
+  // Vérifier les problèmes d'attributs sur les champs de formulaire
+  if (result.accessibility.missingInputAttributes > 0) {
+    issues.push({
+      title: `${result.accessibility.missingInputAttributes} champs avec attributs manquants`,
+      description: 'Ajouter les attributs requis (name, id, etc.) aux champs de formulaire',
+      severity: 'medium'
+    });
+  }
+
+  // Vérifier les problèmes de contraste
+  if (result.accessibility.contrastIssues > 0) {
+    issues.push({
+      title: `${result.accessibility.contrastIssues} problèmes de contraste détectés`,
+      description: 'Améliorer le contraste entre le texte et l\'arrière-plan',
+      severity: 'medium'
+    });
+  }
+
+  return issues;
 }; 
