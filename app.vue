@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onErrorCaptured, onMounted } from 'vue';
+import { onBeforeMount, onErrorCaptured, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import CookieBanner from './components/cookie-banner.vue';
 import { useCookieStore } from './stores/cookieStore';
@@ -59,6 +59,8 @@ const userStore = useUserStore();
 const cookieStore = useCookieStore();
 const plausible = usePlausible();
 
+const isClient = typeof window !== 'undefined';
+
 plausible('page_view', {
   props: {
     page: 'app_initialization',
@@ -79,13 +81,84 @@ onErrorCaptured((err, instance, info) => {
   return true;
 });
 
-onMounted(() => {
-  userStore.initializeStore();
+async function restoreUserSession() {
+  if (!isClient) return false;
 
-  if (process.client) {
+  const storedToken = TokenUtils.retrieveToken();
+  const storedUserData = localStorage.getItem('user_data');
+
+  if (!storedToken || !storedUserData) {
+    console.log('Aucun token ou données utilisateur trouvés dans le stockage local');
+    return false;
+  }
+
+  try {
+    await userStore.restoreUserData();
+    userStore.token = storedToken;
+
+    const validationResult = await userStore.validateToken();
+
+    if (validationResult.valid) {
+      console.log('Token valide, chargement des données utilisateur');
+      await userStore.loadData();
+      userStore.isAuthenticated = true;
+      console.log('Session utilisateur restaurée avec succès');
+      return true;
+    }
+
+    console.log('Token invalide, tentative de rafraîchissement');
+    const refreshResponse = await fetch('/api/auth/refresh', {
+      method: 'POST',
+      credentials: 'include'
+    });
+
+    if (!refreshResponse.ok) {
+      console.log('Échec du rafraîchissement du token');
+      userStore.logout();
+      return false;
+    }
+
+    const refreshData = await refreshResponse.json();
+
+    if (!refreshData.success || !refreshData.accessToken) {
+      console.log('Pas de token dans la réponse de rafraîchissement');
+      userStore.logout();
+      return false;
+    }
+
+    TokenUtils.storeToken(refreshData.accessToken);
+    userStore.setToken(refreshData.accessToken);
+
+    if (refreshData.user) {
+      userStore.user = refreshData.user;
+      userStore.isAuthenticated = true;
+      userStore.isPremium = !!refreshData.user.isPremium;
+      userStore.isAdmin = !!refreshData.user.isAdmin;
+      userStore.persistData();
+    }
+
+    console.log('Session utilisateur restaurée via rafraîchissement');
+    return true;
+  } catch (error) {
+    console.error('Erreur lors de la restauration de la session:', error);
+    userStore.logout();
+    return false;
+  }
+}
+
+onBeforeMount(async () => {
+  if (isClient) {
+    await restoreUserSession();
+  }
+});
+
+onMounted(async () => {
+  if (isClient) {
+    if (!userStore.isAuthenticated) {
+      await restoreUserSession();
+    }
+
     cookieStore.initCookieConsent();
-
-    userStore.validateToken();
   }
 
   router.beforeEach((to, from, next) => {
@@ -140,7 +213,7 @@ onMounted(() => {
     next();
   });
 
-  if (process.client) {
+  if (isClient) {
     window.addEventListener('error', (e) => {
       plausible('error', {
         props: {

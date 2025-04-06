@@ -333,13 +333,8 @@ interface ApiResponse {
 const getAudit = async () => {
   loading.value = true;
   console.log(url.value);
-  const response = await $fetch<ApiResponse>('/api/audit', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${userStore.token}`
-    },
-    body: { url: url.value }
-  });
+
+  const response: any = await userStore.getAudit(url.value)
 
   if (response) {
     auditData.value = response.data;

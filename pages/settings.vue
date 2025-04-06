@@ -274,13 +274,15 @@ const snackbarColor = ref('success');
 const showDeleteAccount = ref(false);
 const deleteAccountConfirmation = ref('');
 
-const theme = ref<string>(process.client ? localStorage.getItem('app_theme') || 'dark' : 'dark');
+const isClient = typeof window !== 'undefined';
+
+const theme = ref<string>(isClient ? localStorage.getItem('app_theme') || 'dark' : 'dark');
 
 const changeTheme = (newTheme: string) => {
   if (['light', 'dark', 'system'].includes(newTheme)) {
     theme.value = newTheme;
 
-    if (process.client) {
+    if (isClient) {
       if (newTheme === 'system') {
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         vuetifyTheme.global.name.value = prefersDark ? 'dark' : 'light';
@@ -300,9 +302,9 @@ const security = ref({
 
 const cookies = ref({
   essential: true,
-  functional: process.client ? localStorage.getItem('cookies_functional') === 'true' : true,
-  analytics: process.client ? localStorage.getItem('cookies_analytics') === 'true' : false,
-  marketing: process.client ? localStorage.getItem('cookies_marketing') === 'true' : false
+  functional: isClient ? localStorage.getItem('cookies_functional') === 'true' : true,
+  analytics: isClient ? localStorage.getItem('cookies_analytics') === 'true' : false,
+  marketing: isClient ? localStorage.getItem('cookies_marketing') === 'true' : false
 });
 
 
@@ -341,7 +343,7 @@ const saveSecurity = async () => {
 };
 
 const saveCookies = () => {
-  if (process.client) {
+  if (isClient) {
     localStorage.setItem('cookies_functional', cookies.value.functional.toString());
     localStorage.setItem('cookies_analytics', cookies.value.analytics.toString());
     localStorage.setItem('cookies_marketing', cookies.value.marketing.toString());
@@ -354,7 +356,7 @@ const resetCookies = () => {
   cookies.value.analytics = false;
   cookies.value.marketing = false;
 
-  if (process.client) {
+  if (isClient) {
     localStorage.setItem('cookies_functional', 'false');
     localStorage.setItem('cookies_analytics', 'false');
     localStorage.setItem('cookies_marketing', 'false');
@@ -396,7 +398,7 @@ const showSnackbar = (text: string, color: string) => {
 
 onMounted(() => {
 
-  if (process.client) {
+  if (isClient) {
     const savedTheme = localStorage.getItem('app_theme');
     if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
       theme.value = savedTheme;

@@ -25,7 +25,8 @@
 </template>
 
 <script lang="ts" setup>
-
+// @ts-ignore
+import { useHead } from '#imports';
 
 const faqItems = [
   {
@@ -49,4 +50,26 @@ const faqItems = [
     answer: 'All users have access to community support. Premium Users benefit from priority support via email.'
   }
 ];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer
+    }
+  }))
+}
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify(faqJsonLd)
+    }
+  ]
+})
 </script>
