@@ -57,6 +57,17 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      script: [
+        {
+          src: 'https://plausible.io/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js',
+          defer: true,
+          'data-domain': 'stackunity.tech'
+        },
+        {
+          key: 'plausible-setup',
+          innerHTML: 'window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }'
+        }
+      ],
       meta: [
         { name: 'crossorigin', content: 'use-credentials' }
       ]
