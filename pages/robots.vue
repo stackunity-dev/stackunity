@@ -392,7 +392,6 @@ const fillDefaultConfigs = () => {
       robotsConfig.value.sitemapUrl = '/sitemap.xml';
     }
 
-    console.log('Default configurations applied');
   } catch (e) {
     console.error('Error applying default configurations:', e);
   }
@@ -405,14 +404,12 @@ const analyzeWebsite = async () => {
   }
 
   const startTime = performance.now();
-  const generationType = configTab.value === 'robots' ? 'robots.txt' : 'schema.org';
 
   try {
     isLoading.value = true;
     error.value = '';
 
     const url = `${siteConfig.value.protocol}://${siteConfig.value.domain}`;
-    console.log('URL to analyze:', url);
 
     const options = {
       maxDepth: 1,
@@ -426,7 +423,6 @@ const analyzeWebsite = async () => {
     if (!skipApiAnalysis.value) {
       try {
         report.value = await userStore.auditSEO(url, options);
-        console.log('Report received:', report.value);
 
         if (report.value) {
           const reportData = report.value as any;
@@ -435,20 +431,17 @@ const analyzeWebsite = async () => {
             const mainResult = reportData.seoResults[mainUrl];
 
             if (mainResult && mainResult.technicalSEO) {
-              console.log('Technical SEO data found:', mainResult.technicalSEO);
 
               if (mainResult.technicalSEO.sitemapFound && mainResult.technicalSEO.sitemapUrl) {
                 try {
                   const sitemapUrl = new URL(mainResult.technicalSEO.sitemapUrl);
                   robotsConfig.value.sitemapUrl = sitemapUrl.pathname;
-                  console.log('Sitemap found:', robotsConfig.value.sitemapUrl);
                 } catch (e) {
                   robotsConfig.value.sitemapUrl = '/sitemap.xml';
                 }
               }
 
               if (mainResult.technicalSEO.robotsTxtFound && mainResult.technicalSEO.robotsTxtContent) {
-                console.log('Robots.txt found:', mainResult.technicalSEO.robotsTxtContent);
                 const robotsContent = mainResult.technicalSEO.robotsTxtContent;
 
                 const disallowMatches = robotsContent.match(/Disallow:\s*([^\n]+)/g);
