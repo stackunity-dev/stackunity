@@ -1,7 +1,14 @@
 <template>
   <v-app>
     <v-main class="d-flex flex-column align-center justify-center">
-      <v-card width="100%" max-width="800px" class="ma-12 pa-4" elevation="3">
+      <!-- Barre d'outils flottante sur mobile -->
+      <v-card v-if="isMobileView" class="floating-toolbar" elevation="5">
+        <v-btn icon="mdi-menu" @click="showMobileControls = !showMobileControls"></v-btn>
+      </v-card>
+
+      <!-- Contrôles principaux (masquables sur mobile) -->
+      <v-card width="100%" max-width="800px" class="ma-4 pa-4" elevation="3"
+        :class="{ 'hidden-controls': isMobileView && !showMobileControls }">
         <v-text-field v-model="url" label="Enter a URL" density="comfortable" prepend-inner-icon="mdi-web"
           variant="outlined" placeholder="https://example.com" clearable @keyup.enter="loadUrl"></v-text-field>
         <div class="d-flex flex-wrap justify-space-between align-center mt-2">
@@ -16,28 +23,52 @@
         </div>
       </v-card>
 
-      <v-card width="100%" class="mb-4" elevation="1">
+      <!-- Sélecteur de mode d'affichage -->
+      <v-card width="100%" class="mb-4" elevation="1"
+        :class="{ 'hidden-controls': isMobileView && !showMobileControls }">
         <v-card-text class="d-flex flex-wrap justify-space-between align-center py-2">
           <div class="d-flex align-center">
-            <v-chip-group v-model="selectedDevices" multiple column class="mr-4" :max="1">
+            <v-chip-group v-model="selectedDevices" multiple column class="mr-4"
+              :max="viewMode === 'comparison' ? 2 : (viewMode === 'grid' ? 6 : 1)">
               <v-chip v-for="device in devices" :key="device.id" :value="device.id" filter>
                 <v-icon start>{{ device.icon }}</v-icon>
                 {{ device.name }}
               </v-chip>
             </v-chip-group>
           </div>
-          <div class="d-flex align-center">
+
+          <div class="d-flex flex-wrap align-center">
+            <!-- Mode d'affichage -->
+            <v-btn-toggle v-model="viewMode" color="primary" density="comfortable" class="mr-2">
+              <v-btn value="tabs" title="Tabs View">
+                <v-icon>mdi-tab</v-icon>
+              </v-btn>
+              <v-btn value="comparison" title="Comparison View">
+                <v-icon>mdi-compare</v-icon>
+              </v-btn>
+              <v-btn value="grid" title="Grid View">
+                <v-icon>mdi-view-grid</v-icon>
+              </v-btn>
+            </v-btn-toggle>
+
+            <!-- Orientation -->
             <v-btn-toggle v-model="orientation" color="primary" density="comfortable">
-              <v-btn value="portrait" prepend-icon="mdi-phone-portrait">Portrait</v-btn>
-              <v-btn value="landscape" prepend-icon="mdi-phone-landscape">Landscape</v-btn>
+              <v-btn value="portrait" prepend-icon="mdi-phone-portrait">
+                <span class="d-none d-sm-inline">Portrait</span>
+              </v-btn>
+              <v-btn value="landscape" prepend-icon="mdi-phone-landscape">
+                <span class="d-none d-sm-inline">Landscape</span>
+              </v-btn>
             </v-btn-toggle>
           </div>
         </v-card-text>
       </v-card>
 
-      <div v-if="sideBySideMode" class="d-flex flex-wrap justify-center gap-4 w-100">
-        <div v-for="deviceId in selectedDevices" :key="deviceId" class="device-container">
-          <div class="iframe-container" :class="{ 'landscape': orientation === 'landscape' }">
+      <!-- Mode Grille (remplace sideBySideMode) -->
+      <div v-if="viewMode === 'grid'" class="device-grid">
+        <div v-for="deviceId in selectedDevices" :key="deviceId" class="device-container"
+          :class="{ 'landscape': orientation === 'landscape' }">
+          <div class="iframe-container">
             <div class="iframe-header d-flex align-center px-2">
               <v-icon size="small" class="mr-2">{{ getDeviceById(deviceId).icon }}</v-icon>
               <span class="text-caption">{{ getDeviceDimensions(deviceId) }}</span>
@@ -46,14 +77,13 @@
                 @click="refreshSpecificIframe(deviceId)"></v-btn>
             </div>
             <div v-if="displayUrl" class="iframe-wrapper">
-              <iframe :src="displayUrl" class="overflow-scroll shadow rounded-b-lg"
-                sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes" :style="getIframeStyle(deviceId)"
-                :ref="el => { if (el) iframeRefs[deviceId] = el as HTMLIFrameElement }"
-                :key="`${deviceId}-${iframeKey}`"></iframe>
+              <iframe :src="displayUrl" class="responsive-iframe" sandbox="allow-forms allow-same-origin allow-scripts"
+                scrolling="yes" :style="getIframeStyle(deviceId)"
+                :ref="el => { if (el) { iframeRefs[deviceId] = el as HTMLIFrameElement; } }"
+                :key="`${deviceId}-${iframeKey}`" @load="handleIframeLoad(deviceId)"></iframe>
               <div v-if="xFrameError" class="iframe-error">
                 <v-icon color="error" size="large" class="mb-2">mdi-alert-circle</v-icon>
-                <p>This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'.
-                </p>
+                <p>This site cannot be displayed in an iframe due to X-Frame-Options.</p>
                 <v-btn color="primary" size="small" :href="displayUrl" target="_blank" class="mt-2">
                   Open in a new tab
                 </v-btn>
@@ -61,18 +91,55 @@
             </div>
             <div v-else class="iframe-placeholder d-flex flex-column align-center justify-center">
               <v-icon size="large" color="grey-lighten-1">mdi-web-off</v-icon>
-              <p class="text-grey-darken-1 mt-2">Enter a URL to preview the site</p>
+              <p class="text-grey-darken-1 mt-2">Enter a URL to preview</p>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Mode Comparaison (nouveau) -->
+      <div v-else-if="viewMode === 'comparison'" class="comparison-container">
+        <div class="comparison-devices">
+          <div v-for="deviceId in selectedDevices.slice(0, 2)" :key="deviceId" class="comparison-device"
+            :class="{ 'landscape': orientation === 'landscape' }">
+            <div class="iframe-container">
+              <div class="iframe-header d-flex align-center px-2">
+                <v-icon size="small" class="mr-2">{{ getDeviceById(deviceId).icon }}</v-icon>
+                <span class="text-caption">{{ getDeviceDimensions(deviceId) }}</span>
+                <v-spacer></v-spacer>
+                <v-btn density="compact" icon="mdi-refresh" size="small" variant="text"
+                  @click="refreshSpecificIframe(deviceId)"></v-btn>
+              </div>
+              <div v-if="displayUrl" class="iframe-wrapper">
+                <iframe :src="displayUrl" class="responsive-iframe"
+                  sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes"
+                  :style="getIframeStyle(deviceId)"
+                  :ref="el => { if (el) { iframeRefs[deviceId] = el as HTMLIFrameElement; } }"
+                  :key="`${deviceId}-${iframeKey}`" @load="handleIframeLoad(deviceId)"></iframe>
+                <div v-if="xFrameError" class="iframe-error">
+                  <v-icon color="error" size="large" class="mb-2">mdi-alert-circle</v-icon>
+                  <p>This site cannot be displayed in an iframe.</p>
+                  <v-btn color="primary" size="small" :href="displayUrl" target="_blank" class="mt-2">
+                    Open in a new tab
+                  </v-btn>
+                </div>
+              </div>
+              <div v-else class="iframe-placeholder d-flex flex-column align-center justify-center">
+                <v-icon size="large" color="grey-lighten-1">mdi-web-off</v-icon>
+                <p class="text-grey-darken-1 mt-2">Enter a URL to preview</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode Onglets (ancien mode) -->
       <v-card v-else width="100%" class="overflow-hidden" elevation="3">
         <v-tabs v-model="tab" density="comfortable" align-tabs="center" bg-color="primary" slider-color="secondary"
           color="white">
           <v-tab v-for="device in devices" :key="device.id" :value="device.id">
             <v-icon :icon="device.icon" class="mr-2"></v-icon>
-            {{ device.name }}
+            <span class="d-none d-sm-inline">{{ device.name }}</span>
             <span class="text-caption ml-1">({{ getDeviceDimensions(device.id) }})</span>
           </v-tab>
         </v-tabs>
@@ -88,15 +155,14 @@
                   @click="refreshCurrentIframe"></v-btn>
               </div>
               <div v-if="displayUrl" class="iframe-wrapper">
-                <iframe v-if="tab === device.id" :src="displayUrl" class="overflow-scroll shadow rounded-b-lg"
+                <iframe v-if="tab === device.id" :src="displayUrl" class="responsive-iframe"
                   sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes"
                   :style="getIframeStyle(device.id)"
                   :ref="el => { if (el) iframeRefs[device.id] = el as HTMLIFrameElement }"
-                  :key="`${device.id}-${iframeKey}`"></iframe>
+                  :key="`${device.id}-${iframeKey}`" @load="handleIframeLoad(device.id)"></iframe>
                 <div v-if="xFrameError" class="iframe-error">
                   <v-icon color="error" size="large" class="mb-2">mdi-alert-circle</v-icon>
-                  <p>This site cannot be displayed in an iframe because it has set 'X-Frame-Options' to 'sameorigin'.
-                  </p>
+                  <p>This site cannot be displayed in an iframe.</p>
                   <v-btn color="primary" size="small" :href="displayUrl" target="_blank" class="mt-2">
                     Open in a new tab
                   </v-btn>
@@ -104,7 +170,7 @@
               </div>
               <div v-else class="iframe-placeholder d-flex flex-column align-center justify-center">
                 <v-icon size="large" color="grey-lighten-1">mdi-web-off</v-icon>
-                <p class="text-grey-darken-1 mt-2">Enter a URL to preview the site</p>
+                <p class="text-grey-darken-1 mt-2">Enter a URL to preview</p>
               </div>
             </div>
           </v-window-item>
@@ -112,15 +178,16 @@
       </v-card>
     </v-main>
 
-    <v-snackbar v-model="snackbar" :color="snackbarColor">
-      {{ snackbarText }}
-    </v-snackbar>
+    <snackBar v-model="snackbar" :text="snackbarText" :color="snackbarColor" :timeout="3000" />
   </v-app>
 </template>
 
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { useUserStore } from '~/stores/userStore';
+import { useDisplay } from 'vuetify';
+import snackBar from '../components/snackbar.vue';
+// @ts-ignore
+import { definePageMeta, useHead } from '#imports';
 
 definePageMeta({
   layout: 'dashboard',
@@ -130,7 +197,7 @@ useHead({
   title: 'Responsive Viewer',
   meta: [
     { name: 'description', content: 'View your websites on different devices' },
-    { name: 'keywords', content: 'responsive, viewer, responsive viewer, responsive design, responsive design viewer, responsive design preview, responsive design preview tool, responsive design preview tool, responsive design preview tool, responsive design preview tool' },
+    { name: 'keywords', content: 'responsive, viewer, responsive design' },
     { name: 'author', content: 'DevUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
@@ -156,7 +223,12 @@ interface RefreshInterval {
   value: number;
 }
 
-const userStore = useUserStore();
+const display = useDisplay();
+
+const isMobileView = computed(() => {
+  return display.mdAndDown.value;
+});
+const showMobileControls = ref(!isMobileView.value);
 
 const url = ref<string>('');
 const displayUrl = ref<string>('');
@@ -168,9 +240,8 @@ const snackbarText = ref<string>('');
 const snackbarColor = ref<string>('success');
 const xFrameError = ref<boolean>(false);
 const orientation = ref<'portrait' | 'landscape'>('portrait');
-const sideBySideMode = ref<boolean>(false);
+const viewMode = ref<'tabs' | 'comparison' | 'grid'>('tabs');
 const isDarkMode = ref<boolean>(false);
-const showHistory = ref<boolean>(false);
 const urlHistory = ref<string[]>([]);
 const selectedDevices = ref<string[]>(['iphone']);
 const autoRefresh = ref<boolean>(false);
@@ -246,6 +317,10 @@ const loadUrl = (): void => {
   displayUrl.value = url.value;
   iframeKey.value++;
 
+  snackbarText.value = "URL loaded";
+  snackbarColor.value = "success";
+  snackbar.value = true;
+
   if (!urlHistory.value.includes(url.value)) {
     urlHistory.value.unshift(url.value);
     if (urlHistory.value.length > 10) {
@@ -284,11 +359,8 @@ const refreshSpecificIframe = (deviceId: string): void => {
   }
 };
 
-const toggleSideBySideMode = (): void => {
-  sideBySideMode.value = !sideBySideMode.value;
-  if (sideBySideMode.value && selectedDevices.value.length === 0) {
-    selectedDevices.value = ['iphone'];
-  }
+const handleIframeLoad = (deviceId: string): void => {
+  console.log(`Iframe chargée pour l'appareil ${deviceId}`);
 };
 
 const setupAutoRefresh = (): void => {
@@ -308,16 +380,18 @@ watch([autoRefresh, refreshInterval], () => {
   setupAutoRefresh();
 });
 
-watch(selectedDevices, (newValue) => {
-  if (newValue.length > 1) {
-    selectedDevices.value = [newValue[newValue.length - 1]];
+watch(viewMode, (newMode) => {
+  if (newMode === 'tabs') {
+    selectedDevices.value = [tab.value];
+  } else if (newMode === 'comparison' && selectedDevices.value.length > 2) {
+    selectedDevices.value = selectedDevices.value.slice(0, 2);
+  } else if (newMode === 'grid' && selectedDevices.value.length === 0) {
+    selectedDevices.value = ['iphone'];
   }
 });
 
 watch(orientation, (newOrientation) => {
-  if (newOrientation === 'landscape' && selectedDevices.value.length > 1) {
-    selectedDevices.value = [selectedDevices.value[0]];
-  }
+  iframeRefs.value = {};
 });
 
 if (process.client) {
@@ -355,7 +429,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-iframe {
+.responsive-iframe {
   resize: both;
   min-width: 300px;
   min-height: 200px;
@@ -377,8 +451,8 @@ iframe {
 
 .iframe-container.landscape {
   max-width: 90vh;
-  margin: 2rem auto;
-  height: 80vh;
+  margin: 0 auto;
+  height: auto;
 }
 
 .iframe-container.landscape iframe {
@@ -417,18 +491,65 @@ iframe {
   border-radius: 0 0 8px 8px;
 }
 
-.device-container {
+.device-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
   margin-bottom: 2rem;
+}
+
+.device-container {
+  margin-bottom: 1rem;
   transition: all 0.3s ease;
   animation: fadeIn 0.5s ease-in-out;
 }
 
-.w-100 {
+.comparison-container {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
 }
 
-.gap-4 {
+.comparison-devices {
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
+  justify-content: center;
+}
+
+.comparison-device {
+  flex: 1;
+  min-width: 300px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .comparison-devices {
+    flex-direction: column;
+  }
+
+  .comparison-device {
+    width: 100%;
+  }
+}
+
+.floating-toolbar {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 100;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hidden-controls {
+  display: none;
 }
 
 @keyframes fadeIn {

@@ -208,6 +208,7 @@
     <v-main class="pa-0">
       <div class="content-wrapper">
         <NuxtPage />
+        <Task v-if="openTask" />
       </div>
     </v-main>
   </v-app>
@@ -219,6 +220,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
 import { useUserStore } from '../stores/userStore';
+import Task from '../components/task.vue';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -229,7 +231,7 @@ const display = useDisplay();
 const mobileDrawer = ref(false);
 const desktopDrawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
-
+const openTask = ref(false);
 
 watch(() => route.path, (newPath, oldPath) => {
   if (display.smAndDown.value) {
@@ -424,6 +426,7 @@ onMounted(() => {
   userStore.loadSnippets();
   userStore.loadSQLSchemas();
   updatePageTitle();
+  openTask.value = true;
 });
 
 function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string): any {

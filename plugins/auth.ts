@@ -55,10 +55,17 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   if (process.client) {
     setInterval(async () => {
       const currentToken = TokenManager.retrieveToken();
-      if (currentToken && await shouldRefreshToken(currentToken)) {
-        await refreshToken();
+      if (currentToken) {
+        try {
+          const shouldRefresh = await shouldRefreshToken(currentToken);
+          if (shouldRefresh) {
+            await refreshToken();
+          }
+        } catch (e) {
+          console.error("[AUTH] Erreur lors de la vérification du token:", e);
+        }
       }
-    }, 60000);
+    }, 30000);
   }
 
   const refreshAccessToken = async () => {
@@ -75,6 +82,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       });
 
       if (!response.ok) {
+        console.warn("Échec du rafraîchissement de token, status:", response.status);
         userStore.logout();
         return false;
       }
@@ -86,18 +94,27 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         userStore.setToken(data.accessToken);
 
         if (data.user) {
-          const isPremiumValue = Number(data.user.isPremium) === 1;
-          const isAdminValue = Number(data.user.isAdmin) === 1;
+          const isPremiumValue = typeof data.user.isPremium === 'number'
+            ? Boolean(data.user.isPremium)
+            : Boolean(data.user.isPremium);
+
+          const isAdminValue = typeof data.user.isAdmin === 'number'
+            ? Boolean(data.user.isAdmin)
+            : Boolean(data.user.isAdmin);
+
+          const userId = data.user.id || data.user.userId;
 
           userStore.user = {
             ...data.user,
+            id: userId,
+            userId: userId,
             isPremium: isPremiumValue,
             isAdmin: isAdminValue
           };
+
           userStore.isAuthenticated = true;
           userStore.isPremium = isPremiumValue;
           userStore.isAdmin = isAdminValue;
-
 
           userStore.persistUserData();
         }
@@ -108,6 +125,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         return false;
       }
     } catch (error) {
+      console.error("[AUTH] Erreur lors du rafraîchissement:", error);
       userStore.logout();
       return false;
     }
@@ -128,22 +146,36 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const originalFetch = window.fetch;
     window.fetch = async (input, init) => {
       const inputUrl = input instanceof Request ? input.url : input.toString();
-      if ((inputUrl.includes('/api/snippets/') || inputUrl.includes('/api/sql/') || inputUrl.includes('/api/studio/')) && userStore.isAuthenticated) {
-        const newInit = { ...init };
+
+      if (inputUrl.includes('/api/') && userStore.isAuthenticated) {
         const token = TokenManager.retrieveToken();
 
         if (token) {
+          const newInit = { ...init };
+
           if (!newInit.headers) {
             newInit.headers = {
-              'Authorization': `Bearer ${token}`
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
             };
           } else if (typeof newInit.headers === 'object') {
             if (newInit.headers instanceof Headers) {
-              newInit.headers.set('Authorization', `Bearer ${token}`);
+              if (!newInit.headers.has('Authorization')) {
+                newInit.headers.set('Authorization', `Bearer ${token}`);
+              }
+              if (!newInit.headers.has('Content-Type')) {
+                newInit.headers.set('Content-Type', 'application/json');
+              }
+              if (!newInit.headers.has('Accept')) {
+                newInit.headers.set('Accept', 'application/json');
+              }
             } else {
               newInit.headers = {
                 ...newInit.headers,
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': newInit.headers['Content-Type'] || 'application/json',
+                'Accept': newInit.headers['Accept'] || 'application/json'
               };
             }
           }
@@ -153,29 +185,50 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
       const response = await originalFetch(input, init);
 
-      if (response.status === 401) {
+      if (response.status === 401 && inputUrl.includes('/api/')) {
+        console.log(`[AUTH] Erreur 401 détectée pour ${inputUrl}, tentative de rafraîchissement du token`);
+
         const refreshSuccessful = await refreshAccessToken();
 
         if (refreshSuccessful) {
-          const newInit = { ...init };
           const token = TokenManager.retrieveToken();
 
           if (token) {
+            const newInit = { ...init };
+
             if (!newInit.headers) {
               newInit.headers = {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
               };
             } else if (typeof newInit.headers === 'object') {
               if (newInit.headers instanceof Headers) {
                 newInit.headers.set('Authorization', `Bearer ${token}`);
+                if (!newInit.headers.has('Content-Type')) {
+                  newInit.headers.set('Content-Type', 'application/json');
+                }
+                if (!newInit.headers.has('Accept')) {
+                  newInit.headers.set('Accept', 'application/json');
+                }
               } else {
                 newInit.headers = {
                   ...newInit.headers,
-                  'Authorization': `Bearer ${token}`
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': newInit.headers['Content-Type'] || 'application/json',
+                  'Accept': newInit.headers['Accept'] || 'application/json'
                 };
               }
             }
             return originalFetch(input, newInit);
+          }
+        } else {
+          console.warn(`[AUTH] Échec du rafraîchissement du token, redirection vers la page de connexion`);
+          if (typeof window !== 'undefined') {
+            userStore.logout();
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 100);
           }
         }
       }

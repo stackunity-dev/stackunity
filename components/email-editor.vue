@@ -249,10 +249,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from '@/stores/userStore';
+import { useUserStore } from '../stores/userStore';
 import { computed, onMounted, ref, watch } from 'vue';
-import type { EmailTemplate } from '~/utils/emailTemplates';
-import { emailTemplates, generateEmailHTML, generateEmailText, generateVueEmailTemplate, getTemplateById } from '~/utils/emailTemplates';
+import type { EmailTemplate } from '../utils/emailTemplates';
+import { emailTemplates, generateEmailHTML, generateEmailText, generateVueEmailTemplate, getTemplateById } from '../utils/emailTemplates';
 
 const form = ref(null);
 const emailPreview = ref(null);
