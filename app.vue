@@ -34,7 +34,7 @@ if (!userStore.user) {
     username: '',
     email: '',
     isPremium: false,
-    isAdmin: false,
+    isAdmin: false
   };
 }
 
