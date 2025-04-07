@@ -34,11 +34,11 @@ if (!userStore.user) {
     username: '',
     email: '',
     isPremium: false,
-    isAdmin: false
+    isAdmin: false,
   };
 }
 
-// Valeurs par défaut pour éviter les erreurs de propriété null
+
 userStore.isPremium = userStore.isPremium || false;
 userStore.isAdmin = userStore.isAdmin || false;
 
