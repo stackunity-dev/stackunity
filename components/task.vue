@@ -1,11 +1,12 @@
 <template>
   <div>
     <v-fade-transition>
-      <v-card v-if="isVisible" class="rounded-lg pa-4 task-card" :class="{ 'minimized': isMinimized }">
+      <v-card v-if="isVisible" class="rounded-lg pa-4 task-card" :elevation="isMinimized ? 0 : 4"
+        :class="{ 'minimized': isMinimized }">
         <div class="d-flex align-center mb-2">
           <v-card-title class="d-flex align-center px-0 py-1">
             <v-icon color="primary" class="mr-2">mdi-lightbulb-on-outline</v-icon>
-            <span class="text-h6 text-gradient">Créez votre site web</span>
+            <span class="text-h6 text-gradient">Create your website</span>
             <v-spacer></v-spacer>
             <v-chip :color="getProgressColor" class="ml-2">
               {{ completedTasks.length }}/{{ tasks.length }}
