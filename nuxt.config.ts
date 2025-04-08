@@ -54,22 +54,28 @@ export default defineNuxtConfig({
       }
     },
     ssr: {
-      noExternal: ['@pinia-plugin-persistedstate/nuxt', 'vue', 'vuetify', 'vuetify/lib', 'vuetify/components'],
-      external: ['monaco-editor', 'vue-chartjs', 'chart.js']
+      noExternal: ['vue', 'vuetify/lib'],
+      external: ['monaco-editor', 'vue-chartjs', 'chart.js', '@pinia-plugin-persistedstate/nuxt', 'vuetify', 'vuetify/components']
     },
     build: {
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 1500,
+      minify: 'esbuild',
+      cssMinify: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            'vue-vendor': ['vue', 'vue-router', 'pinia'],
-            'ui-vendor': ['vuetify', '@mdi/font'],
-            'analytics': ['analytics', 'schema-dts'],
-            'utils': ['ofetch', 'defu', 'zod'],
-            'seo-analyzer': [
-              './server/api/analyze/website-analyzer.ts',
-              './server/api/analyze/security-analyzer.ts'
-            ]
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('vue') || id.includes('pinia')) {
+                return 'vue-vendor';
+              }
+              if (id.includes('vuetify') || id.includes('mdi')) {
+                return 'ui-vendor';
+              }
+              if (id.includes('chart') || id.includes('analytics')) {
+                return 'analytics';
+              }
+              return 'vendor';
+            }
           }
         }
       }
