@@ -61,6 +61,18 @@ export default defineNuxtConfig({
       chunkSizeWarningLimit: 1500,
       minify: 'esbuild',
       cssMinify: true,
+      cssCodeSplit: false,
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+          },
+          inlineDynamicImports: true
+        }
+      }
     },
     server: {
       hmr: {
@@ -70,9 +82,7 @@ export default defineNuxtConfig({
         strict: false,
       },
     },
-    optimizeDeps: {
-      include: ['vuetify', 'vuetify/lib', 'vuetify/components']
-    }
+
   },
 
   compatibilityDate: '2025-03-31',
