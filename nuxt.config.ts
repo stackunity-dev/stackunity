@@ -99,10 +99,6 @@ export default defineNuxtConfig({
     head: {
       script: [
         {
-          src: 'https://cdn.jsdelivr.net/npm/vuetify@3.4.0/dist/vuetify.min.js',
-          defer: true
-        },
-        {
           src: 'https://plausible.io/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js',
           defer: true,
           'data-domain': 'stackunity.tech'
