@@ -48,14 +48,9 @@ export default defineNuxtConfig({
         transformAssetUrls,
       },
     },
-    resolve: {
-      alias: {
-        '@mdi/font': '@mdi/font/css/materialdesignicons.min.css'
-      }
-    },
     ssr: {
       noExternal: ['vue', 'vuetify/lib'],
-      external: ['monaco-editor', 'vue-chartjs', 'chart.js', '@pinia-plugin-persistedstate/nuxt', 'vuetify', 'vuetify/components']
+      external: ['monaco-editor', 'vue-chartjs', 'chart.js', '@pinia-plugin-persistedstate/nuxt']
     },
     build: {
       chunkSizeWarningLimit: 1500,
