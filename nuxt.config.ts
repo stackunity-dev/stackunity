@@ -48,6 +48,11 @@ export default defineNuxtConfig({
         transformAssetUrls,
       },
     },
+    resolve: {
+      alias: {
+        '@mdi/font': '@mdi/font/css/materialdesignicons.min.css'
+      }
+    },
     ssr: {
       noExternal: ['@pinia-plugin-persistedstate/nuxt', 'vue', 'vuetify', 'vuetify/lib', 'vuetify/components'],
       external: ['monaco-editor', 'vue-chartjs', 'chart.js']
