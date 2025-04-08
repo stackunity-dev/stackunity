@@ -61,24 +61,6 @@ export default defineNuxtConfig({
       chunkSizeWarningLimit: 1500,
       minify: 'esbuild',
       cssMinify: true,
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('vue') || id.includes('pinia')) {
-                return 'vue-vendor';
-              }
-              if (id.includes('vuetify') || id.includes('mdi')) {
-                return 'ui-vendor';
-              }
-              if (id.includes('chart') || id.includes('analytics')) {
-                return 'analytics';
-              }
-              return 'vendor';
-            }
-          }
-        }
-      }
     },
     server: {
       hmr: {
