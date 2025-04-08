@@ -58,16 +58,6 @@ export default defineNuxtConfig({
       cssMinify: true,
       cssCodeSplit: false,
       sourcemap: false,
-      rollupOptions: {
-        output: {
-          manualChunks: (id) => {
-            if (id.includes('node_modules')) {
-              return 'vendor';
-            }
-          },
-          inlineDynamicImports: true
-        }
-      }
     },
     server: {
       hmr: {
