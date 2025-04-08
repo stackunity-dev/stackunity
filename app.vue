@@ -42,7 +42,6 @@ if (!userStore.user) {
 userStore.isPremium = userStore.isPremium || false;
 userStore.isAdmin = userStore.isAdmin || false;
 
-// Configuration SEO
 useHead({
   title: 'DevUnity - The all-in-one platform for developers',
   meta: [
@@ -50,7 +49,8 @@ useHead({
     { name: 'keywords', content: 'DevUnity, dashboard, tools, snippets, SQL, Studio, Sitemaps' },
     { name: 'author', content: 'DevUnity' },
     { name: 'robots', content: 'index, follow' },
-    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+
   ],
   script: [
     {
@@ -88,7 +88,6 @@ plausible('page_view', {
 onErrorCaptured((err, instance, info) => {
   console.log('Erreur capturée:', err.message);
 
-  // Ignorer les erreurs spécifiques au démontage de composants Vue
   if (
     err instanceof TypeError &&
     (err.message.includes("'parentNode'") ||
@@ -253,7 +252,6 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   if (isClient) {
-    // Essayer de restaurer la session une seule fois si nécessaire
     if (!userStore.isAuthenticated && !sessionRestorationAttempted.value) {
       try {
         await restoreUserSession();
@@ -262,13 +260,10 @@ onMounted(async () => {
       }
     }
 
-    // Initialiser les cookies
     cookieStore.initCookieConsent();
 
-    // Configuration de la navigation
     router.beforeEach((to, from, next) => {
       try {
-        // S'assurer que l'utilisateur existe toujours pour éviter les erreurs
         if (!userStore.user) {
           userStore.user = {
             id: 0,
@@ -279,12 +274,10 @@ onMounted(async () => {
           };
         }
 
-        // Vérifier et utiliser le token si disponible
         const token = TokenUtils.retrieveToken();
         if (token && !userStore.token) {
           userStore.token = token;
 
-          // Chargement des données en mode sécurisé
           try {
             userStore.loadData().catch(err => {
               console.error('Erreur non critique lors du chargement des données:', err);
@@ -294,16 +287,13 @@ onMounted(async () => {
           }
         }
 
-        // Réinitialiser si pas de token
         if (!token) {
           userStore.token = null;
           userStore.isAuthenticated = false;
         }
 
-        // Suivi analytics sécurisé
         if (to.path !== from.path) {
           try {
-            // Utilisation sécurisée avec valeurs par défaut
             const userType = userStore.isAuthenticated
               ? (userStore.user && Boolean(userStore.user.isPremium) ? 'premium' : 'free')
               : 'guest';
@@ -320,7 +310,6 @@ onMounted(async () => {
           }
         }
 
-        // Vérification des routes premium
         const premiumRoutes = ['/sql-generator', '/seo-audit', '/robots'];
         const normalizedPath = to.path.toLowerCase();
 
@@ -329,7 +318,6 @@ onMounted(async () => {
           return normalizedPath === normalizedRoute || normalizedPath.startsWith(`${normalizedRoute}/`);
         });
 
-        // Vérification de statut premium avec fallback
         let isPremium = false;
         try {
           isPremium = (userStore.user && Boolean(userStore.user.isPremium)) || Boolean(userStore.isPremium) || false;
@@ -338,23 +326,18 @@ onMounted(async () => {
           isPremium = false;
         }
 
-        // Redirection si route premium et utilisateur non premium
         if (isPremiumRoute && !isPremium) {
           return next('/pricing');
         }
 
-        // Continuer la navigation
         next();
       } catch (routerError) {
         console.error('Erreur critique dans la navigation:', routerError);
-        // Toujours continuer pour éviter de bloquer
         next();
       }
     });
 
-    // Gestionnaires d'événements globaux
     if (isClient) {
-      // Suivi des erreurs
       window.addEventListener('error', (e) => {
         try {
           plausible('error', {
@@ -370,7 +353,6 @@ onMounted(async () => {
         }
       });
 
-      // Suivi des fonctionnalités
       document.addEventListener('click', (e) => {
         try {
           const target = e.target as HTMLElement;

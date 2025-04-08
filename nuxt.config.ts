@@ -48,9 +48,18 @@ export default defineNuxtConfig({
       },
     },
     ssr: {
-      noExternal: ['@pinia-plugin-persistedstate/nuxt'],
+      noExternal: ['@pinia-plugin-persistedstate/nuxt', 'vue', 'vuetify', 'vuetify/lib', 'vuetify/components'],
       external: ['monaco-editor']
     },
+    server: {
+      fs: {
+        strict: false,
+        allow: ['..']
+      }
+    },
+    optimizeDeps: {
+      include: ['vuetify', 'vuetify/lib', 'vuetify/components']
+    }
   },
 
   compatibilityDate: '2025-03-31',
@@ -58,6 +67,10 @@ export default defineNuxtConfig({
   app: {
     head: {
       script: [
+        {
+          src: 'https://cdn.jsdelivr.net/npm/vuetify@3.4.0/dist/vuetify.min.js',
+          defer: true
+        },
         {
           src: 'https://plausible.io/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js',
           defer: true,

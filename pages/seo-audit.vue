@@ -105,7 +105,8 @@
           <v-col cols="12" lg="7">
             <v-card class="rounded-lg" elevation="2">
               <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
-                <v-icon color="white" class="mr-2">mdi-format-list-checks</v-icon>
+                <v-icon :color="getFrameworkColor(getResultFromCache(targetUrl)?.framework?.name || '')" class="mr-2"
+                  :icon="getFrameworkIcon(getResultFromCache(targetUrl)?.framework?.name || '')"></v-icon>
                 Audit Results
                 <v-spacer></v-spacer>
                 <v-progress-circular v-if="auditing" indeterminate color="white"></v-progress-circular>
@@ -180,6 +181,10 @@
                               v-if="(tab.value === 'warnings' || tab.value === 'overview') && getResultFromCache(url)?.warnings?.length"
                               :content="getResultFromCache(url)?.warnings?.length || 0" color="error" location="top end"
                               offset-x="3" offset-y="-8"></v-badge>
+                            <v-badge
+                              v-if="tab.value === 'security' && getResultFromCache(url)?.securityChecks?.securityIssues?.length"
+                              :content="getResultFromCache(url)?.securityChecks?.securityIssues?.length || 0"
+                              color="error" location="top end" offset-x="3" offset-y="-8"></v-badge>
                           </v-tab>
                         </v-tabs>
 
@@ -240,9 +245,9 @@
                                           <v-icon :color="critical.severity" class="mr-2">mdi-alert-circle</v-icon>
                                         </template>
                                         <v-list-item-title class="font-weight-medium text-wrap">{{ critical.title
-                                          }}</v-list-item-title>
+                                        }}</v-list-item-title>
                                         <v-list-item-subtitle class="text-wrap">{{ critical.description
-                                          }}</v-list-item-subtitle>
+                                        }}</v-list-item-subtitle>
                                       </v-list-item>
                                     </v-list>
                                     <div v-else class="d-flex flex-column align-center justify-center py-6">
@@ -298,7 +303,7 @@
                                         <v-list-item-title class="text-wrap">Meta Description</v-list-item-title>
                                         <v-list-item-subtitle class="text-wrap">
                                           {{ getResultFromCache(url)?.description ?
-                                            `${getResultFromCache(url)?.description.length} characters` :
+                                            `${getResultFromCache(url)?.description?.length} characters` :
                                             'Missing' }}
                                         </v-list-item-subtitle>
                                       </v-list-item>
@@ -335,10 +340,10 @@
                                   <v-card-text class="pa-3">
                                     <div class="d-flex align-center py-2">
                                       <v-avatar
-                                        :color="(getResultFromCache(url)?.loadTime < 1000) ? 'success-lighten-4' : ((getResultFromCache(url)?.loadTime < 2500) ? 'warning-lighten-4' : 'error-lighten-4')"
+                                        :color="(getResultFromCache(url)?.loadTime ?? 0) < 1000 ? 'success-lighten-4' : ((getResultFromCache(url)?.loadTime ?? 0) < 2500) ? 'warning-lighten-4' : 'error-lighten-4'"
                                         size="42" class="mr-3">
                                         <v-icon
-                                          :color="(getResultFromCache(url)?.loadTime < 1000) ? 'success' : ((getResultFromCache(url)?.loadTime < 2500) ? 'warning' : 'error')"
+                                          :color="(getResultFromCache(url)?.loadTime ?? 0) < 1000 ? 'success' : ((getResultFromCache(url)?.loadTime ?? 0) < 2500) ? 'warning' : 'error'"
                                           size="24">mdi-timer</v-icon>
                                       </v-avatar>
                                       <div>
@@ -431,7 +436,7 @@
                                         <v-list-item-subtitle class="text-wrap">{{ ((getResultFromCache(url)?.loadTime
                                           ?? 0) /
                                           1000).toFixed(2)
-                                          }}s</v-list-item-subtitle>
+                                        }}s</v-list-item-subtitle>
                                       </v-list-item>
                                       <template v-if="getResultFromCache(url)?.coreWebVitals">
                                         <v-list-item
@@ -439,14 +444,14 @@
                                           :key="index">
                                           <template v-if="isDisplayableVital(index)">
                                             <v-list-item-title class="text-wrap">{{ getCoreWebVitalName(index)
-                                              }}</v-list-item-title>
+                                            }}</v-list-item-title>
                                             <v-list-item-subtitle class="text-wrap d-flex align-center">
                                               <span>{{ formatVitalValue(vital, index) }}</span>
                                               <v-chip size="x-small"
                                                 :color="getVitalScoreColor(getResultFromCache(url)?.coreWebVitals?.[index + 'Score'])"
-                                                v-if="getResultFromCache(url)?.coreWebVitals[index + 'Score']"
+                                                v-if="getResultFromCache(url)?.coreWebVitals?.[index + 'Score']"
                                                 class="ml-2">
-                                                {{ getResultFromCache(url)?.coreWebVitals[index + 'Score'] }}%
+                                                {{ getResultFromCache(url)?.coreWebVitals?.[index + 'Score'] }}%
                                               </v-chip>
                                             </v-list-item-subtitle>
                                           </template>
@@ -489,7 +494,7 @@
                                         <v-list-item-title class="text-wrap">Touch Targets</v-list-item-title>
                                         <v-list-item-subtitle class="text-wrap d-flex align-center">
                                           <span>{{ getResultFromCache(url)?.mobileCompatibility?.smallTouchTargets ?? 0
-                                            }}
+                                          }}
                                             small touch areas</span>
                                           <v-chip size="x-small"
                                             :color="(getResultFromCache(url)?.mobileCompatibility?.smallTouchTargets ?? 0) === 0 ? 'success' : 'warning'"
@@ -554,14 +559,15 @@
                                             <v-list-item-title class="text-wrap">Meta Description</v-list-item-title>
                                             <v-list-item-subtitle class="text-wrap d-flex align-center">
                                               <span>{{ getResultFromCache(url)?.description ?
-                                                getResultFromCache(url)?.description.length + ' characters' :
+                                                getResultFromCache(url)?.description?.length + ' characters' :
                                                 'Not defined' }}</span>
                                               <v-chip size="x-small"
-                                                :color="!getResultFromCache(url)?.description ? 'error' : (getResultFromCache(url)?.description.length < 50) ? 'warning' : (getResultFromCache(url)?.description.length > 160) ? 'warning' : 'success'"
+                                                :color="!getResultFromCache(url)?.description ? 'error' : (getResultFromCache(url)?.description?.length ?? 0) < 50 ? 'warning' : (getResultFromCache(url)?.description?.length ?? 0) > 160 ? 'warning' : 'success'"
                                                 class="ml-2">
                                                 {{ !getResultFromCache(url)?.description ? 'Missing' :
-                                                  (getResultFromCache(url)?.description.length < 50) ? 'Too short' :
-                                                    (getResultFromCache(url)?.description.length > 160) ? 'Too long' :
+                                                  (getResultFromCache(url)?.description?.length ?? 0) < 50 ? 'Too short' :
+                                                    (getResultFromCache(url)?.description?.length ?? 0) > 160 ? 'Too long'
+                                                      :
                                                       'Optimal' }}
                                               </v-chip>
                                             </v-list-item-subtitle>
@@ -615,7 +621,7 @@
                                             :key="type">
                                             <v-list-item-title>{{ type }}</v-list-item-title>
                                             <v-list-item-subtitle>
-                                              {{ count }} instance(s)
+                                              {{ count }} instance(s) found
                                             </v-list-item-subtitle>
                                           </v-list-item>
                                         </v-list>
@@ -638,21 +644,24 @@
                                   <v-card-text>
                                     <v-list density="compact">
                                       <template v-if="getResultFromCache(url)?.headingStructure?.h1?.length">
-                                        <v-list-item v-for="(h1, index) in getResultFromCache(url)?.headingStructure.h1"
+                                        <v-list-item
+                                          v-for="(h1, index) in getResultFromCache(url)?.headingStructure?.h1 ?? []"
                                           :key="'h1-' + index">
                                           <v-list-item-title>H1 {{ index + 1 }}</v-list-item-title>
                                           <v-list-item-subtitle>{{ h1 }}</v-list-item-subtitle>
                                         </v-list-item>
                                       </template>
                                       <template v-if="getResultFromCache(url)?.headingStructure?.h2?.length">
-                                        <v-list-item v-for="(h2, index) in getResultFromCache(url)?.headingStructure.h2"
+                                        <v-list-item
+                                          v-for="(h2, index) in getResultFromCache(url)?.headingStructure?.h2 ?? []"
                                           :key="'h2-' + index">
                                           <v-list-item-title>H2 {{ index + 1 }}</v-list-item-title>
                                           <v-list-item-subtitle>{{ h2 }}</v-list-item-subtitle>
                                         </v-list-item>
                                       </template>
                                       <template v-if="getResultFromCache(url)?.headingStructure?.h3?.length">
-                                        <v-list-item v-for="(h3, index) in getResultFromCache(url)?.headingStructure.h3"
+                                        <v-list-item
+                                          v-for="(h3, index) in getResultFromCache(url)?.headingStructure?.h3 ?? []"
                                           :key="'h3-' + index">
                                           <v-list-item-title>H3 {{ index + 1 }}</v-list-item-title>
                                           <v-list-item-subtitle>{{ h3 }}</v-list-item-subtitle>
@@ -662,7 +671,7 @@
                                         v-if="!getResultFromCache(url)?.headingStructure?.h1?.length && !getResultFromCache(url)?.headingStructure?.h2?.length && !getResultFromCache(url)?.headingStructure?.h3?.length">
                                         <v-list-item>
                                           <v-list-item-title class="text-center text-grey">
-                                            Aucune structure de titres trouvée
+                                            No heading structure found
                                           </v-list-item-title>
                                         </v-list-item>
                                       </template>
@@ -678,8 +687,8 @@
                                   </v-card-title>
                                   <v-card-text>
                                     <v-list density="compact"
-                                      v-if="getResultFromCache(url)?.imageAlt && getResultFromCache(url)?.imageAlt.length > 0">
-                                      <v-list-item v-for="(img, index) in getResultFromCache(url)?.imageAlt"
+                                      v-if="(getResultFromCache(url)?.images?.data?.length ?? 0) > 0">
+                                      <v-list-item v-for="(img, index) in getResultFromCache(url)?.images?.data ?? []"
                                         :key="index">
                                         <v-list-item-title>Image {{ index + 1 }}</v-list-item-title>
                                         <v-list-item-subtitle>
@@ -750,27 +759,26 @@
                                   </v-card-title>
                                   <v-card-text>
                                     <v-list density="compact">
-                                      <template v-if="getResultFromCache(url)?.socialTags?.ogTags?.length">
-                                        <v-list-item
-                                          v-for="(tag, tagIndex) in getResultFromCache(url)?.socialTags.ogTags"
-                                          :key="'og-' + tagIndex">
-                                          <v-list-item-title>{{ tag.property || 'og:tag' }}</v-list-item-title>
-                                          <v-list-item-subtitle>{{ tag.content || '-' }}</v-list-item-subtitle>
-                                        </v-list-item>
-                                      </template>
-                                      <template v-if="getResultFromCache(url)?.socialTags?.twitterTags?.length">
-                                        <v-list-item
-                                          v-for="(tag, tagIndex) in getResultFromCache(url)?.socialTags.twitterTags"
-                                          :key="'twitter-' + tagIndex">
-                                          <v-list-item-title>{{ tag.name || 'twitter:tag' }}</v-list-item-title>
-                                          <v-list-item-subtitle>{{ tag.content || '-' }}</v-list-item-subtitle>
+                                      <template v-if="Object.keys(getResultFromCache(url)?.meta?.og || {}).length > 0">
+                                        <v-list-item v-for="(content, property) in getResultFromCache(url)?.meta?.og"
+                                          :key="'og-' + property">
+                                          <v-list-item-title>og:{{ property }}</v-list-item-title>
+                                          <v-list-item-subtitle>{{ content || '-' }}</v-list-item-subtitle>
                                         </v-list-item>
                                       </template>
                                       <template
-                                        v-if="!getResultFromCache(url)?.socialTags?.ogTags?.length && !getResultFromCache(url)?.socialTags?.twitterTags?.length">
+                                        v-if="Object.keys(getResultFromCache(url)?.meta?.twitter || {}).length > 0">
+                                        <v-list-item v-for="(content, name) in getResultFromCache(url)?.meta?.twitter"
+                                          :key="'twitter-' + name">
+                                          <v-list-item-title>twitter:{{ name }}</v-list-item-title>
+                                          <v-list-item-subtitle>{{ content || '-' }}</v-list-item-subtitle>
+                                        </v-list-item>
+                                      </template>
+                                      <template
+                                        v-if="!Object.keys(getResultFromCache(url)?.meta?.og || {}).length && !Object.keys(getResultFromCache(url)?.meta?.twitter || {}).length">
                                         <v-list-item>
                                           <v-list-item-title class="text-center text-grey">
-                                            Aucun tag social trouvé
+                                            No social tags found
                                           </v-list-item-title>
                                         </v-list-item>
                                       </template>
@@ -803,22 +811,89 @@
                                           </v-chip>
                                         </v-list-item-subtitle>
                                       </v-list-item>
-                                      <template v-if="getResultFromCache(url)?.securityChecks?.securityHeaders?.length">
-                                        <v-list-item
-                                          v-for="header in getResultFromCache(url)?.securityChecks.securityHeaders"
-                                          :key="header.name">
-                                          <v-list-item-title>{{ header.name }}</v-list-item-title>
-                                          <v-list-item-subtitle>{{ header.value }}</v-list-item-subtitle>
-                                        </v-list-item>
-                                      </template>
-                                      <template
-                                        v-else-if="!getResultFromCache(url)?.securityChecks?.securityHeaders?.length">
-                                        <v-list-item>
-                                          <v-list-item-title class="text-grey text-center">
-                                            Aucun en-tête de sécurité trouvé
-                                          </v-list-item-title>
-                                        </v-list-item>
-                                      </template>
+                                    </v-list>
+
+                                    <v-divider class="my-3"></v-divider>
+
+                                    <h3 class="text-subtitle-1 mb-3">Security Headers</h3>
+                                    <div
+                                      v-if="getResultFromCache(url)?.securityChecks?.securityHeaders &&
+                                        (Array.isArray(getResultFromCache(url)?.securityChecks?.securityHeaders) ?
+                                          (getResultFromCache(url)?.securityChecks?.securityHeaders?.length ?? 0) > 0 :
+                                          (Object.keys(getResultFromCache(url)?.securityChecks?.securityHeaders || {}).length ?? 0) > 0)"
+                                      class="security-headers-container">
+                                      <v-card class="mb-4 pa-0" variant="outlined">
+                                        <pre class="security-code-block pa-4 ma-0"><code>{{
+                                          formatSecurityHeaders(getResultFromCache(url)?.securityChecks?.securityHeaders || []) }}</code></pre>
+                                      </v-card>
+                                    </div>
+                                    <v-alert v-else type="warning" variant="tonal" class="mb-3">
+                                      No security headers found
+                                    </v-alert>
+
+                                    <v-divider class="my-3"></v-divider>
+
+                                    <h3 class="text-subtitle-1 mb-3">Detected Security Issues</h3>
+                                    <div v-if="getResultFromCache(url)?.securityChecks?.securityIssues?.length">
+                                      <v-expansion-panels>
+                                        <v-expansion-panel>
+                                          <v-expansion-panel-title>
+                                            <div class="d-flex align-center">
+                                              <v-icon color="warning" class="mr-2">mdi-shield-alert</v-icon>
+                                              <span>{{ getResultFromCache(url)?.securityChecks?.securityIssues?.length
+                                              }} security issues</span>
+                                            </div>
+                                          </v-expansion-panel-title>
+                                          <v-expansion-panel-text>
+                                            <v-list>
+                                              <v-list-item
+                                                v-for="(issue, index) in getResultFromCache(url)?.securityChecks?.securityIssues"
+                                                :key="index">
+                                                <template v-slot:prepend>
+                                                  <v-avatar :color="getSeverityColor(issue.severity)" size="small"
+                                                    class="mr-2">
+                                                    <v-icon>{{
+                                                      getSeverityIcon(issue.severity) }}</v-icon>
+                                                  </v-avatar>
+                                                </template>
+                                                <v-list-item-title>{{ issue.type }}</v-list-item-title>
+                                                <v-list-item-subtitle>{{ issue.description }}</v-list-item-subtitle>
+                                              </v-list-item>
+                                            </v-list>
+                                          </v-expansion-panel-text>
+                                        </v-expansion-panel>
+                                      </v-expansion-panels>
+                                    </div>
+                                    <v-alert v-else type="success" variant="tonal">
+                                      No security issues detected
+                                    </v-alert>
+                                  </v-card-text>
+                                </v-card>
+
+                                <v-card variant="outlined" class="mb-4">
+                                  <v-card-title class="text-subtitle-1">
+                                    <v-icon start>mdi-lightbulb</v-icon>
+                                    Security Recommendations
+                                  </v-card-title>
+                                  <v-card-text>
+                                    <v-list density="compact">
+                                      <v-list-item prepend-icon="mdi-lock">
+                                        <v-list-item-title>Enable HTTPS</v-list-item-title>
+                                        <v-list-item-subtitle>Secure all communications with SSL/TLS
+                                          certificate</v-list-item-subtitle>
+                                      </v-list-item>
+
+                                      <v-list-item prepend-icon="mdi-shield">
+                                        <v-list-item-title>Configure security headers</v-list-item-title>
+                                        <v-list-item-subtitle>Add Content-Security-Policy, X-XSS-Protection and other
+                                          headers</v-list-item-subtitle>
+                                      </v-list-item>
+
+                                      <v-list-item prepend-icon="mdi-cookie">
+                                        <v-list-item-title>Cookie settings</v-list-item-title>
+                                        <v-list-item-subtitle>Use HttpOnly, Secure and SameSite for
+                                          cookies</v-list-item-subtitle>
+                                      </v-list-item>
                                     </v-list>
                                   </v-card-text>
                                 </v-card>
@@ -827,40 +902,72 @@
                           </v-window-item>
 
                           <v-window-item value="warnings">
-                            <div v-if="getWarnings(getResultFromCache(url) || {}).length === 0"
-                              class="text-center my-8">
-                              <v-avatar color="success-lighten-4" size="64" class="mb-4">
-                                <v-icon color="success" size="36">mdi-check-circle</v-icon>
-                              </v-avatar>
-                              <div class="text-h6">No warnings found</div>
-                              <div class="text-subtitle-1 text-medium-emphasis mt-2">This page has passed all checks
-                              </div>
+                            <div>
+                              <h3 class="text-h6 mb-4">SEO Warnings</h3>
+
+                              <v-alert v-if="!getResultFromCache(url)?.warnings?.length" type="success" class="mb-4">
+                                No warnings detected for this page
+                              </v-alert>
+
+                              <template v-else>
+                                <v-expansion-panels>
+                                  <v-expansion-panel
+                                    v-for="(warningGroup, i) in displayWarnings(getResultFromCache(url)?.warnings || [])"
+                                    :key="i">
+                                    <v-expansion-panel-title>
+                                      <div class="d-flex align-center">
+                                        <v-icon :color="warningGroup.color" class="mr-2">{{ warningGroup.icon
+                                        }}</v-icon>
+                                        <span class="text-capitalize">{{ warningGroup.type }}</span>
+                                        <v-spacer></v-spacer>
+                                        <v-chip size="small" :color="warningGroup.color">
+                                          {{ warningGroup.warnings.length }}
+                                        </v-chip>
+                                      </div>
+                                    </v-expansion-panel-title>
+                                    <v-expansion-panel-text>
+                                      <v-list>
+                                        <v-list-item v-for="(warning, j) in warningGroup.warnings" :key="j">
+                                          <template v-slot:prepend>
+                                            <v-icon size="small" :color="warningGroup.color">
+                                              {{ warningGroup.icon }}
+                                            </v-icon>
+                                          </template>
+                                          <v-list-item-title>{{ warning.message }}</v-list-item-title>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-expansion-panel-text>
+                                  </v-expansion-panel>
+                                </v-expansion-panels>
+
+                                <v-card class="mt-4" variant="outlined">
+                                  <v-card-title class="text-subtitle-1">
+                                    <v-icon color="info" class="mr-2">mdi-information</v-icon>
+                                    Summary of warnings
+                                  </v-card-title>
+                                  <v-card-text>
+                                    <div class="d-flex flex-wrap gap-2">
+                                      <v-chip v-if="computeWarningCounts(getResultFromCache(url) || {}).critical > 0"
+                                        color="error" size="small" class="ma-1">
+                                        {{ computeWarningCounts(getResultFromCache(url) || {}).critical }} critical(s)
+                                      </v-chip>
+                                      <v-chip v-if="computeWarningCounts(getResultFromCache(url) || {}).high > 0"
+                                        color="warning" size="small" class="ma-1">
+                                        {{ computeWarningCounts(getResultFromCache(url) || {}).high }} important(s)
+                                      </v-chip>
+                                      <v-chip v-if="computeWarningCounts(getResultFromCache(url) || {}).medium > 0"
+                                        color="info" size="small" class="ma-1">
+                                        {{ computeWarningCounts(getResultFromCache(url) || {}).medium }} medium(s)
+                                      </v-chip>
+                                      <v-chip v-if="computeWarningCounts(getResultFromCache(url) || {}).low > 0"
+                                        color="success" size="small" class="ma-1">
+                                        {{ computeWarningCounts(getResultFromCache(url) || {}).low }} minor(s)
+                                      </v-chip>
+                                    </div>
+                                  </v-card-text>
+                                </v-card>
+                              </template>
                             </div>
-                            <v-list v-else>
-                              <v-list-item v-for="(warning, index) in getWarnings(getResultFromCache(url) || {})"
-                                :key="index" :class="`bg-${warning.severity}-lighten-5`" class="mb-3 rounded-lg">
-                                <template v-slot:prepend>
-                                  <v-avatar size="36" :color="`${warning.severity}-lighten-4`">
-                                    <v-icon :color="warning.severity">
-                                      {{ warning.severity === 'error' ? 'mdi-alert-circle' : 'mdi-alert' }}
-                                    </v-icon>
-                                  </v-avatar>
-                                </template>
-                                <v-list-item-title class="font-weight-medium text-wrap">
-                                  {{ warning.title }}
-                                </v-list-item-title>
-                                <v-list-item-subtitle class="text-wrap">
-                                  {{ warning.description }}
-                                </v-list-item-subtitle>
-                                <template v-if="warning.solution" v-slot:append>
-                                  <v-btn color="primary" size="small" variant="text" class="text-none"
-                                    @click="applyFix(warning.fix)">
-                                    Fix
-                                    <v-icon end>mdi-magic</v-icon>
-                                  </v-btn>
-                                </template>
-                              </v-list-item>
-                            </v-list>
                           </v-window-item>
 
                           <v-window-item value="action">
@@ -965,17 +1072,20 @@
                                       <v-card-text>
                                         <div class="d-flex justify-center align-center">
                                           <v-progress-circular
-                                            :model-value="calculateAccessibilityScoreNormalized(getResultFromCache(url))"
-                                            :color="getAccessibilityScoreColor(calculateAccessibilityScoreNormalized(getResultFromCache(url)))"
+                                            :model-value="normalizePercentage(getResultFromCache(url)?.accessibility?.accessibilityScore || 0)"
+                                            :color="getAccessibilityScoreColor(normalizePercentage(getResultFromCache(url)?.accessibility?.accessibilityScore || 0))"
                                             size="100" width="12">
-                                            {{ calculateAccessibilityScoreNormalized(getResultFromCache(url)) }}%
+                                            {{
+                                              normalizePercentage(getResultFromCache(url)?.accessibility?.accessibilityScore
+                                                || 0) }}%
                                           </v-progress-circular>
                                         </div>
                                         <div class="text-center mt-4">
                                           <p class="text-h6"
-                                            :class="`text-${getAccessibilityScoreColor(calculateAccessibilityScoreNormalized(getResultFromCache(url)))}`">
+                                            :class="`text-${getAccessibilityScoreColor(normalizePercentage(getResultFromCache(url)?.accessibility?.accessibilityScore || 0))}`">
                                             {{
-                                              getAccessibilityScoreLabel(calculateAccessibilityScoreNormalized(getResultFromCache(url)))
+                                              getAccessibilityScoreLabel(normalizePercentage(getResultFromCache(url)?.accessibility?.accessibilityScore
+                                                || 0))
                                             }}
                                           </p>
                                         </div>
@@ -1365,8 +1475,13 @@ import {
   getScoreColor,
   getScoreDescription,
   getScoreStatus,
-  parseUrl
-} from '../utils/seoAuditUtils';
+  parseUrl,
+} from '../utils/seo/getScore';
+import {
+  SEOReport,
+  SEOResult,
+  Warning
+} from '../utils/seo/types';
 
 useHead({
   title: 'SEO Audit Tool',
@@ -1385,107 +1500,10 @@ definePageMeta({
   requiresPremium: true
 });
 
-interface SEOResult {
-  title?: string;
-  warnings: Array<string | { severity: string; message: string; type?: string }>;
-  loadTime: number;
-  description: string;
-  coreWebVitals: Record<string, any>;
-  mobileCompatibility: {
-    hasViewport: boolean;
-    smallTouchTargets: number;
-    viewportContent?: string;
-  };
-  technicalSEO: {
-    sitemapFound: boolean;
-    sitemapUrl?: string;
-    sitemapUrls?: number;
-    robotsTxtFound: boolean;
-    robotsTxtContent?: string;
-    schemaTypeCount: Record<string, number>;
-  };
-  headingStructure: {
-    h1: string[];
-    h2: string[];
-    h3: string[];
-  };
-  socialTags: {
-    ogTags: Array<{ property: string; content: string }>;
-    twitterTags: Array<{ name: string; content: string }>;
-  };
-  securityChecks: {
-    https: boolean;
-    securityHeaders: Array<{ name: string; value: string }>;
-  };
-  imageAlt: Array<{
-    alt?: string;
-    src?: string;
-    title?: string;
-    width?: number;
-    height?: number;
-    hasDimensions?: boolean;
-  }>;
-  videoInfo?: Array<{
-    src: string;
-    length?: number;
-    thumbnail?: string;
-    title?: string;
-    description?: string;
-    width?: number;
-    height?: number;
-  }>;
-  contentStats?: {
-    readabilityScore?: number;
-    wordCount?: number;
-    keywordDensity?: number;
-  };
-  structuredData?: any[];
-  accessibility?: AccessibilityData;
-}
-
-interface SEOReport {
-  seoResults: Record<string, SEOResult>;
-  summary?: {
-    totalPages: number;
-    averageLoadTime: number;
-    totalWarnings: number;
-    missingTitles: number;
-    missingDescriptions: number;
-    missingAltTags: number;
-    averageFCP: number;
-    averageLCP: number;
-    averageTTFB: number;
-    pagesWithStructuredData: number;
-    pagesWithSocialTags: number;
-    mobileCompatiblePages: number;
-    securePages: number;
-    missingAria: number;
-    missingAlt: number;
-    missingLabels: number;
-    missingInputAttributes: number;
-    contrastIssues: number;
-    ariaIssues: Array<{ element: string, issue: string }>;
-    inputIssues: Array<{ element: string, issue: string }>;
-    accessibilityScore: number;
-  };
-  visitedURLs: string[];
-}
-
 interface AuditOptions {
   maxDepth: number;
   sameDomainOnly: boolean;
   timeout: number;
-}
-
-interface AccessibilityData {
-  missingAria: number;
-  missingAlt: number;
-  missingLabels: number;
-  missingInputAttributes: number;
-  contrastIssues: number;
-  ariaIssues: Array<{ element: string, issue: string }>;
-  inputIssues: Array<{ element: string, issue: string }>;
-  accessibilityScore: number;
 }
 
 const report = ref<SEOReport | null>(null);
@@ -1499,7 +1517,6 @@ const sitemapPreviewTab = ref('code');
 const robotsTxtDialog = ref(false);
 const robotsTxtContent = ref('');
 const resultCache = ref(new Map<string, any>());
-const isClient = ref(false);
 const userStore = useUserStore();
 
 const options = ref<AuditOptions>({
@@ -1509,13 +1526,13 @@ const options = ref<AuditOptions>({
 });
 
 const tabs = [
-  { value: 'overview', label: 'Vue d\'ensemble', icon: 'mdi-eye' },
-  { value: 'technical', label: 'Technique', icon: 'mdi-code-tags' },
-  { value: 'content', label: 'Contenu', icon: 'mdi-text' },
+  { value: 'overview', label: 'Overview', icon: 'mdi-eye' },
+  { value: 'technical', label: 'Technical', icon: 'mdi-code-tags' },
+  { value: 'content', label: 'Content', icon: 'mdi-text' },
   { value: 'metatags', label: 'Meta Tags', icon: 'mdi-tag-multiple' },
-  { value: 'accessibility', label: 'Accessibilité', icon: 'mdi-account-group' },
-  { value: 'security', label: 'Sécurité', icon: 'mdi-shield-check' },
-  { value: 'warnings', label: 'Problèmes', icon: 'mdi-alert' },
+  { value: 'accessibility', label: 'Accessibility', icon: 'mdi-account-group' },
+  { value: 'security', label: 'Security', icon: 'mdi-shield-check' },
+  { value: 'warnings', label: 'Warnings', icon: 'mdi-alert' },
   { value: 'action', label: 'Actions', icon: 'mdi-check-circle' }
 ];
 
@@ -1532,6 +1549,7 @@ const startAudit = async () => {
     resultCache.value.clear();
 
     const rawReport = await userStore.auditSEO(targetUrl.value, options.value);
+    console.log("rawReport", rawReport);
 
     report.value = adaptSEOResults(rawReport);
   } catch (e: any) {
@@ -1587,8 +1605,8 @@ const downloadSitemap = async () => {
     const response: any = await userStore.generateSitemap(targetUrl.value, JSON.stringify(report.value))
 
     if (!response.ok) {
-      error.value = 'Erreur lors de la génération du sitemap';
-      throw new Error('Erreur lors de la génération du sitemap');
+      error.value = 'Error generating sitemap';
+      throw new Error('Error generating sitemap');
     }
 
     const blob = await response.blob();
@@ -1604,8 +1622,8 @@ const downloadSitemap = async () => {
       document.body.removeChild(a);
     }
   } catch (err: any) {
-    console.error('Erreur lors de la génération du sitemap:', err);
-    error.value = err.message || 'Erreur lors de la génération du sitemap';
+    console.error('Error generating sitemap:', err);
+    error.value = err.message || 'Error generating sitemap';
   }
 };
 
@@ -1624,8 +1642,8 @@ const previewSitemap = async () => {
     });
 
     if (!response.ok) {
-      error.value = 'Erreur lors de la génération du sitemap';
-      throw new Error('Erreur lors de la génération du sitemap');
+      error.value = 'Error generating sitemap';
+      throw new Error('Error generating sitemap');
     }
 
     const data = await response.text();
@@ -1844,207 +1862,110 @@ const showRobotsTxtDialog = (content: string) => {
 };
 
 const adaptSEOData = (data: any): SEOResult => {
-  if (!data) return {
-    title: '',
-    description: '',
-    loadTime: 0,
-    headingStructure: { h1: [], h2: [], h3: [] },
-    imageAlt: [],
-    coreWebVitals: {},
-    mobileCompatibility: { hasViewport: false, smallTouchTargets: 0 },
-    securityChecks: { https: false, securityHeaders: [] },
-    socialTags: { ogTags: [], twitterTags: [] },
-    technicalSEO: { sitemapFound: false, robotsTxtFound: false, schemaTypeCount: {} },
-    structuredData: [],
-    warnings: [],
-    contentStats: { readabilityScore: 0, wordCount: 0, keywordDensity: 0 },
-    accessibility: { missingAria: 0, missingAlt: 0, missingLabels: 0, missingInputAttributes: 0, contrastIssues: 0, ariaIssues: [], inputIssues: [], accessibilityScore: 0 }
-  };
 
-  let imageAlt: Array<{ alt?: string; src?: string; title?: string; width?: number; height?: number; hasDimensions?: boolean }> = [];
+  const warningsFromIssues: Warning[] = data.issues?.map((issue: any) => ({
+    type: mapIssueTypeToWarningType(issue.type),
+    message: issue.message,
+    severity: issue.severity
+  })) || [];
 
-  // Gérer l'accès aux images via data.images ou data.seo.images
-  const imagesData = data.images?.data || (data.seo?.images?.data);
-  const totalImages = data.images?.total || data.seo?.images?.total || 0;
-  const withoutAlt = data.images?.withoutAlt || data.seo?.images?.withoutAlt || 0;
+  const finalWarnings: Warning[] = data.warnings?.length ? data.warnings : warningsFromIssues;
 
-  if (imagesData && Array.isArray(imagesData) && imagesData.length > 0) {
-    imageAlt = imagesData.map((img: any) => ({
-      alt: img.alt || '',
-      src: img.src || '',
-      title: img.title || '',
-      width: img.width || 0,
-      height: img.height || 0,
-      hasDimensions: !!(img.width && img.height)
-    }));
-  } else if (totalImages > 0 || withoutAlt > 0) {
-    for (let i = 0; i < withoutAlt; i++) {
-      imageAlt.push({
-        alt: '',
-        src: '#',
-        title: `Image sans alt ${i + 1}`,
-        width: 0,
-        height: 0,
-        hasDimensions: false
-      });
-    }
+  const result: SEOResult = {
+    title: data.seo?.title || data.title || '',
+    description: data.seo?.description || data.description || '',
+    loadTime: data.performance?.loadTime || data.loadTime || 0,
+    framework: data.framework || { name: '', confidence: 0 },
+    hosting: typeof data.hosting === 'object' ? data.hosting : { provider: data.hosting || '' },
+    domainProvider: typeof data.domainProvider === 'object' ? data.domainProvider : { provider: data.domainProvider || '' },
 
-    for (let i = 0; i < (totalImages - withoutAlt); i++) {
-      imageAlt.push({
-        alt: `Alt text ${i + 1}`,
-        src: '#',
-        title: `Image avec alt ${i + 1}`,
-        width: 0,
-        height: 0,
-        hasDimensions: false
-      });
-    }
-  }
+    headingStructure: data.seo?.headings || data.headingStructure || { h1: [], h2: [], h3: [] },
 
-  let keywordDensity = 0;
-  if (data.seo?.keywordDensity && typeof data.seo.keywordDensity === 'object') {
-    const values = Object.values(data.seo.keywordDensity);
-    if (values.length > 0 && typeof values[0] === 'number') {
-      keywordDensity = values[0];
-    }
-  }
+    imageAlt: data.imageAlt || data.seo?.imageAlt || [],
 
+    links: data.seo?.links || data.links || { internal: [], external: [], broken: [], nofollow: [] },
 
-  let accessibility = {
-    missingAria: 0,
-    missingAlt: 0,
-    missingLabels: 0,
-    missingInputAttributes: 0,
-    contrastIssues: 0,
-    ariaIssues: [],
-    inputIssues: [],
-    accessibilityScore: 0
-  };
+    meta: data.seo?.meta || data.meta || { viewport: '', robots: '', og: {}, twitter: {} },
 
-  if (data.accessibility) {
-    accessibility = { ...data.accessibility };
-  } else if (data.seo?.accessibility) {
-    accessibility = { ...data.seo.accessibility };
-  } else {
-    accessibility.missingAlt = withoutAlt;
-    // Calculer un score d'accessibilité basique en fonction des images sans alt
-    if (totalImages > 0) {
-      const altRatio = 1 - (withoutAlt / totalImages);
-      accessibility.accessibilityScore = Math.round(altRatio * 100);
-    } else {
-      accessibility.accessibilityScore = 100; // Aucune image = pas de problème d'alt manquant
-    }
-  }
-
-  return {
-    title: data.seo?.title || '',
-    description: data.seo?.description || '',
-    loadTime: data.performance?.loadTime || 0,
-    headingStructure: {
-      h1: data.seo?.headings?.h1 || [],
-      h2: data.seo?.headings?.h2 || [],
-      h3: data.seo?.headings?.h3 || [],
-    },
-    imageAlt: imageAlt,
     coreWebVitals: {
-      FCP: data.performance?.fcp || 0,
-      LCP: data.performance?.lcp || 0,
-      TTFB: data.performance?.ttfb || 0,
-      performanceScore: Math.round((data.performance?.speedIndex || 0) / 10) || 0,
+      LCP: data.performance?.lcp || data.coreWebVitals?.LCP || 0,
+      FCP: data.performance?.fcp || data.coreWebVitals?.FCP || 0,
+      CLS: data.performance?.cls || data.coreWebVitals?.CLS || 0.1,
+      TTFB: data.performance?.ttfb || data.coreWebVitals?.TTFB || 0
     },
-    mobileCompatibility: {
-      hasViewport: data.technical?.mobile?.viewport || false,
-      smallTouchTargets: 0,
-      viewportContent: data.seo?.meta?.viewport || '',
-    },
-    securityChecks: {
-      https: data.technical?.https || false,
-      securityHeaders: Object.entries(data.technical?.security?.headers || {}).map(([name, value]) => ({
-        name,
-        value: String(value)
-      }))
-    },
-    socialTags: {
-      ogTags: Object.entries(data.seo?.meta?.og || {}).map(([property, content]) => ({
-        property: `og:${property}`,
-        content: String(content)
-      })),
-      twitterTags: Object.entries(data.seo?.meta?.twitter || {}).map(([name, content]) => ({
-        name: `twitter:${name}`,
-        content: String(content)
-      }))
-    },
-    technicalSEO: {
+
+    technicalSEO: data.technicalSEO || {
       sitemapFound: false,
       robotsTxtFound: false,
-      schemaTypeCount: data.seo?.structuredData?.types || {}
+      schemaTypeCount: {}
     },
-    structuredData: data.seo?.structuredData?.data || [],
-    warnings: [],
-    contentStats: {
-      readabilityScore: data.seo?.readabilityScore || 0,
-      wordCount: data.seo?.wordCount || 0,
-      keywordDensity: keywordDensity
+
+    technical: data.technical || {
+      headers: [],
+      securityIssues: [],
+      meta: {
+        viewport: '',
+        robots: '',
+        og: {},
+        twitter: {}
+      },
+      https: false,
+      mobile: {
+        responsive: false,
+        viewport: false
+      }
     },
-    accessibility: accessibility
+
+    images: {
+      withAlt: data.seo?.images?.withAlt || data.images?.withAlt || 0,
+      withoutAlt: data.seo?.images?.withoutAlt || data.images?.withoutAlt || 0,
+      total: data.seo?.images?.total || data.images?.total || 0,
+      data: data.seo?.images?.data || data.images?.data || []
+    },
+
+    mobileCompatibility: data.technical?.mobile || data.mobileCompatibility || { hasViewport: false },
+
+    securityChecks: {
+      https: data.technical?.https || data.securityChecks?.https || false,
+      securityHeaders: data.technical?.security?.headers || data.securityChecks?.securityHeaders || [],
+      securityIssues: data.technical?.security?.securityIssues || data.securityChecks?.securityIssues || []
+    },
+
+    socialTags: {
+      ogTags: (data.seo?.meta?.og ?
+        (Array.isArray(data.seo.meta.og) ?
+          data.seo.meta.og :
+          Object.entries(data.seo.meta.og || {}).map(([property, content]) => ({ property, content }))
+        ) : []),
+      twitterTags: (data.seo?.meta?.twitter ?
+        (Array.isArray(data.seo.meta.twitter) ?
+          data.seo.meta.twitter :
+          Object.entries(data.seo.meta.twitter || {}).map(([name, content]) => ({ name, content }))
+        ) : [])
+    },
+
+    warnings: finalWarnings,
+
+    structuredData: data.seo?.structuredData?.data || data.structuredData || [],
+    contentStats: data.seo?.contentStats || data.contentStats || { readabilityScore: 0, wordCount: 0, keywordDensity: 0 },
+    issues: data.issues || [],
+    wordCount: data.seo?.wordCount || data.wordCount || 0,
+    readability: data.seo?.readabilityScore || data.readability || 0,
+    url: data.url || '',
+
+    accessibility: data.accessibility || {
+      missingAria: 0,
+      missingAlt: 0,
+      missingLabels: 0,
+      missingInputAttributes: 0,
+      contrastIssues: 0,
+      ariaIssues: [],
+      inputIssues: [],
+      accessibilityScore: 0
+    },
   };
-};
 
-const generateWarnings = (data: any): Array<{ severity: string; message: string; type: string }> => {
-  const warnings: Array<{ severity: string; message: string; type: string }> = [];
-  const warningSet = new Set();
-
-  const addWarning = (severity: string, message: string, type: string) => {
-    const key = `${severity}:${type}:${message}`;
-    if (!warningSet.has(key)) {
-      warningSet.add(key);
-      warnings.push({ severity, message, type });
-    }
-  };
-
-  if (!data.seo?.title) {
-    addWarning('high', 'Missing page title', 'title');
-  } else if (data.seo.title.length < 30) {
-    addWarning('medium', 'Title too short (< 30 characters)', 'title');
-  } else if (data.seo.title.length > 60) {
-    addWarning('medium', 'Title too long (> 60 characters)', 'title');
-  }
-
-  if (!data.seo?.description) {
-    addWarning('high', 'Missing meta description', 'description');
-  } else if (data.seo.description.length < 120) {
-    addWarning('medium', 'Meta description too short (< 120 characters)', 'description');
-  } else if (data.seo.description.length > 160) {
-    addWarning('medium', 'Meta description too long (> 160 characters)', 'description');
-  }
-
-  if (!data.seo?.headings?.h1 || data.seo.headings.h1.length === 0) {
-    addWarning('high', 'Missing H1 tag', 'h1');
-  } else if (data.seo.headings.h1.length > 1) {
-    addWarning('medium', 'Multiple H1 tags detected', 'h1');
-  }
-
-  if (data.seo?.images?.withoutAlt > 0) {
-    addWarning('medium', `${data.seo.images.withoutAlt} image(s) without alt attribute`, 'image');
-  }
-
-  if (!data.technical?.mobile?.viewport) {
-    addWarning('high', 'Missing meta viewport for mobile version', 'mobile');
-  }
-
-  if (!data.technical?.https) {
-    addWarning('high', 'Site is not using HTTPS', 'security');
-  }
-
-  if ((data.performance?.lcp || 0) > 2500) {
-    addWarning('medium', `High LCP (${Math.round(data.performance.lcp)}ms) - Optimize content loading`, 'performance');
-  }
-
-  if ((data.performance?.ttfb || 0) > 600) {
-    addWarning('medium', `High TTFB (${Math.round(data.performance.ttfb)}ms) - Optimize server response time`, 'performance');
-  }
-
-  return warnings;
+  return result;
 };
 
 const adaptSEOResults = (apiResponse: any): SEOReport => {
@@ -2055,17 +1976,13 @@ const adaptSEOResults = (apiResponse: any): SEOReport => {
 
   Object.entries(apiResponse.seoResults || {}).forEach(([url, data]) => {
     const adaptedData = adaptSEOData(data as any);
-    adaptedData.warnings = generateWarnings(data as any);
 
     if ((data as any).technicalSEO) {
-      console.log(`technicalSEO trouvé pour ${url}:`, (data as any).technicalSEO);
       adaptedData.technicalSEO = (data as any).technicalSEO;
     } else if (url === visitedURLs[0]) {
       if (apiResponse.technicalSEO) {
-        console.log("Propagation de technicalSEO depuis la réponse globale");
         adaptedData.technicalSEO = apiResponse.technicalSEO;
       } else {
-        console.log("Initialisation d'un technicalSEO par défaut");
         adaptedData.technicalSEO = {
           sitemapFound: false,
           robotsTxtFound: false,
@@ -2073,14 +1990,12 @@ const adaptSEOResults = (apiResponse: any): SEOReport => {
         };
       }
     } else {
-      console.log(`Initialisation d'un technicalSEO par défaut pour ${url}`);
       adaptedData.technicalSEO = {
         sitemapFound: false,
         robotsTxtFound: false,
         schemaTypeCount: {}
       };
     }
-
     seoResults[url] = adaptedData;
   });
 
@@ -2138,7 +2053,7 @@ const calculateSummary = (seoResults: Record<string, SEOResult>, visitedURLs: st
       pagesWithStructuredData++;
     }
 
-    if ((result.socialTags?.ogTags?.length > 0) || (result.socialTags?.twitterTags?.length > 0)) {
+    if ((result.socialTags?.ogTags?.length ?? 0) > 0 || (result.socialTags?.twitterTags?.length ?? 0) > 0) {
       pagesWithSocialTags++;
     }
 
@@ -2152,8 +2067,8 @@ const calculateSummary = (seoResults: Record<string, SEOResult>, visitedURLs: st
       missingLabels += result.accessibility.missingLabels;
       missingInputAttributes += result.accessibility.missingInputAttributes;
       contrastIssues += result.accessibility.contrastIssues;
-      ariaIssues = [...ariaIssues, ...result.accessibility.ariaIssues];
-      inputIssues = [...inputIssues, ...result.accessibility.inputIssues];
+      ariaIssues = [...(result.accessibility.ariaIssues || [])];
+      inputIssues = [...(result.accessibility.inputIssues || [])];
       accessibilityScore = result.accessibility.accessibilityScore;
     }
   });
@@ -2219,16 +2134,6 @@ function getCoreWebVitalName(name: string): string {
     performanceScore: 'Performance Score'
   };
   return names[name] || name;
-}
-
-function calculateOverallScore(result: any): number {
-  if (!result) return 0;
-
-  const performanceScore = result.coreWebVitals?.performanceScore || 0;
-  const contentScore = result.contentStats?.wordCount ? (result.contentStats.wordCount > 300 ? 100 : (result.contentStats.wordCount / 3)) : 50;
-  const technicalScore = result.securityChecks?.https ? 100 : 50;
-
-  return Math.round((performanceScore + contentScore + technicalScore) / 3);
 }
 
 function getActionItems(result: any): { high: any[], medium: any[] } {
@@ -2366,62 +2271,221 @@ const computeWarningCounts = (result: SEOResult) => {
   return counts;
 };
 
+const getSecurityIssuesCount = (url: string): number => {
+  const result = getResultFromCache(url);
+  if (!result) return 0;
+
+  const explicitIssues = result.securityChecks?.securityIssues?.length || 0;
+
+  let missingHeadersCount = 0;
+  const requiredHeaders = [
+    'content-security-policy',
+    'x-content-type-options',
+    'x-frame-options',
+    'strict-transport-security',
+    'referrer-policy'
+  ];
+
+  const securityHeaders = result.securityChecks?.securityHeaders || [];
+  const headerNames = Array.isArray(securityHeaders)
+    ? securityHeaders.map((h: any) => (h.name || '').toLowerCase())
+    : Object.keys(securityHeaders).map(name => name.toLowerCase());
+
+  requiredHeaders.forEach(header => {
+    if (!headerNames.includes(header)) {
+      missingHeadersCount++;
+    }
+  });
+
+  const httpsIssue = result.securityChecks?.https ? 0 : 1;
+
+  const securityWarnings = (result.warnings || []).filter((w: any) =>
+    typeof w === 'object' && w.type === 'security'
+  ).length;
+
+  return explicitIssues + missingHeadersCount + httpsIssue + securityWarnings;
+};
+
+const emptyResult: SEOResult = {
+  title: '',
+  description: '',
+  headings: { h1: [], h2: [], h3: [] },
+  images: { withAlt: 0, withoutAlt: 0, total: 0 },
+  technical: {
+    https: false,
+    mobile: { viewport: false }
+  },
+  performance: { ttfb: 0, fcp: 0, lcp: 0, cls: 0, speedIndex: 0 },
+  loadTime: 0,
+  framework: { name: '', confidence: 0 },
+  hosting: '',
+  domainProvider: '',
+  headingStructure: { h1: [], h2: [], h3: [] },
+  imageAlt: [],
+  coreWebVitals: {
+    LCP: 0,
+    FCP: 0,
+    CLS: 0,
+    TTFB: 0
+  },
+  mobileCompatibility: {
+    hasViewport: false,
+    smallTouchTargets: 0
+  },
+  securityChecks: {
+    https: false,
+    securityHeaders: []
+  },
+  socialTags: {
+    ogTags: [],
+    twitterTags: []
+  },
+  technicalSEO: {
+    sitemapFound: false,
+    robotsTxtFound: false,
+    schemaTypeCount: {}
+  },
+  structuredData: [],
+  warnings: [],
+  contentStats: {
+    readabilityScore: 0,
+    wordCount: 0,
+    keywordDensity: 0
+  },
+  issues: [],
+  wordCount: 0,
+  readability: 0
+};
+
 const getResultFromCache = (url: string): SEOResult => {
-  if (resultCache.value.has(url)) {
-    const cachedResult = resultCache.value.get(url) as SEOResult;
+  const result = report.value?.seoResults?.[url];
+  if (!result) return emptyResult;
 
-    if (!cachedResult.technicalSEO && report.value?.seoResults[url]?.technicalSEO) {
-      console.log(`Ajout de technicalSEO au résultat mis en cache pour ${url}`);
-      cachedResult.technicalSEO = report.value.seoResults[url].technicalSEO;
-      resultCache.value.set(url, cachedResult);
-    }
+  const warningsFromIssues: Warning[] = result.issues?.map(issue => ({
+    type: mapIssueTypeToWarningType(issue.type),
+    message: issue.message,
+    severity: issue.severity
+  })) || [];
 
-    return cachedResult;
-  }
+  const finalWarnings: Warning[] = result.warnings?.length ? result.warnings : warningsFromIssues;
 
-  if (report.value?.seoResults[url]) {
-    const result = { ...report.value.seoResults[url] };
+  const adaptedResult: SEOResult = {
+    ...emptyResult,
+    ...result,
 
-    if (!result.technicalSEO) {
-      console.log(`Initialisation de technicalSEO pour ${url} depuis le cache`);
+    title: result?.seo?.title || result?.title || '',
+    description: result?.seo?.description || result?.description || '',
 
-      if (url === targetUrl.value && report.value.seoResults[targetUrl.value]?.technicalSEO) {
-        result.technicalSEO = report.value.seoResults[targetUrl.value].technicalSEO;
-      } else {
-        result.technicalSEO = {
-          sitemapFound: false,
-          robotsTxtFound: false,
-          schemaTypeCount: {}
-        };
-      }
-    }
+    headings: result?.seo?.headings || result?.headings || { h1: [], h2: [], h3: [] },
 
-    resultCache.value.set(url, result);
-    return result;
-  }
+    images: {
+      withAlt: result?.seo?.images?.withAlt || result?.images?.withAlt || 0,
+      withoutAlt: result?.seo?.images?.withoutAlt || result?.images?.withoutAlt || 0,
+      total: result?.seo?.images?.total || result?.images?.total || 0,
+      data: result?.seo?.images?.data || result?.images?.data || []
+    },
 
-  const emptyResult: SEOResult = {
-    title: '',
-    description: '',
-    loadTime: 0,
-    headingStructure: { h1: [], h2: [], h3: [] },
-    imageAlt: [],
-    coreWebVitals: {},
-    mobileCompatibility: { hasViewport: false, smallTouchTargets: 0 },
-    securityChecks: { https: false, securityHeaders: [] },
-    socialTags: { ogTags: [], twitterTags: [] },
-    warnings: [],
-    technicalSEO: { sitemapFound: false, robotsTxtFound: false, schemaTypeCount: {} },
-    accessibility: { missingAria: 0, missingAlt: 0, missingLabels: 0, missingInputAttributes: 0, contrastIssues: 0, ariaIssues: [], inputIssues: [], accessibilityScore: 0 }
+    imageAlt: result?.seo?.images?.data || result?.imageAlt || [],
+
+    loadTime: result?.performance?.loadTime || result?.loadTime || 0,
+
+    framework: result?.framework || { name: '', confidence: 0 },
+    hosting: typeof result?.hosting === 'object' ? result?.hosting?.provider || '' : result?.hosting || '',
+    domainProvider: typeof result?.domainProvider === 'object' ? result?.domainProvider?.provider || '' : result?.domainProvider || '',
+
+    coreWebVitals: {
+      LCP: result?.performance?.lcp || result?.coreWebVitals?.LCP || 0,
+      FCP: result?.performance?.fcp || result?.coreWebVitals?.FCP || 0,
+      CLS: result?.performance?.cls || result?.coreWebVitals?.CLS || 0.1,
+      TTFB: result?.performance?.ttfb || result?.coreWebVitals?.TTFB || 0
+    },
+
+    technicalSEO: result?.technicalSEO || {
+      sitemapFound: false,
+      robotsTxtFound: false,
+      schemaTypeCount: {}
+    },
+
+    mobileCompatibility: {
+      hasViewport: result?.technical?.mobile?.viewport ||
+        (result?.mobileCompatibility?.hasViewport) || false,
+      smallTouchTargets: result?.mobileCompatibility?.smallTouchTargets || 0
+    },
+
+    securityChecks: {
+      https: result?.technical?.https || result?.securityChecks?.https || false,
+      securityHeaders: result?.technical?.security?.headers ||
+        result?.securityChecks?.securityHeaders || [],
+      securityIssues: result?.technical?.security?.securityIssues ||
+        result?.securityChecks?.securityIssues || []
+    },
+
+    socialTags: {
+      ogTags: result?.seo?.meta?.og ?
+        (Array.isArray(result.seo.meta.og) ?
+          result.seo.meta.og :
+          Object.entries(result.seo.meta.og || {}).map(([property, content]) => ({ property, content }))
+        ) : (result?.socialTags?.ogTags || []),
+      twitterTags: result?.seo?.meta?.twitter ?
+        (Array.isArray(result.seo.meta.twitter) ?
+          result.seo.meta.twitter :
+          Object.entries(result.seo.meta.twitter || {}).map(([name, content]) => ({ name, content }))
+        ) : (result?.socialTags?.twitterTags || [])
+    },
+
+    warnings: finalWarnings,
+
+    contentStats: {
+      readabilityScore: result?.seo?.readabilityScore || result?.contentStats?.readabilityScore || 0,
+      wordCount: result?.seo?.wordCount || result?.contentStats?.wordCount || 0,
+      keywordDensity: result?.seo?.keywordDensity || result?.contentStats?.keywordDensity || 0
+    },
+
+    issues: result?.issues || [],
+
+    structuredData: result?.seo?.structuredData?.data || result?.structuredData || [],
+
+    wordCount: result?.seo?.wordCount || result?.wordCount || 0,
+    readability: result?.seo?.readabilityScore || result?.readability || 0,
+    url: result?.url || url
   };
 
-  return emptyResult;
+  if (result.accessibility) {
+    adaptedResult.accessibility = result.accessibility;
+  }
+
+  return adaptedResult;
 };
+
+function mapIssueTypeToWarningType(issueType: string): string {
+  const typeMapping: Record<string, string> = {
+    'error': 'general',
+    'warning': 'general',
+
+    'title': 'title',
+    'description': 'description',
+    'h1': 'h1',
+    'content': 'content',
+
+    'image': 'image',
+
+    'performance': 'performance',
+    'technical': 'technical',
+    'security': 'security',
+    'mobile': 'mobile',
+    'accessibility': 'accessibility',
+    'social': 'social',
+    'schema': 'schema',
+    'structured-data': 'schema',
+    'links': 'links'
+  };
+
+  return typeMapping[issueType] || 'general';
+}
 
 const generateSitemap = downloadSitemap;
 
 onMounted(() => {
-  isClient.value = true;
 });
 
 const extractImagesFromSitemap = (): Record<string, Array<{ url: string, title?: string, alt?: string }>> => {
@@ -2448,25 +2512,13 @@ const extractImagesFromSitemap = (): Record<string, Array<{ url: string, title?:
 
           for (let j = 0; j < imageElements.length; j++) {
             const imageElement = imageElements[j];
-            const imageLoc = imageElement.getElementsByTagNameNS("http://www.google.com/schemas/sitemap-image/1.1", "loc")[0]?.textContent || "";
-            const imageTitle = imageElement.getElementsByTagNameNS("http://www.google.com/schemas/sitemap-image/1.1", "title")[0]?.textContent;
-            const imageCaption = imageElement.getElementsByTagNameNS("http://www.google.com/schemas/sitemap-image/1.1", "caption")[0]?.textContent;
-
-            if (imageLoc) {
-              imagesByUrl[pageUrl].push({
-                url: imageLoc,
-                title: imageTitle || undefined,
-                alt: imageCaption || undefined
-              });
-            }
           }
         }
       }
     }
-    console.log("Images extraites du sitemap:", imagesByUrl);
     return imagesByUrl;
   } catch (e) {
-    console.error("Erreur lors de l'extraction des images du sitemap:", e);
+    console.error("Error during image extraction from sitemap:", e);
     return {};
   }
 };
@@ -2474,31 +2526,6 @@ const extractImagesFromSitemap = (): Record<string, Array<{ url: string, title?:
 const isSitemapDialog = ref(false);
 const sitemapTab = ref('code');
 
-const extractUrlsFromSitemap = (): string[] => {
-  if (!sitemapPreview.value) return [];
-
-  try {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(sitemapPreview.value, "text/xml");
-
-    const urls: string[] = [];
-    const urlElements = xmlDoc.getElementsByTagName("url");
-
-    for (let i = 0; i < urlElements.length; i++) {
-      const urlElement = urlElements[i];
-      const locElement = urlElement.getElementsByTagName("loc")[0];
-
-      if (locElement && locElement.textContent) {
-        urls.push(locElement.textContent);
-      }
-    }
-
-    return urls;
-  } catch (e) {
-    console.error("Erreur lors de l'extraction des URLs du sitemap:", e);
-    return [];
-  }
-};
 
 const getTotalUrlsInSitemap = (): number => {
   return extractUrlsFromSitemap().length;
@@ -2513,28 +2540,6 @@ const getCoreWebVitalsFormatted = (url: string): { name: string; value: string; 
   }));
 };
 
-const getWarnings = (result: SEOResult): any[] => {
-  return result?.warnings || [];
-};
-
-const applyFix = (fix: any) => {
-
-};
-
-/**
- * Valide et normalise un pourcentage pour s'assurer qu'il est entre 0 et 100
- * @param {number} percentage - Le pourcentage à valider
- * @returns {number} - Le pourcentage normalisé
- */
-function normalizePercentage(percentage: number): number {
-  if (isNaN(percentage) || percentage === Infinity) {
-    return 0;
-  }
-
-  return Math.min(Math.max(0, Math.round(percentage)), 100);
-}
-
-// Mettre à jour la fonction qui calcule le pourcentage de pages avec des données structurées
 function calculateStructuredDataPercentage(report: any): number {
   if (!report || !report.summary || !report.summary.totalPages) {
     return 0;
@@ -2547,7 +2552,6 @@ function calculateStructuredDataPercentage(report: any): number {
   return normalizePercentage(percentage);
 }
 
-// Mettre à jour la fonction qui calcule le pourcentage de pages avec des balises sociales
 function calculateSocialTagsPercentage(report: any): number {
   if (!report || !report.summary || !report.summary.totalPages) {
     return 0;
@@ -2560,7 +2564,6 @@ function calculateSocialTagsPercentage(report: any): number {
   return normalizePercentage(percentage);
 }
 
-// Mettre à jour la fonction qui calcule le pourcentage de pages compatibles mobile
 function calculateMobileCompatibilityPercentage(report: any): number {
   if (!report || !report.summary || !report.summary.totalPages) {
     return 0;
@@ -2586,52 +2589,71 @@ function calculateHttpsPercentage(report: any): number {
 }
 
 
-function normalizeGlobalScore(score: number): number {
-  if (isNaN(score) || score === Infinity) {
-    return 0;
-  }
-
-  return Math.min(Math.max(0, Math.round(score)), 100);
-}
-
 function calculateGlobalScore(): number {
   if (!report.value || !report.value.summary) {
     return 0;
   }
 
   const summary = report.value.summary;
-  let score = 0;
 
   const titleScore = summary.totalPages > 0 ? (summary.totalPages - summary.missingTitles) / summary.totalPages * 100 : 0;
-
   const descScore = summary.totalPages > 0 ? (summary.totalPages - summary.missingDescriptions) / summary.totalPages * 100 : 0;
-
   const secureScore = calculateHttpsPercentage(report.value);
-
   const mobileScore = calculateMobileCompatibilityPercentage(report.value);
-
   const structuredDataScore = calculateStructuredDataPercentage(report.value);
 
-  score = (titleScore + descScore + secureScore + mobileScore + structuredDataScore) / 5;
+  let accessibilityScore = 0;
+  let accessibilityCount = 0;
+
+  let securityScore = 0;
+  let securityCount = 0;
+
+  let warningsScore = 0;
+
+  if (report.value.seoResults) {
+    Object.values(report.value.seoResults).forEach((result: any) => {
+      if (result.accessibility) {
+        accessibilityScore += normalizePercentage(result.accessibility.accessibilityScore);
+        accessibilityCount++;
+      }
+
+      if (result.securityChecks) {
+        let pageSecurityScore = 0;
+        if (result.securityChecks.https) pageSecurityScore += 40;
+
+        const headers = result.securityChecks.securityHeaders;
+        let headerCount = 0;
+
+        if (headers) {
+          if (Array.isArray(headers)) {
+            headerCount = headers.length;
+          } else if (typeof headers === 'object') {
+            headerCount = Object.keys(headers).length;
+          }
+        }
+
+        pageSecurityScore += headerCount * 12;
+        securityScore += Math.min(100, pageSecurityScore);
+        securityCount++;
+      }
+
+      const warningCount = result.warnings?.length || 0;
+      warningsScore += warningCount > 0 ? Math.max(0, 100 - (warningCount * 5)) : 100;
+    });
+  }
+
+  const avgAccessibilityScore = accessibilityCount > 0 ? accessibilityScore / accessibilityCount : 0;
+  const avgSecurityScore = securityCount > 0 ? securityScore / securityCount : 0;
+  const avgWarningsScore = Object.keys(report.value.seoResults || {}).length > 0 ?
+    warningsScore / Object.keys(report.value.seoResults).length : 0;
+
+  const baseScore = (titleScore + descScore + secureScore + mobileScore + structuredDataScore) / 5;
+
+  const score = (baseScore * 0.4) + (avgAccessibilityScore * 0.2) + (avgSecurityScore * 0.2) + (avgWarningsScore * 0.2);
 
   return normalizePercentage(score);
 }
 
-function calculateAccessibilityScoreNormalized(result: SEOResult): number {
-  if (!result || !result.accessibility) return 0;
-
-  const accessibility = result.accessibility;
-  const totalIssues = accessibility.missingAria +
-    accessibility.missingAlt +
-    accessibility.missingLabels +
-    accessibility.missingInputAttributes +
-    accessibility.contrastIssues;
-
-  if (totalIssues === 0) return 100;
-
-  const score = Math.max(0, 100 - (totalIssues * 5));
-  return normalizePercentage(score);
-}
 
 function getAccessibilityScoreColor(score: number): string {
   if (score >= 90) return 'success';
@@ -2642,12 +2664,11 @@ function getAccessibilityScoreColor(score: number): string {
 
 function getAccessibilityScoreLabel(score: number): string {
   if (score >= 90) return 'Excellent';
-  if (score >= 70) return 'Bon';
-  if (score >= 50) return 'Moyen';
-  return 'À améliorer';
+  if (score >= 70) return 'Good';
+  if (score >= 50) return 'Medium';
+  return 'To improve';
 }
 
-// Ajouter cette nouvelle fonction pour vérifier si la page a des problèmes d'accessibilité
 function hasAccessibilityIssues(url: string): boolean {
   const result = getResultFromCache(url);
   if (!result || !result.accessibility) return false;
@@ -2662,6 +2683,204 @@ function hasAccessibilityIssues(url: string): boolean {
     result.accessibility.contrastIssues > 0
   );
 }
+
+function normalizePercentage(value: number): number {
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+const displayWarnings = (warnings: Array<any>) => {
+  if (!warnings || warnings.length === 0) return [];
+
+  const warningsByType = new Map<string, Array<{ severity: string, message: string, type: string }>>();
+
+  warnings.forEach(warning => {
+    let type = '';
+    let severity = '';
+    let message = '';
+
+    if (typeof warning === 'string') {
+      type = 'general';
+      severity = 'medium';
+      message = warning;
+    } else {
+      type = warning.type || 'general';
+      severity = warning.severity || 'medium';
+      message = warning.message || '';
+    }
+
+    if (!warningsByType.has(type)) {
+      warningsByType.set(type, []);
+    }
+
+    warningsByType.get(type)!.push({
+      severity,
+      message,
+      type
+    });
+  });
+
+  const result: Array<{ type: string, icon: string, color: string, warnings: Array<{ severity: string, message: string, type: string }> }> = [];
+
+  const typeConfig: Record<string, { icon: string, color: string }> = {
+    title: { icon: 'mdi-format-title', color: 'error' },
+    description: { icon: 'mdi-text-box', color: 'warning' },
+    h1: { icon: 'mdi-format-header-1', color: 'warning' },
+    image: { icon: 'mdi-image', color: 'warning' },
+    mobile: { icon: 'mdi-cellphone', color: 'error' },
+    security: { icon: 'mdi-shield', color: 'error' },
+    performance: { icon: 'mdi-speedometer', color: 'warning' },
+    accessibility: { icon: 'mdi-access-point', color: 'warning' },
+    content: { icon: 'mdi-file-document', color: 'info' },
+    links: { icon: 'mdi-link', color: 'warning' },
+    social: { icon: 'mdi-share-variant', color: 'info' },
+    schema: { icon: 'mdi-code-json', color: 'info' },
+    technical: { icon: 'mdi-wrench', color: 'info' },
+    structure: { icon: 'mdi-format-header-pound', color: 'warning' },
+    general: { icon: 'mdi-alert', color: 'info' }
+  };
+
+  warningsByType.forEach((warnings, type) => {
+    const config = typeConfig[type] || { icon: 'mdi-alert', color: 'info' };
+
+    result.push({
+      type,
+      icon: config.icon,
+      color: config.color,
+      warnings: warnings.sort((a, b) => {
+        const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+        return (severityOrder[a.severity as keyof typeof severityOrder] || 2) - (severityOrder[b.severity as keyof typeof severityOrder] || 2);
+      })
+    });
+  });
+
+  return result;
+};
+
+const getSeverityColor = (severity: string): string => {
+  switch (severity) {
+    case 'critical':
+      return 'error';
+    case 'high':
+      return 'error-darken-1';
+    case 'medium':
+      return 'warning';
+    case 'low':
+      return 'info';
+    default:
+      return 'info';
+  }
+};
+
+
+const getSeverityIcon = (severity: string): string => {
+  switch (severity) {
+    case 'critical':
+      return 'mdi-alert';
+    case 'high':
+      return 'mdi-alert';
+    case 'medium':
+      return 'mdi-alert';
+    case 'low':
+      return 'mdi-alert';
+    default:
+      return 'mdi-alert';
+  }
+};
+
+const getFrameworkIcon = (framework: string) => {
+  switch (framework) {
+    case 'Vue.js':
+      return 'mdi-vuejs';
+    case 'React':
+      return 'mdi-react';
+    case 'Angular':
+      return 'mdi-angular';
+    case 'Svelte':
+      return 'mdi-svelte';
+    case 'Next.js':
+      return 'mdi-react';
+    case 'Nuxt.js':
+      return 'mdi-nuxt';
+    default:
+      return 'mdi-language-html5';
+  }
+}
+
+const getFrameworkColor = (framework: string) => {
+  switch (framework) {
+    case 'Vue.js':
+      return 'primary';
+    case 'React':
+      return 'secondary';
+    case 'Angular':
+      return 'yellow';
+    case 'Svelte':
+      return 'warning';
+    case 'Next.js':
+      return 'info';
+    case 'Nuxt.js':
+      return 'success';
+    default:
+      return 'white';
+  }
+}
+
+function formatSecurityHeaders(headers: any): string {
+  if (!headers) return 'No security headers';
+
+  if (headers && typeof headers === 'object' && !Array.isArray(headers)) {
+    return Object.entries(headers)
+      .map(([name, value]) => `${name}: ${value}`)
+      .join('\n');
+  }
+
+  return headers.map(header => `${header.name}: ${header.value}`).join('\n');
+}
+
+function getSecurityHeadersCount(result: any): number {
+  if (!result || !result.securityChecks || !result.securityChecks.securityHeaders) {
+    return 0;
+  }
+
+  const headers = result.securityChecks.securityHeaders;
+
+  if (typeof headers === 'object' && !Array.isArray(headers)) {
+    return Object.keys(headers).length;
+  }
+
+  if (Array.isArray(headers)) {
+    return headers.length;
+  }
+
+  return 0;
+}
+
+const extractUrlsFromSitemap = (): string[] => {
+  if (!sitemapPreview.value) return [];
+
+  const urls: string[] = [];
+
+  try {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(sitemapPreview.value, "text/xml");
+
+    const urlElements = xmlDoc.getElementsByTagName("url");
+
+    for (let i = 0; i < urlElements.length; i++) {
+      const urlElement = urlElements[i];
+      const locElement = urlElement.getElementsByTagName("loc")[0];
+
+      if (locElement && locElement.textContent) {
+        urls.push(locElement.textContent);
+      }
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'extraction des URLs du sitemap:", error);
+  }
+
+  return urls;
+};
+
 </script>
 
 <style scoped>

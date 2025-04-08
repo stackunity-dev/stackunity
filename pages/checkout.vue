@@ -29,37 +29,62 @@
               <img src="/logo/devunity.png" alt="Devunity Logo" width="300" />
             </div>
 
-            <h2 class="text-h5 font-weight-bold mb-2">Premium Payment</h2>
-            <p class="text-subtitle-1 text-medium-emphasis mb-8">Lifetime access to all premium features</p>
+            <div class="price-card mb-6">
+              <v-card class="elevation-3 rounded-lg overflow-hidden">
+                <v-card-text class="pa-6">
+                  <div class="d-flex justify-space-between align-center mb-4">
+                    <div>
+                      <h2 class="text-h5 font-weight-bold mb-1">Premium Lifetime</h2>
+                      <div class="text-subtitle-1 text-medium-emphasis">Unlimited access to all premium features</div>
+                    </div>
+                    <v-chip color="primary" size="large" class="ml-2">
+                      <v-icon start>mdi-crown</v-icon>
+                      Best choice
+                    </v-chip>
+                  </div>
 
-            <div class="mb-6 px-3 py-4 bg-surface-variant rounded-lg">
-              <div class="d-flex justify-space-between align-center mb-3">
-                <span class="text-subtitle-1 font-weight-medium">Lifetime Premium Access</span>
-                <span class="text-h6 font-weight-bold">{{ taxDetails.baseAmount }}€ HT</span>
-              </div>
-              <v-divider class="mb-3"></v-divider>
-              <div class="d-flex justify-space-between align-center mb-1">
-                <span class="text-body-2 text-medium-emphasis">Subtotal</span>
-                <span class="text-body-2">{{ taxDetails.baseAmount }}€ HT</span>
-              </div>
-              <div v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0"
-                class="d-flex justify-space-between align-center">
-                <span class="text-body-2 text-medium-emphasis">TVA ({{ taxDetails.taxPercentage }}%)</span>
-                <span class="text-body-2">{{ taxDetails.taxAmount }}€</span>
-              </div>
-              <v-divider class="my-3"></v-divider>
-              <div class="d-flex justify-space-between align-center">
-                <span class="text-subtitle-1 font-weight-medium">Total</span>
-                <span class="text-h6 font-weight-bold">{{ taxDetails.totalAmount }}€ TTC
-                </span>
-              </div>
-              <div v-if="taxDetails.isVatExempt && taxDetails.vatNumber" class="mt-2 text-caption text-medium-emphasis">
-                TVA not applicable, Art. 283-2 du CGI - Autoliquidation of the TVA
-                <div>VAT number : {{ taxDetails.vatNumber }}</div>
-              </div>
-              <div v-else-if="billingCountry !== 'FR' && !isInEU(billingCountry)"
-                class="mt-2 text-caption text-medium-emphasis">
-                Exportation outside the EU - VAT not applicable
+                  <v-divider class="mb-4"></v-divider>
+
+                  <div class="price-details">
+                    <div class="d-flex justify-space-between align-center mb-2">
+                      <span class="text-body-1">Prix HT</span>
+                      <span class="text-h6 font-weight-bold">{{ taxDetails.baseAmount }}€</span>
+                    </div>
+                    <div v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0"
+                      class="d-flex justify-space-between align-center mb-2">
+                      <span class="text-body-1">TVA ({{ taxDetails.taxPercentage }}%)</span>
+                      <span class="text-h6">{{ taxDetails.taxAmount }}€</span>
+                    </div>
+                    <v-divider class="my-3"></v-divider>
+                    <div class="d-flex justify-space-between align-center">
+                      <div>
+                        <span class="text-h5 font-weight-bold">Total TTC</span>
+                        <div class="text-caption text-medium-emphasis">One-time payment, lifetime access</div>
+                      </div>
+                      <div class="text-right">
+                        <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount }}€</span>
+                        <div class="text-caption success--text">Save 100% vs monthly</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="taxDetails.isVatExempt && taxDetails.vatNumber"
+                    class="mt-3 text-caption text-medium-emphasis">
+                    VAT not applicable, Art. 283-2 of the CGI - Self-assessment of VAT
+                    <div>VAT number: {{ taxDetails.vatNumber }}</div>
+                  </div>
+                  <div v-else-if="billingCountry !== 'FR' && !isInEU(billingCountry)"
+                    class="mt-3 text-caption text-medium-emphasis">
+                    Export outside EU - VAT not applicable
+                  </div>
+                </v-card-text>
+              </v-card>
+            </div>
+
+            <div class="benefits-list mb-6">
+              <div v-for="(benefit, index) in benefits" :key="index" class="benefit-item d-flex align-center mb-3">
+                <v-icon color="success" size="small" class="mr-2">mdi-check-circle</v-icon>
+                <span class="text-body-2">{{ benefit }}</span>
               </div>
             </div>
 
@@ -248,28 +273,37 @@ const taxDetails = ref({
   vatNumber: ''
 });
 
-const features = ref([
+const benefits = [
+  'Unlimited access to all premium features',
+  'Priority support and updates',
+  'Advanced SEO analysis tools',
+  'Custom development tools',
+  'Team collaboration features',
+  'No recurring fees - pay once, use forever'
+];
+
+const features = [
   {
-    icon: 'mdi-database-outline',
-    title: 'Database Designer',
-    description: 'Create and visually manage your database schemas'
+    icon: 'mdi-rocket-launch',
+    title: 'Advanced Development Tools',
+    description: 'Access to premium development tools and features'
   },
   {
-    icon: 'mdi-magnify',
-    title: 'SEO Audit',
-    description: 'Analyze and optimize your SEO performance'
+    icon: 'mdi-shield-check',
+    title: 'Priority Support',
+    description: 'Get priority support for all your questions'
   },
   {
-    icon: 'mdi-robot',
-    title: 'Robots & Schema',
-    description: 'Generate robots.txt and schema.org data structures'
+    icon: 'mdi-update',
+    title: 'Regular Updates',
+    description: 'Stay ahead with the latest features and improvements'
   },
   {
-    icon: 'mdi-palette',
-    title: 'Premium Components',
-    description: 'Access all components and development tools'
+    icon: 'mdi-account-group',
+    title: 'Team Collaboration',
+    description: 'Work seamlessly with your team members'
   }
-]);
+];
 
 const updateTaxRates = async () => {
   try {
@@ -650,5 +684,19 @@ const customFilter = (item: any, query: string, itemText: string) => {
   .right-panel-checkout {
     padding: 2rem 1rem;
   }
+}
+
+.price-card {
+  background: linear-gradient(145deg, rgb(var(--v-theme-surface)) 0%, rgb(var(--v-theme-surface-variant)) 100%);
+  border-radius: 12px;
+}
+.price-card .v-card {
+  background: rgba(var(--v-theme-surface), 0.8);
+  backdrop-filter: blur(10px);
+}
+.price-details {
+  background: rgba(var(--v-theme-surface-variant), 0.1);
+  padding: 16px;
+  border-radius: 8px;
 }
 </style>

@@ -2,7 +2,10 @@ import axios from 'axios';
 import { load as cheerioLoad } from 'cheerio';
 import { createError, defineEventHandler, H3Event, readBody } from 'h3';
 import { performance } from 'perf_hooks';
-import type { CheerioSelector, ExtendedResponse, SiteAnalysisResult, StructuredData, WebsiteAnalysisResult } from './analyzer-types';
+import type { CheerioSelector, ExtendedWebsiteAnalysisResult, SchemaOrgSuggestion, SecurityIssue, SiteAnalysisResult, StructuredData, WebsiteAnalysisResult } from './analyzer-types';
+import { analyzeSecurityVulnerabilities } from './security-analyzer';
+
+
 
 export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisResult> => {
   try {
@@ -12,32 +15,24 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     if (!url) {
       throw createError({
         statusCode: 400,
-        message: 'URL requise'
+        message: 'URL required'
       });
     }
-
-    console.log(`Démarrage de l'analyse pour: ${url}, options:`, JSON.stringify({
-      maxPages,
-      focusOnContact,
-      checkSitemap,
-      checkRobotsTxt
-    }, null, 2));
 
     try {
       new URL(url);
     } catch (urlError) {
       throw createError({
         statusCode: 400,
-        message: 'URL invalide'
+        message: 'Invalid URL'
       });
     }
 
     let urls: string[] = [];
     try {
       urls = await crawlWebsite(url, maxPages);
-      console.log(`Analyse de ${urls.length} pages...`);
     } catch (crawlError) {
-      console.error('Erreur lors du crawl:', crawlError);
+      console.error('Error during crawl:', crawlError);
       urls = [url];
     }
 
@@ -52,7 +47,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
           if (!aIsContact && bIsContact) return 1;
           return 0;
         } catch (e) {
-          console.error('Erreur lors du tri des URLs:', e);
+          console.error('Error during URL sorting:', e);
           return 0;
         }
       });
@@ -78,7 +73,6 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
 
     for (const pageUrl of pagesToAnalyze) {
       try {
-        console.log(`Analyse de la page: ${pageUrl}`);
         const result = await analyzeWebsite(pageUrl);
         results[pageUrl] = result;
 
@@ -97,20 +91,19 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
         if (result.technical.mobile.viewport) mobileCompatiblePages++;
         if (result.technical.https) securePages++;
       } catch (pageError) {
-        console.error(`Erreur lors de l'analyse de ${pageUrl}:`, pageError);
+        console.error(`Error during analysis of ${pageUrl}:`, pageError);
       }
     }
 
     if (Object.keys(results).length === 0) {
-      console.log('Aucun résultat d\'analyse disponible, création d\'un résultat de secours');
       try {
         const fallbackResult = await createFallbackResult(url);
         results[url] = fallbackResult;
       } catch (fallbackError) {
-        console.error('Erreur lors de la création du résultat de secours:', fallbackError);
+        console.error('Error during fallback result creation:', fallbackError);
         throw createError({
           statusCode: 500,
-          message: 'Impossible d\'analyser le site'
+          message: 'Unable to analyze the site'
         });
       }
     }
@@ -128,18 +121,17 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
               break;
             }
           } catch (contactError) {
-            console.error(`Erreur lors de l'extraction des informations de contact de ${pageUrl}:`, contactError);
+            console.error(`Error during contact information extraction from ${pageUrl}:`, contactError);
           }
         }
       }
     } catch (contactError) {
-      console.error('Erreur lors de l\'extraction des informations de contact:', contactError);
+      console.error('Error during contact information extraction:', contactError);
     }
 
     const imagesData: Record<string, any> = {};
     for (const [url, result] of Object.entries(results)) {
       if (result && result.seo && result.seo.images) {
-        console.log(`Extraction des images pour ${url}:`, JSON.stringify(result.seo.images, null, 2));
         imagesData[url] = {
           images: result.seo.images
         };
@@ -174,10 +166,10 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
       }
     };
   } catch (error) {
-    console.error('Erreur lors de l\'analyse:', error);
+    console.error('Error during analysis:', error);
     throw createError({
       statusCode: 500,
-      message: `Erreur lors de l'analyse du site: ${error.message || 'Erreur inconnue'}`
+      message: `Error during site analysis: ${error.message || 'Unknown error'}`
     });
   }
 });
@@ -251,7 +243,18 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
       data: [] as StructuredData[],
       count: 0,
       types: {} as Record<string, number>
-    }
+    },
+    accessibility: {
+      missingAria: 0,
+      missingAlt: 0,
+      missingLabels: 0,
+      missingInputAttributes: 0,
+      contrastIssues: 0,
+      ariaIssues: [],
+      inputIssues: [],
+      accessibilityScore: 0
+    },
+    largeFiles: analyzeLargeFiles($, url)
   };
 
   $('meta').each((_, el) => {
@@ -292,7 +295,7 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
         }
       }
     } catch (e) {
-      console.error('Erreur parsing JSON-LD:', e);
+      console.error('Error parsing JSON-LD:', e);
     }
   });
 
@@ -305,7 +308,7 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     },
     security: {
       headers: response.headers as Record<string, string>,
-      securityIssues: []
+      securityIssues: [] as SecurityIssue[]
     },
     meta: {
       charset: $('meta[charset]').attr('charset'),
@@ -319,6 +322,79 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
       time: 0
     }
   };
+
+  const securityAnalysis = analyzeSecurityVulnerabilities($, response.headers as Record<string, string>, url);
+
+  const securityIssues: SecurityIssue[] = [];
+
+  securityAnalysis.xssVulnerabilities.forEach(vuln => {
+    securityIssues.push({
+      type: 'XSS',
+      description: `${vuln.description} in the element ${vuln.element} (${vuln.attribute})`,
+      severity: vuln.severity
+    });
+  });
+
+  securityAnalysis.csrfVulnerabilities.forEach(vuln => {
+    securityIssues.push({
+      type: 'CSRF',
+      description: vuln.description,
+      severity: vuln.severity
+    });
+  });
+
+  securityAnalysis.injectionVulnerabilities.forEach(vuln => {
+    securityIssues.push({
+      type: 'Injection',
+      description: vuln.description,
+      severity: vuln.severity
+    });
+  });
+
+  securityAnalysis.infoLeakVulnerabilities.forEach(vuln => {
+    securityIssues.push({
+      type: 'Information leak',
+      description: vuln.description,
+      severity: vuln.severity
+    });
+  });
+
+  securityAnalysis.headerAnalysis.missing.forEach(header => {
+    securityIssues.push({
+      type: 'Missing security header',
+      description: `The security header ${header} is missing`,
+      severity: 'medium'
+    });
+  });
+
+  const cookieAnalysis = securityAnalysis.cookieAnalysis;
+  if (!cookieAnalysis.secure && !cookieAnalysis.httpOnly && !cookieAnalysis.sameSite) {
+    securityIssues.push({
+      type: 'Unsecured cookies',
+      description: 'The cookies are not secured (missing Secure, HttpOnly and SameSite attributes)',
+      severity: 'high'
+    });
+  } else if (!cookieAnalysis.secure) {
+    securityIssues.push({
+      type: 'Unsecured cookies',
+      description: 'The cookies do not have the Secure attribute',
+      severity: 'medium'
+    });
+  } else if (!cookieAnalysis.httpOnly) {
+    securityIssues.push({
+      type: 'Unsecured cookies',
+      description: 'The cookies do not have the HttpOnly attribute',
+      severity: 'medium'
+    });
+  } else if (!cookieAnalysis.sameSite) {
+    securityIssues.push({
+      type: 'Unsecured cookies',
+      description: 'The cookies do not have the SameSite attribute',
+      severity: 'low'
+    });
+  }
+
+  technicalData.security.securityIssues = securityIssues;
 
   const urlObj = new URL(url);
   const isRootUrl = urlObj.pathname === '/' || urlObj.pathname === '';
@@ -346,12 +422,17 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
   let contactInfo: Record<string, string> = {};
   try {
     contactInfo = await findContactInfo(url, linksData.internal.map(link => link.href));
-    console.log('Informations de contact trouvées:', contactInfo);
   } catch (error) {
-    console.error('Erreur lors de la recherche des informations de contact:', error);
+    console.error('Error during contact information search:', error);
   }
 
-  const schemaData = analyzeSchemaOrg(url, html, $, seoData as any, contactInfo);
+
+  const resources = analyzeResources($, url);
+
+  const framework = analyzeFramework($);
+  const hosting = await analyzeHosting(url);
+  const domainProvider = analyzeDomainProvider(url);
+  const largeFiles = analyzeLargeFiles($, url);
 
   const result: ExtendedWebsiteAnalysisResult = {
     url,
@@ -359,17 +440,19 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     seo: seoData as any,
     technical: technicalData,
     technicalSEO: technicalSEO,
-    schemaOrg: schemaData,
     accessibility: accessibilityData,
-    issues
+    issues,
+    resources,
+    framework,
+    hosting,
+    domainProvider,
+    largeFiles,
   };
 
-  const endTime = performance.now();
   return result;
 }
 
 function analyzeImages($: CheerioSelector) {
-  console.log("Analyzing images...");
   const images = $('img').map((_, el) => {
     const $img = $(el);
     const src = $img.attr('src') || '';
@@ -422,7 +505,6 @@ function analyzeLinks($: CheerioSelector, baseUrl: string) {
           return { href, text, hasImage };
         }
       } catch (e) {
-        // Ignorer les liens invalides
       }
     }
     return null;
@@ -441,7 +523,6 @@ function analyzeLinks($: CheerioSelector, baseUrl: string) {
           return { href, text, hasImage };
         }
       } catch (e) {
-        // Ignorer les liens invalides
       }
     }
     return null;
@@ -481,20 +562,6 @@ function checkResponsiveness($: CheerioSelector): boolean {
     $('img[srcset], picture, source[srcset]').length > 0;
 }
 
-interface SchemaOrgSuggestion {
-  type: string;
-  properties: Record<string, any>;
-  template: string;
-}
-
-interface SchemaOrg {
-  suggestions: SchemaOrgSuggestion[];
-}
-
-interface ExtendedWebsiteAnalysisResult extends WebsiteAnalysisResult {
-  schemaOrg: SchemaOrg;
-}
-
 function analyzeSchemaOrg(url: string, html: string, $: CheerioSelector, seo: any, contactInfo: Record<string, string> = {}): any {
   try {
     const existing = seo.structuredData || [];
@@ -510,7 +577,7 @@ function analyzeSchemaOrg(url: string, html: string, $: CheerioSelector, seo: an
           .replace(/\r/g, '\\r')
           .replace(/\t/g, '\\t');
       } catch (e) {
-        console.error('Erreur lors de l\'échappement de chaîne JSON:', e);
+        console.error('Error during JSON string escaping:', e);
         return '';
       }
     };
@@ -533,26 +600,26 @@ function analyzeSchemaOrg(url: string, html: string, $: CheerioSelector, seo: an
             orgName = contactInfo.name;
           }
         } catch (e) {
-          console.error('Erreur lors de l\'extraction du nom de l\'organisation:', e);
+          console.error('Error during organization name extraction:', e);
         }
 
         let logo = '';
         try {
           logo = $('link[rel="icon"]').attr('href') || '';
         } catch (e) {
-          console.error('Erreur lors de l\'extraction du logo:', e);
+          console.error('Error during logo extraction:', e);
         }
 
         let phone = '';
         try {
-          const phoneMatch = $('body').text().match(/(\+\d{1,3}[-\.\s]??)?\(?\d{3}\)?[-\.\s]??\d{3}[-\.\s]??\d{4}/);
+          const phoneMatch = $('body').text().match(/(\+\d{1,3}[-\.\s]??)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/);
           phone = phoneMatch ? phoneMatch[0] : '';
 
           if (contactInfo?.telephone && !phone) {
             phone = contactInfo.telephone;
           }
         } catch (e) {
-          console.error('Erreur lors de l\'extraction du téléphone:', e);
+          console.error('Error during phone extraction:', e);
         }
 
         const properties: Record<string, any> = {
@@ -594,11 +661,11 @@ function analyzeSchemaOrg(url: string, html: string, $: CheerioSelector, seo: an
             template
           });
         } catch (e) {
-          console.error('Erreur lors de la génération du template JSON pour Organization:', e);
+          console.error('Error during Organization template JSON generation:', e);
         }
       }
     } catch (orgError) {
-      console.error('Erreur lors de l\'analyse des données Organization:', orgError);
+      console.error('Error during Organization data analysis:', orgError);
     }
 
     try {
@@ -754,10 +821,22 @@ async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean; conten
 function standardizeUrl(url: string): string {
   try {
     const urlObj = new URL(url);
-    if (urlObj.pathname !== "/" && urlObj.pathname.endsWith("/")) {
-      urlObj.pathname = urlObj.pathname.slice(0, -1);
+
+    // Normaliser le protocole en minuscules
+    const protocol = urlObj.protocol.toLowerCase();
+
+    // Normaliser le hostname en minuscules
+    const hostname = urlObj.hostname.toLowerCase();
+
+    // Normaliser le chemin en supprimant les slashes de fin
+    let pathname = urlObj.pathname;
+    if (pathname !== "/" && pathname.endsWith("/")) {
+      pathname = pathname.slice(0, -1);
     }
-    return urlObj.toString();
+
+    // Reconstruire l'URL normalisée
+    const normalizedUrl = `${protocol}//${hostname}${pathname}${urlObj.search}${urlObj.hash}`;
+    return normalizedUrl;
   } catch (e) {
     return url;
   }
@@ -778,37 +857,29 @@ function toggleSlash(url: string): string | null {
 }
 
 async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<string[]> {
-  console.log(`Démarrage du crawl de ${baseUrl}, limite de ${maxPages} pages`);
-
   try {
     let normalizedUrl = standardizeUrl(baseUrl);
-    console.log(`URL standardisée: ${normalizedUrl}`);
 
-    const protectedRoutes = [
-      '/dashboard',
-      '/profile',
-      '/settings',
-      '/projects',
-      '/account',
-      '/admin',
-      '/user',
-      '/workspace',
-      '/billing',
-      '/analytics',
-      '/notifications'
-    ];
-
+    // Set pour stocker toutes les URLs découvertes
     const allDiscoveredUrls = new Set<string>();
+    // Set pour stocker les URLs visitées
     const visited = new Set<string>();
+    // Set pour stocker les formes canoniques des URLs (sans www, sans slash final, etc.)
+    const canonicalForms = new Set<string>();
 
+    // Ajouter l'URL normalisée
     allDiscoveredUrls.add(normalizedUrl);
     visited.add(normalizedUrl);
+
+    // Ajouter la forme canonique
+    const canonicalUrl = getCanonicalForm(normalizedUrl);
+    canonicalForms.add(canonicalUrl);
 
     const alternateUrl = toggleSlash(normalizedUrl);
     if (alternateUrl) {
       allDiscoveredUrls.add(alternateUrl);
       visited.add(alternateUrl);
-      console.log(`Version alternative ajoutée: ${alternateUrl}`);
+      canonicalForms.add(getCanonicalForm(alternateUrl));
     }
 
     let mainPageHtml = '';
@@ -822,7 +893,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       });
 
       if (checkResponse.status !== 200) {
-        console.log(`URL principale inaccessible: ${normalizedUrl}, statut: ${checkResponse.status}`);
         return [normalizedUrl];
       }
 
@@ -840,31 +910,27 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       const baseHostname = baseUrlObj.hostname;
 
       function shouldKeepWithoutVisiting(url: string): boolean {
-        try {
-          const urlObj = new URL(url);
-          const path = urlObj.pathname.toLowerCase();
-
-          const authProtectedPaths = [
-            '/dashboard',
-            '/admin',
-            '/account',
-            '/profile',
-            '/user',
-            '/member',
-            '/login',
-            '/signin',
-            '/signup',
-            '/register',
-            '/checkout',
-            '/cart',
-            '/orders',
-            '/settings'
-          ];
-
-          return authProtectedPaths.some(protectedPath => path.includes(protectedPath));
-        } catch (e) {
-          return false;
+        // Ne pas visiter les URLs protégées ou bloquées
+        if (isProtectedOrBlockedUrl(url)) {
+          return true;
         }
+
+        // Ne pas visiter les fichiers de ressources
+        if (/\.(jpg|jpeg|png|gif|svg|webp|css|js|json|xml|pdf|zip|gz|rar|woff|woff2|eot|ttf|otf|mp4|webm|mp3|avi|mov)$/i.test(url)) {
+          return true;
+        }
+
+        // Ne pas visiter URLs contenant ?= ou #= qui sont souvent des filtres dynamiques
+        if (url.includes('?') || url.includes('#')) {
+          return true;
+        }
+
+        // Ne pas visiter les pages d'archives
+        if (/\/page\/\d+\//.test(url) || /\/p\/\d+\//.test(url)) {
+          return true;
+        }
+
+        return false;
       }
 
       const extractLinks = ($: CheerioSelector, pageUrl: string): string[] => {
@@ -875,7 +941,7 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
           if (href) {
             try {
               const url = normalizeUrl(href, pageUrl, baseUrlObj);
-              if (url) links.push(url);
+              if (url && !isProtectedOrBlockedUrl(url)) links.push(url);
             } catch (e) { }
           }
         });
@@ -891,7 +957,7 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
           if (linkAttr) {
             try {
               const url = normalizeUrl(linkAttr, pageUrl, baseUrlObj);
-              if (url) links.push(url);
+              if (url && !isProtectedOrBlockedUrl(url)) links.push(url);
             } catch (e) { }
           }
         });
@@ -911,7 +977,7 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
             try {
               const cleanMatch = match.replace(/^"|"$/g, '');
               const url = normalizeUrl(cleanMatch, pageUrl, baseUrlObj);
-              if (url) links.push(url);
+              if (url && !isProtectedOrBlockedUrl(url)) links.push(url);
             } catch (e) { }
           });
         });
@@ -921,7 +987,7 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
           if (href) {
             try {
               const url = normalizeUrl(href, pageUrl, baseUrlObj);
-              if (url) links.push(url);
+              if (url && !isProtectedOrBlockedUrl(url)) links.push(url);
             } catch (e) { }
           }
         });
@@ -971,8 +1037,6 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
             queue.push(standardizedLink);
           }
         });
-
-        console.log(`${mainPageLinks.length} liens trouvés sur la page principale`);
       }
 
       const timeoutPromise = new Promise<string[]>((resolve) => {
@@ -1024,8 +1088,10 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
                   console.log(`URL protégée détectée (non visitée): ${standardizedLink}`);
                 }
               } else if (!visited.has(standardizedLink) && !queue.includes(standardizedLink) &&
+                !canonicalForms.has(getCanonicalForm(standardizedLink)) &&
                 queue.length + visited.size < maxPages) {
                 queue.push(standardizedLink);
+                canonicalForms.add(getCanonicalForm(standardizedLink));
               }
             });
 
@@ -1047,6 +1113,33 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
   } catch (error) {
     console.error('Erreur fatale dans crawlWebsite:', error);
     return [baseUrl];
+  }
+}
+
+/**
+ * Obtient une forme canonique de l'URL pour comparer plus facilement les URLs similaires
+ */
+function getCanonicalForm(url: string): string {
+  try {
+    const urlObj = new URL(url);
+
+    // Enlever le www si présent
+    let hostname = urlObj.hostname.toLowerCase();
+    if (hostname.startsWith('www.')) {
+      hostname = hostname.substring(4);
+    }
+
+    // Normaliser le chemin
+    let pathname = urlObj.pathname;
+    if (pathname === '') pathname = '/';
+    if (pathname !== '/' && pathname.endsWith('/')) {
+      pathname = pathname.slice(0, -1);
+    }
+
+    // Forme canonique sans protocole ni paramètres
+    return `${hostname}${pathname}`;
+  } catch (e) {
+    return url;
   }
 }
 
@@ -1144,20 +1237,16 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
     try {
       if (data && data.images) {
         if (data.images.data && Array.isArray(data.images.data)) {
-          console.log(`Nombre d'images trouvées: ${data.images.data.length}`);
 
           imageUrls[pageUrl] = data.images.data
             .filter(img => {
               if (!img || !img.src) {
-                console.log("Image ignorée (pas de src):", img);
                 return false;
               }
-              console.log(`Image trouvée: ${img.src}`);
               return true;
             })
             .map(img => {
               const absoluteUrl = getAbsoluteImageUrl(img.src, pageUrl);
-              console.log(`  - URL transformée: ${img.src} -> ${absoluteUrl}`);
               return {
                 url: absoluteUrl,
                 title: img.title || undefined,
@@ -1205,7 +1294,6 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
       const urlImages = imageUrls[url] || [];
       const isImage = isImageUrl(url);
 
-      console.log(`Génération du sitemap pour ${url}, nombre d'images: ${urlImages.length}`);
 
       if (isImage) {
         return `  <url>
@@ -1237,11 +1325,9 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
         index === self.findIndex(i => i.url === img.url)
       );
 
-      console.log(`Après fusion, nombre total d'images pour ${url}: ${uniquePageImages.length}`);
 
       const imageSection = uniquePageImages.length > 0
         ? uniquePageImages.map(img => {
-          console.log(`  - Ajout de l'image au sitemap: ${img.url}`);
           return `
     <image:image>
       <image:loc>${img.url}</image:loc>${img.title ? `
@@ -1295,7 +1381,6 @@ function rankPages(results: Record<string, WebsiteAnalysisResult>): string[] {
 
 async function findContactInfo(baseUrl: string, links: string[]): Promise<Record<string, string>> {
   if (!links || links.length === 0) {
-    console.log('Aucun lien fourni pour la recherche de contact');
     return {};
   }
 
@@ -1317,11 +1402,9 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
           prioritizedUrls.push(link);
         }
       } catch (e) {
-        console.log(`URL invalide ignorée: ${link}`);
       }
     });
 
-    console.log(`${prioritizedUrls.length} liens potentiels de contact trouvés`);
 
     if (prioritizedUrls.length === 0) {
       prioritizedUrls.push(baseUrl);
@@ -1341,7 +1424,6 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
         });
 
         if (response.status !== 200) {
-          console.log(`Page inaccessible: ${url}, statut: ${response.status}`);
           continue;
         }
 
@@ -1450,14 +1532,13 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
           break;
         }
       } catch (error) {
-        console.error(`Erreur lors de l'analyse de ${url} pour les contacts:`, error.message);
+        console.error(`Error analyzing ${url} for contacts:`, error.message);
       }
     }
 
-    console.log('Informations de contact trouvées:', contactInfo);
     return contactInfo;
   } catch (error) {
-    console.error('Erreur générale lors de la recherche de contacts:', error);
+    console.error('General error when searching for contacts:', error);
     return {};
   }
 }
@@ -1558,7 +1639,7 @@ async function createFallbackResult(url: string): Promise<WebsiteAnalysisResult>
       issues: []
     };
   } catch (e) {
-    console.error('Erreur lors de la création du résultat de secours:', e);
+    console.error('Error creating fallback result:', e);
     throw e;
   }
 }
@@ -1573,7 +1654,6 @@ function analyzeAccessibility($: CheerioSelector): {
   inputIssues: Array<{ element: string, issue: string }>;
   accessibilityScore: number;
 } {
-  // Vérifier les images sans attribut alt
   const images = $('img');
   const imagesWithoutAlt = $('img:not([alt])');
   const missingAlt = imagesWithoutAlt.length;
@@ -1617,10 +1697,8 @@ function analyzeAccessibility($: CheerioSelector): {
 
     if (!role) return;
 
-    // Trouver le rôle correspondant dans notre liste
     const ariaRole = ariaRoles.find(r => r.role === role);
     if (ariaRole) {
-      // Vérifier que les attributs requis sont présents
       const missingAttrs = ariaRole.requiredAttrs.filter(attr => !$el.attr(attr));
       if (missingAttrs.length > 0) {
         missingAria++;
@@ -1632,7 +1710,6 @@ function analyzeAccessibility($: CheerioSelector): {
     }
   });
 
-  // Vérifier les éléments avec des attributs ARIA mal utilisés
   const ariaAttributes = [
     'aria-activedescendant', 'aria-atomic', 'aria-autocomplete', 'aria-busy', 'aria-checked',
     'aria-controls', 'aria-current', 'aria-describedby', 'aria-disabled', 'aria-dropeffect',
@@ -1643,7 +1720,6 @@ function analyzeAccessibility($: CheerioSelector): {
     'aria-setsize', 'aria-sort', 'aria-valuemax', 'aria-valuemin', 'aria-valuenow', 'aria-valuetext'
   ];
 
-  // Vérifier les attributs aria qui nécessitent des rôles spécifiques
   const ariaRoleMap = {
     'aria-checked': ['checkbox', 'radio', 'menuitemcheckbox', 'menuitemradio', 'switch'],
     'aria-expanded': ['button', 'combobox', 'document', 'link', 'menu', 'menuitem', 'select'],
@@ -1733,7 +1809,7 @@ function analyzeAccessibility($: CheerioSelector): {
         missingInputAttributes++;
         inputIssues.push({
           element: `<${tagName} type="${type}"...>`,
-          issue: 'Champ sans méthode d\'identification accessible (placeholder, aria-label, aria-labelledby, ou label associé)'
+          issue: 'Field without accessible identification method (placeholder, aria-label, aria-labelledby, or associated label)'
         });
       }
     }
@@ -1755,7 +1831,7 @@ function analyzeAccessibility($: CheerioSelector): {
       missingAria++;
       ariaIssues.push({
         element: `<${tagName}...>`,
-        issue: 'Élément interactif sans texte ou alternative accessible (aria-label, aria-labelledby, title)'
+        issue: 'Interactive element without text or accessible alternative (aria-label, aria-labelledby, title)'
       });
     }
   });
@@ -1767,38 +1843,31 @@ function analyzeAccessibility($: CheerioSelector): {
     if (i === 1 && headings.length === 0) {
       ariaIssues.push({
         element: '<h1>',
-        issue: 'Aucun titre h1 trouvé sur la page. Le niveau h1 est essentiel pour la structure de la page.'
+        issue: 'No h1 title found on the page. The h1 level is essential for the page structure.'
       });
       missingAria++;
     } else if (i > 1 && previousLevel === 0 && headings.length > 0) {
       ariaIssues.push({
         element: `<h${i}>`,
-        issue: `Titre h${i} utilisé sans h${i - 1} précédent. Les niveaux de titre doivent être utilisés dans l'ordre.`
+        issue: `Title h${i} used without previous h${i - 1}. Titles levels must be used in order.`
       });
       missingAria++;
     }
 
-    // Mettre à jour le niveau précédent s'il y a des titres à ce niveau
     if (headings.length > 0) {
       previousLevel = i;
     }
   }
 
-  // Pour l'analyse des contrastes, nous ne pouvons pas facilement le faire côté serveur
-  // car cela nécessite des informations CSS calculées. On met une valeur par défaut.
   const contrastIssues = 0;
 
-  // Calculer un score d'accessibilité basé sur les problèmes trouvés
   const totalIssues = missingAria + missingAlt + missingLabels + missingInputAttributes + contrastIssues;
   const totalElements = Math.max(1, images.length + ariaElements.length + inputs.length + interactiveElements.length);
 
-  // Calcul du score d'accessibilité plus nuancé
   let accessibilityScore = 100;
 
   if (totalElements > 0 && totalIssues > 0) {
-    // Pénalités pour chaque type de problème
     if (missingAlt > 0) {
-      // Plus grave pour les images sans alt
       accessibilityScore -= Math.min(25, (missingAlt / Math.max(1, images.length)) * 100);
     }
 
@@ -1811,12 +1880,10 @@ function analyzeAccessibility($: CheerioSelector): {
     }
   }
 
-  // S'il n'y a aucun élément à vérifier, le score est parfait
   if (totalElements <= 1 && totalIssues === 0) {
     accessibilityScore = 100;
   }
 
-  // Arrondir et s'assurer que le score est entre 0 et 100
   accessibilityScore = Math.max(0, Math.min(100, Math.round(accessibilityScore)));
 
   return {
@@ -1836,34 +1903,268 @@ function generateSEOIssues(seoData: any, performanceData: any): Array<{ type: st
 
   if (!seoData.title) {
     issues.push({
-      type: 'error',
-      message: 'Titre manquant',
+      type: 'title',
+      message: 'Title missing',
       severity: 'high'
+    });
+  } else if (seoData.title.length < 10) {
+    issues.push({
+      type: 'title',
+      message: 'Title too short (less than 10 characters)',
+      severity: 'medium'
+    });
+  } else if (seoData.title.length > 60) {
+    issues.push({
+      type: 'title',
+      message: 'Title too long (more than 60 characters)',
+      severity: 'low'
     });
   }
 
   if (!seoData.description) {
     issues.push({
-      type: 'warning',
-      message: 'Description meta manquante',
+      type: 'description',
+      message: 'Meta description missing',
       severity: 'medium'
+    });
+  } else if (seoData.description.length < 50) {
+    issues.push({
+      type: 'description',
+      message: 'Description meta too short (less than 50 characters)',
+      severity: 'low'
+    });
+  } else if (seoData.description.length > 160) {
+    issues.push({
+      type: 'description',
+      message: 'Description meta too long (more than 160 characters)',
+      severity: 'low'
     });
   }
 
   if (seoData.images && seoData.images.withoutAlt > 0) {
     issues.push({
-      type: 'warning',
-      message: `${seoData.images.withoutAlt} image(s) sans attribut alt`,
+      type: 'image',
+      message: `${seoData.images.withoutAlt} image(s) without alt attribute`,
       severity: 'medium'
     });
   }
 
-  if (performanceData && performanceData.loadTime > 3000) {
+  if (!seoData.headings || !seoData.headings.h1 || seoData.headings.h1.length === 0) {
     issues.push({
-      type: 'warning',
-      message: 'Temps de chargement élevé',
+      type: 'h1',
+      message: 'H1 title missing',
+      severity: 'high'
+    });
+  } else if (seoData.headings.h1.length > 1) {
+    issues.push({
+      type: 'h1',
+      message: `${seoData.headings.h1.length} h1 titles detected (one recommended)`,
       severity: 'medium'
     });
+  }
+
+  if (performanceData) {
+    if (performanceData.loadTime > 3000) {
+      issues.push({
+        type: 'performance',
+        message: `High loading time (${(performanceData.loadTime / 1000).toFixed(2)}s)`,
+        severity: 'medium'
+      });
+    }
+
+    if (performanceData.ttfb > 200) {
+      issues.push({
+        type: 'performance',
+        message: `High TTFB (${performanceData.ttfb}ms)`,
+        severity: 'medium'
+      });
+    }
+
+    if (performanceData.fcp > 2000) {
+      issues.push({
+        type: 'performance',
+        message: `First Contentful Paint high (${performanceData.fcp}ms)`,
+        severity: 'medium'
+      });
+    }
+
+    if (performanceData.lcp > 2500) {
+      issues.push({
+        type: 'performance',
+        message: `Largest Contentful Paint high (${performanceData.lcp}ms)`,
+        severity: 'medium'
+      });
+    }
+  }
+
+  if (seoData.accessibility) {
+    if (seoData.accessibility.accessibilityScore < 70) {
+      issues.push({
+        type: 'accessibility',
+        message: `Low accessibility score (${seoData.accessibility.accessibilityScore}/100)`,
+        severity: 'high'
+      });
+    }
+
+    if (seoData.accessibility.missingAria > 0) {
+      issues.push({
+        type: 'accessibility',
+        message: `${seoData.accessibility.missingAria} elements without ARIA attributes`,
+        severity: 'medium'
+      });
+    }
+
+    if (seoData.accessibility.missingLabels > 0) {
+      issues.push({
+        type: 'accessibility',
+        message: `${seoData.accessibility.missingLabels} form fields without label`,
+        severity: 'medium'
+      });
+    }
+
+    if (seoData.accessibility.missingInputAttributes > 0) {
+      issues.push({
+        type: 'accessibility',
+        message: `${seoData.accessibility.missingInputAttributes} form fields without required attributes`,
+        severity: 'medium'
+      });
+    }
+
+    if (seoData.accessibility.contrastIssues > 0) {
+      issues.push({
+        type: 'accessibility',
+        message: `${seoData.accessibility.contrastIssues} contrast issues detected`,
+        severity: 'medium'
+      });
+    }
+  }
+
+  const hasSocialTags = (seoData.meta?.og && Object.keys(seoData.meta.og).length > 0) ||
+    (seoData.meta?.twitter && Object.keys(seoData.meta.twitter).length > 0) ||
+    (seoData.socialTags?.ogTags?.length > 0) ||
+    (seoData.socialTags?.twitterTags?.length > 0);
+
+  if (!hasSocialTags) {
+    issues.push({
+      type: 'social',
+      message: 'No social media tags (Open Graph, Twitter Cards) detected',
+      severity: 'medium'
+    });
+  } else {
+    const ogTags = seoData.meta?.og || {};
+    const ogTagsArray = Array.isArray(ogTags) ? ogTags : Object.keys(ogTags);
+
+    const essentialOgTags = ['title', 'description', 'image', 'url'];
+    const missingOgTags = essentialOgTags.filter(tag => !ogTagsArray.includes(tag));
+
+    if (missingOgTags.length > 0) {
+      issues.push({
+        type: 'social',
+        message: `Missing Open Graph tags: ${missingOgTags.join(', ')}`,
+        severity: 'low'
+      });
+    }
+  }
+
+  if (seoData.securityChecks) {
+    if (!seoData.securityChecks.https) {
+      issues.push({
+        type: 'security',
+        message: 'HTTPS not enabled',
+        severity: 'high'
+      });
+    }
+
+    const securityHeaders = seoData.securityChecks.securityHeaders || [];
+    const headerNames = securityHeaders.map((h: any) => h.name?.toLowerCase());
+
+    const essentialHeaders = [
+      { name: 'content-security-policy', severity: 'medium' },
+      { name: 'x-content-type-options', severity: 'medium' },
+      { name: 'x-frame-options', severity: 'medium' },
+      { name: 'strict-transport-security', severity: 'high' },
+      { name: 'referrer-policy', severity: 'low' }
+    ];
+
+    essentialHeaders.forEach(header => {
+      if (!headerNames.includes(header.name)) {
+        issues.push({
+          type: 'security',
+          message: `Missing security header: ${header.name}`,
+          severity: header.severity as 'high' | 'medium' | 'low'
+        });
+      }
+    });
+
+    if (seoData.securityChecks.securityIssues && seoData.securityChecks.securityIssues.length > 0) {
+      seoData.securityChecks.securityIssues.forEach((issue: any) => {
+        issues.push({
+          type: 'security',
+          message: issue.description,
+          severity: issue.severity
+        });
+      });
+    }
+  }
+
+  if (seoData.wordCount < 300) {
+    issues.push({
+      type: 'content',
+      message: `Content too short (${seoData.wordCount} words, minimum recommended: 300)`,
+      severity: 'medium'
+    });
+  }
+
+  if (seoData.readabilityScore < 50) {
+    issues.push({
+      type: 'content',
+      message: `Low readability score (${seoData.readabilityScore}/100)`,
+      severity: 'medium'
+    });
+  }
+
+  if (!seoData.structuredData || seoData.structuredData.length === 0) {
+    issues.push({
+      type: 'technical',
+      message: 'No structured data (Schema.org) detected',
+      severity: 'low'
+    });
+  }
+
+  if (seoData.mobileCompatibility) {
+    if (!seoData.mobileCompatibility.hasViewport) {
+      issues.push({
+        type: 'mobile',
+        message: 'Viewport tag missing, site probably not optimized for mobile',
+        severity: 'high'
+      });
+    }
+
+    if (seoData.mobileCompatibility.smallTouchTargets > 0) {
+      issues.push({
+        type: 'mobile',
+        message: `${seoData.mobileCompatibility.smallTouchTargets} small touch targets detected`,
+        severity: 'medium'
+      });
+    }
+  }
+
+  if (!seoData.meta?.canonical) {
+    issues.push({
+      type: 'technical',
+      message: 'Canonical tag missing',
+      severity: 'medium'
+    });
+  }
+
+  if (seoData.resources) {
+    if (seoData.resources.largeFiles && seoData.resources.largeFiles.length > 0) {
+      issues.push({
+        type: 'performance',
+        message: `${seoData.resources.largeFiles.length} large file(s) detected`,
+        severity: 'medium'
+      });
+    }
   }
 
   return issues;
@@ -1881,7 +2182,6 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
   const title = $('title').text().trim();
   const metaTagsHtml = metaTags.map(tag => $.html(tag)).join('\n');
 
-  // Check for essential meta tags
   const essentialTags = [
     { name: 'Title', present: title.length > 0, content: title },
     { name: 'Description', present: $('meta[name="description"]').length > 0, content: $('meta[name="description"]').attr('content') || '' },
@@ -1891,7 +2191,6 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
     { name: 'Canonical', present: $('link[rel="canonical"]').length > 0, content: $('link[rel="canonical"]').attr('href') || '' },
   ];
 
-  // Check for social media tags
   const socialTags = [
     { name: 'og:title', present: $('meta[property="og:title"]').length > 0, content: $('meta[property="og:title"]').attr('content') || '' },
     { name: 'og:description', present: $('meta[property="og:description"]').length > 0, content: $('meta[property="og:description"]').attr('content') || '' },
@@ -1904,7 +2203,6 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
     { name: 'twitter:image', present: $('meta[name="twitter:image"]').length > 0, content: $('meta[name="twitter:image"]').attr('content') || '' },
   ];
 
-  // Identify missing or problematic meta tags
   const issues: Array<{ tagName: string, issue: string, recommendation: string, example?: string, severity: string }> = [];
 
   if (!title || title.length < 10 || title.length > 60) {
@@ -1968,7 +2266,6 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
     });
   }
 
-  // Calculate score based on essential and social tags presence
   const essentialCount = essentialTags.filter(tag => tag.present).length;
   const essentialScore = (essentialCount / essentialTags.length) * 100;
 
@@ -1999,11 +2296,9 @@ export function analyzeAriaAttributes($: CheerioSelector): {
   formElementsWithLabelsPercent: number;
   issues: Array<{ element: string; issue: string; suggestion: string; code?: string; severity: string }>;
 } {
-  // Interactive elements that should have ARIA roles or attributes
   const interactiveElements = $('button, a, input, select, textarea, [role="button"], [role="link"], [role="checkbox"], [role="radio"], [role="tab"], [role="menu"], [role="menuitem"], [role="listbox"], [role="option"]');
   const interactiveElementsCount = interactiveElements.length;
 
-  // Form elements that should have labels
   const formElements = $('input, select, textarea');
   const formElementsCount = formElements.length;
 
@@ -2017,7 +2312,6 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     const hasAriaRole = element.attr('role') !== undefined;
     const hasAriaLabel = element.attr('aria-label') !== undefined || element.attr('aria-labelledby') !== undefined;
 
-    // Check if element has appropriate ARIA attributes
     if (!hasAriaRole && !hasAriaLabel && tagName !== 'a' && tagName !== 'button') {
       missingAriaCount++;
       return false;
@@ -2040,12 +2334,10 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     return true;
   }).length;
 
-  // Check for elements with invalid ARIA attributes
   $('[aria-labelledby]').each(function () {
     const labelledby = $(this).attr('aria-labelledby');
     if (labelledby && !labelledby.includes('{{') && !labelledby.includes('}}')) {
       try {
-        // Utiliser une méthode plus sûre pour vérifier l'existence de l'élément
         const idSelector = labelledby.split(' ').map(id => `#${id.replace(/['"\\]/g, '\\$&')}`).join(', ');
         if (idSelector && $(idSelector).length === 0) {
           invalidAriaCount++;
@@ -2056,17 +2348,14 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     }
   });
 
-  // Calculate percentages
   const interactiveElementsWithAriaPercent = interactiveElementsCount > 0 ?
     Math.round((interactiveElementsWithAria / interactiveElementsCount) * 100) : 100;
 
   const formElementsWithLabelsPercent = formElementsCount > 0 ?
     Math.round((formElementsWithLabels / formElementsCount) * 100) : 100;
 
-  // Collect issues
   const issues: Array<{ element: string; issue: string; suggestion: string; code?: string; severity: string }> = [];
 
-  // Check for missing alt attributes on images
   $('img').each(function () {
     const img = $(this);
     if (!img.attr('alt') && !img.attr('role') && !img.attr('aria-hidden')) {
@@ -2080,13 +2369,11 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     }
   });
 
-  // Check for form elements without labels
   $('input, select, textarea').each(function () {
     const element = $(this);
     const id = element.attr('id');
     const type = element.attr('type')?.toLowerCase();
 
-    // Skip hidden and submit inputs
     if (type === 'hidden' || type === 'submit' || type === 'button') {
       return;
     }
@@ -2105,7 +2392,6 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     }
   });
 
-  // Check for anchor tags without href
   $('a').each(function () {
     if (!$(this).attr('href') && !$(this).attr('role')) {
       issues.push({
@@ -2118,7 +2404,6 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     }
   });
 
-  // Check for buttons without text
   $('button').each(function () {
     const button = $(this);
     const buttonText = button.text().trim();
@@ -2135,12 +2420,10 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     }
   });
 
-  // Check for invalid ARIA references
   $('[aria-labelledby]').each(function () {
     const labelledby = $(this).attr('aria-labelledby');
     if (labelledby && !labelledby.includes('{{') && !labelledby.includes('}}')) {
       try {
-        // Utiliser une méthode plus sûre pour vérifier l'existence de l'élément
         const idSelector = labelledby.split(' ').map(id => `#${id.replace(/['"\\]/g, '\\$&')}`).join(', ');
         if (idSelector && $(idSelector).length === 0) {
           issues.push({
@@ -2157,7 +2440,6 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     }
   });
 
-  // Calculate score
   const missingAriaScore = interactiveElementsCount > 0 ?
     Math.min(100, 100 - (missingAriaCount / interactiveElementsCount * 100)) : 100;
 
@@ -2186,4 +2468,415 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     formElementsWithLabelsPercent,
     issues
   };
+}
+
+function analyzeResources($: CheerioSelector, baseUrl: string) {
+  const results = {
+    css: {
+      total: 0,
+      minified: 0,
+      recommendations: [] as string[]
+    },
+    js: {
+      total: 0,
+      minified: 0,
+      recommendations: [] as string[]
+    },
+    images: {
+      total: 0,
+      optimized: 0,
+      unoptimized: 0,
+      totalSize: 0,
+      recommendations: [] as string[]
+    }
+  };
+
+  const processedCssFiles = new Set<string>();
+  const processedJsFiles = new Set<string>();
+  const processedImageFiles = new Set<string>();
+
+  $('link[rel="stylesheet"]').each((_, el) => {
+    const href = $(el).attr('href');
+    if (!href) return;
+
+    const fullUrl = new URL(href, baseUrl).href;
+    if (processedCssFiles.has(fullUrl)) return;
+    processedCssFiles.add(fullUrl);
+
+    results.css.total++;
+    if (href.includes('/_nuxt/') || href.endsWith('.min.css')) {
+      results.css.minified++;
+    } else {
+      results.css.recommendations.push(`Minify the CSS file: ${href}`);
+    }
+  });
+
+  $('script[src]').each((_, el) => {
+    const src = $(el).attr('src');
+    if (!src) return;
+
+    const fullUrl = new URL(src, baseUrl).href;
+    if (processedJsFiles.has(fullUrl)) return;
+    processedJsFiles.add(fullUrl);
+
+    if (src.includes('plausible.io')) return;
+
+    results.js.total++;
+    if (src.includes('/_nuxt/') || src.endsWith('.min.js')) {
+      results.js.minified++;
+    } else {
+      results.js.recommendations.push(`Minify the JavaScript file: ${src}`);
+    }
+  });
+
+  $('img').each((_, el) => {
+    const src = $(el).attr('src');
+    if (!src) return;
+
+    const fullUrl = new URL(src, baseUrl).href;
+    if (processedImageFiles.has(fullUrl)) return;
+    processedImageFiles.add(fullUrl);
+
+    results.images.total++;
+
+    if (src.endsWith('.webp') || src.endsWith('.avif')) {
+      results.images.optimized++;
+    } else {
+      results.images.unoptimized++;
+      results.images.recommendations.push(`Convert the image to WebP/AVIF format: ${src}`);
+    }
+
+    if (!$(el).attr('loading')) {
+      results.images.recommendations.push(`Add loading="lazy" to the image: ${src}`);
+    }
+
+    if (!$(el).attr('width') || !$(el).attr('height')) {
+      results.images.recommendations.push(`Specify the dimensions of the image: ${src}`);
+    }
+  });
+
+  return results;
+}
+
+function analyzeFramework($: CheerioSelector): { name: string; version?: string; confidence: number } {
+  const frameworkSignatures = {
+    'Vue.js': {
+      selectors: ['[data-v-]', '.__v', '.vue'],
+      scripts: ['vue', 'vue.min'],
+      confidence: 0
+    },
+    'React': {
+      selectors: ['[data-reactroot]', '[data-reactid]', '.react'],
+      scripts: ['react', 'react-dom'],
+      confidence: 0
+    },
+    'Angular': {
+      selectors: [
+        '[ng-version]',
+        '[ng-app]',
+        '[ng-controller]',
+        '[ng-model]',
+        '[ng-bind]',
+        '[ng-repeat]',
+        '[ng-if]',
+        '[ng-show]',
+        '[ng-hide]',
+        '[ng-class]',
+        '[ng-style]',
+        '[ng-click]',
+        '[ng-submit]',
+        '[ng-form]',
+        '[ng-include]',
+        '[ng-view]',
+        '[ng-template]',
+        '[ng-container]',
+        '[ng-content]',
+        '[ng-component]'
+      ],
+      scripts: [
+        'angular',
+        'ng-',
+        '@angular',
+        'angular.min',
+        'angular.js',
+        'angular.min.js',
+        'angular.bundle',
+        'angular.bundle.min',
+        'angular-animate',
+        'angular-route',
+        'angular-ui-router',
+        'angular-material',
+        'angular-cli',
+        'angular-core',
+        'angular-common',
+        'angular-compiler',
+        'angular-platform-browser',
+        'angular-platform-browser-dynamic'
+      ],
+      confidence: 0
+    },
+    'jQuery': {
+      selectors: ['[jquery]'],
+      scripts: ['jquery'],
+      confidence: 0
+    },
+    'Nuxt.js': {
+      selectors: ['[data-nuxt]', '[data-nuxt-app]', '[data-nuxt-root]'],
+      scripts: ['nuxt', 'nuxt.config'],
+      confidence: 0
+    },
+    'Next.js': {
+      selectors: ['[data-nextjs-page]', '[data-nextjs-dialog]', '[data-nextjs-scroll-focus-boundary]'],
+      scripts: ['next', '_next/static'],
+      confidence: 0
+    },
+  };
+
+  Object.entries(frameworkSignatures).forEach(([name, sig]) => {
+    sig.selectors.forEach(selector => {
+      if ($(selector).length > 0) {
+        sig.confidence += 0.3;
+      }
+    });
+  });
+
+  $('script[src]').each((_, el) => {
+    const src = $(el).attr('src')?.toLowerCase() || '';
+    Object.entries(frameworkSignatures).forEach(([name, sig]) => {
+      sig.scripts.forEach(script => {
+        if (src.includes(script)) {
+          sig.confidence += 0.4;
+        }
+      });
+    });
+  });
+
+  $('[class]').each((_, el) => {
+    const classes = $(el).attr('class')?.toLowerCase() || '';
+    Object.entries(frameworkSignatures).forEach(([name, sig]) => {
+      if (classes.includes(name.toLowerCase())) {
+        sig.confidence += 0.3;
+      }
+    });
+  });
+
+  const detected = Object.entries(frameworkSignatures)
+    .map(([name, sig]) => ({ name, confidence: sig.confidence }))
+    .sort((a, b) => b.confidence - a.confidence)[0];
+
+  return {
+    name: detected.name,
+    confidence: detected.confidence
+  };
+}
+
+async function analyzeHosting(url: string): Promise<{ provider: string; type: string; confidence: number }> {
+  const hostingSignatures = {
+    'Cloudflare': {
+      headers: ['cf-ray', 'cf-cache-status', 'cf-connecting-ip'],
+      confidence: 0
+    },
+    'AWS': {
+      headers: ['x-amz-cf-id', 'x-amz-cf-pop', 'x-amz-request-id'],
+      confidence: 0
+    },
+    'Google Cloud': {
+      headers: ['x-cloud-trace-context', 'x-goog-api-client'],
+      confidence: 0
+    },
+    'Azure': {
+      headers: ['x-ms-request-id', 'x-ms-version'],
+      confidence: 0
+    },
+    'OVH': {
+      headers: ['x-ovh-request-id', 'x-ovh-trace-id'],
+      confidence: 0
+    },
+    'Heroku': {
+      headers: ['x-request-id', 'x-request-start'],
+      confidence: 0
+    },
+    'Netlify': {
+      headers: ['x-nf-request-id', 'x-nf-request-start'],
+      confidence: 0
+    },
+    'Vercel': {
+      headers: ['x-vercel-id', 'x-vercel-deployment-url'],
+      confidence: 0
+    }
+  };
+
+  let provider = 'Unknown';
+  let type = 'Unknown';
+  let maxConfidence = 0;
+
+  try {
+    const response = await axios.get(url);
+    const headers = response.headers;
+
+    Object.entries(hostingSignatures).forEach(([name, sig]) => {
+      sig.headers.forEach(header => {
+        if (headers[header]) {
+          sig.confidence += 0.4;
+        }
+      });
+
+      if (sig.confidence > maxConfidence) {
+        maxConfidence = sig.confidence;
+        provider = name;
+        type = 'Cloud';
+      }
+    });
+
+    if (headers['server']) {
+      const server = headers['server'].toLowerCase();
+      if (server.includes('apache')) {
+        provider = 'Apache';
+        type = 'Dédié';
+        maxConfidence = 0.6;
+      } else if (server.includes('nginx')) {
+        provider = 'Nginx';
+        type = 'Dédié';
+        maxConfidence = 0.6;
+      } else if (server.includes('iis')) {
+        provider = 'IIS';
+        type = 'Dédié';
+        maxConfidence = 0.6;
+      }
+    }
+
+    if (headers['x-powered-by']) {
+      const poweredBy = headers['x-powered-by'].toLowerCase();
+      if (poweredBy.includes('php')) {
+        type = 'Partagé';
+        maxConfidence = Math.max(maxConfidence, 0.5);
+      }
+    }
+
+  } catch (error) {
+    console.error('Erreur lors de l\'analyse de l\'hébergement:', error);
+  }
+
+  return {
+    provider,
+    type,
+    confidence: maxConfidence
+  };
+}
+
+function analyzeLargeFiles($: CheerioSelector, baseUrl: string): Array<{
+  url: string;
+  type: string;
+  size: number;
+  impact: number;
+}> {
+  const largeFiles: Array<{
+    url: string;
+    type: string;
+    size: number;
+    impact: number;
+  }> = [];
+
+  $('img').each((_, el) => {
+    const src = $(el).attr('src');
+    if (src) {
+      const url = new URL(src, baseUrl).href;
+      largeFiles.push({
+        url,
+        type: 'image',
+        size: 0,
+        impact: 0
+      });
+    }
+  });
+
+  $('script[src]').each((_, el) => {
+    const src = $(el).attr('src');
+    if (src) {
+      const url = new URL(src, baseUrl).href;
+      largeFiles.push({
+        url,
+        type: 'script',
+        size: 0,
+        impact: 0
+      });
+    }
+  });
+
+  $('link[rel="stylesheet"]').each((_, el) => {
+    const href = $(el).attr('href');
+    if (href) {
+      const url = new URL(href, baseUrl).href;
+      largeFiles.push({
+        url,
+        type: 'stylesheet',
+        size: 0,
+        impact: 0
+      });
+    }
+  });
+
+  return largeFiles;
+}
+
+function analyzeDomainProvider(url: string): { provider: string; confidence: number } {
+  try {
+    const urlObj = new URL(url);
+    const domain = urlObj.hostname;
+
+    if (domain.includes('ovh') || domain.includes('ovhcloud')) {
+      return { provider: 'OVH', confidence: 0.9 };
+    } else if (domain.includes('gandi')) {
+      return { provider: 'Gandi', confidence: 0.9 };
+    } else if (domain.includes('godaddy')) {
+      return { provider: 'GoDaddy', confidence: 0.9 };
+    } else if (domain.includes('namecheap')) {
+      return { provider: 'Namecheap', confidence: 0.9 };
+    } else if (domain.includes('ionos') || domain.includes('1and1')) {
+      return { provider: 'IONOS', confidence: 0.9 };
+    } else if (domain.includes('name.com')) {
+      return { provider: 'Name.com', confidence: 0.9 };
+    } else if (domain.includes('dreamhost')) {
+      return { provider: 'Dreamhost', confidence: 0.9 };
+    } else if (domain.includes('hover')) {
+      return { provider: 'Hover', confidence: 0.9 };
+    } else if (domain.includes('google') || domain.includes('domains.google')) {
+      return { provider: 'Google Domains', confidence: 0.9 };
+    } else if (domain.includes('amazon') || domain.includes('aws')) {
+      return { provider: 'Amazon Route 53', confidence: 0.8 };
+    } else if (domain.includes('cloudflare')) {
+      return { provider: 'Cloudflare', confidence: 0.9 };
+    }
+
+    return { provider: 'Unknown', confidence: 0.5 };
+  } catch (error) {
+    console.error('Erreur lors de l\'analyse du fournisseur de domaine:', error);
+    return { provider: 'Inconnu', confidence: 0.3 };
+  }
+}
+
+/**
+ * Checks if a URL is likely to be inaccessible or a protection page
+ * @param url URL to check
+ * @returns true if the URL should be skipped
+ */
+function isProtectedOrBlockedUrl(url: string): boolean {
+  const blockedPatterns = [
+    // Cloudflare email protection
+    /\/cdn-cgi\/l\/email-protection/,
+    // Other common protection paths
+    /\/cdn-cgi\/challenge-platform\//,
+    /\/cdn-cgi\/captcha/,
+    // Admin paths that are typically protected
+    /\/wp-admin\//,
+    /\/administrator\//,
+    /\/admin\//,
+    // Common auth pages
+    /\/login\//,
+    /\/logout\//,
+    /\/signin\//,
+    /\/signup\//
+  ];
+
+  return blockedPatterns.some(pattern => pattern.test(url));
 }

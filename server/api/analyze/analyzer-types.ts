@@ -207,14 +207,30 @@ export interface SchemaOrg {
   suggestions: SchemaOrgSuggestion[];
 }
 
-export interface ExtendedWebsiteAnalysisResult extends WebsiteAnalysisResult {
-  schemaOrg: {
-    suggestions?: SchemaOrgSuggestion[];
-    contactInfo?: Record<string, string>;
+export interface ResourceAnalysis {
+  css: {
+    total: number;
+    minified: number;
+    recommendations: string[];
   };
-  issues: Array<{
-    type: string;
-    message: string;
-    severity: 'critical' | 'high' | 'medium' | 'low';
-  }>;
-} 
+  js: {
+    total: number;
+    minified: number;
+    recommendations: string[];
+  };
+  images: {
+    total: number;
+    optimized: number;
+    unoptimized: number;
+    totalSize: number;
+    recommendations: string[];
+  };
+}
+
+export interface ExtendedWebsiteAnalysisResult extends WebsiteAnalysisResult {
+  resources: ResourceAnalysis;
+  framework: { name: string; version?: string; confidence: number };
+  hosting: { provider: string; type: string; confidence: number };
+  domainProvider: { provider: string; confidence: number };
+  largeFiles: Array<{ url: string; type: string; size: number; impact: number }>;
+}

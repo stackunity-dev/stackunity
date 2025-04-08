@@ -32,6 +32,8 @@
             <p class="text-subtitle-1 text-medium-emphasis mb-6">Pick up where you left off</p>
 
             <v-form @submit.prevent="handleSignin">
+              <input type="hidden" name="_csrf" :value="csrfToken">
+
               <v-text-field v-model="form.email" label="Email address" type="email" variant="outlined"
                 prepend-inner-icon="mdi-email-outline" density="comfortable"
                 :rules="[v => !!v || 'Email required', v => /.+@.+\..+/.test(v) || 'Invalid email format']"
@@ -106,6 +108,8 @@ const form = ref({
   password: '',
 });
 
+const csrfToken = ref('');
+
 const features = ref([
   {
     icon: 'mdi-palette-outline',
@@ -133,6 +137,14 @@ const snackbarText = ref('');
 onMounted(async () => {
   try {
     const token = TokenUtils.retrieveToken();
+
+    try {
+      const response = await fetch('/api/auth/csrf');
+      const data = await response.json();
+      csrfToken.value = data.token;
+    } catch (error) {
+      console.error('Erreur lors de la récupération du token CSRF:', error);
+    }
 
     if (token) {
       const validation = await userStore.validateToken();
@@ -169,7 +181,12 @@ const handleSignin = async () => {
       return;
     }
 
-    const response = await userStore.login(form.value.email, form.value.password, rememberMe.value);
+    const response = await userStore.login(
+      form.value.email,
+      form.value.password,
+      rememberMe.value,
+      csrfToken.value
+    );
     if (response.success) {
       const urlParams = new URLSearchParams(window.location.search);
       const redirectPath = urlParams.get('redirect');
@@ -183,7 +200,7 @@ const handleSignin = async () => {
       router.push('/dashboard');
     } else {
       snackbarColor.value = 'error';
-      snackbarText.value = response.error || 'Erreur de connexion';
+      snackbarText.value = 'Erreur de connexion';
       showSnackbar.value = true;
     }
   } catch (err: any) {
@@ -206,7 +223,6 @@ async function handleRedirection() {
     const redirectPath = urlParams.get('redirect');
 
     if (redirectPath) {
-      console.log('[LOGIN] Redirection vers:', redirectPath);
       window.location.href = redirectPath;
     } else {
       console.log('[LOGIN] Redirection vers le tableau de bord');

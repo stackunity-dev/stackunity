@@ -19,7 +19,7 @@ export default defineEventHandler(async (event: H3Event) => {
     if (!body.url || !body.report) {
       return {
         statusCode: 400,
-        body: 'URL et rapport requis'
+        body: 'URL and report required'
       };
     }
 
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event: H3Event) => {
     if (urls.length === 0) {
       return {
         statusCode: 400,
-        body: 'Aucune URL trouvée dans le rapport'
+        body: 'No URLs found in the report'
       };
     }
 
@@ -44,11 +44,11 @@ export default defineEventHandler(async (event: H3Event) => {
 
     return xml;
   } catch (error: any) {
-    console.error('Erreur lors de la génération du sitemap:', error);
+    console.error('Error generating sitemap:', error);
 
     return {
       statusCode: 500,
-      body: `Erreur lors de la génération du sitemap: ${error.message}`
+      body: `Error generating sitemap: ${error.message}`
     };
   }
 }); 

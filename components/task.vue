@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-fade-transition>
-      <v-card v-if="isVisible" class="rounded-lg pa-4 task-card" :elevation="isMinimized ? 0 : 4"
+      <v-card v-if="isVisible" class="rounded-lg pa-4 task-card" :elevation="isMinimized ? 0 : 24"
         :class="{ 'minimized': isMinimized }">
         <div class="d-flex align-center mb-2">
           <v-card-title class="d-flex align-center px-0 py-1">
@@ -24,28 +24,43 @@
           <div v-if="!isMinimized">
             <v-card-text class="pt-2 pb-2">
               <v-list>
-                <v-list-item v-for="(task, index) in tasks" :key="index"
-                  :class="{ 'completed-task': completedTasks.includes(task.id) }">
-                  <template v-slot:prepend>
-                    <v-checkbox v-model="completedTasks" :value="task.id" :color="task.color || 'primary'" hide-details
-                      @update:model-value="updateTaskStatus(task.id)"></v-checkbox>
+                <v-list-group v-for="(group, groupIndex) in taskGroups" :key="groupIndex"
+                  :model-value="openedGroup === groupIndex" @update:model-value="toggleGroup(groupIndex)">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item v-bind="props" :title="group.title" :prepend-icon="group.icon" :color="group.color">
+                      <template v-slot:append>
+                        <v-chip size="small" :color="getGroupProgressColor(group.tasks)" class="mr-3">
+                          {{ getCompletedGroupTasks(group.tasks) }}/{{ group.tasks.length }}
+                        </v-chip>
+                        <v-icon size="small" class="expand-icon">mdi-chevron-down</v-icon>
+                      </template>
+                    </v-list-item>
                   </template>
 
-                  <v-list-item-title :class="{ 'text-decoration-line-through': completedTasks.includes(task.id) }">
-                    {{ task.title }}
-                  </v-list-item-title>
+                  <v-list-item v-for="(task, index) in group.tasks" :key="task.id"
+                    :class="{ 'completed-task': completedTasks.includes(task.id) }">
+                    <template v-slot:prepend>
+                      <v-checkbox v-model="completedTasks" :value="task.id" :color="task.color || 'primary'"
+                        hide-details @update:model-value="updateTaskStatus(task.id)"></v-checkbox>
+                    </template>
 
-                  <v-list-item-subtitle v-if="task.description">
-                    {{ task.description }}
-                  </v-list-item-subtitle>
+                    <v-list-item-title :class="{ 'text-decoration-line-through': completedTasks.includes(task.id) }">
+                      {{ task.title }}
+                    </v-list-item-title>
 
-                  <template v-slot:append v-if="task.link">
-                    <v-btn variant="text" size="small" density="compact" :to="task.link"
-                      :disabled="task.requiresPrevious && !isPreviousCompleted(index)" color="primary">
-                      <v-icon size="small">mdi-arrow-right</v-icon>
-                    </v-btn>
-                  </template>
-                </v-list-item>
+                    <v-list-item-subtitle v-if="task.description">
+                      {{ task.description }}
+                    </v-list-item-subtitle>
+
+                    <template v-slot:append v-if="task.link">
+                      <v-btn variant="text" size="small" density="compact" :to="task.link"
+                        :disabled="task.requiresPrevious && !isPreviousCompleted(getGlobalTaskIndex(group, task))"
+                        color="primary">
+                        <v-icon size="small">mdi-arrow-right</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-list-item>
+                </v-list-group>
               </v-list>
             </v-card-text>
 
@@ -63,7 +78,10 @@
     </v-fade-transition>
 
     <v-btn v-if="!isVisible" icon="mdi-lightbulb-on-outline" color="primary" size="large" class="show-tasks-btn"
-      @click="showCard">
+      elevation="8" @click="showCard">
+      <template v-slot:append>
+        <div class="pulse-effect"></div>
+      </template>
     </v-btn>
 
     <snackBar v-model="snackbar" :text="snackbarText" :color="snackbarColor" :timeout="3000" />
@@ -111,64 +129,103 @@ onMounted(() => {
   if (minimized === 'true') {
     isMinimized.value = true;
   }
+
+  // Initialiser l'état du groupe ouvert
+  const savedOpenedGroup = localStorage.getItem('openedGroup');
+  if (savedOpenedGroup && savedOpenedGroup !== '') {
+    openedGroup.value = parseInt(savedOpenedGroup);
+  }
 });
 
-const tasks = ref([
+const taskGroups = ref([
   {
-    id: 1,
-    title: 'Create the UI interface',
-    description: 'Create the basic UI components for your application',
+    title: 'Design & UI',
+    icon: 'mdi-palette',
     color: 'primary',
-    link: '/studio',
-    completed: false,
-    requiresPrevious: false
+    tasks: [
+      {
+        id: 1,
+        title: 'Create the UI interface',
+        description: 'Create the basic UI components for your application',
+        color: 'primary',
+        link: '/studio',
+        completed: false,
+        requiresPrevious: false
+      },
+      {
+        id: 2,
+        title: 'Test the responsive of your application',
+        description: 'Test the responsive of your application',
+        color: 'info',
+        link: '/responsive',
+        completed: false,
+        requiresPrevious: true
+      }
+    ]
   },
   {
-    id: 2,
-    title: 'Test the responsive of your application',
-    description: 'Test the responsive of your application',
-    color: 'info',
-    link: '/responsive',
-    completed: false,
-    requiresPrevious: true
-  },
-  {
-    id: 3,
-    title: 'Create the database',
-    description: 'Create the database and the models to store your data',
+    title: 'Data Storage',
+    icon: 'mdi-database',
     color: 'success',
-    link: '/sql-generator',
-    completed: false,
-    requiresPrevious: true
+    tasks: [
+      {
+        id: 3,
+        title: 'Create the database',
+        description: 'Create the database and the models to store your data',
+        color: 'success',
+        link: '/sql-generator',
+        completed: false,
+        requiresPrevious: true
+      }
+    ]
   },
   {
-    id: 4,
-    title: 'Check the accessibility of your application',
-    description: 'Check the accessibility of your application',
+    title: 'User Experience',
+    icon: 'mdi-account-check',
     color: 'orange',
-    link: '/accessibility',
-    completed: false,
-    requiresPrevious: false
+    tasks: [
+      {
+        id: 4,
+        title: 'Check the accessibility and the structure of your application',
+        description: 'Check the accessibility and the structure of your application',
+        color: 'orange',
+        link: '/accessibility',
+        completed: false,
+        requiresPrevious: false
+      }
+    ]
   },
   {
-    id: 5,
-    title: 'Audit the SEO of your application',
-    description: 'Audit the SEO of your application',
+    title: 'SEO & Optimization',
+    icon: 'mdi-search-web',
     color: 'warning',
-    link: '/seo-audit',
-    completed: false,
-    requiresPrevious: true
-  },
-  {
-    id: 6,
-    title: 'Use the robots generator for your application',
-    description: 'Use the robots generator for your application',
-    color: 'deep-purple',
-    link: '/robots',
-    completed: false,
-    requiresPrevious: true
+    tasks: [
+      {
+        id: 5,
+        title: 'Audit the SEO of your application',
+        description: 'Audit the SEO of your application',
+        color: 'warning',
+        link: '/seo-audit',
+        completed: false,
+        requiresPrevious: true
+      },
+      {
+        id: 6,
+        title: 'Use the robots generator for your application',
+        description: 'Use the robots generator for your application',
+        color: 'deep-purple',
+        link: '/robots',
+        completed: false,
+        requiresPrevious: true
+      }
+    ]
   }
 ]);
+
+// Flatten tasks for backward compatibility
+const tasks = computed(() => {
+  return taskGroups.value.flatMap(group => group.tasks);
+});
 
 const savedTasks = localStorage.getItem('completedTasks');
 const completedTasks = ref(savedTasks ? JSON.parse(savedTasks) : []);
@@ -183,10 +240,34 @@ const updateTaskStatus = (taskId) => {
   }
 };
 
+const getGlobalTaskIndex = (group, task) => {
+  let index = 0;
+  for (const g of taskGroups.value) {
+    if (g === group) {
+      return index + g.tasks.indexOf(task);
+    }
+    index += g.tasks.length;
+  }
+  return -1;
+};
+
 const isPreviousCompleted = (index) => {
   if (index === 0) return true;
-  const previousTask = tasks.value[index - 1];
+  const allTasks = tasks.value;
+  const previousTask = allTasks[index - 1];
   return completedTasks.value.includes(previousTask.id);
+};
+
+const getCompletedGroupTasks = (groupTasks) => {
+  return groupTasks.filter(task => completedTasks.value.includes(task.id)).length;
+};
+
+const getGroupProgressColor = (groupTasks) => {
+  const progress = getCompletedGroupTasks(groupTasks) / groupTasks.length;
+  if (progress === 1) return 'success';
+  if (progress >= 0.7) return 'info';
+  if (progress >= 0.3) return 'warning';
+  return 'error';
 };
 
 const completedAllTasks = computed(() => {
@@ -205,6 +286,21 @@ const finishOnboarding = () => {
   userStore.updateUserField('onboardingCompleted', true);
   router.push('/deploy');
 };
+
+// État pour suivre quel groupe est ouvert
+const openedGroup = ref<number | null>(null);
+
+// Fonction pour basculer l'état d'ouverture d'un groupe
+const toggleGroup = (groupIndex: number): void => {
+  if (openedGroup.value === groupIndex) {
+    openedGroup.value = null; // Fermer le groupe si déjà ouvert
+  } else {
+    openedGroup.value = groupIndex; // Ouvrir ce groupe et fermer tous les autres
+  }
+
+  // Sauvegarder l'état dans le localStorage
+  localStorage.setItem('openedGroup', openedGroup.value !== null ? openedGroup.value.toString() : '');
+};
 </script>
 
 <style scoped>
@@ -220,6 +316,8 @@ const finishOnboarding = () => {
   overflow-y: auto;
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
   background-color: rgba(var(--v-theme-surface), 0.95) !important;
+  background: radial-gradient(circle at 30% 30%, rgba(173, 199, 255, 0.12), transparent 40%),
+    radial-gradient(circle at 70% 70%, rgba(125, 208, 255, 0.12), transparent 35%);
   backdrop-filter: blur(10px);
 }
 
@@ -261,16 +359,71 @@ const finishOnboarding = () => {
   background-color: rgba(var(--v-theme-primary), 0.05);
 }
 
+.v-list-group__items .v-list-item {
+  padding-left: 16px;
+  margin-left: 8px;
+  border-left: 2px dashed rgba(var(--v-theme-primary), 0.2);
+}
+
+.v-list-group__items .completed-task {
+  border-left: 2px solid rgba(var(--v-theme-success), 0.3);
+}
+
 .show-tasks-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 1000;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
 }
 
 .show-tasks-btn:hover {
-  transform: scale(1.1);
+  transform: scale(1.01);
+  box-shadow: 0 6px 16px rgba(var(--v-theme-primary), 0.4);
+}
+
+
+.pulse-effect {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: var(--v-theme-error);
+  box-shadow: 0 0 8px var(--v-theme-error);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+}
+
+.v-list-group--active>.v-list-group__activator .v-list-item {
+  background: rgba(var(--v-theme-primary), 0.05);
+}
+
+.v-list-group--active .expand-icon {
+  transform: rotate(180deg);
+}
+
+.expand-icon {
+  transition: transform 0.3s ease;
+}
+
+.v-list-group__activator {
+  cursor: pointer;
 }
 </style>

@@ -51,12 +51,12 @@
       </v-app-bar>
     </header>
 
-    <nav location="right" temporary class="v-theme--dark mobile-nav-drawer d-md-none pa-6"
-      aria-label="Mobile Navigation">
+    <nav location="right" temporary class="mobile-nav-drawer d-md-none" aria-label="Mobile Navigation">
       <v-navigation-drawer v-model="drawer" location="right" temporary
-        class="v-theme--dark mobile-nav-drawer d-md-none pa-6">
+        class="v-navigation-drawer v-navigation-drawer--right v-navigation-drawer--temporary v-theme--dark v-theme--dark pa-6">
         <div class="drawer-header mb-8 d-flex justify-space-between align-center">
-          <img src="/logo/devunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="120">
+          <img src="/logo/devunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="120"
+            :eager="true" loading="eager">
           <v-btn icon variant="text" @click="drawer = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
@@ -75,7 +75,7 @@
         </div>
 
         <div class="drawer-footer mt-auto pt-6">
-          <v-btn block color="primary" to="/signup" class="mb-4" size="large" rounded="pill">
+          <v-btn block color="primary" to="/signup" class="mb-4" size="large" rounded="pill" elevation="2">
             <v-icon start>mdi-rocket-launch-outline</v-icon>
             Get started
           </v-btn>
@@ -88,31 +88,31 @@
 
     <v-main class="main-content">
       <main>
-        <section id="hero" class="hero-section" aria-labelledby="hero-heading">
-          <v-container class="py-16">
-            <v-row class="align-center justify-center">
-              <v-col cols="12" md="6" class="text-center text-md-left">
-                <v-responsive>
-                  <h1 id="hero-heading" class="text-h2 font-weight-bold mb-4">Develop faster with StackUnity</h1>
-                  <p class="text-subtitle-1 text-medium-emphasis mb-8">
-                    The all-in-one platform for developers who want to create, manage and optimize their web projects
-                    with unparalleled speed and efficiency.
-                  </p>
-                  <div class="d-flex flex-column flex-sm-row justify-center justify-md-start">
-                    <v-btn x-large color="primary" variant="tonal" class="px-6 mb-3 mb-sm-0 mr-sm-4" to="/signup">
-                      Get started
-                    </v-btn>
-                    <v-btn x-large outlined color="info" variant="tonal" class="px-6" href="#features">
-                      Learn more
-                      <v-icon right>mdi-arrow-right</v-icon>
-                    </v-btn>
-                  </div>
-                </v-responsive>
+        <section class="hero-section py-16">
+          <v-container>
+            <v-row align="center" justify="center">
+              <v-col cols="12" md="6" class="text-center text-md-start">
+                <h1 class="text-h2 font-weight-bold mb-4">
+                  <span class="text-primary">StackUnity</span> - Your All-in-One Development Hub
+                </h1>
+                <p class="text-h5 mb-8 text-medium-emphasis">
+                  Accelerate your development workflow with our comprehensive suite of tools. From code snippets to SEO
+                  optimization, we've got you covered.
+                </p>
+                <div class="d-flex flex-column flex-sm-row ga-4 justify-center justify-md-start">
+                  <v-btn color="success" size="x-large" to="/signup" variant="tonal" class="px-8" elevation="2">
+                    <v-icon start>mdi-rocket-launch-outline</v-icon>
+                    Start Free Trial
+                  </v-btn>
+                  <v-btn variant="tonal" color="info" size="x-large" href="#features" class="px-8">
+                    <v-icon start>mdi-play-circle-outline</v-icon>
+                    Watch Demo
+                  </v-btn>
+                </div>
               </v-col>
-              <v-col cols="12" md="6" class="d-flex justify-center mt-8 mt-md-0">
-                <v-img src="/images/preview-devunity.avif" loading="eager"
-                  alt="StackUnity platform preview showing collaborative development features" max-width="90%" contain
-                  class="hero-image rounded-xl elevation-10" fetchpriority="high"></v-img>
+              <v-col cols="12" md="6" class="d-none d-md-flex justify-center">
+                <v-img src="/images/preview-devunity.avif" max-width="600" class="hero-image rounded-lg" loading="eager"
+                  alt="StackUnity platform preview" cover></v-img>
               </v-col>
             </v-row>
           </v-container>
@@ -228,7 +228,8 @@
         <v-row>
           <v-col cols="12" md="5" lg="5" class="mb-6 mb-md-0">
             <div class="d-flex align-center mb-4">
-              <img src="/logo/devunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="180">
+              <img src="/logo/devunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="180"
+                :eager="true" loading="eager">
             </div>
             <p class="text-body-2 text-medium-emphasis mb-4">
               The all-in-one platform for developers who want to create, manage and optimize their web projects.
@@ -335,10 +336,10 @@ const Pricing = defineAsyncComponent(() => import('../components/pricing.vue'));
 const Faq = defineAsyncComponent(() => import('../components/faq.vue'));
 
 const stats = [
-  { value: '2x', label: 'Faster Development' },
-  { value: '50+', label: 'Ready-to-use Components' },
-  { value: '99.9%', label: 'Guaranteed Uptime' },
-  { value: '24/7', label: 'Reactive Support' }
+  { value: '10x', label: 'Faster Development' },
+  { value: '100%', label: 'Code Quality' },
+  { value: '24/7', label: 'Support' },
+  { value: '50+', label: 'Tools Available' }
 ];
 
 const features = [

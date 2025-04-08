@@ -241,7 +241,9 @@ watch(() => route.path, (newPath, oldPath) => {
 
 });
 
-watch(() => display.smAndDown.value, (isSmall) => {
+const isSmall = computed(() => display.smAndDown.value);
+
+watch(isSmall, (isSmall) => {
   if (!isSmall) {
     desktopDrawer.value = true;
   }

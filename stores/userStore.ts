@@ -149,15 +149,64 @@ interface CrawlReport {
     pagesWithSocialTags: number;
     mobileCompatiblePages: number;
     securePages: number;
+    totalIssues: number;
+    criticalIssues: number;
+    highIssues: number;
+    mediumIssues: number;
+    lowIssues: number;
+    resourceIssues: {
+      css: number;
+      js: number;
+      images: number;
+    };
   };
   generatedSitemap: string;
   rankedUrls: string[];
+  issues: Array<{
+    type: string;
+    message: string;
+    severity: 'critical' | 'high' | 'medium' | 'low';
+  }>;
+  resources: {
+    css: {
+      total: number;
+      minified: number;
+      recommendations: string[];
+    };
+    js: {
+      total: number;
+      minified: number;
+      recommendations: string[];
+    };
+    images: {
+      total: number;
+      optimized: number;
+      unoptimized: number;
+      totalSize: number;
+      recommendations: string[];
+    };
+  };
 }
 
 interface SEOAuditResult {
   success: boolean;
   message?: string;
   result?: CrawlReport;
+}
+
+interface UserState {
+  user: User | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  error: string | null;
+  systemData: SystemData | null;
+  snippets: BaseSnippet[];
+  seoAuditResults: SEOAuditResult[];
+}
+
+interface LoginResponse {
+  success: boolean;
+  message?: string;
 }
 
 export const useUserStore = defineStore('user', {
@@ -300,6 +349,7 @@ export const useUserStore = defineStore('user', {
           if (!this.user) {
             this.user = {
               id: decodedData.userId,
+              userId: decodedData.userId,
               username: decodedData.username || '',
               email: decodedData.email || '',
               isPremium: isPremiumValue,
@@ -401,7 +451,12 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async login(email: string, password: string, rememberMe: boolean) {
+    async login(
+      email: string,
+      password: string,
+      rememberMe: boolean,
+      csrfToken: string
+    ): Promise<LoginResponse> {
       this.loading = true;
       this.error = null;
 
@@ -409,7 +464,8 @@ export const useUserStore = defineStore('user', {
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
           },
           body: JSON.stringify({ email, password, rememberMe }),
           credentials: 'include'
@@ -444,57 +500,12 @@ export const useUserStore = defineStore('user', {
         } else {
           this.error = data.error || 'Erreur lors de la connexion';
           this.loading = false;
-          return { success: false, error: this.error };
+          return { success: false };
         }
       } catch (error: any) {
         this.error = error.message || 'Erreur lors de la connexion';
         this.loading = false;
-        return { success: false, error: this.error };
-      }
-    },
-
-    async updateUser(email: string, username: string, company?: string, website?: string, bio?: string) {
-      try {
-        const response = await fetch('/api/auth/updateUser', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}`
-          },
-          body: JSON.stringify({ email, username, company, website, bio })
-        });
-
-        if (!response.ok) {
-          throw new Error('Erreur lors de la mise à jour de l\'utilisateur');
-        }
-
-        const data = await response.json();
-        this.user = data.user;
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour de l\'utilisateur:', error);
-        throw error;
-      }
-    },
-
-    async resetPassword(newPassword: string) {
-      try {
-        const response = await fetch('/api/auth/resetPassword', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}`
-          },
-          body: JSON.stringify({ newPassword })
-        });
-
-        if (!response.ok) {
-          throw new Error('Erreur lors de la réinitialisation du mot de passe');
-        }
-
-        return response.json();
-      } catch (error) {
-        console.error('Erreur lors de la réinitialisation du mot de passe:', error);
-        throw error;
+        return { success: false };
       }
     },
 
@@ -537,6 +548,134 @@ export const useUserStore = defineStore('user', {
       }
     },
 
+    async validateToken() {
+      try {
+        const token = this.token || TokenUtils.retrieveToken();
+
+        if (!token) {
+          return { valid: false, message: 'Pas de token disponible' };
+        }
+
+        const response = await fetch('/api/auth/validate', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (data.valid) {
+          this.isAuthenticated = true;
+          this.token = token;
+
+          if (data.user) {
+
+            const userId = data.user.userId || data.user.id;
+
+            let isPremiumValue = false;
+            if (data.user.isPremium !== undefined) {
+              isPremiumValue = data.user.isPremium === true ||
+                (typeof data.user.isPremium === 'number' && data.user.isPremium === 1) ||
+                (typeof data.user.isPremium === 'string' && (data.user.isPremium === '1' || data.user.isPremium === 'true'));
+            }
+
+            let isAdminValue = false;
+            if (data.user.isAdmin !== undefined) {
+              isAdminValue = data.user.isAdmin === true ||
+                (typeof data.user.isAdmin === 'number' && data.user.isAdmin === 1) ||
+                (typeof data.user.isAdmin === 'string' && (data.user.isAdmin === '1' || data.user.isAdmin === 'true'));
+            }
+
+            if (!this.user) {
+              this.user = {
+                id: userId,
+                userId: userId,
+                username: data.user.username || '',
+                email: data.user.email || '',
+                isPremium: isPremiumValue,
+                isAdmin: isAdminValue
+              };
+            } else {
+              this.user.id = userId;
+              this.user.userId = userId;
+              this.user.username = data.user.username || this.user.username;
+              this.user.email = data.user.email || this.user.email;
+              this.user.isPremium = isPremiumValue;
+              this.user.isAdmin = isAdminValue;
+            }
+
+            this.isPremium = isPremiumValue;
+            this.isAdmin = isAdminValue;
+
+
+            this.persistData();
+          }
+        }
+
+        return data;
+      } catch (error) {
+        console.error('[STORE] Erreur lors de la validation du token:', error);
+        return { valid: false, message: 'Erreur lors de la validation' };
+      }
+    },
+
+    async updateUser(email: string, username: string, company?: string, website?: string, bio?: string) {
+      try {
+        const response = await fetch('/api/auth/updateUser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ email, username, company, website, bio })
+        });
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la mise à jour de l\'utilisateur');
+        }
+
+        const data = await response.json();
+        this.user = data.user;
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour de l\'utilisateur:', error);
+        throw error;
+      }
+    },
+
+    async forgotPassword(email: string) {
+      try {
+        const response = await $fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          body: { email }
+        });
+        return response;
+      } catch (error: any) {
+        throw new Error(error.data?.message || 'Erreur lors de la réinitialisation du mot de passe');
+      }
+    },
+
+    async resetPassword(newPassword: string) {
+      try {
+        const response = await fetch('/api/auth/resetPassword', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ newPassword })
+        });
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la réinitialisation du mot de passe');
+        }
+
+        return response.json();
+      } catch (error) {
+        console.error('Erreur lors de la réinitialisation du mot de passe:', error);
+        throw error;
+      }
+    },
+
     async deleteAccount() {
       try {
         const response = await fetch('/api/auth/deleteAccount', {
@@ -555,53 +694,6 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         console.error('Erreur lors de la suppression du compte:', error);
         throw error;
-      }
-    },
-
-    async saveSQLSchema(databaseName: string, tables: Table[]) {
-      try {
-        const schemaData = {
-          database_name: databaseName,
-          tables: tables.map(table => ({
-            name: table.name,
-            columns: table.columns.map(col => ({
-              name: col.name,
-              type: col.type,
-              primaryKey: col.primaryKey,
-              foreignKey: col.foreignKey,
-              notNull: col.notNull,
-              unique: col.unique,
-              autoIncrement: col.autoIncrement,
-              referencedTable: col.referencedTable,
-              referencedColumn: col.referencedColumn
-            }))
-          }))
-        };
-
-        const userId = this.user.userId;
-
-        const response: any = await $fetch('/api/sql/saveSQLSchema', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.token}`,
-          },
-          body: { ...schemaData, userId }
-        });
-
-        if (response.success) {
-          this.sqlSchemas.push({
-            ...schemaData,
-            id: response.id
-          });
-        } else {
-          throw new Error(response.error || 'Erreur lors de la sauvegarde');
-        }
-
-        return response;
-      } catch (err: any) {
-        console.error('Erreur lors de la sauvegarde du schéma:', err);
-        throw err;
       }
     },
 
@@ -700,6 +792,125 @@ export const useUserStore = defineStore('user', {
       }
     },
 
+
+
+    async saveSQLSchema(databaseName: string, tables: Table[]) {
+      try {
+        const schemaData = {
+          database_name: databaseName,
+          tables: tables.map(table => ({
+            name: table.name,
+            columns: table.columns.map(col => ({
+              name: col.name,
+              type: col.type,
+              primaryKey: col.primaryKey,
+              foreignKey: col.foreignKey,
+              notNull: col.notNull,
+              unique: col.unique,
+              autoIncrement: col.autoIncrement,
+              referencedTable: col.referencedTable,
+              referencedColumn: col.referencedColumn
+            }))
+          }))
+        };
+
+        const userId = this.user.userId;
+
+        const response: any = await $fetch('/api/sql/saveSQLSchema', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.token}`,
+          },
+          body: { ...schemaData, userId }
+        });
+
+        if (response.success) {
+          this.sqlSchemas.push({
+            ...schemaData,
+            id: response.id
+          });
+        } else {
+          throw new Error(response.error || 'Erreur lors de la sauvegarde');
+        }
+
+        return response;
+      } catch (err: any) {
+        console.error('Erreur lors de la sauvegarde du schéma:', err);
+        throw err;
+      }
+    },
+
+    async loadSQLSchemas(retryCount = 0) {
+      const MAX_RETRIES = 2;
+
+      try {
+        const token = TokenUtils.retrieveToken();
+        if (!token) {
+          return { success: false, error: 'Authentification requise' };
+        }
+
+
+        const response = await fetch('/api/sql/loadSQLSchemas', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        if (response.status === 401 && retryCount < MAX_RETRIES) {
+          try {
+            const validationResult = await this.validateToken();
+            if (validationResult.valid) {
+              return this.loadSQLSchemas(retryCount + 1);
+            }
+
+            const refreshResponse = await fetch('/api/auth/refresh', {
+              method: 'POST',
+              credentials: 'include'
+            });
+
+            if (refreshResponse.ok) {
+              const refreshData = await refreshResponse.json();
+              if (refreshData.success && refreshData.accessToken) {
+                TokenUtils.storeToken(refreshData.accessToken);
+                this.token = refreshData.accessToken;
+
+                if (refreshData.user) {
+                  this.user = refreshData.user;
+                  this.isAuthenticated = true;
+                  this.isPremium = !!refreshData.user.isPremium;
+                  this.isAdmin = !!refreshData.user.isAdmin;
+                  this.persistData();
+                }
+
+                return this.loadSQLSchemas(retryCount + 1);
+              }
+            }
+
+            return { success: false, error: 'Échec du rafraîchissement du token' };
+          } catch (refreshError) {
+            return { success: false, error: 'Erreur lors du rafraîchissement du token' };
+          }
+        }
+
+        if (!response.ok) {
+          console.error(`[STORE] Erreur lors du chargement des schémas: ${response.status}`);
+          return { success: false, error: `Erreur HTTP ${response.status}` };
+        }
+
+        const data = await response.json();
+        if (data && data.schemas) {
+          this.sqlSchemas = data.schemas;
+        }
+        return data;
+      } catch (err) {
+        console.error('[STORE] Erreur lors du chargement des schémas:', err);
+        return { success: false, error: err instanceof Error ? err.message : 'Erreur inconnue' };
+      }
+    },
+
     async loadSnippets(retryCount = 0) {
       const MAX_RETRIES = 2;
 
@@ -771,84 +982,6 @@ export const useUserStore = defineStore('user', {
         return data;
       } catch (err) {
         console.error('[STORE] Erreur lors du chargement des snippets:', err);
-        return { success: false, error: err instanceof Error ? err.message : 'Erreur inconnue' };
-      }
-    },
-
-    markFavoriteSnippets() {
-      const favoriteIds = this.favoritesSnippets.map(fav => fav.snippet_id);
-
-      this.worldSnippets.forEach(snippet => {
-        snippet.isFavorite = favoriteIds.includes(snippet.id);
-      });
-    },
-
-    async loadSQLSchemas(retryCount = 0) {
-      const MAX_RETRIES = 2;
-
-      try {
-        const token = TokenUtils.retrieveToken();
-        if (!token) {
-          return { success: false, error: 'Authentification requise' };
-        }
-
-
-        const response = await fetch('/api/sql/loadSQLSchemas', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
-        });
-
-        if (response.status === 401 && retryCount < MAX_RETRIES) {
-          try {
-            const validationResult = await this.validateToken();
-            if (validationResult.valid) {
-              return this.loadSQLSchemas(retryCount + 1);
-            }
-
-            const refreshResponse = await fetch('/api/auth/refresh', {
-              method: 'POST',
-              credentials: 'include'
-            });
-
-            if (refreshResponse.ok) {
-              const refreshData = await refreshResponse.json();
-              if (refreshData.success && refreshData.accessToken) {
-                TokenUtils.storeToken(refreshData.accessToken);
-                this.token = refreshData.accessToken;
-
-                if (refreshData.user) {
-                  this.user = refreshData.user;
-                  this.isAuthenticated = true;
-                  this.isPremium = !!refreshData.user.isPremium;
-                  this.isAdmin = !!refreshData.user.isAdmin;
-                  this.persistData();
-                }
-
-                return this.loadSQLSchemas(retryCount + 1);
-              }
-            }
-
-            return { success: false, error: 'Échec du rafraîchissement du token' };
-          } catch (refreshError) {
-            return { success: false, error: 'Erreur lors du rafraîchissement du token' };
-          }
-        }
-
-        if (!response.ok) {
-          console.error(`[STORE] Erreur lors du chargement des schémas: ${response.status}`);
-          return { success: false, error: `Erreur HTTP ${response.status}` };
-        }
-
-        const data = await response.json();
-        if (data && data.schemas) {
-          this.sqlSchemas = data.schemas;
-        }
-        return data;
-      } catch (err) {
-        console.error('[STORE] Erreur lors du chargement des schémas:', err);
         return { success: false, error: err instanceof Error ? err.message : 'Erreur inconnue' };
       }
     },
@@ -959,6 +1092,14 @@ export const useUserStore = defineStore('user', {
         console.error('[STORE] Erreur lors de la suppression du snippet:', err);
         throw err;
       }
+    },
+
+    markFavoriteSnippets() {
+      const favoriteIds = this.favoritesSnippets.map(fav => fav.snippet_id);
+
+      this.worldSnippets.forEach(snippet => {
+        snippet.isFavorite = favoriteIds.includes(snippet.id);
+      });
     },
 
     async addFavorite(snippetId: number, type: 'world' | 'personal') {
@@ -1138,6 +1279,7 @@ export const useUserStore = defineStore('user', {
               }
 
               const data = await response.json();
+              console.log("data", data);
               return {
                 url: pageUrl,
                 data
@@ -1241,6 +1383,7 @@ export const useUserStore = defineStore('user', {
 
         const formattedData = this.formatAnalyzerResponse(mergedData, url);
         this.seoData = formattedData;
+        console.log("formattedData", formattedData);
         return formattedData;
 
       } catch (error: any) {
@@ -1253,7 +1396,6 @@ export const useUserStore = defineStore('user', {
     },
 
     formatAnalyzerResponse(response: any, url: string) {
-
       if (!response) {
         throw new Error('Réponse vide de l\'analyseur');
       }
@@ -1271,32 +1413,53 @@ export const useUserStore = defineStore('user', {
               robotsTxtFound: false,
               schemaTypeCount: {}
             };
-          } else {
           }
         });
       }
 
+      const issues = response.issues || [];
+      const criticalIssues = issues.filter(issue => issue.severity === 'critical').length;
+      const highIssues = issues.filter(issue => issue.severity === 'high').length;
+      const mediumIssues = issues.filter(issue => issue.severity === 'medium').length;
+      const lowIssues = issues.filter(issue => issue.severity === 'low').length;
+
       return {
         seoResults: response.seoResults || {},
-        summary: response.summary || {
-          totalPages: 0,
-          averageLoadTime: 0,
-          totalWarnings: 0,
-          missingTitles: 0,
-          missingDescriptions: 0,
-          missingAltTags: 0,
-          averageFCP: 0,
-          averageLCP: 0,
-          averageTTFB: 0,
-          pagesWithStructuredData: 0,
-          pagesWithSocialTags: 0,
-          mobileCompatiblePages: 0,
-          securePages: 0
+        summary: {
+          ...(response.summary || {
+            totalPages: 0,
+            averageLoadTime: 0,
+            totalWarnings: 0,
+            missingTitles: 0,
+            missingDescriptions: 0,
+            missingAltTags: 0,
+            averageFCP: 0,
+            averageLCP: 0,
+            averageTTFB: 0,
+            pagesWithStructuredData: 0,
+            pagesWithSocialTags: 0,
+            mobileCompatiblePages: 0,
+            securePages: 0
+          }),
+          totalIssues: issues.length,
+          criticalIssues,
+          highIssues,
+          mediumIssues,
+          lowIssues,
+          resourceIssues: {
+            css: response.resources?.css?.recommendations?.length || 0,
+            js: response.resources?.js?.recommendations?.length || 0,
+            images: response.resources?.images?.recommendations?.length || 0
+          }
         },
         visitedURLs: response.visitedURLs || [],
         urlMap: response.urlMap || {},
         generatedSitemap: response.generatedSitemap || '',
-        rankedUrls: response.rankedUrls || []
+        rankedUrls: response.rankedUrls || [],
+        issues: issues,
+        framework: response.framework || {},
+        hosting: response.hosting || {},
+        domainProvider: response.domainProvider || {},
       };
     },
 
@@ -1332,6 +1495,31 @@ export const useUserStore = defineStore('user', {
         return response;
       } catch (err: any) {
         console.error(err.message, err.stack);
+      }
+    },
+
+    async loadStudioComponents() {
+      try {
+        const response = await fetch('/api/studio/getComponent', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Erreur lors du chargement des composants');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          this.studioComponents = data.components;
+        } else {
+          console.error('[STORE] Erreur lors du chargement des composants:', data.error);
+        }
+      } catch (error) {
+        console.error('[STORE] Erreur lors du chargement des composants:', error);
+        throw error;
       }
     },
 
@@ -1453,18 +1641,6 @@ export const useUserStore = defineStore('user', {
       } catch (err: any) {
         console.error('Erreur lors de la désinscription:', err.message, err.stack);
         return null;
-      }
-    },
-
-    async forgotPassword(email: string) {
-      try {
-        const response = await $fetch('/api/auth/forgot-password', {
-          method: 'POST',
-          body: { email }
-        });
-        return response;
-      } catch (error: any) {
-        throw new Error(error.data?.message || 'Erreur lors de la réinitialisation du mot de passe');
       }
     },
 
@@ -1614,102 +1790,6 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async validateToken() {
-      try {
-        const token = this.token || TokenUtils.retrieveToken();
-
-        if (!token) {
-          return { valid: false, message: 'Pas de token disponible' };
-        }
-
-        const response = await fetch('/api/auth/validate', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        const data = await response.json();
-
-        if (data.valid) {
-          this.isAuthenticated = true;
-          this.token = token;
-
-          if (data.user) {
-
-            const userId = data.user.userId || data.user.id;
-
-            let isPremiumValue = false;
-            if (data.user.isPremium !== undefined) {
-              isPremiumValue = data.user.isPremium === true ||
-                (typeof data.user.isPremium === 'number' && data.user.isPremium === 1) ||
-                (typeof data.user.isPremium === 'string' && (data.user.isPremium === '1' || data.user.isPremium === 'true'));
-            }
-
-            let isAdminValue = false;
-            if (data.user.isAdmin !== undefined) {
-              isAdminValue = data.user.isAdmin === true ||
-                (typeof data.user.isAdmin === 'number' && data.user.isAdmin === 1) ||
-                (typeof data.user.isAdmin === 'string' && (data.user.isAdmin === '1' || data.user.isAdmin === 'true'));
-            }
-
-            if (!this.user) {
-              this.user = {
-                id: userId,
-                userId: userId,
-                username: data.user.username || '',
-                email: data.user.email || '',
-                isPremium: isPremiumValue,
-                isAdmin: isAdminValue
-              };
-            } else {
-              this.user.id = userId;
-              this.user.userId = userId;
-              this.user.username = data.user.username || this.user.username;
-              this.user.email = data.user.email || this.user.email;
-              this.user.isPremium = isPremiumValue;
-              this.user.isAdmin = isAdminValue;
-            }
-
-            this.isPremium = isPremiumValue;
-            this.isAdmin = isAdminValue;
-
-
-            this.persistData();
-          }
-        }
-
-        return data;
-      } catch (error) {
-        console.error('[STORE] Erreur lors de la validation du token:', error);
-        return { valid: false, message: 'Erreur lors de la validation' };
-      }
-    },
-
-    async loadStudioComponents() {
-      try {
-        const response = await fetch('/api/studio/getComponent', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${this.token}`
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Erreur lors du chargement des composants');
-        }
-
-        const data = await response.json();
-        if (data.success) {
-          this.studioComponents = data.components;
-        } else {
-          console.error('[STORE] Erreur lors du chargement des composants:', data.error);
-        }
-      } catch (error) {
-        console.error('[STORE] Erreur lors du chargement des composants:', error);
-        throw error;
-      }
-    },
-
     async generateInvoice(
       paymentId: string,
       customerName: string,
@@ -1791,23 +1871,6 @@ export const useUserStore = defineStore('user', {
         };
       }
     },
-
-    async getAudit(url: string) {
-      try {
-        const response = await $fetch('/api/audit', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${this.token}`
-          },
-          body: { url }
-        });
-
-        return response;
-      } catch (error) {
-        console.error('Erreur lors de l\'audit:', error);
-        return null;
-      }
-    }
   },
 
   persist: {

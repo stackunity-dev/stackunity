@@ -1,94 +1,4 @@
-export interface WarningItem {
-  message: string;
-  severity: 'critical' | 'high' | 'medium' | 'low';
-  type: 'meta' | 'content' | 'performance' | 'security' | 'mobile' | 'general' | 'loading' | 'title' | 'description' | 'h1' | 'image' | 'social' | 'structured-data';
-}
-
-export interface ActionItem {
-  title: string;
-  description: string;
-  severity: 'high' | 'medium' | 'low' | 'error';
-}
-
-export interface Warning {
-  severity: string;
-  message: string;
-  type?: string;
-}
-
-export interface SEOResult {
-  title?: string;
-  description?: string;
-  loadTime?: number;
-  headingStructure?: {
-    h1?: string[];
-    h2?: string[];
-    h3?: string[];
-  };
-  imageAlt?: Array<{
-    alt?: string;
-    src?: string;
-    title?: string;
-    width?: number;
-    height?: number;
-    hasDimensions?: boolean;
-  }>;
-  videoInfo?: Array<{
-    src: string;
-    length?: number;
-    thumbnail?: string;
-    title?: string;
-    description?: string;
-    width?: number;
-    height?: number;
-  }>;
-  coreWebVitals?: {
-    LCP?: number;
-    FCP?: number;
-    TTFB?: number;
-    performanceScore?: number;
-  };
-  mobileCompatibility?: {
-    hasViewport?: boolean;
-    smallTouchTargets?: number;
-    viewportContent?: string;
-  };
-  securityChecks?: {
-    https?: boolean;
-    securityHeaders?: Array<{ name: string; value: string }>;
-  };
-  socialTags?: {
-    ogTags?: Array<{ property: string; content: string }>;
-    twitterTags?: Array<{ name: string; content: string }>;
-  };
-  technicalSEO?: {
-    sitemapFound?: boolean;
-    sitemapUrl?: string;
-    sitemapUrls?: number;
-    robotsTxtFound?: boolean;
-    robotsTxtContent?: string;
-    schemaTypeCount?: Record<string, number>;
-  };
-  structuredData?: any[];
-  warnings?: Array<string | Warning>;
-  contentStats?: {
-    readabilityScore?: number;
-    wordCount?: number;
-    keywordDensity?: number;
-  };
-  accessibility?: AccessibilityData;
-}
-
-export interface AccessibilityData {
-  missingAria: number;
-  missingAlt: number;
-  missingLabels: number;
-  missingInputAttributes: number;
-  contrastIssues: number;
-  ariaIssues: Array<{ element: string, issue: string }>;
-  inputIssues: Array<{ element: string, issue: string }>;
-  accessibilityScore: number;
-}
+import { SEOResult, ActionItem, Warning, ActionItems } from "./types";
 
 export const calculateOverallScore = (result: SEOResult): number => {
   if (!result) return 0;
@@ -667,12 +577,6 @@ export const getSEOScore = (result: SEOResult): number => {
   return Math.round((score / (totalWeight || 1)) * 100);
 };
 
-interface ActionItems {
-  high: ActionItem[];
-  medium: ActionItem[];
-  low: ActionItem[];
-}
-
 export const getActionItems = (result: SEOResult): ActionItems => {
   const actionItems: ActionItems = {
     high: [] as ActionItem[],
@@ -895,7 +799,6 @@ export const getAccessibilityIssues = (result: SEOResult): ActionItem[] => {
 
   if (!result || !result.accessibility) return issues;
 
-  // Vérifier les problèmes d'attributs ARIA
   if (result.accessibility.missingAria > 0) {
     issues.push({
       title: `${result.accessibility.missingAria} attributs ARIA manquants`,
@@ -904,7 +807,6 @@ export const getAccessibilityIssues = (result: SEOResult): ActionItem[] => {
     });
   }
 
-  // Vérifier les images sans attribut alt
   if (result.accessibility.missingAlt > 0) {
     issues.push({
       title: `${result.accessibility.missingAlt} images sans attribut alt`,
@@ -913,7 +815,6 @@ export const getAccessibilityIssues = (result: SEOResult): ActionItem[] => {
     });
   }
 
-  // Vérifier les champs de formulaire sans label
   if (result.accessibility.missingLabels > 0) {
     issues.push({
       title: `${result.accessibility.missingLabels} champs sans label associé`,
@@ -922,7 +823,6 @@ export const getAccessibilityIssues = (result: SEOResult): ActionItem[] => {
     });
   }
 
-  // Vérifier les problèmes d'attributs sur les champs de formulaire
   if (result.accessibility.missingInputAttributes > 0) {
     issues.push({
       title: `${result.accessibility.missingInputAttributes} champs avec attributs manquants`,
@@ -931,7 +831,6 @@ export const getAccessibilityIssues = (result: SEOResult): ActionItem[] => {
     });
   }
 
-  // Vérifier les problèmes de contraste
   if (result.accessibility.contrastIssues > 0) {
     issues.push({
       title: `${result.accessibility.contrastIssues} problèmes de contraste détectés`,
