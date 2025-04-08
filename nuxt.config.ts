@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   ssr: true,
 
   nitro: {
+    minify: true,
     preset: 'node-server',
     output: {
       dir: '.output',
@@ -20,7 +21,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
 
   build: {
-    transpile: ['vuetify'],
+    transpile: ['vuetify']
   },
 
   modules: [
@@ -51,11 +52,30 @@ export default defineNuxtConfig({
       noExternal: ['@pinia-plugin-persistedstate/nuxt', 'vue', 'vuetify', 'vuetify/lib', 'vuetify/components'],
       external: ['monaco-editor']
     },
+    build: {
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vue-vendor': ['vue', 'vue-router', 'pinia'],
+            'ui-vendor': ['vuetify', '@mdi/font'],
+            'analytics': ['analytics', 'schema-dts'],
+            'utils': ['ofetch', 'defu', 'zod'],
+            'seo-analyzer': [
+              './server/api/analyze/website-analyzer.ts',
+              './server/api/analyze/security-analyzer.ts'
+            ]
+          }
+        }
+      }
+    },
     server: {
+      hmr: {
+        protocol: 'ws',
+      },
       fs: {
         strict: false,
-        allow: ['..']
-      }
+      },
     },
     optimizeDeps: {
       include: ['vuetify', 'vuetify/lib', 'vuetify/components']
@@ -90,7 +110,7 @@ export default defineNuxtConfig({
   },
 
   experimental: {
-    payloadExtraction: false,
+    payloadExtraction: true,
     renderJsonPayloads: false
   }
 });
