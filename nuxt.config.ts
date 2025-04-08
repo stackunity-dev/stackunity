@@ -50,7 +50,7 @@ export default defineNuxtConfig({
     },
     ssr: {
       noExternal: ['@pinia-plugin-persistedstate/nuxt', 'vue', 'vuetify', 'vuetify/lib', 'vuetify/components'],
-      external: ['monaco-editor']
+      external: ['monaco-editor', 'vue-chartjs', 'chart.js']
     },
     build: {
       chunkSizeWarningLimit: 1000,

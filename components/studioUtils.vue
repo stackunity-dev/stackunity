@@ -525,9 +525,9 @@ import {
 } from 'chart.js';
 import { computed, ref, watch } from 'vue';
 import { Bar, Doughnut, Line, Pie, PolarArea, Radar } from 'vue-chartjs';
-import Snackbar from '~/components/snackbar.vue';
-import { useUserStore } from '~/stores/userStore';
-import { getUtilsTemplate } from '~/utils/utilsTemplates';
+import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
+import { getUtilsTemplate } from '../utils/utilsTemplates';
 const emit = defineEmits(['update:content', 'save']);
 const userStore = useUserStore();
 
