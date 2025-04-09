@@ -1,12 +1,11 @@
 <template>
   <v-app>
-
-    <v-navigation-drawer v-model="mobileDrawer" :mobile-breakpoint="960" :permanent="display.mdAndUp.value"
+    <v-navigation-drawer v-model="drawer" :mobile-breakpoint="960" :permanent="!display.smAndDown.value"
       :temporary="display.smAndDown.value" location="left" class="dashboard-drawer">
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-4">
           <div class="logo-container mr-3">
-            <img src="/logo/stackunity-title.png" alt="StackUnity" class="logo-devunity" />
+            <img src="/logo/stackunity-letter.png" alt="StackUnity" class="logo-devunity" />
           </div>
           <div>
             <div class="text-h6 font-weight-bold">StackUnity</div>
@@ -99,105 +98,8 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-navigation-drawer v-model="desktopDrawer" permanent class="d-none d-sm-block" app clipped>
-      <div class="drawer-header pa-4">
-        <div class="d-flex align-center mb-4">
-          <div class="logo-container mr-3">
-            <img src="/logo/stackunity-title.png" alt="StackUnity" class="logo-devunity" />
-          </div>
-          <div>
-            <div class="text-h6 font-weight-bold">StackUnity</div>
-            <div class="text-caption text-medium-emphasis">v1.0.0</div>
-          </div>
-        </div>
-
-        <v-text-field v-model="search" density="compact" variant="outlined" placeholder="Search..."
-          prepend-inner-icon="mdi-magnify" hide-details rounded class="mb-2" bg-color="surface"></v-text-field>
-      </div>
-
-      <v-divider></v-divider>
-
-      <v-list density="compact" v-model:opened="open" nav class="px-2">
-        <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard-outline" title="Dashboard" rounded="lg"
-          class="mb-1" color="primary" nuxt @click="closeDrawer" data-plausible-feature="dashboard_menu">
-        </v-list-item>
-
-        <v-list-group value="Recent Projects" class="mb-1" prepend-icon="mdi-history">
-          <template #activator="{ props }">
-            <v-list-item v-bind="props" title="Recent Projects" rounded="lg" color="primary" />
-          </template>
-
-          <v-list-item v-for="(snippet, index) in recentSnippets" :key="index" :to="`/snippets?id=${snippet.id}`"
-            :title="snippet.title" :prepend-icon="getFrameworkIcon(snippet.framework)" class="ml-4" rounded="lg"
-            color="primary" nuxt @click="closeDrawer">
-            <template #subtitle>
-              <span class="text-caption">{{ getSnippetDate(snippet) }}</span>
-            </template>
-          </v-list-item>
-
-          <v-list-item v-if="recentSnippets.length === 0" class="ml-4" title="No recent projects" disabled />
-        </v-list-group>
-
-        <v-list-group value="Recent SQL schemas" class="mb-1" prepend-icon="mdi-database-outline">
-          <template #activator="{ props }">
-            <v-list-item v-bind="props" title="Recent SQL schemas" rounded="lg" color="primary" />
-          </template>
-
-          <v-list-item v-for="(schema, index) in recentSQLSchemas" :key="index" :to="`/sql-generator?id=${schema.id}`"
-            :title="schema.database_name" prepend-icon="mdi-database" class="ml-4" rounded="lg" color="primary" nuxt
-            @click="closeDrawer">
-            <template #subtitle>
-              <span class="text-caption">{{ getSchemaTablesCount(schema) }} tables</span>
-            </template>
-          </v-list-item>
-
-          <v-list-item v-if="recentSQLSchemas.length === 0" class="ml-4" title="No recent SQL schemas" disabled />
-        </v-list-group>
-
-        <v-list-subheader class="mt-2 text-uppercase font-weight-bold text-caption">Applications</v-list-subheader>
-
-        <v-list-group v-for="(item, index) in items" :key="index" :value="item.title" class="mb-1"
-          :prepend-icon="item.prependIcon">
-          <template #activator="{ props }">
-            <v-list-item v-bind="props" :title="item.title" rounded="lg" color="primary" />
-          </template>
-
-          <template v-for="(child, idx) in item.children" :key="idx">
-            <component v-if="child.component" :is="child.component.component" v-bind="child.component.props"
-              class="ml-4 my-1 premium-menu-item" />
-            <v-list-item v-else :to="child.link" :title="child.title" :prepend-icon="child.icon || 'mdi-circle-small'"
-              class="ml-4" rounded="lg" color="primary" nuxt @click="closeDrawer" />
-          </template>
-        </v-list-group>
-
-        <v-divider class="my-3"></v-divider>
-
-        <v-list-subheader class="text-uppercase font-weight-bold text-caption">System</v-list-subheader>
-
-        <client-only>
-          <v-list-group v-if="userStore.user?.isAdmin" value="Administration" class="mb-1"
-            prepend-icon="mdi-shield-account">
-            <template #activator="{ props }">
-              <v-list-item v-bind="props" title="Administration" rounded="lg" color="primary" />
-            </template>
-
-            <v-list-item to="/admin/newsletter-admin" prepend-icon="mdi-email-outline" title="Newsletter" rounded="lg"
-              class="ml-4" color="primary" nuxt @click="closeDrawer" />
-          </v-list-group>
-        </client-only>
-
-        <v-list-item v-if="!userStore.user.isPremium" to="/checkout" prepend-icon="mdi-credit-card-outline"
-          title="Premium" rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer" />
-
-        <v-list-item to="/settings" prepend-icon="mdi-cog-outline" title="Settings" rounded="lg" class="mb-1"
-          color="primary" nuxt @click="closeDrawer" />
-
-        <v-list-item @click="logout" prepend-icon="mdi-logout" title="Logout" rounded="lg" color="error" />
-      </v-list>
-    </v-navigation-drawer>
-
     <v-app-bar class="border-b page-header px-4" color="primary" flat scroll-behavior="elevate" :elevation="0">
-      <v-app-bar-nav-icon v-if="display.smAndDown.value" @click="mobileDrawer = !mobileDrawer"
+      <v-app-bar-nav-icon v-if="display.smAndDown.value" @click="drawer = !drawer"
         color="on-surface"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
         <v-icon size="large" class="mr-3">{{ getCurrentPageIcon() }}</v-icon>
@@ -228,24 +130,22 @@ const route = useRoute();
 const open = ref([]);
 const search = ref('');
 const display = useDisplay();
-const mobileDrawer = ref(false);
-const desktopDrawer = ref(!display.smAndDown.value);
+const drawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
 const openTask = ref(false);
 
 watch(() => route.path, (newPath, oldPath) => {
   if (display.smAndDown.value) {
-    mobileDrawer.value = false;
+    drawer.value = false;
   }
   updatePageTitle();
-
 });
 
 const isSmall = computed(() => display.smAndDown.value);
 
 watch(isSmall, (isSmall) => {
   if (!isSmall) {
-    desktopDrawer.value = true;
+    drawer.value = true;
   }
 });
 
@@ -410,7 +310,7 @@ const getCurrentPageIcon = () => {
 
 const closeDrawer = () => {
   if (display.smAndDown.value) {
-    mobileDrawer.value = false;
+    drawer.value = false;
   }
 };
 
