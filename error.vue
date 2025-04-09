@@ -1,7 +1,7 @@
 <template>
   <div class="error-container">
     <div class="error-content">
-      <img src="/logo/devunity.png" alt="DevUnity Logo" width="200" class="error-logo mb-8" />
+      <img src="/logo/stackunity.png" alt="StackUnity Logo" width="200" class="error-logo mb-8" />
 
       <h1 class="error-title">
         <template v-if="error?.statusCode === 404">Page not found</template>

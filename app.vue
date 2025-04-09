@@ -43,18 +43,18 @@ userStore.isPremium = userStore.isPremium || false;
 userStore.isAdmin = userStore.isAdmin || false;
 
 useHead({
-  title: 'DevUnity - The all-in-one platform for developers',
+  title: 'StackUnity - The all-in-one platform for developers',
   meta: [
-    { name: 'description', content: 'DevUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
-    { name: 'keywords', content: 'DevUnity, dashboard, tools, snippets, SQL, Studio, Sitemaps' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { name: 'keywords', content: 'StackUnity, dashboard, tools, snippets, SQL, Studio, Sitemaps' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-    { name: 'og:title', content: 'DevUnity - The all-in-one platform for developers' },
+    { name: 'og:title', content: 'StackUnity - The all-in-one platform for developers' },
     { name: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
     { rel: 'canonical', href: 'https://stackunity.tech/' },
-    { rel: 'icon', type: 'image/png', href: '/logo/stackunity-title.png' }    
+    { rel: 'icon', type: 'image/png', href: '/logo/stackunity.png' }
   ],
   script: [
     {
@@ -62,12 +62,12 @@ useHead({
       innerHTML: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "DevUnity",
-        "description": "DevUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.",
-        "url": "https://devunity.tech/",
-        "email": "support@devunity.tech",
+        "name": "StackUnity",
+        "description": "StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.",
+        "url": "https://stackunity.tech/",
+        "email": "support@stackunity.tech",
         "foundingDate": "2025-04-05",
-        "legalName": "DevUnity",
+        "legalName": "StackUnity",
         "numberOfEmployees": {
           "@type": "QuantitativeValue",
           "value": "1"
@@ -75,7 +75,7 @@ useHead({
         "potentialAction": {
           "@type": "ContactAction",
           "name": "Contact",
-          "target": "mailto:support@devunity.tech"
+          "target": "mailto:support@stackunity.tech"
         }
       })
     }
