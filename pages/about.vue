@@ -4,7 +4,7 @@
       <v-container class="d-flex align-center py-0 my-0">
         <NuxtLink to="/" class="text-decoration-none">
           <div class="d-flex align-center">
-            <img src="/logo/devunity-title.png" alt="DevUnity title" width="150">
+            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
           </div>
         </NuxtLink>
         <v-spacer></v-spacer>
@@ -74,7 +74,7 @@
               <section>
                 <h2 class="text-h4 font-weight-bold mb-6 primary--text">Get in Touch</h2>
                 <p class="text-body-1 mb-6">
-                  Have questions about DevUnity or want to learn more about our company?
+                  Have questions about StackUnity or want to learn more about our company?
                   Don't hesitate to reach out to us.
                 </p>
                 <v-btn color="primary" to="/contact" size="large" class="px-8 py-3 rounded-pill" elevation="2">
@@ -92,10 +92,10 @@
       <v-container>
         <div class="d-flex flex-column flex-md-row justify-space-between align-center">
           <div class="mb-4 mb-md-0">
-            <img src="/logo/devunity-title.png" alt="DevUnity title" width="120">
+            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="120">
           </div>
           <div class="text-body-2 text-medium-emphasis">
-            &copy; {{ new Date().getFullYear() }} DevUnity. All rights reserved.
+            &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
           </div>
         </div>
       </v-container>

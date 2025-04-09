@@ -4,7 +4,7 @@
       <v-container class="d-flex align-center py-0 my-0">
         <NuxtLink to="/" class="text-decoration-none">
           <div class="d-flex align-center">
-            <img src="/logo/devunity-title.png" alt="DevUnity title" width="150">
+            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
           </div>
         </NuxtLink>
         <v-spacer></v-spacer>
@@ -24,7 +24,7 @@
               </p>
 
               <p class="text-subtitle-1 mb-6">
-                At DevUnity, we place great importance on protecting your personal data. This privacy policy explains
+                At StackUnity, we place great importance on protecting your personal data. This privacy policy explains
                 how we collect, use, and protect your information when you use our platform.
               </p>
 
@@ -105,8 +105,8 @@
               <h2 class="text-h4 font-weight-bold mb-4">Contact Us</h2>
               <p class="text-body-1 mb-6">
                 If you have any questions about this privacy policy or our data protection practices, please don't
-                hesitate to contact us at <a href="mailto:privacy@devunity.com"
-                  class="text-decoration-underline">privacy@devunity.com</a>.
+                hesitate to contact us at <a href="mailto:privacy@stackunity.com"
+                  class="text-decoration-underline">privacy@stackunity.com</a>.
               </p>
             </v-card>
           </v-col>
@@ -118,7 +118,7 @@
       <v-container>
         <div class="text-center">
           <p class="text-body-2 text-medium-emphasis">
-            &copy; {{ new Date().getFullYear() }} DevUnity. All rights reserved.
+            &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
           </p>
         </div>
       </v-container>
@@ -135,16 +135,16 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Privacy Policy - DevUnity',
+  title: 'Privacy Policy - StackUnity',
   meta: [
-    { name: 'description', content: 'Learn how DevUnity collects, uses, and protects your personal data when you use our platform.' },
-    { name: 'keywords', content: 'DevUnity, privacy, policy, data protection, personal data' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'description', content: 'Learn how StackUnity collects, uses, and protects your personal data when you use our platform.' },
+    { name: 'keywords', content: 'StackUnity, privacy, policy, data protection, personal data' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Privacy Policy - DevUnity' },
-    { name: 'og:description', content: 'Learn how DevUnity collects, uses, and protects your personal data when you use our platform.' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:title', content: 'Privacy Policy - StackUnity' },
+    { name: 'og:description', content: 'Learn how StackUnity collects, uses, and protects your personal data when you use our platform.' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/privacy' }

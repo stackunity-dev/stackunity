@@ -3,7 +3,7 @@
     <v-container>
       <div class="d-flex flex-column align-center mb-6">
         <NuxtLink to="/" class="mb-4">
-          <img src="" alt="StackUnity title" width="150">
+          <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
         </NuxtLink>
         <h1 class="text-h3 font-weight-bold text-center">Terms of Service</h1>
       </div>

@@ -5,9 +5,9 @@
         <v-col cols="12" md="6" class="d-none d-md-flex left-panel-signup align-center justify-center">
           <div class="left-content text-center">
             <h1>
-              <img src="/logo/devunity.png" alt="Devunity - Develop faster and better with DevUnity" class="logo mb-8"
-                width="350" />
-              <span class="sr-only">Devunity - Develop faster and better with DevUnity</span>
+              <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
+                class="logo mb-8" width="350" />
+              <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
             </h1>
 
             <div class="features-list">
@@ -26,11 +26,11 @@
         <v-col cols="12" md="6" class="right-panel-signup d-flex align-center justify-center">
           <v-card class="signup-card pa-md-8 pa-4 elevation-0" max-width="450" width="100%">
             <div class="d-flex justify-center d-md-none mb-6">
-              <img src="/logo/devunity.png" alt="Devunity Logo" width="240" />
+              <img src="/logo/stackunity-title.png" alt="StackUnity Logo" width="240" />
             </div>
 
             <h2 class="text-h5 font-weight-bold mb-2">Create an account</h2>
-            <p class="text-subtitle-1 text-medium-emphasis mb-6">Join Devunity and start your experience</p>
+            <p class="text-subtitle-1 text-medium-emphasis mb-6">Join StackUnity and start your experience</p>
 
             <v-form @submit.prevent="handleSignup">
               <v-text-field v-model="form.username" label="Username" type="text" variant="outlined"

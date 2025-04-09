@@ -5,9 +5,9 @@
         <v-col cols="12" md="6" class="d-none d-md-flex left-panel align-center justify-center">
           <div class="left-content text-center">
             <h1>
-              <img src="/logo/devunity.png" alt="Devunity - Develop faster and better with DevUnity" class="logo mb-8"
-                width="350" />
-              <span class="sr-only">Devunity - Develop faster and better with DevUnity</span>
+              <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
+                class="logo mb-8" width="350" />
+              <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
             </h1>
             <div class="features-list">
               <div v-for="(feature, index) in features" :key="index" class="feature-item d-flex align-center"
@@ -25,7 +25,7 @@
         <v-col cols="12" md="6" class="right-panel d-flex align-center justify-center">
           <v-card class="login-card pa-md-8 pa-4 elevation-0" max-width="450" width="100%">
             <div class="d-flex justify-center d-md-none mb-6">
-              <img src="/logo/devunity.png" alt="Devunity Logo" width="240" />
+              <img src="/logo/stackunity-title.png" alt="StackUnity Logo" width="240" />
             </div>
 
             <h2 class="text-h5 font-weight-bold mb-2">Sign In</h2>
@@ -94,9 +94,13 @@ useHead({
     { name: 'og:title', content: 'Sign In - StackUnity' },
     { name: 'og:description', content: 'Sign in to your StackUnity account to access all features' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+    { name: 'og:image:width', content: '1200' },
+    { name: 'og:image:height', content: '630' },
+    { name: 'og:image:alt', content: 'StackUnity Logo' },
+    { name: 'og:image:secure_url', content: 'https://stackunity.tech/logo/stackunity-title.png' },
   ],
   link: [
-    { rel: 'canonical', href: 'https://stackunity.com/login' }
+    { rel: 'canonical', href: 'https://stackunity.tech/login' }
   ]
 })
 

@@ -5,7 +5,7 @@
         <v-container class="d-flex align-center py-0 my-0">
           <NuxtLink to="/login" class="text-decoration-none" aria-label="StackUnity Home">
             <div class="d-flex align-center brand-container">
-              <img src="/logo/devunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="150"
+              <img src="/logo/stackunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="150"
                 class="logo-image">
               <div class="brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left">
                 <span class="text-caption font-weight-medium text-gradient">PROPULSE YOUR CODE</span>
@@ -55,7 +55,7 @@
       <v-navigation-drawer v-model="drawer" location="right" temporary
         class="v-navigation-drawer v-navigation-drawer--right v-navigation-drawer--temporary v-theme--dark v-theme--dark pa-6">
         <div class="drawer-header mb-8 d-flex justify-space-between align-center">
-          <img src="/logo/devunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="120"
+          <img src="/logo/stackunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="120"
             :eager="true" loading="eager">
           <v-btn icon variant="text" @click="drawer = false">
             <v-icon>mdi-close</v-icon>
@@ -228,7 +228,7 @@
         <v-row>
           <v-col cols="12" md="5" lg="5" class="mb-6 mb-md-0">
             <div class="d-flex align-center mb-4">
-              <img src="/logo/devunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="180"
+              <img src="/logo/stackunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="180"
                 :eager="true" loading="eager">
             </div>
             <p class="text-body-2 text-medium-emphasis mb-4">
@@ -321,14 +321,14 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { name: 'og:title', content: 'StackUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects.' },
     { name: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
     { name: 'og:url', content: 'https://stackunity.tech' },
     { name: 'og:site_name', content: 'StackUnity' },
     { name: 'og:type', content: 'website' },
     { name: 'og:image:width', content: '1200' },
     { name: 'og:image:height', content: '630' },
     { name: 'og:image:alt', content: 'StackUnity Logo' },
-    { name: 'og:image:secure_url', content: 'https://stackunity.tech/logo/devunity-title.png' },
+    { name: 'og:image:secure_url', content: 'https://stackunity.tech/logo/stackunity-title.png' },
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.tech' }

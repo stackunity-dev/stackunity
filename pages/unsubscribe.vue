@@ -49,22 +49,25 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useUserStore } from '@/stores/userStore';
+import { useUserStore } from '../stores/userStore';
+// @ts-ignore
+import { definePageMeta, navigateTo, useHead } from '#imports';
+
 
 definePageMeta({
   layout: 'empty'
 });
 
 useHead({
-  title: 'Unsubscribe - DevUnity',
+  title: 'Unsubscribe - StackUnity',
   meta: [
     { name: 'description', content: 'Unsubscribe from the newsletter' },
-    { name: 'author', content: 'DevUnity' },
+    { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'noindex, nofollow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Unsubscribe - DevUnity' },
+    { name: 'og:title', content: 'Unsubscribe - StackUnity' },
     { name: 'og:description', content: 'Unsubscribe from the newsletter' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ]
 })
 const userStore = useUserStore();

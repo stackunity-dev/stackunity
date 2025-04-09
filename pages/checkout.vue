@@ -5,9 +5,9 @@
         <v-col cols="12" md="6" class="d-none d-md-flex left-panel-checkout align-center justify-center">
           <div class="left-content text-center">
             <h1>
-              <img src="/logo/devunity.png" alt="Devunity - Develop faster and better with DevUnity" class="logo mb-8"
-                width="350" />
-              <span class="sr-only">Devunity - Develop faster and better with DevUnity</span>
+              <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
+                class="logo mb-8" width="350" />
+              <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
             </h1>
 
             <div class="features-list">
@@ -26,7 +26,7 @@
         <v-col cols="12" md="6" class="right-panel-checkout d-flex align-center justify-center">
           <v-card class="checkout-card pa-8 elevation-0" max-width="500" width="100%">
             <div class="d-flex justify-center d-md-none mb-8">
-              <img src="/logo/devunity.png" alt="Devunity Logo" width="300" />
+              <img src="/logo/stackunity-title.png" alt="StackUnity Logo" width="300" />
             </div>
 
             <div class="price-card mb-6">
@@ -187,18 +187,18 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Payment - DevUnity',
+  title: 'Payment - StackUnity',
   meta: [
     { name: 'author', content: 'Nûr' },
-    { name: 'description', content: 'Pay to access premium features of DevUnity' },
+    { name: 'description', content: 'Pay to access premium features of StackUnity' },
     { name: 'robots', content: 'nofollow, noindex' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Payment - DevUnity' },
-    { name: 'og:description', content: 'Pay to access premium features of DevUnity' },
-    { name: 'og:image', content: '/logo/devunity-title.png' },
+    { name: 'og:title', content: 'Payment - StackUnity' },
+    { name: 'og:description', content: 'Pay to access premium features of StackUnity' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [
-    { rel: 'canonical', href: 'https://devunity.com/checkout' }
+    { rel: 'canonical', href: 'https://stackunity.tech/checkout' }
   ]
 })
 

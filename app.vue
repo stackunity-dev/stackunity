@@ -50,7 +50,11 @@ useHead({
     { name: 'author', content: 'DevUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-
+    { name: 'og:title', content: 'DevUnity - The all-in-one platform for developers' },
+    { name: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
+    { rel: 'canonical', href: 'https://stackunity.tech/' },
+    { rel: 'icon', type: 'image/png', href: '/logo/stackunity-title.png' }    
   ],
   script: [
     {
