@@ -566,7 +566,6 @@ import { getSQLTemplate, getSQLTemplateNames } from '../utils/sqlTemplates';
 import { definePageMeta, useHead } from '#imports';
 import javascript from 'highlight.js/lib/languages/javascript';
 import sql from 'highlight.js/lib/languages/sql';
-import html2canvas from 'html2canvas';
 import { DatabaseType, SQLSchema, StoredTable } from '../utils/sql/types';
 
 useHead({
@@ -697,7 +696,7 @@ const loadSchemaNames = async () => {
     if (userStore.sqlSchemas && userStore.sqlSchemas.length > 0) {
       availableSchemas.value = (userStore.sqlSchemas as unknown as SQLSchema[]).map(schema => ({
         title: schema.database_name,
-        value: schema.id
+        value: schema.id ?? null
       }));
 
       availableSchemas.value.unshift({

@@ -203,6 +203,9 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { name: 'og:title', content: 'Responsive Viewer' },
     { name: 'og:description', content: 'View your websites on different devices' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.com/responsive' }
   ]
 })
 
@@ -246,6 +249,7 @@ const urlHistory = ref<string[]>([]);
 const selectedDevices = ref<string[]>(['iphone']);
 const autoRefresh = ref<boolean>(false);
 const refreshInterval = ref<number>(5);
+const isClient = typeof window !== 'undefined';
 let refreshTimer: number | null = null;
 
 const refreshIntervals: RefreshInterval[] = [
@@ -326,7 +330,7 @@ const loadUrl = (): void => {
     if (urlHistory.value.length > 10) {
       urlHistory.value.pop();
     }
-    if (process.client) {
+    if (isClient) {
       localStorage.setItem('responsive-url-history', JSON.stringify(urlHistory.value));
     }
   }
@@ -394,7 +398,7 @@ watch(orientation, (newOrientation) => {
   iframeRefs.value = {};
 });
 
-if (process.client) {
+if (isClient) {
   window.addEventListener('error', (e) => {
     if (e.message && e.message.includes('Refused to display') && e.message.includes('X-Frame-Options')) {
       xFrameError.value = true;
@@ -403,7 +407,7 @@ if (process.client) {
 }
 
 onMounted(() => {
-  if (process.client) {
+  if (isClient) {
     const savedHistory = localStorage.getItem('responsive-url-history');
     if (savedHistory) {
       try {

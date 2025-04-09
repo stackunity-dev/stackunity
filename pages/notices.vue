@@ -215,6 +215,9 @@ useHead({
     { name: 'og:title', content: 'Legal Notices & Credits - StackUnity' },
     { name: 'og:description', content: 'Legal notices, privacy policy and credits of the open source libraries used by StackUnity.' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.com/notices' }
   ]
 });
 

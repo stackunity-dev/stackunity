@@ -329,6 +329,9 @@ useHead({
     { name: 'og:image:height', content: '630' },
     { name: 'og:image:alt', content: 'StackUnity Logo' },
     { name: 'og:image:secure_url', content: 'https://stackunity.tech/logo/devunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.tech' }
   ]
 })
 

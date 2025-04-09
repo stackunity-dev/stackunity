@@ -144,6 +144,10 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { name: 'og:title', content: 'Privacy Policy - DevUnity' },
     { name: 'og:description', content: 'Learn how DevUnity collects, uses, and protects your personal data when you use our platform.' },
+    { name: 'og:image', content: '/logo/devunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.com/privacy' }
   ]
 });
 </script>

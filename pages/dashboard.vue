@@ -206,6 +206,9 @@ useHead({
     { name: 'og:title', content: 'Dashboard - StackUnity' },
     { name: 'og:description', content: 'Dashboard for StackUnity' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.com/dashboard' }
   ]
 })
 

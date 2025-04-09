@@ -122,6 +122,9 @@ useHead({
     { name: 'og:title', content: 'About - StackUnity' },
     { name: 'og:description', content: 'Discover the mission and values behind StackUnity, the all-in-one platform for web developers.' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.com/about' }
   ]
 });
 

@@ -98,6 +98,9 @@ useHead({
     { name: 'og:title', content: 'Contact Us - StackUnity' },
     { name: 'og:description', content: 'Contact the StackUnity team for any questions, suggestions or support requests. We are here to help you.' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.com/contact' }
   ]
 });
 

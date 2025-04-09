@@ -340,6 +340,9 @@ useHead({
     { name: 'og:title', content: 'Snippets - StackUnity' },
     { name: 'og:description', content: 'Deploy and use numerous snippets across the world' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.com/snippets' }
   ]
 })
 

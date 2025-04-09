@@ -774,6 +774,9 @@ useHead({
     { name: 'og:title', content: 'Accessibility - StackUnity' },
     { name: 'og:description', content: 'Accessibility tools for web developers' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.com/accessibility' }
   ]
 });
 

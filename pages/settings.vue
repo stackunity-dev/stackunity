@@ -261,6 +261,9 @@ useHead({
     { name: 'og:title', content: 'Settings - StackUnity' },
     { name: 'og:description', content: 'Manage your account settings and preferences' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.com/settings' }
   ]
 });
 
