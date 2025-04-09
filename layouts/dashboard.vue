@@ -6,7 +6,7 @@
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-4">
           <div class="logo-container mr-3">
-            <img src="/logo/devunity-letter.png" alt="DevUnity" class="logo-devunity" />
+            <img src="/logo/stackunity-letter.png" alt="StackUnity" class="logo-devunity" />
           </div>
           <div>
             <div class="text-h6 font-weight-bold">StackUnity</div>
@@ -103,7 +103,7 @@
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-4">
           <div class="logo-container mr-3">
-            <img src="/logo/devunity-letter.png" alt="DevUnity" class="logo-devunity" />
+            <img src="/logo/stackunity-title.png" alt="StackUnity" class="logo-devunity" />
           </div>
           <div>
             <div class="text-h6 font-weight-bold">StackUnity</div>
@@ -219,8 +219,8 @@ import { computed, markRaw, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
-import { useUserStore } from '../stores/userStore';
 import Task from '../components/task.vue';
+import { useUserStore } from '../stores/userStore';
 
 const userStore = useUserStore();
 const router = useRouter();
