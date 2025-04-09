@@ -6,7 +6,7 @@
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-4">
           <div class="logo-container mr-3">
-            <img src="/logo/stackunity-letter.png" alt="StackUnity" class="logo-devunity" />
+            <img src="/logo/stackunity-title.png" alt="StackUnity" class="logo-devunity" />
           </div>
           <div>
             <div class="text-h6 font-weight-bold">StackUnity</div>
