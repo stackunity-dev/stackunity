@@ -1116,27 +1116,21 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
   }
 }
 
-/**
- * Obtient une forme canonique de l'URL pour comparer plus facilement les URLs similaires
- */
 function getCanonicalForm(url: string): string {
   try {
     const urlObj = new URL(url);
 
-    // Enlever le www si présent
     let hostname = urlObj.hostname.toLowerCase();
     if (hostname.startsWith('www.')) {
       hostname = hostname.substring(4);
     }
 
-    // Normaliser le chemin
     let pathname = urlObj.pathname;
     if (pathname === '') pathname = '/';
     if (pathname !== '/' && pathname.endsWith('/')) {
       pathname = pathname.slice(0, -1);
     }
 
-    // Forme canonique sans protocole ni paramètres
     return `${hostname}${pathname}`;
   } catch (e) {
     return url;

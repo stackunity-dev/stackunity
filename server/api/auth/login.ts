@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { defineEventHandler, readBody } from 'h3';
 import { RowDataPacket } from 'mysql2';
 import { ServerTokenManager } from '../../utils/ServerTokenManager';

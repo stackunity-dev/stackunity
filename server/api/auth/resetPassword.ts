@@ -1,6 +1,6 @@
-import { pool } from '../db';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { defineEventHandler, readBody } from 'h3';
+import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
