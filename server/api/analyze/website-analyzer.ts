@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { load as cheerioLoad } from 'cheerio';
+import type { CheerioAPI } from 'cheerio';
+import * as cheerio from 'cheerio';
 import { createError, defineEventHandler, H3Event, readBody } from 'h3';
 import { performance } from 'perf_hooks';
 import type { CheerioSelector, ExtendedWebsiteAnalysisResult, SchemaOrgSuggestion, SecurityIssue, SiteAnalysisResult, StructuredData, WebsiteAnalysisResult } from './analyzer-types';
@@ -179,13 +180,15 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
   const response = await axios.get(url);
   const loadTime = performance.now() - startTime;
   const html = response.data;
-  const $ = cheerioLoad(html);
+  const $ = cheerio.load(html);
+
+  const cls = calculateCLS($);
 
   const performanceData = {
     ttfb: loadTime * 0.2,
     fcp: loadTime * 0.4,
     lcp: loadTime * 0.6,
-    cls: 0.1,
+    cls: cls,
     speedIndex: loadTime * 0.5,
     totalBlockingTime: loadTime * 0.3,
     loadTime,
@@ -776,7 +779,7 @@ async function checkSitemap(baseUrl: string): Promise<{ found: boolean; url?: st
           if (typeof content === 'string' &&
             (content.includes('<urlset') || content.includes('<sitemapindex'))) {
 
-            const $ = cheerioLoad(content);
+            const $ = cheerio.load(content);
             const urlCount = $('url').length;
 
             return {
@@ -858,52 +861,33 @@ function toggleSlash(url: string): string | null {
 
 async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<string[]> {
   try {
-    let normalizedUrl = standardizeUrl(baseUrl);
-
-    // Set pour stocker toutes les URLs découvertes
-    const allDiscoveredUrls = new Set<string>();
-    // Set pour stocker les URLs visitées
     const visited = new Set<string>();
-    // Set pour stocker les formes canoniques des URLs (sans www, sans slash final, etc.)
+    const queue: string[] = [];
+    const skippedUrls: string[] = [];
+    const allDiscoveredUrls = new Set<string>();
     const canonicalForms = new Set<string>();
 
-    // Ajouter l'URL normalisée
-    allDiscoveredUrls.add(normalizedUrl);
-    visited.add(normalizedUrl);
-
-    // Ajouter la forme canonique
-    const canonicalUrl = getCanonicalForm(normalizedUrl);
-    canonicalForms.add(canonicalUrl);
-
-    const alternateUrl = toggleSlash(normalizedUrl);
-    if (alternateUrl) {
-      allDiscoveredUrls.add(alternateUrl);
-      visited.add(alternateUrl);
-      canonicalForms.add(getCanonicalForm(alternateUrl));
+    // Normaliser l'URL de base
+    const normalizedUrl = standardizeUrl(baseUrl);
+    if (!normalizedUrl) {
+      console.error('URL de base invalide');
+      return [baseUrl];
     }
 
-    let mainPageHtml = '';
+    let mainPageHtml: string | null = null;
     try {
-      const checkResponse = await axios.get(normalizedUrl, {
+      const response = await axios.get(normalizedUrl, {
         timeout: 5000,
         maxRedirects: 3,
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
       });
-
-      if (checkResponse.status !== 200) {
-        return [normalizedUrl];
-      }
-
-      mainPageHtml = checkResponse.data;
-    } catch (initialError) {
-      console.error(`URL principale inaccessible: ${normalizedUrl}`, initialError.message);
+      mainPageHtml = response.data;
+    } catch (error) {
+      console.error(`Erreur lors de la récupération de la page principale: ${error.message}`);
       return [normalizedUrl];
     }
-
-    const queue: string[] = [];
-    const skippedUrls: string[] = [];
 
     try {
       const baseUrlObj = new URL(normalizedUrl);
@@ -1023,7 +1007,7 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       };
 
       if (mainPageHtml) {
-        const $ = cheerioLoad(mainPageHtml);
+        const $ = cheerio.load(mainPageHtml);
         const mainPageLinks = extractLinks($, normalizedUrl);
 
         mainPageLinks.forEach(link => {
@@ -1048,7 +1032,10 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
 
       const crawlPromise = new Promise<string[]>(async (resolve) => {
         let crawlCount = 0;
-        const maxCrawlAttempts = Math.min(10, maxPages);
+        const maxCrawlAttempts = Math.min(20, maxPages * 2);
+
+        // Ajouter l'URL de base à la queue
+        queue.push(normalizedUrl);
 
         while (queue.length > 0 && visited.size < maxPages && crawlCount < maxCrawlAttempts) {
           const currentUrl = queue.shift() as string;
@@ -1066,20 +1053,25 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
               maxRedirects: 3,
               headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-              },
-              validateStatus: (status) => status === 200
+              }
             });
 
             const html = response.data;
-            if (!html) continue;
+            if (!html) {
+              console.log(`Page vide pour ${currentUrl}`);
+              continue;
+            }
 
             visited.add(currentUrl);
 
-            const $ = cheerioLoad(html);
+            const $ = cheerio.load(html);
             const pageLinks = extractLinks($, currentUrl);
 
-            pageLinks.forEach(link => {
+            // Ajouter les liens à la queue
+            for (const link of pageLinks) {
               const standardizedLink = standardizeUrl(link);
+              if (!standardizedLink) continue;
+
               allDiscoveredUrls.add(standardizedLink);
 
               if (shouldKeepWithoutVisiting(standardizedLink)) {
@@ -1093,10 +1085,14 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
                 queue.push(standardizedLink);
                 canonicalForms.add(getCanonicalForm(standardizedLink));
               }
-            });
+            }
 
             console.log(`${pageLinks.length} liens trouvés sur ${currentUrl}`);
           } catch (error) {
+            if (error.response?.status === 404) {
+              console.log(`Page non trouvée (404): ${currentUrl}`);
+              continue;
+            }
             console.error(`Erreur lors de l'analyse de ${currentUrl}: ${error.message}`);
           }
         }
@@ -1424,7 +1420,7 @@ async function findContactInfo(baseUrl: string, links: string[]): Promise<Record
         const html = response.data;
         if (!html) continue;
 
-        const $ = cheerioLoad(html);
+        const $ = cheerio.load(html);
 
         if (!contactInfo.telephone) {
           $('a[href^="tel:"]').each((_, element) => {
@@ -1703,16 +1699,6 @@ function analyzeAccessibility($: CheerioSelector): {
       }
     }
   });
-
-  const ariaAttributes = [
-    'aria-activedescendant', 'aria-atomic', 'aria-autocomplete', 'aria-busy', 'aria-checked',
-    'aria-controls', 'aria-current', 'aria-describedby', 'aria-disabled', 'aria-dropeffect',
-    'aria-expanded', 'aria-flowto', 'aria-grabbed', 'aria-haspopup', 'aria-hidden',
-    'aria-invalid', 'aria-label', 'aria-labelledby', 'aria-level', 'aria-live',
-    'aria-multiline', 'aria-multiselectable', 'aria-orientation', 'aria-owns', 'aria-posinset',
-    'aria-pressed', 'aria-readonly', 'aria-relevant', 'aria-required', 'aria-selected',
-    'aria-setsize', 'aria-sort', 'aria-valuemax', 'aria-valuemin', 'aria-valuenow', 'aria-valuetext'
-  ];
 
   const ariaRoleMap = {
     'aria-checked': ['checkbox', 'radio', 'menuitemcheckbox', 'menuitemradio', 'switch'],
@@ -2758,25 +2744,16 @@ async function analyzeHosting(url: string): Promise<{ provider: string; type: st
   };
 }
 
-function analyzeLargeFiles($: CheerioSelector, baseUrl: string): Array<{
-  url: string;
-  type: string;
-  size: number;
-  impact: number;
-}> {
-  const largeFiles: Array<{
-    url: string;
-    type: string;
-    size: number;
-    impact: number;
-  }> = [];
+function analyzeLargeFiles($: CheerioSelector, baseUrl: string) {
+  const largeFiles: Array<{ url: string; type: string; size: number; impact: number }> = [];
 
-  $('img').each((_, el) => {
+  // Analyser les images
+  $('img[src]').each((_, el) => {
     const src = $(el).attr('src');
     if (src) {
-      const url = new URL(src, baseUrl).href;
+      const fullUrl = new URL(src, baseUrl).toString();
       largeFiles.push({
-        url,
+        url: fullUrl,
         type: 'image',
         size: 0,
         impact: 0
@@ -2784,12 +2761,13 @@ function analyzeLargeFiles($: CheerioSelector, baseUrl: string): Array<{
     }
   });
 
+  // Analyser les scripts
   $('script[src]').each((_, el) => {
     const src = $(el).attr('src');
     if (src) {
-      const url = new URL(src, baseUrl).href;
+      const fullUrl = new URL(src, baseUrl).toString();
       largeFiles.push({
-        url,
+        url: fullUrl,
         type: 'script',
         size: 0,
         impact: 0
@@ -2797,12 +2775,13 @@ function analyzeLargeFiles($: CheerioSelector, baseUrl: string): Array<{
     }
   });
 
-  $('link[rel="stylesheet"]').each((_, el) => {
+  // Analyser les feuilles de style
+  $('link[rel="stylesheet"][href]').each((_, el) => {
     const href = $(el).attr('href');
     if (href) {
-      const url = new URL(href, baseUrl).href;
+      const fullUrl = new URL(href, baseUrl).toString();
       largeFiles.push({
-        url,
+        url: fullUrl,
         type: 'stylesheet',
         size: 0,
         impact: 0
@@ -2873,4 +2852,101 @@ function isProtectedOrBlockedUrl(url: string): boolean {
   ];
 
   return blockedPatterns.some(pattern => pattern.test(url));
+}
+
+function calculateCLS($: CheerioAPI): number {
+  let cls = 0;
+  const viewportHeight = 800; // Estimation de la hauteur du viewport
+
+  // Détermine si un élément est probablement above the fold
+  const isAboveTheFold = (el: any): boolean => {
+    const $el = $(el);
+    // Essaie de déterminer la position approximative
+    let offsetTop = 0;
+    let parent = $el.parent();
+
+    // Remonte jusqu'à 3 niveaux pour estimer la position
+    for (let i = 0; i < 3 && parent.length; i++) {
+      const marginTop = parseInt(parent.attr('style')?.match(/margin-top:\s*(\d+)px/)?.[1] || '0', 10);
+      const paddingTop = parseInt(parent.attr('style')?.match(/padding-top:\s*(\d+)px/)?.[1] || '0', 10);
+      offsetTop += marginTop + paddingTop;
+      parent = parent.parent();
+    }
+
+    return offsetTop < viewportHeight;
+  };
+
+  // Vérification des images sans dimensions
+  $('img').each((_, el) => {
+    const $img = $(el);
+    if (!$img.attr('width') || !$img.attr('height')) {
+      // Réduire la pénalité et ne considérer que les images above the fold
+      if (isAboveTheFold(el)) {
+        // Vérifier si l'image a une petite taille basée sur la classe ou le style
+        const style = $img.attr('style') || '';
+        const hasSmallSizeClass = ($img.attr('class') || '').match(/small|icon|logo|thumbnail/i);
+        const hasLargeSizeClass = ($img.attr('class') || '').match(/large|hero|banner|cover/i);
+
+        if (hasSmallSizeClass || style.match(/width:\s*(\d+)px/) && parseInt(style.match(/width:\s*(\d+)px/)?.[1] || '100', 10) < 50) {
+          cls += 0.001; // Très petite pénalité pour les petites images
+        } else if (hasLargeSizeClass) {
+          cls += 0.01; // Pénalité plus importante pour les grandes images
+        } else {
+          cls += 0.005; // Pénalité moyenne pour les images standard
+        }
+      } else {
+        cls += 0.0005; // Pénalité minime pour les images hors écran
+      }
+    }
+  });
+
+  // Vérification des iframes sans dimensions
+  $('iframe').each((_, el) => {
+    const $iframe = $(el);
+    if (!$iframe.attr('width') || !$iframe.attr('height')) {
+      if (isAboveTheFold(el)) {
+        cls += 0.008; // Pénalité pour les iframes above the fold
+      } else {
+        cls += 0.0005; // Pénalité minime pour les iframes hors écran
+      }
+    }
+  });
+
+  // Vérification des éléments avec dimensions en pourcentage
+  $('*').each((_, el) => {
+    const $el = $(el);
+    const style = $el.attr('style') || '';
+    const position = style.match(/position:\s*(fixed|sticky|absolute)/i);
+
+    // Ignorer les éléments à position fixe ou sticky qui causent moins de CLS
+    if (!position || (position[1] !== 'fixed' && position[1] !== 'sticky')) {
+      if (isAboveTheFold(el)) {
+        if (style.includes('width:') && style.includes('%')) {
+          cls += 0.001;
+        }
+        if (style.includes('height:') && style.includes('%')) {
+          cls += 0.002; // La hauteur en % est plus problématique
+        }
+      }
+    }
+  });
+
+  // Ajout d'une pénalité pour les grands conteneurs qui pourraient causer des shifts
+  $('div, section, article, header, footer, main, aside').each((_, el) => {
+    const $el = $(el);
+    const style = $el.attr('style') || '';
+    const hasChildren = $el.children().length > 3;
+
+    if (isAboveTheFold(el) && hasChildren) {
+      // Vérifier si c'est un grand conteneur sans hauteur fixe
+      if (!style.includes('min-height') && !style.includes('height:')) {
+        cls += 0.0002; // Pénalité très réduite
+      }
+    }
+  });
+
+  // Facteur de calibration pour mieux correspondre aux scores Lighthouse
+  const calibrationFactor = 0.3; // Ajuster ce facteur en fonction des tests
+
+  return Math.min(1, Math.max(0, cls * calibrationFactor));
 }

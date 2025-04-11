@@ -29,7 +29,7 @@
           <StudioForm :initialContent="editorContent" @update:content="updateEditorContent" class="fill-height" />
         </div>
 
-        <div v-else-if="selectedComponent === 'Utils (v-date, v-color, v-alerts)' && userStore.user.isPremium"
+        <div v-else-if="selectedComponent === 'Utils (v-date, v-alerts, charts)' && userStore.user.isPremium"
           class="studio-editor">
           <StudioUtils :initialContent="editorContent" @update:content="updateEditorContent" class="fill-height" />
         </div>
@@ -173,7 +173,7 @@ useHead({
 const editorContent = ref('')
 const deleteConfirmation = ref(false)
 const templateToDelete = ref<any>(null)
-const componentsList = ref(['Card (v-card)', 'Nav (v-navigation-drawer)', 'Timeline (v-timeline)', 'Form (v-form)', 'Utils (v-date, v-color, v-alerts)'])
+const componentsList = ref(['Card (v-card)', 'Nav (v-navigation-drawer)', 'Timeline (v-timeline)', 'Form (v-form)', 'Utils (v-date, v-alerts, charts)'])
 const selectedComponent = ref('Card (v-card)')
 
 const isPremiumComponent = (component: string) => {
@@ -188,7 +188,7 @@ const getPremiumComponentTitle = (component: string) => {
       return 'Timeline Components';
     case 'Form (v-form)':
       return 'Form Builder';
-    case 'Utils (v-date, v-color, v-alerts)':
+    case 'Utils (v-date, v-alerts, charts)':
       return 'UI Utilities';
     default:
       return 'Premium Components';
@@ -260,7 +260,7 @@ const applyTemplate = (template: any) => {
       selectedComponent.value = 'Form (v-form)'
       break
     case 'utils':
-      selectedComponent.value = 'Utils (v-date, v-color, v-alerts)'
+      selectedComponent.value = 'Utils (v-date, v-alerts, charts)'
       break
   }
 
@@ -383,7 +383,7 @@ const applyTemplateWithoutUrlChange = (template: any) => {
       selectedComponent.value = 'Form (v-form)'
       break
     case 'utils':
-      selectedComponent.value = 'Utils (v-date, v-color, v-alerts)'
+      selectedComponent.value = 'Utils (v-date, v-alerts, charts)'
       break
   }
 
@@ -452,8 +452,7 @@ onMounted(async () => {
 }
 
 .studio-editor {
-  height: calc(100vh - 120px);
-  min-height: 400px;
+
   border-radius: 8px;
   overflow: hidden;
   background: var(--v-surface-variant-base);

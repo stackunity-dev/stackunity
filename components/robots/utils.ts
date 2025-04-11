@@ -239,36 +239,68 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
     '@type': schemaConfig.type
   };
 
-  const sanitizeString = (str: string | undefined): string => {
-    if (!str) return '';
-    return str
-      .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\\"')
-      .replace(/\n/g, '\\n')
-      .replace(/\r/g, '\\r')
-      .replace(/\t/g, '\\t');
+  // Fonction pour traiter les valeurs de manière appropriée
+  const processValue = (value: any): any => {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+
+    // Si c'est déjà un objet, le retourner tel quel
+    if (typeof value === 'object' && value !== null) {
+      return value;
+    }
+
+    // Si c'est une chaîne qui ressemble à du JSON, essayer de la parser
+    if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) {
+      try {
+        return JSON.parse(value);
+      } catch (e) {
+        // Si le parsing échoue, retourner la chaîne telle quelle
+        return value;
+      }
+    }
+
+    // Sinon, retourner la valeur telle quelle
+    return value;
   };
 
-  if (schemaConfig.name) schema.name = sanitizeString(schemaConfig.name);
-  if (schemaConfig.description) schema.description = sanitizeString(schemaConfig.description);
-  if (schemaConfig.url) schema.url = sanitizeString(schemaConfig.url);
+  if (schemaConfig.name) schema.name = schemaConfig.name;
+  if (schemaConfig.description) schema.description = schemaConfig.description;
+  if (schemaConfig.url) schema.url = schemaConfig.url;
   else if (fullUrl) schema.url = fullUrl;
-  if (schemaConfig.image) schema.image = sanitizeString(schemaConfig.image);
+  if (schemaConfig.image) schema.image = schemaConfig.image;
+  if (schemaConfig.telephone) schema.telephone = schemaConfig.telephone;
+  if (schemaConfig.email) schema.email = schemaConfig.email;
 
-  if (schemaConfig.telephone) schema.telephone = sanitizeString(schemaConfig.telephone);
-  if (schemaConfig.email) schema.email = sanitizeString(schemaConfig.email);
-
+  // Traiter l'adresse
   if (schemaConfig.address || schemaConfig.city || schemaConfig.region) {
-    schema.address = {
-      '@type': 'PostalAddress',
-      'streetAddress': sanitizeString(schemaConfig.address) || '',
-      'addressLocality': sanitizeString(schemaConfig.city) || '',
-      'addressRegion': sanitizeString(schemaConfig.region) || '',
-      'postalCode': sanitizeString(schemaConfig.postalCode) || '',
-      'addressCountry': sanitizeString(schemaConfig.country) || 'FR'
-    };
+    // Vérifier si address est déjà un objet JSON
+    if (typeof schemaConfig.address === 'string' && schemaConfig.address.startsWith('{')) {
+      try {
+        schema.address = JSON.parse(schemaConfig.address);
+      } catch (e) {
+        schema.address = {
+          '@type': 'PostalAddress',
+          'streetAddress': schemaConfig.address || '',
+          'addressLocality': schemaConfig.city || '',
+          'addressRegion': schemaConfig.region || '',
+          'postalCode': schemaConfig.postalCode || '',
+          'addressCountry': schemaConfig.country || 'FR'
+        };
+      }
+    } else {
+      schema.address = {
+        '@type': 'PostalAddress',
+        'streetAddress': schemaConfig.address || '',
+        'addressLocality': schemaConfig.city || '',
+        'addressRegion': schemaConfig.region || '',
+        'postalCode': schemaConfig.postalCode || '',
+        'addressCountry': schemaConfig.country || 'FR'
+      };
+    }
   }
 
+  // Traiter les coordonnées géographiques
   if (schemaConfig.latitude && schemaConfig.longitude) {
     schema.geo = {
       '@type': 'GeoCoordinates',
@@ -282,27 +314,55 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
     case 'Organization':
       // Logo optimisé pour le SEO
       if (schemaConfig.logo) {
-        schema.logo = {
-          '@type': 'ImageObject',
-          'url': schemaConfig.logo,
-          'width': '512',
-          'height': '512'
-        };
+        // Vérifier si logo est déjà un objet JSON
+        if (typeof schemaConfig.logo === 'object' && schemaConfig.logo !== null) {
+          schema.logo = schemaConfig.logo;
+        } else if (typeof schemaConfig.logo === 'string' && schemaConfig.logo.startsWith('{')) {
+          try {
+            schema.logo = JSON.parse(schemaConfig.logo);
+          } catch (e) {
+            schema.logo = {
+              '@type': 'ImageObject',
+              'url': schemaConfig.logo,
+              'width': '512',
+              'height': '512'
+            };
+          }
+        } else {
+          schema.logo = {
+            '@type': 'ImageObject',
+            'url': schemaConfig.logo,
+            'width': '512',
+            'height': '512'
+          };
+        }
       }
 
       // Profils sociaux
-      if (schemaConfig.socialProfiles && schemaConfig.socialProfiles.length) {
-        schema.sameAs = schemaConfig.socialProfiles;
+      if (schemaConfig.socialProfiles) {
+        if (typeof schemaConfig.socialProfiles === 'string') {
+          try {
+            schema.sameAs = JSON.parse(schemaConfig.socialProfiles);
+          } catch (e) {
+            // Si la chaîne n'est pas un JSON valide, l'ignorer
+          }
+        } else if (Array.isArray(schemaConfig.socialProfiles) && schemaConfig.socialProfiles.length) {
+          schema.sameAs = schemaConfig.socialProfiles;
+        }
       }
 
       // Informations légales et commerciales
       if (schemaConfig.foundingDate) schema.foundingDate = schemaConfig.foundingDate;
       if (schemaConfig.legalName) schema.legalName = schemaConfig.legalName;
       if (schemaConfig.numberOfEmployees) {
-        schema.numberOfEmployees = {
-          '@type': 'QuantitativeValue',
-          'value': schemaConfig.numberOfEmployees
-        };
+        if (typeof schemaConfig.numberOfEmployees === 'object') {
+          schema.numberOfEmployees = schemaConfig.numberOfEmployees;
+        } else {
+          schema.numberOfEmployees = {
+            '@type': 'QuantitativeValue',
+            'value': schemaConfig.numberOfEmployees
+          };
+        }
       }
 
       // Action potentielle (contact)
@@ -580,7 +640,7 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
     return JSON.stringify({
       '@context': 'https://schema.org',
       '@type': schemaConfig.type,
-      'name': sanitizeString(schemaConfig.name) || 'Website',
+      'name': processValue(schemaConfig.name) || 'Website',
       'url': fullUrl
     }, null, 2);
   }

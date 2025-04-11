@@ -312,7 +312,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'StackUnity - Create, manage and optimize your web projects with ease.',
+  title: 'StackUnity - Create, manage and optimize your web projects.',
   meta: [
     { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
     { name: 'keywords', content: 'development hub, collaborative development platform, integrated development tools' },

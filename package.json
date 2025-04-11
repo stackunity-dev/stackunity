@@ -60,6 +60,7 @@
     "jose": "^6.0.10",
     "jsdom": "^26.0.0",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^3.0.1",
     "jwt-decode": "^4.0.0",
     "monaco-editor": "^0.52.2",
     "monaco-editor-vue3": "^0.1.10",

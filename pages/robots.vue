@@ -78,6 +78,20 @@
                           Path Management
                         </div>
 
+                        <!-- Templates prédéfinis -->
+                        <v-select v-model="selectedRobotsTemplate" :items="robotsTemplates" item-title="name"
+                          item-value="value" label="Templates prédéfinis" variant="outlined" density="comfortable"
+                          class="mb-4" @update:model-value="applyRobotsTemplate">
+                          <template v-slot:item="{ props, item }">
+                            <v-list-item v-bind="props">
+                              <template v-slot:prepend>
+                                <v-icon :color="item.raw.color">{{ item.raw.icon }}</v-icon>
+                              </template>
+                              <v-list-item-subtitle>{{ item.raw.description }}</v-list-item-subtitle>
+                            </v-list-item>
+                          </template>
+                        </v-select>
+
                         <v-expansion-panels variant="accordion" class="mb-4 rounded-lg">
                           <v-expansion-panel>
                             <v-expansion-panel-title class="rounded-t-lg">
@@ -151,6 +165,26 @@
 
                   <v-window-item value="schema">
                     <SchemaConfigComponent :schema-config="schemaConfig" />
+
+                    <v-card variant="outlined" class="pa-4 mb-4 rounded-lg">
+                      <div class="text-subtitle-1 font-weight-bold mb-3 d-flex align-center">
+                        <v-icon color="primary" class="mr-2">mdi-code-json</v-icon>
+                        Templates Schema.org
+                      </div>
+
+                      <v-select v-model="selectedSchemaTemplate" :items="schemaTemplates" item-title="name"
+                        item-value="value" label="predefined templates" variant="outlined" density="comfortable"
+                        class="mb-4" @update:model-value="applySchemaTemplate">
+                        <template v-slot:item="{ props, item }">
+                          <v-list-item v-bind="props">
+                            <template v-slot:prepend>
+                              <v-icon :color="item.raw.color">{{ item.raw.icon }}</v-icon>
+                            </template>
+                            <v-list-item-subtitle>{{ item.raw.description }}</v-list-item-subtitle>
+                          </v-list-item>
+                        </template>
+                      </v-select>
+                    </v-card>
                   </v-window-item>
                 </v-window>
 
@@ -217,7 +251,9 @@ useHead({
   ]
 });
 
-if (process.client) {
+const isClient = process.env.CLIENT;
+
+if (isClient) {
   window.addEventListener('error', (event) => {
     if (event.target && (event.target as HTMLElement).tagName === 'SCRIPT') {
       const src = (event.target as HTMLScriptElement).src || '';
@@ -374,7 +410,7 @@ const fillDefaultConfigs = () => {
     }
 
     if (!schemaConfig.value.description) {
-      schemaConfig.value.description = `Site officiel de ${domain}`;
+      schemaConfig.value.description = `Official site of ${domain}`;
     }
 
     if (!schemaConfig.value.url) {
@@ -572,7 +608,7 @@ const generatePreviewContent = () => {
     }
   } catch (e) {
     console.error('Erreur lors de la génération de contenu:', e);
-    error.value = e.message || 'Une erreur est survenue lors de la génération du contenu.';
+    error.value = e.message || 'An error occurred while generating content.';
   }
 };
 
@@ -591,6 +627,248 @@ const getSchemaIcon = () => {
 };
 
 const robotsPreviewLines = ref<RobotsPreviewLine[]>([]);
+
+const robotsTemplates = ref([
+  {
+    name: 'WordPress',
+    description: 'Optimal configuration for WordPress sites',
+    icon: 'mdi-wordpress',
+    color: 'blue',
+    config: {
+      userAgent: '*',
+      customUserAgent: '',
+      crawlDelay: '10',
+      sitemapUrl: '/sitemap.xml',
+      contact: 'webmaster@example.com'
+    },
+    rules: [
+      { path: '/wp-admin/', type: 'disallow', severity: 'high', category: 'admin', description: 'Protège la zone d\'administration' },
+      { path: '/wp-includes/', type: 'disallow', severity: 'medium', category: 'system', description: 'Protège les fichiers système' },
+      { path: '/wp-content/plugins/', type: 'disallow', severity: 'medium', category: 'plugins', description: 'Protège les plugins' },
+      { path: '/wp-content/themes/', type: 'disallow', severity: 'low', category: 'themes', description: 'Protège les thèmes' },
+      { path: '/xmlrpc.php', type: 'disallow', severity: 'high', category: 'security', description: 'Protège contre les attaques XML-RPC' },
+      { path: '/wp-login.php', type: 'disallow', severity: 'high', category: 'auth', description: 'Protège la page de connexion' },
+      { path: '/wp-register.php', type: 'disallow', severity: 'high', category: 'auth', description: 'Protège la page d\'inscription' },
+      { path: '/wp-cron.php', type: 'disallow', severity: 'medium', category: 'system', description: 'Protège le cron WordPress' },
+      { path: '/wp-trackback.php', type: 'disallow', severity: 'medium', category: 'system', description: 'Protège le trackback' },
+      { path: '/wp-comments-post.php', type: 'disallow', severity: 'medium', category: 'comments', description: 'Protège la soumission des commentaires' },
+      { path: '/wp-json/', type: 'disallow', severity: 'medium', category: 'api', description: 'Protège l\'API REST' },
+      { path: '/wp-content/uploads/', type: 'allow', severity: 'low', category: 'media', description: 'Autorise l\'accès aux médias' },
+      { path: '/wp-content/cache/', type: 'disallow', severity: 'medium', category: 'cache', description: 'Protège le cache' }
+    ]
+  },
+  {
+    name: 'E-commerce',
+    description: 'Optimal configuration for e-commerce sites',
+    icon: 'mdi-cart',
+    color: 'green',
+    config: {
+      userAgent: '*',
+      customUserAgent: '',
+      crawlDelay: '5',
+      sitemapUrl: '/sitemap.xml',
+      contact: 'webmaster@example.com'
+    },
+    rules: [
+      { path: '/admin/', type: 'disallow', severity: 'high', category: 'admin', description: 'Protège la zone d\'administration' },
+      { path: '/checkout/', type: 'disallow', severity: 'medium', category: 'checkout', description: 'Protège le processus de paiement' },
+      { path: '/cart/', type: 'disallow', severity: 'low', category: 'cart', description: 'Protège le panier' },
+      { path: '/account/', type: 'disallow', severity: 'high', category: 'user', description: 'Protège les comptes utilisateurs' },
+      { path: '/wishlist/', type: 'disallow', severity: 'low', category: 'user', description: 'Protège les listes de souhaits' },
+      { path: '/compare/', type: 'disallow', severity: 'low', category: 'user', description: 'Protège la comparaison de produits' },
+      { path: '/search/', type: 'allow', severity: 'low', category: 'search', description: 'Autorise l\'accès à la recherche' },
+      { path: '/catalog/', type: 'allow', severity: 'low', category: 'catalog', description: 'Autorise l\'accès au catalogue' },
+      { path: '/product/', type: 'allow', severity: 'low', category: 'products', description: 'Autorise l\'accès aux produits' },
+      { path: '/category/', type: 'allow', severity: 'low', category: 'categories', description: 'Autorise l\'accès aux catégories' },
+      { path: '/api/', type: 'disallow', severity: 'high', category: 'api', description: 'Protège l\'API' },
+      { path: '/media/', type: 'allow', severity: 'low', category: 'media', description: 'Autorise l\'accès aux médias' },
+      { path: '/static/', type: 'allow', severity: 'low', category: 'static', description: 'Autorise l\'accès aux fichiers statiques' }
+    ]
+  },
+  {
+    name: 'Blog',
+    description: 'Optimal configuration for blogs',
+    icon: 'mdi-post',
+    color: 'purple',
+    config: {
+      userAgent: '*',
+      customUserAgent: '',
+      crawlDelay: '3',
+      sitemapUrl: '/sitemap.xml',
+      contact: 'webmaster@example.com'
+    },
+    rules: [
+      { path: '/admin/', type: 'disallow', severity: 'high', category: 'admin', description: 'Protège la zone d\'administration' },
+      { path: '/login/', type: 'disallow', severity: 'high', category: 'auth', description: 'Protège la page de connexion' },
+      { path: '/register/', type: 'disallow', severity: 'high', category: 'auth', description: 'Protège la page d\'inscription' },
+      { path: '/search/', type: 'allow', severity: 'low', category: 'search', description: 'Autorise l\'accès à la recherche' },
+      { path: '/tag/', type: 'allow', severity: 'low', category: 'tags', description: 'Autorise l\'accès aux tags' },
+      { path: '/category/', type: 'allow', severity: 'low', category: 'categories', description: 'Autorise l\'accès aux catégories' },
+      { path: '/author/', type: 'allow', severity: 'low', category: 'authors', description: 'Autorise l\'accès aux auteurs' },
+      { path: '/feed/', type: 'allow', severity: 'low', category: 'feeds', description: 'Autorise l\'accès aux flux RSS' },
+      { path: '/comments/', type: 'disallow', severity: 'medium', category: 'comments', description: 'Protège les commentaires' },
+      { path: '/api/', type: 'disallow', severity: 'high', category: 'api', description: 'Protège l\'API' },
+      { path: '/media/', type: 'allow', severity: 'low', category: 'media', description: 'Autorise l\'accès aux médias' },
+      { path: '/static/', type: 'allow', severity: 'low', category: 'static', description: 'Autorise l\'accès aux fichiers statiques' }
+    ]
+  }
+]);
+
+const schemaTemplates = ref([
+  {
+    name: 'Article',
+    description: 'Structure for blog articles',
+    icon: 'mdi-newspaper',
+    color: 'orange',
+    type: {
+      type: 'Article',
+      description: 'Structure for blog articles',
+      properties: [
+        { name: 'headline', value: 'Titre de l\'article', required: true, description: 'Titre de l\'article' },
+        { name: 'author', value: 'Nom de l\'auteur', required: true, description: 'Auteur de l\'article' },
+        { name: 'datePublished', value: new Date().toISOString(), required: true, description: 'Date de publication' },
+        { name: 'dateModified', value: new Date().toISOString(), required: false, description: 'Date de modification' },
+        { name: 'image', value: 'https://example.com/image.jpg', required: false, description: 'Image principale' },
+        { name: 'description', value: 'Description de l\'article', required: true, description: 'Description de l\'article' },
+        { name: 'articleBody', value: 'Contenu de l\'article', required: true, description: 'Contenu de l\'article' },
+        { name: 'publisher', value: 'Nom de l\'éditeur', required: true, description: 'Éditeur de l\'article' },
+        { name: 'keywords', value: 'mot-clé1, mot-clé2, mot-clé3', required: false, description: 'Mots-clés de l\'article' },
+        { name: 'articleSection', value: 'Catégorie', required: false, description: 'Section de l\'article' },
+        { name: 'inLanguage', value: 'fr', required: false, description: 'Langue de l\'article' }
+      ]
+    }
+  },
+  {
+    name: 'Product',
+    description: 'Structure for e-commerce products',
+    icon: 'mdi-package-variant',
+    color: 'green',
+    type: {
+      type: 'Product',
+      description: 'Structure for e-commerce products',
+      properties: [
+        { name: 'name', value: 'Product name', required: true, description: 'Product name' },
+        { name: 'description', value: 'Product description', required: true, description: 'Product description' },
+        { name: 'image', value: 'https://example.com/product.jpg', required: true, description: 'Product image' },
+        { name: 'offers', value: '{"@type": "Offer", "price": "0.00", "priceCurrency": "EUR", "availability": "https://schema.org/InStock"}', required: true, description: 'Price and availability' },
+        { name: 'brand', value: 'Brand', required: false, description: 'Product brand' },
+        { name: 'sku', value: 'SKU123', required: false, description: 'Product reference' },
+        { name: 'gtin', value: '123456789012', required: false, description: 'Product GTIN' },
+        { name: 'mpn', value: 'MPN123', required: false, description: 'Product manufacturer part number' },
+        { name: 'color', value: 'Black', required: false, description: 'Product color' },
+        { name: 'material', value: 'Cotton', required: false, description: 'Product material' },
+        { name: 'weight', value: '1.5 kg', required: false, description: 'Product weight' },
+        { name: 'category', value: 'Category', required: false, description: 'Product category' },
+        { name: 'aggregateRating', value: '{"@type": "AggregateRating", "ratingValue": "4.5", "reviewCount": "100"}', required: false, description: 'Product average rating' }
+      ]
+    }
+  },
+  {
+    name: 'Organization',
+    description: 'Structure for organizations',
+    icon: 'mdi-office-building',
+    color: 'blue',
+    type: {
+      type: 'Organization',
+      description: 'Structure for organizations',
+      properties: [
+        { name: 'name', value: 'Organization name', required: true, description: 'Organization name' },
+        { name: 'description', value: 'Organization description', required: true, description: 'Organization description' },
+        { name: 'url', value: 'https://example.com', required: true, description: 'Website URL' },
+        { name: 'logo', value: { '@type': 'ImageObject', url: 'https://example.com/logo.png' }, required: true, description: 'Organization logo' },
+        { name: 'image', value: 'https://example.com/image.jpg', required: false, description: 'Organization image' },
+        { name: 'telephone', value: '+33 1 23 45 67 89', required: false, description: 'Phone number' },
+        { name: 'email', value: 'contact@example.com', required: false, description: 'Email address' },
+        { name: 'address', value: { '@type': 'PostalAddress', streetAddress: '123 rue Example', addressLocality: 'Paris', postalCode: '75000', addressCountry: 'FR' }, required: false, description: 'Postal address' },
+        { name: 'foundingDate', value: '2020-01-01', required: false, description: 'Creation date' },
+        { name: 'legalName', value: 'Legal organization name', required: false, description: 'Legal organization name' },
+        { name: 'numberOfEmployees', value: '50', required: false, description: 'Number of employees' },
+        { name: 'socialProfiles', value: '["https://facebook.com/example", "https://twitter.com/example"]', required: false, description: 'Profils sociaux' }
+      ]
+    }
+  },
+  {
+    name: 'LocalBusiness',
+    description: 'Structure for local business',
+    icon: 'mdi-store',
+    color: 'cyan',
+    type: {
+      type: 'LocalBusiness',
+      description: 'Structure pour les entreprises locales',
+      properties: [
+        { name: 'name', value: 'Business name', required: true, description: 'Business name' },
+        { name: 'description', value: 'Business description', required: true, description: 'Business description' },
+        { name: 'url', value: 'https://example.com', required: true, description: 'Website URL' },
+        { name: 'logo', value: 'https://example.com/logo.png', required: true, description: 'Business logo' },
+        { name: 'image', value: 'https://example.com/image.jpg', required: false, description: 'Business image' },
+        { name: 'telephone', value: '+33 1 23 45 67 89', required: true, description: 'Phone number' },
+        { name: 'email', value: 'contact@example.com', required: false, description: 'Email address' },
+        { name: 'address', value: { '@type': 'PostalAddress', streetAddress: '123 rue Example', addressLocality: 'Paris', postalCode: '75000', addressCountry: 'FR' }, required: true, description: 'Postal address' },
+        { name: 'openingHours', value: 'Mo-Fr 09:00-18:00', required: false, description: 'Opening hours' },
+        { name: 'priceRange', value: '€€', required: false, description: 'Price range' },
+        { name: 'areaServed', value: 'Paris and region parisienne', required: false, description: 'Served area' },
+        { name: 'hasMap', value: 'https://maps.google.com/?q=48.8566,2.3522', required: false, description: 'Link to the map' },
+        { name: 'geo', value: '{"@type": "GeoCoordinates", "latitude": 48.8566, "longitude": 2.3522}', required: false, description: 'Geographic coordinates' }
+      ]
+    }
+  }
+]);
+
+const selectedRobotsTemplate = ref(null);
+const selectedSchemaTemplate = ref(null);
+
+const applyRobotsTemplate = async () => {
+  if (selectedRobotsTemplate.value) {
+    try {
+      const template = robotsTemplates.value.find(t => t.name === selectedRobotsTemplate.value);
+      if (template) {
+        robotsConfig.value = {
+          userAgent: template.config.userAgent,
+          customUserAgent: template.config.customUserAgent,
+          crawlDelay: template.config.crawlDelay,
+          sitemapUrl: template.config.sitemapUrl,
+          contact: template.config.contact,
+          disallowedPaths: [],
+          allowedPaths: []
+        };
+
+        template.rules.forEach(rule => {
+          if (rule.type === 'disallow') {
+            robotsConfig.value.disallowedPaths.push(rule.path);
+          } else if (rule.type === 'allow') {
+            robotsConfig.value.allowedPaths.push(rule.path);
+          }
+        });
+
+        generatePreviewContent();
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'application du template:', error);
+    }
+  }
+};
+
+const applySchemaTemplate = async () => {
+  if (selectedSchemaTemplate.value) {
+    try {
+      const template = schemaTemplates.value.find(t => t.name === selectedSchemaTemplate.value);
+      if (template) {
+        schemaConfig.value = {
+          ...schemaConfig.value,
+          type: template.type.type
+        };
+
+        template.type.properties.forEach(prop => {
+          schemaConfig.value[prop.name] = prop.value;
+        });
+
+        generatePreviewContent();
+      }
+    } catch (error) {
+      console.error('Error applying template:', error);
+    }
+  }
+};
 </script>
 
 <style scoped></style>

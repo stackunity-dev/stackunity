@@ -1279,7 +1279,6 @@ export const useUserStore = defineStore('user', {
               }
 
               const data = await response.json();
-              console.log("data", data);
               return {
                 url: pageUrl,
                 data
@@ -1290,8 +1289,6 @@ export const useUserStore = defineStore('user', {
             }
           })
         );
-
-        console.log("allResults", allResults);
 
         const validResults = allResults.filter(result => result !== null);
         const mergedData = {
@@ -1383,7 +1380,6 @@ export const useUserStore = defineStore('user', {
 
         const formattedData = this.formatAnalyzerResponse(mergedData, url);
         this.seoData = formattedData;
-        console.log("formattedData", formattedData);
         return formattedData;
 
       } catch (error: any) {
