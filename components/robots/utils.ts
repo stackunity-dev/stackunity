@@ -1,30 +1,4 @@
-import type { WebsiteAnalysisResult } from '../../server/api/analyzer-types';
 import { RobotsConfig, SchemaConfig, SiteConfig } from './types';
-
-// Utilisation de types partiels au lieu d'héritage pour éviter les erreurs
-type ExtendedSEOResult = Partial<WebsiteAnalysisResult> & {
-  structuredData?: any[];
-  robotsMeta?: Partial<{
-    index: boolean;
-    follow: boolean;
-    noindex: boolean;
-    nofollow: boolean;
-    noarchive: boolean;
-    nosnippet: boolean;
-    noodp: boolean;
-  }>;
-  schemaOrg?: {
-    suggestions: Array<{
-      type: string;
-      properties: Record<string, any>;
-      template: string;
-    }>;
-  };
-};
-
-type ExtendedCrawlReport = Partial<WebsiteAnalysisResult> & {
-  seoResults?: Record<string, ExtendedSEOResult>;
-};
 
 export function fillConfigsFromAudit(
   report: any,
@@ -33,66 +7,49 @@ export function fillConfigsFromAudit(
   robotsConfig: RobotsConfig
 ): { siteConfig: SiteConfig; schemaConfig: SchemaConfig; robotsConfig: RobotsConfig } {
 
-  // Cloner les configs pour éviter la modification directe
   const newSiteConfig = { ...siteConfig };
   const newSchemaConfig = { ...schemaConfig };
   const newRobotsConfig = { ...robotsConfig };
 
   try {
     if (!report || !report.seoResults) {
-      console.log('Rapport invalide ou vide');
       return { siteConfig: newSiteConfig, schemaConfig: newSchemaConfig, robotsConfig: newRobotsConfig };
     }
 
-    // Trouver la page principale dans les résultats (généralement la première)
     const urls = Object.keys(report.seoResults);
     if (urls.length === 0) {
-      console.log('Aucune URL analysée dans le rapport');
       return { siteConfig: newSiteConfig, schemaConfig: newSchemaConfig, robotsConfig: newRobotsConfig };
     }
 
-    // Utiliser uniquement la page principale comme source de données
     const mainUrl = urls[0];
     const mainPageData = report.seoResults[mainUrl];
-    console.log('Analyse des données de la page principale:', mainUrl);
 
     if (!mainPageData) {
-      console.log('Données non trouvées pour', mainUrl);
       return { siteConfig: newSiteConfig, schemaConfig: newSchemaConfig, robotsConfig: newRobotsConfig };
     }
 
-    // Récupérer les données de sitemap et robots.txt de la page principale uniquement
     if (mainPageData.technicalSEO) {
-      console.log('Données techniques SEO trouvées pour', mainUrl);
 
-      // Sitemap
       if (mainPageData.technicalSEO.sitemapFound && mainPageData.technicalSEO.sitemapUrl) {
         try {
           const sitemapUrl = new URL(mainPageData.technicalSEO.sitemapUrl);
           newRobotsConfig.sitemapUrl = sitemapUrl.pathname;
-          console.log('Sitemap trouvé:', newRobotsConfig.sitemapUrl);
         } catch (e) {
-          console.error('Erreur lors du parsing de l\'URL du sitemap:', e);
-          // Utiliser le chemin par défaut
           newRobotsConfig.sitemapUrl = '/sitemap.xml';
         }
       }
 
-      // Robots.txt
       if (mainPageData.technicalSEO.robotsTxtFound && mainPageData.technicalSEO.robotsTxtContent) {
-        console.log('Robots.txt trouvé pour', mainUrl);
         const robotsContent = mainPageData.technicalSEO.robotsTxtContent;
 
-        // Extraire les chemins Disallow
         const disallowMatches = robotsContent.match(/Disallow:\s*([^\n]+)/g);
         if (disallowMatches) {
           const disallowedPaths = disallowMatches.map(line => {
             const path = line.replace(/Disallow:\s*/, '').trim();
             return path;
-          }).filter(Boolean); // Filtrer les valeurs vides
+          }).filter(Boolean);
 
           if (disallowedPaths.length > 0) {
-            // Fusionner avec les chemins existants et supprimer les doublons
             newRobotsConfig.disallowedPaths = [...new Set([
               ...newRobotsConfig.disallowedPaths,
               ...disallowedPaths
@@ -100,16 +57,14 @@ export function fillConfigsFromAudit(
           }
         }
 
-        // Extraire les chemins Allow
         const allowMatches = robotsContent.match(/Allow:\s*([^\n]+)/g);
         if (allowMatches) {
           const allowedPaths = allowMatches.map(line => {
             const path = line.replace(/Allow:\s*/, '').trim();
             return path;
-          }).filter(Boolean); // Filtrer les valeurs vides
+          }).filter(Boolean);
 
           if (allowedPaths.length > 0) {
-            // Fusionner avec les chemins existants et supprimer les doublons
             newRobotsConfig.allowedPaths = [...new Set([
               ...newRobotsConfig.allowedPaths,
               ...allowedPaths
@@ -119,13 +74,9 @@ export function fillConfigsFromAudit(
       }
     }
 
-    // Configuration du Schema.org
     if (mainPageData.seo) {
-      // Titre du site
       if (mainPageData.seo.title && !newSchemaConfig.name) {
-        // Extraire un nom raisonnable du titre
         const title = mainPageData.seo.title;
-        // Si le titre contient un séparateur, prendre la première partie
         const separators = ['-', '|', ':', '•', '·', '—'];
         let name = title;
 
@@ -140,17 +91,14 @@ export function fillConfigsFromAudit(
         newSchemaConfig.name = name;
       }
 
-      // Description
       if (mainPageData.seo.description && !newSchemaConfig.description) {
         newSchemaConfig.description = mainPageData.seo.description;
       }
 
-      // URL
       if (!newSchemaConfig.url) {
         newSchemaConfig.url = mainUrl;
       }
 
-      // Extraire des données pour Schema.org si disponibles
       if (mainPageData.schemaOrg && mainPageData.schemaOrg.contactInfo) {
         const contactInfo = mainPageData.schemaOrg.contactInfo;
 
@@ -174,7 +122,7 @@ export function fillConfigsFromAudit(
       robotsConfig: newRobotsConfig
     };
   } catch (error) {
-    console.error('Erreur lors du remplissage des configurations à partir de l\'audit:', error);
+    console.error('Error filling configs from audit:', error);
     return {
       siteConfig: siteConfig,
       schemaConfig: schemaConfig,
@@ -183,9 +131,6 @@ export function fillConfigsFromAudit(
   }
 }
 
-/**
- * Génère le contenu du fichier robots.txt
- */
 export const generateRobotsContent = (siteConfig: SiteConfig, robotsConfig: RobotsConfig): string => {
   let content = `User-agent: ${robotsConfig.userAgent !== 'All robots' ?
     (robotsConfig.userAgent === 'Custom' ? robotsConfig.customUserAgent :
@@ -197,70 +142,56 @@ export const generateRobotsContent = (siteConfig: SiteConfig, robotsConfig: Robo
       }[robotsConfig.userAgent] || "*")
     : "*"}\n`;
 
-  // Crawl-Delay
   if (robotsConfig.crawlDelay) {
     content += `Crawl-delay: ${robotsConfig.crawlDelay}\n`;
   }
 
-  // Chemins autorisés
   if (robotsConfig.allowedPaths && robotsConfig.allowedPaths.length > 0) {
     robotsConfig.allowedPaths.forEach(path => {
       content += `Allow: ${path}\n`;
     });
   }
 
-  // Chemins non autorisés
   if (robotsConfig.disallowedPaths && robotsConfig.disallowedPaths.length > 0) {
     robotsConfig.disallowedPaths.forEach(path => {
       content += `Disallow: ${path}\n`;
     });
   }
 
-  // Sitemap
   if (robotsConfig.sitemapUrl) {
     content += `\nSitemap: ${siteConfig.protocol}://${siteConfig.domain}${robotsConfig.sitemapUrl.startsWith('/') ? robotsConfig.sitemapUrl : '/' + robotsConfig.sitemapUrl}\n`;
   }
 
-  // Host (pour Yandex)
   content += `\nHost: ${siteConfig.protocol}://${siteConfig.domain}\n`;
 
   return content;
 };
 
-/**
- * Génère le contenu JSON-LD pour schema.org
- */
 export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: SchemaConfig): string => {
   const fullUrl = `${siteConfig.protocol}://${siteConfig.domain}`;
 
-  // Structure de base du schéma
   const schema: any = {
     '@context': 'https://schema.org',
     '@type': schemaConfig.type
   };
 
-  // Fonction pour traiter les valeurs de manière appropriée
   const processValue = (value: any): any => {
     if (value === null || value === undefined || value === '') {
       return '';
     }
 
-    // Si c'est déjà un objet, le retourner tel quel
     if (typeof value === 'object' && value !== null) {
       return value;
     }
 
-    // Si c'est une chaîne qui ressemble à du JSON, essayer de la parser
     if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) {
       try {
         return JSON.parse(value);
       } catch (e) {
-        // Si le parsing échoue, retourner la chaîne telle quelle
         return value;
       }
     }
 
-    // Sinon, retourner la valeur telle quelle
     return value;
   };
 
@@ -272,9 +203,7 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
   if (schemaConfig.telephone) schema.telephone = schemaConfig.telephone;
   if (schemaConfig.email) schema.email = schemaConfig.email;
 
-  // Traiter l'adresse
   if (schemaConfig.address || schemaConfig.city || schemaConfig.region) {
-    // Vérifier si address est déjà un objet JSON
     if (typeof schemaConfig.address === 'string' && schemaConfig.address.startsWith('{')) {
       try {
         schema.address = JSON.parse(schemaConfig.address);
@@ -300,7 +229,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
     }
   }
 
-  // Traiter les coordonnées géographiques
   if (schemaConfig.latitude && schemaConfig.longitude) {
     schema.geo = {
       '@type': 'GeoCoordinates',
@@ -309,12 +237,9 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
     };
   }
 
-  // Propriétés spécifiques par type avec structure enrichie
   switch (schemaConfig.type) {
     case 'Organization':
-      // Logo optimisé pour le SEO
       if (schemaConfig.logo) {
-        // Vérifier si logo est déjà un objet JSON
         if (typeof schemaConfig.logo === 'object' && schemaConfig.logo !== null) {
           schema.logo = schemaConfig.logo;
         } else if (typeof schemaConfig.logo === 'string' && schemaConfig.logo.startsWith('{')) {
@@ -338,20 +263,17 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         }
       }
 
-      // Profils sociaux
       if (schemaConfig.socialProfiles) {
         if (typeof schemaConfig.socialProfiles === 'string') {
           try {
             schema.sameAs = JSON.parse(schemaConfig.socialProfiles);
           } catch (e) {
-            // Si la chaîne n'est pas un JSON valide, l'ignorer
           }
         } else if (Array.isArray(schemaConfig.socialProfiles) && schemaConfig.socialProfiles.length) {
           schema.sameAs = schemaConfig.socialProfiles;
         }
       }
 
-      // Informations légales et commerciales
       if (schemaConfig.foundingDate) schema.foundingDate = schemaConfig.foundingDate;
       if (schemaConfig.legalName) schema.legalName = schemaConfig.legalName;
       if (schemaConfig.numberOfEmployees) {
@@ -365,7 +287,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         }
       }
 
-      // Action potentielle (contact)
       if (schemaConfig.potentialAction || schemaConfig.email) {
         schema.potentialAction = {
           '@type': 'ContactAction',
@@ -374,7 +295,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         };
       }
 
-      // Horaires d'ouverture
       if (schemaConfig.openingHours) {
         schema.openingHoursSpecification = {
           '@type': 'OpeningHoursSpecification',
@@ -387,7 +307,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
       break;
 
     case 'LocalBusiness':
-      // Toutes les propriétés d'Organization
       if (schemaConfig.logo) {
         schema.logo = {
           '@type': 'ImageObject',
@@ -401,7 +320,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         schema.sameAs = schemaConfig.socialProfiles;
       }
 
-      // Propriétés spécifiques aux entreprises locales
       if (schemaConfig.openingHours) {
         schema.openingHoursSpecification = {
           '@type': 'OpeningHoursSpecification',
@@ -415,11 +333,9 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
       if (schemaConfig.areaServed) schema.areaServed = schemaConfig.areaServed;
       if (schemaConfig.hasMap) schema.hasMap = schemaConfig.hasMap;
 
-      // Services additionnels
       if (schemaConfig.deliveryAvailable) schema.hasDeliveryMethod = "http://schema.org/DeliveryModeOwnFleet";
       if (schemaConfig.acceptsReservations) schema.acceptsReservations = "True";
 
-      // Avis et évaluations
       if (schemaConfig.ratingValue && schemaConfig.ratingCount) {
         schema.aggregateRating = {
           '@type': 'AggregateRating',
@@ -448,12 +364,10 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         };
       }
 
-      // Compétences et connaissances
       if (schemaConfig.knowsAbout && schemaConfig.knowsAbout.length) {
         schema.knowsAbout = schemaConfig.knowsAbout;
       }
 
-      // Nationalité
       if (schemaConfig.nationality) {
         schema.nationality = {
           '@type': 'Country',
@@ -461,7 +375,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         };
       }
 
-      // Profils sociaux
       if (schemaConfig.socialProfiles && schemaConfig.socialProfiles.length) {
         schema.sameAs = schemaConfig.socialProfiles;
       }
@@ -488,7 +401,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         };
       }
 
-      // Offre de prix
       if (schemaConfig.price || schemaConfig.availability) {
         schema.offers = {
           '@type': 'Offer',
@@ -499,7 +411,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         };
       }
 
-      // Avis et évaluations
       if (schemaConfig.ratingValue && schemaConfig.reviewCount) {
         schema.aggregateRating = {
           '@type': 'AggregateRating',
@@ -534,11 +445,9 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
       if (schemaConfig.articleSection) schema.articleSection = schemaConfig.articleSection;
       if (schemaConfig.articleBody) schema.articleBody = schemaConfig.articleBody;
 
-      // Langue et copyright
       if (schemaConfig.inLanguage) schema.inLanguage = schemaConfig.inLanguage;
       if (schemaConfig.copyrightYear) schema.copyrightYear = schemaConfig.copyrightYear;
 
-      // Emplacement de l'image principale
       if (schemaConfig.image) {
         schema.image = {
           '@type': 'ImageObject',
@@ -559,7 +468,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
           'address': schema.address
         };
 
-        // Ajout des coordonnées géographiques si disponibles
         if (schema.geo) {
           schema.location.geo = schema.geo;
           delete schema.geo;
@@ -579,7 +487,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         };
       }
 
-      // Offre et disponibilité des billets
       if (schemaConfig.offerPrice || schemaConfig.offerAvailability) {
         schema.offers = {
           '@type': 'Offer',
@@ -591,7 +498,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
         };
       }
 
-      // Statut de l'événement
       if (schemaConfig.eventStatus) schema.eventStatus = schemaConfig.eventStatus;
       if (schemaConfig.eventAttendanceMode) schema.eventAttendanceMode = schemaConfig.eventAttendanceMode;
       break;
@@ -612,7 +518,6 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
       }
       if (schemaConfig.inLanguage) schema.inLanguage = schemaConfig.inLanguage;
 
-      // Recherche sur le site
       schema.potentialAction = {
         '@type': 'SearchAction',
         'target': {
@@ -624,19 +529,14 @@ export const generateSchemaContent = (siteConfig: SiteConfig, schemaConfig: Sche
       break;
   }
 
-  // Sérialisation JSON avec indentation et en s'assurant que les attributs spéciaux @context et @type sont bien formatés
   try {
-    // Utiliser JSON.stringify pour une sérialisation correcte
     const jsonSchema = JSON.stringify(schema, null, 2);
-
-    // Vérifier que le JSON est valide en le parsant à nouveau
     JSON.parse(jsonSchema);
 
     return jsonSchema;
   } catch (error) {
-    console.error('Erreur lors de la génération du schema JSON-LD:', error);
+    console.error('Error generating schema JSON-LD:', error);
 
-    // En cas d'erreur, retourner un schema minimal valide
     return JSON.stringify({
       '@context': 'https://schema.org',
       '@type': schemaConfig.type,

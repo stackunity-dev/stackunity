@@ -128,42 +128,37 @@ export interface ExtendedSEOResult {
 
 export const typePropertiesConfig: Record<string, SchemaProperty[]> = {
   Organization: [
-    { key: 'foundingDate', label: 'Date de fondation', icon: 'mdi-calendar', type: 'date' },
-    { key: 'legalName', label: 'Nom légal', icon: 'mdi-domain' },
-    { key: 'numberOfEmployees', label: 'Nombre d\'employés', icon: 'mdi-account-group' }
+    { key: 'foundingDate', label: 'Date of incorporation', icon: 'mdi-calendar', type: 'date' },
+    { key: 'legalName', label: 'Legal name', icon: 'mdi-domain' },
+    { key: 'numberOfEmployees', label: 'Number of employees', icon: 'mdi-account-group' }
   ],
   Person: [
-    { key: 'jobTitle', label: 'Titre du poste', icon: 'mdi-badge-account' },
-    { key: 'givenName', label: 'Prénom', icon: 'mdi-account' },
-    { key: 'familyName', label: 'Nom', icon: 'mdi-account' },
-    { key: 'birthDate', label: 'Date de naissance', icon: 'mdi-calendar', type: 'date' }
+    { key: 'jobTitle', label: 'Job title', icon: 'mdi-badge-account' },
+    { key: 'givenName', label: 'First name', icon: 'mdi-account' },
+    { key: 'familyName', label: 'Last name', icon: 'mdi-account' },
+    { key: 'birthDate', label: 'Date of birth', icon: 'mdi-calendar', type: 'date' }
   ],
   Product: [
-    { key: 'price', label: 'Prix', icon: 'mdi-currency-usd' },
-    { key: 'brand', label: 'Marque', icon: 'mdi-tag' },
-    { key: 'category', label: 'Catégorie', icon: 'mdi-shape' }
+    { key: 'price', label: 'Price', icon: 'mdi-currency-usd' },
+    { key: 'brand', label: 'Brand', icon: 'mdi-tag' },
+    { key: 'category', label: 'Category', icon: 'mdi-shape' }
   ],
   Article: [
-    { key: 'headline', label: 'Titre', icon: 'mdi-format-title' },
-    { key: 'author', label: 'Auteur', icon: 'mdi-account-edit' },
-    { key: 'datePublished', label: 'Date de publication', icon: 'mdi-calendar', type: 'date' }
+    { key: 'headline', label: 'Title', icon: 'mdi-format-title' },
+    { key: 'author', label: 'Author', icon: 'mdi-account-edit' },
+    { key: 'datePublished', label: 'Date of publication', icon: 'mdi-calendar', type: 'date' }
   ],
   LocalBusiness: [
-    { key: 'openingHours', label: 'Horaires d\'ouverture', icon: 'mdi-clock-outline' },
-    { key: 'priceRange', label: 'Fourchette de prix', icon: 'mdi-currency-usd' }
+    { key: 'openingHours', label: 'Opening hours', icon: 'mdi-clock-outline' },
+    { key: 'priceRange', label: 'Price range', icon: 'mdi-currency-usd' }
   ],
   WebSite: [
-    { key: 'potentialAction', label: 'URL de recherche', icon: 'mdi-magnify' },
-    { key: 'inLanguage', label: 'Langues', icon: 'mdi-translate' }
+    { key: 'potentialAction', label: 'Search URL', icon: 'mdi-magnify' },
+    { key: 'inLanguage', label: 'Languages', icon: 'mdi-translate' }
   ],
   Event: [
-    { key: 'startDate', label: 'Date de début', icon: 'mdi-calendar', type: 'date' },
-    { key: 'endDate', label: 'Date de fin', icon: 'mdi-calendar', type: 'date' },
-    { key: 'location', label: 'Lieu', icon: 'mdi-map-marker' }
+    { key: 'startDate', label: 'Start date', icon: 'mdi-calendar', type: 'date' },
+    { key: 'endDate', label: 'End date', icon: 'mdi-calendar', type: 'date' },
+    { key: 'location', label: 'Location', icon: 'mdi-map-marker' }
   ],
-  Restaurant: [
-    { key: 'servesCuisine', label: 'Type de cuisine', icon: 'mdi-food' },
-    { key: 'menu', label: 'Menu', icon: 'mdi-menu' },
-    { key: 'options', label: 'Options', icon: 'mdi-checkbox-marked-circle-outline', type: 'restaurant-options' }
-  ]
 }; 
