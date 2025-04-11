@@ -784,10 +784,16 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
   const queue: string[] = [];
   const baseUrlObj = new URL(baseUrl);
   const domain = baseUrlObj.hostname;
+  const failedUrls = new Set<string>(); // Pour suivre les URL qui ont échoué
 
   // Définir les fonctions utilitaires internes
   function shouldKeepWithoutVisiting(url: string): boolean {
     try {
+      // Si l'URL a déjà échoué, ne pas réessayer
+      if (failedUrls.has(url)) {
+        return true;
+      }
+
       // Extraire les extensions de fichier
       const urlObj = new URL(url);
       const path = urlObj.pathname;
@@ -835,8 +841,20 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
         return null;
       }
 
-      // Supprimer les fragments # et normaliser
-      return fullUrl.split('#')[0].replace(/\/$/, '');
+      // Normaliser l'URL (supprimer les fragments # et normaliser)
+      let normalizedUrl = fullUrl.split('#')[0];
+
+      // Cas spécial pour la page d'accueil
+      if (normalizedUrl === `${baseUrlObj.protocol}//${baseUrlObj.host}`) {
+        normalizedUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}/`;
+      }
+
+      // Pour les autres pages, supprimer le trailing slash pour éviter les doublons
+      else if (normalizedUrl.endsWith('/') && normalizedUrl !== `${baseUrlObj.protocol}//${baseUrlObj.host}/`) {
+        normalizedUrl = normalizedUrl.slice(0, -1);
+      }
+
+      return normalizedUrl;
     } catch (error) {
       return null;
     }
@@ -844,15 +862,25 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
 
   const extractLinks = ($: CheerioSelector, pageUrl: string): string[] => {
     const links: string[] = [];
+
+    // Récupérer tous les liens <a>
     $('a[href]').each((_, element) => {
       const href = $(element).attr('href')?.trim();
       if (!href) return;
 
-      // Ignorer les liens vides, mais pas la racine '/'
-      if (href === '#') return;
-
       const normalizedUrl = normalizeUrl(href, pageUrl, baseUrlObj);
       if (normalizedUrl) {
+        links.push(normalizedUrl);
+      }
+    });
+
+    // Récupérer les liens dans les menus de navigation (souvent masqués sur mobile ou dynamiques)
+    $('nav a, .menu a, .navigation a, header a, footer a, [role="navigation"] a').each((_, element) => {
+      const href = $(element).attr('href')?.trim();
+      if (!href) return;
+
+      const normalizedUrl = normalizeUrl(href, pageUrl, baseUrlObj);
+      if (normalizedUrl && !links.includes(normalizedUrl)) {
         links.push(normalizedUrl);
       }
     });
@@ -865,14 +893,14 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
       if (b === rootUrl) return 1;
 
       // Prioriser les pages de contact, à propos, etc.
-      const importantKeywords = ['contact', 'about', 'services', 'products', 'blog'];
+      const importantKeywords = ['contact', 'about', 'services', 'products', 'blog', 'pricing'];
       const aIsImportant = importantKeywords.some(kw => a.toLowerCase().includes(kw));
       const bIsImportant = importantKeywords.some(kw => b.toLowerCase().includes(kw));
 
       if (aIsImportant && !bIsImportant) return -1;
       if (!aIsImportant && bIsImportant) return 1;
 
-      // Prioriser les URL plus courtes
+      // Prioriser les URL plus courtes (généralement plus importantes)
       return a.length - b.length;
     });
   };
@@ -882,12 +910,15 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
   queue.push(rootUrl);
 
   // Définir un délai maximum pour le crawl
-  const MAX_CRAWL_TIME = 30000; // 30 secondes
+  const MAX_CRAWL_TIME = 45000; // 45 secondes pour avoir plus de temps pour crawler
   const startTime = Date.now();
 
   // Utiliser des promesses parallèles pour accélérer le crawl
   const MAX_CONCURRENT_REQUESTS = 5;
   let activeRequests = 0;
+
+  // Garder une trace des pages en cours d'analyse
+  const inProgress = new Set<string>();
 
   while (queue.length > 0 && visitedUrls.size < maxPages && (Date.now() - startTime) < MAX_CRAWL_TIME) {
     if (activeRequests >= MAX_CONCURRENT_REQUESTS) {
@@ -897,15 +928,19 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
     }
 
     const currentUrl = queue.shift();
-    if (!currentUrl || visitedUrls.has(currentUrl) || shouldKeepWithoutVisiting(currentUrl)) {
+    if (!currentUrl) continue;
+
+    // Vérifier si l'URL a déjà été visitée ou est en cours d'analyse
+    if (visitedUrls.has(currentUrl) || inProgress.has(currentUrl) || shouldKeepWithoutVisiting(currentUrl)) {
       continue;
     }
 
-    // Marquer comme visité avant de commencer la requête
-    visitedUrls.add(currentUrl);
+    // Marquer l'URL comme en cours d'analyse
+    inProgress.add(currentUrl);
     activeRequests++;
 
     try {
+      console.log(`Crawling: ${currentUrl}`);
       const response = await axios.get(currentUrl, {
         timeout: 5000,
         maxRedirects: 3,
@@ -916,31 +951,60 @@ async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<str
         },
       });
 
+      // Vérifier que c'est bien du HTML
       const contentType = response.headers['content-type'] || '';
       if (!contentType.includes('text/html')) {
-        activeRequests--;
+        console.log(`Not HTML: ${currentUrl}`);
         continue;
       }
 
+      // Analyse réussie, marquer comme visitée
+      visitedUrls.add(currentUrl);
+
+      // Extraire et ajouter les liens
       const $ = cheerio.load(response.data);
       const links = extractLinks($, currentUrl);
 
       // Ajouter les liens à la file d'attente
       for (const link of links) {
-        if (!visitedUrls.has(link) && !queue.includes(link) &&
-          new URL(link).hostname === domain &&
+        if (!visitedUrls.has(link) && !queue.includes(link) && !inProgress.has(link) &&
+          !failedUrls.has(link) && new URL(link).hostname === domain &&
           visitedUrls.size + queue.length < maxPages) {
           queue.push(link);
         }
       }
     } catch (error) {
       console.error(`Error crawling ${currentUrl}: ${error.message}`);
+      // Marquer l'URL comme ayant échoué pour éviter de réessayer
+      failedUrls.add(currentUrl);
     } finally {
+      // Enlever de la liste des URL en cours d'analyse
+      inProgress.delete(currentUrl);
       activeRequests--;
     }
   }
 
   // S'assurer que la page d'accueil est toujours incluse
+  if (!visitedUrls.has(rootUrl) && !failedUrls.has(rootUrl)) {
+    try {
+      console.log(`Forcing crawl of root URL: ${rootUrl}`);
+      const response = await axios.get(rootUrl, {
+        timeout: 5000,
+        maxRedirects: 3,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com)',
+        },
+      });
+
+      if (response.headers['content-type']?.includes('text/html')) {
+        visitedUrls.add(rootUrl);
+      }
+    } catch (error) {
+      console.error(`Error crawling root URL: ${error.message}`);
+    }
+  }
+
+  // Ajouter la page d'accueil même si elle a échoué
   if (!visitedUrls.has(rootUrl)) {
     visitedUrls.add(rootUrl);
   }
