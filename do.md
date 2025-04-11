@@ -1,5 +1,0 @@
-- Objectif : révision de seo-audit.vue
-- Fichier assosicer : website-analyzer.ts
-- A faire :
-- Le calcul du CLS échoue (le reste marche tres bien)
-- Refonte de la tab overview pour supprimer les 3 tabs apparaisant en bas et faire a la place en desosus de la ligne 1, une section Performance affichant avec des progress circular etc... les métriques LCP FPC CLS Loading time TTFB
