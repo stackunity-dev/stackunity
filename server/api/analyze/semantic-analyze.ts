@@ -7,7 +7,7 @@ import {
 import {
   analyzeAriaAttributes,
   analyzeMetaTags
-} from './website-analyzer'
+} from './analyze-functions'
 
 
 function analyzeHtmlStructure($: ReturnType<typeof load>): {

@@ -164,8 +164,10 @@ const updatePageTitle = () => {
     currentPageTitle.value = 'Responsive';
   } else if (path.includes('/accessibility')) {
     currentPageTitle.value = 'Accessibility';
-  } else if (path.includes('/seo-audit')) {
-    currentPageTitle.value = 'SEO Audit';
+  } else if (path.includes('/website-analyzer')) {
+    currentPageTitle.value = 'Web view vitals';
+  } else if (path.includes('/robots')) {
+    currentPageTitle.value = 'Robots & Schema';
   } else if (path.includes('/settings')) {
     currentPageTitle.value = 'Settings';
   } else if (path.includes('/newsletter-admin')) {
@@ -295,7 +297,7 @@ const getCurrentPageIcon = () => {
     return 'mdi-responsive';
   } else if (path.includes('/accessibility')) {
     return 'mdi-access-point';
-  } else if (path.includes('/seo-audit')) {
+  } else if (path.includes('/website-analyzer')) {
     return 'mdi-magnify';
   } else if (path.includes('/robots')) {
     return 'mdi-robot';
@@ -388,7 +390,7 @@ const items = computed(() => [
     prependIcon: 'mdi-rocket-launch-outline',
     link: true,
     children: [
-      createPremiumMenuItem('SEO Audit', '/seo-audit', 'mdi-magnify', 'seoAudit'),
+      createPremiumMenuItem('Web view vitals', '/website-analyzer', 'mdi-magnify', 'websiteAnalyzer'),
       createPremiumMenuItem('Robots & Schema', '/robots', 'mdi-robot', 'robots')
     ]
   },

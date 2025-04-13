@@ -194,19 +194,17 @@ interface SEOAuditResult {
   result?: CrawlReport;
 }
 
-interface UserState {
-  user: User | null;
-  isAuthenticated: boolean;
-  loading: boolean;
-  error: string | null;
-  systemData: SystemData | null;
-  snippets: BaseSnippet[];
-  seoAuditResults: SEOAuditResult[];
-}
-
 interface LoginResponse {
   success: boolean;
   message?: string;
+}
+
+interface RandomData {
+  totalWarnings: number;
+  criticalCount: number;
+  majorCount: number;
+  minorCount: number;
+  infoCount: number;
 }
 
 export const useUserStore = defineStore('user', {
@@ -224,6 +222,7 @@ export const useUserStore = defineStore('user', {
     sqlSchemas: [] as SQLSchema[],
     studioComponents: [] as StudioComponent[],
     emailHistory: [] as EmailHistoryItem[],
+    randomData: null as RandomData | null,
     isAuthenticated: false,
     loading: false,
     error: null,
@@ -1213,7 +1212,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async auditSEO(url: string, options: any): Promise<any> {
+    async auditSEO(url: string): Promise<any> {
       try {
         this.isSeoLoading = true;
         this.seoError = '';
@@ -1237,12 +1236,7 @@ export const useUserStore = defineStore('user', {
             Authorization: `Bearer ${this.token}`
           },
           body: JSON.stringify({
-            url,
-            maxPages: options?.maxUrlsToAnalyze || 10,
-            checkSitemap: options?.checkSitemap,
-            checkRobotsTxt: options?.checkRobotsTxt,
-            timeout: options?.timeout || 30000,
-            focusOnContact: options?.focusOnContact || false
+            url
           })
         });
 
@@ -1265,11 +1259,6 @@ export const useUserStore = defineStore('user', {
                 },
                 body: JSON.stringify({
                   url: pageUrl,
-                  options: {
-                    ...options,
-                    maxDepth: 0,
-                    sameDomainOnly: true
-                  }
                 })
               });
 
@@ -1419,6 +1408,29 @@ export const useUserStore = defineStore('user', {
       const mediumIssues = issues.filter(issue => issue.severity === 'medium').length;
       const lowIssues = issues.filter(issue => issue.severity === 'low').length;
 
+      // Calculer les scores moyens de sécurité et d'engagement
+      let totalSecurityScore = 0;
+      let pagesWithSecurityScore = 0;
+      let totalEngagementScore = 0;
+      let pagesWithEngagementScore = 0;
+
+      if (response.seoResults) {
+        Object.values(response.seoResults).forEach((result: any) => {
+          if (result.securityChecks && result.securityChecks.securityScore !== undefined) {
+            totalSecurityScore += Number(result.securityChecks.securityScore);
+            pagesWithSecurityScore++;
+          }
+
+          if (result.engagement && result.engagement.engagementScore !== undefined) {
+            totalEngagementScore += Number(result.engagement.engagementScore);
+            pagesWithEngagementScore++;
+          }
+        });
+      }
+
+      const securityScore = pagesWithSecurityScore > 0 ? Math.round(totalSecurityScore / pagesWithSecurityScore) : 0;
+      const engagementScore = pagesWithEngagementScore > 0 ? Math.round(totalEngagementScore / pagesWithEngagementScore) : 0;
+
       return {
         seoResults: response.seoResults || {},
         summary: {
@@ -1442,6 +1454,8 @@ export const useUserStore = defineStore('user', {
           highIssues,
           mediumIssues,
           lowIssues,
+          securityScore,
+          engagementScore,
           resourceIssues: {
             css: response.resources?.css?.recommendations?.length || 0,
             js: response.resources?.js?.recommendations?.length || 0,

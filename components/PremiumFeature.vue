@@ -126,8 +126,8 @@ const featureType = computed(() => {
   const title = props.title?.toLowerCase() || '';
   if (title.includes('database') || title.includes('sql')) {
     return 'databaseDesigner';
-  } else if (title.includes('seo audit')) {
-    return 'seoAudit';
+  } else if (title.includes('web view vitals')) {
+    return 'websiteAnalyzer';
   } else if (title.includes('robot') || title.includes('schema')) {
     return 'robots';
   } else if (title.includes('studio')) {
@@ -141,7 +141,7 @@ const featureType = computed(() => {
 
 type FeatureMap = {
   databaseDesigner: string[];
-  seoAudit: string[];
+  websiteAnalyzer: string[];
   robots: string[];
   studioComponents: string[];
   accessibility: string[];
@@ -155,11 +155,11 @@ const features: FeatureMap = {
     "Multiple database engine support",
     "Export schemas as SQL or diagrams"
   ],
-  seoAudit: [
+  websiteAnalyzer: [
     "Complete website SEO audit",
     "Technical SEO recommendations",
     "Content optimization suggestions",
-    "Exportable PDF reports"
+    "Full website analysis"
   ],
   robots: [
     "robots.txt generator",
@@ -191,7 +191,7 @@ const features: FeatureMap = {
 const getFeatures = (type: string): string[] => {
   switch (type) {
     case 'databaseDesigner': return features.databaseDesigner;
-    case 'seoAudit': return features.seoAudit;
+    case 'websiteAnalyzer': return features.websiteAnalyzer;
     case 'robots': return features.robots;
     case 'studioComponents': return features.studioComponents;
     case 'accessibility': return features.accessibility;
@@ -202,7 +202,7 @@ const getFeatures = (type: string): string[] => {
 const getFeatureImage = (type: string): string => {
   switch (type) {
     case 'databaseDesigner': return '/images/premium/sql-designer.avif';
-    case 'seoAudit': return '/images/premium/seo-audit.avif';
+    case 'websiteAnalyzer': return '/images/premium/seo-audit.avif';
     case 'robots': return '/images/premium/robots.avif';
     case 'studioComponents': return '/images/premium/studio-preview.avif';
     case 'accessibility': return '/images/premium/accessibility.avif';
@@ -406,7 +406,7 @@ const goToPricingPage = () => {
   background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(25, 118, 210, 0.05));
 }
 
-.premium-hero-seoAudit {
+.premium-hero-websiteAnalyzer {
   background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(56, 142, 60, 0.05));
 }
 

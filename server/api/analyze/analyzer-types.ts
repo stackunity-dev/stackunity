@@ -12,8 +12,36 @@ export interface SecurityIssue {
   severity: 'critical' | 'high' | 'medium' | 'low';
 }
 
+export interface EngagementIssue {
+  issue: string;
+  description: string;
+  recommendation: string;
+  severity: 'high' | 'medium' | 'low' | 'info';
+}
+
+export interface EngagementData {
+  ctaCount: number;
+  interactiveElements: number;
+  visualElements: number;
+  socialElements: number;
+  navigationScore: number;
+  readabilityScore: number;
+  engagementTechniques: {
+    hasSocialLinks: boolean;
+    hasCtaButtons: boolean;
+    hasFormsOrInputs: boolean;
+    hasVideos: boolean;
+    hasImages: boolean;
+    hasInteractiveElements: boolean;
+    hasFeedbackMechanisms: boolean;
+  };
+  issues: EngagementIssue[];
+}
+
 export interface WebsiteAnalysisResult {
   url: string;
+  title?: string;
+  description?: string;
   performance: {
     ttfb: number;
     fcp: number;
@@ -118,6 +146,24 @@ export interface WebsiteAnalysisResult {
   technical: {
     statusCode: number;
     https: boolean;
+    sitemap?: {
+      found: boolean;
+      url?: string;
+      content?: string;
+      urls?: number;
+    };
+    robotsTxt?: {
+      found: boolean;
+      content?: string;
+    };
+    largeFiles?: Array<{
+      url: string;
+      type: string;
+      size: number;
+      sizeFormatted: string;
+      extension: string;
+      name: string;
+    }>;
     mobile: {
       viewport: boolean;
       responsive: boolean;
@@ -156,11 +202,19 @@ export interface WebsiteAnalysisResult {
     robotsTxtContent?: string;
     schemaTypeCount: Record<string, number>;
   };
+  socialTags?: {
+    openGraph: boolean;
+    twitter: boolean;
+    twitterTags: Array<{ name: string; content: string }>;
+  };
   issues: Array<{
     type: string;
     message: string;
     severity: 'critical' | 'high' | 'medium' | 'low';
+    description?: string;
+    recommendation?: string;
   }>;
+  engagement?: EngagementData;
 }
 
 export interface ExtendedResponse {

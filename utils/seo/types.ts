@@ -1,7 +1,9 @@
 export interface SEOResult {
   seoResults?: Record<string, any>;
   url?: string;
+  canonical?: string;
   title?: string;
+  viewport?: string;
   description?: string;
   headings?: {
     h1: string[];
@@ -14,6 +16,7 @@ export interface SEOResult {
   meta?: {
     viewport?: string;
     robots?: string;
+    canonical?: string;
     og?: Record<string, string> | Array<{ property: string; content: string }>;
     twitter?: Record<string, string> | Array<{ name: string; content: string }>;
   };
@@ -34,6 +37,7 @@ export interface SEOResult {
     statusCode?: number;
     mobile?: {
       viewport?: boolean;
+      viewportContent?: string;
     };
     https?: boolean;
     schema?: {
@@ -47,13 +51,14 @@ export interface SEOResult {
     };
     security?: {
       headers?: Array<{ name: string; value: string }>;
+      cookies?: {
+        secure: boolean;
+        httpOnly: boolean;
+        sameSite: boolean;
+        score: number;
+      };
+      score?: number;
       securityIssues?: SecurityIssue[];
-    };
-    meta?: {
-      viewport?: string;
-      robots?: string;
-      og?: Record<string, string> | Array<{ property: string; content: string }>;
-      twitter?: Record<string, string> | Array<{ name: string; content: string }>;
     };
   };
   performance?: {
@@ -86,6 +91,30 @@ export interface SEOResult {
     }>;
     accessibilityScore: number;
   };
+  engagement?: {
+    engagementScore: number;
+    ctaCount: number;
+    interactiveElements: number;
+    visualElements: number;
+    socialElements: number;
+    navigationScore: number;
+    readabilityScore: number;
+    engagementTechniques: {
+      hasSocialLinks: boolean;
+      hasCtaButtons: boolean;
+      hasFormsOrInputs: boolean;
+      hasVideos: boolean;
+      hasImages: boolean;
+      hasInteractiveElements: boolean;
+      hasFeedbackMechanisms: boolean;
+    };
+    issues: Array<{
+      issue: string;
+      description: string;
+      recommendation: string;
+      severity: 'high' | 'medium' | 'low' | 'info';
+    }>;
+  };
   wordCount?: number;
   readability?: number;
   links?: {
@@ -104,15 +133,6 @@ export interface SEOResult {
     name: string;
     confidence: number
   };
-  hosting?: string | {
-    provider: string;
-    type?: string;
-    confidence?: number
-  };
-  domainProvider?: string | {
-    provider: string;
-    confidence?: number
-  };
   headingStructure?: {
     h1: string[];
     h2: string[];
@@ -121,23 +141,6 @@ export interface SEOResult {
     h5?: string[];
     h6?: string[];
   };
-  imageAlt?: Array<{
-    alt?: string;
-    src?: string;
-    title?: string;
-    width?: number;
-    height?: number;
-    hasDimensions?: boolean;
-  }>;
-  videoInfo?: Array<{
-    src: string;
-    length?: number;
-    thumbnail?: string;
-    title?: string;
-    description?: string;
-    width?: number;
-    height?: number;
-  }>;
   coreWebVitals?: {
     LCP?: number;
     FCP?: number;
@@ -154,6 +157,13 @@ export interface SEOResult {
     https: boolean;
     securityHeaders: Array<{ name: string; value: string }>;
     securityIssues?: SecurityIssue[];
+    securityScore?: number;
+    cookies?: {
+      secure: boolean;
+      httpOnly: boolean;
+      sameSite: boolean;
+      score: number;
+    };
   };
   socialTags?: {
     ogTags: Array<{ property: string; content: string }>;
@@ -246,13 +256,6 @@ export interface SEOResult {
       accessibilityScore: number;
     };
   };
-
-  largeFiles?: Array<{
-    url: string;
-    type: string;
-    size: number;
-    impact: number;
-  }>;
 
   resources?: {
     css?: {

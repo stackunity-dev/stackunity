@@ -8,6 +8,6 @@ Disallow: /wp-admin
 Disallow: /cgi-bin
 Disallow: /admin/newsletter-admin
 
-Sitemap: https://devunity.tech/sitemap.xml
+Sitemap: https://stackunity.tech/sitemap.xml
 
-Host: https://devunity.tech
+Host: https://stackunity.tech
