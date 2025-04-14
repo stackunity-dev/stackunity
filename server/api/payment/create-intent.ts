@@ -1,6 +1,13 @@
 import { defineEventHandler, readBody } from 'h3';
 import Stripe from 'stripe';
 
+const promoCodes = {
+  'WELCOME10': { type: 'percentage', value: 10, description: '10% de réduction sur votre achat' },
+  'WELCOME50': { type: 'percentage', value: 50, description: '50% de réduction sur votre achat' },
+};
+
+const usedCodes = new Set<string>();
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
@@ -9,7 +16,8 @@ export default defineEventHandler(async (event) => {
       customer_name,
       country_code = 'FR',
       vat_number = '',
-      is_business = false
+      is_business = false,
+      promo_code = ''
     } = body;
 
     if (!currency) {
@@ -41,7 +49,31 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    const baseAmount = 19999;
+    let baseAmount = 19999;
+    let discountAmount = 0;
+    let discountDescription = '';
+
+    if (promo_code) {
+      const upperCode = promo_code.toUpperCase();
+
+      if (promoCodes[upperCode] && !usedCodes.has(upperCode)) {
+        const promoInfo = promoCodes[upperCode];
+
+        if (promoInfo.type === 'percentage') {
+          discountAmount = Math.round(baseAmount * (promoInfo.value / 100));
+          discountDescription = `${promoInfo.value}% de réduction`;
+        } else if (promoInfo.type === 'fixed') {
+          discountAmount = promoInfo.value * 100;
+          discountDescription = `${promoInfo.value}€ de réduction`;
+        }
+
+        discountAmount = Math.min(discountAmount, baseAmount - 1);
+
+        usedCodes.add(upperCode);
+      }
+    }
+
+    const discountedBaseAmount = baseAmount - discountAmount;
 
     if (process.env.NODE_ENV === 'development' && stripeSecretKey.startsWith('sk_test_')) {
       console.log('Development mode: returning mock tax details without Stripe API call');
@@ -60,14 +92,17 @@ export default defineEventHandler(async (event) => {
         estimatedTaxRate = 0;
       }
 
-      const estimatedTaxAmount = Math.round(baseAmount * estimatedTaxRate);
-      const estimatedTotalAmount = baseAmount + estimatedTaxAmount;
+      const estimatedTaxAmount = Math.round(discountedBaseAmount * estimatedTaxRate);
+      const estimatedTotalAmount = discountedBaseAmount + estimatedTaxAmount;
 
       return {
         success: true,
         clientSecret: 'dev_mock_secret_' + Math.random().toString(36).substring(2),
         taxDetails: {
           baseAmount: baseAmount / 100,
+          discountAmount: discountAmount / 100,
+          discountDescription: discountDescription,
+          discountedBaseAmount: discountedBaseAmount / 100,
           taxAmount: estimatedTaxAmount / 100,
           totalAmount: estimatedTotalAmount / 100,
           taxPercentage: Math.round(estimatedTaxRate * 100),
@@ -111,7 +146,7 @@ export default defineEventHandler(async (event) => {
           currency,
           line_items: [
             {
-              amount: baseAmount,
+              amount: discountedBaseAmount,
               reference: 'premium_lifetime_access',
               tax_behavior: 'exclusive',
               tax_code: 'txcd_10103001',
@@ -196,9 +231,9 @@ export default defineEventHandler(async (event) => {
           fallbackTaxRate = 0;
         }
 
-        const fallbackTaxAmount = Math.round(baseAmount * fallbackTaxRate);
+        const fallbackTaxAmount = Math.round(discountedBaseAmount * fallbackTaxRate);
         taxCalculation = {
-          amount_total: baseAmount + fallbackTaxAmount,
+          amount_total: discountedBaseAmount + fallbackTaxAmount,
           tax_amount_exclusive: fallbackTaxAmount,
           tax_breakdown: [{ tax_rate_percentage: fallbackTaxRate * 100 }]
         };
@@ -214,7 +249,11 @@ export default defineEventHandler(async (event) => {
           is_business: is_business ? 'true' : 'false',
           vat_number: vat_number || 'none',
           base_amount: baseAmount.toString(),
+          discount_amount: discountAmount.toString(),
+          discount_description: discountDescription,
+          discounted_base_amount: discountedBaseAmount.toString(),
           tax_amount: taxCalculation.tax_amount_exclusive.toString(),
+          promo_code: promo_code || 'none'
         }
       });
 
@@ -226,6 +265,9 @@ export default defineEventHandler(async (event) => {
         clientSecret: paymentIntent.client_secret,
         taxDetails: {
           baseAmount: baseAmount / 100,
+          discountAmount: discountAmount / 100,
+          discountDescription: discountDescription,
+          discountedBaseAmount: discountedBaseAmount / 100,
           taxAmount: taxCalculation.tax_amount_exclusive / 100,
           totalAmount: taxCalculation.amount_total / 100,
           taxPercentage: taxPercentage,

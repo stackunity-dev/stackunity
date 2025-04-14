@@ -497,11 +497,70 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
             if (sitemapResponse.status === 200 && sitemapResponse.data) {
               const content = sitemapResponse.data;
+              // Vérifier différentes façons dont un sitemap XML peut être structuré
               if (typeof content === 'string' &&
-                (content.includes('<urlset') || content.includes('<sitemapindex'))) {
+                (content.includes('<urlset') ||
+                  content.includes('<sitemapindex') ||
+                  content.includes('<?xml') && content.toLowerCase().includes('sitemap'))) {
 
                 const $ = cheerio.load(content, { xmlMode: true });
-                const urlCount = $('url').length;
+
+                // Chercher les URLs dans différents formats de namespace
+                let urlCount = $('url').length;
+
+                // Si pas d'URLs trouvées dans le namespace par défaut, essayer avec des sélecteurs plus génériques
+                if (urlCount === 0) {
+                  urlCount = $('*[loc]').length;
+                }
+
+                // Si c'est un sitemapindex, essayer de compter les URLs dans le premier sitemap référencé
+                if (urlCount === 0 && ($('sitemap').length > 0 || $('*|sitemap').length > 0)) {
+                  let firstSitemapLoc = '';
+                  // Essayer plusieurs sélecteurs pour trouver le premier sitemap
+                  const sitemapLocSelectors = [
+                    'sitemap loc', '*|sitemap *|loc', 'sitemap *|loc', '*[loc]'
+                  ];
+
+                  for (const selector of sitemapLocSelectors) {
+                    const locElement = $(selector).first();
+                    if (locElement.length > 0) {
+                      firstSitemapLoc = locElement.text().trim();
+                      if (firstSitemapLoc) break;
+                    }
+                  }
+
+                  if (firstSitemapLoc) {
+                    try {
+                      // Normaliser l'URL du sitemap
+                      if (!firstSitemapLoc.startsWith('http')) {
+                        if (firstSitemapLoc.startsWith('/')) {
+                          firstSitemapLoc = `${baseUrlObj.protocol}//${baseUrlObj.hostname}${firstSitemapLoc}`;
+                        } else {
+                          firstSitemapLoc = new URL(firstSitemapLoc, sitemapUrl).href;
+                        }
+                      }
+
+                      const subSitemapResponse = await axios.get(firstSitemapLoc, {
+                        timeout: 8000,
+                        headers: {
+                          'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+                          'Accept': 'application/xml,text/xml,*/*'
+                        }
+                      });
+
+                      if (subSitemapResponse.status === 200 && subSitemapResponse.data) {
+                        const subContent = subSitemapResponse.data;
+                        const $sub = cheerio.load(subContent, { xmlMode: true });
+                        urlCount = $sub('url').length;
+                        if (urlCount === 0) {
+                          urlCount = $sub('*[loc]').length;
+                        }
+                      }
+                    } catch (subError) {
+                      console.log(`Impossible d'accéder au sous-sitemap: ${subError.message}`);
+                    }
+                  }
+                }
 
                 return {
                   found: true,
@@ -534,11 +593,70 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
         if (response.status === 200 && response.data) {
           const content = response.data;
 
+          // Vérifier différentes façons dont un sitemap XML peut être structuré
           if (typeof content === 'string' &&
-            (content.includes('<urlset') || content.includes('<sitemapindex'))) {
+            (content.includes('<urlset') ||
+              content.includes('<sitemapindex') ||
+              content.includes('<?xml') && content.toLowerCase().includes('sitemap'))) {
 
             const $ = cheerio.load(content, { xmlMode: true });
-            const urlCount = $('url').length;
+
+            // Chercher les URLs dans différents formats de namespace
+            let urlCount = $('url').length;
+
+            // Si pas d'URLs trouvées dans le namespace par défaut, essayer avec des sélecteurs plus génériques
+            if (urlCount === 0) {
+              urlCount = $('*[loc]').length;
+            }
+
+            // Si c'est un sitemapindex, essayer de compter les URLs dans le premier sitemap référencé
+            if (urlCount === 0 && ($('sitemap').length > 0 || $('*|sitemap').length > 0)) {
+              let firstSitemapLoc = '';
+              // Essayer plusieurs sélecteurs pour trouver le premier sitemap
+              const sitemapLocSelectors = [
+                'sitemap loc', '*|sitemap *|loc', 'sitemap *|loc', '*[loc]'
+              ];
+
+              for (const selector of sitemapLocSelectors) {
+                const locElement = $(selector).first();
+                if (locElement.length > 0) {
+                  firstSitemapLoc = locElement.text().trim();
+                  if (firstSitemapLoc) break;
+                }
+              }
+
+              if (firstSitemapLoc) {
+                try {
+                  // Normaliser l'URL du sitemap
+                  if (!firstSitemapLoc.startsWith('http')) {
+                    if (firstSitemapLoc.startsWith('/')) {
+                      firstSitemapLoc = `${baseUrlObj.protocol}//${baseUrlObj.hostname}${firstSitemapLoc}`;
+                    } else {
+                      firstSitemapLoc = new URL(firstSitemapLoc, url).href;
+                    }
+                  }
+
+                  const subSitemapResponse = await axios.get(firstSitemapLoc, {
+                    timeout: 8000,
+                    headers: {
+                      'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+                      'Accept': 'application/xml,text/xml,*/*'
+                    }
+                  });
+
+                  if (subSitemapResponse.status === 200 && subSitemapResponse.data) {
+                    const subContent = subSitemapResponse.data;
+                    const $sub = cheerio.load(subContent, { xmlMode: true });
+                    urlCount = $sub('url').length;
+                    if (urlCount === 0) {
+                      urlCount = $sub('*[loc]').length;
+                    }
+                  }
+                } catch (subError) {
+                  console.log(`Impossible d'accéder au sous-sitemap: ${subError.message}`);
+                }
+              }
+            }
 
             return {
               found: true,

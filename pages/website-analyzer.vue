@@ -874,7 +874,7 @@ const startAudit = async () => {
     resultCache.value.clear();
 
     const rawReport = await userStore.auditSEO(targetUrl.value);
-
+    console.log(rawReport);
     report.value = adaptSEOResults(rawReport);
   } catch (e: any) {
     error.value = e.message || 'An error occurred during analysis';

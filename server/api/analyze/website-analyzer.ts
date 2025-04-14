@@ -160,8 +160,8 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
       }
     }
 
-    let sitemapResult = { found: false };
-    let robotsTxtResult = { found: false };
+    let sitemapResult: { found: boolean; url?: string; content?: string; urls?: number } = { found: false };
+    let robotsTxtResult: { found: boolean; content?: string } = { found: false };
 
     if (checkSitemapFlag) {
       sitemapResult = await checkSitemap(url);
@@ -172,6 +172,37 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     }
 
     const sitemap = checkSitemapFlag ? generateSitemap(urls, imagesData) : '';
+
+    // Assurons-nous que les informations de sitemap et robots.txt sont présentes et correctes dans le résultat
+    for (const key in results) {
+      if (results[key] && results[key].technicalSEO) {
+        // Mise à jour des infos de sitemap
+        results[key].technicalSEO.sitemapFound = sitemapResult.found;
+        if (sitemapResult.url) {
+          results[key].technicalSEO.sitemapUrl = sitemapResult.url;
+        }
+
+        // Mise à jour des infos de robots.txt
+        results[key].technicalSEO.robotsTxtFound = robotsTxtResult.found;
+        if (robotsTxtResult.content) {
+          results[key].technicalSEO.robotsTxtContent = robotsTxtResult.content;
+        }
+      } else if (results[key]) {
+        results[key].technicalSEO = {
+          sitemapFound: sitemapResult.found,
+          robotsTxtFound: robotsTxtResult.found,
+          schemaTypeCount: results[key].seo?.structuredData?.types || {}
+        };
+
+        if (sitemapResult.url) {
+          results[key].technicalSEO.sitemapUrl = sitemapResult.url;
+        }
+
+        if (robotsTxtResult.content) {
+          results[key].technicalSEO.robotsTxtContent = robotsTxtResult.content;
+        }
+      }
+    }
 
     return {
       urlMap: { [url]: urls },
@@ -695,13 +726,25 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
   };
 
   const isImageUrl = (url: string): boolean => {
-    return !!url.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i);
+    try {
+      return !!url.match(/\.(jpg|jpeg|png|gif|webp|svg|avif|bmp|tiff?)(\?.*)?$/i);
+    } catch (e) {
+      return false;
+    }
   };
 
   const imageUrls: Record<string, Array<{ url: string, title?: string, alt?: string }>> = {};
 
   const getAbsoluteImageUrl = (imgSrc: string, pageUrl: string): string => {
     try {
+      if (!imgSrc || typeof imgSrc !== 'string') {
+        return '';
+      }
+
+      if (imgSrc.startsWith('data:')) {
+        return ''; // Ignorer les data URLs
+      }
+
       if (imgSrc.startsWith('http')) {
         return imgSrc;
       } else if (imgSrc.startsWith('//')) {
@@ -714,30 +757,34 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
       }
     } catch (e) {
       console.error(`Erreur lors de la conversion de l'URL d'image ${imgSrc}:`, e);
-      return imgSrc;
+      return '';
     }
   };
 
+  // Traiter les données d'images
   Object.entries(imagesData).forEach(([pageUrl, data]) => {
     try {
-      if (data && data.images) {
-        if (data.images.data && Array.isArray(data.images.data)) {
+      if (!data || !data.images) {
+        return;
+      }
 
-          imageUrls[pageUrl] = data.images.data
-            .filter(img => {
-              if (!img || !img.src) {
-                return false;
-              }
-              return true;
-            })
-            .map(img => {
-              const absoluteUrl = getAbsoluteImageUrl(img.src, pageUrl);
-              return {
-                url: absoluteUrl,
-                title: img.title || undefined,
-                alt: img.alt || undefined
-              };
-            });
+      if (data.images.data && Array.isArray(data.images.data)) {
+        const validImages = data.images.data
+          .filter(img => img && img.src && typeof img.src === 'string')
+          .map(img => {
+            const absoluteUrl = getAbsoluteImageUrl(img.src, pageUrl);
+            if (!absoluteUrl) return null;
+
+            return {
+              url: absoluteUrl,
+              title: img.title || undefined,
+              alt: img.alt || undefined
+            };
+          })
+          .filter(Boolean);
+
+        if (validImages.length > 0) {
+          imageUrls[pageUrl] = validImages;
         }
       }
     } catch (e) {
@@ -745,6 +792,7 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
     }
   });
 
+  // Ajouter les URLs d'images directes
   const directImageUrls = uniqueUrls.filter(url => isImageUrl(url));
   if (directImageUrls.length > 0) {
     imageUrls['directImages'] = directImageUrls.map(url => ({
@@ -754,31 +802,37 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
     }));
   }
 
-  const sitemapEntries = uniqueUrls
-    .filter(url => {
-      try {
-        if (url.match(/\.(css|js|ico|woff|woff2|ttf|eot|pdf|zip|rar|exe|dll|docx?|xlsx?|pptx?)(\?.*)?$/i)) {
-          return false;
-        }
-
-        if (url.includes('/api/') || url.includes('/wp-json/')) {
-          return false;
-        }
-
-        if (url.includes('/404') || url.includes('/500') || url.includes('/error')) {
-          return false;
-        }
-
-        return true;
-      } catch (e) {
-        return true;
+  // Filtrer les URLs pour le sitemap
+  const filteredUrls = uniqueUrls.filter(url => {
+    try {
+      if (!url || typeof url !== 'string') {
+        return false;
       }
-    })
-    .map(url => {
+
+      if (url.match(/\.(css|js|ico|woff|woff2|ttf|eot|pdf|zip|rar|exe|dll|docx?|xlsx?|pptx?)(\?.*)?$/i)) {
+        return false;
+      }
+
+      if (url.includes('/api/') || url.includes('/wp-json/')) {
+        return false;
+      }
+
+      if (url.includes('/404') || url.includes('/500') || url.includes('/error')) {
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  });
+
+  // Générer les entrées du sitemap
+  const sitemapEntries = filteredUrls.map(url => {
+    try {
       const { priority, changefreq } = getPriorityAndChangefreq(url);
       const urlImages = imageUrls[url] || [];
       const isImage = isImageUrl(url);
-
 
       if (isImage) {
         return `  <url>
@@ -793,26 +847,28 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
       }
 
       const directImages = imageUrls['directImages'] || [];
+      let pageImages = [...urlImages];
 
-      const pageImages = [...urlImages];
-
+      // Attribuer les images aux pages d'accueil ou pages principales
       if (url.endsWith('/') || url.split('/').length <= 3) {
         pageImages.push(...directImages);
       }
 
-      for (const [pageUrl, imgs] of Object.entries(imageUrls)) {
-        if (pageUrl !== 'directImages' && pageUrl !== url) {
-          pageImages.push(...imgs);
-        }
+      // Limiter le nombre d'images par page à 1000 pour éviter les sitemaps trop volumineux
+      if (pageImages.length > 1000) {
+        pageImages = pageImages.slice(0, 1000);
       }
 
+      // Dédupliquer les images
       const uniquePageImages = pageImages.filter((img, index, self) =>
-        index === self.findIndex(i => i.url === img.url)
+        img && img.url && index === self.findIndex(i => i && i.url === img.url)
       );
 
-
+      // Générer la section d'images
       const imageSection = uniquePageImages.length > 0
         ? uniquePageImages.map(img => {
+          if (!img || !img.url) return '';
+
           return `
     <image:image>
       <image:loc>${img.url}</image:loc>${img.title ? `
@@ -828,16 +884,17 @@ export function generateSitemap(urls: string[], imagesData: Record<string, any> 
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>${imageSection}
   </url>`;
-    }).join('\n');
+    } catch (e) {
+      console.error(`Erreur lors de la génération de l'entrée de sitemap pour ${url}:`, e);
+      return '';
+    }
+  }).filter(Boolean).join('\n');
 
-  const sitemap =
-    `<?xml version="1.0" encoding="UTF-8"?>
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${sitemapEntries}
 </urlset>`;
-
-  return sitemap;
 }
 
 function getCharset(contentType: string): string | null {

@@ -311,11 +311,74 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
             if (sitemapResponse.status === 200 && sitemapResponse.data) {
               const content = sitemapResponse.data;
+              // Vérifier différentes façons dont un sitemap XML peut être structuré
               if (typeof content === 'string' &&
-                (content.includes('<urlset') || content.includes('<sitemapindex'))) {
+                (content.includes('<urlset') ||
+                  content.includes('<sitemapindex') ||
+                  content.includes('<?xml') && content.toLowerCase().includes('sitemap'))) {
 
-                const $ = cheerio.load(content, { xmlMode: true });
-                const urlCount = $('url').length;
+                const $ = cheerio.load(content, {
+                  xmlMode: true
+                });
+
+                // Chercher les URLs dans différents formats de namespace
+                let urlCount = $('url').length;
+
+                // Si pas d'URLs trouvées dans le namespace par défaut, essayer avec des sélecteurs plus génériques
+                if (urlCount === 0) {
+                  urlCount = $('*[loc]').length;
+                }
+
+                // Si c'est un sitemapindex, essayer de compter les URLs dans le premier sitemap référencé
+                if (urlCount === 0 && ($('sitemap').length > 0 || $('*|sitemap').length > 0)) {
+                  let firstSitemapLoc = '';
+                  // Essayer plusieurs sélecteurs pour trouver le premier sitemap
+                  const sitemapLocSelectors = [
+                    'sitemap loc', '*|sitemap *|loc', 'sitemap *|loc', '*[loc]'
+                  ];
+
+                  for (const selector of sitemapLocSelectors) {
+                    const locElement = $(selector).first();
+                    if (locElement.length > 0) {
+                      firstSitemapLoc = locElement.text().trim();
+                      if (firstSitemapLoc) break;
+                    }
+                  }
+
+                  if (firstSitemapLoc) {
+                    try {
+                      // Normaliser l'URL du sitemap
+                      if (!firstSitemapLoc.startsWith('http')) {
+                        if (firstSitemapLoc.startsWith('/')) {
+                          firstSitemapLoc = `${baseUrlObj.protocol}//${baseUrlObj.hostname}${firstSitemapLoc}`;
+                        } else {
+                          firstSitemapLoc = new URL(firstSitemapLoc, sitemapUrl).href;
+                        }
+                      }
+
+                      const subSitemapResponse = await axios.get(firstSitemapLoc, {
+                        timeout: 8000,
+                        headers: {
+                          'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+                          'Accept': 'application/xml,text/xml,*/*'
+                        }
+                      });
+
+                      if (subSitemapResponse.status === 200 && subSitemapResponse.data) {
+                        const subContent = subSitemapResponse.data;
+                        const $sub = cheerio.load(subContent, {
+                          xmlMode: true
+                        });
+                        urlCount = $sub('url').length;
+                        if (urlCount === 0) {
+                          urlCount = $sub('*[loc]').length;
+                        }
+                      }
+                    } catch (subError) {
+                      console.log(`Impossible d'accéder au sous-sitemap: ${subError.message}`);
+                    }
+                  }
+                }
 
                 return {
                   found: true,
@@ -348,11 +411,74 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
         if (response.status === 200 && response.data) {
           const content = response.data;
 
+          // Vérifier différentes façons dont un sitemap XML peut être structuré
           if (typeof content === 'string' &&
-            (content.includes('<urlset') || content.includes('<sitemapindex'))) {
+            (content.includes('<urlset') ||
+              content.includes('<sitemapindex') ||
+              content.includes('<?xml') && content.toLowerCase().includes('sitemap'))) {
 
-            const $ = cheerio.load(content, { xmlMode: true });
-            const urlCount = $('url').length;
+            const $ = cheerio.load(content, {
+              xmlMode: true
+            });
+
+            // Chercher les URLs dans différents formats de namespace
+            let urlCount = $('url').length;
+
+            // Si pas d'URLs trouvées dans le namespace par défaut, essayer avec des sélecteurs plus génériques
+            if (urlCount === 0) {
+              urlCount = $('*[loc]').length;
+            }
+
+            // Si c'est un sitemapindex, essayer de compter les URLs dans le premier sitemap référencé
+            if (urlCount === 0 && ($('sitemap').length > 0 || $('*|sitemap').length > 0)) {
+              let firstSitemapLoc = '';
+              // Essayer plusieurs sélecteurs pour trouver le premier sitemap
+              const sitemapLocSelectors = [
+                'sitemap loc', '*|sitemap *|loc', 'sitemap *|loc', '*[loc]'
+              ];
+
+              for (const selector of sitemapLocSelectors) {
+                const locElement = $(selector).first();
+                if (locElement.length > 0) {
+                  firstSitemapLoc = locElement.text().trim();
+                  if (firstSitemapLoc) break;
+                }
+              }
+
+              if (firstSitemapLoc) {
+                try {
+                  // Normaliser l'URL du sitemap
+                  if (!firstSitemapLoc.startsWith('http')) {
+                    if (firstSitemapLoc.startsWith('/')) {
+                      firstSitemapLoc = `${baseUrlObj.protocol}//${baseUrlObj.hostname}${firstSitemapLoc}`;
+                    } else {
+                      firstSitemapLoc = new URL(firstSitemapLoc, url).href;
+                    }
+                  }
+
+                  const subSitemapResponse = await axios.get(firstSitemapLoc, {
+                    timeout: 8000,
+                    headers: {
+                      'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+                      'Accept': 'application/xml,text/xml,*/*'
+                    }
+                  });
+
+                  if (subSitemapResponse.status === 200 && subSitemapResponse.data) {
+                    const subContent = subSitemapResponse.data;
+                    const $sub = cheerio.load(subContent, {
+                      xmlMode: true
+                    });
+                    urlCount = $sub('url').length;
+                    if (urlCount === 0) {
+                      urlCount = $sub('*[loc]').length;
+                    }
+                  }
+                } catch (subError) {
+                  console.log(`Impossible d'accéder au sous-sitemap: ${subError.message}`);
+                }
+              }
+            }
 
             return {
               found: true,
@@ -382,38 +508,96 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
     const baseUrlObj = new URL(baseUrl);
     const robotsUrl = `${baseUrlObj.protocol}//${baseUrlObj.hostname}/robots.txt`;
 
-    const response = await axios.get(robotsUrl, {
-      timeout: 8000,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
-        'Accept': 'text/plain,*/*',
-        'Accept-Encoding': 'gzip, deflate, br'
-      }
-    });
+    try {
+      const response = await axios.get(robotsUrl, {
+        timeout: 10000, // augmenter le timeout pour les serveurs lents
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+          'Accept': 'text/plain,application/octet-stream,*/*',
+          'Accept-Encoding': 'gzip, deflate, br'
+        },
+        validateStatus: (status) => status === 200 || status === 204
+      });
 
-    if (response.status === 200) {
-      const content = response.data;
-      // Vérifier que le contenu ressemble à un fichier robots.txt
-      if (typeof content === 'string' &&
-        (content.includes('User-agent:') ||
+      // Vérifier si nous avons reçu un contenu
+      if (response.status === 200 && response.data) {
+        let content = '';
+
+        // Si les données reçues sont un buffer ou un tableau, les convertir en chaîne
+        if (Buffer.isBuffer(response.data)) {
+          content = response.data.toString('utf-8');
+        } else if (typeof response.data === 'object') {
+          content = JSON.stringify(response.data);
+        } else {
+          content = String(response.data);
+        }
+
+        // Vérifier que le contenu ressemble à un fichier robots.txt
+        if (content.includes('User-agent:') ||
           content.includes('Disallow:') ||
           content.includes('Allow:') ||
-          content.includes('Sitemap:'))) {
+          content.includes('Sitemap:') ||
+          content.trim().startsWith('#') ||
+          /^[a-zA-Z0-9\-_]+:/.test(content)) {
+          return {
+            found: true,
+            content: content
+          };
+        }
+
+        // Si le contenu ne semble pas être au format robots.txt standard,
+        // mais qu'il s'agit bien d'une réponse 200 à l'URL robots.txt,
+        // considérer quand même qu'un robots.txt existe
         return {
           found: true,
           content: content
         };
       }
+    } catch (directError) {
+      console.log(`Erreur lors de l'accès direct à robots.txt: ${directError.message}`);
+
+      // Essayer avec une autre approche (HEAD request)
+      try {
+        const headResponse = await axios.head(robotsUrl, {
+          timeout: 5000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)'
+          }
+        });
+
+        if (headResponse.status === 200) {
+          // Le fichier existe mais nous n'avons pas pu le lire, indiquer qu'il est trouvé
+          return {
+            found: true,
+            content: "<!-- Robots.txt file exists but content could not be retrieved -->"
+          };
+        }
+      } catch (headError) {
+        console.log(`Échec de la vérification HEAD pour robots.txt: ${headError.message}`);
+      }
     }
 
-    // Si on a une réponse mais pas le bon contenu, on vérifie quand même
-    if (response.status === 200 && response.data) {
-      return {
-        found: true,
-        content: String(response.data)
-      };
+    // Dernière tentative avec une autre méthode HTTP
+    try {
+      // Certains CDN ou WAF peuvent bloquer GET mais autoriser OPTIONS
+      const optionsResponse = await axios.options(robotsUrl, {
+        timeout: 5000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)'
+        }
+      });
+
+      if (optionsResponse.status === 200) {
+        return {
+          found: true,
+          content: "<!-- Robots.txt file exists but content could not be retrieved via GET -->"
+        };
+      }
+    } catch (optionsError) {
+      console.log(`Échec de la vérification OPTIONS pour robots.txt: ${optionsError.message}`);
     }
 
+    // Aucune des méthodes n'a fonctionné, le fichier n'existe probablement pas
     return { found: false };
   } catch (error) {
     console.error('Erreur lors de la vérification du robots.txt:', error);

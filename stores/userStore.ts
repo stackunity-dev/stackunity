@@ -1702,7 +1702,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async checkout(cardholderName: string, countryCode: string = 'FR', isBusinessCustomer: boolean = false, vatNumber: string = ''): Promise<{
+    async checkout(cardholderName: string, countryCode: string = 'FR', isBusinessCustomer: boolean = false, vatNumber: string = '', promoCode: string = ''): Promise<{
       success: boolean;
       clientSecret?: string;
       error?: string;
@@ -1713,6 +1713,9 @@ export const useUserStore = defineStore('user', {
         taxPercentage: number;
         isVatExempt?: boolean;
         vatNumber?: string;
+        discountAmount?: number;
+        discountDescription?: string;
+        discountedBaseAmount?: number;
       }
     }> {
       const currency = 'eur';
@@ -1724,7 +1727,8 @@ export const useUserStore = defineStore('user', {
             customer_name: cardholderName,
             country_code: countryCode,
             is_business: isBusinessCustomer,
-            vat_number: vatNumber
+            vat_number: vatNumber,
+            promo_code: promoCode
           }
         });
 
@@ -1742,6 +1746,9 @@ export const useUserStore = defineStore('user', {
                 taxPercentage: number;
                 isVatExempt?: boolean;
                 vatNumber?: string;
+                discountAmount?: number;
+                discountDescription?: string;
+                discountedBaseAmount?: number;
               } | undefined
             };
           }

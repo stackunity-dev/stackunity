@@ -48,7 +48,18 @@
                   <div class="price-details">
                     <div class="d-flex justify-space-between align-center mb-2">
                       <span class="text-body-1">Prix HT</span>
-                      <span class="text-h6 font-weight-bold">{{ taxDetails.baseAmount }}€</span>
+                      <span :class="{ 'text-decoration-line-through': taxDetails.discountAmount > 0 }"
+                        class="text-h6 font-weight-bold">
+                        {{ taxDetails.baseAmount }}€
+                      </span>
+                    </div>
+                    <div v-if="taxDetails.discountAmount > 0" class="d-flex justify-space-between align-center mb-2">
+                      <span class="text-body-1 success--text">{{ taxDetails.discountDescription }}</span>
+                      <span class="text-h6 success--text">-{{ taxDetails.discountAmount }}€</span>
+                    </div>
+                    <div v-if="taxDetails.discountAmount > 0" class="d-flex justify-space-between align-center mb-2">
+                      <span class="text-body-1">Prix HT après réduction</span>
+                      <span class="text-h6 font-weight-bold">{{ taxDetails.discountedBaseAmount }}€</span>
                     </div>
                     <div v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0"
                       class="d-flex justify-space-between align-center mb-2">
@@ -63,7 +74,10 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount }}€</span>
-                        <div class="text-caption success--text">Save 100% vs monthly</div>
+                        <div v-if="taxDetails.discountAmount > 0" class="text-caption success--text">
+                          You save {{ Math.round(taxDetails.discountAmount / taxDetails.baseAmount * 100) }}%
+                        </div>
+                        <div v-else class="text-caption success--text">Save 100% vs monthly</div>
                       </div>
                     </div>
                   </div>
@@ -133,6 +147,18 @@
                         placeholder="e.g. FR12345678901"
                         hint="Enter your VAT number to apply reverse charge if eligible" persistent-hint
                         @update:model-value="updateTaxRates"></v-text-field>
+                    </v-col>
+                  </v-row>
+
+                  <v-row dense class="mb-4">
+                    <v-col cols="12">
+                      <v-text-field v-model="promoCode" label="Code promo" variant="outlined"
+                        placeholder="Entrez votre code promo" append-inner-icon="mdi-check"
+                        @click:append-inner="applyPromoCode" @keydown.enter="applyPromoCode"></v-text-field>
+                      <div v-if="promoCodeMessage" :class="promoCodeSuccess ? 'text-success' : 'text-error'"
+                        class="text-caption mt-1">
+                        {{ promoCodeMessage }}
+                      </div>
                     </v-col>
                   </v-row>
 
@@ -217,6 +243,9 @@ const snackbarText = ref('');
 const billingCountry = ref('FR');
 const isBusinessCustomer = ref(false);
 const vatNumber = ref('');
+const promoCode = ref('');
+const promoCodeMessage = ref('');
+const promoCodeSuccess = ref(false);
 
 const countries = [
   { code: 'FR', name: 'France' },
@@ -270,7 +299,10 @@ const taxDetails = ref({
   totalAmount: 300,
   taxPercentage: 0,
   isVatExempt: false,
-  vatNumber: ''
+  vatNumber: '',
+  discountAmount: 0,
+  discountDescription: '',
+  discountedBaseAmount: 300
 });
 
 const benefits = [
@@ -314,7 +346,8 @@ const updateTaxRates = async () => {
       cardholderName.value,
       billingCountry.value,
       isBusinessCustomer.value,
-      vatNumber.value
+      vatNumber.value,
+      promoCode.value
     );
 
     if (response.success && response.taxDetails) {
@@ -324,7 +357,10 @@ const updateTaxRates = async () => {
         totalAmount: response.taxDetails.totalAmount,
         taxPercentage: response.taxDetails.taxPercentage,
         isVatExempt: response.taxDetails.isVatExempt || false,
-        vatNumber: response.taxDetails.vatNumber || ''
+        vatNumber: response.taxDetails.vatNumber || '',
+        discountAmount: response.taxDetails.discountAmount || 0,
+        discountDescription: response.taxDetails.discountDescription || '',
+        discountedBaseAmount: response.taxDetails.discountedBaseAmount || response.taxDetails.baseAmount
       };
 
       if (taxDetails.value.isVatExempt) {
@@ -442,7 +478,8 @@ const processPayment = async () => {
       cardholderName.value,
       billingCountry.value,
       isBusinessCustomer.value,
-      vatNumber.value
+      vatNumber.value,
+      promoCode.value
     );
 
     if (!result.success || !result.clientSecret) {
@@ -456,7 +493,10 @@ const processPayment = async () => {
         totalAmount: result.taxDetails.totalAmount,
         taxPercentage: result.taxDetails.taxPercentage,
         isVatExempt: result.taxDetails.isVatExempt || false,
-        vatNumber: result.taxDetails.vatNumber || ''
+        vatNumber: result.taxDetails.vatNumber || '',
+        discountAmount: result.taxDetails.discountAmount || 0,
+        discountDescription: result.taxDetails.discountDescription || '',
+        discountedBaseAmount: result.taxDetails.discountedBaseAmount || result.taxDetails.baseAmount
       };
     }
 
@@ -565,6 +605,57 @@ const customFilter = (item: any, query: string, itemText: string) => {
   const queryText = query.toString().toLowerCase();
 
   return text.indexOf(queryText) > -1;
+};
+
+const applyPromoCode = async () => {
+  if (!promoCode.value) {
+    promoCodeMessage.value = '';
+    return;
+  }
+
+  try {
+    loading.value = true;
+    // Utiliser directement le code promo dans le checkout 
+    // au lieu de faire une requête spécifique pour valider le code
+    const response = await userStore.checkout(
+      cardholderName.value,
+      billingCountry.value,
+      isBusinessCustomer.value,
+      vatNumber.value,
+      promoCode.value // Ajouter le code promo
+    );
+
+    if (response.success && response.taxDetails) {
+      taxDetails.value = {
+        baseAmount: response.taxDetails.baseAmount,
+        taxAmount: response.taxDetails.taxAmount,
+        totalAmount: response.taxDetails.totalAmount,
+        taxPercentage: response.taxDetails.taxPercentage,
+        isVatExempt: response.taxDetails.isVatExempt || false,
+        vatNumber: response.taxDetails.vatNumber || '',
+        discountAmount: response.taxDetails.discountAmount || 0,
+        discountDescription: response.taxDetails.discountDescription || '',
+        discountedBaseAmount: response.taxDetails.discountedBaseAmount || response.taxDetails.baseAmount
+      };
+
+      if (response.taxDetails.discountAmount > 0) {
+        promoCodeSuccess.value = true;
+        promoCodeMessage.value = `Code promo appliqué : ${response.taxDetails.discountDescription}`;
+      } else {
+        promoCodeSuccess.value = false;
+        promoCodeMessage.value = 'Code promo invalide ou déjà utilisé';
+      }
+    } else {
+      promoCodeSuccess.value = false;
+      promoCodeMessage.value = response.error || 'Erreur lors de l\'application du code promo';
+    }
+  } catch (error) {
+    console.error('Error applying promo code:', error);
+    promoCodeSuccess.value = false;
+    promoCodeMessage.value = 'Erreur lors de l\'application du code promo';
+  } finally {
+    loading.value = false;
+  }
 };
 </script>
 

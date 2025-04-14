@@ -119,17 +119,9 @@ export const calculateMetaTagsScore = (result) => {
   // Calcul du pourcentage
   const finalScore = total > 0 ? Math.round((score / total) * 100) : 0;
 
-  // Log des résultats détaillés pour debugging
-  console.log('Meta Tags Score Debug:', debugInfo, 'Final Score:', finalScore);
-
   return finalScore;
 };
 
-/**
- * Calcule le score du contenu
- * @param {Object} result - Résultat de l'audit pour une URL
- * @returns {Number} - Score entre 0 et 100
- */
 export const calculateContentScore = (result) => {
   if (!result) return 0;
 
@@ -284,17 +276,10 @@ export const calculateContentScore = (result) => {
   // Calcul du pourcentage
   const finalScore = total > 0 ? Math.round((score / total) * 100) : 0;
 
-  // Log pour debugging
-  console.log('Content Score Debug:', debugInfo, 'Final Score:', finalScore);
 
   return finalScore;
 };
 
-/**
- * Calcule le score technique SEO
- * @param {Object} result - Résultat de l'audit pour une URL
- * @returns {Number} - Score entre 0 et 100
- */
 export const calculateTechnicalSeoScore = (result) => {
   if (!result) return 0;
 
@@ -477,7 +462,6 @@ export const calculateTechnicalSeoScore = (result) => {
 
   const finalScore = total > 0 ? Math.round((score / total) * 100) : 0;
 
-  console.log('Technical SEO Score Debug:', debugInfo, 'Final Score:', finalScore);
 
   return finalScore;
 };
@@ -615,18 +599,6 @@ export const calculateAccessibilityScore = (result) => {
   const finalScore = total > 0 ? Math.round((score / total) * 100) : 0;
   debugInfo.totalScore = finalScore;
 
-  // Log pour débogage
-  console.log('Détails du score d\'accessibilité:', {
-    imagesWithAlt: debugInfo.imagesWithAlt,
-    headingStructure: debugInfo.headingStructure,
-    ariaAttributes: debugInfo.ariaAttributes,
-    contrastIssues: debugInfo.contrastIssues,
-    formAccessibility: debugInfo.formAccessibility,
-    total: total,
-    score: score,
-    finalScore: finalScore
-  });
-
   return finalScore;
 };
 
@@ -644,7 +616,6 @@ export const calculateSecurityScore = (result) => {
   if (result.securityChecks &&
     result.securityChecks.securityScore !== undefined &&
     !hasSecurityIssues) {
-    console.log('Security Score (from result, no issues):', result.securityChecks.securityScore);
     return Number(result.securityChecks.securityScore) || 0;
   }
 
@@ -747,16 +718,6 @@ export const calculateSecurityScore = (result) => {
 
   // Calculer le score final, avec un minimum de 0
   const finalScore = Math.max(0, Math.round(score));
-
-  // Log pour debugging
-  console.log('Security Score Detail:', {
-    baseScore: debugInfo.baseScore,
-    warnings: debugInfo.warnings || 0,
-    warningsCount: debugInfo.warningsCount || 0,
-    vulnerabilities: debugInfo.vulnerabilitiesCount,
-    finalScore: finalScore
-  });
-
   return finalScore;
 };
 
