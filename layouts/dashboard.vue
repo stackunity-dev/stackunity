@@ -165,7 +165,7 @@ const updatePageTitle = () => {
   } else if (path.includes('/accessibility')) {
     currentPageTitle.value = 'Accessibility';
   } else if (path.includes('/website-analyzer')) {
-    currentPageTitle.value = 'Web view vitals';
+    currentPageTitle.value = 'Website analyzer';
   } else if (path.includes('/robots')) {
     currentPageTitle.value = 'Robots & Schema';
   } else if (path.includes('/settings')) {
@@ -390,7 +390,7 @@ const items = computed(() => [
     prependIcon: 'mdi-rocket-launch-outline',
     link: true,
     children: [
-      createPremiumMenuItem('Web view vitals', '/website-analyzer', 'mdi-magnify', 'websiteAnalyzer'),
+      createPremiumMenuItem('Website analyzer', '/website-analyzer', 'mdi-magnify', 'websiteAnalyzer'),
       createPremiumMenuItem('Robots & Schema', '/robots', 'mdi-robot', 'robots')
     ]
   },

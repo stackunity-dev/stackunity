@@ -126,7 +126,7 @@ const featureType = computed(() => {
   const title = props.title?.toLowerCase() || '';
   if (title.includes('database') || title.includes('sql')) {
     return 'databaseDesigner';
-  } else if (title.includes('web view vitals')) {
+  } else if (title.includes('website analyzer')) {
     return 'websiteAnalyzer';
   } else if (title.includes('robot') || title.includes('schema')) {
     return 'robots';
