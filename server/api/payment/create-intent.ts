@@ -1,12 +1,11 @@
 import { defineEventHandler, readBody } from 'h3';
 import Stripe from 'stripe';
 
+// Liste des codes promo avec leurs réductions
 const promoCodes = {
   'WELCOME10': { type: 'percentage', value: 10, description: '10% de réduction sur votre achat' },
-  'WELCOME50': { type: 'percentage', value: 50, description: '50% de réduction sur votre achat' },
+  'WELCOME20': { type: 'percentage', value: 20, description: '20% de réduction sur votre achat' },
 };
-
-const usedCodes = new Set<string>();
 
 export default defineEventHandler(async (event) => {
   try {
@@ -49,30 +48,33 @@ export default defineEventHandler(async (event) => {
       };
     }
 
+    // Prix de base
     let baseAmount = 19999;
     let discountAmount = 0;
     let discountDescription = '';
 
+    // Vérifier si un code promo a été fourni
     if (promo_code) {
       const upperCode = promo_code.toUpperCase();
 
-      if (promoCodes[upperCode] && !usedCodes.has(upperCode)) {
+      if (promoCodes[upperCode]) {
+        // Appliquer la réduction
         const promoInfo = promoCodes[upperCode];
 
         if (promoInfo.type === 'percentage') {
           discountAmount = Math.round(baseAmount * (promoInfo.value / 100));
           discountDescription = `${promoInfo.value}% de réduction`;
         } else if (promoInfo.type === 'fixed') {
-          discountAmount = promoInfo.value * 100;
+          discountAmount = promoInfo.value * 100; // Convertir en centimes
           discountDescription = `${promoInfo.value}€ de réduction`;
         }
 
-        discountAmount = Math.min(discountAmount, baseAmount - 1);
-
-        usedCodes.add(upperCode);
+        // S'assurer que la réduction ne dépasse pas le montant total
+        discountAmount = Math.min(discountAmount, baseAmount - 1); // Laisser au moins 1 centime
       }
     }
 
+    // Appliquer la réduction
     const discountedBaseAmount = baseAmount - discountAmount;
 
     if (process.env.NODE_ENV === 'development' && stripeSecretKey.startsWith('sk_test_')) {
