@@ -1,7 +1,6 @@
 import { defineEventHandler, readBody } from 'h3';
 import Stripe from 'stripe';
 
-// Liste des codes promo avec leurs réductions
 const promoCodes = {
   'WELCOME10': { type: 'percentage', value: 10, description: '10% de réduction sur votre achat' },
   'TUESDAY50': { type: 'percentage', value: 50, description: '50% de réduction sur votre achat' },
