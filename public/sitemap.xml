@@ -3,49 +3,37 @@
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://stackunity.tech/</loc>
-    <lastmod>2025-04-10T16:20:11.652Z</lastmod>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
       <image:caption>StackUnity - developement hub all-in-one platform</image:caption>
     </image:image>
-    <image:image>
-      <image:loc>https://stackunity.tech/logo/stackunity.png</image:loc>
-      <image:caption>StackUnity - Develop faster and better with StackUnity</image:caption>
-    </image:image>
   </url>
   <url>
     <loc>https://stackunity.tech/about</loc>
-    <lastmod>2025-04-10T16:20:11.652Z</lastmod>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
       <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
       <image:caption>StackUnity title</image:caption>
-    </image:image>
-    <image:image>
-      <image:loc>https://stackunity.tech/logo/stackunity.png</image:loc>
-      <image:caption>StackUnity - Develop faster and better with StackUnity</image:caption>
     </image:image>
   </url>
   <url>
     <loc>https://stackunity.tech/contact</loc>
-    <lastmod>2025-04-10T16:20:11.652Z</lastmod>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
       <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
       <image:caption>StackUnity title</image:caption>
     </image:image>
-    <image:image>
-      <image:loc>https://stackunity.tech/logo/stackunity.png</image:loc>
-      <image:caption>StackUnity - Develop faster and better with StackUnity</image:caption>
-    </image:image>
   </url>
   <url>
     <loc>https://stackunity.tech/login</loc>
-    <lastmod>2025-04-10T16:20:11.652Z</lastmod>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <image:image>
@@ -59,35 +47,27 @@
   </url>
   <url>
     <loc>https://stackunity.tech/notices</loc>
-    <lastmod>2025-04-10T16:20:11.652Z</lastmod>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <image:image>
       <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
       <image:caption>DevUnity title</image:caption>
     </image:image>
-    <image:image>
-      <image:loc>https://stackunity.tech/logo/stackunity.png</image:loc>
-      <image:caption>StackUnity - Develop faster and better with StackUnity</image:caption>
-    </image:image>
   </url>
   <url>
     <loc>https://stackunity.tech/privacy</loc>
-    <lastmod>2025-04-10T16:20:11.652Z</lastmod>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <image:image>
       <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
       <image:caption>StackUnity title</image:caption>
     </image:image>
-    <image:image>
-      <image:loc>https://stackunity.tech/logo/stackunity.png</image:loc>
-      <image:caption>StackUnity - Develop faster and better with StackUnity</image:caption>
-    </image:image>
   </url>
   <url>
     <loc>https://stackunity.tech/signup</loc>
-    <lastmod>2025-04-10T16:20:11.652Z</lastmod>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <image:image>
@@ -101,16 +81,12 @@
   </url>
   <url>
     <loc>https://stackunity.tech/terms</loc>
-    <lastmod>2025-04-10T16:20:11.652Z</lastmod>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <image:image>
       <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
       <image:caption>StackUnity title</image:caption>
-    </image:image>
-    <image:image>
-      <image:loc>https://stackunity.tech/logo/stackunity.png</image:loc>
-      <image:caption>StackUnity - Develop faster and better with StackUnity</image:caption>
     </image:image>
   </url>
 </urlset>

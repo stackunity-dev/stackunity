@@ -44,6 +44,9 @@ userStore.isAdmin = userStore.isAdmin || false;
 
 useHead({
   title: 'StackUnity - The all-in-one platform for developers',
+  htmlAttrs: {
+    lang: 'en'
+  },
   meta: [
     { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
     { name: 'keywords', content: 'StackUnity, dashboard, tools, snippets, SQL, Studio, Sitemaps' },
@@ -109,9 +112,9 @@ onErrorCaptured((err, instance, info) => {
 async function restoreUserSession() {
   if (!isClient) return false;
 
-  // Protéger contre les boucles infinies de restauration
+  // Protect against infinite restoration loops
   if (restorationAttemptCount.value >= maxRestorationAttempts) {
-    console.log('Nombre maximal de tentatives de restauration atteint');
+    console.log('Maximum restoration attempts reached');
     return false;
   }
 
@@ -123,8 +126,6 @@ async function restoreUserSession() {
     // Vérifier le token et les données utilisateur
     const storedToken = TokenUtils.retrieveToken();
     const storedUserData = localStorage.getItem('user_data');
-
-    console.log('Tentative de restauration de session:', !!storedToken, !!storedUserData);
 
     // Si aucune donnée n'est disponible, arrêter la restauration
     if (!storedToken || !storedUserData) {
@@ -179,14 +180,12 @@ async function restoreUserSession() {
           });
 
           if (!refreshResponse.ok) {
-            console.log('Échec du rafraîchissement du token');
             return false;
           }
 
           const refreshData = await refreshResponse.json();
 
           if (!refreshData.success || !refreshData.accessToken) {
-            console.log('Pas de token dans la réponse de rafraîchissement');
             return false;
           }
 
@@ -204,12 +203,6 @@ async function restoreUserSession() {
             userStore.isPremium = Boolean(refreshData.user.isPremium);
             userStore.isAdmin = Boolean(refreshData.user.isAdmin);
             userStore.persistData();
-
-            console.log('Session restaurée par rafraîchissement', {
-              authenticated: userStore.isAuthenticated,
-              premium: userStore.isPremium,
-              admin: userStore.isAdmin
-            });
 
             return true;
           }

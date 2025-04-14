@@ -26,15 +26,15 @@
               </div>
 
               <div class="auth-buttons ml-6">
-                <v-btn color="primary" class="login-btn" to="/login" variant="tonal" rounded="rounded-xl"
-                  prepend-icon="mdi-login">
+                <v-btn color="primary" class="login-btn" aria-label="Login" to="/login" variant="tonal"
+                  rounded="rounded-xl" prepend-icon="mdi-login">
                   Login
                 </v-btn>
               </div>
             </nav>
 
             <div v-else-if="isClient && !display.smAndUp.value" class="d-flex align-center">
-              <v-btn color="primary" class="mr-2" to="/login" size="small" rounded="pill">
+              <v-btn color="primary" class="mr-2" to="/login" aria-label="Login" size="small" rounded="pill">
                 <v-icon size="small" class="mr-1">mdi-login</v-icon>
                 Login
               </v-btn>
@@ -56,8 +56,8 @@
         class="v-navigation-drawer v-navigation-drawer--right v-navigation-drawer--temporary v-theme--dark v-theme--dark pa-6">
         <div class="drawer-header mb-8 d-flex justify-space-between align-center">
           <img src="/logo/stackunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="120"
-            :eager="true" loading="eager">
-          <v-btn icon variant="text" @click="drawer = false">
+            loading="eager">
+          <v-btn icon variant="text" aria-label="Close" @click="drawer = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
@@ -75,7 +75,8 @@
         </div>
 
         <div class="drawer-footer mt-auto pt-6">
-          <v-btn block color="primary" to="/signup" class="mb-4" size="large" rounded="pill" elevation="2">
+          <v-btn block color="primary" to="/signup" aria-label="Get started" class="mb-4" size="large" rounded="pill"
+            elevation="2">
             <v-icon start>mdi-rocket-launch-outline</v-icon>
             Get started
           </v-btn>
@@ -99,11 +100,13 @@
                   The starting point for devs who want to progress, build and monetise their projects.
                 </p>
                 <div class="d-flex flex-column flex-sm-row ga-4 justify-center justify-md-start">
-                  <v-btn color="success" size="x-large" to="/signup" variant="tonal" class="px-8" elevation="2">
+                  <v-btn color="success" size="x-large" aria-label="Start Free Trial" to="/signup" variant="tonal"
+                    class="px-8" elevation="2">
                     <v-icon start>mdi-rocket-launch-outline</v-icon>
                     Start Free Trial
                   </v-btn>
-                  <v-btn variant="tonal" color="info" size="x-large" href="#features" class="px-8">
+                  <v-btn variant="tonal" color="info" size="x-large" aria-label="Watch Demo" href="#features"
+                    class="px-8">
                     <v-icon start>mdi-play-circle-outline</v-icon>
                     Watch Demo
                   </v-btn>
@@ -178,8 +181,8 @@
                     <v-card-title class="text-h5 font-weight-bold">{{ step.title }}</v-card-title>
                     <v-card-text class="text-body-1">{{ step.description }}</v-card-text>
                     <v-card-actions class="pa-4">
-                      <v-btn :color="step.color" variant="text" class="text-none" :to="step.link">Learn more <v-icon
-                          right>mdi-arrow-right</v-icon></v-btn>
+                      <v-btn :color="step.color" variant="text" class="text-none" :to="step.link"
+                        aria-label="Learn more">Learn more <v-icon right>mdi-arrow-right</v-icon></v-btn>
                     </v-card-actions>
                   </v-card>
                 </article>
@@ -188,7 +191,7 @@
 
             <div class="d-flex justify-center mt-12">
               <v-btn size="large" color="info" variant="tonal" class="px-8 rounded-pill" elevation="2" to="/signup"
-                nuxt>
+                aria-label="Get Started Now" nuxt>
                 Get Started Now
                 <v-icon end>mdi-rocket-launch-outline</v-icon>
               </v-btn>
@@ -212,7 +215,8 @@
                 <p class="text-subtitle-1 white--text text-opacity-high mb-8">
                   Join the community already using DevUnity for their projects.
                 </p>
-                <v-btn x-large color="info" variant="tonal" elevation="2" class="px-8" to="/signup">
+                <v-btn x-large color="info" variant="tonal" elevation="2" class="px-8" aria-label="Create free account"
+                  to="/signup">
                   Create free account
                 </v-btn>
               </v-col>
@@ -228,7 +232,7 @@
           <v-col cols="12" md="5" lg="5" class="mb-6 mb-md-0">
             <div class="d-flex align-center mb-4">
               <img src="/logo/stackunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="180"
-                :eager="true" loading="eager">
+                loading="eager">
             </div>
             <p class="text-body-2 text-medium-emphasis mb-4">
               The all-in-one platform for developers who want to create, manage and optimize their web projects.
