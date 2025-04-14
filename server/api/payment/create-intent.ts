@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     const {
-      currency,
+      currency = 'EUR',
       customer_name,
       country_code = 'FR',
       vat_number = '',
