@@ -199,7 +199,7 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
       }
 
       doc.moveDown(2);
-      doc.fontSize(8).text('DevUnity SAS - Capital social: 1 000€ - SIRET: 123 456 789 00012 - RCS Paris - TVA Intracommunautaire: FR12345678900', { align: 'center' });
+      doc.fontSize(8).text('StackUnity SAS - Capital social: 1 000€ - SIRET: 123 456 789 00012 - RCS Paris - TVA Intracommunautaire: FR12345678900', { align: 'center' });
       doc.text('Payment made by credit card via Stripe', { align: 'center' });
       doc.moveDown();
       doc.text(`Facture générée le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, { align: 'center' });
@@ -228,7 +228,7 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://devunity.com/logo/devunity-title.png" alt="DevUnity Logo" style="max-width: 200px;" />
+            <img src="https://stackunity.tech/logo/stackunity-title.png" alt="StackUnity Logo" style="max-width: 200px;" />
           </div>
           
           <h2 style="color: #333;">Thank you for your purchase!</h2>
@@ -242,7 +242,7 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
             <p><strong>Date:</strong> ${new Date().toLocaleDateString('fr-FR')}</p>
           </div>
           
-          <p>You can now enjoy all the premium features of DevUnity:</p>
+          <p>You can now enjoy all the premium features of StackUnity:</p>
           <ul>
             <li>Database Designer</li>
             <li>SEO Audit</li>
@@ -250,9 +250,9 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
             <li>Premium Components</li>
           </ul>
           
-          <p>If you have any questions regarding your invoice or your subscription, please contact our support team at <a href="mailto:support@devunity.com">support@devunity.com</a>.</p>
+          <p>If you have any questions regarding your invoice or your subscription, please contact our support team at <a href="mailto:support@stackunity.tech">support@stackunity.tech</a>.</p>
           
-          <p>Best regards,<br />The DevUnity team</p>
+          <p>Best regards,<br />The StackUnity team</p>
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #777; text-align: center;">
             <p>StackUnity SAS - 86000 Poitiers, France</p>
