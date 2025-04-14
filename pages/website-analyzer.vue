@@ -74,7 +74,8 @@
                   Resume loading...
                 </v-alert>
 
-                <v-btn color="primary" block class="mt-4" prepend-icon="mdi-file-pdf-box" @click="generatePDFReport">
+                <v-btn disabled color="primary" block class="mt-4" prepend-icon="mdi-file-pdf-box"
+                  @click="generatePDFReport">
                   Generate PDF Report
                 </v-btn>
               </v-card-text>

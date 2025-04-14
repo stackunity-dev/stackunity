@@ -96,8 +96,7 @@
                   <span class="text-primary">StackUnity</span> - Your All-in-One Development Hub
                 </h1>
                 <p class="text-h5 mb-8 text-medium-emphasis">
-                  Accelerate your development workflow with our comprehensive suite of tools. From code snippets to SEO
-                  optimization, we've got you covered.
+                  The starting point for devs who want to progress, build and monetise their projects.
                 </p>
                 <div class="d-flex flex-column flex-sm-row ga-4 justify-center justify-md-start">
                   <v-btn color="success" size="x-large" to="/signup" variant="tonal" class="px-8" elevation="2">
@@ -135,7 +134,7 @@
               <span class="section-subtitle">POWERFUL TOOLS</span>
               <h2 id="features-heading" class="text-h3 font-weight-bold mb-3">Features That Boost Your Productivity</h2>
               <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
-                DevUnity combines all the tools you need to develop modern web applications in one intuitive platform.
+                StackUnity combines all the tools you need to develop modern web applications in one intuitive platform.
               </p>
             </div>
 
