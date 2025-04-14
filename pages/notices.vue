@@ -96,8 +96,28 @@
                 <p class="text-body-1 mb-4">
                   StackUnity is proud to use and contribute to the open source ecosystem. Our platform relies on several
                   open source libraries
-                  and frameworks, whose copyright belongs to their respective authors.
+                  and frameworks, whose copyright belong to their respective authors.
                 </p>
+
+                <v-expansion-panels variant="accordion" class="mb-6">
+                  <v-expansion-panel>
+                    <v-expansion-panel-title>
+                      Vuetify MIT License
+                    </v-expansion-panel-title>
+                    <v-expansion-panel-text>
+                      <pre class="text-body-2 pa-4 bg-grey-lighten-4 rounded-lg">
+The MIT License (MIT)
+
+Copyright (c) 2016-2023 John Jeremy Leider
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre>
+                    </v-expansion-panel-text>
+                  </v-expansion-panel>
+                </v-expansion-panels>
 
                 <h3 class="text-h6 font-weight-bold mt-6 mb-4">Frameworks & Libraries</h3>
                 <div class="libraries-grid">

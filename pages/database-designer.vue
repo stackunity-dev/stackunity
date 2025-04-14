@@ -40,6 +40,30 @@
                         prepend-inner-icon="mdi-folder-open" @update:model-value="handleSchemaSelection" hide-details
                         :loading="isLoadingSchemas"></v-select>
 
+                      <div class="text-h6 mb-2 d-flex align-center">
+                        <v-icon color="primary" class="mr-2">mdi-import</v-icon>
+                        Import Schema
+                      </div>
+                      <v-divider class="mb-4"></v-divider>
+
+                      <v-select v-model="importType" :items="importTypes" label="Schema Type" variant="outlined"
+                        class="mb-4" hide-details></v-select>
+
+                      <v-file-input v-if="importType === 'orm'" v-model="schemaFile" :accept="fileAccept"
+                        label="Schema File" variant="outlined" prepend-icon="mdi-file-upload" class="mb-4" hide-details
+                        @change="handleFileImport"></v-file-input>
+
+                      <v-textarea v-if="importType === 'sql'" v-model="sqlSchema" label="SQL Schema" variant="outlined"
+                        rows="4" class="mb-4" hide-details></v-textarea>
+
+                      <v-textarea v-if="importType === 'nosql'" v-model="nosqlSchema" label="NoSQL Schema"
+                        variant="outlined" rows="4" class="mb-4" hide-details></v-textarea>
+
+                      <v-btn color="primary" block :loading="importing" :disabled="!canImport" @click="importSchema"
+                        prepend-icon="mdi-import" variant="tonal" class="mb-4">
+                        Import Schema
+                      </v-btn>
+
                       <div class="d-flex flex-wrap">
                         <v-btn color="primary" @click="addTable" prepend-icon="mdi-table-plus" variant="tonal"
                           class="mr-2 mb-2">
@@ -1106,8 +1130,7 @@ const loadSelectedSchema = (schema: any) => {
           ...(column.foreignKey ? ['foreignKey'] : []),
           ...(column.notNull ? ['notNull'] : []),
           ...(column.unique ? ['unique'] : []),
-          ...(column.autoIncrement ? ['autoIncrement'] : []),
-          ...(column.default ? ['default'] : [])
+          ...(column.autoIncrement ? ['autoIncrement'] : [])
         ]
       };
     }),
@@ -1424,6 +1447,159 @@ const exportDatabase = (format) => {
   snackbarText.value = `Database exported to ${format.toUpperCase()}`;
   snackbarColor.value = 'success';
   showSnackbar.value = true;
+};
+
+// Import Types
+const importType = ref('sql');
+const importTypes = [
+  { title: 'SQL', value: 'sql' },
+  { title: 'ORM', value: 'orm' },
+  { title: 'NoSQL', value: 'nosql' }
+];
+
+// File Input
+const schemaFile = ref<File[]>([]);
+const importing = ref(false);
+
+// SQL Import
+const sqlSchema = ref('');
+
+// ORM Import
+const ormType = ref('sequelize');
+const ormTypes = [
+  { title: 'Sequelize', value: 'sequelize' },
+  { title: 'TypeORM', value: 'typeorm' },
+  { title: 'Prisma', value: 'prisma' }
+];
+const ormLanguage = ref('typescript');
+const ormLanguages = [
+  { title: 'TypeScript', value: 'typescript' },
+  { title: 'JavaScript', value: 'javascript' }
+];
+
+// NoSQL Import
+const nosqlType = ref('mongodb');
+const nosqlTypes = [
+  { title: 'MongoDB', value: 'mongodb' },
+  { title: 'Firebase', value: 'firebase' },
+  { title: 'DynamoDB', value: 'dynamodb' }
+];
+const nosqlSchema = ref('');
+
+// Computed Properties
+const fileAccept = computed(() => {
+  switch (importType.value) {
+    case 'sql':
+      return '.sql';
+    case 'orm':
+      return '.ts,.js';
+    case 'nosql':
+      return '.json';
+    default:
+      return '';
+  }
+});
+
+const canImport = computed(() => {
+  if (schemaFile.value.length > 0) return true;
+  if (importType.value === 'sql' && sqlSchema.value) return true;
+  if (importType.value === 'nosql' && nosqlSchema.value) return true;
+  return false;
+});
+
+// Methods
+const handleFileImport = (files: File[]) => {
+  if (!files || files.length === 0) return;
+
+  const file = files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const content = e.target?.result as string;
+    switch (importType.value) {
+      case 'sql':
+        sqlSchema.value = content;
+        break;
+      case 'nosql':
+        nosqlSchema.value = content;
+        break;
+    }
+  };
+  reader.readAsText(file);
+};
+
+const importSchema = async () => {
+  importing.value = true;
+  try {
+    let schema;
+    switch (importType.value) {
+      case 'sql':
+        schema = {
+          database_name: databaseName.value,
+          tables: tables.value
+        };
+        break;
+      case 'orm':
+        if (schemaFile.value.length === 0) throw new Error('Aucun fichier sélectionné');
+        const content = await schemaFile.value[0].text();
+        schema = {
+          database_name: databaseName.value,
+          tables: JSON.parse(content).tables || []
+        };
+        break;
+      case 'nosql':
+        if (!nosqlSchema.value) throw new Error('Aucun schéma NoSQL fourni');
+        schema = {
+          database_name: databaseName.value,
+          tables: JSON.parse(nosqlSchema.value).tables || []
+        };
+        break;
+    }
+
+    if (schema.tables) {
+      tables.value = schema.tables.map((table: any) => ({
+        id: Math.random().toString(36).substring(2, 15),
+        name: table.name,
+        columns: table.columns.map((col: any) => ({
+          name: col.name,
+          type: col.type,
+          nullable: col.nullable,
+          primaryKey: col.primaryKey,
+          foreignKey: col.foreignKey,
+          notNull: col.notNull,
+          unique: col.unique,
+          autoIncrement: col.autoIncrement,
+          referencedTable: col.referencedTable,
+          referencedColumn: col.referencedColumn,
+          constraints: [
+            ...(col.primaryKey ? ['primaryKey'] : []),
+            ...(col.foreignKey ? ['foreignKey'] : []),
+            ...(col.notNull ? ['notNull'] : []),
+            ...(col.unique ? ['unique'] : []),
+            ...(col.autoIncrement ? ['autoIncrement'] : [])
+          ]
+        })),
+        foreignKeys: [],
+        defaultOptions: []
+      }));
+    }
+
+    if (schema.database_name) {
+      databaseName.value = schema.database_name;
+    }
+
+    generateSQL();
+
+    snackbarText.value = 'Schéma importé avec succès';
+    snackbarColor.value = 'success';
+    showSnackbar.value = true;
+  } catch (error) {
+    console.error('Erreur lors de l\'importation du schéma:', error);
+    snackbarText.value = 'Erreur lors de l\'importation du schéma';
+    snackbarColor.value = 'error';
+    showSnackbar.value = true;
+  } finally {
+    importing.value = false;
+  }
 };
 </script>
 

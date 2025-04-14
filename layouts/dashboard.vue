@@ -156,7 +156,7 @@ const updatePageTitle = () => {
     currentPageTitle.value = 'Dashboard';
   } else if (path.includes('/snippets')) {
     currentPageTitle.value = 'Snippets';
-  } else if (path.includes('/sql-generator')) {
+  } else if (path.includes('/database-designer')) {
     currentPageTitle.value = 'Database Designer';
   } else if (path.includes('/studio')) {
     currentPageTitle.value = 'Studio';
@@ -289,7 +289,7 @@ const getCurrentPageIcon = () => {
     return 'mdi-view-dashboard-outline';
   } else if (path.includes('/snippets')) {
     return 'mdi-code-tags';
-  } else if (path.includes('/sql-generator')) {
+  } else if (path.includes('/database-designer')) {
     return 'mdi-database-cog';
   } else if (path.includes('/studio')) {
     return 'mdi-palette';
@@ -373,7 +373,7 @@ const items = computed(() => [
     prependIcon: 'mdi-database-outline',
     link: true,
     children: [
-      createPremiumMenuItem('Database Designer', '/sql-generator', 'mdi-database', 'databaseDesigner')
+      createPremiumMenuItem('Database Designer', '/database-designer', 'mdi-database', 'databaseDesigner')
     ]
   },
   {
