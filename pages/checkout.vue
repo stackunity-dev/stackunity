@@ -47,7 +47,7 @@
 
                   <div class="price-details">
                     <div class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-body-1">Prix HT</span>
+                      <span class="text-body-1">HT price</span>
                       <span :class="{ 'text-decoration-line-through': taxDetails.discountAmount > 0 }"
                         class="text-h6 font-weight-bold">
                         {{ taxDetails.baseAmount }}€
@@ -58,7 +58,7 @@
                       <span class="text-h6 success--text">-{{ taxDetails.discountAmount }}€</span>
                     </div>
                     <div v-if="taxDetails.discountAmount > 0" class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-body-1">Prix HT après réduction</span>
+                      <span class="text-body-1">HT price after discount</span>
                       <span class="text-h6 font-weight-bold">{{ taxDetails.discountedBaseAmount }}€</span>
                     </div>
                     <div v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0"
@@ -152,8 +152,8 @@
 
                   <v-row dense class="mb-4">
                     <v-col cols="12">
-                      <v-text-field v-model="promoCode" label="Code promo" variant="outlined"
-                        placeholder="Entrez votre code promo" append-inner-icon="mdi-check"
+                      <v-text-field v-model="promoCode" label="Promo code" variant="outlined"
+                        placeholder="Enter your promo code" append-inner-icon="mdi-check"
                         @click:append-inner="applyPromoCode" @keydown.enter="applyPromoCode"></v-text-field>
                       <div v-if="promoCodeMessage" :class="promoCodeSuccess ? 'text-success' : 'text-error'"
                         class="text-caption mt-1">
@@ -638,21 +638,21 @@ const applyPromoCode = async () => {
         discountedBaseAmount: response.taxDetails.discountedBaseAmount || response.taxDetails.baseAmount
       };
 
-      if (response.taxDetails.discountAmount > 0) {
+      if (response.taxDetails.discountAmount && response.taxDetails.discountAmount > 0) {
         promoCodeSuccess.value = true;
-        promoCodeMessage.value = `Code promo appliqué : ${response.taxDetails.discountDescription}`;
+        promoCodeMessage.value = `Promo code applied : ${response.taxDetails.discountDescription}`;
       } else {
         promoCodeSuccess.value = false;
-        promoCodeMessage.value = 'Code promo invalide ou déjà utilisé';
+        promoCodeMessage.value = 'Invalid promo code or already used';
       }
     } else {
       promoCodeSuccess.value = false;
-      promoCodeMessage.value = response.error || 'Erreur lors de l\'application du code promo';
+      promoCodeMessage.value = response.error || 'Error applying promo code';
     }
   } catch (error) {
     console.error('Error applying promo code:', error);
     promoCodeSuccess.value = false;
-    promoCodeMessage.value = 'Erreur lors de l\'application du code promo';
+    promoCodeMessage.value = 'Error applying promo code';
   } finally {
     loading.value = false;
   }
