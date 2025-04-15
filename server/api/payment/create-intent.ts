@@ -2,8 +2,8 @@ import { defineEventHandler, readBody } from 'h3';
 import Stripe from 'stripe';
 
 const promoCodes = {
-  'WELCOME10': { type: 'percentage', value: 10, description: '10% de réduction sur votre achat' },
-  'TUESDAY50': { type: 'percentage', value: 50, description: '50% de réduction sur votre achat' },
+  'WELCOME20': { type: 'percentage', value: 20, description: '20% OFF' },
+  'TUESDAY50': { type: 'percentage', value: 50, description: '50% OFF' },
 };
 
 export default defineEventHandler(async (event) => {
