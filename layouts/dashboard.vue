@@ -5,7 +5,7 @@
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-4">
           <div class="logo-container mr-3">
-            <img src="/logo/stackunity-letter.png" alt="StackUnity" class="logo-devunity" />
+            <img src="/images/logo.png" alt="StackUnity" class="logo-devunity" />
           </div>
           <div>
             <div class="text-h6 font-weight-bold">StackUnity</div>
@@ -399,7 +399,18 @@ const items = computed(() => [
 
 <style scoped>
 .drawer-header {
-  background: linear-gradient(to bottom, rgba(var(--v-theme-surface-variant), 0.3), transparent)
+  background: transparent;
+  padding: 16px;
+}
+
+.drawer-header .text-h6 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: rgb(var(--v-theme-on-surface));
+}
+
+.drawer-header .text-caption {
+  color: rgba(var(--v-theme-on-surface), 0.7);
 }
 
 .page-header {
@@ -433,15 +444,13 @@ const items = computed(() => [
 }
 
 .logo-container {
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 30% 30%, rgba(var(--v-theme-secondary), 0.18), transparent 60%),
-    radial-gradient(circle at 70% 70%, rgba(var(--v-theme-surface), 0.1), transparent 50%);
+  background: transparent;
   border-radius: 50%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
 }
@@ -453,13 +462,13 @@ const items = computed(() => [
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 15% 85%, rgba(var(--v-theme-primary), 0.12), transparent 50%);
+  background: transparent;
   z-index: 0;
 }
 
 .logo-devunity {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   position: relative;
   z-index: 1;

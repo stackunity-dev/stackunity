@@ -32,3 +32,12 @@ Thumbs.db
 # Fichiers de cache
 .cache/
 .temp/
+
+# Autres fichiers à ignorer
+node_modules
+.nuxt
+.output
+.DS_Store
+.env
+.env.*
+!.env.example

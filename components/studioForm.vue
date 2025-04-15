@@ -6,6 +6,8 @@
           <div class="px-4 py-2 d-flex align-center">
             <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2">Vue.js</v-chip>
             <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2">Vuetify</v-chip>
+            <PremiumFeature v-if="!userStore.user.isPremium" premium-link="/subscribe" title="Studio components"
+              icon="mdi-palette" type="chip" feature-key="studioComponents" />
           </div>
 
           <div class="px-4 py-2 d-flex align-center justify-space-between">
@@ -55,6 +57,33 @@
                   </div>
 
                   <v-card class="mb-4 pa-3">
+                    <v-text-field v-model="formProperties.title" label="Form Title" variant="outlined"
+                      density="comfortable" prepend-inner-icon="mdi-format-title" class="mb-4"></v-text-field>
+
+                    <v-text-field v-model="formProperties.subtitle" label="Form Subtitle (optional)" variant="outlined"
+                      density="comfortable" prepend-inner-icon="mdi-format-text" class="mb-4"></v-text-field>
+
+                    <v-switch v-model="formProperties.showGoogleLogin" color="primary" label="Show Google Login Button"
+                      hide-details class="mb-2"></v-switch>
+
+                    <v-text-field v-if="formProperties.showGoogleLogin" v-model="formProperties.googleLoginText"
+                      label="Google Login Button Text" variant="outlined" density="comfortable"
+                      prepend-inner-icon="mdi-google" class="mb-4"></v-text-field>
+
+                    <v-switch v-model="formProperties.showLinkedInLogin" color="primary"
+                      label="Show LinkedIn Login Button" hide-details class="mb-2"></v-switch>
+
+                    <v-text-field v-if="formProperties.showLinkedInLogin" v-model="formProperties.linkedInLoginText"
+                      label="LinkedIn Login Button Text" variant="outlined" density="comfortable"
+                      prepend-inner-icon="mdi-linkedin" class="mb-4"></v-text-field>
+
+                    <v-switch v-model="formProperties.showDivider" color="primary" label="Show Divider" hide-details
+                      class="mb-2"></v-switch>
+
+                    <v-text-field v-if="formProperties.showDivider" v-model="formProperties.dividerText"
+                      label="Divider Text" variant="outlined" density="comfortable" prepend-inner-icon="mdi-minus"
+                      class="mb-4"></v-text-field>
+
                     <div v-for="(field, index) in formFields" :key="index" class="mb-4">
                       <div class="d-flex align-center justify-space-between mb-2">
                         <span class="text-subtitle-2">Field {{ index + 1 }}</span>
@@ -154,6 +183,104 @@
                         <v-icon v-if="color.value === 'default'">mdi-palette-outline</v-icon>
                       </v-btn>
                     </v-btn-toggle>
+                  </div>
+
+                  <v-divider class="my-4"></v-divider>
+
+                  <div class="section-title d-flex align-center mb-3">
+                    <v-icon color="primary" class="mr-2">mdi-google</v-icon>
+                    <span class="text-h6">Google Button Style</span>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="text-subtitle-2 mb-2">Button Variant</label>
+                    <v-chip-group v-model="formProperties.googleButtonVariant" mandatory
+                      selected-class="bg-primary text-white">
+                      <v-chip v-for="variant in buttonVariants" :key="variant" size="small" :value="variant">
+                        {{ variant }}
+                      </v-chip>
+                    </v-chip-group>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="text-subtitle-2 mb-2">Button Color</label>
+                    <v-btn-toggle v-model="formProperties.googleButtonColor" mandatory density="comfortable"
+                      selected-class="border-primary">
+                      <v-btn v-for="color in colors" :key="color.value" :value="color.value"
+                        :color="color.value !== 'default' ? color.value : undefined" size="small" variant="tonal"
+                        width="40" height="40" class="ma-1" :class="{ 'bg-grey-lighten-3': color.value === 'default' }">
+                        <v-icon v-if="color.value === 'default'">mdi-palette-outline</v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="text-subtitle-2 mb-2">Button Size</label>
+                    <v-chip-group v-model="formProperties.googleButtonSize" mandatory
+                      selected-class="bg-primary text-white">
+                      <v-chip v-for="size in ['small', 'default', 'large', 'x-large']" :key="size" size="small"
+                        :value="size">
+                        {{ size }}
+                      </v-chip>
+                    </v-chip-group>
+                  </div>
+
+                  <v-switch v-model="formProperties.googleButtonRounded" color="primary" label="Rounded Button"
+                    hide-details class="mb-2"></v-switch>
+
+                  <div class="mb-4">
+                    <label class="text-subtitle-2 mb-2">Button Elevation</label>
+                    <v-slider v-model="formProperties.googleButtonElevation" min="0" max="24" step="1"
+                      thumb-label="always" color="primary"></v-slider>
+                  </div>
+
+                  <v-divider class="my-4"></v-divider>
+
+                  <div class="section-title d-flex align-center mb-3">
+                    <v-icon color="primary" class="mr-2">mdi-linkedin</v-icon>
+                    <span class="text-h6">LinkedIn Button Style</span>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="text-subtitle-2 mb-2">Button Variant</label>
+                    <v-chip-group v-model="formProperties.linkedInButtonVariant" mandatory
+                      selected-class="bg-primary text-white">
+                      <v-chip v-for="variant in buttonVariants" :key="variant" size="small" :value="variant">
+                        {{ variant }}
+                      </v-chip>
+                    </v-chip-group>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="text-subtitle-2 mb-2">Button Color</label>
+                    <v-btn-toggle v-model="formProperties.linkedInButtonColor" mandatory density="comfortable"
+                      selected-class="border-primary">
+                      <v-btn v-for="color in colors" :key="color.value" :value="color.value"
+                        :color="color.value !== 'default' ? color.value : undefined" size="small" variant="tonal"
+                        width="40" height="40" class="ma-1" :class="{ 'bg-grey-lighten-3': color.value === 'default' }">
+                        <v-icon v-if="color.value === 'default'">mdi-palette-outline</v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="text-subtitle-2 mb-2">Button Size</label>
+                    <v-chip-group v-model="formProperties.linkedInButtonSize" mandatory
+                      selected-class="bg-primary text-white">
+                      <v-chip v-for="size in ['small', 'default', 'large', 'x-large']" :key="size" size="small"
+                        :value="size">
+                        {{ size }}
+                      </v-chip>
+                    </v-chip-group>
+                  </div>
+
+                  <v-switch v-model="formProperties.linkedInButtonRounded" color="primary" label="Rounded Button"
+                    hide-details class="mb-2"></v-switch>
+
+                  <div class="mb-4">
+                    <label class="text-subtitle-2 mb-2">Button Elevation</label>
+                    <v-slider v-model="formProperties.linkedInButtonElevation" min="0" max="24" step="1"
+                      thumb-label="always" color="primary"></v-slider>
                   </div>
                 </div>
               </v-window-item>
@@ -327,9 +454,35 @@
           <v-form v-model="formValid" :validate-on-blur="formProperties.validateOnBlur"
             :validate-on-input="formProperties.validateOnInput" class="w-100" :color="formProperties.color"
             style="max-width: 600px" ref="form">
+            <div class="text-center mb-6">
+              <h2 class="text-h4 font-weight-bold mb-2">{{ formProperties.title }}</h2>
+              <p v-if="formProperties.subtitle" class="text-body-1 text-medium-emphasis">{{ formProperties.subtitle }}
+              </p>
+            </div>
+
             <v-alert v-if="showSuccessMessage" type="success" class="mb-4">
               {{ formProperties.successMessage }}
             </v-alert>
+
+            <v-btn v-if="formProperties.showGoogleLogin" :color="formProperties.googleButtonColor"
+              :variant="formProperties.googleButtonVariant" :size="formProperties.googleButtonSize"
+              :rounded="formProperties.googleButtonRounded" :elevation="formProperties.googleButtonElevation" block
+              class="mb-4" prepend-icon="mdi-google">
+              {{ formProperties.googleLoginText }}
+            </v-btn>
+
+            <v-btn v-if="formProperties.showLinkedInLogin" :color="formProperties.linkedInButtonColor"
+              :variant="formProperties.linkedInButtonVariant" :size="formProperties.linkedInButtonSize"
+              :rounded="formProperties.linkedInButtonRounded" :elevation="formProperties.linkedInButtonElevation" block
+              class="mb-4" prepend-icon="mdi-linkedin">
+              {{ formProperties.linkedInLoginText }}
+            </v-btn>
+
+            <v-divider
+              v-if="(formProperties.showGoogleLogin || formProperties.showLinkedInLogin) && formProperties.showDivider"
+              class="mb-4">
+              {{ formProperties.dividerText }}
+            </v-divider>
 
             <template v-for="(field, index) in formFields" :key="index">
 
@@ -466,48 +619,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import type { VForm } from 'vuetify/components';
-import Snackbar from '~/components/snackbar.vue';
-import { useUserStore } from '~/stores/userStore';
-import { getFormTemplate } from '~/utils/formTemplates';
-import icons from '~/utils/icons';
-import theme from '~/utils/theme';
-
-interface FormField {
-  type: string;
-  label: string;
-  placeholder: string;
-  value: any;
-  options?: string;
-  required: boolean;
-  icon?: string;
-  counter?: boolean;
-}
-
-type FormVariant = 'outlined' | 'plain' | 'filled' | 'underlined' | 'solo' | 'solo-inverted' | 'solo-filled';
-type FormDensity = 'default' | 'comfortable' | 'compact';
-type MessageLocation = 'bottom' | 'top';
-type ButtonVariant = 'elevated' | 'flat' | 'tonal' | 'outlined' | 'text' | 'plain';
-type ColorValue = 'default' | 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error';
-
-interface FormProperties {
-  variant: FormVariant;
-  density: FormDensity;
-  color: ColorValue;
-  disabled: boolean;
-  readonly: boolean;
-  persistentPlaceholder: boolean;
-  validateOnBlur: boolean;
-  validateOnInput: boolean;
-  successMessage: string;
-  errorMessage: string;
-  messageLocation: MessageLocation;
-  submitButtonText: string;
-  cancelButtonText: string;
-  submitButtonColor: ColorValue;
-  cancelButtonColor: ColorValue;
-  buttonVariant: ButtonVariant;
-  blockButtons: boolean;
-}
+import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
+import { getFormTemplate } from '../utils/formTemplates';
+import icons from '../utils/icons';
+import theme from '../utils/theme';
+import type { FormField, FormProperties, FormVariant, FormDensity, MessageLocation, ButtonVariant } from '../utils/studio/form-types';
 
 const emit = defineEmits(['update:content', 'save']);
 
@@ -593,7 +710,25 @@ const formProperties = ref<FormProperties>({
   submitButtonColor: 'primary',
   cancelButtonColor: 'secondary',
   buttonVariant: 'tonal',
-  blockButtons: false
+  blockButtons: false,
+  title: 'Form Title',
+  subtitle: 'Optional subtitle',
+  showGoogleLogin: false,
+  googleLoginText: 'Sign in with Google',
+  showLinkedInLogin: false,
+  linkedInLoginText: 'Sign in with LinkedIn',
+  showDivider: true,
+  dividerText: 'or continue with email',
+  googleButtonVariant: 'outlined',
+  googleButtonColor: 'default',
+  googleButtonSize: 'large',
+  googleButtonRounded: true,
+  googleButtonElevation: 0,
+  linkedInButtonVariant: 'outlined',
+  linkedInButtonColor: 'default',
+  linkedInButtonSize: 'large',
+  linkedInButtonRounded: true,
+  linkedInButtonElevation: 0
 });
 
 const addField = () => {
@@ -639,7 +774,33 @@ const applyTemplate = (templateType: string) => {
   if (templateFields && templateFields.length > 0) {
     formFields.value = templateFields;
 
-    // Afficher un message de succès
+    switch (templateType) {
+      case 'login':
+        formProperties.value.title = 'Welcome Back';
+        formProperties.value.subtitle = 'Sign in to your account';
+        formProperties.value.showGoogleLogin = true;
+        formProperties.value.showDivider = true;
+        break;
+      case 'register':
+        formProperties.value.title = 'Create Account';
+        formProperties.value.subtitle = 'Join our community today';
+        formProperties.value.showGoogleLogin = true;
+        formProperties.value.showDivider = true;
+        break;
+      case 'contact':
+        formProperties.value.title = 'Contact Us';
+        formProperties.value.subtitle = 'We\'d love to hear from you';
+        formProperties.value.showGoogleLogin = false;
+        formProperties.value.showDivider = false;
+        break;
+      case 'survey':
+        formProperties.value.title = 'Customer Survey';
+        formProperties.value.subtitle = 'Help us improve our service';
+        formProperties.value.showGoogleLogin = false;
+        formProperties.value.showDivider = false;
+        break;
+    }
+
     snackbarText.value = `${templateType.charAt(0).toUpperCase() + templateType.slice(1)} template applied successfully!`;
     showSnackbarMessage.value = true;
   }
@@ -670,9 +831,52 @@ const generateTemplateCode = () => {
   if (formProperties.value.validateOnInput) code += '  validate-on-input\n';
   code += '>\n';
 
+  code += '  <div class="text-center mb-6">\n';
+  code += `    <h2 class="text-h4 font-weight-bold mb-2">${formProperties.value.title}</h2>\n`;
+  if (formProperties.value.subtitle) {
+    code += `    <p class="text-body-1 text-medium-emphasis">${formProperties.value.subtitle}</p>\n`;
+  }
+  code += '  </div>\n\n';
+
   code += '  <v-alert v-if="showSuccessMessage" type="success" class="mb-4">\n';
   code += `    ${formProperties.value.successMessage}\n`;
   code += '  </v-alert>\n\n';
+
+  if (formProperties.value.showGoogleLogin) {
+    code += '  <v-btn\n';
+    code += `    color="${formProperties.value.googleButtonColor}"\n`;
+    code += `    variant="${formProperties.value.googleButtonVariant}"\n`;
+    code += `    size="${formProperties.value.googleButtonSize}"\n`;
+    if (formProperties.value.googleButtonRounded) code += '    rounded\n';
+    code += `    elevation="${formProperties.value.googleButtonElevation}"\n`;
+    code += '    block\n';
+    code += '    class="mb-4"\n';
+    code += '    prepend-icon="mdi-google"\n';
+    code += '  >\n';
+    code += `    ${formProperties.value.googleLoginText}\n`;
+    code += '  </v-btn>\n\n';
+  }
+
+  if (formProperties.value.showLinkedInLogin) {
+    code += '  <v-btn\n';
+    code += `    color="${formProperties.value.linkedInButtonColor}"\n`;
+    code += `    variant="${formProperties.value.linkedInButtonVariant}"\n`;
+    code += `    size="${formProperties.value.linkedInButtonSize}"\n`;
+    if (formProperties.value.linkedInButtonRounded) code += '    rounded\n';
+    code += `    elevation="${formProperties.value.linkedInButtonElevation}"\n`;
+    code += '    block\n';
+    code += '    class="mb-4"\n';
+    code += '    prepend-icon="mdi-linkedin"\n';
+    code += '  >\n';
+    code += `    ${formProperties.value.linkedInLoginText}\n`;
+    code += '  </v-btn>\n\n';
+  }
+
+  if ((formProperties.value.showGoogleLogin || formProperties.value.showLinkedInLogin) && formProperties.value.showDivider) {
+    code += '  <v-divider class="mb-4">\n';
+    code += `    ${formProperties.value.dividerText}\n`;
+    code += '  </v-divider>\n\n';
+  }
 
   formFields.value.forEach(field => {
     switch (field.type) {
