@@ -55,9 +55,9 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     { name: 'og:title', content: 'StackUnity - The all-in-one platform for developers' },
     { name: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
-    { name: 'og:image', content: '/images/preview.png' },
+    { name: 'og:image', content: '/images/preview.jpg' },
     { rel: 'canonical', href: 'https://stackunity.tech/' },
-    { rel: 'icon', type: 'image/png', href: '/images/preview.png' }
+    { rel: 'icon', type: 'image/jpg', href: '/images/preview.jpg' }
   ],
   script: [
     {
