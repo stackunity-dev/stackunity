@@ -366,8 +366,8 @@ const features = [
     color: 'info'
   },
   {
-    title: 'SEO Audit',
-    description: 'Analyze and optimize your websites\' SEO to improve their visibility.',
+    title: 'Website Audit',
+    description: 'Analyze and optimize your websites\' performance to improve their visibility.',
     icon: 'mdi-magnify',
     color: 'success'
   },
