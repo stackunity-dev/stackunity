@@ -172,6 +172,8 @@ const updatePageTitle = () => {
     currentPageTitle.value = 'Settings';
   } else if (path.includes('/newsletter-admin')) {
     currentPageTitle.value = 'Newsletter';
+  } else if (path.includes('/api-testing-hub')) {
+    currentPageTitle.value = 'API Testing Hub';
   } else {
     const routeName = path.split('/').pop() || 'Dashboard';
     currentPageTitle.value = routeName.charAt(0).toUpperCase() + routeName.slice(1);
@@ -373,7 +375,8 @@ const items = computed(() => [
     prependIcon: 'mdi-database-outline',
     link: true,
     children: [
-      createPremiumMenuItem('Database Designer', '/database-designer', 'mdi-database', 'databaseDesigner')
+      createPremiumMenuItem('Database Designer', '/database-designer', 'mdi-database', 'databaseDesigner'),
+      createPremiumMenuItem('API Testing Hub', '/api-testing-hub', 'mdi-api', 'apiTestingHub')
     ]
   },
   {

@@ -26,4 +26,8 @@ export default defineNuxtRouteMiddleware((to) => {
     console.log(`Access denied to premium route: ${to.path}`);
     return navigateTo('/checkout');
   }
+
+  if (!userStore.isPremium) {
+    return navigateTo('/pricing');
+  }
 }); 

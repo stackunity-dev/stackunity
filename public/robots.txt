@@ -1,12 +1,10 @@
 User-agent: *
 Disallow: /admin
 Disallow: /robots
-Disallow: /seo-audit
+Disallow: /database-designer
 Disallow: /checkout
-Disallow: /sql-generator
-Disallow: /wp-admin
+Disallow: /website-analyzer
 Disallow: /cgi-bin
-Disallow: /admin/newsletter-admin
 
 Sitemap: https://stackunity.tech/sitemap.xml
 

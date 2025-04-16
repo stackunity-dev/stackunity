@@ -113,8 +113,8 @@
                 </div>
               </v-col>
               <v-col cols="12" md="6" class="d-none d-md-flex justify-center">
-                <v-img src="/images/preview-devunity.avif" max-width="600" class="hero-image rounded-lg" loading="eager"
-                  alt="StackUnity platform preview" cover></v-img>
+                <v-img src="/images/preview-stackunity.avif" max-width="600" class="hero-image rounded-lg"
+                  loading="eager" alt="StackUnity platform preview" cover></v-img>
               </v-col>
             </v-row>
           </v-container>
@@ -367,14 +367,14 @@ const features = [
   },
   {
     title: 'Website Audit',
-    description: 'Analyze and optimize your websites\' performance to improve their visibility.',
+    description: 'Analyze and optimize your websites performance to improve their visibility.',
     icon: 'mdi-magnify',
     color: 'success'
   },
   {
-    title: 'Sitemaps',
-    description: 'Generate and setup all your sitemaps in our sitemaps container.',
-    icon: 'mdi-sitemap',
+    title: 'API Testing',
+    description: 'Test your APIs for security vulnerabilities and performance issues.',
+    icon: 'mdi-api',
     color: 'warning'
   },
   {

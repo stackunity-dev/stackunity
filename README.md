@@ -5,7 +5,7 @@ DevUnity is an all-in-one platform for developers who want to create, manage and
 ## Features
 
 - **Database Designer**: Create and visually manage your database schemas
-- **SEO Audit**: Analyze and optimize your website for better search engine visibility
+- **Website Audit**: Analyze and optimize your website for better search engine visibility, accessibility and more 
 - **Robots & Schema Generator**: Generate robots.txt files and schema.org data structures
 - **Premium Components**: Access high-quality Vuetify components and templates
 
@@ -14,7 +14,7 @@ DevUnity is an all-in-one platform for developers who want to create, manage and
 - Frontend: Nuxt.js with Vuetify
 - Payment Processing: Stripe
 - Authentication: JWT-based secure authentication
-- SEO Tools: Built-in analytics and performance tracking
+- Wesbite Tools: Built-in analytics and performance tracking
 
 ## Deployment
 

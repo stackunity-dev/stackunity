@@ -316,7 +316,7 @@ const getFrameworkColor = (framework: string) => {
 
 const quickTools = ref([
   {
-    title: 'SEO Audit',
+    title: 'Website Audit',
     icon: 'mdi-magnify',
     color: 'primary',
     link: '/seo-audit',
@@ -365,11 +365,11 @@ const quickTools = ref([
     disabled: false
   },
   {
-    title: 'Sitemaps',
-    icon: 'mdi-sitemap',
+    title: 'API Testing',
+    icon: 'mdi-api',
     color: 'grey',
-    link: '/seo-audit',
-    disabled: !userStore.user?.isPremium
+    link: '/api-testing-hub',
+    disabled: false
   },
 ]);
 

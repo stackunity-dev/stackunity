@@ -172,7 +172,7 @@ function analyzeXSSVulnerabilities($: CheerioSelector, vulnerabilities: XSSVulne
   let found = 0;
   riskAttributes.forEach(attr => {
     $(`[${attr}]`).each((_, element) => {
-      const el = element as Element;
+      const el = element as unknown as Element;
       const code = $(el).attr(attr) || '';
       found++;
 

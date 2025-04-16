@@ -89,7 +89,12 @@ export default defineNuxtConfig({
         }
       ],
       meta: [
-        { name: 'crossorigin', content: 'use-credentials' }
+        { name: 'crossorigin', content: 'use-credentials' },
+        { name: 'author', content: 'Stackunity' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
       ]
     },
     buildAssetsDir: '/_nuxt/',

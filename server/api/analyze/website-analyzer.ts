@@ -241,6 +241,10 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     headers: {
       'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,*/*;q=0.8',
+      'Allow-Methods': 'POST, GET, OPTIONS',
+      'Allow-Headers': 'Content-Type, Authorization',
+      'Allow-Origin': '*',
+      'Allow-Credentials': 'true',
       'Accept-Language': 'fr,en-US;q=0.8,en;q=0.5',
       'Accept-Encoding': 'gzip, deflate, br',
       'Connection': 'keep-alive'
