@@ -14,6 +14,10 @@
     <v-chip v-else-if="type === 'chip'" prepend-icon="mdi-crown" color="warning" @click="showDialog = true" size="small"
       class="gold-gradient-chip">Premium </v-chip>
 
+    <v-tab v-else-if="type === 'tab'" prepend-icon="mdi-crown" class="gold-gradient-item" @click="showDialog = true">
+      {{ title }}
+    </v-tab>
+
     <v-dialog v-model="showDialog" max-width="650">
       <v-card class="rounded-lg premium-dialog" elevation="12">
         <v-card-title class="bg-primary text-white py-4 px-4 rounded-t-lg d-flex align-center">
@@ -145,6 +149,7 @@ type FeatureMap = {
   robots: string[];
   studioComponents: string[];
   accessibility: string[];
+  security: string[];
   default: string[];
 };
 
@@ -180,6 +185,13 @@ const features: FeatureMap = {
     "Metadata analysis",
     "ARIA analysis"
   ],
+  security: [
+    "Complete security vulnerability analysis",
+    "CSRF vulnerability detection",
+    "JWT analysis and validation",
+    "Multi-factor authentication testing",
+    "Command injection detection"
+  ],
   default: [
     "Unlimited access to all features",
     "Priority support",
@@ -195,6 +207,7 @@ const getFeatures = (type: string): string[] => {
     case 'robots': return features.robots;
     case 'studioComponents': return features.studioComponents;
     case 'accessibility': return features.accessibility;
+    case 'security': return features.security;
     default: return features.default;
   }
 };
@@ -206,6 +219,7 @@ const getFeatureImage = (type: string): string => {
     case 'robots': return '/images/premium/robots.avif';
     case 'studioComponents': return '/images/premium/studio-preview.avif';
     case 'accessibility': return '/images/premium/accessibility.avif';
+    case 'security': return '/images/premium/security.avif';
     default: return '/images/preview-devunity.avif';
   }
 };
@@ -416,6 +430,10 @@ const goToPricingPage = () => {
 
 .premium-hero-studioComponents {
   background: linear-gradient(135deg, rgba(156, 39, 176, 0.1), rgba(123, 31, 162, 0.05));
+}
+
+.premium-hero-security {
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(30, 136, 229, 0.05));
 }
 
 .premium-hero-audit {

@@ -567,6 +567,26 @@ export async function testContentTypeManipulation(originalRequest: ApiRequest): 
   };
 }
 
+export function getTestResultColor(status: string): string {
+  switch (status) {
+    case 'success': return 'success';
+    case 'warning': return 'warning';
+    case 'error': return 'error';
+    case 'info': return 'info';
+    default: return 'grey';
+  }
+}
+
+export function getTestResultIcon(status: string): string {
+  switch (status) {
+    case 'success': return 'mdi-check-circle';
+    case 'warning': return 'mdi-alert-circle';
+    case 'error': return 'mdi-close-circle';
+    case 'info': return 'mdi-information';
+    default: return 'mdi-help-circle';
+  }
+}
+
 export async function runAllSecurityTests(request: ApiRequest): Promise<ApiTestResult[]> {
   const results: ApiTestResult[] = [];
 

@@ -107,7 +107,9 @@
               <v-tab value="body">Body</v-tab>
               <v-tab value="headers">Headers</v-tab>
               <v-tab value="docs">Documentation</v-tab>
-              <v-tab value="apitest">API Tests</v-tab>
+              <PremiumFeature v-if="!userStore.isPremium" type="tab" title="API Tests" icon="mdi-shield-bug"
+                color="warning" variant="elevated" size="large" />
+              <v-tab v-else-if="userStore.isPremium" value="apitest">API Tests</v-tab>
             </v-tabs>
 
             <v-window v-model="responseTab">
@@ -230,7 +232,8 @@ import { useUserStore } from '../stores/userStore';
 import { definePageMeta, useHead } from '#imports';
 import JsonTreeViewer from '../components/JsonTreeViewer.vue';
 import * as requestUtils from '../utils/ts/api/requestUtils';
-import { runAllSecurityTests } from '../utils/ts/api/securityTests';
+import * as securityTests from '../utils/ts/api/securityTests';
+import { users } from 'systeminformation';
 
 definePageMeta({
   layout: 'dashboard'
@@ -672,23 +675,11 @@ const apiTestResults = ref<Array<{
 }>>([]);
 
 function getTestResultColor(status: string): string {
-  switch (status) {
-    case 'success': return 'success';
-    case 'warning': return 'warning';
-    case 'error': return 'error';
-    case 'info': return 'info';
-    default: return 'grey';
-  }
+  return securityTests.getTestResultColor(status);
 }
 
 function getTestResultIcon(status: string): string {
-  switch (status) {
-    case 'success': return 'mdi-check-circle';
-    case 'warning': return 'mdi-alert-circle';
-    case 'error': return 'mdi-close-circle';
-    case 'info': return 'mdi-information';
-    default: return 'mdi-help-circle';
-  }
+  return securityTests.getTestResultIcon(status);
 }
 
 async function runApiTests() {
@@ -709,7 +700,7 @@ async function runApiTests() {
       params: request.value.params
     };
 
-    apiTestResults.value = await runAllSecurityTests(apiRequest);
+    apiTestResults.value = await securityTests.runAllSecurityTests(apiRequest);
 
   } catch (error) {
     console.error('Erreur lors des tests d\'API:', error);
