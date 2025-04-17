@@ -203,7 +203,7 @@ function evaluateEngagementIssues($: CheerioSelector, issues: any[], metrics: an
       recommendation: 'Add clear call-to-action buttons to guide users to desired actions',
       severity: 'high'
     });
-  } else if (metrics.ctaCount > 10) {
+  } else if (metrics.ctaCount > 15) {
     issues.push({
       issue: 'Too many CTAs',
       description: 'A large number of call-to-action buttons can create confusion for users',

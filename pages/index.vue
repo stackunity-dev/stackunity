@@ -1,7 +1,7 @@
 <template>
   <v-app class="landing-screen">
     <header>
-      <v-app-bar app :elevation="2" :color="'surface'" class="px-0 nav-bar" v-model="showAppBar">
+      <v-app-bar app :elevation="2" :color="'surface'" class="px-0 nav-bar" v-model="showAppBar" role="banner">
         <v-container class="d-flex align-center py-0 my-0">
           <NuxtLink to="/login" class="text-decoration-none" aria-label="StackUnity Home">
             <div class="d-flex align-center brand-container">
@@ -17,15 +17,16 @@
           <div v-show="isClient" class="d-flex align-center">
             <nav v-if="isClient && display.smAndUp.value" class="d-flex align-center custom-nav-menu"
               aria-label="Main Navigation">
-              <div class="nav-links-wrapper">
+              <div class="nav-links-wrapper" role="menubar">
                 <v-btn v-for="item in menuItems" :key="item.href" class="nav-btn custom-btn" :href="item.href"
-                  :class="{ 'active-nav-btn': activeSection === item.href.substring(1) }" variant="text">
+                  :class="{ 'active-nav-btn': activeSection === item.href.substring(1) }" variant="text" role="menuitem"
+                  :aria-current="activeSection === item.href.substring(1) ? 'page' : undefined">
                   <span class="nav-text">{{ item.title }}</span>
                   <span class="nav-btn-background"></span>
                 </v-btn>
               </div>
 
-              <div class="auth-buttons ml-6">
+              <div class="auth-buttons ml-6" role="navigation" aria-label="Authentication">
                 <v-btn color="primary" class="login-btn" aria-label="Login" to="/login" variant="tonal"
                   rounded="rounded-xl" prepend-icon="mdi-login">
                   Login
@@ -38,8 +39,9 @@
                 <v-icon size="small" class="mr-1">mdi-login</v-icon>
                 Login
               </v-btn>
-              <v-btn icon @click="drawer = !drawer" class="menu-toggle-btn" aria-label="Toggle navigation menu">
-                <div class="hamburger-icon" :class="{ 'active': drawer }">
+              <v-btn icon @click="drawer = !drawer" class="menu-toggle-btn" aria-label="Toggle navigation menu"
+                :aria-expanded="drawer">
+                <div class="hamburger-icon" :class="{ 'active': drawer }" aria-hidden="true">
                   <span></span>
                   <span></span>
                   <span></span>
@@ -53,21 +55,23 @@
 
     <nav location="right" temporary class="mobile-nav-drawer d-md-none" aria-label="Mobile Navigation">
       <v-navigation-drawer v-model="drawer" location="right" temporary
-        class="v-navigation-drawer v-navigation-drawer--right v-navigation-drawer--temporary v-theme--dark v-theme--dark pa-6">
+        class="v-navigation-drawer v-navigation-drawer--right v-navigation-drawer--temporary v-theme--dark v-theme--dark pa-6"
+        role="dialog" aria-modal="true">
         <div class="drawer-header mb-8 d-flex justify-space-between align-center">
           <img src="/logo/stackunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="120"
             loading="eager">
-          <v-btn icon variant="text" aria-label="Close" @click="drawer = false">
+          <v-btn icon variant="text" aria-label="Close navigation menu" @click="drawer = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
 
         <div class="mobile-nav-links">
-          <v-list nav>
+          <v-list nav role="menu">
             <v-list-item v-for="item in menuItems" :key="item.href" :href="item.href" @click="drawer = false"
-              class="mobile-nav-item mb-3" rounded="lg">
+              class="mobile-nav-item mb-3" rounded="lg" role="menuitem"
+              :aria-current="activeSection === item.href.substring(1) ? 'page' : undefined">
               <template v-slot:prepend>
-                <v-icon class="mr-2" :icon="item.icon" color="primary"></v-icon>
+                <v-icon class="mr-2" :icon="item.icon" color="primary" aria-hidden="true"></v-icon>
               </template>
               <v-list-item-title class="text-subtitle-1 font-weight-medium">{{ item.title }}</v-list-item-title>
             </v-list-item>
@@ -77,37 +81,37 @@
         <div class="drawer-footer mt-auto pt-6">
           <v-btn block color="primary" to="/signup" aria-label="Get started" class="mb-4" size="large" rounded="pill"
             elevation="2">
-            <v-icon start>mdi-rocket-launch-outline</v-icon>
+            <v-icon start aria-hidden="true">mdi-rocket-launch-outline</v-icon>
             Get started
           </v-btn>
           <p class="text-caption text-center text-medium-emphasis">Join our community of developers and propulse your
-            web
-            projects to new horizons.</p>
+            web projects to new horizons.</p>
         </div>
       </v-navigation-drawer>
     </nav>
 
     <v-main class="main-content">
       <main>
-        <section class="hero-section py-16">
+        <section class="hero-section py-16" aria-labelledby="hero-heading">
           <v-container>
             <v-row align="center" justify="center">
               <v-col cols="12" md="6" class="text-center text-md-start">
-                <h1 class="text-h2 font-weight-bold mb-4">
+                <h1 id="hero-heading" class="text-h2 font-weight-bold mb-4">
                   <span class="text-primary">StackUnity</span> - Your All-in-One Development Hub
                 </h1>
                 <p class="text-h5 mb-8 text-medium-emphasis">
                   The starting point for devs who want to progress, build and monetise their projects.
                 </p>
-                <div class="d-flex flex-column flex-sm-row ga-4 justify-center justify-md-start">
+                <div class="d-flex flex-column flex-sm-row ga-4 justify-center justify-md-start" role="group"
+                  aria-label="Call to action">
                   <v-btn color="success" size="x-large" aria-label="Start Free Trial" to="/signup" variant="elevated"
                     class="px-8" elevation="20">
-                    <v-icon start>mdi-rocket-launch-outline</v-icon>
+                    <v-icon start aria-hidden="true">mdi-rocket-launch-outline</v-icon>
                     Start Free Trial
                   </v-btn>
                   <v-btn variant="elevated" color="info" size="x-large" aria-label="Watch Demo" href="#features"
                     class="px-8" elevation="20">
-                    <v-icon start>mdi-play-circle-outline</v-icon>
+                    <v-icon start aria-hidden="true">mdi-play-circle-outline</v-icon>
                     Watch Demo
                   </v-btn>
                 </div>
@@ -124,7 +128,8 @@
           <v-container>
             <v-row class="align-center justify-center">
               <v-col v-for="(stat, i) in stats" :key="i" cols="6" sm="3" class="text-center">
-                <div class="stat-value text-h3 font-weight-bold primary--text mb-1">{{ stat.value }}</div>
+                <div class="stat-value text-h3 font-weight-bold primary--text mb-1" role="text"
+                  aria-label="{{ stat.label }}: {{ stat.value }}">{{ stat.value }}</div>
                 <div class="stat-label text-subtitle-2 text-medium-emphasis">{{ stat.label }}</div>
               </v-col>
             </v-row>
@@ -134,7 +139,7 @@
         <section id="features" class="py-16" aria-labelledby="features-heading">
           <v-container>
             <div class="text-center mb-12">
-              <span class="section-subtitle">POWERFUL TOOLS</span>
+              <span class="section-subtitle" aria-hidden="true">POWERFUL TOOLS</span>
               <h2 id="features-heading" class="text-h3 font-weight-bold mb-3">Features That Boost Your Productivity</h2>
               <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
                 StackUnity combines all the tools you need to develop modern web applications in one intuitive platform.
@@ -143,13 +148,14 @@
 
             <v-row>
               <v-col v-for="(feature, index) in features" :key="index" cols="12" md="4" class="mb-8">
-                <article class="feature-card h-100 rounded-lg">
+                <article class="feature-card h-100 rounded-lg" role="article"
+                  aria-labelledby="feature-title-{{ index }}">
                   <v-card class="feature-card h-100 rounded-lg" flat>
                     <v-card-text class="pa-6">
-                      <v-avatar :color="feature.color" size="56" class="mb-4">
+                      <v-avatar :color="feature.color" size="56" class="mb-4" aria-hidden="true">
                         <v-icon dark size="32">{{ feature.icon }}</v-icon>
                       </v-avatar>
-                      <h3 class="text-h5 font-weight-bold mb-3">{{ feature.title }}</h3>
+                      <h3 id="feature-title-{{ index }}" class="text-h5 font-weight-bold mb-3">{{ feature.title }}</h3>
                       <p class="text-body-1 text-medium-emphasis">{{ feature.description }}</p>
                     </v-card-text>
                   </v-card>
@@ -170,19 +176,23 @@
 
             <v-row justify="center" class="mt-8">
               <v-col v-for="(step, i) in steps" :key="i" cols="12" md="4" class="px-4">
-                <article>
+                <article role="article" aria-labelledby="step-title-{{ i }}">
                   <v-card class="h-100 rounded-xl" elevation="3" :class="`border-${step.color}`"
                     style="border-top: #00658b 4px solid;">
                     <v-card-item>
-                      <v-avatar :color="step.color" size="56" class="mb-4">
+                      <v-avatar :color="step.color" size="56" class="mb-4" aria-label="Step {{ i + 1 }}">
                         <span class="text-h5 font-weight-bold white--text">{{ i + 1 }}</span>
                       </v-avatar>
                     </v-card-item>
-                    <v-card-title class="text-h5 font-weight-bold">{{ step.title }}</v-card-title>
+                    <v-card-title id="step-title-{{ i }}" class="text-h5 font-weight-bold">{{ step.title
+                    }}</v-card-title>
                     <v-card-text class="text-body-1">{{ step.description }}</v-card-text>
                     <v-card-actions class="pa-4">
                       <v-btn :color="step.color" variant="text" class="text-none" :to="step.link"
-                        aria-label="Learn more">Learn more <v-icon right>mdi-arrow-right</v-icon></v-btn>
+                        :aria-label="`Learn more about ${step.title}`">
+                        Learn more
+                        <v-icon right aria-hidden="true">mdi-arrow-right</v-icon>
+                      </v-btn>
                     </v-card-actions>
                   </v-card>
                 </article>
@@ -193,17 +203,17 @@
               <v-btn size="large" color="info" variant="elevated" class="px-8 rounded-pill" elevation="20" to="/signup"
                 aria-label="Get Started Now" nuxt>
                 Get Started Now
-                <v-icon end>mdi-rocket-launch-outline</v-icon>
+                <v-icon end aria-hidden="true">mdi-rocket-launch-outline</v-icon>
               </v-btn>
             </div>
           </v-container>
         </section>
 
-        <section id="pricing" class="py-16" aria-labelledby="pricing-heading">
+        <section id="pricing" class="py-16">
           <Pricing />
         </section>
 
-        <section id="faq" class="py-16" aria-labelledby="faq-heading">
+        <section id="faq" class="py-16">
           <Faq />
         </section>
 
@@ -315,6 +325,9 @@ definePageMeta({
 })
 
 useHead({
+  htmlAttrs: {
+    lang: 'en'
+  },
   title: 'StackUnity - Create, manage and optimize your web projects.',
   meta: [
     { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
