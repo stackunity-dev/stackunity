@@ -376,7 +376,7 @@ const items = computed(() => [
     link: true,
     children: [
       createPremiumMenuItem('Database Designer', '/database-designer', 'mdi-database', 'databaseDesigner'),
-      createPremiumMenuItem('API Testing Hub', '/api-testing-hub', 'mdi-api', 'apiTestingHub')
+      { title: 'API Testing Hub', link: '/api-testing-hub', icon: 'mdi-api' }
     ]
   },
   {
