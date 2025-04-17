@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="pa-2 pa-sm-4">
 
     <v-alert v-if="request.method === 'DELETE'" color="info" variant="tonal" class="mb-4">
       <v-icon>mdi-information</v-icon>
@@ -7,24 +7,27 @@
     </v-alert>
 
     <v-card class="mb-4">
-      <v-card-title>New API Test</v-card-title>
+      <v-card-title class="text-h6 d-flex flex-wrap">
+        <span class="flex-grow-1">New API Test</span>
+      </v-card-title>
       <v-card-text>
         <v-form @submit.prevent="sendRequest">
-          <v-row>
-            <v-col cols="12" md="3">
+          <v-row dense>
+            <v-col cols="12" sm="3">
               <v-select v-model="request.method" :items="['GET', 'POST', 'PUT', 'DELETE', 'PATCH']" label="Method"
-                required variant="outlined" density="comfortable" :class="`text-${getMethodColor(request.method)}`">
+                required variant="outlined" density="comfortable"
+                :class="`text-${getMethodColor(request.method)} mobile-select`">
               </v-select>
             </v-col>
-            <v-col cols="12" md="9">
-              <v-text-field v-model="request.url" label="URL" placeholder="https://api.example.com/endpoint"
-                required></v-text-field>
+            <v-col cols="12" sm="9">
+              <v-text-field v-model="request.url" label="URL" placeholder="https://api.example.com/endpoint" required
+                class="mobile-input"></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-tabs v-model="activeTab">
+              <v-tabs v-model="activeTab" show-arrows density="comfortable" class="mobile-tabs">
                 <v-tab value="headers">Headers</v-tab>
                 <v-tab value="body">Body</v-tab>
                 <v-tab value="params">Params</v-tab>
@@ -32,20 +35,22 @@
 
               <v-window v-model="activeTab">
                 <v-window-item value="headers">
-                  <v-row v-for="(header, index) in request.headers" :key="index">
+                  <v-row dense v-for="(header, index) in request.headers" :key="index" class="mobile-row">
                     <v-col cols="5">
-                      <v-text-field v-model="header.key" label="Clé" placeholder="Content-Type"></v-text-field>
+                      <v-text-field v-model="header.key" label="Clé" placeholder="Content-Type" density="comfortable"
+                        hide-details class="mb-2"></v-text-field>
                     </v-col>
                     <v-col cols="5">
-                      <v-text-field v-model="header.value" label="Valeur" placeholder="application/json"></v-text-field>
+                      <v-text-field v-model="header.value" label="Valeur" placeholder="application/json"
+                        density="comfortable" hide-details class="mb-2"></v-text-field>
                     </v-col>
-                    <v-col cols="2">
-                      <v-btn color="error" icon @click="removeHeader(index)">
+                    <v-col cols="2" class="d-flex align-center">
+                      <v-btn color="error" icon size="small" @click="removeHeader(index)">
                         <v-icon>mdi-delete</v-icon>
                       </v-btn>
                     </v-col>
                   </v-row>
-                  <v-btn color="primary" variant="tonal" @click="addHeader" class="mt-2">
+                  <v-btn color="primary" variant="tonal" @click="addHeader" class="mt-2" size="small">
                     Add a header
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
@@ -92,119 +97,130 @@
     </v-card>
 
     <v-card v-if="response">
-      <v-card-title>
-        Response
+      <v-card-title class="text-h6 d-flex flex-wrap align-center">
+        <span class="flex-grow-1">Response</span>
+        <v-chip :color="response.status >= 200 && response.status < 300 ? 'success' : 'error'" class="ml-2"
+          size="small">
+          Status: {{ response.status }}
+        </v-chip>
       </v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12">
-            <v-chip :color="response.status >= 200 && response.status < 300 ? 'success' : 'error'" class="mb-2">
-              Status: {{ response.status }}
-            </v-chip>
-          </v-col>
-          <v-col cols="12">
-            <v-tabs v-model="responseTab">
+            <v-tabs v-model="responseTab" show-arrows density="comfortable" class="mobile-tabs">
               <v-tab value="body">Body</v-tab>
               <v-tab value="headers">Headers</v-tab>
-              <v-tab value="docs">Documentation</v-tab>
+              <v-tab value="docs">Docs</v-tab>
               <PremiumFeature v-if="!userStore.isPremium" type="tab" title="API Tests" icon="mdi-shield-bug"
-                color="warning" variant="elevated" size="large" />
-              <v-tab v-else-if="userStore.isPremium" value="apitest">API Tests</v-tab>
+                color="warning" variant="elevated" size="small" />
+              <v-tab v-else-if="userStore.isPremium" value="apitest">Tests</v-tab>
             </v-tabs>
 
             <v-window v-model="responseTab">
               <v-window-item value="body">
-                <v-tabs v-model="bodyView">
+                <v-tabs v-model="bodyView" density="comfortable" class="mobile-tabs">
                   <v-tab value="raw">Raw</v-tab>
                   <v-tab value="tree">Tree</v-tab>
                 </v-tabs>
                 <v-window v-model="bodyView">
                   <v-window-item value="raw">
-                    <pre class="response-body bg-grey-darken-4" v-html="formattedResponse"></pre>
+                    <div class="response-wrapper">
+                      <pre class="response-body bg-grey-darken-4" v-html="formattedResponse"></pre>
+                    </div>
                   </v-window-item>
                   <v-window-item value="tree">
-                    <JsonTreeViewer :data="response?.data" />
+                    <div class="response-wrapper">
+                      <JsonTreeViewer :data="response?.data" />
+                    </div>
                   </v-window-item>
                 </v-window>
               </v-window-item>
+
               <v-window-item value="headers">
-                <pre class="response-body bg-grey-darken-4" v-html="formattedHeaders"></pre>
+                <div class="response-wrapper">
+                  <pre class="response-body bg-grey-darken-4" v-html="formattedHeaders"></pre>
+                </div>
               </v-window-item>
+
               <v-window-item value="docs">
-                <v-card class="mb-4">
-                  <v-card-title>
-                    Documentation OpenAPI
+                <v-card class="mb-4" variant="flat">
+                  <v-card-title class="d-flex flex-wrap align-center pa-2">
+                    <span class="text-body-1">Documentation OpenAPI</span>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" variant="tonal" @click="downloadDocs" class="mr-2">
-                      <v-icon>mdi-download</v-icon>
+                    <v-btn color="primary" variant="tonal" @click="downloadDocs" size="small" class="mt-2 mt-sm-0">
+                      <v-icon start>mdi-download</v-icon>
                       Download
                     </v-btn>
                   </v-card-title>
                   <v-card-text>
-                    <v-row>
-                      <v-col cols="12" md="6">
+                    <v-row dense>
+                      <v-col cols="12" sm="6">
                         <v-select v-model="docOptions.schemaDepth" :items="[1, 2, 3, 4, 5]" label="Profondeur du schéma"
-                          density="comfortable"></v-select>
+                          density="comfortable" hide-details class="mb-2">
+                        </v-select>
                       </v-col>
-                      <v-col cols="12" md="6">
-                        <v-switch v-model="docOptions.showExamples" label="Afficher les exemples"
-                          density="comfortable"></v-switch>
+                      <v-col cols="12" sm="6">
+                        <v-switch v-model="docOptions.showExamples" label="Afficher les exemples" density="comfortable"
+                          hide-details class="mb-2">
+                        </v-switch>
                       </v-col>
                     </v-row>
-                    <pre class="response-body bg-grey-darken-4" v-html="formattedDocs"></pre>
+                    <div class="response-wrapper">
+                      <pre class="response-body bg-grey-darken-4" v-html="formattedDocs"></pre>
+                    </div>
                   </v-card-text>
                 </v-card>
               </v-window-item>
+
               <v-window-item value="apitest">
-                <v-card class="mb-4">
-                  <v-card-title class="d-flex align-center">
-                    Automatic API tests
+                <v-card class="mb-4" variant="flat">
+                  <v-card-title class="d-flex flex-wrap align-center pa-2">
+                    <span class="text-body-1">Automated API Tests</span>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" variant="tonal" @click="runApiTests" :loading="apiTestsLoading" class="mr-2">
+                    <v-btn color="primary" variant="tonal" @click="runApiTests" :loading="apiTestsLoading" size="small"
+                      class="mt-2 mt-sm-0">
                       <v-icon start>mdi-shield-bug</v-icon>
-                      Run the tests
+                      Run Tests
                     </v-btn>
                   </v-card-title>
-                  <v-card-text>
+                  <v-card-text class="pa-0">
                     <v-alert v-if="!apiTestResults.length && !apiTestsLoading" color="info" variant="tonal"
-                      class="mb-4">
-                      Click on "Run the tests" to automatically analyze different potential vulnerabilities
+                      class="ma-2">
+                      Click on "Run Tests" to analyze potential vulnerabilities
                     </v-alert>
 
                     <v-expansion-panels v-if="apiTestResults.length > 0">
                       <v-expansion-panel v-for="(test, index) in apiTestResults" :key="index">
-                        <v-expansion-panel-title>
-                          <div class="d-flex align-center">
-                            <v-icon :color="getTestResultColor(test.status)" class="mr-2">
+                        <v-expansion-panel-title class="text-body-2">
+                          <div class="d-flex align-center flex-wrap gap-2">
+                            <v-icon :color="getTestResultColor(test.status)" size="small">
                               {{ getTestResultIcon(test.status) }}
                             </v-icon>
-                            <span>{{ test.name }}</span>
-                            <v-chip size="small" :color="getTestResultColor(test.status)" class="ml-2">
+                            <span class="text-truncate">{{ test.name }}</span>
+                            <v-chip size="x-small" :color="getTestResultColor(test.status)" class="ml-auto">
                               {{ test.status }}
                             </v-chip>
                           </div>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
-                          <div>
+                          <div class="text-body-2">
                             <p><strong>Description:</strong> {{ test.description }}</p>
                             <p v-if="test.impact"><strong>Impact:</strong> {{ test.impact }}</p>
-                            <v-divider class="my-3"></v-divider>
+                            <v-divider class="my-2"></v-divider>
 
                             <div v-if="test.response">
                               <p><strong>Result:</strong> {{ test.message }}</p>
-                              <v-card variant="outlined" class="mt-3">
-                                <v-card-text>
+                              <v-card variant="outlined" class="mt-2">
+                                <v-card-text class="pa-2">
                                   <p><strong>Status:</strong> {{ test.response.status }}</p>
-                                  <p><strong>Response data:</strong></p>
-                                  <pre
-                                    class="response-body bg-grey-darken-4">{{ JSON.stringify(test.response.data, null, 2) }}</pre>
+                                  <p><strong>Data:</strong></p>
+                                  <div class="response-wrapper">
+                                    <pre
+                                      class="response-body bg-grey-darken-4">{{ JSON.stringify(test.response.data, null, 2) }}</pre>
+                                  </div>
                                 </v-card-text>
                               </v-card>
                             </div>
-
-                            <v-alert v-if="test.recommendation" color="info" variant="tonal" class="mt-3">
-                              <strong>Recommendation:</strong> {{ test.recommendation }}
-                            </v-alert>
                           </div>
                         </v-expansion-panel-text>
                       </v-expansion-panel>
@@ -233,7 +249,6 @@ import { definePageMeta, useHead } from '#imports';
 import JsonTreeViewer from '../components/JsonTreeViewer.vue';
 import * as requestUtils from '../utils/ts/api/requestUtils';
 import * as securityTests from '../utils/ts/api/securityTests';
-import { users } from 'systeminformation';
 
 definePageMeta({
   layout: 'dashboard'
@@ -719,6 +734,75 @@ async function runApiTests() {
   overflow-x: auto;
   max-height: 400px;
   font-family: monospace;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .response-body {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    max-height: 300px;
+  }
+
+  .mobile-row {
+    margin: 0 -8px;
+  }
+
+  .mobile-select {
+    min-width: 100px;
+  }
+
+  .mobile-input {
+    font-size: 0.9rem;
+  }
+
+  .mobile-tabs {
+    margin: 0 -16px;
+  }
+
+  :deep(.v-tab) {
+    padding: 0.5rem;
+    min-width: auto;
+  }
+
+  :deep(.v-btn) {
+    padding: 0.25rem 0.5rem;
+  }
+
+  :deep(.v-card-title) {
+    font-size: 1.25rem;
+    padding: 1rem;
+  }
+
+  :deep(.v-card-text) {
+    padding: 0.75rem;
+  }
+
+  .response-wrapper {
+    margin: 0.25rem 0;
+  }
+
+  :deep(.v-expansion-panel-title) {
+    padding: 0.5rem;
+    min-height: auto;
+  }
+
+  :deep(.v-expansion-panel-text) {
+    padding: 0.5rem;
+  }
+
+  .gap-2 {
+    gap: 0.5rem;
+  }
+
+  :deep(.text-body-2) {
+    font-size: 0.875rem;
+  }
+
+  :deep(.v-alert) {
+    padding: 0.5rem;
+    margin: 0.5rem;
+  }
 }
 
 :deep(.hljs) {
@@ -753,5 +837,12 @@ async function runApiTests() {
 
 .method-select :deep(.v-field__input)>div {
   width: 100%;
+}
+
+.response-wrapper {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  margin: 0.5rem 0;
 }
 </style>

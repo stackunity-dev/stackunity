@@ -1,7 +1,3 @@
-/**
- * Hook pour utiliser Plausible Analytics avec des métadonnées enrichies
- * @returns Fonction pour suivre des événements
- */
 export function usePlausible() {
   if (process.client) {
     // @ts-ignore
