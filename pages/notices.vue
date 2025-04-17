@@ -4,7 +4,7 @@
       <v-container class="d-flex align-center py-0 my-0">
         <NuxtLink to="/" class="text-decoration-none">
           <div class="d-flex align-center">
-            <img src="/logo/stackunity-title.png" alt="DevUnity title" width="150">
+            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
           </div>
         </NuxtLink>
         <v-spacer></v-spacer>
@@ -50,9 +50,7 @@
                 <h2 class="text-h4 font-weight-bold mb-6 primary--text">Privacy Policy</h2>
                 <p class="text-body-1 mb-4">
                   StackUnity is committed to protecting your personal data in accordance with the General Data
-                  Protection
-                  Regulation (GDPR)
-                  and the French Data Protection Act.
+                  Protection Regulation (GDPR) and the French Data Protection Act.
                 </p>
                 <h3 class="text-h6 font-weight-bold mt-6 mb-4">Collection and Use</h3>
                 <p class="text-body-1 mb-4">
@@ -63,16 +61,28 @@
                 <h3 class="text-h6 font-weight-bold mt-6 mb-4">User Rights</h3>
                 <p class="text-body-1 mb-4">
                   In accordance with the applicable legislation, you have the right to access, rectify, delete and
-                  oppose
-                  the processing of your personal data. To exercise these rights, please contact us at
-                  privacy@stackunity.tech.
+                  oppose the processing of your personal data. To exercise these rights, please contact us at
+                  <a href="mailto:privacy@stackunity.tech">privacy@stackunity.tech</a>.
                 </p>
+                <div class="d-flex align-center mt-6">
+                  <v-btn color="primary" to="/privacy" size="small" variant="tonal" class="mr-3">
+                    Full Privacy Policy
+                    <v-icon end>mdi-arrow-right</v-icon>
+                  </v-btn>
+                </div>
+                <div class="text-caption text-medium-emphasis structured-data-info" itemscope
+                  itemtype="http://schema.org/PrivacyPolicy">
+                  <meta itemprop="name" content="StackUnity Privacy Policy" />
+                  <meta itemprop="url" content="https://stackunity.tech/privacy" />
+                  <meta itemprop="author" content="StackUnity" />
+                  <meta itemprop="dateModified" content="2023-06-01" />
+                </div>
               </section>
 
               <v-divider class="mb-12"></v-divider>
 
               <section class="mb-12" id="cookies">
-                <h2 class="text-h4 font-weight-bold mb-6 primary--text">Privacy Policy</h2>
+                <h2 class="text-h4 font-weight-bold mb-6 primary--text">Cookie Policy</h2>
                 <p class="text-body-1 mb-4">
                   Our site uses cookies to improve your experience and analyze traffic. Cookies are small text files
                   stored on your browser that allow us to personalize your experience and understand how you use our
@@ -80,13 +90,22 @@
                 </p>
                 <h3 class="text-h6 font-weight-bold mt-6 mb-4">Types of Cookies Used</h3>
                 <ul class="text-body-1 mb-4 pl-4">
-                  <li class="mb-2">Essential Cookies : necessary for the site to function</li>
-                  <li class="mb-2">Analytical Cookies : to understand how users interact with our site</li>
-                  <li class="mb-2">Preference Cookies : to remember your choices and personalizations</li>
+                  <li class="mb-2">Essential Cookies: necessary for the site to function</li>
+                  <li class="mb-2">Analytical Cookies: to understand how users interact with our site</li>
+                  <li class="mb-2">Preference Cookies: to remember your choices and personalizations</li>
                 </ul>
                 <p class="text-body-1 mb-4">
                   You can manage your cookie preferences at any time from the settings of your browser.
                 </p>
+                <div class="text-caption text-medium-emphasis structured-data-info" itemscope
+                  itemtype="http://schema.org/WebSite">
+                  <meta itemprop="name" content="StackUnity" />
+                  <meta itemprop="url" content="https://stackunity.tech" />
+                  <div itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
+                    <meta itemprop="target" content="https://stackunity.tech/search?q={search_term_string}" />
+                    <meta itemprop="query-input" content="required name=search_term_string" />
+                  </div>
+                </div>
               </section>
 
               <v-divider class="mb-12"></v-divider>
@@ -225,19 +244,51 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Legal Notices & Credits - StackUnity',
+  title: 'Legal Notices & Credits - StackUnity | Open Source Libraries & GDPR',
   meta: [
-    { name: 'description', content: 'Legal notices, privacy policy and credits of the open source libraries used by StackUnity.' },
-    { name: 'keywords', content: 'StackUnity, legal notices, credits, open source, RGPD, privacy, cookies' },
+    { name: 'description', content: 'Official legal notices, privacy policy (GDPR compliance) and open source credits for StackUnity web development platform. Transparency & compliance information.' },
+    { name: 'keywords', content: 'StackUnity, legal notices, terms of service, GDPR, privacy policy, data protection, cookies policy, open source, MIT license, vue.js, nuxt.js, web development' },
     { name: 'author', content: 'StackUnity' },
-    { name: 'robots', content: 'index, follow' },
+    { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Legal Notices & Credits - StackUnity' },
-    { name: 'og:description', content: 'Legal notices, privacy policy and credits of the open source libraries used by StackUnity.' },
+    { name: 'og:title', content: 'Legal Notices & Credits - StackUnity | Open Source & GDPR' },
+    { name: 'og:description', content: 'Official legal notices, privacy policy (GDPR compliance) and open source credits for StackUnity web development platform. Transparency & compliance information.' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+    { name: 'og:type', content: 'website' },
+    { name: 'og:url', content: 'https://stackunity.com/notices' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'Legal Notices & Credits - StackUnity' },
+    { name: 'twitter:description', content: 'Official legal notices, privacy policy (GDPR compliance) and open source credits for StackUnity.' },
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/notices' }
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Legal Notices & Credits - StackUnity",
+        "description": "Official legal notices, privacy policy (GDPR compliance) and open source credits for StackUnity web development platform.",
+        "publisher": {
+          "@type": "Organization",
+          "name": "StackUnity",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://stackunity.com/images/logo.png"
+          }
+        },
+        "inLanguage": "en-US",
+        "copyrightYear": new Date().getFullYear(),
+        "mainEntity": {
+          "@type": "WebSite",
+          "url": "https://stackunity.com",
+          "name": "StackUnity",
+          "alternateName": "Stack Unity Platform"
+        }
+      })
+    }
   ]
 });
 

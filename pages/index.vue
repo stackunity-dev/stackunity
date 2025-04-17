@@ -100,13 +100,13 @@
                   The starting point for devs who want to progress, build and monetise their projects.
                 </p>
                 <div class="d-flex flex-column flex-sm-row ga-4 justify-center justify-md-start">
-                  <v-btn color="success" size="x-large" aria-label="Start Free Trial" to="/signup" variant="tonal"
-                    class="px-8" elevation="2">
+                  <v-btn color="success" size="x-large" aria-label="Start Free Trial" to="/signup" variant="elevated"
+                    class="px-8" elevation="20">
                     <v-icon start>mdi-rocket-launch-outline</v-icon>
                     Start Free Trial
                   </v-btn>
-                  <v-btn variant="tonal" color="info" size="x-large" aria-label="Watch Demo" href="#features"
-                    class="px-8">
+                  <v-btn variant="elevated" color="info" size="x-large" aria-label="Watch Demo" href="#features"
+                    class="px-8" elevation="20">
                     <v-icon start>mdi-play-circle-outline</v-icon>
                     Watch Demo
                   </v-btn>
@@ -190,7 +190,7 @@
             </v-row>
 
             <div class="d-flex justify-center mt-12">
-              <v-btn size="large" color="info" variant="tonal" class="px-8 rounded-pill" elevation="2" to="/signup"
+              <v-btn size="large" color="info" variant="elevated" class="px-8 rounded-pill" elevation="20" to="/signup"
                 aria-label="Get Started Now" nuxt>
                 Get Started Now
                 <v-icon end>mdi-rocket-launch-outline</v-icon>
@@ -215,8 +215,8 @@
                 <p class="text-subtitle-1 white--text text-opacity-high mb-8">
                   Join the community already using DevUnity for their projects.
                 </p>
-                <v-btn x-large color="info" variant="tonal" elevation="2" class="px-8" aria-label="Create free account"
-                  to="/signup">
+                <v-btn x-large color="info" variant="elevated" elevation="20" class="px-8"
+                  aria-label="Create free account" to="/signup">
                   Create free account
                 </v-btn>
               </v-col>
@@ -255,12 +255,12 @@
                 <v-btn icon variant="text" class="mr-3" href="https://twitter.com" target="_blank" aria-label="Twitter">
                   <v-icon>mdi-twitter</v-icon>
                 </v-btn>
-                <v-btn icon variant="text" class="mr-3" href="https://github.com/nurdjedidi/devunity" target="_blank"
-                  aria-label="GitHub">
+                <v-btn icon variant="text" class="mr-3" href="https://github.com/stackunity-dev/stackunity"
+                  target="_blank" aria-label="GitHub">
                   <v-icon>mdi-github</v-icon>
                 </v-btn>
-                <v-btn icon variant="text" class="mr-3" href="https://linkedin.com" target="_blank"
-                  aria-label="LinkedIn">
+                <v-btn icon variant="text" class="mr-3" href="https://www.linkedin.com/company/stackunity/"
+                  target="_blank" aria-label="LinkedIn">
                   <v-icon>mdi-linkedin</v-icon>
                 </v-btn>
               </div>
@@ -292,7 +292,7 @@
           </div>
           <div class="d-flex align-center">
             <a href="mailto:contact@stackunity.com"
-              class="text-body-2 text-decoration-none text-medium-emphasis">support@stackunity.com</a>
+              class="text-body-2 text-decoration-none text-medium-emphasis">support@stackunity.tech</a>
           </div>
         </div>
       </v-container>

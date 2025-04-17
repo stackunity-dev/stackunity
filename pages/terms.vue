@@ -29,7 +29,7 @@
 
           <h2 class="text-h5 font-weight-bold mb-4">3. User Content</h2>
           <p class="mb-4">
-            You retain ownership of any content you submit to DevUnity. By submitting content, you grant us a
+            You retain ownership of any content you submit to StackUnity. By submitting content, you grant us a
             non-exclusive, worldwide, royalty-free license to use, reproduce, modify, publish, and distribute
             such content for the purpose of providing and promoting our services.
           </p>
@@ -49,22 +49,22 @@
 
           <h2 class="text-h5 font-weight-bold mb-4">5. Intellectual Property</h2>
           <p class="mb-4">
-            The DevUnity platform, including its design, layout, text, graphics, and other content, is the exclusive
-            property of DevUnity and is protected by national and international copyright laws. You may not
+            The StackUnity platform, including its design, layout, text, graphics, and other content, is the exclusive
+            property of StackUnity and is protected by national and international copyright laws. You may not
             reproduce, modify, distribute, or create derivative works based on our platform without our express
             permission.
           </p>
 
           <h2 class="text-h5 font-weight-bold mb-4">6. Limitation of Liability</h2>
           <p class="mb-4">
-            To the fullest extent permitted by law, DevUnity shall not be liable for any indirect, incidental,
+            To the fullest extent permitted by law, StackUnity shall not be liable for any indirect, incidental,
             special, consequential, or punitive damages, including without limitation, loss of profits, data,
             or other intangible losses, resulting from your use or inability to use our services.
           </p>
 
           <h2 class="text-h5 font-weight-bold mb-4">7. Indemnification</h2>
           <p class="mb-4">
-            You agree to defend, indemnify, and hold harmless DevUnity, its officers, directors, employees,
+            You agree to defend, indemnify, and hold harmless StackUnity, its officers, directors, employees,
             and agents from any claims, liabilities, damages, losses, or expenses, including legal fees,
             arising out of your use of our platform or your violation of these Terms.
           </p>
@@ -86,8 +86,22 @@
           <h2 class="text-h5 font-weight-bold mb-4">10. Contact Us</h2>
           <p class="mb-4">
             If you have any questions about these Terms, please contact us at
-            <a href="mailto:legal@devunity.com" class="text-decoration-underline">legal@devunity.com</a>.
+            <a href="mailto:legal@stackunity.com" class="text-decoration-underline">legal@stackunity.com</a>.
           </p>
+
+          <div class="structured-data-container" style="display:none;">
+            <div itemscope itemtype="http://schema.org/TermsOfService">
+              <meta itemprop="name" content="StackUnity Terms of Service" />
+              <meta itemprop="description"
+                content="Read the Terms of Service for the StackUnity platform. By using our services, you agree to be bound by these terms." />
+              <meta itemprop="url" content="https://stackunity.com/terms" />
+              <div itemprop="author" itemscope itemtype="http://schema.org/Organization">
+                <meta itemprop="name" content="StackUnity" />
+                <meta itemprop="url" content="https://stackunity.com" />
+              </div>
+              <meta itemprop="dateModified" content="{{ new Date().toISOString().split('T')[0] }}" />
+            </div>
+          </div>
         </div>
       </v-card>
 
@@ -96,8 +110,13 @@
           Last updated: {{ new Date().toLocaleDateString() }}
         </p>
         <p class="text-caption text-medium-emphasis">
-          &copy; {{ new Date().getFullYear() }} DevUnity. All rights reserved.
+          &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
         </p>
+        <div class="d-flex justify-center mt-2 legal-links">
+          <a href="/privacy" class="mx-2 text-caption">Privacy Policy</a>
+          <a href="/notices" class="mx-2 text-caption">Legal Notices</a>
+          <a href="/contact" class="mx-2 text-caption">Contact</a>
+        </div>
       </div>
     </v-container>
   </div>
@@ -108,19 +127,52 @@
 import { useHead } from '#imports';
 
 useHead({
-  title: 'Terms of Service - StackUnity',
+  title: 'Terms of Service - StackUnity | User Agreement & Policies',
   meta: [
-    { name: 'description', content: 'Read the Terms of Service for the StackUnity platform. By using our services, you agree to be bound by these terms.' },
+    { name: 'description', content: 'Official Terms of Service for the StackUnity web development platform. Understand your rights and obligations when using our services. Legal agreement between you and StackUnity.' },
     { name: 'author', content: 'StackUnity' },
-    { name: 'keywords', content: 'StackUnity, terms of service, usage, services, bound, terms' },
-    { name: 'robots', content: 'index,follow' },
+    { name: 'keywords', content: 'StackUnity, terms of service, user agreement, legal terms, acceptable use policy, intellectual property, liability limitations, indemnification, platform usage, web development terms' },
+    { name: 'robots', content: 'index,follow,max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Terms of Service - StackUnity' },
-    { name: 'og:description', content: 'Read the Terms of Service for the DevUnity platform. By using our services, you agree to be bound by these terms.' },
+    { name: 'og:title', content: 'Terms of Service - StackUnity | User Agreement & Policies' },
+    { name: 'og:description', content: 'Official Terms of Service for the StackUnity web development platform. Understand your rights and obligations when using our services.' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
+    { name: 'og:type', content: 'website' },
+    { name: 'og:url', content: 'https://stackunity.com/terms' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'Terms of Service - StackUnity' },
+    { name: 'twitter:description', content: 'Read the Terms of Service for the StackUnity platform. By using our services, you agree to be bound by these terms.' },
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/terms' }
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Terms of Service - StackUnity",
+        "description": "Official Terms of Service for the StackUnity web development platform. Understand your rights and obligations when using our services.",
+        "publisher": {
+          "@type": "Organization",
+          "name": "StackUnity",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://stackunity.com/logo/stackunity-title.png"
+          }
+        },
+        "mainEntity": {
+          "@type": "WebSite",
+          "url": "https://stackunity.com",
+          "name": "StackUnity"
+        },
+        "potentialAction": {
+          "@type": "ReadAction",
+          "target": "https://stackunity.com/terms"
+        }
+      })
+    }
   ]
 })
 </script>
@@ -156,5 +208,15 @@ li {
 
 a {
   color: rgb(var(--v-theme-primary));
+}
+
+.legal-links a {
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  text-decoration: none;
+}
+
+.legal-links a:hover {
+  color: rgb(var(--v-theme-primary));
+  text-decoration: underline;
 }
 </style>

@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { TokenUtils } from './utils/token';
 
 const props = defineProps({
   error: Object
@@ -62,15 +63,7 @@ const handleError = () => {
 };
 
 onMounted(() => {
-  // Au chargement, vérifie si une erreur est liée à l'authentification
-  // et tente automatiquement de restaurer la session
-  if (isAuthError.value) {
-    console.log("Tentative de restauration de session pour erreur:", props.error);
-    isLoading.value = true;
-    setTimeout(() => {
-      window.location.reload();
-    }, 3000);
-  }
+  TokenUtils.retrieveToken();
 });
 </script>
 
