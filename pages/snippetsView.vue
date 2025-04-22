@@ -278,7 +278,6 @@ onMounted(async () => {
     await new Promise(resolve => setTimeout(resolve, 500));
 
     if (!userStore.isAuthenticated) {
-      console.log('[SNIPPETS VIEW] Utilisateur non authentifié, redirection...');
       navigateTo('/login');
       return;
     }
@@ -338,15 +337,6 @@ function toggleEdit() {
     });
   }
 };
-
-const highlightedCode = computed(() => {
-  if (!code.value) return '';
-  const highlighted = hljs.highlight(code.value, {
-    language: selectedLanguage.value,
-    ignoreIllegals: true
-  });
-  return highlighted.value;
-});
 
 const updateSnippet = async () => {
   try {

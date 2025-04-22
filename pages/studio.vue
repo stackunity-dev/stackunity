@@ -143,11 +143,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import Snackbar from '../components/snackbar.vue';
-import StudioEditor from '../components/studioCard.vue';
-import StudioForm from '../components/studioForm.vue';
-import StudioNav from '../components/studioNav.vue';
-import StudioTimeline from '../components/studioTimeline.vue';
-import StudioUtils from '../components/studioUtils.vue';
+import StudioEditor from '../components/studio/studioCard.vue';
+import StudioForm from '../components/studio/studioForm.vue';
+import StudioNav from '../components/studio/studioNav.vue';
+import StudioTimeline from '../components/studio/studioTimeline.vue';
+import StudioUtils from '../components/studio/studioUtils.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, navigateTo, useHead } from '#imports';

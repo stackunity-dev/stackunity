@@ -1,5 +1,5 @@
 <template>
-  <v-app class="landing-screen">
+  <v-app class="landing-screen" :style="filterStyle">
     <header>
       <v-app-bar app :elevation="2" :color="'surface'" class="px-0 nav-bar" v-model="showAppBar" role="banner">
         <v-container class="d-flex align-center py-0 my-0">
@@ -26,7 +26,7 @@
                 </v-btn>
               </div>
 
-              <div class="auth-buttons ml-6" role="navigation" aria-label="Authentication">
+              <div class="auth-buttons ml-4" role="navigation" aria-label="Authentication">
                 <v-btn color="primary" class="login-btn" aria-label="Login" to="/login" variant="tonal"
                   rounded="rounded-xl" prepend-icon="mdi-login">
                   Login
@@ -92,85 +92,152 @@
 
     <v-main class="main-content">
       <main>
-        <section class="hero-section py-16" aria-labelledby="hero-heading">
-          <v-container>
-            <v-row align="center" justify="center">
-              <v-col cols="12" md="6" class="text-center text-md-start">
-                <h1 id="hero-heading" class="text-h2 font-weight-bold mb-4">
-                  <span class="text-primary">StackUnity</span> - Your All-in-One Development Hub
-                </h1>
-                <p class="text-h5 mb-8 text-medium-emphasis">
-                  The starting point for devs who want to progress, build and monetise their projects.
+        <FadeInSection>
+          <section class="hero-section py-16" aria-labelledby="hero-heading">
+            <v-container>
+              <v-row align="center" justify="center">
+                <v-col cols="12" md="6" class="text-center text-md-start">
+                  <h1 id="hero-heading" class="text-h2 font-weight-bold mb-4">
+                    <span class="text-primary">StackUnity</span> - The all-in-one platform for developers
+                  </h1>
+                  <p class="text-h5 mb-4 text-medium-emphasis">
+                    Create, optimise and monitor your websites with our integrated professional tools.
+                  </p>
+                  <div class="features-banner d-flex flex-wrap mb-6">
+                    <div class="mini-feature mr-4 mb-2">
+                      <v-icon color="primary" size="small" class="mr-1">mdi-check-circle</v-icon>
+                      <span class="text-body-2">Website audit</span>
+                    </div>
+                    <div class="mini-feature mr-4 mb-2">
+                      <v-icon color="primary" size="small" class="mr-1">mdi-check-circle</v-icon>
+                      <span class="text-body-2">SQL visualizer</span>
+                    </div>
+                    <div class="mini-feature mr-4 mb-2">
+                      <v-icon color="primary" size="small" class="mr-1">mdi-check-circle</v-icon>
+                      <span class="text-body-2">Accessibility</span>
+                    </div>
+                    <div class="mini-feature mb-2">
+                      <v-icon color="primary" size="small" class="mr-1">mdi-check-circle</v-icon>
+                      <span class="text-body-2">API testing hub</span>
+                    </div>
+                  </div>
+                  <div class="d-flex flex-column flex-sm-row ga-4 justify-center justify-md-start" role="group"
+                    aria-label="Call to action">
+                    <v-btn color="success" size="x-large" aria-label="Créer un compte" to="/signup" variant="elevated"
+                      class="px-8" :elevation="getElevation('start-free-trial', 6, 20)"
+                      @mouseenter="setHoverOn('start-free-trial')" @mouseleave="setHoverOff('start-free-trial')">
+                      <v-icon start aria-hidden="true">mdi-rocket-launch-outline</v-icon>
+                      Create an account
+                    </v-btn>
+                    <v-btn variant="elevated" color="info" size="x-large" aria-label="Watch the demo" href="#preview"
+                      class="px-8 mt-3 mt-sm-0 ml-sm-4" :elevation="getElevation('watch-demo', 6, 20)"
+                      @mouseenter="setHoverOn('watch-demo')" @mouseleave="setHoverOff('watch-demo')">
+                      <v-icon start aria-hidden="true">mdi-play-circle-outline</v-icon>
+                      Watch the demo
+                    </v-btn>
+                  </div>
+                </v-col>
+                <v-col cols="12" md="6" class="d-none d-md-flex justify-center">
+                  <v-img src="/images/preview-stackunity.avif" max-width="600" class="hero-image rounded-lg"
+                    loading="eager" alt="Aperçu de la plateforme StackUnity" cover></v-img>
+                </v-col>
+              </v-row>
+            </v-container>
+          </section>
+        </FadeInSection>
+
+
+        <FadeInSection>
+          <section class="stats-section py-8" aria-labelledby="stats-heading">
+            <v-container>
+              <v-row class="align-center justify-center">
+                <v-col v-for="(stat, i) in stats" :key="i" cols="6" sm="3" class="text-center">
+                  <div class="stat-value text-h3 font-weight-bold primary--text mb-1" role="text"
+                    aria-label="{{ stat.label }}: {{ stat.value }}">{{ stat.value }}</div>
+                  <div class="stat-label text-subtitle-2 text-medium-emphasis">{{ stat.label }}</div>
+                </v-col>
+              </v-row>
+            </v-container>
+          </section>
+        </FadeInSection>
+
+        <FadeInSection>
+          <section id="features" class="py-16" aria-labelledby="features-heading">
+            <v-container>
+              <div class="text-center mb-12">
+                <span class="section-subtitle text-uppercase font-weight-medium text-primary mb-2 d-block">Main
+                  features</span>
+                <h2 id="features-heading" class="text-h3 font-weight-bold mb-3">Powerful tools for your projects
+                </h2>
+                <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
+                  StackUnity gathers all the tools you need to develop modern web applications on a single platform.
                 </p>
-                <div class="d-flex flex-column flex-sm-row ga-4 justify-center justify-md-start" role="group"
-                  aria-label="Call to action">
-                  <v-btn color="success" size="x-large" aria-label="Start Free Trial" to="/signup" variant="elevated"
-                    class="px-8" elevation="20">
-                    <v-icon start aria-hidden="true">mdi-rocket-launch-outline</v-icon>
-                    Start Free Trial
-                  </v-btn>
-                  <v-btn variant="elevated" color="info" size="x-large" aria-label="Watch Demo" href="#features"
-                    class="px-8" elevation="20">
-                    <v-icon start aria-hidden="true">mdi-play-circle-outline</v-icon>
-                    Watch Demo
-                  </v-btn>
-                </div>
-              </v-col>
-              <v-col cols="12" md="6" class="d-none d-md-flex justify-center">
-                <v-img src="/images/preview-stackunity.avif" max-width="600" class="hero-image rounded-lg"
-                  loading="eager" alt="StackUnity platform preview" cover></v-img>
-              </v-col>
-            </v-row>
-          </v-container>
-        </section>
+              </div>
 
-        <section class="stats-section py-8" aria-label="Key Statistics">
-          <v-container>
-            <v-row class="align-center justify-center">
-              <v-col v-for="(stat, i) in stats" :key="i" cols="6" sm="3" class="text-center">
-                <div class="stat-value text-h3 font-weight-bold primary--text mb-1" role="text"
-                  aria-label="{{ stat.label }}: {{ stat.value }}">{{ stat.value }}</div>
-                <div class="stat-label text-subtitle-2 text-medium-emphasis">{{ stat.label }}</div>
-              </v-col>
-            </v-row>
-          </v-container>
-        </section>
+              <v-row>
+                <v-col v-for="(feature, index) in features" :key="index" cols="12" md="4" class="mb-8">
+                  <article class="feature-card h-100 rounded-lg" role="article"
+                    aria-labelledby="feature-title-{{ index }}">
+                    <v-card class="feature-card h-100 rounded-lg" flat>
+                      <v-card-text class="pa-6">
+                        <v-avatar :color="feature.color" size="56" class="mb-4" aria-hidden="true">
+                          <v-icon dark size="32">{{ feature.icon }}</v-icon>
+                        </v-avatar>
 
-        <section id="features" class="py-16" aria-labelledby="features-heading">
-          <v-container>
-            <div class="text-center mb-12">
-              <span class="section-subtitle" aria-hidden="true">POWERFUL TOOLS</span>
-              <h2 id="features-heading" class="text-h3 font-weight-bold mb-3">Features That Boost Your Productivity</h2>
-              <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
-                StackUnity combines all the tools you need to develop modern web applications in one intuitive platform.
-              </p>
-            </div>
+                        <div class="d-flex align-center justify-space-between">
+                          <h3 id="feature-title-{{ index }}" class="text-h5 font-weight-bold mb-3">
+                            {{ feature.title }}
+                          </h3>
 
-            <v-row>
-              <v-col v-for="(feature, index) in features" :key="index" cols="12" md="4" class="mb-8">
-                <article class="feature-card h-100 rounded-lg" role="article"
-                  aria-labelledby="feature-title-{{ index }}">
-                  <v-card class="feature-card h-100 rounded-lg" flat>
-                    <v-card-text class="pa-6">
-                      <v-avatar :color="feature.color" size="56" class="mb-4" aria-hidden="true">
-                        <v-icon dark size="32">{{ feature.icon }}</v-icon>
-                      </v-avatar>
-                      <h3 id="feature-title-{{ index }}" class="text-h5 font-weight-bold mb-3">{{ feature.title }}</h3>
-                      <p class="text-body-1 text-medium-emphasis">{{ feature.description }}</p>
-                    </v-card-text>
-                  </v-card>
-                </article>
-              </v-col>
-            </v-row>
-          </v-container>
-        </section>
+                          <div v-if="feature.title === 'Accessibility'" class="vision-filter-wrapper ml-2">
+                            <v-menu offset-y>
+                              <template v-slot:activator="{ props }">
+                                <v-btn icon density="comfortable" variant="text" v-bind="props"
+                                  :color="selectedVisionType !== 'normal' ? 'primary' : feature.color"
+                                  aria-label="Test vision impairments" size="small">
+                                  <v-icon>{{ visionTypeIcon }}</v-icon>
+                                  <v-tooltip activator="parent" location="top">
+                                    Try different vision types
+                                  </v-tooltip>
+                                </v-btn>
+                              </template>
+                              <v-list dense>
+                                <v-list-item v-for="type in visionTypes" :key="type.value"
+                                  @click="selectedVisionType = type.value; applyVisionFilter()">
+                                  <template v-slot:prepend>
+                                    <v-icon :icon="type.icon"
+                                      :color="selectedVisionType === type.value ? 'primary' : ''"></v-icon>
+                                  </template>
+                                  <v-list-item-title>{{ type.title }}</v-list-item-title>
+                                </v-list-item>
+                                <v-divider v-if="selectedVisionType !== 'normal'"></v-divider>
+                                <v-list-item v-if="selectedVisionType !== 'normal'">
+                                  <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" label="Intensity"
+                                    hide-details class="px-2 py-0" density="compact"
+                                    @update:model-value="applyVisionFilter">
+                                  </v-slider>
+                                </v-list-item>
+                              </v-list>
+                            </v-menu>
+                          </div>
+                        </div>
+
+                        <p class="text-body-1 text-medium-emphasis">{{ feature.description }}</p>
+                      </v-card-text>
+                    </v-card>
+                  </article>
+                </v-col>
+              </v-row>
+            </v-container>
+          </section>
+        </FadeInSection>
 
         <section class="py-16" aria-labelledby="how-it-works-heading">
           <v-container>
             <div class="text-center mb-12">
-              <h2 id="how-it-works-heading" class="text-h3 font-weight-bold mb-3">How It Works</h2>
+              <h2 id="how-it-works-heading" class="text-h3 font-weight-bold mb-3">How it works</h2>
               <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
-                Three simple steps to start using Devroid and transform your development workflow.
+                Three simple steps to start using StackUnity and transform your development workflow.
               </p>
             </div>
 
@@ -200,9 +267,10 @@
             </v-row>
 
             <div class="d-flex justify-center mt-12">
-              <v-btn size="large" color="info" variant="elevated" class="px-8 rounded-pill" elevation="20" to="/signup"
-                aria-label="Get Started Now" nuxt>
-                Get Started Now
+              <v-btn size="large" color="info" variant="elevated" class="px-8 rounded-pill"
+                :elevation="getElevation('get-started-now', 2, 20)" @mouseenter="setHoverOn('get-started-now')"
+                @mouseleave="setHoverOff('get-started-now')" to="/signup" aria-label="Get started now" nuxt>
+                Get started now
                 <v-icon end aria-hidden="true">mdi-rocket-launch-outline</v-icon>
               </v-btn>
             </div>
@@ -221,13 +289,14 @@
           <v-container>
             <v-row justify="center">
               <v-col cols="12" md="8" class="text-center">
-                <h2 id="cta-heading" class="text-h3 font-weight-bold white--text mb-4">Ready to get started?</h2>
+                <h2 id="cta-heading" class="text-h3 font-weight-bold white--text mb-4">Ready to start ?</h2>
                 <p class="text-subtitle-1 white--text text-opacity-high mb-8">
-                  Join the community already using DevUnity for their projects.
+                  Join the community that uses StackUnity for their projects.
                 </p>
-                <v-btn x-large color="info" variant="elevated" elevation="20" class="px-8"
-                  aria-label="Create free account" to="/signup">
-                  Create free account
+                <v-btn x-large color="info" variant="elevated" :elevation="getElevation('create-free-account', 2, 20)"
+                  @mouseenter="setHoverOn('create-free-account')" @mouseleave="setHoverOff('create-free-account')"
+                  class="px-8" aria-label="Create an account" to="/signup">
+                  Create an account
                 </v-btn>
               </v-col>
             </v-row>
@@ -313,41 +382,42 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, onMounted, ref } from 'vue';
+import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
 import { useDisplay } from 'vuetify';
+import FadeInSection from '../components/FadeInSection.vue';
 import Snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore 
 import { definePageMeta, useHead } from '#imports';
-
+import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
 definePageMeta({
   layout: 'empty'
 })
 
 useHead({
   htmlAttrs: {
-    lang: 'en'
+    lang: 'fr'
   },
-  title: 'StackUnity - Create, manage and optimize your web projects.',
+  title: 'StackUnity - Créez, gérez et optimisez vos projets web',
   meta: [
-    { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
-    { name: 'keywords', content: 'development hub, collaborative development platform, integrated development tools' },
+    { name: 'description', content: 'StackUnity est la plateforme tout-en-un pour les développeurs qui souhaitent créer, gérer et optimiser leurs projets web.' },
+    { name: 'keywords', content: 'développement web, plateforme développeurs, outils développement, audit SEO, générateur SQL, accessibilité' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { property: 'og:title', content: 'StackUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects.' },
-    { property: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { property: 'og:title', content: 'StackUnity - La plateforme tout-en-un pour développeurs web' },
+    { property: 'og:description', content: 'StackUnity est la plateforme tout-en-un pour les développeurs qui souhaitent créer, gérer et optimiser leurs projets web.' },
     { property: 'og:image', content: '/images/preview.png' },
     { property: 'og:url', content: 'https://stackunity.tech' },
     { property: 'og:site_name', content: 'StackUnity' },
     { property: 'og:type', content: 'website' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
-    { property: 'og:image:alt', content: 'StackUnity Logo' },
+    { property: 'og:image:alt', content: 'Logo StackUnity' },
     { property: 'og:image:secure_url', content: 'https://stackunity.tech/images/preview.png' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'StackUnity - The all-in-one platform for developers who want to create, manage and optimize their web projects.' },
-    { name: 'twitter:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { name: 'twitter:title', content: 'StackUnity - La plateforme tout-en-un pour développeurs web' },
+    { name: 'twitter:description', content: 'StackUnity est la plateforme tout-en-un pour les développeurs qui souhaitent créer, gérer et optimiser leurs projets web.' },
     { name: 'twitter:image', content: '/images/preview.png' },
   ],
   link: [
@@ -359,34 +429,34 @@ const Pricing = defineAsyncComponent(() => import('../components/pricing.vue'));
 const Faq = defineAsyncComponent(() => import('../components/faq.vue'));
 
 const stats = [
-  { value: '10x', label: 'Faster Development' },
-  { value: '100%', label: 'Code Quality' },
-  { value: '24/7', label: 'Support' },
-  { value: '50+', label: 'Tools Available' }
+  { value: '10x', label: 'Accelerated development' },
+  { value: '100%', label: 'Code quality' },
+  { value: '24/7', label: 'Available support' },
+  { value: '50+', label: 'Integrated tools' }
 ];
 
 const features = [
   {
-    title: 'Code Snippets',
-    description: 'Create, share and reuse code snippets to speed up your development.',
+    title: 'Code snippets',
+    description: 'Create, share and reuse code snippets to accelerate your development.',
     icon: 'mdi-code-tags',
     color: 'primary'
   },
   {
-    title: 'SQL Generator',
-    description: 'Visually design your database schemas and generate the corresponding SQL code.',
+    title: 'SQL visualizer',
+    description: 'Design visually your database schemas and generate the corresponding SQL code.',
     icon: 'mdi-database',
     color: 'info'
   },
   {
-    title: 'Website Audit',
-    description: 'Analyze and optimize your websites performance to improve their visibility.',
+    title: 'Website audit',
+    description: 'Analyze and optimize the performance of your websites to improve their visibility.',
     icon: 'mdi-magnify',
     color: 'success'
   },
   {
-    title: 'API Testing',
-    description: 'Test your APIs for security vulnerabilities and performance issues.',
+    title: 'API testing',
+    description: 'Test your APIs to detect security vulnerabilities and performance issues.',
     icon: 'mdi-api',
     color: 'warning'
   },
@@ -397,7 +467,7 @@ const features = [
     color: 'error'
   },
   {
-    title: 'Design Studio',
+    title: 'Design studio',
     description: 'Create modern user interfaces with our integrated design studio.',
     icon: 'mdi-palette',
     color: 'secondary'
@@ -407,7 +477,7 @@ const features = [
 const steps = [
   {
     title: 'Create your account',
-    description: 'Sign up for free and set up your developer profile in minutes.',
+    description: 'Sign up for free and configure your developer profile in a few minutes.',
     link: '/signup',
     color: 'primary'
   },
@@ -419,7 +489,7 @@ const steps = [
   },
   {
     title: 'Develop faster',
-    description: 'Use our tools to speed up your development and improve the quality of your projects.',
+    description: 'Use our tools to accelerate your development and improve the quality of your projects.',
     link: '/signup',
     color: 'success'
   }
@@ -511,6 +581,101 @@ const showMessage = (message: string, type = 'info', timeout = 3000) => {
   showSnackbar.value = true;
 };
 
+// Vision filter
+const selectedVisionType = ref('normal');
+const filterIntensity = ref(70);
+
+const visionTypes = [
+  {
+    title: 'Normal vision',
+    value: 'normal',
+    icon: 'mdi-eye'
+  },
+  {
+    title: 'Protanopia (Red-Green)',
+    value: 'protanopia',
+    icon: 'mdi-eye-minus'
+  },
+  {
+    title: 'Deuteranopia (Red-Green)',
+    value: 'deuteranopia',
+    icon: 'mdi-eye-minus'
+  },
+  {
+    title: 'Tritanopia (Blue-Yellow)',
+    value: 'tritanopia',
+    icon: 'mdi-eye-minus'
+  },
+  {
+    title: 'Achromatopsia (B&W)',
+    value: 'achromatopsia',
+    icon: 'mdi-eye-off'
+  },
+  {
+    title: 'Blur',
+    value: 'blur',
+    icon: 'mdi-blur'
+  }
+];
+
+const visionTypeIcon = computed(() => {
+  const type = visionTypes.find(t => t.value === selectedVisionType.value);
+  return type ? type.icon : 'mdi-eye';
+});
+
+const filterStyle = computed(() => {
+  const intensity = filterIntensity.value / 100;
+
+  switch (selectedVisionType.value) {
+    case 'protanopia': {
+      const matrix = [
+        0.367 + (1 - 0.367) * (1 - intensity), 0.633 * intensity, 0, 0, 0,
+        0.333 * intensity, 0.667 + (1 - 0.667) * (1 - intensity), 0, 0, 0,
+        0, 0.121 * intensity, 0.879 + (1 - 0.879) * (1 - intensity), 0, 0,
+        0, 0, 0, 1, 0
+      ].join(' ');
+      return {
+        filter: `brightness(1.1) contrast(0.95) saturate(0.9) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feColorMatrix type="matrix" values="${matrix}"/></filter></svg>#f')`
+      };
+    }
+    case 'deuteranopia': {
+      const matrix = [
+        0.625 + (1 - 0.625) * (1 - intensity), 0.375 * intensity, 0, 0, 0,
+        0.7 * intensity, 0.3 + (1 - 0.3) * (1 - intensity), 0, 0, 0,
+        0, 0.3 * intensity, 0.7 + (1 - 0.7) * (1 - intensity), 0, 0,
+        0, 0, 0, 1, 0
+      ].join(' ');
+      return {
+        filter: `brightness(1.05) contrast(0.97) saturate(0.95) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feColorMatrix type="matrix" values="${matrix}"/></filter></svg>#f')`
+      };
+    }
+    case 'tritanopia': {
+      const matrix = [
+        0.95 + (1 - 0.95) * (1 - intensity), 0.05 * intensity, 0, 0, 0,
+        0, 0.433 + (1 - 0.433) * (1 - intensity), 0.567 * intensity, 0, 0,
+        0, 0.475 * intensity, 0.525 + (1 - 0.525) * (1 - intensity), 0, 0,
+        0, 0, 0, 1, 0
+      ].join(' ');
+      return {
+        filter: `brightness(1) contrast(1.1) saturate(0.8) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feColorMatrix type="matrix" values="${matrix}"/></filter></svg>#f')`
+      };
+    }
+    case 'achromatopsia':
+      return {
+        filter: `grayscale(${intensity * 100}%)`
+      };
+    case 'blur':
+      return {
+        filter: `blur(${intensity * 3}px)`
+      };
+    default:
+      return {};
+  }
+});
+
+const applyVisionFilter = () => {
+  // This function can be expanded for more complex functionality if needed
+};
 </script>
 
 <style scoped>
@@ -557,6 +722,60 @@ const showMessage = (message: string, type = 'info', timeout = 3000) => {
   }
 }
 
+.features-banner {
+  margin: 20px 0;
+}
+
+.mini-feature {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba(var(--v-theme-primary), 0.1);
+  border-radius: 20px;
+  padding: 4px 12px;
+  transition: all 0.3s ease;
+}
+
+.mini-feature:hover {
+  background-color: rgba(var(--v-theme-primary), 0.2);
+  transform: translateY(-2px);
+}
+
+.video-container {
+  position: relative;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.play-button {
+  background-color: rgba(var(--v-theme-primary), 0.9);
+  transition: all 0.3s ease;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.play-button:hover {
+  transform: scale(1.1);
+  background-color: rgb(var(--v-theme-primary));
+}
+
+.section-subtitle {
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  display: inline-block;
+  padding: 5px 15px;
+  border-radius: 20px;
+  background-color: rgba(var(--v-theme-primary), 0.1);
+  margin-bottom: 10px;
+}
+
 .feature-card {
   transition: all 0.3s ease;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
@@ -594,11 +813,13 @@ const showMessage = (message: string, type = 'info', timeout = 3000) => {
 
 .testimonial-card {
   transition: all 0.3s ease;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
 }
 
 .testimonial-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(var(--v-theme-primary), 0.3);
 }
 
 @media (max-width: 960px) {
@@ -850,5 +1071,54 @@ footer h4::after {
   .footer-column {
     border-left: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   }
+}
+
+/* Styles pour le formulaire de newsletter amélioré */
+.newsletter-signup {
+  position: relative;
+  background: linear-gradient(rgba(var(--v-theme-surface), 0.8), rgba(var(--v-theme-surface), 0.9));
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(var(--v-theme-primary), 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.newsletter-signup:hover {
+  border-color: rgba(var(--v-theme-primary), 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.newsletter-signup .v-text-field {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.preview-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.preview-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(var(--v-theme-primary), 0.05), transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(var(--v-theme-info), 0.05), transparent 50%);
+  z-index: 0;
+}
+
+.accessibility-filter-container {
+  position: relative;
+}
+
+.vision-filter-wrapper {
+  display: inline-flex;
+  align-items: center;
 }
 </style>

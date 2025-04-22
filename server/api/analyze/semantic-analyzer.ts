@@ -186,14 +186,14 @@ export function analyzeSemanticStructure($: CheerioSelector): {
     grade = 'Easy to read (high school level)';
     readabilitySuggestion = 'The text is accessible to most adult readers.';
   } else if (readabilityScore > 60) {
-    grade = 'Standard (baccalaureate level)';
-    readabilitySuggestion = 'Consider simplifying some long phrases to improve readability.';
+    grade = 'Standard (undergraduate level)';
+    readabilitySuggestion = 'Consider simplifying some long sentences to improve readability.';
   } else if (readabilityScore > 50) {
-    grade = 'Difficult (license level)';
-    readabilitySuggestion = 'Shorten phrases and simplify vocabulary to reach a wider audience.';
+    grade = 'Difficult (graduate level)';
+    readabilitySuggestion = 'Shorten sentences and simplify vocabulary to reach a wider audience.';
   } else if (readabilityScore > 30) {
     grade = 'Difficult (master or specialist level)';
-    readabilitySuggestion = 'The text is complex. Divide long phrases and replace technical terms.';
+    readabilitySuggestion = 'The text is complex. Break down long sentences and replace technical terms.';
   } else {
     grade = 'Very difficult (expert level)';
     readabilitySuggestion = 'The text is very complex. Rewrite to significantly improve readability.';
@@ -204,7 +204,7 @@ export function analyzeSemanticStructure($: CheerioSelector): {
   }
 
   if (averageSentenceLength > 25) {
-    readabilitySuggestion += ' The sentences are too long (average: ' +
+    readabilitySuggestion += ' Sentences are too long (average: ' +
       averageSentenceLength.toFixed(1) + ' words). Aim for 15-20 words per sentence.';
   }
 

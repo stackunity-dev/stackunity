@@ -6,6 +6,7 @@ export const calculateMetaTagsScore = (result) => {
   let debugInfo: {
     title?: number;
     description?: number;
+    viewport?: number;
     canonical?: number;
     openGraph?: number;
     twitter?: number;
@@ -44,7 +45,14 @@ export const calculateMetaTagsScore = (result) => {
   }
   total += 15;
 
-  // Vérification des OpenGraph tags
+  const viewport = result.viewport || (result.seo && result.seo.viewport);
+  if (viewport) {
+    score += 10;
+    debugInfo.viewport = 10;
+  } else {
+    debugInfo.viewport = 0;
+  }
+
   let ogTagsCount = 0;
   if (result.openGraph && Object.keys(result.openGraph).length > 0) {
     ogTagsCount = Object.keys(result.openGraph).length;
@@ -68,7 +76,6 @@ export const calculateMetaTagsScore = (result) => {
   }
   total += 15;
 
-  // Vérification des Twitter Cards
   let twitterTagsCount = 0;
   if (result.twitterCards && Object.keys(result.twitterCards).length > 0) {
     twitterTagsCount = Object.keys(result.twitterCards).length;
@@ -92,7 +99,6 @@ export const calculateMetaTagsScore = (result) => {
   }
   total += 10;
 
-  // Vérification des langues alternatives
   const hasAlternateLanguages = result.alternateLanguages &&
     Array.isArray(result.alternateLanguages) &&
     result.alternateLanguages.length > 0;
@@ -104,7 +110,6 @@ export const calculateMetaTagsScore = (result) => {
   }
   total += 10;
 
-  // Vérification du favicon
   const hasFavicon = result.favicon ||
     (result.seo && result.seo.favicon) ||
     (result.technical && result.technical.favicon);
@@ -116,7 +121,6 @@ export const calculateMetaTagsScore = (result) => {
   }
   total += 10;
 
-  // Calcul du pourcentage
   const finalScore = total > 0 ? Math.round((score / total) * 100) : 0;
 
   return finalScore;
@@ -128,7 +132,6 @@ export const calculateContentScore = (result) => {
   let score = 0;
   let total = 0;
 
-  // Définir un objet avec des propriétés pour le debugging
   let debugInfo: {
     h1?: number;
     h2h3?: number;
@@ -143,7 +146,6 @@ export const calculateContentScore = (result) => {
     externalLinks?: number;
   } = {};
 
-  // Structure du contenu - H1
   const hasH1 = (result.headings && result.headings.h1 && result.headings.h1.length > 0) ||
     (result.headingStructure && result.headingStructure.h1 && result.headingStructure.h1.length > 0) ||
     (result.seo && result.seo.headings && result.seo.headings.h1 && result.seo.headings.h1.length > 0);
@@ -156,7 +158,6 @@ export const calculateContentScore = (result) => {
   }
   total += 15;
 
-  // Structure du contenu - H2, H3
   const hasH2orH3 = (result.headings &&
     ((result.headings.h2 && result.headings.h2.length > 0) ||
       (result.headings.h3 && result.headings.h3.length > 0))) ||
@@ -175,7 +176,6 @@ export const calculateContentScore = (result) => {
   }
   total += 10;
 
-  // Richesse du contenu - longueur
   const contentLength = result.contentLength ||
     (result.seo && result.seo.wordCount) ||
     result.wordCount || 0;
@@ -198,7 +198,6 @@ export const calculateContentScore = (result) => {
   }
   total += 25;
 
-  // Images avec attributs alt
   const images = result.images ||
     (result.seo && result.seo.images) ||
     (result.images && result.images.data);
@@ -210,16 +209,13 @@ export const calculateContentScore = (result) => {
     let imagesWithAlt = 0;
     let imagesTotal = 0;
 
-    // Cas où images est un tableau
     if (Array.isArray(images)) {
       imagesArray = images;
     }
-    // Cas où images.data est un tableau 
     else if (images.data && Array.isArray(images.data)) {
       imagesArray = images.data;
     }
 
-    // Si nous avons trouvé un tableau d'images
     if (imagesArray.length > 0) {
       imagesWithAlt = imagesArray.filter(img => img && img.alt).length;
       imagesTotal = imagesArray.length;
@@ -228,13 +224,11 @@ export const calculateContentScore = (result) => {
       debugInfo.imagesTotal = imagesTotal;
 
       if (imagesTotal > 0) {
-        // Attribution du score : 100% si toutes les images ont des alt, score proportionnel sinon
         const altPercentage = imagesWithAlt / imagesTotal;
         score += Math.round(altPercentage * 20);
         debugInfo.imageScore = Math.round(altPercentage * 20);
       }
     }
-    // Cas où images est un objet avec des statistiques
     else if (typeof images === 'object') {
       if (images.withAlt !== undefined && images.total !== undefined && images.total > 0) {
         const altPercentage = images.withAlt / images.total;
@@ -249,7 +243,6 @@ export const calculateContentScore = (result) => {
   }
   total += 20;
 
-  // Liens internes
   const hasInternalLinks = (result.links && result.links.internal && result.links.internal.length > 0) ||
     (result.internalLinks && result.internalLinks.length > 0);
 
@@ -261,7 +254,6 @@ export const calculateContentScore = (result) => {
   }
   total += 15;
 
-  // Liens externes
   const hasExternalLinks = (result.links && result.links.external && result.links.external.length > 0) ||
     (result.externalLinks && result.externalLinks.length > 0);
 
@@ -273,7 +265,6 @@ export const calculateContentScore = (result) => {
   }
   total += 15;
 
-  // Calcul du pourcentage
   const finalScore = total > 0 ? Math.round((score / total) * 100) : 0;
 
 
@@ -299,7 +290,6 @@ export const calculateTechnicalSeoScore = (result) => {
 
   debugInfo.url = result.url || 'unknown';
 
-  // Mobile friendly - Viewport
   const hasViewport = result.viewport ||
     (result.technical && result.technical.mobile && result.technical.mobile.viewport) ||
     (result.mobileCompatibility && result.mobileCompatibility.hasViewport);
@@ -312,8 +302,6 @@ export const calculateTechnicalSeoScore = (result) => {
   }
   total += 15;
 
-  // URL structure - pas de paramètres ni de fragment
-  // Si l'URL est "/" ou courte sans paramètres, la considérer comme optimisée
   const hasCleanUrl = result.url && typeof result.url === 'string' &&
     (result.url === "/" ||
       (!result.url.includes('?') && !result.url.includes('#')));
@@ -326,7 +314,6 @@ export const calculateTechnicalSeoScore = (result) => {
   }
   total += 10;
 
-  // HTTPS
   const hasHttps = result.url && typeof result.url === 'string' &&
     (result.url.startsWith('https') || result.url === "/" ||
       (result.securityChecks && result.securityChecks.https === true));
@@ -339,7 +326,6 @@ export const calculateTechnicalSeoScore = (result) => {
   }
   total += 15;
 
-  // Robots.txt
   const hasRobotsTxt = result.robotsTxt ||
     (result.technicalSEO && result.technicalSEO.robotsTxtFound) ||
     (result.technical && result.technical.robotsTxt);
@@ -352,7 +338,6 @@ export const calculateTechnicalSeoScore = (result) => {
   }
   total += 10;
 
-  // XML Sitemap
   const hasSitemap = result.sitemap ||
     (result.technicalSEO && result.technicalSEO.sitemapFound) ||
     (result.technical && result.technical.sitemap);
@@ -365,8 +350,6 @@ export const calculateTechnicalSeoScore = (result) => {
   }
   total += 10;
 
-  // Schema.org markup
-  // Vérification du structured data avec plusieurs méthodes
   let structuredDataCount = 0;
   if (result.structuredData) {
     if (Array.isArray(result.structuredData)) {
@@ -391,7 +374,6 @@ export const calculateTechnicalSeoScore = (result) => {
   }
   total += 15;
 
-  // Page speed (basé sur les Core Web Vitals)
   let webVitalsScore = 0;
   if (result.coreWebVitals) {
     let vitalsScore = 0;
@@ -412,24 +394,19 @@ export const calculateTechnicalSeoScore = (result) => {
         const numValue = Number(value);
         let vitalScore = 0;
 
-        // Calculer le score en fonction des valeurs cibles
         if (vital === 'CLS') {
-          // Pour CLS, moins c'est mieux (0 est parfait)
           if (numValue <= vitalTargets.CLS.good) vitalScore = 100;
           else if (numValue >= vitalTargets.CLS.poor) vitalScore = 0;
           else {
-            // Calcul linéaire entre good et poor
             const range = vitalTargets.CLS.poor - vitalTargets.CLS.good;
             const position = numValue - vitalTargets.CLS.good;
             vitalScore = 100 - Math.round((position / range) * 100);
           }
         } else {
-          // Pour les autres métriques en ms, moins c'est mieux
           const targets = vitalTargets[vital];
           if (numValue <= targets.good) vitalScore = 100;
           else if (numValue >= targets.poor) vitalScore = 0;
           else {
-            // Calcul linéaire entre good et poor
             const range = targets.poor - targets.good;
             const position = numValue - targets.good;
             vitalScore = 100 - Math.round((position / range) * 100);
@@ -469,7 +446,6 @@ export const calculateTechnicalSeoScore = (result) => {
 export const calculateAccessibilityScore = (result) => {
   if (!result) return 0;
 
-  // Vérifier si le score d'accessibilité existe déjà dans result
   if (result.accessibilityScore !== undefined) {
     return Number(result.accessibilityScore);
   }
@@ -477,7 +453,6 @@ export const calculateAccessibilityScore = (result) => {
   let score = 0;
   let total = 0;
 
-  // Objet pour le débogage et le suivi des points
   let debugInfo = {
     imagesWithAlt: 0,
     headingStructure: 0,
@@ -487,7 +462,6 @@ export const calculateAccessibilityScore = (result) => {
     totalScore: 0
   };
 
-  // 1. Vérification des images avec attributs alt
   const images = result.images ||
     (result.seo && result.seo.images) ||
     (result.images && result.images.data) ||
@@ -509,7 +483,6 @@ export const calculateAccessibilityScore = (result) => {
       }
     }
   } else if (result.accessibility && result.accessibility.missingAlt !== undefined) {
-    // Alternative avec la nouvelle structure d'accessibilité
     const missingAlt = result.accessibility.missingAlt;
     const totalImgs = result.accessibility.totalImages || (missingAlt + (result.accessibility.imagesWithAlt || 0));
 
@@ -521,7 +494,6 @@ export const calculateAccessibilityScore = (result) => {
   }
   total += 25;
 
-  // 2. Vérification de la structure des titres
   if ((result.headings && result.headings.h1 && result.headings.h1.length === 1) ||
     (result.headingStructure && result.headingStructure.h1 && result.headingStructure.h1.length === 1) ||
     (result.seo && result.seo.headings && result.seo.headings.h1 && result.seo.headings.h1.length === 1)) {
@@ -530,12 +502,10 @@ export const calculateAccessibilityScore = (result) => {
   }
   total += 15;
 
-  // 3. Vérification des attributs ARIA
   if (result.aria && result.aria.count > 0) {
     score += 20;
     debugInfo.ariaAttributes = 20;
   } else if (result.accessibility && result.accessibility.missingAria !== undefined) {
-    // Alternative avec la nouvelle structure
     const missingAria = result.accessibility.missingAria;
     if (missingAria === 0) {
       score += 20;
@@ -547,7 +517,6 @@ export const calculateAccessibilityScore = (result) => {
   }
   total += 20;
 
-  // 4. Vérification des problèmes de contraste
   let contrastWarnings = 0;
 
   if (result.accessibility && result.accessibility.contrastIssues !== undefined) {
@@ -574,14 +543,12 @@ export const calculateAccessibilityScore = (result) => {
   }
   total += 20;
 
-  // 5. Vérification de l'accessibilité des formulaires
   if (result.forms && result.forms.accessible) {
     score += 20;
     debugInfo.formAccessibility = 20;
   } else if (result.accessibility &&
     result.accessibility.missingLabels !== undefined &&
     result.accessibility.missingInputAttributes !== undefined) {
-    // Alternative avec la nouvelle structure
     const missingLabels = result.accessibility.missingLabels;
     const missingInputs = result.accessibility.missingInputAttributes;
 
@@ -595,7 +562,6 @@ export const calculateAccessibilityScore = (result) => {
   }
   total += 20;
 
-  // Calcul du score final
   const finalScore = total > 0 ? Math.round((score / total) * 100) : 0;
   debugInfo.totalScore = finalScore;
 
@@ -652,7 +618,6 @@ export const calculateSecurityScore = (result) => {
     baseScore: score
   };
 
-  // Traitement des avertissements de sécurité
   let warningsDeduction = 0;
   let warningsCount = 0;
 
@@ -662,7 +627,6 @@ export const calculateSecurityScore = (result) => {
     if (Array.isArray(securityIssues) && securityIssues.length > 0) {
       warningsCount = securityIssues.length;
 
-      // S'assurer que vulnerabilitiesCount existe
       if (!debugInfo.vulnerabilitiesCount) {
         debugInfo.vulnerabilitiesCount = {
           critical: 0,
@@ -675,7 +639,6 @@ export const calculateSecurityScore = (result) => {
 
       let issueDeduction = 0;
 
-      // Compter par sévérité
       for (const issue of securityIssues) {
         const severity = issue.severity ? issue.severity.toLowerCase() : 'medium';
         const description = issue.description || 'Issue de sécurité';
@@ -716,7 +679,6 @@ export const calculateSecurityScore = (result) => {
   debugInfo.warnings = -warningsDeduction;
   debugInfo.warningsCount = warningsCount;
 
-  // Calculer le score final, avec un minimum de 0
   const finalScore = Math.max(0, Math.round(score));
   return finalScore;
 };
@@ -845,7 +807,6 @@ export const calculateAllMetrics = (result) => {
   const security = calculateSecurityScore(result);
   const engagement = calculateEngagementScore(result);
 
-  // Pondération des scores
   const weights = {
     metaTags: 0.25,
     content: 0.25,

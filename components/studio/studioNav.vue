@@ -1,105 +1,105 @@
 <template>
   <v-app>
-    <v-main class="w-100 h-100 overflow-hidden d-flex">
-      <div class="control-panel" style="width: 350px;">
+    <v-main class="w-100 h-100 overflow-hidden d-flex" role="main">
+      <div class="control-panel" style="width: 350px;" role="complementary" aria-label="Navigation control panel">
         <v-card flat class="fill-height">
-          <div class="px-4 py-2 d-flex align-center">
-            <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2">Vue.js</v-chip>
-            <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2">Vuetify</v-chip>
+          <div class="px-4 py-2 d-flex align-center" role="group" aria-label="Framework indicators">
+            <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2"
+              aria-label="Vue.js framework">Vue.js</v-chip>
+            <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2"
+              aria-label="Vuetify framework">Vuetify</v-chip>
           </div>
 
-          <v-tabs v-model="tab" color="primary" align-tabs="center" class="px-4">
-            <v-tab value="content">Content</v-tab>
-            <v-tab value="style">Style</v-tab>
-            <v-tab value="actions">Actions</v-tab>
-            <v-tab value="templates">Template</v-tab>
+          <v-tabs v-model="tab" color="primary" align-tabs="center" class="px-4" role="tablist"
+            aria-label="Navigation settings">
+            <v-tab value="content" role="tab" aria-controls="content-panel">Content</v-tab>
+            <v-tab value="style" role="tab" aria-controls="style-panel">Style</v-tab>
+            <v-tab value="actions" role="tab" aria-controls="actions-panel">Actions</v-tab>
+            <v-tab value="templates" role="tab" aria-controls="templates-panel">Template</v-tab>
           </v-tabs>
 
           <v-divider></v-divider>
 
           <v-card-text class="pa-0 fill-height" style="overflow-y: auto">
             <v-window v-model="tab">
-              <v-window-item value="content">
+              <v-window-item value="content" role="tabpanel" id="content-panel">
                 <div class="pa-4">
-                  <div class="section-title d-flex align-center mb-3">
+                  <div class="section-title d-flex align-center mb-3" role="heading" aria-level="2">
                     <v-icon color="primary" class="mr-2">mdi-view-dashboard-outline</v-icon>
                     <span class="text-h6">App Bar</span>
                   </div>
 
                   <v-switch v-model="navProperties.addAppBar" color="primary" label="Add app bar" hide-details
-                    class="mb-4" />
+                    class="mb-4" role="switch" aria-label="Toggle app bar visibility" />
 
                   <div v-if="navProperties.addAppBar">
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-2 d-block">App Bar Color</label>
-                      <v-btn-toggle v-model="navProperties.appBarColor" mandatory density="comfortable" class="mb-4">
+                      <label class="text-subtitle-2 mb-2 d-block" id="appbar-color-label">App Bar Color</label>
+                      <v-btn-toggle v-model="navProperties.appBarColor" mandatory density="comfortable" class="mb-4"
+                        role="radiogroup" aria-labelledby="appbar-color-label">
                         <v-btn v-for="(color, index) in appBarColors" :key="color.value" :value="index"
                           :color="color.value !== 'default' ? color.value : undefined" size="small" variant="tonal"
-                          width="40" height="40" class="ma-1">
+                          width="40" height="40" class="ma-1" role="radio" :aria-label="color.value">
                           <v-icon v-if="color.value === 'default'">mdi-palette-outline</v-icon>
                         </v-btn>
                       </v-btn-toggle>
                     </div>
 
-                    <v-card class="mb-4 pa-3">
+                    <v-card class="mb-4 pa-3" role="region" aria-label="App bar items configuration">
                       <div v-for="(item, index) in appBar" :key="index" class="d-flex align-center mb-2">
                         <v-text-field v-model="item.title" label="Title" variant="outlined" density="compact"
-                          prepend-inner-icon="mdi-format-title" class="mr-2" placeholder="Home" />
+                          prepend-inner-icon="mdi-format-title" class="mr-2" placeholder="Home"
+                          :aria-label="'App bar item ' + (index + 1) + ' title'" />
                         <v-select v-model="item.icon" :items="navIcons" label="Icon" variant="outlined"
-                          density="compact" prepend-inner-icon="mdi-pencil" class="mr-2" placeholder="mdi-home">
-                          <template v-slot:item="{ item, props }">
-                            <v-list-item v-bind="props">
-                              <template v-slot:prepend>
-                                <v-icon :icon="item.raw"></v-icon>
-                              </template>
-                            </v-list-item>
-                          </template>
-                        </v-select>
+                          density="compact" prepend-inner-icon="mdi-pencil" class="mr-2" placeholder="mdi-home"
+                          :aria-label="'App bar item ' + (index + 1) + ' icon'" />
                         <v-btn icon="mdi-delete" color="error" variant="text" density="compact"
-                          @click="removeAppBar(index)"></v-btn>
+                          @click="removeAppBar(index)" :aria-label="'Remove app bar item ' + (index + 1)"></v-btn>
                       </div>
                       <v-btn color="primary" prepend-icon="mdi-plus" variant="tonal" block @click="addAppBar"
-                        class="mt-2">
+                        class="mt-2" aria-label="Add new app bar item">
                         Add app bar item
                       </v-btn>
                     </v-card>
                   </div>
 
-                  <v-divider class="my-4"></v-divider>
+                  <v-divider class="my-4" role="separator"></v-divider>
 
-                  <div class="section-title d-flex align-center mb-3">
+                  <div class="section-title d-flex align-center mb-3" role="heading" aria-level="2">
                     <v-icon color="primary" class="mr-2">mdi-format-list-bulleted</v-icon>
                     <span class="text-h6">Navigation Items</span>
                   </div>
 
                   <v-switch v-model="navProperties.showSubheader" color="primary" label="Add subheaders" hide-details
-                    class="mb-4" />
+                    class="mb-4" role="switch" aria-label="Toggle subheaders visibility" />
 
                   <div v-if="navProperties.showSubheader">
-                    <v-card class="mb-4 pa-3">
+                    <v-card class="mb-4 pa-3" role="region" aria-label="Subheaders configuration">
                       <div v-for="(item, index) in navHeader" :key="index" class="d-flex align-center mb-2">
                         <v-text-field v-model="item.title" label="Subheader text" variant="outlined" density="compact"
-                          prepend-inner-icon="mdi-format-header-3" class="mr-2" placeholder="Section" />
+                          prepend-inner-icon="mdi-format-header-3" class="mr-2" placeholder="Section"
+                          :aria-label="'Subheader ' + (index + 1) + ' text'" />
                         <v-btn icon="mdi-delete" color="error" variant="text" density="compact"
-                          @click="removeHeader(index)"></v-btn>
+                          @click="removeHeader(index)" :aria-label="'Remove subheader ' + (index + 1)"></v-btn>
                       </div>
                       <v-btn color="primary" prepend-icon="mdi-plus" variant="tonal" block @click="addHeader"
-                        class="mt-2">
+                        class="mt-2" aria-label="Add new subheader">
                         Add subheader
                       </v-btn>
                     </v-card>
                   </div>
 
                   <v-switch v-model="navProperties.showIconItems" color="primary" label="Add navigation items"
-                    hide-details class="mb-4" />
+                    hide-details class="mb-4" role="switch" aria-label="Toggle navigation items visibility" />
 
                   <div v-if="navProperties.showIconItems">
-                    <v-card class="mb-4 pa-3">
+                    <v-card class="mb-4 pa-3" role="region" aria-label="Navigation items configuration">
                       <div v-for="(item, index) in navItems" :key="index" class="d-flex align-center mb-2">
                         <v-select v-model="item.icon" :items="navIcons" label="Icon" variant="outlined"
-                          density="compact" prepend-inner-icon="mdi-emoticon" class="mr-2" placeholder="mdi-home">
+                          density="compact" prepend-inner-icon="mdi-emoticon" class="mr-2" placeholder="mdi-home"
+                          :aria-label="'Navigation item ' + (index + 1) + ' icon'">
                           <template v-slot:item="{ item, props }">
-                            <v-list-item v-bind="props">
+                            <v-list-item v-bind="props" role="option">
                               <template v-slot:prepend>
                                 <v-icon :icon="item.raw"></v-icon>
                               </template>
@@ -108,21 +108,24 @@
                           </template>
                         </v-select>
                         <v-text-field v-model="item.title" label="Title" variant="outlined" density="compact"
-                          prepend-inner-icon="mdi-format-title" class="mr-2" placeholder="Home" />
+                          prepend-inner-icon="mdi-format-title" class="mr-2" placeholder="Home"
+                          :aria-label="'Navigation item ' + (index + 1) + ' title'" />
                         <v-btn icon="mdi-delete" color="error" variant="text" density="compact"
-                          @click="removeItem(index)"></v-btn>
+                          @click="removeItem(index)" :aria-label="'Remove navigation item ' + (index + 1)"></v-btn>
                       </div>
                       <v-btn color="primary" prepend-icon="mdi-plus" variant="tonal" block @click="addIconItem"
-                        class="mt-2">
+                        class="mt-2" aria-label="Add new navigation item">
                         Add navigation item
                       </v-btn>
                     </v-card>
                   </div>
 
                   <v-text-field v-model="navProperties.image" label="Background image URL" variant="outlined"
-                    density="comfortable" clearable prepend-inner-icon="mdi-image" class="mb-4">
+                    density="comfortable" clearable prepend-inner-icon="mdi-image" class="mb-4"
+                    aria-label="Background image URL input">
                     <template v-slot:append-inner>
-                      <v-btn icon="mdi-refresh" variant="text" size="small" @click="navProperties.image = ''"></v-btn>
+                      <v-btn icon="mdi-refresh" variant="text" size="small" @click="navProperties.image = ''"
+                        aria-label="Clear background image"></v-btn>
                     </template>
                   </v-text-field>
 
@@ -139,65 +142,68 @@
                 </div>
               </v-window-item>
 
-              <v-window-item value="style">
+              <v-window-item value="style" role="tabpanel" id="style-panel">
                 <div class="pa-4">
-                  <div class="section-title d-flex align-center mb-3">
+                  <div class="section-title d-flex align-center mb-3" role="heading" aria-level="2">
                     <v-icon color="primary" class="mr-2">mdi-palette</v-icon>
                     <span class="text-h6">Appearance</span>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2 d-block">Color</label>
-                    <v-btn-toggle mandatory density="comfortable" selected-class="border-primary">
+                    <label class="text-subtitle-2 mb-2 d-block" id="color-selection">Color</label>
+                    <v-btn-toggle mandatory density="comfortable" selected-class="border-primary" role="radiogroup"
+                      aria-labelledby="color-selection">
                       <v-btn v-for="color in colors" :key="color" :value="color"
                         :color="color !== 'default' ? color : undefined" size="small" variant="tonal" width="40"
-                        height="40" class="ma-1" @click="navProperties.color = color">
+                        height="40" class="ma-1" @click="navProperties.color = color" role="radio" :aria-label="color">
                         <v-icon v-if="color === 'default'">mdi-palette-outline</v-icon>
                       </v-btn>
                     </v-btn-toggle>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-1 d-block">Elevation</label>
+                    <label class="text-subtitle-2 mb-1 d-block" id="elevation-slider">Elevation</label>
                     <div class="d-flex align-center">
                       <v-icon size="small" color="primary">mdi-box-shadow</v-icon>
-                      <v-slider v-model="navProperties.elevation" min="0" max="24" step="1" thumb-label
-                        class="mx-2"></v-slider>
-                      <v-chip size="x-small">{{ navProperties.elevation }}</v-chip>
+                      <v-slider v-model="navProperties.elevation" min="0" max="24" step="1" thumb-label class="mx-2"
+                        aria-labelledby="elevation-slider" role="slider" />
+                      <v-chip size="x-small" aria-label="Current elevation value">{{ navProperties.elevation }}</v-chip>
                     </div>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-1 d-block">Width</label>
+                    <label class="text-subtitle-2 mb-1 d-block" id="width-slider">Width</label>
                     <div class="d-flex align-center">
                       <v-icon size="small" color="primary">mdi-arrow-expand-horizontal</v-icon>
-                      <v-slider v-model="navProperties.width" min="180" max="400" step="10" thumb-label
-                        class="mx-2"></v-slider>
-                      <v-chip size="x-small">{{ navProperties.width }}px</v-chip>
+                      <v-slider v-model="navProperties.width" min="180" max="400" step="10" thumb-label class="mx-2"
+                        aria-labelledby="width-slider" role="slider" />
+                      <v-chip size="x-small" aria-label="Current width value">{{ navProperties.width }}px</v-chip>
                     </div>
                   </div>
 
-                  <v-divider class="my-4"></v-divider>
+                  <v-divider class="my-4" role="separator"></v-divider>
 
-                  <div class="section-title d-flex align-center mb-3">
+                  <div class="section-title d-flex align-center mb-3" role="heading" aria-level="2">
                     <v-icon color="primary" class="mr-2">mdi-monitor-dashboard</v-icon>
                     <span class="text-h6">Layout & Position</span>
                   </div>
 
                   <div class="mb-4">
-                    <v-btn-toggle v-model="navProperties.location" mandatory density="comfortable" class="mb-3">
-                      <v-btn value="left" prepend-icon="mdi-format-horizontal-align-left">Left</v-btn>
-                      <v-btn value="right" prepend-icon="mdi-format-horizontal-align-right">Right</v-btn>
+                    <v-btn-toggle v-model="navProperties.location" mandatory density="comfortable" class="mb-3"
+                      role="radiogroup" aria-label="Navigation position">
+                      <v-btn value="left" prepend-icon="mdi-format-horizontal-align-left" role="radio">Left</v-btn>
+                      <v-btn value="right" prepend-icon="mdi-format-horizontal-align-right" role="radio">Right</v-btn>
                     </v-btn-toggle>
                   </div>
 
                   <v-switch v-model="navProperties.rounded" color="primary" label="Rounded corners" hide-details
-                    class="mb-2" />
-                  <v-switch v-model="navProperties.floating" color="primary" label="Floating" hide-details
-                    class="mb-2" />
-                  <v-switch v-model="navProperties.rail" color="primary" label="Rail mode" hide-details class="mb-2" />
+                    class="mb-2" role="switch" aria-label="Toggle rounded corners" />
+                  <v-switch v-model="navProperties.floating" color="primary" label="Floating" hide-details class="mb-2"
+                    role="switch" aria-label="Toggle floating navigation" />
+                  <v-switch v-model="navProperties.rail" color="primary" label="Rail mode" hide-details class="mb-2"
+                    role="switch" aria-label="Toggle rail mode" />
                   <v-switch v-model="navProperties.expandOnHover" color="primary" label="Expand on hover" hide-details
-                    class="mb-2" />
+                    class="mb-2" role="switch" aria-label="Toggle expand on hover" />
                   <v-switch v-model="navProperties.permanent" color="primary" label="Permanent" hide-details
                     class="mb-2" />
 
@@ -391,7 +397,6 @@
         <v-card-title class="d-flex justify-space-between align-center pa-4">
           <v-tabs v-model="codeTab" color="primary">
             <v-tab value="template">Template</v-tab>
-            <v-tab value="script">Script</v-tab>
             <v-tab value="theme">Theme</v-tab>
           </v-tabs>
           <v-btn icon="mdi-close" variant="text" @click="showCodeDialog = false"></v-btn>
@@ -399,22 +404,17 @@
         <v-card-text>
           <v-window v-model="codeTab">
             <v-window-item value="template">
-              <v-sheet class="bg-grey-darken-4 rounded pa-4"
-                style="white-space: pre-wrap; font-family: monospace; color: white;">
-                {{ generateTemplateCode() }}
-              </v-sheet>
+              <pre class="code-block"><code class="language-vue" ref="codeElement">{{ highlightedTemplateCode }}</code>
+          </pre>
             </v-window-item>
             <v-window-item value="script">
-              <v-sheet class="bg-grey-darken-4 rounded pa-4"
-                style="white-space: pre-wrap; font-family: monospace; color: white;">
-                {{ generateScriptCode() }}
-              </v-sheet>
+              <pre class="code-block"><code class="language-javascript" ref="scriptCodeElement">{{ highlightedScriptCode
+              }}</code>
+          </pre>
             </v-window-item>
             <v-window-item value="theme">
-              <v-sheet class="bg-grey-darken-4 rounded pa-4"
-                style="white-space: pre-wrap; font-family: monospace; color: white;">
-                {{ theme }}
-              </v-sheet>
+              <pre class="code-block"><code class="language-css" ref="themeCodeElement">{{ highlightedThemeCode }}</code>
+          </pre>
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -431,12 +431,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
-import Snackbar from '~/components/snackbar.vue';
-import { useUserStore } from '~/stores/userStore';
-import icons from '~/utils/icons';
-import { getNavTemplate } from '~/utils/navTemplates';
-import theme from '~/utils/theme';
+import hljs from 'highlight.js/lib/core';
+import 'highlight.js/styles/atom-one-dark.css';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import Snackbar from '../../components/snackbar.vue';
+import { useUserStore } from '../../stores/userStore';
+import icons from '../../utils/icons';
+import { getNavTemplate } from '../../utils/navTemplates';
+import theme from '../../utils/theme';
 
 const emit = defineEmits(['update:content', 'save']);
 
@@ -456,6 +458,9 @@ interface NavHeader {
 }
 
 const tab = ref('content');
+const codeElement = ref<HTMLElement | null>(null);
+const themeCodeElement = ref<HTMLElement | null>(null);
+const scriptCodeElement = ref<HTMLElement | null>(null);
 const previewMode = ref('desktop');
 const showCodeDialog = ref(false);
 const codeTab = ref('template');
@@ -467,14 +472,6 @@ const navItems = ref<NavItem[]>([]);
 const navHeader = ref<NavHeader[]>([]);
 const appBar = ref<AppBar[]>([]);
 const navIcons = ref(icons);
-
-const transitions = [
-  'none',
-  'fade',
-  'slide-x-transition',
-  'slide-y-transition',
-  'scale-transition'
-];
 
 const appBarColors = ([
   { value: 'default', color: 'default' },
@@ -754,7 +751,7 @@ import { ref, computed } from 'vue';
 
 const navItems = ref([`;
 
-  let combinedItems = [];
+  let combinedItems: string[] = [];
 
   for (let i = 0; i < navHeader.value.length; i++) {
     combinedItems.push(`{ type: 'subheader', title: '${navHeader.value[i].title}' }`);
@@ -880,12 +877,37 @@ const loadTemplateFromStore = () => {
   }
 };
 
+const highlightedTemplateCode = computed(() => {
+  return generateTemplateCode();
+});
+
+const highlightedScriptCode = computed(() => {
+  return generateScriptCode();
+});
+
+const highlightedThemeCode = computed(() => {
+  return theme;
+});
+
+
 watch(navProperties, () => {
   generateNavCodeSilently();
 }, { deep: true });
 
 watch(previewMode, () => {
   generateNavCodeSilently();
+});
+
+watch(codeTab, () => {
+  nextTick(() => {
+    if (codeTab.value === 'template' && codeElement.value) {
+      hljs.highlightElement(codeElement.value);
+    } else if (codeTab.value === 'script' && scriptCodeElement.value) {
+      hljs.highlightElement(scriptCodeElement.value);
+    } else if (codeTab.value === 'theme' && themeCodeElement.value) {
+      hljs.highlightElement(themeCodeElement.value);
+    }
+  });
 });
 
 watch(() => {
@@ -921,5 +943,22 @@ onMounted(() => {
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
+}
+
+.code-block {
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  background-color: #282c34;
+  overflow: auto;
+  max-height: 60vh;
+}
+
+.code-block code {
+  display: block;
+  padding: 1rem;
+  font-family: "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  font-size: 14px;
+  line-height: 1.5;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div class="text-center mb-12">
-      <h2 class="text-h3 font-weight-bold mb-3">Frequently Asked Questions</h2>
+      <h2 class="text-h3 font-weight-bold mb-3">Frequently asked questions</h2>
       <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
         You have questions? We have answers.
       </p>
@@ -31,23 +31,27 @@ import { useHead } from '#imports';
 const faqItems = [
   {
     question: 'What is StackUnity?',
-    answer: 'StackUnity is an all-in-one platform for developers who want to create, manage and optimize their web projects. It combines development tools, monitoring, SEO audit and much more.'
+    answer: 'StackUnity is a one-stop-shop for developers who want to create, manage and optimize their web projects. It combines development tools, monitoring, SEO audit and much more.'
   },
   {
     question: 'Is there a freemium model?',
-    answer: 'Yes, you can access the application free of charge with paid premium extensions.'
+    answer: 'Yes, you can access the application for free with premium paid extensions.'
   },
   {
     question: 'Why this price?',
-    answer: 'We offer a lifetime access to all our tools for a single price. This is a one-time payment that gives you access to all our tools forever and updates are included.'
+    answer: 'We offer lifetime access to all our tools for a unique price. It is a one-time payment that gives you access to all our tools for life and updates are included.'
   },
   {
-    question: 'Are there any limitations in the free plan?',
-    answer: 'The free plan allows you to create up to 5 personal snippets and use basic features. For unlimited usage and advanced features, we recommend upgrading to the lifetime access plan.'
+    question: 'Are there limitations in the free plan?',
+    answer: 'The free plan allows you to create up to 5 personal snippets and use the basic features. For unlimited use and advanced features, we recommend upgrading to the lifetime access plan.'
   },
   {
-    question: 'How does technical support work?',
-    answer: 'All users have access to community support. Premium Users benefit from priority support via email.'
+    question: 'How does the support work?',
+    answer: 'All users have access to community support. Premium users benefit from priority support via email.'
+  },
+  {
+    question: 'Can I try StackUnity before buying?',
+    answer: 'Absolutely! You can create a free account to explore the basic features of the platform before deciding to buy the full access.'
   }
 ];
 

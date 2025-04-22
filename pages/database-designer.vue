@@ -1031,9 +1031,9 @@ const validateColumnName = (name: string): boolean => {
 
 const handleSchemaSelection = (schemaId: number | null) => {
   if (schemaId) {
-    router.push({ path: '/sql-generator', query: { id: schemaId.toString() } });
+    router.push({ path: '/database-designer', query: { id: schemaId.toString() } });
   } else {
-    router.push({ path: '/sql-generator', query: {} });
+    router.push({ path: '/database-designer', query: {} });
 
     databaseName.value = '';
     tables.value = [];
@@ -1051,17 +1051,17 @@ const loadSchemaById = async (id: number) => {
 
     if (schema) {
       loadSelectedSchema(schema);
-      snackbarText.value = 'Schéma chargé avec succès';
+      snackbarText.value = 'Schema loaded successfully';
       snackbarColor.value = 'success';
       showSnackbar.value = true;
     } else {
-      snackbarText.value = 'Schéma non trouvé';
+      snackbarText.value = 'Schema not found';
       snackbarColor.value = 'error';
       showSnackbar.value = true;
     }
   } catch (err) {
-    console.error('Erreur lors du chargement du schéma:', err);
-    snackbarText.value = 'Erreur lors du chargement du schéma';
+    console.error('Error loading schema:', err);
+    snackbarText.value = 'Error loading schema';
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   }
@@ -1246,7 +1246,7 @@ const autoArrangeTables = () => {
     tablePositions.value.set(table.id, { x, y });
   });
 
-  snackbarText.value = "Tables réorganisées";
+  snackbarText.value = "Tables rearranged";
   snackbarColor.value = "success";
   showSnackbar.value = true;
 };
@@ -1255,7 +1255,7 @@ const exportDiagram = async (format: 'png' | 'svg') => {
   try {
 
   } catch (error) {
-    console.error(`Erreur lors de l'export ${format}:`, error);
+    console.error(`Error exporting ${format}:`, error);
   }
 };
 
@@ -1295,14 +1295,14 @@ async function convertToNoSQLHandler(type: string) {
     }, 0);
 
     // Show success notification
-    snackbarText.value = `SQL converti en NoSQL (${type})`;
+    snackbarText.value = `SQL converted to NoSQL (${type})`;
     snackbarColor.value = 'success';
     showSnackbar.value = true;
   } catch (error: any) {
-    console.error('Erreur lors de la conversion NoSQL:', error);
+    console.error('Error converting NoSQL:', error);
 
     // Show error notification
-    snackbarText.value = `Erreur de conversion: ${error.message}`;
+    snackbarText.value = `Error converting: ${error.message}`;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   }
@@ -1340,14 +1340,14 @@ async function convertToORMHandler(type: string) {
     }, 0);
 
     // Show success notification
-    snackbarText.value = `SQL converti en ORM (${type})`;
+    snackbarText.value = `SQL converted to ORM (${type})`;
     snackbarColor.value = 'success';
     showSnackbar.value = true;
   } catch (error: any) {
-    console.error('Erreur lors de la conversion ORM:', error);
+    console.error('Error converting ORM:', error);
 
     // Show error notification
-    snackbarText.value = `Erreur de conversion: ${error.message}`;
+    snackbarText.value = `Error converting: ${error.message}`;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   }
@@ -1368,7 +1368,7 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Error in onMounted:', error);
-    snackbarText.value = 'Erreur lors du chargement initial';
+    snackbarText.value = 'Error loading initial';
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   } finally {

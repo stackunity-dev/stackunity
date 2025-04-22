@@ -1,6 +1,6 @@
 import axios from 'axios';
-import type { CheerioAPI } from 'cheerio';
 import * as cheerio from 'cheerio';
+import { type CheerioAPI } from 'cheerio';
 import { performance } from 'perf_hooks';
 import type { CheerioSelector, StructuredData, WebsiteAnalysisResult } from './analyzer-types';
 
@@ -8,7 +8,7 @@ export async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult
   const startTime = performance.now();
   const response = await axios.get(url, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+      'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.tech/bot)',
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,*/*;q=0.8',
       'Accept-Language': 'fr,en-US;q=0.8,en;q=0.5',
       'Accept-Encoding': 'gzip, deflate, br',
@@ -151,11 +151,9 @@ export async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult
     }
   });
 
-  // Vérification du sitemap et robots.txt de manière asynchrone
   const sitemapResult = await checkSitemap(url);
   const robotsTxtResult = await checkRobotsTxt(url);
 
-  // Analyse des fichiers volumineux dans les liens
   const largeFiles = await analyzeLargeFiles(linksData.internal, url);
 
   const technical = {
@@ -202,11 +200,9 @@ export async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult
     }
   };
 
-  // Analyser et évaluer les en-têtes de sécurité
   const securityEvaluation = evaluateSecurityHeaders(technical.security.headers);
   technical.security.score = securityEvaluation.score;
 
-  // Analyser les cookies
   const cookieHeader = response.headers['set-cookie'];
   if (cookieHeader) {
     technical.security.cookies = analyzeCookies(cookieHeader);
@@ -223,7 +219,6 @@ export async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult
 
   const issues = generateSEOIssues(seoData, performanceData, url);
 
-  // Vérification HTTPS
   if (url && !url.startsWith('https://')) {
     issues.push({
       type: 'security',
@@ -258,7 +253,6 @@ export function analyzeImages($: CheerioSelector) {
   const images = $('img');
   const totalImages = images.length;
 
-  // Vérifier aussi les images en background CSS
   const elementsWithBgImage = $('[style*="background-image"]');
   let bgImageCount = 0;
 
@@ -277,7 +271,6 @@ export function analyzeImages($: CheerioSelector) {
   const withSrcset = images.filter('[srcset]').length;
 
 
-  // Récupérer les détails complets des images
   const imageDetails: {
     src: string;
     alt: string;
@@ -288,13 +281,10 @@ export function analyzeImages($: CheerioSelector) {
     inBackground?: boolean;
   }[] = [];
 
-  // Analyser les images standard
   images.each((index, img) => {
     const src = $(img).attr('src');
     const alt = $(img).attr('alt') || '';
     const title = $(img).attr('title') || '';
-
-    console.log(`Image ${index + 1} - src: ${src}, alt: "${alt}", title: "${title}"`);
 
     if (src && !src.startsWith('data:image') && src.trim() !== '') {
       imageDetails.push({
@@ -309,14 +299,12 @@ export function analyzeImages($: CheerioSelector) {
       });
     }
 
-    // Vérifier aussi les sources dans srcset
     const srcset = $(img).attr('srcset');
     if (srcset) {
       const srcsetUrls = srcset.split(',')
         .map(s => s.trim().split(' ')[0])
         .filter(s => s && !s.startsWith('data:image') && s.trim() !== '');
 
-      // Ajouter chaque source de srcset comme une image séparée
       for (const srcsetUrl of srcsetUrls) {
         if (!imageDetails.some(img => img.src === srcsetUrl)) {
           imageDetails.push({
@@ -335,7 +323,6 @@ export function analyzeImages($: CheerioSelector) {
     }
   });
 
-  // Vérifier aussi les images dans <picture>
   $('picture source').each((_, source) => {
     const srcset = $(source).attr('srcset');
     if (srcset) {
@@ -343,13 +330,11 @@ export function analyzeImages($: CheerioSelector) {
         .map(s => s.trim().split(' ')[0])
         .filter(s => s && !s.startsWith('data:image') && s.trim() !== '');
 
-      // Récupérer l'alt de l'image associée à la balise picture
       const parentPicture = $(source).closest('picture');
       const imgInPicture = parentPicture.find('img').first();
       const alt = imgInPicture.attr('alt') || '';
       const title = imgInPicture.attr('title') || '';
 
-      // Ajouter chaque source comme une image séparée
       for (const srcsetUrl of srcsetUrls) {
         if (!imageDetails.some(img => img.src === srcsetUrl)) {
           imageDetails.push({
@@ -367,14 +352,12 @@ export function analyzeImages($: CheerioSelector) {
     }
   });
 
-  // Images dans les background-image
   elementsWithBgImage.each((_, el) => {
     const style = $(el).attr('style') || '';
     const match = style.match(/url\(['"]?([^'"()]+)['"]?\)/);
     if (match && match[1] && !match[1].startsWith('data:image')) {
       const bgUrl = match[1];
       if (!imageDetails.some(img => img.src === bgUrl)) {
-        // Pour les images de fond, on utilise l'attribut aria-label comme alt si présent
         const ariaLabel = $(el).attr('aria-label') || '';
         imageDetails.push({
           src: bgUrl,
@@ -388,10 +371,8 @@ export function analyzeImages($: CheerioSelector) {
     }
   });
 
-  // Normaliser les URLs relatives
   const imageDetailsFinal = imageDetails.map(img => {
     if (img.src.startsWith('/')) {
-      // C'est une URL relative, on la laisse telle quelle mais on la note
       return {
         ...img,
         src: img.src,
@@ -410,7 +391,7 @@ export function analyzeImages($: CheerioSelector) {
     withHeight,
     withSrcset,
     urls: imageDetailsFinal.map(img => img.src),
-    data: imageDetailsFinal  // Inclure tous les détails des images pour analyse complète
+    data: imageDetailsFinal
   };
 }
 
@@ -471,12 +452,11 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
     const baseUrlObj = new URL(baseUrl);
     const robotsTxtUrl = `${baseUrlObj.protocol}//${baseUrlObj.hostname}/robots.txt`;
 
-    // Vérifier d'abord le robots.txt pour trouver le sitemap
     try {
       const robotsResponse = await axios.get(robotsTxtUrl, {
         timeout: 8000,
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+          'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.tech/bot)',
           'Accept': 'text/plain,*/*'
         }
       });
@@ -490,14 +470,13 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
             const sitemapResponse = await axios.get(sitemapUrl, {
               timeout: 8000,
               headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+                'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.tech/bot)',
                 'Accept': 'application/xml,text/xml,*/*'
               }
             });
 
             if (sitemapResponse.status === 200 && sitemapResponse.data) {
               const content = sitemapResponse.data;
-              // Vérifier différentes façons dont un sitemap XML peut être structuré
               if (typeof content === 'string' &&
                 (content.includes('<urlset') ||
                   content.includes('<sitemapindex') ||
@@ -505,18 +484,14 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
                 const $ = cheerio.load(content, { xmlMode: true });
 
-                // Chercher les URLs dans différents formats de namespace
                 let urlCount = $('url').length;
 
-                // Si pas d'URLs trouvées dans le namespace par défaut, essayer avec des sélecteurs plus génériques
                 if (urlCount === 0) {
                   urlCount = $('*[loc]').length;
                 }
 
-                // Si c'est un sitemapindex, essayer de compter les URLs dans le premier sitemap référencé
                 if (urlCount === 0 && ($('sitemap').length > 0 || $('*|sitemap').length > 0)) {
                   let firstSitemapLoc = '';
-                  // Essayer plusieurs sélecteurs pour trouver le premier sitemap
                   const sitemapLocSelectors = [
                     'sitemap loc', '*|sitemap *|loc', 'sitemap *|loc', '*[loc]'
                   ];
@@ -531,7 +506,6 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
                   if (firstSitemapLoc) {
                     try {
-                      // Normaliser l'URL du sitemap
                       if (!firstSitemapLoc.startsWith('http')) {
                         if (firstSitemapLoc.startsWith('/')) {
                           firstSitemapLoc = `${baseUrlObj.protocol}//${baseUrlObj.hostname}${firstSitemapLoc}`;
@@ -543,7 +517,7 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
                       const subSitemapResponse = await axios.get(firstSitemapLoc, {
                         timeout: 8000,
                         headers: {
-                          'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+                          'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.tech/bot)',
                           'Accept': 'application/xml,text/xml,*/*'
                         }
                       });
@@ -585,7 +559,7 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
         const response = await axios.get(url, {
           timeout: 8000,
           headers: {
-            'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+            'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.tech/bot)',
             'Accept': 'application/xml,text/xml,*/*'
           }
         });
@@ -593,7 +567,6 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
         if (response.status === 200 && response.data) {
           const content = response.data;
 
-          // Vérifier différentes façons dont un sitemap XML peut être structuré
           if (typeof content === 'string' &&
             (content.includes('<urlset') ||
               content.includes('<sitemapindex') ||
@@ -601,18 +574,14 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
             const $ = cheerio.load(content, { xmlMode: true });
 
-            // Chercher les URLs dans différents formats de namespace
             let urlCount = $('url').length;
 
-            // Si pas d'URLs trouvées dans le namespace par défaut, essayer avec des sélecteurs plus génériques
             if (urlCount === 0) {
               urlCount = $('*[loc]').length;
             }
 
-            // Si c'est un sitemapindex, essayer de compter les URLs dans le premier sitemap référencé
             if (urlCount === 0 && ($('sitemap').length > 0 || $('*|sitemap').length > 0)) {
               let firstSitemapLoc = '';
-              // Essayer plusieurs sélecteurs pour trouver le premier sitemap
               const sitemapLocSelectors = [
                 'sitemap loc', '*|sitemap *|loc', 'sitemap *|loc', '*[loc]'
               ];
@@ -627,7 +596,6 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
               if (firstSitemapLoc) {
                 try {
-                  // Normaliser l'URL du sitemap
                   if (!firstSitemapLoc.startsWith('http')) {
                     if (firstSitemapLoc.startsWith('/')) {
                       firstSitemapLoc = `${baseUrlObj.protocol}//${baseUrlObj.hostname}${firstSitemapLoc}`;
@@ -639,7 +607,7 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
                   const subSitemapResponse = await axios.get(firstSitemapLoc, {
                     timeout: 8000,
                     headers: {
-                      'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+                      'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.tech/bot)',
                       'Accept': 'application/xml,text/xml,*/*'
                     }
                   });
@@ -686,7 +654,7 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
     const response = await axios.get(robotsUrl, {
       timeout: 8000,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
+        'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.tech/bot)',
         'Accept': 'text/plain,*/*',
         'Accept-Encoding': 'gzip, deflate, br'
       }
@@ -791,7 +759,7 @@ export function calculateKeywordDensity(text: string): Record<string, number> {
   return results;
 }
 
-export function checkResponsiveness($: CheerioSelector): boolean {
+export function checkResponsiveness($: CheerioAPI): boolean {
   return !!$('meta[name="viewport"]').attr('content')?.includes('width=device-width');
 }
 
@@ -812,7 +780,7 @@ export function calculateCLS($: CheerioAPI): number {
   return Math.min(1, Math.max(0, riskScore));
 }
 
-export function analyzeAccessibility($: CheerioSelector): {
+export function analyzeAccessibility($: CheerioAPI): {
   missingAria: number;
   missingAlt: number;
   missingLabels: number;
@@ -1019,7 +987,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
     if (hasH3 && !hasH2) {
       issues.push({
         type: 'seo',
-        message: 'La page utilise des balises H3 sans balise H2.',
+        message: 'The page uses H3 headings without any H2 headings',
         title: 'Heading hierarchy skip',
         severity: 'low',
         description: 'The page uses H3 headings without any H2 headings',
@@ -1032,7 +1000,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (seoData.images && seoData.images.withoutAlt > 0) {
     issues.push({
       type: 'seo',
-      message: `${seoData.images.withoutAlt} image(s) n'ont pas d'attribut alt.`,
+      message: `${seoData.images.withoutAlt} image(s) without alt attributes`,
       title: `${seoData.images.withoutAlt} image(s) without alt attributes`,
       severity: 'medium',
       description: 'Alt attributes are essential for accessibility of images and SEO',
@@ -1049,7 +1017,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
     if (largeImages.length > 0) {
       issues.push({
         type: 'performance',
-        message: `${largeImages.length} image(s) sont trop grandes et peuvent ralentir le chargement.`,
+        message: `${largeImages.length} image(s) are too large and can slow down page loading`,
         title: 'Oversized images',
         severity: 'medium',
         description: 'Large images can significantly slow down page loading',
@@ -1062,7 +1030,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (seoData.structuredData && seoData.structuredData.count === 0) {
     issues.push({
       type: 'seo',
-      message: 'La page ne contient pas de données structurées (JSON-LD).',
+      message: 'The page does not contain structured data (JSON-LD)',
       title: 'No structured data',
       severity: 'medium',
       description: 'The page does not contain structured data (JSON-LD)',
@@ -1074,7 +1042,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (seoData.meta && Object.keys(seoData.meta.og || {}).length === 0) {
     issues.push({
       type: 'social',
-      message: 'La page ne contient pas de balises Open Graph.',
+      message: 'The page does not contain Open Graph tags',
       title: 'No Open Graph tags',
       severity: 'medium',
       description: 'The page does not contain Open Graph meta tags',
@@ -1085,7 +1053,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
     if (!seoData.meta.og.image) {
       issues.push({
         type: 'social',
-        message: 'Les balises Open Graph ne contiennent pas d\'image.',
+        message: 'The Open Graph tags do not include an image',
         title: 'Missing og:image',
         severity: 'medium',
         description: 'Open Graph tags do not include an image',
@@ -1098,7 +1066,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (seoData.meta && Object.keys(seoData.meta.twitter || {}).length === 0) {
     issues.push({
       type: 'social',
-      message: 'La page ne contient pas de balises Twitter Card.',
+      message: 'The page does not contain Twitter Card tags',
       title: 'No Twitter Card tags',
       severity: 'low',
       description: 'The page does not contain Twitter Card meta tags',
@@ -1110,7 +1078,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (seoData.meta && !seoData.meta.viewport) {
     issues.push({
       type: 'mobile',
-      message: 'La page ne contient pas de balise viewport.',
+      message: 'The page does not contain a viewport meta tag',
       title: 'No viewport meta tag',
       severity: 'high',
       description: 'The page does not contain a viewport meta tag',
@@ -1122,7 +1090,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (seoData.wordCount < 300) {
     issues.push({
       type: 'content',
-      message: `La page contient peu de contenu textuel (${seoData.wordCount} mots).`,
+      message: `The page contains little text content (${seoData.wordCount} words).`,
       title: 'Thin content',
       severity: seoData.wordCount < 200 ? 'high' : 'medium',
       description: `The page only has ${seoData.wordCount} words, which may be considered thin content`,
@@ -1131,11 +1099,10 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
     });
   }
 
-  // Vérification de la lisibilité
   if (seoData.readabilityScore < 30) {
     issues.push({
       type: 'content',
-      message: 'La lisibilité du contenu est très faible.',
+      message: 'The readability of the content is very low.',
       title: 'Very low readability score',
       severity: 'high',
       description: 'The content is difficult to read and understand',
@@ -1145,7 +1112,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   } else if (seoData.readabilityScore < 50) {
     issues.push({
       type: 'content',
-      message: 'La lisibilité du contenu pourrait être améliorée.',
+      message: 'The readability of the content could be improved.',
       title: 'Low readability score',
       severity: 'medium',
       description: 'The content may be difficult to read for some users',
@@ -1154,12 +1121,11 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
     });
   }
 
-  // Vérification des liens internes et externes
   if (seoData.links) {
     if (seoData.links.internal.length === 0) {
       issues.push({
         type: 'seo',
-        message: 'La page ne contient pas de liens internes.',
+        message: 'The page does not contain any internal links',
         title: 'No internal links',
         severity: 'high',
         description: 'The page does not contain any internal links',
@@ -1171,7 +1137,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
     if (seoData.links.external.length === 0) {
       issues.push({
         type: 'seo',
-        message: 'La page ne contient pas de liens externes.',
+        message: 'The page does not contain any external links',
         title: 'No external links',
         severity: 'low',
         description: 'The page does not contain any external links',
@@ -1181,11 +1147,10 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
     }
   }
 
-  // Vérification des liens canoniques
   if (!seoData.meta.canonical) {
     issues.push({
       type: 'seo',
-      message: 'La page ne contient pas de lien canonique.',
+      message: 'The page does not contain a canonical link',
       title: 'No canonical link',
       severity: 'medium',
       description: 'The page does not have a canonical link tag',
@@ -1197,7 +1162,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (!seoData.meta || !seoData.meta.language) {
     issues.push({
       type: 'seo',
-      message: 'La page ne spécifie pas d\'attribut de langue.',
+      message: 'The page does not specify a language attribute',
       title: 'No language attribute',
       severity: 'low',
       description: 'The page does not specify a language attribute',
@@ -1209,7 +1174,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (performanceData && performanceData.loadTime > 3000) {
     issues.push({
       type: 'performance',
-      message: `Le temps de chargement de la page est trop long (${Math.round(performanceData.loadTime)}ms).`,
+      message: `The page load time is too long (${Math.round(performanceData.loadTime)}ms).`,
       title: 'Page load time too high',
       severity: 'high',
       description: `Current load time: ${Math.round(performanceData.loadTime)}ms (good < 3000ms)`,
@@ -1219,7 +1184,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   } else if (performanceData && performanceData.loadTime > 1500) {
     issues.push({
       type: 'performance',
-      message: `Le temps de chargement de la page pourrait être amélioré (${Math.round(performanceData.loadTime)}ms).`,
+      message: `The page load time could be improved (${Math.round(performanceData.loadTime)}ms).`,
       title: 'Page load time could be improved',
       severity: 'medium',
       description: `Current load time: ${Math.round(performanceData.loadTime)}ms (good < 1500ms)`,
@@ -1227,11 +1192,10 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
       category: 'Performance'
     });
   }
-  // Vérification du CLS (Cumulative Layout Shift)
   if (performanceData && performanceData.cls > 0.25) {
     issues.push({
       type: 'performance',
-      message: 'La page pourrait avoir des problèmes de déplacement de mise en page (CLS élevé).',
+      message: 'The page may have layout shift issues (CLS is high).',
       title: 'Cumulative Layout Shift (CLS) too high',
       severity: 'medium',
       description: `Current CLS: ${performanceData.cls.toFixed(2)} (good < 0.1)`,
@@ -1241,7 +1205,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   } else if (performanceData && performanceData.cls > 0.1) {
     issues.push({
       type: 'performance',
-      message: 'La page a un déplacement de mise en page modéré (CLS modéré).',
+      message: 'The page may have layout shift issues (CLS is moderate).',
       title: 'Cumulative Layout Shift (CLS) moderate',
       severity: 'low',
       description: `Current CLS: ${performanceData.cls.toFixed(2)} (good < 0.1)`,
@@ -1250,11 +1214,10 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
     });
   }
 
-  // Vérification des Core Web Vitals (LCP, FCP, TTFB)
   if (performanceData && performanceData.lcp > 4000) {
     issues.push({
       type: 'performance',
-      message: 'Largest Contentful Paint (LCP) trop élevé.',
+      message: 'Largest Contentful Paint (LCP) is too high.',
       title: 'Largest Contentful Paint (LCP) too high',
       severity: 'high',
       description: `Current LCP: ${Math.round(performanceData.lcp)}ms (good < 2500ms)`,
@@ -1264,7 +1227,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   } else if (performanceData && performanceData.lcp > 2500) {
     issues.push({
       type: 'performance',
-      message: 'Largest Contentful Paint (LCP) pourrait être amélioré.',
+      message: 'Largest Contentful Paint (LCP) could be improved.',
       title: 'Largest Contentful Paint (LCP) moderate',
       severity: 'medium',
       description: `Current LCP: ${Math.round(performanceData.lcp)}ms (good < 2500ms)`,
@@ -1276,7 +1239,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (performanceData && performanceData.fcp > 2000) {
     issues.push({
       type: 'performance',
-      message: 'First Contentful Paint (FCP) trop élevé.',
+      message: 'First Contentful Paint (FCP) is too high.',
       title: 'First Contentful Paint (FCP) too high',
       severity: 'high',
       description: `Current FCP: ${Math.round(performanceData.fcp)}ms (good < 2000ms)`,
@@ -1288,7 +1251,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   if (performanceData && performanceData.ttfb > 1500) {
     issues.push({
       type: 'performance',
-      message: 'Time to First Byte (TTFB) trop élevé.',
+      message: 'Time to First Byte (TTFB) is too high.',
       title: 'Time to First Byte (TTFB) too high',
       severity: 'high',
       description: `Current TTFB: ${Math.round(performanceData.ttfb)}ms (good < 800ms)`,
@@ -1298,7 +1261,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
   } else if (performanceData && performanceData.ttfb > 800) {
     issues.push({
       type: 'performance',
-      message: 'Time to First Byte (TTFB) pourrait être amélioré.',
+      message: 'Time to First Byte (TTFB) could be improved.',
       title: 'Time to First Byte (TTFB) moderate',
       severity: 'medium',
       description: `Current TTFB: ${Math.round(performanceData.ttfb)}ms (good < 800ms)`,
@@ -1307,11 +1270,10 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
     });
   }
 
-  // On ne vérifie le HTTPS que si le site n'est pas déjà en HTTPS
   if (url && typeof url === 'string' && !url.startsWith('https://')) {
     issues.push({
       type: 'security',
-      message: 'Protocole HTTPS non utilisé.',
+      message: 'The website is not using HTTPS encryption',
       title: 'Not using HTTPS',
       severity: 'critical',
       description: 'The website is not using HTTPS encryption',
@@ -1324,7 +1286,7 @@ export function generateSEOIssues(seoData: any, performanceData: any, url?: stri
 }
 
 
-export function analyzeMetaTags($: CheerioSelector, url: string): {
+export function analyzeMetaTags($: CheerioAPI): {
   score: number;
   essential: Array<{ name: string; present: boolean; content?: string; score: number }>;
   social: {
@@ -1344,7 +1306,6 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
   const title = $('title').text().trim();
   const metaTagsHtml = metaTags.map(tag => $.html(tag)).join('\n');
 
-  // Balises essentielles avec scoring individuel
   const essentialTags = [
     {
       name: 'Title',
@@ -1381,10 +1342,9 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
       present: $('link[rel="canonical"]').length > 0,
       content: $('link[rel="canonical"]').attr('href') || '',
       score: $('link[rel="canonical"]').length > 0 ? 100 : 0
-    },
+    }
   ];
 
-  // Balises Open Graph avec scoring
   const ogTags = [
     { name: 'og:title', present: $('meta[property="og:title"]').length > 0, content: $('meta[property="og:title"]').attr('content') || '', score: 0 },
     { name: 'og:description', present: $('meta[property="og:description"]').length > 0, content: $('meta[property="og:description"]').attr('content') || '', score: 0 },
@@ -1395,7 +1355,6 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
     { name: 'og:locale', present: $('meta[property="og:locale"]').length > 0, content: $('meta[property="og:locale"]').attr('content') || '', score: 0 },
   ];
 
-  // Balises Twitter avec scoring
   const twitterTags = [
     { name: 'twitter:card', present: $('meta[name="twitter:card"]').length > 0, content: $('meta[name="twitter:card"]').attr('content') || '', score: 0 },
     { name: 'twitter:title', present: $('meta[name="twitter:title"]').length > 0, content: $('meta[name="twitter:title"]').attr('content') || '', score: 0 },
@@ -1405,7 +1364,6 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
     { name: 'twitter:creator', present: $('meta[name="twitter:creator"]').length > 0, content: $('meta[name="twitter:creator"]').attr('content') || '', score: 0 },
   ];
 
-  // Calcul des scores pour les balises sociales
   ogTags.forEach(tag => {
     tag.score = tag.present ? 100 : 0;
   });
@@ -1414,41 +1372,57 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
     tag.score = tag.present ? 100 : 0;
   });
 
-  const issues: Array<{ tagName: string, issue: string, recommendation: string, example?: string, severity: string }> = [];
+  const issues: Array<{ tagName: string; issue: string; recommendation: string; example?: string; severity: string }> = [];
 
-  // Vérification des balises essentielles
-  if (!title || title.length < 10 || title.length > 60) {
+  if (title.length > 60) {
     issues.push({
       tagName: 'title',
-      issue: 'Title tag is missing or has improper length',
-      recommendation: 'Add a descriptive title between 10-60 characters',
-      example: '<title>Your Descriptive Page Title | Brand Name</title>',
-      severity: 'critical'
+      issue: `Title is too long (${title.length} characters)`,
+      recommendation: 'Reduce the title length to 60 characters maximum',
+      example: title.substring(0, 57) + '...',
+      severity: 'medium'
     });
   }
 
-  const descriptionTag = $('meta[name="description"]');
-  if (!descriptionTag.length) {
+  if (!title.includes('-') && !title.includes('|')) {
+    issues.push({
+      tagName: 'title',
+      issue: 'The title does not contain a brand separator',
+      recommendation: 'Add a separator (- or |) to include your brand name',
+      example: `${title} - Your Brand`,
+      severity: 'low'
+    });
+  }
+
+  const description = $('meta[name="description"]').attr('content') || '';
+  if (description.length > 160) {
     issues.push({
       tagName: 'meta description',
-      issue: 'Meta description is missing',
-      recommendation: 'Add a descriptive meta description between 50-160 characters',
-      example: '<meta name="description" content="A compelling description of your page content that includes relevant keywords">',
-      severity: 'high'
+      issue: `The description is too long (${description.length} characters)`,
+      recommendation: 'Reduce the description length to 160 characters maximum',
+      example: description.substring(0, 157) + '...',
+      severity: 'medium'
     });
-  } else {
-    const descriptionContent = descriptionTag.attr('content') || '';
-    if (descriptionContent.length < 50 || descriptionContent.length > 160) {
-      issues.push({
-        tagName: 'meta description',
-        issue: 'Meta description has improper length',
-        recommendation: 'Meta description should be between 50-160 characters for optimal display in search results',
-        severity: 'medium'
-      });
-    }
+  } else if (description.length < 120 && description.length > 0) {
+    issues.push({
+      tagName: 'meta description',
+      issue: `The description is a bit short (${description.length} characters)`,
+      recommendation: 'Increase the description length to at least 120 characters for more details',
+      severity: 'low'
+    });
   }
 
-  // Calcul des scores détaillés
+  const robotsContent = $('meta[name="robots"]').attr('content') || '';
+  if (robotsContent && robotsContent.split(',').length < 2) {
+    issues.push({
+      tagName: 'meta robots',
+      issue: 'The robots directives are basic',
+      recommendation: 'Add additional directives like max-snippet, max-image-preview, etc.',
+      example: 'index, follow, max-snippet:-1, max-image-preview:large',
+      severity: 'low'
+    });
+  }
+
   const essentialScore = Math.round(essentialTags.reduce((acc, tag) => acc + tag.score, 0) / essentialTags.length);
   const ogScore = Math.round(ogTags.reduce((acc, tag) => acc + tag.score, 0) / ogTags.length);
   const twitterScore = Math.round(twitterTags.reduce((acc, tag) => acc + tag.score, 0) / twitterTags.length);
@@ -1456,7 +1430,6 @@ export function analyzeMetaTags($: CheerioSelector, url: string): {
   const technicalScore = calculateTechnicalScore(essentialTags);
   const contentScore = calculateContentScore(essentialTags, ogTags, twitterTags);
 
-  // Score final pondéré
   const finalScore = Math.round(
     (essentialScore * 0.4) +
     (socialScore * 0.3) +
@@ -1486,7 +1459,8 @@ function calculateTitleScore(title: string): number {
   if (!title) return 0;
   const length = title.length;
   if (length < 10) return 30;
-  if (length > 60) return 50;
+  if (length > 60) return 70;
+  if (!title.includes('-') && !title.includes('|')) return 85;
   return 100;
 }
 
@@ -1494,16 +1468,20 @@ function calculateDescriptionScore(description: string): number {
   if (!description) return 0;
   const length = description.length;
   if (length < 50) return 30;
-  if (length > 160) return 50;
+  if (length > 160) return 70;
+  if (length < 120) return 85;
   return 100;
 }
 
 function calculateRobotsScore(robotsContent: string): number {
   if (!robotsContent) return 0;
-  const directives = robotsContent.toLowerCase().split(',');
+  const directives = robotsContent.toLowerCase().split(',').map(d => d.trim());
   const hasIndex = directives.includes('index');
   const hasFollow = directives.includes('follow');
-  return (hasIndex && hasFollow) ? 100 : 50;
+  if (!hasIndex && !hasFollow) return 0;
+  if (!hasIndex || !hasFollow) return 50;
+  if (directives.length < 2) return 85;
+  return 100;
 }
 
 function calculateTechnicalScore(essentialTags: Array<{ name: string; present: boolean; content?: string; score: number }>): number {
@@ -1527,7 +1505,6 @@ function calculateContentScore(
   let score = 0;
   let count = 0;
 
-  // Vérification de la cohérence entre les titres
   if (title && ogTitle && title === ogTitle) {
     score += 100;
     count++;
@@ -1537,7 +1514,6 @@ function calculateContentScore(
     count++;
   }
 
-  // Vérification de la cohérence entre les descriptions
   if (description && ogDescription && description === ogDescription) {
     score += 100;
     count++;
@@ -1550,7 +1526,7 @@ function calculateContentScore(
   return count > 0 ? Math.round(score / count) : 0;
 }
 
-export function analyzeAriaAttributes($: CheerioSelector): {
+export function analyzeAriaAttributes($: CheerioAPI): {
   score: number;
   missingAriaCount: number;
   missingLabels: number;
@@ -1563,11 +1539,9 @@ export function analyzeAriaAttributes($: CheerioSelector): {
 } {
   const issues: Array<{ element: string; issue: string; suggestion: string; code?: string; severity: string; context?: string }> = [];
 
-  // Éléments interactifs qui devraient avoir des attributs ARIA
   const interactiveElements = $('button, a[href], input, select, textarea, [role="button"], [role="link"], [role="menuitem"], [tabindex]');
   const interactiveElementsCount = interactiveElements.length;
 
-  // Vérifier les attributs ARIA manquants
   interactiveElements.each((_, el) => {
     const $el = $(el);
     const tagName = $el.prop('tagName')?.toLowerCase();
@@ -1579,25 +1553,24 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     if (!ariaLabel && !ariaLabelledby) {
       let context = '';
       if (tagName === 'button') {
-        context = 'Le texte du bouton est : ' + $el.text().trim();
+        context = 'The button text is : ' + $el.text().trim();
       } else if (tagName === 'a') {
-        context = 'Le lien pointe vers : ' + $el.attr('href');
+        context = 'The link points to : ' + $el.attr('href');
       } else if (tagName === 'input') {
-        context = 'Type d\'input : ' + $el.attr('type');
+        context = 'The input type is : ' + $el.attr('type');
       }
 
       issues.push({
         element: `<${tagName}>`,
-        issue: 'Attribut ARIA manquant',
-        suggestion: `Ajoutez un attribut aria-label ou aria-labelledby pour décrire l'élément`,
-        code: `<${tagName} aria-label="Description de l'élément">`,
+        issue: 'Missing ARIA attribute',
+        suggestion: `Add an aria-label or aria-labelledby attribute to describe the element`,
+        code: `<${tagName} aria-label="Description of the element">`,
         severity: 'high',
         context
       });
     }
   });
 
-  // Vérifier les formulaires
   const formElements = $('form input, form select, form textarea');
   const formElementsCount = formElements.length;
   let formElementsWithLabels = 0;
@@ -1612,9 +1585,9 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     if (!hasLabel && !ariaLabel && !ariaLabelledby) {
       issues.push({
         element: `<${$el.prop('tagName')?.toLowerCase()}>`,
-        issue: 'Champ de formulaire sans label',
-        suggestion: 'Ajoutez un label ou un attribut aria-label/aria-labelledby',
-        code: `<label for="${id}">Description du champ</label>\n<input id="${id}" ...>`,
+        issue: 'Form field without label',
+        suggestion: 'Add a label or an aria-label/aria-labelledby attribute',
+        code: `<label for="${id}">Description of the field</label>\n<input id="${id}" ...>`,
         severity: 'high'
       });
     } else {
@@ -1622,28 +1595,29 @@ export function analyzeAriaAttributes($: CheerioSelector): {
     }
   });
 
-  // Vérifier les attributs ARIA invalides
-  $('[aria-*]').each((_, el) => {
+  $('*').each((_, el) => {
     const $el = $(el);
-    const ariaAttributes = Object.keys($el.attr() || {}).filter(attr => attr.startsWith('aria-'));
+    const attrs = $el.attr() || {};
+    const ariaAttributes = Object.keys(attrs).filter(attr => attr.startsWith('aria-'));
 
-    ariaAttributes.forEach(attr => {
-      const value = $el.attr(attr);
-      if (!value || value.trim() === '') {
-        issues.push({
-          element: `<${$el.prop('tagName')?.toLowerCase()}>`,
-          issue: `Attribut ARIA vide : ${attr}`,
-          suggestion: 'Supprimez l\'attribut ou ajoutez une valeur valide',
-          severity: 'medium'
-        });
-      }
-    });
+    if (ariaAttributes.length > 0) {
+      ariaAttributes.forEach(attr => {
+        const value = $el.attr(attr);
+        if (!value || value.trim() === '') {
+          issues.push({
+            element: `<${$el.prop('tagName')?.toLowerCase()}>`,
+            issue: `Empty ARIA attribute: ${attr}`,
+            suggestion: 'Remove the attribute or add a valid value',
+            severity: 'medium'
+          });
+        }
+      });
+    }
   });
 
-  // Calculer les scores
-  const missingAriaCount = issues.filter(issue => issue.issue.includes('Attribut ARIA manquant')).length;
-  const invalidAriaCount = issues.filter(issue => issue.issue.includes('Attribut ARIA vide')).length;
-  const missingLabels = issues.filter(issue => issue.issue.includes('sans label')).length;
+  const missingAriaCount = issues.filter(issue => issue.issue.includes('Missing ARIA attribute')).length;
+  const invalidAriaCount = issues.filter(issue => issue.issue.includes('Empty ARIA attribute')).length;
+  const missingLabels = issues.filter(issue => issue.issue.includes('Form field without label')).length;
 
   const interactiveElementsWithAriaPercent = interactiveElementsCount > 0
     ? ((interactiveElementsCount - missingAriaCount) / interactiveElementsCount) * 100
@@ -1672,9 +1646,7 @@ export function analyzeAriaAttributes($: CheerioSelector): {
   };
 }
 
-/**
- * Analyse les fichiers volumineux dans les liens internes
- */
+
 export async function analyzeLargeFiles(internalLinks: string[], baseUrl: string): Promise<Array<{
   url: string;
   type: string;
@@ -1692,18 +1664,15 @@ export async function analyzeLargeFiles(internalLinks: string[], baseUrl: string
     name: string;
   }> = [];
 
-  // Extensions à vérifier pour les fichiers volumineux
   const fileExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', 'csv', 'txt'];
 
-  // Filtrer les liens qui semblent être des fichiers
   const potentialFileLinks = internalLinks.filter(link => {
     const extension = link.split('.').pop()?.toLowerCase();
     return extension && fileExtensions.includes(extension);
-  }).slice(0, 10); // Limiter à 10 fichiers max pour éviter trop de requêtes
+  }).slice(0, 10);
 
   for (const link of potentialFileLinks) {
     try {
-      // Effectuer une requête HEAD pour obtenir les métadonnées sans télécharger le fichier entier
       const response = await axios.head(link, {
         timeout: 5000,
         headers: {
@@ -1711,14 +1680,11 @@ export async function analyzeLargeFiles(internalLinks: string[], baseUrl: string
         }
       });
 
-      // Extraire les informations pertinentes
       const contentType = response.headers['content-type'] || 'application/octet-stream';
       const contentLength = parseInt(response.headers['content-length'] || '0', 10);
 
-      // Formater la taille
       const sizeFormatted = formatFileSize(contentLength);
 
-      // Extraire le nom et l'extension du fichier
       const urlObj = new URL(link);
       const pathParts = urlObj.pathname.split('/');
       const fileName = pathParts[pathParts.length - 1];
@@ -1735,16 +1701,14 @@ export async function analyzeLargeFiles(internalLinks: string[], baseUrl: string
         name
       });
     } catch (error) {
-      console.error(`Erreur lors de l'analyse du fichier ${link}:`, error);
+      console.error(`Error analyzing file ${link}:`, error);
     }
   }
 
   return result;
 }
 
-/**
- * Formate la taille d'un fichier en unités lisibles
- */
+
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
 
@@ -1758,7 +1722,6 @@ export function formatFileSize(bytes: number): string {
 function extractSecurityHeaders(headers: any): Record<string, string> {
   const securityHeaders: Record<string, string> = {};
 
-  // Liste des en-têtes de sécurité importants à vérifier
   const importantHeaders = [
     'content-security-policy',
     'strict-transport-security',
@@ -1774,7 +1737,6 @@ function extractSecurityHeaders(headers: any): Record<string, string> {
     'cross-origin-embedder-policy'
   ];
 
-  // Normaliser les noms d'en-têtes en minuscules pour la comparaison
   if (headers && typeof headers === 'object') {
     Object.entries(headers).forEach(([key, value]) => {
       const headerKey = key.toLowerCase();
@@ -1803,7 +1765,6 @@ function evaluateSecurityHeaders(headers: Record<string, string>): { score: numb
   let score = 0;
   const missing: string[] = [];
 
-  // Calculer le score et collecter les en-têtes manquants
   securityHeadersInfo.forEach(header => {
     if (headers[header.name]) {
       score += header.weight;
@@ -1831,7 +1792,6 @@ function analyzeCookies(cookieHeader: string | string[]): { secure: boolean; htt
   const httpOnly = httpOnlyCount === cookies.length;
   const sameSite = sameSiteCount === cookies.length;
 
-  // Calculer un score pondéré pour les cookies
   let score = 0;
   if (secure) score += 40;
   if (httpOnly) score += 30;

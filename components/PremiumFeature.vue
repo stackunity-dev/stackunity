@@ -1,35 +1,39 @@
 <template>
   <div>
     <v-btn v-if="type === 'button'" :color="color" :variant="variant" :disabled="disabled" @click="showDialog = true"
-      class="premium-btn" elevation="2" :size="size">
-      <v-icon :icon="icon" class="crown-icon" />
+      class="premium-btn" elevation="2" :size="size" :aria-label="`${title} - Premium feature`">
+      <v-icon :icon="icon" class="crown-icon" aria-hidden="true" />
       <span class="premium-text">{{ title }}</span>
     </v-btn>
 
     <v-list-item v-else-if="type === 'list-item'" prepend-icon="mdi-crown" @click="showDialog = true" rounded="lg"
-      density="compact" class="gold-gradient-item">
+      density="compact" class="gold-gradient-item" role="button" :aria-label="`${title} - Premium feature`">
       <v-list-item-title>{{ title }}</v-list-item-title>
     </v-list-item>
 
     <v-chip v-else-if="type === 'chip'" prepend-icon="mdi-crown" color="warning" @click="showDialog = true" size="small"
-      class="gold-gradient-chip">Premium </v-chip>
+      class="gold-gradient-chip" role="button" aria-label="Premium feature">Premium </v-chip>
 
-    <v-tab v-else-if="type === 'tab'" prepend-icon="mdi-crown" class="gold-gradient-item" @click="showDialog = true">
+    <v-tab v-else-if="type === 'tab'" prepend-icon="mdi-crown" class="gold-gradient-item" @click="showDialog = true"
+      role="tab" :aria-label="`${title} - Premium feature`">
       {{ title }}
     </v-tab>
 
-    <v-dialog v-model="showDialog" max-width="650">
+    <v-dialog v-model="showDialog" max-width="650" role="dialog" aria-labelledby="premium-dialog-title">
       <v-card class="rounded-lg premium-dialog" elevation="12">
-        <v-card-title class="bg-primary text-white py-4 px-4 rounded-t-lg d-flex align-center">
-          <v-icon color="white" class="mr-2" size="24">{{ icon }}</v-icon>
+        <v-card-title id="premium-dialog-title"
+          class="bg-primary text-white py-4 px-4 rounded-t-lg d-flex align-center">
+          <v-icon color="white" class="mr-2" size="24" aria-hidden="true">{{ icon }}</v-icon>
           {{ title || 'Premium feature' }}
         </v-card-title>
 
         <v-card-text class="pa-0">
-          <div class="premium-hero pa-4" :class="`premium-hero-${featureType}`">
+          <div class="premium-hero pa-4" :class="`premium-hero-${featureType}`" role="region"
+            aria-label="Feature description">
             <div class="text-center mb-4">
-              <v-icon :icon="icon" size="64" color="warning" class="mb-2 premium-icon"></v-icon>
-              <div class="text-h5 font-weight-bold mb-2">{{ title || 'Premium feature' }}</div>
+              <v-icon :icon="icon" size="64" color="warning" class="mb-2 premium-icon" aria-hidden="true"></v-icon>
+              <div class="text-h5 font-weight-bold mb-2" role="heading" aria-level="2">{{ title || 'Premium feature' }}
+              </div>
               <div class="text-subtitle-2 text-medium-emphasis mx-auto" style="max-width: 400px">
                 Unlock this premium feature and access all advanced tools to optimize your web development.
               </div>
@@ -39,46 +43,51 @@
           <div class="px-4 premium-content">
             <v-row>
               <v-col cols="12" sm="7" class="py-2 mt-2">
-                <div class="text-h6 font-weight-bold mb-3">Included features:</div>
-                <v-list class="rounded-lg mb-4 premium-features-list pa-0">
+                <div class="text-h6 font-weight-bold mb-3" role="heading" aria-level="3">Included features:</div>
+                <v-list class="rounded-lg mb-4 premium-features-list pa-0" role="list"
+                  aria-label="Premium features list">
                   <v-list-item v-for="(feature, index) in getFeatures(featureType)" :key="index"
-                    prepend-icon="mdi-check-circle-outline" class="premium-feature-item py-1 px-0" density="compact">
+                    prepend-icon="mdi-check-circle-outline" class="premium-feature-item py-1 px-0" density="compact"
+                    role="listitem">
                     <v-list-item-title class="text-body-2">{{ feature }}</v-list-item-title>
                   </v-list-item>
                 </v-list>
-
               </v-col>
 
               <v-col cols="12" sm="5" class="py-2">
-                <div class="preview-image-container mb-3 mt-5 d-none d-sm-block">
+                <div class="preview-image-container mb-3 mt-5 d-none d-sm-block" role="img"
+                  :aria-label="`${title} preview image`">
                   <v-img :src="getFeatureImage(featureType)" class="rounded-lg premium-preview-image" height="160"
                     :width="400" contain position="center" :alt="`${title} preview`">
                     <template v-slot:placeholder>
                       <v-row class="fill-height ma-0" align="center" justify="center">
-                        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                        <v-progress-circular indeterminate color="primary"
+                          aria-label="Loading preview image"></v-progress-circular>
                       </v-row>
                     </template>
                   </v-img>
                 </div>
 
-                <v-card class="price-card mb-3 pa-4" color="surface" rounded="lg" elevation="1">
+                <v-card class="price-card mb-3 pa-4" color="surface" rounded="lg" elevation="1" role="region"
+                  aria-label="Pricing information">
                   <div class="d-flex justify-space-between align-center mb-2">
-                    <div class="text-h4 font-weight-bold">199€</div>
-                    <v-chip color="success" size="small">Save 25%</v-chip>
+                    <div class="text-h4 font-weight-bold" role="text" aria-label="Price: 199 euros">199€</div>
+                    <v-chip color="success" size="small" aria-label="Discount: Save 25%">Save 25%</v-chip>
                   </div>
                   <div class="text-body-2 text-medium-emphasis mb-4">Unlimited access for life</div>
                   <v-btn color="warning" variant="elevated" block size="large" height="48" @click="goToPricingPage"
-                    class="premium-action-btn text-uppercase font-weight-bold">
-                    <v-icon start>mdi-crown</v-icon>
+                    class="premium-action-btn text-uppercase font-weight-bold" aria-label="Get premium access now">
+                    <v-icon start aria-hidden="true">mdi-crown</v-icon>
                     Get now
                   </v-btn>
-                  <div class="d-flex align-center justify-center mt-3">
-                    <v-icon size="small" color="success" class="mr-1">mdi-check-circle</v-icon>
+                  <div class="d-flex align-center justify-center mt-3" role="text" aria-label="Additional benefits">
+                    <v-icon size="small" color="success" class="mr-1" aria-hidden="true">mdi-check-circle</v-icon>
                     <span class="text-caption">Single payment • Unlimited access • Priority support</span>
                   </div>
                 </v-card>
 
-                <v-btn color="error" variant="tonal" @click="showDialog = false" class="text-none pa-2">
+                <v-btn color="error" variant="tonal" @click="showDialog = false" class="text-none pa-2"
+                  aria-label="Continue with free version">
                   I'll continue with the free version
                 </v-btn>
               </v-col>
@@ -130,14 +139,18 @@ const featureType = computed(() => {
   const title = props.title?.toLowerCase() || '';
   if (title.includes('database') || title.includes('sql')) {
     return 'databaseDesigner';
-  } else if (title.includes('website analyzer')) {
+  } else if (title.toLowerCase().includes('website analyzer')) {
     return 'websiteAnalyzer';
-  } else if (title.includes('robot') || title.includes('schema')) {
+  } else if (title.toLowerCase().includes('robot') || title.toLowerCase().includes('schema')) {
     return 'robots';
-  } else if (title.includes('studio')) {
+  } else if (title.toLowerCase().includes('studio')) {
     return 'studioComponents';
-  } else if (title.includes('accessibility')) {
+  } else if (title.toLowerCase().includes('accessibility')) {
     return 'accessibility';
+  } else if (title.toLowerCase().includes('user engagement')) {
+    return 'userEngagement';
+  } else if (title.toLowerCase().includes('semantic')) {
+    return 'semantic';
   } else {
     return 'default';
   }
@@ -149,6 +162,8 @@ type FeatureMap = {
   robots: string[];
   studioComponents: string[];
   accessibility: string[];
+  semantic: string[];
+  userEngagement: string[];
   security: string[];
   default: string[];
 };
@@ -192,6 +207,18 @@ const features: FeatureMap = {
     "Multi-factor authentication testing",
     "Command injection detection"
   ],
+  semantic: [
+    "Semantic structure analysis",
+    "Metadata analysis",
+    "ARIA analysis",
+    "SEO optimization suggestions"
+  ],
+  userEngagement: [
+    "User engagement analysis",
+    "User engagement optimization suggestions",
+    "User engagement metrics",
+    "User engagement reports"
+  ],
   default: [
     "Unlimited access to all features",
     "Priority support",
@@ -207,7 +234,9 @@ const getFeatures = (type: string): string[] => {
     case 'robots': return features.robots;
     case 'studioComponents': return features.studioComponents;
     case 'accessibility': return features.accessibility;
+    case 'semantic': return features.semantic;
     case 'security': return features.security;
+    case 'userEngagement': return features.userEngagement;
     default: return features.default;
   }
 };
@@ -219,7 +248,9 @@ const getFeatureImage = (type: string): string => {
     case 'robots': return '/images/premium/robots.avif';
     case 'studioComponents': return '/images/premium/studio-preview.avif';
     case 'accessibility': return '/images/premium/accessibility.avif';
+    case 'semantic': return '/images/premium/semantic.avif';
     case 'security': return '/images/premium/security.avif';
+    case 'userEngagement': return '/images/premium/user-engagement.avif';
     default: return '/images/preview-devunity.avif';
   }
 };

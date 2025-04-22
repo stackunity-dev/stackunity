@@ -2,63 +2,51 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import type { WebsiteAnalysisResult } from './analyzer-types';
 
-/**
- * Crawle un site web en suivant les liens à partir de l'URL de base
- */
 export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Promise<string[]> {
   const visitedUrls = new Set<string>();
   const queue: string[] = [];
   const baseUrlObj = new URL(baseUrl);
   const domain = baseUrlObj.hostname;
-  const failedUrls = new Set<string>(); // Pour suivre les URL qui ont échoué
-  const normalizedUrls = new Set<string>(); // Pour éviter les doublons après normalisation
+  const failedUrls = new Set<string>();
+  const normalizedUrls = new Set<string>();
 
-  // Définir les fonctions utilitaires internes
   function shouldKeepWithoutVisiting(url: string): boolean {
     try {
-      // Si l'URL a déjà échoué, ne pas réessayer
       if (failedUrls.has(url)) {
         return true;
       }
 
-      // Extraire les extensions de fichier
       const urlObj = new URL(url);
       const path = urlObj.pathname;
       const extension = path.split('.').pop()?.toLowerCase();
 
-      // Liste des extensions de fichiers à exclure (on va réduire la liste pour autoriser plus de fichiers)
       const excludedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'mp4', 'webm', 'mp3', 'wav', 'zip', 'rar', 'exe', 'dll'];
-      // Autoriser les fichiers PDF, DOC, DOCX, XLS, XLSX qui peuvent contenir du contenu important
       const largeFilesAllowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'pptx', 'ppt', 'txt', 'csv'];
 
       if (extension && excludedExtensions.includes(extension) && !largeFilesAllowed.includes(extension)) {
         return true;
       }
 
-      // Autoriser quand même les URL avec des paramètres de pagination (mais limiter à page=1)
       if (urlObj.search.includes('page=') && !urlObj.search.includes('page=1')) {
         return true;
       }
 
-      // Exclure les URL avec des paramètres de filtrage spécifiques mais pas toutes
       if ((urlObj.search.includes('filter=') && !urlObj.pathname.includes('/filter/')) ||
         (urlObj.search.includes('sort=') && !urlObj.pathname.includes('/sort/')) ||
         (urlObj.search.includes('tag=') && !urlObj.pathname.includes('/tag/'))) {
         return true;
       }
 
-      // Augmenter la limite de longueur d'URL et le nombre de paramètres
       if (url.length > 250 || urlObj.search.split('&').length > 8) {
         return true;
       }
 
-      // Être moins restrictif sur l'exclusion de certaines URLs
       if (url.includes('/cdn-cgi/') ||
         url.includes('email-protection') ||
-        url.includes('/wp-json/wp/') || // Exclure uniquement API WordPress spécifiques, pas toutes
+        url.includes('/wp-json/wp/') ||
         (url.includes('/api/') && !urlObj.pathname.endsWith('/api/') &&
-          !urlObj.pathname.includes('/api/products') && // Autoriser les API produits
-          !urlObj.pathname.includes('/api/content'))) { // Autoriser les API de contenu
+          !urlObj.pathname.includes('/api/products') &&
+          !urlObj.pathname.includes('/api/content'))) {
         return true;
       }
 
@@ -87,15 +75,12 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
         return null;
       }
 
-      // Normaliser l'URL (supprimer les fragments # et normaliser)
       let normalizedUrl = fullUrl.split('#')[0];
 
-      // Cas spécial pour la page d'accueil
       if (normalizedUrl === `${baseUrlObj.protocol}//${baseUrlObj.host}`) {
         normalizedUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}/`;
       }
 
-      // Pour les autres pages, supprimer le trailing slash pour éviter les doublons
       else if (normalizedUrl.endsWith('/') && normalizedUrl !== `${baseUrlObj.protocol}//${baseUrlObj.host}/`) {
         normalizedUrl = normalizedUrl.slice(0, -1);
       }
@@ -109,7 +94,6 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
   const extractLinks = ($: cheerio.CheerioAPI, pageUrl: string): string[] => {
     const links: string[] = [];
 
-    // Récupérer tous les liens <a>
     $('a[href]').each((_, element) => {
       const href = $(element).attr('href')?.trim();
       if (!href) return;
@@ -120,7 +104,6 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
       }
     });
 
-    // Récupérer les liens dans les menus de navigation (souvent masqués sur mobile ou dynamiques)
     $('nav a, .menu a, .navigation a, header a, footer a, [role="navigation"] a').each((_, element) => {
       const href = $(element).attr('href')?.trim();
       if (!href) return;
@@ -131,14 +114,11 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
       }
     });
 
-    // Prioriser les pages importantes
     return links.sort((a, b) => {
-      // Prioriser la page d'accueil
       const rootUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}/`;
       if (a === rootUrl) return -1;
       if (b === rootUrl) return 1;
 
-      // Prioriser les pages de contact, à propos, etc.
       const importantKeywords = ['contact', 'about', 'services', 'products', 'blog', 'pricing', 'legal', 'privacy'];
       const aIsImportant = importantKeywords.some(kw => a.toLowerCase().includes(kw));
       const bIsImportant = importantKeywords.some(kw => b.toLowerCase().includes(kw));
@@ -146,29 +126,23 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
       if (aIsImportant && !bIsImportant) return -1;
       if (!aIsImportant && bIsImportant) return 1;
 
-      // Prioriser les URL plus courtes
       return a.length - b.length;
     });
   };
 
-  // Assurons-nous que la page d'accueil soit incluse
   const rootUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}/`;
   queue.push(rootUrl);
 
-  // Définir un délai maximum pour le crawl
-  const MAX_CRAWL_TIME = 60000; // 60 secondes pour avoir plus de temps pour crawler
+  const MAX_CRAWL_TIME = 60000;
   const startTime = Date.now();
 
-  // Utiliser des promesses parallèles pour accélérer le crawl
-  const MAX_CONCURRENT_REQUESTS = 3; // Réduire le nombre de requêtes simultanées pour éviter les problèmes
+  const MAX_CONCURRENT_REQUESTS = 3;
   let activeRequests = 0;
 
-  // Garder une trace des pages en cours d'analyse
   const inProgress = new Set<string>();
 
   while (queue.length > 0 && visitedUrls.size < maxPages && (Date.now() - startTime) < MAX_CRAWL_TIME) {
     if (activeRequests >= MAX_CONCURRENT_REQUESTS) {
-      // Attendre qu'une requête se termine avant de continuer
       await new Promise(resolve => setTimeout(resolve, 100));
       continue;
     }
@@ -176,19 +150,17 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
     const currentUrl = queue.shift();
     if (!currentUrl) continue;
 
-    // Vérifier si l'URL a déjà été visitée ou est en cours d'analyse
     if (visitedUrls.has(currentUrl) || inProgress.has(currentUrl) || shouldKeepWithoutVisiting(currentUrl)) {
       continue;
     }
 
-    // Marquer l'URL comme en cours d'analyse
     inProgress.add(currentUrl);
     activeRequests++;
 
     try {
       console.log(`Crawling: ${currentUrl}`);
       const response = await axios.get(currentUrl, {
-        timeout: 10000, // Augmenter le timeout pour les pages plus lentes
+        timeout: 10000,
         maxRedirects: 5,
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
@@ -198,23 +170,19 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
         },
       });
 
-      // Vérifier que c'est bien du HTML
       const contentType = response.headers['content-type'] || '';
       if (!contentType.includes('text/html')) {
         console.log(`Not HTML: ${currentUrl}`);
         continue;
       }
 
-      // Analyse réussie, marquer comme visitée
       visitedUrls.add(currentUrl);
 
-      // Extraire et ajouter les liens
       const $ = cheerio.load(response.data);
       const links = extractLinks($, currentUrl);
 
-      // Ajouter les liens à la file d'attente
       for (const link of links) {
-        const normalizedLink = link.toLowerCase(); // Normaliser en minuscules pour éviter les doublons
+        const normalizedLink = link.toLowerCase();
 
         if (!normalizedUrls.has(normalizedLink) &&
           !visitedUrls.has(link) &&
@@ -237,7 +205,6 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
     }
   }
 
-  // S'assurer que la page d'accueil est toujours incluse
   if (!visitedUrls.has(rootUrl) && !failedUrls.has(rootUrl)) {
     try {
       console.log(`Forcing crawl of root URL: ${rootUrl}`);
@@ -258,7 +225,6 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
     }
   }
 
-  // Ajouter la page d'accueil même si elle a échoué
   if (!visitedUrls.has(rootUrl)) {
     visitedUrls.add(rootUrl);
   }
@@ -266,9 +232,6 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
   return Array.from(visitedUrls);
 }
 
-/**
- * Vérifie l'existence et le contenu du sitemap
- */
 export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; url?: string; content?: string; urls?: number }> {
   try {
     const possibleLocations = [
@@ -285,7 +248,6 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
     const baseUrlObj = new URL(baseUrl);
     const robotsTxtUrl = `${baseUrlObj.protocol}//${baseUrlObj.hostname}/robots.txt`;
 
-    // Vérifier d'abord le robots.txt pour trouver le sitemap
     try {
       const robotsResponse = await axios.get(robotsTxtUrl, {
         timeout: 8000,
@@ -311,7 +273,6 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
             if (sitemapResponse.status === 200 && sitemapResponse.data) {
               const content = sitemapResponse.data;
-              // Vérifier différentes façons dont un sitemap XML peut être structuré
               if (typeof content === 'string' &&
                 (content.includes('<urlset') ||
                   content.includes('<sitemapindex') ||
@@ -321,18 +282,14 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
                   xmlMode: true
                 });
 
-                // Chercher les URLs dans différents formats de namespace
                 let urlCount = $('url').length;
 
-                // Si pas d'URLs trouvées dans le namespace par défaut, essayer avec des sélecteurs plus génériques
                 if (urlCount === 0) {
                   urlCount = $('*[loc]').length;
                 }
 
-                // Si c'est un sitemapindex, essayer de compter les URLs dans le premier sitemap référencé
                 if (urlCount === 0 && ($('sitemap').length > 0 || $('*|sitemap').length > 0)) {
                   let firstSitemapLoc = '';
-                  // Essayer plusieurs sélecteurs pour trouver le premier sitemap
                   const sitemapLocSelectors = [
                     'sitemap loc', '*|sitemap *|loc', 'sitemap *|loc', '*[loc]'
                   ];
@@ -347,7 +304,6 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
                   if (firstSitemapLoc) {
                     try {
-                      // Normaliser l'URL du sitemap
                       if (!firstSitemapLoc.startsWith('http')) {
                         if (firstSitemapLoc.startsWith('/')) {
                           firstSitemapLoc = `${baseUrlObj.protocol}//${baseUrlObj.hostname}${firstSitemapLoc}`;
@@ -411,7 +367,6 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
         if (response.status === 200 && response.data) {
           const content = response.data;
 
-          // Vérifier différentes façons dont un sitemap XML peut être structuré
           if (typeof content === 'string' &&
             (content.includes('<urlset') ||
               content.includes('<sitemapindex') ||
@@ -421,18 +376,14 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
               xmlMode: true
             });
 
-            // Chercher les URLs dans différents formats de namespace
             let urlCount = $('url').length;
 
-            // Si pas d'URLs trouvées dans le namespace par défaut, essayer avec des sélecteurs plus génériques
             if (urlCount === 0) {
               urlCount = $('*[loc]').length;
             }
 
-            // Si c'est un sitemapindex, essayer de compter les URLs dans le premier sitemap référencé
             if (urlCount === 0 && ($('sitemap').length > 0 || $('*|sitemap').length > 0)) {
               let firstSitemapLoc = '';
-              // Essayer plusieurs sélecteurs pour trouver le premier sitemap
               const sitemapLocSelectors = [
                 'sitemap loc', '*|sitemap *|loc', 'sitemap *|loc', '*[loc]'
               ];
@@ -447,7 +398,6 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
               if (firstSitemapLoc) {
                 try {
-                  // Normaliser l'URL du sitemap
                   if (!firstSitemapLoc.startsWith('http')) {
                     if (firstSitemapLoc.startsWith('/')) {
                       firstSitemapLoc = `${baseUrlObj.protocol}//${baseUrlObj.hostname}${firstSitemapLoc}`;
@@ -500,9 +450,6 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
   }
 }
 
-/**
- * Vérifie l'existence et le contenu du robots.txt
- */
 export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean; content?: string }> {
   try {
     const baseUrlObj = new URL(baseUrl);
@@ -510,7 +457,7 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
 
     try {
       const response = await axios.get(robotsUrl, {
-        timeout: 10000, // augmenter le timeout pour les serveurs lents
+        timeout: 10000,
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; StackUnityBot/1.0; +https://stackunity.com/bot)',
           'Accept': 'text/plain,application/octet-stream,*/*',
@@ -519,11 +466,9 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
         validateStatus: (status) => status === 200 || status === 204
       });
 
-      // Vérifier si nous avons reçu un contenu
       if (response.status === 200 && response.data) {
         let content = '';
 
-        // Si les données reçues sont un buffer ou un tableau, les convertir en chaîne
         if (Buffer.isBuffer(response.data)) {
           content = response.data.toString('utf-8');
         } else if (typeof response.data === 'object') {
@@ -532,7 +477,6 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
           content = String(response.data);
         }
 
-        // Vérifier que le contenu ressemble à un fichier robots.txt
         if (content.includes('User-agent:') ||
           content.includes('Disallow:') ||
           content.includes('Allow:') ||
@@ -544,10 +488,6 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
             content: content
           };
         }
-
-        // Si le contenu ne semble pas être au format robots.txt standard,
-        // mais qu'il s'agit bien d'une réponse 200 à l'URL robots.txt,
-        // considérer quand même qu'un robots.txt existe
         return {
           found: true,
           content: content
@@ -556,7 +496,6 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
     } catch (directError) {
       console.log(`Erreur lors de l'accès direct à robots.txt: ${directError.message}`);
 
-      // Essayer avec une autre approche (HEAD request)
       try {
         const headResponse = await axios.head(robotsUrl, {
           timeout: 5000,
@@ -566,7 +505,6 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
         });
 
         if (headResponse.status === 200) {
-          // Le fichier existe mais nous n'avons pas pu le lire, indiquer qu'il est trouvé
           return {
             found: true,
             content: "<!-- Robots.txt file exists but content could not be retrieved -->"
@@ -577,9 +515,7 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
       }
     }
 
-    // Dernière tentative avec une autre méthode HTTP
     try {
-      // Certains CDN ou WAF peuvent bloquer GET mais autoriser OPTIONS
       const optionsResponse = await axios.options(robotsUrl, {
         timeout: 5000,
         headers: {
@@ -597,7 +533,6 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
       console.log(`Échec de la vérification OPTIONS pour robots.txt: ${optionsError.message}`);
     }
 
-    // Aucune des méthodes n'a fonctionné, le fichier n'existe probablement pas
     return { found: false };
   } catch (error) {
     console.error('Erreur lors de la vérification du robots.txt:', error);
@@ -605,9 +540,6 @@ export async function checkRobotsTxt(baseUrl: string): Promise<{ found: boolean;
   }
 }
 
-/**
- * Trouve les informations de contact sur le site
- */
 export async function findContactInfo(baseUrl: string, links: string[]): Promise<Record<string, string>> {
   if (!links || links.length === 0) {
     return {};
@@ -772,9 +704,7 @@ export async function findContactInfo(baseUrl: string, links: string[]): Promise
   }
 }
 
-/**
- * Crée un résultat d'analyse de secours 
- */
+
 export async function createFallbackResult(url: string): Promise<WebsiteAnalysisResult> {
   try {
     return {
@@ -873,9 +803,7 @@ export async function createFallbackResult(url: string): Promise<WebsiteAnalysis
   }
 }
 
-/**
- * Génère un sitemap XML à partir d'une liste d'URLs
- */
+
 export function generateSitemap(urls: string[], imagesData: Record<string, any> = {}): string {
   const date = new Date().toISOString();
   let baseDomain = '';
@@ -982,29 +910,23 @@ ${sitemapEntries}
 </urlset>`;
 }
 
-/**
- * Classe les pages par importance selon des critères SEO
- */
+
 export function rankPages(results: Record<string, WebsiteAnalysisResult>): string[] {
   return Object.entries(results)
     .sort(([, a], [, b]) => {
       const getScore = (result: WebsiteAnalysisResult) => {
         let score = 0;
 
-        // Performance
         score += (1000 - result.performance.loadTime) / 10;
         score += (100 - result.performance.ttfb) / 2;
 
-        // SEO
         if (result.seo.title) score += 10;
         if (result.seo.description) score += 10;
         if (result.seo.images && result.seo.images.withAlt)
           score += result.seo.images.withAlt * 2;
 
-        // Issues
         score -= result.issues.length * 5;
 
-        // Content
         score += result.seo.wordCount / 100;
         if (result.seo.structuredData && result.seo.structuredData.types)
           score += Object.keys(result.seo.structuredData.types).length * 5;

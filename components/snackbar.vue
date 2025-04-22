@@ -1,9 +1,9 @@
 <template>
   <v-snackbar v-model="show" color="grey-darken-4" :timeout="timeout" location="top right" elevation="4"
-    :transition="'slide-x-reverse-transition'" data-plausible-feature="snackbar">
+    :transition="'slide-x-reverse-transition'" data-plausible-feature="snackbar" role="alert" aria-live="polite">
     <div class="d-flex align-center">
-      <v-icon :color="iconColor" :icon="icon" class="mr-2" />
-      {{ text }}
+      <v-icon :color="iconColor" :icon="icon" class="mr-2" :aria-label="getIconLabel" />
+      <span role="status">{{ text }}</span>
     </div>
   </v-snackbar>
 </template>
@@ -39,6 +39,21 @@ const icon = computed(() => {
       return 'mdi-information';
     default:
       return 'mdi-bell';
+  }
+});
+
+const getIconLabel = computed(() => {
+  switch (props.color) {
+    case 'success':
+      return 'Success notification';
+    case 'error':
+      return 'Error notification';
+    case 'warning':
+      return 'Warning notification';
+    case 'info':
+      return 'Information notification';
+    default:
+      return 'Notification';
   }
 });
 </script>

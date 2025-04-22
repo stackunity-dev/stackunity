@@ -9,6 +9,13 @@
     <v-card class="mb-4">
       <v-card-title class="text-h6 d-flex flex-wrap">
         <span class="flex-grow-1">New API Test</span>
+        <v-tooltip location="bottom" text="History settings">
+          <template v-slot:activator="{ props }">
+            <v-btn icon variant="text" v-bind="props" @click="showHistoryDialog = true">
+              <v-icon>mdi-history</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
       </v-card-title>
       <v-card-text>
         <v-form @submit.prevent="sendRequest">
@@ -37,11 +44,11 @@
                 <v-window-item value="headers">
                   <v-row dense v-for="(header, index) in request.headers" :key="index" class="mobile-row">
                     <v-col cols="5">
-                      <v-text-field v-model="header.key" label="Clé" placeholder="Content-Type" density="comfortable"
+                      <v-text-field v-model="header.key" label="Key" placeholder="Authorization" density="comfortable"
                         hide-details class="mb-2"></v-text-field>
                     </v-col>
                     <v-col cols="5">
-                      <v-text-field v-model="header.value" label="Valeur" placeholder="application/json"
+                      <v-text-field v-model="header.value" label="Value" placeholder="Bearer token123"
                         density="comfortable" hide-details class="mb-2"></v-text-field>
                     </v-col>
                     <v-col cols="2" class="d-flex align-center">
@@ -50,10 +57,49 @@
                       </v-btn>
                     </v-col>
                   </v-row>
-                  <v-btn color="primary" variant="tonal" @click="addHeader" class="mt-2" size="small">
-                    Add a header
-                    <v-icon>mdi-plus</v-icon>
-                  </v-btn>
+                  <div class="d-flex align-center flex-wrap gap-2 mt-2">
+                    <v-btn color="primary" variant="tonal" @click="addHeader" size="small">
+                      Add a header
+                      <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+
+                    <v-menu>
+                      <template v-slot:activator="{ props }">
+                        <v-btn color="secondary" variant="text" size="small" v-bind="props" class="ml-2">
+                          Common Headers
+                          <v-icon end>mdi-menu-down</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list density="compact">
+                        <v-list-item @click="addCommonHeader('Authorization', 'Bearer token123')">
+                          <v-list-item-title>Authorization</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="addCommonHeader('Content-Type', 'application/json')">
+                          <v-list-item-title>Content-Type</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="addCommonHeader('Accept', 'application/json')">
+                          <v-list-item-title>Accept</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="addCommonHeader('X-API-Key', 'your-api-key')">
+                          <v-list-item-title>X-API-Key</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+
+                    <v-tooltip location="top" text="Common headers automatically added by browsers">
+                      <template v-slot:activator="{ props }">
+                        <v-btn color="info" variant="text" size="small" v-bind="props" class="ml-2">
+                          <v-icon>mdi-information-outline</v-icon>
+                        </v-btn>
+                      </template>
+                      <div class="pa-2">
+                        <p class="text-body-2">Note: Some standard headers like <code>Host</code>,
+                          <code>User-Agent</code>,
+                          <code>Accept</code>, etc. are automatically added by browsers and not shown here.
+                        </p>
+                      </div>
+                    </v-tooltip>
+                  </div>
                 </v-window-item>
 
                 <v-window-item value="body">
@@ -137,9 +183,28 @@
               </v-window-item>
 
               <v-window-item value="headers">
-                <div class="response-wrapper">
-                  <pre class="response-body bg-grey-darken-4" v-html="formattedHeaders"></pre>
-                </div>
+                <v-tabs v-model="headersTab" density="comfortable" class="mt-2">
+                  <v-tab value="response">Response Headers</v-tab>
+                  <v-tab value="request">Request Headers</v-tab>
+                </v-tabs>
+
+                <v-window v-model="headersTab">
+                  <v-window-item value="response">
+                    <div class="response-wrapper">
+                      <pre class="response-body bg-grey-darken-4" v-html="formattedResponseHeaders"></pre>
+                    </div>
+                  </v-window-item>
+
+                  <v-window-item value="request">
+                    <div class="response-wrapper">
+                      <pre class="response-body bg-grey-darken-4" v-html="formattedRequestHeaders"></pre>
+                    </div>
+                    <v-alert v-if="sentHeaders && Object.keys(sentHeaders).length === 0" type="info" variant="tonal"
+                      class="mt-2">
+                      No custom headers were sent with this request.
+                    </v-alert>
+                  </v-window-item>
+                </v-window>
               </v-window-item>
 
               <v-window-item value="docs">
@@ -215,8 +280,8 @@
                                   <p><strong>Status:</strong> {{ test.response.status }}</p>
                                   <p><strong>Data:</strong></p>
                                   <div class="response-wrapper">
-                                    <pre
-                                      class="response-body bg-grey-darken-4">{{ JSON.stringify(test.response.data, null, 2) }}</pre>
+                                    <pre class="response-body bg-grey-darken-4">{{ JSON.stringify(test.response.data, null,
+                                      2) }}</pre>
                                   </div>
                                 </v-card-text>
                               </v-card>
@@ -233,6 +298,36 @@
         </v-row>
       </v-card-text>
     </v-card>
+
+    <v-dialog v-model="showHistoryDialog" max-width="500">
+      <v-card>
+        <v-card-title class="text-h6">History Settings</v-card-title>
+        <v-card-text>
+          <v-switch v-model="saveToHistory" color="primary" label="Save requests to history"></v-switch>
+
+          <v-alert v-if="historyError" type="error" variant="tonal" class="mt-4 mb-2">
+            {{ historyError }}
+          </v-alert>
+
+          <div class="d-flex align-center mt-4">
+            <v-btn color="error" variant="outlined" @click="clearHistory" :disabled="!saveToHistory">
+              Clear History
+              <v-icon end>mdi-delete</v-icon>
+            </v-btn>
+            <v-spacer></v-spacer>
+            <div class="text-caption" v-if="saveToHistory">
+              Stored requests: {{ historyCount }}
+            </div>
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" variant="text" @click="showHistoryDialog = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
   </v-container>
 </template>
@@ -268,9 +363,11 @@ const apiTestingStore = useApiTestingStore();
 
 const activeTab = ref('headers');
 const responseTab = ref('body');
+const headersTab = ref('response');
 const loading = ref(false);
 const response = ref<any>(null);
 const bodyView = ref('raw');
+const sentHeaders = ref<Record<string, string>>({});
 
 const request = ref({
   method: 'GET',
@@ -289,9 +386,14 @@ const formattedResponse = computed(() => {
   }
 });
 
-const formattedHeaders = computed(() => {
+const formattedResponseHeaders = computed(() => {
   if (!response.value?.headers) return '';
   return JSON.stringify(response.value.headers, null, 2);
+});
+
+const formattedRequestHeaders = computed(() => {
+  if (!sentHeaders.value) return '';
+  return JSON.stringify(sentHeaders.value, null, 2);
 });
 
 const docOptions = ref({
@@ -404,6 +506,16 @@ function removeParam(index: number) {
   request.value.params.splice(index, 1);
 }
 
+function addCommonHeader(key: string, value: string) {
+  // Check if this header already exists
+  const existingHeader = request.value.headers.find(h => h.key === key);
+  if (existingHeader) {
+    existingHeader.value = value;
+  } else {
+    request.value.headers.push({ key, value });
+  }
+}
+
 async function buildUrlWithParams(baseUrl: string, params: { key: string; value: string }[]) {
   return requestUtils.buildUrlWithParams(baseUrl, params);
 }
@@ -452,6 +564,7 @@ watch(() => request.value, () => {
 
 async function sendRequest() {
   loading.value = true;
+  historyError.value = null;
   const startTime = performance.now();
   try {
     if (!request.value.url) {
@@ -475,12 +588,13 @@ async function sendRequest() {
       finalUrl = url.toString();
     }
 
-    const headers = request.value.headers.reduce((acc: any, header) => {
+    // Store the headers we're actually sending
+    sentHeaders.value = {};
+    request.value.headers.forEach(header => {
       if (header.key && header.value) {
-        acc[header.key] = header.value;
+        sentHeaders.value[header.key] = header.value;
       }
-      return acc;
-    }, {});
+    });
 
     let body: string | null = null;
     if (request.value.body) {
@@ -498,7 +612,7 @@ async function sendRequest() {
         method: request.value.method,
         headers: {
           'Content-Type': 'application/json',
-          ...headers
+          ...sentHeaders.value
         },
         body: body || undefined
       });
@@ -541,13 +655,25 @@ async function sendRequest() {
       data: responseBody
     };
 
-    apiTestingStore.addToHistory({
-      requestId: '',
-      status: responseData.status,
-      headers: responseHeaders,
-      data: response.value.data,
-      duration
-    });
+    if (saveToHistory.value) {
+      try {
+        apiTestingStore.addToHistory({
+          requestId: '',
+          status: responseData.status,
+          headers: responseHeaders,
+          data: response.value.data,
+          duration
+        });
+
+        updateHistoryCount();
+      } catch (error) {
+        console.error('Error saving to history:', error);
+        historyError.value = 'Failed to save request to history. Storage quota may be exceeded.';
+        if (error.message && error.message.includes('quota')) {
+          saveToHistory.value = false;
+        }
+      }
+    }
   } catch (error) {
     console.error('Erreur lors de la requête:', error);
     response.value = {
@@ -564,6 +690,9 @@ async function sendRequest() {
     };
   } finally {
     loading.value = false;
+    if (responseTab.value === 'headers') {
+      headersTab.value = 'request';
+    }
   }
 }
 
@@ -618,7 +747,16 @@ watch(() => request.value.method, (newMethod) => {
 });
 
 onMounted(() => {
-  apiTestingStore.loadData();
+  try {
+    apiTestingStore.loadData();
+    updateHistoryCount();
+  } catch (error) {
+    console.error('Error loading API testing data:', error);
+    if (error.message && error.message.includes('quota')) {
+      historyError.value = 'History storage quota exceeded. History has been disabled.';
+      saveToHistory.value = false;
+    }
+  }
   loadStateFromUrl();
 });
 
@@ -721,6 +859,31 @@ async function runApiTests() {
     console.error('Erreur lors des tests d\'API:', error);
   } finally {
     apiTestsLoading.value = false;
+  }
+}
+
+const showHistoryDialog = ref(false);
+const saveToHistory = ref(true);
+const historyError = ref<string | null>(null);
+const historyCount = ref(0);
+
+function clearHistory() {
+  apiTestingStore.clearHistory();
+  historyError.value = null;
+  historyCount.value = 0;
+}
+
+function updateHistoryCount() {
+  try {
+    const historyData = localStorage.getItem('apiTesting_history');
+    if (historyData) {
+      const history = JSON.parse(historyData);
+      historyCount.value = Array.isArray(history) ? history.length : 0;
+    } else {
+      historyCount.value = 0;
+    }
+  } catch (e) {
+    historyCount.value = 0;
   }
 }
 
@@ -844,5 +1007,20 @@ async function runApiTests() {
   width: 100%;
   overflow-x: auto;
   margin: 0.5rem 0;
+}
+
+.headers-tab {
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  margin-bottom: 8px;
+}
+
+.response-headers-title,
+.request-headers-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 8px 0;
+  opacity: 0.7;
 }
 </style>

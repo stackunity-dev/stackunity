@@ -2,12 +2,12 @@ import { load } from 'cheerio'
 import { createError, defineEventHandler, readBody } from 'h3'
 import fetch from 'node-fetch'
 import {
-  analyzeSemanticStructure
-} from './semantic-analyzer'
-import {
   analyzeAriaAttributes,
   analyzeMetaTags
 } from './analyze-functions'
+import {
+  analyzeSemanticStructure
+} from './semantic-analyzer'
 
 
 function analyzeHtmlStructure($: ReturnType<typeof load>): {
@@ -119,7 +119,7 @@ export default defineEventHandler(async (event) => {
         case 'semantic':
           return analyzeSemanticStructure($)
         case 'meta':
-          return analyzeMetaTags($, url)
+          return analyzeMetaTags($)
         case 'aria':
           return analyzeAriaAttributes($)
         case 'structure':
@@ -127,7 +127,7 @@ export default defineEventHandler(async (event) => {
         case 'all':
           return {
             semantic: analyzeSemanticStructure($),
-            meta: analyzeMetaTags($, url),
+            meta: analyzeMetaTags($),
             aria: analyzeAriaAttributes($),
             structure: analyzeHtmlStructure($)
           }

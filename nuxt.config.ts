@@ -41,7 +41,6 @@ export default defineNuxtConfig({
       })
     },
   ],
-
   vite: {
     vue: {
       template: {

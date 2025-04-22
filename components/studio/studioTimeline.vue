@@ -417,7 +417,6 @@
         <v-card-title class="d-flex justify-space-between align-center pa-4">
           <v-tabs v-model="codeTab" color="primary">
             <v-tab value="template">Template</v-tab>
-            <v-tab value="script">Script</v-tab>
             <v-tab value="theme">Theme</v-tab>
           </v-tabs>
           <v-btn icon="mdi-close" variant="text" @click="showCodeDialog = false"></v-btn>
@@ -425,22 +424,17 @@
         <v-card-text>
           <v-window v-model="codeTab">
             <v-window-item value="template">
-              <v-sheet class="bg-grey-darken-4 rounded pa-4"
-                style="white-space: pre-wrap; font-family: monospace; color: white;">
-                {{ generateTemplateCode() }}
-              </v-sheet>
+              <pre class="code-block"><code class="language-vue" ref="codeElement">{{ highlightedTemplateCode }}</code>
+          </pre>
             </v-window-item>
             <v-window-item value="script">
-              <v-sheet class="bg-grey-darken-4 rounded pa-4"
-                style="white-space: pre-wrap; font-family: monospace; color: white;">
-                {{ generateScriptCode() }}
-              </v-sheet>
+              <pre class="code-block"><code class="language-javascript" ref="scriptCodeElement">{{ highlightedScriptCode
+              }}</code>
+          </pre>
             </v-window-item>
             <v-window-item value="theme">
-              <v-sheet class="bg-grey-darken-4 rounded pa-4"
-                style="white-space: pre-wrap; font-family: monospace; color: white;">
-                {{ theme }}
-              </v-sheet>
+              <pre class="code-block"><code class="language-css" ref="themeCodeElement">{{ highlightedThemeCode }}</code>
+          </pre>
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -457,11 +451,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
-import Snackbar from '~/components/snackbar.vue';
-import { useUserStore } from '~/stores/userStore';
-import icons from '~/utils/icons';
-import { getTimelineTemplate } from '~/utils/timelineTemplates';
+import hljs from 'highlight.js/lib/core';
+import 'highlight.js/styles/atom-one-dark.css';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import Snackbar from '../../components/snackbar.vue';
+import { useUserStore } from '../../stores/userStore';
+import icons from '../../utils/icons';
+import { getTimelineTemplate } from '../../utils/timelineTemplates';
+import theme from '../../utils/theme';
 
 const emit = defineEmits(['update:content', 'save']);
 
@@ -477,6 +474,9 @@ interface TimelineItem {
 
 const codeTab = ref('template');
 const tab = ref('content');
+const codeElement = ref<HTMLElement | null>(null);
+const themeCodeElement = ref<HTMLElement | null>(null);
+const scriptCodeElement = ref<HTMLElement | null>(null);
 const previewMode = ref('desktop');
 const showCodeDialog = ref(false);
 const generatedCode = ref('');
@@ -888,7 +888,19 @@ const loadTemplateFromStore = () => {
   }
 };
 
-// Surveiller les changements d'URL pour recharger le template si nécessaire
+const highlightedTemplateCode = computed(() => {
+  return generateTemplateCode();
+});
+
+const highlightedScriptCode = computed(() => {
+  return generateScriptCode();
+});
+
+const highlightedThemeCode = computed(() => {
+  return theme;
+});
+
+
 watch(() => {
   if (typeof window !== 'undefined') {
     return window.location.search;
@@ -899,6 +911,18 @@ watch(() => {
     loadTemplateFromStore();
   }
 }, { immediate: true });
+
+watch(codeTab, () => {
+  nextTick(() => {
+    if (codeTab.value === 'template' && codeElement.value) {
+      hljs.highlightElement(codeElement.value);
+    } else if (codeTab.value === 'script' && scriptCodeElement.value) {
+      hljs.highlightElement(scriptCodeElement.value);
+    } else if (codeTab.value === 'theme' && themeCodeElement.value) {
+      hljs.highlightElement(themeCodeElement.value);
+    }
+  });
+});
 </script>
 
 <style scoped>
@@ -992,5 +1016,22 @@ watch(() => {
 .scroll-y-transition-leave-to {
   transform: translateY(100%);
   opacity: 0;
+}
+
+.code-block {
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  background-color: #282c34;
+  overflow: auto;
+  max-height: 60vh;
+}
+
+.code-block code {
+  display: block;
+  padding: 1rem;
+  font-family: "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  font-size: 14px;
+  line-height: 1.5;
 }
 </style>

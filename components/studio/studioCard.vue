@@ -1,69 +1,81 @@
 <template>
   <v-app>
-    <v-main class="w-100 h-100 overflow-hidden d-flex">
-      <div class="control-panel">
+    <v-main class="w-100 h-100 overflow-hidden d-flex" role="main">
+      <div class="control-panel" role="complementary" aria-label="Card customization panel">
         <v-card flat class="fill-height">
-          <div class="px-4 py-2 d-flex align-center">
-            <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2">Vue.js</v-chip>
-            <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2">Vuetify</v-chip>
+          <div class="px-4 py-2 d-flex align-center" role="group" aria-label="Framework indicators">
+            <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2"
+              aria-label="Vue.js framework">Vue.js</v-chip>
+            <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2"
+              aria-label="Vuetify framework">Vuetify</v-chip>
             <PremiumFeature v-if="!userStore.user.isPremium" premium-link="/subscribe" title="Studio components"
-              icon="mdi-palette" type="chip" feature-key="studioComponents" />
+              icon="mdi-palette" type="chip" feature-key="studioComponents" aria-label="Premium feature indicator" />
           </div>
 
-          <v-tabs v-model="propertiesTab" color="primary" align-tabs="center" class="px-4">
-            <v-tab value="content">Content</v-tab>
-            <v-tab value="style">Style</v-tab>
-            <v-tab value="actions">Actions</v-tab>
-            <v-tab value="data">Data</v-tab>
-            <v-tab value="templates">Templates</v-tab>
+          <v-tabs v-model="propertiesTab" color="primary" align-tabs="center" class="px-4" role="tablist"
+            aria-label="Card properties tabs">
+            <v-tab value="content" role="tab" aria-controls="content-panel">Content</v-tab>
+            <v-tab value="style" role="tab" aria-controls="style-panel">Style</v-tab>
+            <v-tab value="actions" role="tab" aria-controls="actions-panel">Actions</v-tab>
+            <v-tab value="data" role="tab" aria-controls="data-panel">Data</v-tab>
+            <v-tab value="templates" role="tab" aria-controls="templates-panel">Templates</v-tab>
           </v-tabs>
 
-          <v-divider></v-divider>
+          <v-divider role="separator"></v-divider>
 
           <v-card-text class="pa-0 fill-height" style="overflow-y: auto">
             <v-window v-model="propertiesTab" class="fill-height">
-              <v-window-item value="content">
+              <v-window-item value="content" role="tabpanel" id="content-panel">
                 <div class="pa-4">
                   <v-text-field v-model="cardProperties.title" label="Title" variant="outlined" density="comfortable"
-                    clearable prepend-inner-icon="mdi-format-title" class="mb-4"></v-text-field>
+                    clearable prepend-inner-icon="mdi-format-title" class="mb-4"
+                    aria-label="Card title input"></v-text-field>
 
                   <v-text-field v-model="cardProperties.subtitle" label="Subtitle" variant="outlined"
-                    density="comfortable" clearable prepend-inner-icon="mdi-format-text" class="mb-4"></v-text-field>
+                    density="comfortable" clearable prepend-inner-icon="mdi-format-text" class="mb-4"
+                    aria-label="Card subtitle input"></v-text-field>
 
                   <v-textarea v-model="cardProperties.text" label="Text" variant="outlined" density="comfortable"
-                    auto-grow rows="3" row-height="20" clearable prepend-inner-icon="mdi-text"
-                    class="mb-4"></v-textarea>
+                    auto-grow rows="3" row-height="20" clearable prepend-inner-icon="mdi-text" class="mb-4"
+                    aria-label="Card content text"></v-textarea>
 
                   <v-text-field v-model="cardProperties.image" label="Image URL" variant="outlined"
-                    density="comfortable" clearable prepend-inner-icon="mdi-image" class="mb-1"></v-text-field>
+                    density="comfortable" clearable prepend-inner-icon="mdi-image" class="mb-1"
+                    aria-label="Card image URL input"></v-text-field>
                   <div class="d-flex flex-wrap mb-4">
-                    <v-chip-group mandatory selected-class="bg-primary text-white">
-                      <v-chip size="small" value="none" @click="removeImage">None</v-chip>
-                      <v-chip size="small" value="mountains" @click="setImage('mountains')">Mountains</v-chip>
-                      <v-chip size="small" value="beach" @click="setImage('beach')">Beach</v-chip>
-                      <v-chip size="small" value="forest" @click="setImage('forest')">Forest</v-chip>
+                    <v-chip-group mandatory selected-class="bg-primary text-white" role="radiogroup"
+                      aria-label="Image selection">
+                      <v-chip size="small" value="none" @click="removeImage" role="radio"
+                        aria-label="No image">None</v-chip>
+                      <v-chip size="small" value="mountains" @click="setImage('mountains')" role="radio"
+                        aria-label="Mountains image">Mountains</v-chip>
+                      <v-chip size="small" value="beach" @click="setImage('beach')" role="radio"
+                        aria-label="Beach image">Beach</v-chip>
+                      <v-chip size="small" value="forest" @click="setImage('forest')" role="radio"
+                        aria-label="Forest image">Forest</v-chip>
                     </v-chip-group>
                   </div>
 
                   <v-select v-model="cardProperties.icon" :items="icons" label="Icon" variant="outlined"
-                    density="comfortable" clearable prepend-inner-icon="mdi-pencil" class="mb-4">
+                    density="comfortable" clearable prepend-inner-icon="mdi-pencil" class="mb-4"
+                    aria-label="Card icon selection">
                     <template v-slot:item="{ item, props }">
-                      <v-list-item v-bind="props">
+                      <v-list-item v-bind="props" role="option">
                         <template v-slot:prepend>
-                          <v-icon :icon="item.raw"></v-icon>
+                          <v-icon :icon="item.raw" :aria-label="item.raw"></v-icon>
                         </template>
                       </v-list-item>
                     </template>
                   </v-select>
 
                   <div v-if="cardProperties.icon" class="mb-4">
-                    <label class="text-subtitle-2 mb-1">Icon color</label>
+                    <label class="text-subtitle-2 mb-1" id="icon-color-label">Icon color</label>
                     <div class="color-selector-container">
                       <v-btn-toggle v-model="iconColorIndex" mandatory density="comfortable"
-                        selected-class="border-primary">
+                        selected-class="border-primary" role="radiogroup" aria-labelledby="icon-color-label">
                         <v-btn v-for="(color, index) in cardColors" :key="color.value" :value="index"
                           :color="color.value !== 'default' ? color.value : undefined" size="small" variant="tonal"
-                          width="40" height="40" class="ma-1">
+                          width="40" height="40" class="ma-1" role="radio" :aria-label="color.value">
                           <v-icon v-if="color.value === 'default'">mdi-palette-outline</v-icon>
                         </v-btn>
                       </v-btn-toggle>
@@ -72,95 +84,102 @@
                 </div>
               </v-window-item>
 
-              <v-window-item value="style">
+              <v-window-item value="style" role="tabpanel" id="style-panel">
                 <div class="pa-4">
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-1 d-block">Elevation</label>
+                    <label class="text-subtitle-2 mb-1 d-block" id="elevation-slider">Elevation</label>
                     <div class="d-flex align-center">
                       <v-icon size="small" color="primary">mdi-card-outline</v-icon>
-                      <v-slider v-model="cardProperties.elevation" min="0" max="24" step="1" thumb-label
-                        class="mx-2"></v-slider>
+                      <v-slider v-model="cardProperties.elevation" min="0" max="24" step="1" thumb-label class="mx-2"
+                        aria-labelledby="elevation-slider" role="slider"></v-slider>
                       <v-icon size="small" color="primary">mdi-layers-triple</v-icon>
                     </div>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-1">Variant</label>
-                    <v-chip-group v-model="cardVariantIndex" mandatory selected-class="bg-primary text-white">
-                      <v-chip v-for="(variant, index) in cardVariants" :key="variant" size="small" :value="index">
+                    <label class="text-subtitle-2 mb-1" id="variant-selection">Variant</label>
+                    <v-chip-group v-model="cardVariantIndex" mandatory selected-class="bg-primary text-white"
+                      role="radiogroup" aria-labelledby="variant-selection">
+                      <v-chip v-for="(variant, index) in cardVariants" :key="variant" size="small" :value="index"
+                        role="radio" :aria-label="variant">
                         {{ variant }}
                       </v-chip>
                     </v-chip-group>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-1">Color</label>
+                    <label class="text-subtitle-2 mb-1" id="color-selection">Color</label>
                     <div class="color-selector-container">
                       <v-btn-toggle v-model="cardColorIndex" mandatory density="comfortable"
-                        selected-class="border-primary">
+                        selected-class="border-primary" role="radiogroup" aria-labelledby="color-selection">
                         <v-btn v-for="(color, index) in cardColors" :key="color.value" :value="index"
                           :color="color.value !== 'default' ? color.value : undefined" size="small" variant="tonal"
-                          width="40" height="40" class="ma-1">
+                          width="40" height="40" class="ma-1" role="radio" :aria-label="color.value">
                           <v-icon v-if="color.value === 'default'">mdi-palette-outline</v-icon>
                         </v-btn>
                       </v-btn-toggle>
                     </div>
                   </div>
 
-                  <v-switch v-model="cardProperties.loading" color="primary" label="Loading" hide-details
-                    class="mb-2"></v-switch>
-                  <v-switch v-model="cardProperties.disabled" color="primary" label="Disabled" hide-details
-                    class="mb-4"></v-switch>
+                  <v-switch v-model="cardProperties.loading" color="primary" label="Loading" hide-details class="mb-2"
+                    role="switch" aria-label="Toggle loading state"></v-switch>
+                  <v-switch v-model="cardProperties.disabled" color="primary" label="Disabled" hide-details class="mb-4"
+                    role="switch" aria-label="Toggle disabled state"></v-switch>
                   <v-switch v-model="cardProperties.hoverEffect" color="primary" label="Hover effect" hide-details
-                    class="mb-4"></v-switch>
+                    class="mb-4" role="switch" aria-label="Toggle hover effect"></v-switch>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-1 d-block">Padding</label>
+                    <label class="text-subtitle-2 mb-1 d-block" id="padding-slider">Padding</label>
                     <div class="d-flex align-center">
                       <v-icon size="small" color="primary">mdi-arrow-collapse</v-icon>
-                      <v-slider v-model="cardProperties.padding" min="0" max="16" step="4" thumb-label
-                        class="mx-2"></v-slider>
+                      <v-slider v-model="cardProperties.padding" min="0" max="16" step="4" thumb-label class="mx-2"
+                        aria-labelledby="padding-slider" role="slider"></v-slider>
                       <v-icon size="small" color="primary">mdi-arrow-expand</v-icon>
                     </div>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-1 d-block">Border radius</label>
+                    <label class="text-subtitle-2 mb-1 d-block" id="border-radius-slider">Border radius</label>
                     <div class="d-flex align-center">
                       <v-icon size="small" color="primary">mdi-square-outline</v-icon>
                       <v-slider v-model="roundedIndex" :min="0" :max="roundedLabels.length - 1" step="1" thumb-label
-                        :thumb-label-text="roundedLabels[roundedIndex]" class="mx-2"></v-slider>
+                        :thumb-label-text="roundedLabels[roundedIndex]" class="mx-2"
+                        aria-labelledby="border-radius-slider" role="slider"></v-slider>
                       <v-icon size="small" color="primary">mdi-rectangle-outline</v-icon>
                     </div>
                   </div>
                 </div>
               </v-window-item>
 
-              <v-window-item value="actions">
+              <v-window-item value="actions" role="tabpanel" id="actions-panel">
                 <div class="pa-4">
                   <v-switch v-model="cardProperties.showButtons" color="primary" label="Show buttons" hide-details
-                    class="mb-4"></v-switch>
+                    class="mb-4" role="switch" aria-label="Toggle button visibility"></v-switch>
 
                   <template v-if="cardProperties.showButtons">
                     <v-text-field v-model="cardProperties.buttonText" label="Button text" variant="outlined"
-                      density="comfortable" prepend-inner-icon="mdi-button-cursor" class="mb-4"></v-text-field>
+                      density="comfortable" prepend-inner-icon="mdi-button-cursor" class="mb-4"
+                      aria-label="Button text input"></v-text-field>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1">Button style</label>
-                      <v-chip-group v-model="buttonVariantIndex" mandatory selected-class="bg-primary text-white">
-                        <v-chip v-for="(variant, index) in buttonVariants" :key="variant" size="small" :value="index">
+                      <label class="text-subtitle-2 mb-1" id="button-style">Button style</label>
+                      <v-chip-group v-model="buttonVariantIndex" mandatory selected-class="bg-primary text-white"
+                        role="radiogroup" aria-labelledby="button-style">
+                        <v-chip v-for="(variant, index) in buttonVariants" :key="variant" size="small" :value="index"
+                          role="radio" :aria-label="variant">
                           {{ variant }}
                         </v-chip>
                       </v-chip-group>
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1">Button color</label>
+                      <label class="text-subtitle-2 mb-1" id="button-color">Button color</label>
                       <div class="d-flex overflow-x-auto">
-                        <v-btn-toggle v-model="buttonColorIndex" mandatory density="comfortable" class="d-flex">
+                        <v-btn-toggle v-model="buttonColorIndex" mandatory density="comfortable" class="d-flex"
+                          role="radiogroup" aria-labelledby="button-color">
                           <v-btn v-for="(color, index) in cardColors" :key="color.value" :value="index"
                             :color="color.value !== 'default' ? color.value : undefined" size="small" variant="tonal"
-                            width="40" height="40" class="ma-1">
+                            width="40" height="40" class="ma-1" role="radio" :aria-label="color.value">
                             <v-icon v-if="color.value === 'default'">mdi-palette-outline</v-icon>
                           </v-btn>
                         </v-btn-toggle>
@@ -168,37 +187,43 @@
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1 d-block">Button width</label>
+                      <label class="text-subtitle-2 mb-1 d-block" id="button-width">Button width</label>
                       <div class="d-flex align-center">
-                        <v-chip size="x-small">Auto</v-chip>
+                        <v-chip size="x-small" aria-label="Auto width">Auto</v-chip>
                         <v-slider v-model="cardProperties.buttonWidth" min="0" max="100" step="25" thumb-label
-                          :thumb-label-text="cardProperties.buttonWidth + '%'" class="mx-2"></v-slider>
-                        <v-chip size="x-small">100%</v-chip>
+                          :thumb-label-text="cardProperties.buttonWidth + '%'" class="mx-2"
+                          aria-labelledby="button-width" role="slider"></v-slider>
+                        <v-chip size="x-small" aria-label="Full width">100%</v-chip>
                       </div>
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1">Button position</label>
+                      <label class="text-subtitle-2 mb-1" id="button-position">Button position</label>
                       <div class="d-flex justify-space-between">
-                        <v-btn-toggle v-model="cardProperties.buttonPosition" mandatory density="comfortable">
-                          <v-btn value="start" icon="mdi-format-align-left"></v-btn>
-                          <v-btn value="center" icon="mdi-format-align-center"></v-btn>
-                          <v-btn value="end" icon="mdi-format-align-right"></v-btn>
-                          <v-btn value="space-between" icon="mdi-format-align-justify"></v-btn>
+                        <v-btn-toggle v-model="cardProperties.buttonPosition" mandatory density="comfortable"
+                          role="radiogroup" aria-labelledby="button-position">
+                          <v-btn value="start" icon="mdi-format-align-left" role="radio"
+                            aria-label="Align left"></v-btn>
+                          <v-btn value="center" icon="mdi-format-align-center" role="radio"
+                            aria-label="Align center"></v-btn>
+                          <v-btn value="end" icon="mdi-format-align-right" role="radio"
+                            aria-label="Align right"></v-btn>
+                          <v-btn value="space-between" icon="mdi-format-align-justify" role="radio"
+                            aria-label="Space between"></v-btn>
                         </v-btn-toggle>
                       </div>
                     </div>
 
                     <v-autocomplete v-model="cardProperties.buttonIcon" :items="icons" label="Icon" variant="outlined"
-                      density="comfortable" class="mb-2 mt-2"></v-autocomplete>
+                      density="comfortable" class="mb-2 mt-2" aria-label="Button icon selection"></v-autocomplete>
 
                     <v-text-field v-model="cardProperties.buttonLink" label="Link" variant="outlined"
-                      density="comfortable" class="mb-2"></v-text-field>
+                      density="comfortable" class="mb-2" aria-label="Button link URL"></v-text-field>
 
                   </template>
 
                   <v-switch v-model="cardProperties.showProgress" color="primary" label="Show progress circular"
-                    hide-details class="mb-4"></v-switch>
+                    hide-details class="mb-4" role="switch" aria-label="Toggle progress indicator"></v-switch>
 
                   <template v-if="cardProperties.showProgress">
                     <div class="mb-4">
@@ -531,7 +556,7 @@
           </v-card>
         </div>
 
-        <div v-if="userStore.user.isPremium" class="d-flex justify-end mt-3">
+        <div class="d-flex justify-end mt-3">
           <v-btn color="secondary" class="mr-2" prepend-icon="mdi-eye" @click="previewCode">
             Preview Code
           </v-btn>
@@ -539,33 +564,37 @@
             Copy code
           </v-btn>
         </div>
-        <div v-else class="d-flex justify-end mt-3">
-          <PremiumFeature title="Preview code" icon="mdi-eye" featureKey="studioComponents" variant="elevated"
-            class="premium-feature-button mr-2" type="button" />
-          <PremiumFeature title="Copy code" icon="mdi-content-copy" featureKey="studioComponents" variant="elevated"
-            class="premium-feature-button" type="button" />
-        </div>
       </div>
 
       <v-dialog v-model="showCodeDialog" width="800">
-        <v-card>
+        <v-card class="bg-grey-darken-4">
           <v-card-title class="d-flex justify-space-between align-center pa-4">
-            <span>Generated Code</span>
+            <v-tabs v-model="codeTab" color="primary">
+              <v-tab value="template">Template</v-tab>
+              <v-tab value="theme">Theme</v-tab>
+            </v-tabs>
             <v-btn icon="mdi-close" variant="text" @click="showCodeDialog = false"></v-btn>
           </v-card-title>
           <v-card-text>
-            <v-sheet class="bg-grey-darken-4 rounded pa-4" style="white-space: pre-wrap; font-family: monospace;">
-              {{ generatedCode }}
-            </v-sheet>
+            <v-window v-model="codeTab">
+              <v-window-item value="template">
+                <pre class="code-block"><code class="language-vue" ref="codeElement">{{ highlightedTemplateCode }}</code>
+          </pre>
+              </v-window-item>
+              <v-window-item value="theme">
+                <pre class="code-block"><code class="language-css" ref="themeCodeElement">{{ highlightedThemeCode }}</code>
+          </pre>
+              </v-window-item>
+            </v-window>
           </v-card-text>
           <v-card-actions class="pa-4">
-
-            <v-btn color="primary" prepend-icon="mdi-content-copy" @click="copyCardCode">
-              Copy to Clipboard
+            <v-btn color="secondary" prepend-icon="mdi-content-copy" @click="copyCurrentTab">
+              Copy Current Tab
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
+
 
       <Snackbar v-model="showSnackbarMessage" :text="snackbarText" :color="snackbarColor" />
     </v-main>
@@ -573,13 +602,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
-import PremiumFeature from '../components/PremiumFeature.vue';
-import Snackbar from '../components/snackbar.vue';
-import { useUserStore } from '../stores/userStore';
-import { getCardTemplate } from '../utils/cardTemplates';
-import icons from '../utils/icons';
-import theme from '../utils/theme';
+import hljs from 'highlight.js/lib/core';
+import 'highlight.js/styles/atom-one-dark.css';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import PremiumFeature from '../../components/PremiumFeature.vue';
+import Snackbar from '../../components/snackbar.vue';
+import { useUserStore } from '../../stores/userStore';
+import { getCardTemplate } from '../../utils/cardTemplates';
+import icons from '../../utils/icons';
+import theme from '../../utils/theme';
 
 const props = defineProps({
   initialContent: {
@@ -622,16 +653,17 @@ const cardVariantIndex = ref(0)
 const cardColorIndex = ref(0)
 const buttonColorIndex = ref(5)
 const buttonVariantIndex = ref(2)
-const buttonLinkIndex = ref('')
 const progressSizeIndex = ref(2)
 const progressColorIndex = ref(1)
 const showCodeDialog = ref(false)
-const generatedCode = ref('')
 const showSnackbarMessage = ref(false)
 const snackbarText = ref('Code copied to clipboard')
 const snackbarColor = ref('success')
 const componentType = ref('card')
 const timelineItemsCount = ref(3)
+const codeElement = ref(null);
+const themeCodeElement = ref(null);
+
 
 const timelineItems = ref([
   { title: 'User 1', message: 'Message sent', color: 'primary' },
@@ -726,6 +758,7 @@ const sparklineColorIndex = ref(1)
 const sparklineColor = computed((): CardColor => cardColors[sparklineColorIndex.value].value)
 const sparklineDataText = ref(cardProperties.value.sparklineData.join(','))
 const sparklineLabelsText = ref(cardProperties.value.sparklineLabels.join(','))
+const codeTab = ref('template')
 
 const updateSparklineData = () => {
   try {
@@ -749,7 +782,21 @@ const updateSparklineLabels = () => {
   }
 }
 
-function generateCardCode() {
+const generateCardCode = () => {
+  const templateCode = generateTemplateCode();
+  const themeCode = theme;
+
+  switch (codeTab.value) {
+    case 'template':
+      return templateCode;
+    case 'style':
+      return themeCode;
+    default:
+      return `${templateCode}\n\n${themeCode}`;
+  }
+};
+
+function generateTemplateCode() {
   const card = cardProperties.value;
   let code = '<v-card';
   code += ` elevation="${card.elevation}"`;
@@ -766,7 +813,7 @@ function generateCardCode() {
   if (card.image) code += `\n  <v-img src="${card.image}" height="200" cover></v-img>`;
 
   if (card.title) {
-    code += `\n  <v-card-title>`;
+    code += `\n  <v-card-title>\n`;
     if (card.icon) {
       code += `<v-icon start`;
       if (cardColors[iconColorIndex.value].value !== 'default') {
@@ -774,7 +821,7 @@ function generateCardCode() {
       }
       code += `>${card.icon}</v-icon> `;
     }
-    code += `${card.title}</v-card-title>`;
+    code += `${card.title}\n</v-card-title>`;
   }
 
   if (card.subtitle) code += `\n  <v-card-subtitle>${card.subtitle}</v-card-subtitle>`;
@@ -860,7 +907,7 @@ function generateCardCode() {
     code += '\n  </v-card-actions>';
   }
 
-  return code + '\n</v-card>\n\n' + theme;
+  return code + '\n</v-card>\n\n';
 }
 
 function generateCardCodeSilently() {
@@ -869,34 +916,48 @@ function generateCardCodeSilently() {
 }
 
 const previewCode = () => {
-  generatedCode.value = generateCardCode();
   showCodeDialog.value = true;
+  nextTick(() => {
+    if (codeElement.value) {
+      hljs.highlightElement(codeElement.value);
+    }
+    if (themeCodeElement.value) {
+      hljs.highlightElement(themeCodeElement.value);
+    }
+  });
 };
 
-function generateDefaultCardCode() {
-  return generateCardCode()
-}
-
-const onComponentTypeChange = () => {
-  generateCardCodeSilently()
-}
-
-const saveContent = () => {
-  const code = generateCardCode()
-  emit('save', code)
-}
-
 const copyCardCode = () => {
-  const code = generateCardCode();
-  navigator.clipboard.writeText(code)
+  const templateCode = generateTemplateCode();
+
+  const fullCode = `${templateCode}\n\n${theme}`;
+
+  navigator.clipboard.writeText(fullCode)
     .then(() => {
       snackbarText.value = 'Code copied to clipboard!';
       showSnackbarMessage.value = true;
     })
     .catch(err => {
-      console.error('Error copying code:', err);
+      console.error('Error copying:', err);
     });
-  console.log(cardProperties.value)
+};
+
+const copyCurrentTab = () => {
+  let code;
+  switch (codeTab.value) {
+    case 'template':
+      code = generateTemplateCode();
+      break;
+    case 'style':
+      code = theme;
+      break;
+    default:
+      code = '';
+  }
+  window.navigator.clipboard.writeText(code)
+    .catch(err => {
+      console.error('Error copying:', err);
+    });
 };
 
 watch([
@@ -1142,7 +1203,23 @@ watch(() => {
   }
 }, { immediate: true });
 
-const userIsPremium = computed(() => userStore.user.isPremium);
+const highlightedTemplateCode = computed(() => {
+  return generateTemplateCode();
+});
+
+const highlightedThemeCode = computed(() => {
+  return theme;
+});
+
+watch(codeTab, () => {
+  nextTick(() => {
+    if (codeTab.value === 'template' && codeElement.value) {
+      hljs.highlightElement(codeElement.value);
+    } else if (codeTab.value === 'theme' && themeCodeElement.value) {
+      hljs.highlightElement(themeCodeElement.value);
+    }
+  });
+});
 </script>
 
 <style scoped>
@@ -1153,8 +1230,11 @@ const userIsPremium = computed(() => userStore.user.isPremium);
   gap: 8px
 }
 .control-panel {
-  width: 320px;
-  overflow: hidden
+  width: 400px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+  border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 .preview-area {
   flex: 1;
@@ -1162,9 +1242,10 @@ const userIsPremium = computed(() => userStore.user.isPremium);
   overflow: auto
 }
 .preview-canvas {
-  background-color: white;
+  min-height: 60vh;
+  border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05)
+  background-image: repeating-linear-gradient(45deg, var(--v-theme-surface) 0, var(--v-theme-surface) 10px, var(--v-theme-surface-variant) 10px, var(--v-theme-surface-variant) 20px);
 }
 .preview-desktop {
   padding: 32px
@@ -1279,5 +1360,22 @@ const userIsPremium = computed(() => userStore.user.isPremium);
 
 .v-btn-toggle .v-btn {
   flex: 0 0 auto;
+}
+
+.code-block {
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  background-color: #282c34;
+  overflow: auto;
+  max-height: 60vh;
+}
+
+.code-block code {
+  display: block;
+  padding: 1rem;
+  font-family: "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  font-size: 14px;
+  line-height: 1.5;
 }
 </style>

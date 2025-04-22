@@ -1,12 +1,18 @@
 <template>
-  <v-row>
+  <v-row role="region" aria-label="SEO Metrics Overview">
     <v-col v-for="(metric, index) in metrics" :key="metric.key" cols="12" sm="4" md="2.4"
       class="d-flex flex-column align-center">
+      <div :id="`metric-${metric.key}`" class="text-caption mb-2 text-center">{{ metric.title }}</div>
       <v-progress-circular :model-value="metricValues[metric.key] || 0"
-        :color="getMetricColor(metricValues[metric.key] || 0)" size="70" width="6">
-        <span class="text-body-2 font-weight-medium">{{ metricValues[metric.key] || 0 }}%</span>
+        :color="getMetricColor(metricValues[metric.key] || 0)" size="70" width="6" role="progressbar"
+        :aria-valuenow="metricValues[metric.key] || 0" aria-valuemin="0" aria-valuemax="100"
+        :aria-labelledby="`metric-${metric.key}`">
+        <span class="text-body-2 font-weight-medium" aria-hidden="true">{{ metricValues[metric.key] || 0 }}%</span>
       </v-progress-circular>
-      <div class="text-caption mt-2 text-center">{{ metric.title }}</div>
+      <div class="text-caption mt-2 text-center" role="status"
+        :aria-label="`${metric.title} score: ${metricValues[metric.key] || 0}%`">
+        {{ metric.title }}
+      </div>
     </v-col>
   </v-row>
 </template>
@@ -16,10 +22,10 @@ import { computed, watchEffect } from 'vue';
 import {
   calculateAccessibilityScore,
   calculateContentScore,
+  calculateEngagementScore,
   calculateMetaTagsScore,
   calculateSecurityScore,
   calculateTechnicalSeoScore,
-  calculateEngagementScore,
   getMetricColor
 } from '../../utils/seo/metrics';
 

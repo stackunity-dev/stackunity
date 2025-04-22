@@ -2,12 +2,12 @@
   <v-container class="pa-md-12 pa-sm-6" fluid>
     <v-responsive class="text-center mx-auto mb-6 mb-md-12" max-width="700">
       <h2 class="text-md-h4 font-weight-bold mb-4 text-sm-h5">
-        Unlimited Access for One Price
+        Unlimited access for a unique price
       </h2>
 
       <p class="text-subtitle-1 text-medium-emphasis">
-        Get access to all our premium development tools with a single payment.
-        No monthly subscriptions, no hidden fees, just exceptional value.
+        Access all our premium development tools with a single payment.
+        No monthly subscription, no hidden fees, just exceptional value.
       </p>
     </v-responsive>
 
@@ -21,15 +21,15 @@
             </div>
 
             <div class="text-h3 mb-8 text-high-emphasis font-weight-bold">
-              $199
-              <small class="text-overline">USD</small>
+              199€
+              <small class="text-overline">EUR</small>
             </div>
 
             <v-btn class="mb-5 text-none" color="success" max-height="36" max-width="256" rounded="lg"
-              text="Get Access Now" to="/login" variant="flat" width="100%" size="large" />
+              text="Get access now" to="/login" variant="flat" width="100%" size="large" />
 
             <div class="text-caption text-medium-emphasis w-75 text-center">
-              Limited time offer - Regular price: $249
+              Limited time offer - Normal price: 249€
             </div>
           </v-card>
         </v-col>
@@ -38,9 +38,9 @@
           <h2 class="text-h5 font-weight-bold mb-4">Lifetime subscription</h2>
 
           <p class="text-medium-emphasis mb-4">
-            Maximize your productivity with StackUnity. This limited-time offer won't be available
-            in the future. Get access to all current and future features, including full
-            access to all development components and tools.
+            Maximize your productivity with StackUnity. This limited time offer will not be available
+            in the future. Get access to all current and future features, including full access to all development
+            components and tools.
           </p>
 
           <div class="d-flex align-center mb-8">
@@ -66,7 +66,7 @@
 import { ref } from 'vue';
 
 const featuresPricing = ref([
-  'Unlimited access to snippets and studio',
+  'Unlimited access to snippets and design studio',
   'Unlimited SQL generator and monitoring tools',
   'Unlimited SEO audit and accessibility tools',
   'Lifetime access and updates',

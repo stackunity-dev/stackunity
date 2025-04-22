@@ -473,7 +473,6 @@
         <v-card-title class="d-flex justify-space-between align-center pa-4">
           <v-tabs v-model="codeTab" color="primary">
             <v-tab value="template">Template</v-tab>
-            <v-tab value="script">Script</v-tab>
             <v-tab value="theme">Theme</v-tab>
           </v-tabs>
           <v-btn icon="mdi-close" variant="text" @click="showCodeDialog = false"></v-btn>
@@ -481,22 +480,17 @@
         <v-card-text>
           <v-window v-model="codeTab">
             <v-window-item value="template">
-              <v-sheet class="bg-grey-darken-4 rounded pa-4"
-                style="white-space: pre-wrap; font-family: monospace; color: white;">
-                {{ generateTemplateCode() }}
-              </v-sheet>
+              <pre class="code-block"><code class="language-vue" ref="codeElement">{{ highlightedTemplateCode }}</code>
+          </pre>
             </v-window-item>
             <v-window-item value="script">
-              <v-sheet class="bg-grey-darken-4 rounded pa-4"
-                style="white-space: pre-wrap; font-family: monospace; color: white;">
-                {{ generateScriptCode() }}
-              </v-sheet>
+              <pre class="code-block"><code class="language-javascript" ref="scriptCodeElement">{{ highlightedScriptCode
+              }}</code>
+          </pre>
             </v-window-item>
             <v-window-item value="theme">
-              <v-sheet class="bg-grey-darken-4 rounded pa-4"
-                style="white-space: pre-wrap; font-family: monospace; color: white;">
-                {{ theme }}
-              </v-sheet>
+              <pre class="code-block"><code class="language-css" ref="themeCodeElement">{{ highlightedThemeCode }}</code>
+          </pre>
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -513,6 +507,8 @@
 </template>
 
 <script setup lang="ts">
+import hljs from 'highlight.js/lib/core';
+import 'highlight.js/styles/atom-one-dark.css';
 import {
   ArcElement,
   BarElement, CategoryScale,
@@ -523,15 +519,20 @@ import {
   RadialLinearScale,
   Title, Tooltip
 } from 'chart.js';
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { Bar, Doughnut, Line, Pie, PolarArea, Radar } from 'vue-chartjs';
-import Snackbar from '../components/snackbar.vue';
-import { useUserStore } from '../stores/userStore';
-import { getUtilsTemplate } from '../utils/utilsTemplates';
+import Snackbar from '../../components/snackbar.vue';
+import { useUserStore } from '../../stores/userStore';
+import { getUtilsTemplate } from '../../utils/utilsTemplates';
+import theme from '../../utils/theme';
+
 const emit = defineEmits(['update:content', 'save']);
 const userStore = useUserStore();
 
 const tab = ref('type');
+const codeElement = ref<HTMLElement | null>(null);
+const themeCodeElement = ref<HTMLElement | null>(null);
+const scriptCodeElement = ref<HTMLElement | null>(null);
 const showCodeDialog = ref(false);
 const codeTab = ref('template');
 const generatedCode = ref('');
@@ -771,7 +772,7 @@ const generateTemplateCode = () => {
       }
       if (properties.value.ripple === false) code += `  :ripple="false"\n`;
       if (properties.value.eventHandler) {
-        const eventModifiers = [];
+        const eventModifiers: string[] = [];
         if (properties.value.stopPropagation) eventModifiers.push('stop');
         if (properties.value.preventDefault) eventModifiers.push('prevent');
 
@@ -817,7 +818,7 @@ const generateTemplateCode = () => {
       }
       if (properties.value.closeOnBack) code += `  close-on-back\n`;
       if (properties.value.eventHandler) {
-        const eventModifiers = [];
+        const eventModifiers: string[] = [];
         if (properties.value.stopPropagation) eventModifiers.push('stop');
         if (properties.value.preventDefault) eventModifiers.push('prevent');
 
@@ -842,7 +843,7 @@ const generateTemplateCode = () => {
         code += `  :transition-duration="${properties.value.transitionDuration}"\n`;
       }
       if (properties.value.eventHandler) {
-        const eventModifiers = [];
+        const eventModifiers: string[] = [];
         if (properties.value.stopPropagation) eventModifiers.push('stop');
         if (properties.value.preventDefault) eventModifiers.push('prevent');
 
@@ -872,7 +873,7 @@ const generateTemplateCode = () => {
       }
       if (properties.value.eager) code += `  eager\n`;
       if (properties.value.eventHandler) {
-        const eventModifiers = [];
+        const eventModifiers: string[] = [];
         if (properties.value.stopPropagation) eventModifiers.push('stop');
         if (properties.value.preventDefault) eventModifiers.push('prevent');
 
@@ -933,7 +934,7 @@ const generateTemplateCode = () => {
       if (properties.value.autoUpload) code += `  auto-upload\n`;
       if (properties.value.disabled) code += `  disabled\n`;
       if (properties.value.eventHandler) {
-        const eventModifiers = [];
+        const eventModifiers: string[] = [];
         if (properties.value.stopPropagation) eventModifiers.push('stop');
         if (properties.value.preventDefault) eventModifiers.push('prevent');
 
@@ -1211,6 +1212,19 @@ const loadTemplateFromStore = () => {
   }
 };
 
+const highlightedTemplateCode = computed(() => {
+  return generateTemplateCode();
+});
+
+const highlightedScriptCode = computed(() => {
+  return generateScriptCode();
+});
+
+const highlightedThemeCode = computed(() => {
+  return theme;
+});
+
+
 watch(() => {
   if (typeof window !== 'undefined') {
     return window.location.search;
@@ -1225,6 +1239,18 @@ watch(() => {
 watch([selectedType, properties], () => {
   generateCodeSilently();
 }, { deep: true });
+
+watch(codeTab, () => {
+  nextTick(() => {
+    if (codeTab.value === 'template' && codeElement.value) {
+      hljs.highlightElement(codeElement.value);
+    } else if (codeTab.value === 'script' && scriptCodeElement.value) {
+      hljs.highlightElement(scriptCodeElement.value);
+    } else if (codeTab.value === 'theme' && themeCodeElement.value) {
+      hljs.highlightElement(themeCodeElement.value);
+    }
+  });
+});
 
 </script>
 
@@ -1260,5 +1286,22 @@ canvas {
 .caption-overlay {
   background-color: rgba(0, 0, 0, 0.6);
   font-size: 0.8rem;
+}
+
+.code-block {
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  background-color: #282c34;
+  overflow: auto;
+  max-height: 60vh;
+}
+
+.code-block code {
+  display: block;
+  padding: 1rem;
+  font-family: "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  font-size: 14px;
+  line-height: 1.5;
 }
 </style>

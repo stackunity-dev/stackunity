@@ -45,9 +45,9 @@
             <v-list-item v-bind="props" title="Recent SQL schemas" rounded="lg" color="primary" />
           </template>
 
-          <v-list-item v-for="(schema, index) in recentSQLSchemas" :key="index" :to="`/sql-generator?id=${schema.id}`"
-            :title="schema.database_name" prepend-icon="mdi-database" class="ml-4" rounded="lg" color="primary" nuxt
-            @click="closeDrawer">
+          <v-list-item v-for="(schema, index) in recentSQLSchemas" :key="index"
+            :to="`/database-designer?id=${schema.id}`" :title="schema.database_name" prepend-icon="mdi-database"
+            class="ml-4" rounded="lg" color="primary" nuxt @click="closeDrawer">
             <template #subtitle>
               <span class="text-caption">{{ getSchemaTablesCount(schema) }} tables</span>
             </template>
@@ -293,12 +293,18 @@ const getCurrentPageIcon = () => {
     return 'mdi-code-tags';
   } else if (path.includes('/database-designer')) {
     return 'mdi-database-cog';
+  } else if (path.includes('/api-testing-hub')) {
+    return 'mdi-api';
+  } else if (path.includes('/semantic')) {
+    return 'mdi-semantic-web';
   } else if (path.includes('/studio')) {
     return 'mdi-palette';
   } else if (path.includes('/responsive')) {
     return 'mdi-responsive';
   } else if (path.includes('/accessibility')) {
     return 'mdi-access-point';
+  } else if (path.includes('/user-engagement')) {
+    return 'mdi-account-group';
   } else if (path.includes('/website-analyzer')) {
     return 'mdi-magnify';
   } else if (path.includes('/robots')) {
@@ -367,7 +373,8 @@ const items = computed(() => [
     link: true,
     children: [
       { title: 'Snippets', link: '/snippets', icon: 'mdi-code-tags' },
-      { title: 'Studio', link: '/studio', icon: 'mdi-palette' }
+      { title: 'Studio', link: '/studio', icon: 'mdi-palette' },
+      createPremiumMenuItem('Semantic', '/semantic', 'mdi-semantic-web', 'semantic')
     ]
   },
   {
@@ -385,7 +392,8 @@ const items = computed(() => [
     link: true,
     children: [
       { title: 'Responsive', link: '/responsive', icon: 'mdi-responsive' },
-      { title: 'Accessibility', link: '/accessibility', icon: 'mdi-access-point' }
+      { title: 'Accessibility', link: '/accessibility', icon: 'mdi-access-point' },
+      createPremiumMenuItem('User Engagement', '/user-engagement', 'mdi-account-group', 'userEngagement')
     ]
   },
   {
@@ -401,9 +409,14 @@ const items = computed(() => [
 </script>
 
 <style scoped>
+.dashboard-drawer {
+  border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  background: rgba(var(--v-theme-surface), 0.95);
+  backdrop-filter: blur(10px);
+}
+
 .drawer-header {
-  background: transparent;
-  padding: 16px;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .drawer-header .text-h6 {
@@ -413,37 +426,29 @@ const items = computed(() => [
 }
 
 .drawer-header .text-caption {
-  color: rgba(var(--v-theme-on-surface), 0.7);
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 .page-header {
   position: relative;
   z-index: 4;
+  background: rgba(var(--v-theme-surface), 0.95);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
-@media (max-width: 600px) {
-  .page-header {
-    margin-bottom: 0;
-  }
+.v-list-item {
+  transition: all 0.3s ease;
 }
 
-.premium-menu-item {
-  width: 100%;
-  display: block;
-  padding-right: 8px;
+.v-list-item:hover {
+  background: rgba(var(--v-theme-primary), var(--v-hover-opacity));
+  transform: translateX(4px);
 }
 
-.premium-menu-item :deep(.v-list-item) {
-  min-height: 40px;
-  width: 100%;
-  border-radius: 8px;
-}
-
-.premium-menu-item :deep(.premium-text) {
-  max-width: 100%;
-  opacity: 1;
-  margin-left: 8px;
+.v-list-item.v-list-item--active {
+  background: rgba(var(--v-theme-primary), var(--v-selected-opacity));
+  border-right: 3px solid rgb(var(--v-theme-primary));
 }
 
 .logo-container {
@@ -452,10 +457,11 @@ const items = computed(() => [
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  background: linear-gradient(180deg, var(--v-theme-primary), var(--v-theme-secondary));
   border-radius: 50%;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.2);
 }
 
 .logo-container::before {
@@ -483,7 +489,7 @@ const items = computed(() => [
   padding-top: 64px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 960px) {
   .content-wrapper {
     margin-left: 0;
     width: 100%;

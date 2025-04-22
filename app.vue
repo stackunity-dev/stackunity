@@ -2,7 +2,6 @@
   <NuxtLayout>
     <v-app>
       <NuxtPage />
-      <CookieBanner />
     </v-app>
   </NuxtLayout>
 </template>
@@ -10,7 +9,6 @@
 <script lang="ts" setup>
 import { onBeforeMount, onErrorCaptured, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import CookieBanner from './components/cookie-banner.vue';
 import { useCookieStore } from './stores/cookieStore';
 import { useUserStore } from './stores/userStore';
 import { TokenUtils } from './utils/token';

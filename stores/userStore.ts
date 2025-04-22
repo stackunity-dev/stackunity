@@ -26,40 +26,6 @@ interface DeleteResponse {
   message?: string;
 }
 
-interface CpuData {
-  usage: number;
-  cores: number[];
-  speed: number;
-}
-
-interface MemoryData {
-  total: number;
-  used: number;
-  free: number;
-  swapUsed: number;
-  swapTotal: number;
-}
-
-interface DiskData {
-  fs: string;
-  size: number;
-  used: number;
-  use: number;
-  mount: string;
-}
-
-interface SystemData {
-  cpu: CpuData;
-  memory: MemoryData;
-  disks: Array<DiskData>;
-}
-
-interface SystemResponse {
-  success: boolean;
-  data?: SystemData;
-  error?: string;
-}
-
 interface BaseSnippet {
   id: number;
   publishWorld: string;
@@ -211,11 +177,6 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     user: null as User | null,
     token: null as string | null,
-    systemData: {
-      cpu: { usage: 0, cores: [] as number[], speed: 0 },
-      memory: { total: 0, used: 0, free: 0, swapUsed: 0, swapTotal: 0 },
-      disks: [] as DiskData[]
-    } as SystemData,
     personalSnippets: [] as BaseSnippet[],
     worldSnippets: [] as BaseSnippet[],
     favoritesSnippets: [] as FavoriteSnippet[],
@@ -1162,56 +1123,6 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async getMonitoringData() {
-      try {
-        if (!this.token) {
-          console.warn('Aucun token disponible pour getMonitoringData');
-          return;
-        }
-
-        const response = await fetch('/api/monitoring/system', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${this.token}`
-          }
-        });
-
-        if (!response.ok) {
-          if (response.status === 401 || response.status === 403) {
-            console.warn('Session expirée ou non autorisée pour les données de monitoring');
-            return;
-          }
-          throw new Error(`Erreur ${response.status} lors de la récupération des données système`);
-        }
-
-        const data = await response.json();
-        if (data.success && data.data) {
-          this.systemData = {
-            cpu: {
-              usage: data.data.cpu?.usage || 0,
-              cores: data.data.cpu?.cores || [],
-              speed: data.data.cpu?.speed || 0
-            },
-            memory: {
-              total: data.data.memory?.total || 0,
-              used: data.data.memory?.used || 0,
-              free: data.data.memory?.free || 0,
-              swapUsed: data.data.memory?.swapUsed || 0,
-              swapTotal: data.data.memory?.swapTotal || 0
-            },
-            disks: data.data.disks || []
-          };
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération des données système:', error);
-        this.systemData = {
-          cpu: { usage: 0, cores: [], speed: 0 },
-          memory: { total: 0, used: 0, free: 0, swapUsed: 0, swapTotal: 0 },
-          disks: []
-        };
-      }
-    },
-
     async auditSEO(url: string): Promise<any> {
       try {
         this.isSeoLoading = true;
@@ -1219,13 +1130,13 @@ export const useUserStore = defineStore('user', {
         this.seoData = null;
 
         if (!url) {
-          throw new Error('URL non spécifiée');
+          throw new Error('URL required');
         }
 
         try {
           new URL(url);
         } catch (e) {
-          throw new Error('URL invalide');
+          throw new Error('Invalid URL');
         }
 
 
@@ -1242,7 +1153,7 @@ export const useUserStore = defineStore('user', {
 
         if (!initialResponse.ok) {
           const errorData = await initialResponse.json().catch(() => ({}));
-          throw new Error(`Erreur ${initialResponse.status}: ${errorData.message || initialResponse.statusText}`);
+          throw new Error(`Error ${initialResponse.status}: ${errorData.message || initialResponse.statusText}`);
         }
 
         const initialData = await initialResponse.json();

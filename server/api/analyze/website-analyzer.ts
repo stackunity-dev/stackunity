@@ -32,7 +32,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     if (!url) {
       throw createError({
         statusCode: 400,
-        message: 'URL required'
+        message: 'URL is required'
       });
     }
 
@@ -41,7 +41,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     } catch (urlError) {
       throw createError({
         statusCode: 400,
-        message: 'Invalid URL'
+        message: 'Invalid URL format'
       });
     }
 
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
     try {
       urls = await crawlWebsite(url, maxPages);
     } catch (crawlError) {
-      console.error('Error during crawl:', crawlError);
+      console.error('Crawl error:', crawlError);
       urls = [url];
     }
 
@@ -64,7 +64,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
           if (!aIsContact && bIsContact) return 1;
           return 0;
         } catch (e) {
-          console.error('Error during URL sorting:', e);
+          console.error('URL sorting error:', e);
           return 0;
         }
       });

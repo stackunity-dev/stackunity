@@ -134,612 +134,118 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="mb-8 rounded-lg" elevation="3">
-          <v-card-title class="text-h6 pa-4 bg-indigo text-white">
-            <v-icon size="large" class="mr-2">mdi-file-tree</v-icon>
-            Semantic Structure Analyzer
+        <v-card class="mt-8 mb-8 rounded-lg" elevation="3" ref="parentCard">
+          <v-card-title class="text-h6 pa-4 bg-secondary text-white">
+            <v-icon size="large" class="mr-2">mdi-eye</v-icon>
+            Visual Impairment Simulator
           </v-card-title>
-          <v-card-text class="pa-4">
+          <v-card-text class="pa-4" :class="{ 'iframe-parent-fullscreen': isFullscreen }">
             <v-row>
-              <v-col cols="12" md="6">
-                <v-card variant="outlined" class="pa-4 mb-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-web</v-icon>
-                    Analyze URL
-                  </v-card-title>
-                  <v-card-text>
-                    <v-text-field v-model="semanticUrl" label="Enter URL to analyze semantic structure"
-                      variant="outlined" density="comfortable" placeholder="https://example.com"
-                      @keyup.enter="analyzeSemanticStructure"></v-text-field>
-                    <premium-feature v-if="!isPremium" title="Semantic structure analysis" icon="mdi-web"
-                      color="primary" feature-key="accessibility" />
-                    <v-btn v-if="isPremium" color="primary" prepend-icon="mdi-magnify" @click="analyzeSemanticStructure"
-                      :loading="semanticLoading" :disabled="!semanticUrl" block class="mt-4">
-                      Analyze Structure
+              <v-col cols="12" md="4" :class="{ 'd-none': isFullscreen }">
+                <v-text-field v-model="urlToSimulate" label="URL of the site to simulate" variant="outlined"
+                  density="comfortable" prepend-inner-icon="mdi-web" hint="Enter the complete URL (https://...)"
+                  persistent-hint @keyup.enter="loadUrl">
+                  <template v-slot:append>
+                    <v-btn variant="tonal" size="small" color="secondary" @click="loadUrl" class="mr-2"
+                      :disabled="!urlToSimulate">
+                      <v-icon>mdi-refresh</v-icon>
                     </v-btn>
-                  </v-card-text>
-                </v-card>
-
-                <v-card v-if="semanticResults" variant="outlined" class="pa-4">
-                  <v-card-title class="d-flex align-center">
-                    <span>Structure Score</span>
-                    <v-spacer></v-spacer>
-                    <v-progress-circular :model-value="semanticResults.score.toString()"
-                      :color="getScoreColor(semanticResults.score)" size="60" width="8">
-                      <span class="text-subtitle-2 font-weight-bold">{{ semanticResults.score }}%</span>
-                    </v-progress-circular>
-                  </v-card-title>
-
-                  <v-card-text>
-                    <v-list density="compact">
-                      <v-list-subheader>Semantic Elements</v-list-subheader>
-                      <v-list-item v-for="(value, key) in semanticResults.structure" :key="key"
-                        :prepend-icon="value ? 'mdi-check-circle' : 'mdi-close-circle'" :title="getElementTitle(key)"
-                        :subtitle="value ? 'Present' : 'Missing'">
-                      </v-list-item>
-                    </v-list>
-
-                    <v-divider class="my-4"></v-divider>
-
-                    <v-list v-if="semanticResults.readabilityAnalysis" density="compact">
-                      <v-list-subheader>Readability Analysis</v-list-subheader>
-                      <v-list-item prepend-icon="mdi-book-open-variant"
-                        :title="`Score: ${Math.round(semanticResults.readabilityAnalysis.score)}`"
-                        :subtitle="semanticResults.readabilityAnalysis.grade">
-                      </v-list-item>
-                      <v-list-item prepend-icon="mdi-text"
-                        :title="`Word Count: ${semanticResults.readabilityAnalysis.wordCount}`">
-                      </v-list-item>
-                      <v-list-item prepend-icon="mdi-format-align-left"
-                        :title="`Average Sentence Length: ${semanticResults.readabilityAnalysis.averageSentenceLength.toFixed(1)} words`">
-                      </v-list-item>
-                      <v-list-item prepend-icon="mdi-format-letter-case"
-                        :title="`Complex Words: ${semanticResults.readabilityAnalysis.complexWordCount}`"
-                        :subtitle="`${Math.round(semanticResults.readabilityAnalysis.complexWordCount / semanticResults.readabilityAnalysis.wordCount * 100)}% of total words`">
-                      </v-list-item>
-                    </v-list>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-
-              <v-col cols="12" md="6">
-                <v-card v-if="semanticResults && semanticResults.issues.length > 0" variant="outlined"
-                  class="pa-4 mb-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-alert-circle</v-icon>
-                    Issues Found ({{ semanticResults.issues.length }})
-                  </v-card-title>
-                  <v-card-text>
-                    <v-expansion-panels>
-                      <v-expansion-panel v-for="(issue, index) in semanticResults.issues" :key="index">
-                        <v-expansion-panel-title>
-                          <div class="d-flex align-center">
-                            <v-icon color="warning" class="mr-2">mdi-alert</v-icon>
-                            <div>{{ issue.element }}</div>
-                          </div>
-                        </v-expansion-panel-title>
-                        <v-expansion-panel-text>
-                          <div class="pa-2">
-                            <div class="font-weight-medium mb-2">{{ issue.issue }}</div>
-                            <v-alert type="info" variant="tonal" class="mb-0">
-                              {{ issue.suggestion }}
-                            </v-alert>
-                          </div>
-                        </v-expansion-panel-text>
-                      </v-expansion-panel>
-                    </v-expansion-panels>
-                  </v-card-text>
-                </v-card>
-
-                <v-card v-if="semanticResults && semanticResults.headingStructure.length > 0" variant="outlined"
-                  class="pa-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-format-header-pound</v-icon>
-                    Heading Structure
-                  </v-card-title>
-                  <v-card-text>
-                    <div style="max-height: 400px; overflow-y: auto;">
-                      <div v-for="(heading, index) in semanticResults.headingStructure" :key="index"
-                        class="py-2 px-3 mb-2 rounded-lg"
-                        :style="`margin-left: ${(heading.level - 1) * 20}px; background-color: var(--v-theme-${getHeadingColor(heading.level)})`">
-                        <div class="d-flex align-center">
-                          <v-chip size="small" color="primary" class="mr-2">H{{ heading.level }}</v-chip>
-                          <div class="text-truncate">{{ heading.text || '(empty heading)' }}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <v-alert v-if="!semanticResults.structure.validHeadingStructure" type="warning" class="mt-4">
-                      The heading structure is not properly ordered. Headings should follow a hierarchical structure
-                      without
-                      skipping levels.
-                    </v-alert>
-                  </v-card-text>
-                </v-card>
-
-                <v-card v-if="semanticResults && semanticResults.readabilityAnalysis" variant="outlined"
-                  class="pa-4 mt-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-text-box</v-icon>
-                    Readability Suggestions
-                  </v-card-title>
-                  <v-card-text>
-                    <v-alert :color="getReadabilityColor(semanticResults.readabilityAnalysis.score)" variant="tonal"
-                      class="mb-4">
-                      {{ semanticResults.readabilityAnalysis.suggestion }}
-                    </v-alert>
-
-                    <v-list density="compact">
-                      <v-list-item prepend-icon="mdi-checkbox-marked-circle"
-                        v-if="semanticResults.readabilityAnalysis.score > 60">
-                        <v-list-item-title>Good readability score</v-list-item-title>
-                        <v-list-item-subtitle>Your content is easy to read for most audiences</v-list-item-subtitle>
-                      </v-list-item>
-
-                      <v-list-item prepend-icon="mdi-format-line-spacing"
-                        v-if="semanticResults.readabilityAnalysis.averageSentenceLength > 20">
-                        <v-list-item-title>Consider shorter sentences</v-list-item-title>
-                        <v-list-item-subtitle>Aim for an average of 15-20 words per sentence</v-list-item-subtitle>
-                      </v-list-item>
-
-                      <v-list-item prepend-icon="mdi-format-letter-case"
-                        v-if="semanticResults.readabilityAnalysis.complexWordCount / semanticResults.readabilityAnalysis.wordCount > 0.2">
-                        <v-list-item-title>Reduce complex words</v-list-item-title>
-                        <v-list-item-subtitle>Try to use simpler terms where possible</v-list-item-subtitle>
-                      </v-list-item>
-
-                      <v-list-item prepend-icon="mdi-text-box-multiple"
-                        v-if="semanticResults.readabilityAnalysis.paragraphCount < 3 && semanticResults.readabilityAnalysis.wordCount > 200">
-                        <v-list-item-title>Add more paragraphs</v-list-item-title>
-                        <v-list-item-subtitle>Break up long text into smaller, manageable chunks</v-list-item-subtitle>
-                      </v-list-item>
-                    </v-list>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-
-        <v-card class="mb-8 rounded-lg" elevation="3">
-          <v-card-title class="text-h6 pa-4 bg-purple text-white">
-            <v-icon size="large" class="mr-2">mdi-tag-multiple</v-icon>
-            Meta Tags Analyzer
-          </v-card-title>
-          <v-card-text class="pa-4">
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-card variant="outlined" class="pa-4 mb-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-web</v-icon>
-                    Analyze URL
-                  </v-card-title>
-                  <v-card-text>
-                    <v-text-field v-model="metaUrl" label="Enter URL to analyze meta tags" variant="outlined"
-                      density="comfortable" placeholder="https://example.com"
-                      @keyup.enter="analyzeMetaTags"></v-text-field>
-                    <premium-feature v-if="!isPremium" title="Meta tags analysis" icon="mdi-web" color="primary"
-                      feature-key="accessibility" />
-                    <v-btn v-if="isPremium" color="primary" prepend-icon="mdi-magnify" @click="analyzeMetaTags"
-                      :loading="metaLoading" :disabled="!metaUrl" block class="mt-4">
-                      Analyze Meta Tags
+                    <v-btn variant="tonal" color="primary" size="small" :disabled="!finalUrl" @click="toggleFullscreen"
+                      title="Maximize view">
+                      <v-icon>mdi-fullscreen</v-icon>
                     </v-btn>
-                  </v-card-text>
-                </v-card>
+                  </template>
+                </v-text-field>
 
-                <v-card v-if="metaResults" variant="outlined" class="pa-4">
-                  <v-card-title class="d-flex align-center">
-                    <span>Meta Tags Score</span>
-                    <v-spacer></v-spacer>
-                    <v-progress-circular :model-value="metaResults.score.toString()"
-                      :color="getScoreColor(metaResults.score)" size="60" width="8">
-                      <span class="text-subtitle-2 font-weight-bold">{{ metaResults.score }}%</span>
-                    </v-progress-circular>
-                  </v-card-title>
+                <v-select v-model="selectedVisionType" :items="availableVisionTypes" label="Type of visual impairment"
+                  variant="outlined" density="comfortable" class="mt-4" item-title="title" item-value="value"
+                  @update:model-value="applyVisionFilter">
+                  <template v-slot:prepend-inner>
+                    <v-icon :icon="visionTypes.find(t => t.value === selectedVisionType)?.icon || 'mdi-eye'"></v-icon>
+                  </template>
+                </v-select>
 
-                  <v-card-text>
-                    <v-list density="compact">
-                      <v-list-subheader>Essential Meta Tags</v-list-subheader>
-                      <v-list-item v-for="(meta, index) in metaResults.essential" :key="'essential-' + index"
-                        :prepend-icon="meta.present ? 'mdi-check-circle' : 'mdi-close-circle'" :title="meta.name"
-                        :subtitle="meta.present ? 'Present' : 'Missing'">
-                        <template v-slot:append v-if="meta.present && meta.content">
-                          <v-tooltip location="top">
-                            <template v-slot:activator="{ props }">
-                              <v-icon v-bind="props" size="small" color="info">mdi-information</v-icon>
-                            </template>
-                            <span>{{ meta.content }}</span>
-                          </v-tooltip>
-                        </template>
-                      </v-list-item>
-                    </v-list>
+                <v-alert v-if="!userStore.isPremium && selectedVisionType !== 'normal'" color="info" variant="tonal"
+                  class="mt-4">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-information</v-icon>
+                  </template>
+                  <div class="d-flex align-center justify-space-between">
+                    <div>
+                      <div class="text-subtitle-1 mb-1">Limited access</div>
+                      <p class="mb-0">Upgrade to the premium version to access all types of visual impairments.</p>
+                    </div>
+                    <v-btn color="primary" variant="tonal" size="small" to="/checkout">Upgrade</v-btn>
+                  </div>
+                </v-alert>
 
-                    <v-divider class="my-4"></v-divider>
-
-                    <v-list density="compact">
-                      <v-list-subheader>Social Media Tags</v-list-subheader>
-                      <v-list-item v-for="(meta, index) in metaResults.social" :key="'social-' + index"
-                        :prepend-icon="meta.present ? 'mdi-check-circle' : 'mdi-close-circle'" :title="meta.name"
-                        :subtitle="meta.present ? 'Present' : 'Missing'">
-                        <template v-slot:append v-if="meta.present && meta.content">
-                          <v-tooltip location="top">
-                            <template v-slot:activator="{ props }">
-                              <v-icon v-bind="props" size="small" color="info">mdi-information</v-icon>
-                            </template>
-                            <span>{{ meta.content }}</span>
-                          </v-tooltip>
-                        </template>
-                      </v-list-item>
-                    </v-list>
-                  </v-card-text>
-                </v-card>
+                <v-slider v-if="selectedVisionType !== 'normal'" v-model="filterIntensity" :min="0" :max="100" :step="1"
+                  label="Intensity of the filter" thumb-label class="mt-4"
+                  @update:model-value="applyVisionFilter"></v-slider>
               </v-col>
 
-              <v-col cols="12" md="6">
-                <v-card v-if="metaResults && metaResults.issues.length > 0" variant="outlined" class="pa-4 mb-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-alert-circle</v-icon>
-                    Issues Found ({{ metaResults.issues.length }})
-                  </v-card-title>
-                  <v-card-text>
-                    <v-expansion-panels>
-                      <v-expansion-panel v-for="(issue, index) in metaResults.issues" :key="index">
-                        <v-expansion-panel-title>
-                          <div class="d-flex align-center">
-                            <v-icon :color="issue.severity" class="mr-2">mdi-alert</v-icon>
-                            <div>{{ issue.tagName }}</div>
-                          </div>
-                        </v-expansion-panel-title>
-                        <v-expansion-panel-text>
-                          <div class="pa-2">
-                            <div class="font-weight-medium mb-2">{{ issue.issue }}</div>
-                            <v-alert type="info" variant="tonal" class="mb-2">
-                              {{ issue.recommendation }}
-                            </v-alert>
-                            <div v-if="issue.example" class="mt-2 pa-3 bg-grey-lighten-4 rounded-lg">
-                              <code>{{ issue.example }}</code>
-                            </div>
-                          </div>
-                        </v-expansion-panel-text>
-                      </v-expansion-panel>
-                    </v-expansion-panels>
-                  </v-card-text>
-                </v-card>
-
-                <v-card v-if="metaResults" variant="outlined" class="pa-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-code-tags</v-icon>
-                    All Meta Tags
-                  </v-card-title>
-                  <v-card-text>
-                    <v-alert type="info" variant="tonal" class="mb-4">
-                      All meta tags found on the page are listed below.
-                    </v-alert>
-                    <div style="max-height: 400px; overflow-y: auto;" class="pa-2 bg-grey-lighten-4 rounded-lg">
-                      <pre><code>{{ metaResults.metaHtml }}</code></pre>
+              <v-col :cols="isFullscreen ? '12' : '12 md-8'">
+                <div class="iframe-container" ref="iframeContainer" :class="{ 'fullscreen-mode': isFullscreen }"
+                  style="position: relative; height: 600px; border: 1px solid #ccc; border-radius: 4px; overflow: hidden;">
+                  <div :style="filterStyle" style="height: 100%;">
+                    <iframe v-if="finalUrl" :src="finalUrl" style="width: 100%; height: 100%; border: none;"
+                      ref="previewFrame" @load="iframeLoading = false"></iframe>
+                    <div v-else-if="iframeLoading" class="d-flex align-center justify-center"
+                      style="height: 100%; background: #f5f5f5;">
+                      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                      <div class="text-h6 text-grey ml-2">Chargement en cours...</div>
                     </div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-
-        <v-card class="mb-8 rounded-lg" elevation="3">
-          <v-card-title class="text-h6 pa-4 bg-teal text-white">
-            <v-icon size="large" class="mr-2">mdi-sitemap</v-icon>
-            HTML Structure Visualizer
-          </v-card-title>
-          <v-card-text class="pa-4">
-            <v-row>
-              <v-col cols="12" md="5">
-                <v-card variant="outlined" class="pa-4 mb-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-web</v-icon>
-                    Analyze URL
-                  </v-card-title>
-                  <v-card-text>
-                    <v-text-field v-model="structureUrl" label="Enter URL to visualize HTML structure"
-                      variant="outlined" density="comfortable" placeholder="https://example.com"
-                      @keyup.enter="analyzeHtmlStructure"></v-text-field>
-                    <premium-feature v-if="!isPremium" title="HTML structure analysis" icon="mdi-web" color="primary"
-                      feature-key="accessibility" />
-                    <v-btn v-if="isPremium" color="primary" prepend-icon="mdi-magnify" @click="analyzeHtmlStructure"
-                      :loading="structureLoading" :disabled="!structureUrl" block class="mt-4">
-                      Visualize Structure
-                    </v-btn>
-                  </v-card-text>
-                </v-card>
-
-                <v-card v-if="structureResults" variant="outlined" class="pa-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-chart-pie</v-icon>
-                    Elements Distribution
-                  </v-card-title>
-                  <v-card-text>
-                    <div class="d-flex justify-space-between mb-4">
-                      <div class="text-center">
-                        <div class="text-h4 font-weight-bold">{{ structureResults.totalElements }}</div>
-                        <div class="text-caption">Total Elements</div>
-                      </div>
-                      <div class="text-center">
-                        <div class="text-h4 font-weight-bold">{{ structureResults.semanticElements }}</div>
-                        <div class="text-caption">Semantic Elements</div>
-                      </div>
-                      <div class="text-center">
-                        <div class="text-h4 font-weight-bold">{{ structureResults.divCount }}</div>
-                        <div class="text-caption">Div Elements</div>
-                      </div>
+                    <div v-else class="d-flex align-center justify-center" style="height: 100%; background: #f5f5f5;">
+                      <v-icon size="64" color="grey">mdi-web</v-icon>
+                      <div class="text-h6 text-grey ml-2">Entrez une URL pour commencer</div>
                     </div>
+                  </div>
+                </div>
 
-                    <v-alert :color="structureResults.semanticRatio >= 0.3 ? 'success' : 'warning'" variant="tonal"
-                      class="mb-4">
-                      {{ structureResults.semanticRatio >= 0.3
-                        ? 'Good semantic elements ratio!'
-                        : 'Low semantic elements ratio. Consider using more semantic HTML elements.' }}
-                    </v-alert>
+                <div :class="{ 'fullscreen-controls': isFullscreen }">
+                  <v-btn v-if="isFullscreen" icon variant="tonal" color="primary" @click="toggleFullscreen"
+                    title="Exit fullscreen">
+                    <v-icon>{{ isFullscreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen' }}</v-icon>
+                  </v-btn>
+                  <v-btn v-if="isFullscreen" icon variant="tonal" class="ml-2" color="primary" @click="reloadIframe"
+                    title="Refresh page">
+                    <v-icon>mdi-refresh</v-icon>
+                  </v-btn>
 
-                    <v-list density="compact">
-                      <v-list-item v-for="(count, tag) in structureResults.topElements" :key="tag" :title="`<${tag}>`"
-                        :subtitle="`${count} elements (${Math.round(count / structureResults.totalElements * 100)}%)`">
+                  <v-menu v-if="isFullscreen" offset-y>
+                    <template v-slot:activator="{ props }">
+                      <v-btn icon variant="tonal" color="primary" v-bind="props" class="ml-2" title="Vision type">
+                        <v-icon>{{visionTypes.find(t => t.value === selectedVisionType)?.icon || 'mdi-eye'}}</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item v-for="type in availableVisionTypes" :key="type.value"
+                        @click="selectedVisionType = type.value; applyVisionFilter()">
                         <template v-slot:prepend>
-                          <v-avatar :color="getElementColor(tag)" size="32">
-                            <span class="text-white text-caption">{{ tag }}</span>
-                          </v-avatar>
+                          <v-icon :icon="type.icon"></v-icon>
                         </template>
+                        <v-list-item-title>{{ type.title }}</v-list-item-title>
                       </v-list-item>
-                    </v-list>
-                  </v-card-text>
-                </v-card>
-              </v-col>
 
-              <v-col cols="12" md="7">
-                <v-card v-if="structureResults" variant="outlined" class="pa-4">
-                  <v-card-title class="text-h6 mb-2 d-flex align-center">
-                    <v-icon start>mdi-file-tree</v-icon>
-                    <span>DOM Structure</span>
-                    <v-spacer></v-spacer>
-                    <v-btn-toggle v-model="structureViewMode" density="compact" variant="outlined">
-                      <v-btn value="tree" prepend-icon="mdi-file-tree">Tree</v-btn>
-                      <v-btn value="map" prepend-icon="mdi-view-grid">Map</v-btn>
-                    </v-btn-toggle>
-                  </v-card-title>
-                  <v-card-text>
-                    <div v-if="structureViewMode === 'tree'" style="max-height: 500px; overflow-y: auto;">
-                      <div class="structure-tree">
-                        <v-list density="compact">
-                          <template v-for="(node, index) in structureResults.tree" :key="index">
-                            <div class="node-wrapper">
-                              <div class="tree-node" :style="`padding-left: ${node.depth * 20}px`"
-                                @click="toggleNode(`root-${index}`)"
-                                :class="{ 'clickable': node.children && node.children.length > 0 }">
-                                <v-icon size="small" :color="getElementColor(node.tag)" class="mr-2">
-                                  {{ node.children && node.children.length > 0 ?
-                                    (expandedNodes[`root-${index}`] ? 'mdi-chevron-down' : 'mdi-chevron-right') :
-                                    'mdi-code-tags' }}
-                                </v-icon>
-                                <span class="tag-name">&lt;{{ node.tag }}&gt;</span>
-                                <span v-if="node.id" class="text-caption ml-2">#{{ node.id }}</span>
-                                <span v-if="node.class" class="text-caption ml-2">.{{ node.class }}</span>
-                                <span class="text-caption ml-2">({{ node.childCount }} children)</span>
-                              </div>
-                              <div v-if="node.children && node.children.length > 0 && expandedNodes[`root-${index}`]"
-                                class="node-children">
-                                <template v-for="(child, childIndex) in node.children"
-                                  :key="`child-${index}-${childIndex}`">
-                                  <div class="node-wrapper">
-                                    <div class="tree-node" :style="`padding-left: ${(child.depth) * 20}px`"
-                                      @click.stop="toggleNode(`root-${index}-${childIndex}`)"
-                                      :class="{ 'clickable': child.children && child.children.length > 0 }">
-                                      <v-icon size="small" :color="getElementColor(child.tag)" class="mr-2">
-                                        {{ child.children && child.children.length > 0 ?
-                                          (expandedNodes[`root-${index}-${childIndex}`] ? 'mdi-chevron-down' :
-                                            'mdi-chevron-right') :
-                                          'mdi-code-tags' }}
-                                      </v-icon>
-                                      <span class="tag-name">&lt;{{ child.tag }}&gt;</span>
-                                      <span v-if="child.id" class="text-caption ml-2">#{{ child.id }}</span>
-                                      <span v-if="child.class" class="text-caption ml-2">.{{ child.class }}</span>
-                                      <span class="text-caption ml-2">({{ child.childCount }} children)</span>
-                                    </div>
-                                    <div
-                                      v-if="child.children && child.children.length > 0 && expandedNodes[`root-${index}-${childIndex}`]"
-                                      class="child-children" style="padding-left: 20px">
-                                      <div v-for="(grandChild, gcIndex) in child.children"
-                                        :key="`grandchild-${index}-${childIndex}-${gcIndex}`" class="tree-node"
-                                        :style="`padding-left: ${(grandChild.depth) * 20}px`">
-                                        <v-icon size="small" :color="getElementColor(grandChild.tag)"
-                                          class="mr-2">mdi-code-tags</v-icon>
-                                        <span class="tag-name">&lt;{{ grandChild.tag }}&gt;</span>
-                                        <span v-if="grandChild.id" class="text-caption ml-2">#{{ grandChild.id }}</span>
-                                        <span v-if="grandChild.class" class="text-caption ml-2">.{{ grandChild.class
-                                        }}</span>
-                                        <span class="text-caption ml-2">({{ grandChild.childCount }} children)</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </template>
-                              </div>
-                            </div>
-                          </template>
-                        </v-list>
-                      </div>
-                    </div>
-                    <div v-else class="structure-map" style="height: 500px; overflow-y: auto;">
-                      <div class="d-flex flex-wrap">
-                        <div v-for="(node, index) in structureResults.flatTree" :key="index"
-                          class="element-block pa-1 ma-1 rounded-sm text-caption text-white text-center"
-                          :style="`background-color: ${getElementColor(node.tag)}; width: ${Math.max(30, node.children * 5)}px; height: ${Math.max(30, node.depth * 5)}px;`"
-                          :title="`<${node.tag}> (${node.children} children, depth: ${node.depth})`">
-                          {{ node.tag }}
-                        </div>
-                      </div>
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
+                      <v-divider v-if="!userStore.isPremium"></v-divider>
 
-        <v-card class="mb-8 rounded-lg" elevation="3">
-          <v-card-title class="text-h6 pa-4 bg-deep-purple text-white">
-            <v-icon size="large" class="mr-2">mdi-access-point</v-icon>
-            ARIA Accessibility Checker
-          </v-card-title>
-          <v-card-text class="pa-4">
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-card variant="outlined" class="pa-4 mb-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-web</v-icon>
-                    Analyze URL
-                  </v-card-title>
-                  <v-card-text>
-                    <v-text-field v-model="ariaUrl" label="Enter URL to check ARIA attributes" variant="outlined"
-                      density="comfortable" placeholder="https://example.com"
-                      @keyup.enter="analyzeAriaAttributes"></v-text-field>
-                    <premium-feature v-if="!isPremium" title="ARIA attributes analysis" icon="mdi-web" color="primary"
-                      feature-key="accessibility" />
-                    <v-btn v-if="isPremium" color="primary" prepend-icon="mdi-magnify" @click="analyzeAriaAttributes"
-                      :loading="ariaLoading" :disabled="!ariaUrl" block class="mt-4">
-                      Check ARIA Attributes
-                    </v-btn>
-                  </v-card-text>
-                </v-card>
-
-                <v-card v-if="ariaResults" variant="outlined" class="pa-4">
-                  <v-card-title class="d-flex align-center">
-                    <span>ARIA Score</span>
-                    <v-spacer></v-spacer>
-                    <v-progress-circular :model-value="ariaResults.score.toString()"
-                      :color="getScoreColor(ariaResults.score)" size="60" width="8">
-                      <span class="text-subtitle-2 font-weight-bold">{{ ariaResults.score }}%</span>
-                    </v-progress-circular>
-                  </v-card-title>
-
-                  <v-card-text>
-                    <div class="d-flex justify-space-between mb-4">
-                      <div class="text-center">
-                        <div class="text-h4 font-weight-bold"
-                          :class="ariaResults.missingAriaCount > 0 ? 'text-warning' : 'text-success'">
-                          {{ ariaResults.missingAriaCount }}
-                        </div>
-                        <div class="text-caption">Missing ARIA</div>
-                      </div>
-                      <div class="text-center">
-                        <div class="text-h4 font-weight-bold"
-                          :class="ariaResults.missingLabels > 0 ? 'text-warning' : 'text-success'">
-                          {{ ariaResults.missingLabels }}
-                        </div>
-                        <div class="text-caption">Missing Labels</div>
-                      </div>
-                      <div class="text-center">
-                        <div class="text-h4 font-weight-bold"
-                          :class="ariaResults.invalidAriaCount > 0 ? 'text-error' : 'text-success'">
-                          {{ ariaResults.invalidAriaCount }}
-                        </div>
-                        <div class="text-caption">Invalid ARIA</div>
-                      </div>
-                    </div>
-
-                    <v-list density="compact">
-                      <v-list-subheader>Element Analysis</v-list-subheader>
-                      <v-list-item title="Interactive Elements"
-                        :subtitle="`${ariaResults.interactiveElementsCount} elements found`">
+                      <v-list-item v-if="!userStore.isPremium" density="comfortable">
                         <template v-slot:prepend>
-                          <v-icon :color="ariaResults.interactiveElementsWithAriaPercent >= 80 ? 'success' : 'warning'">
-                            {{ ariaResults.interactiveElementsWithAriaPercent >= 80 ? 'mdi-check-circle' :
-                              'mdi-alert-circle' }}
-                          </v-icon>
+                          <v-icon color="warning">mdi-lock</v-icon>
                         </template>
+                        <v-list-item-title>Other types (Premium)</v-list-item-title>
                         <template v-slot:append>
-                          <v-chip size="small"
-                            :color="ariaResults.interactiveElementsWithAriaPercent >= 80 ? 'success' : 'warning'">
-                            {{ ariaResults.interactiveElementsWithAriaPercent }}% have ARIA
-                          </v-chip>
-                        </template>
-                      </v-list-item>
-                      <v-list-item title="Form Controls" :subtitle="`${ariaResults.formElementsCount} elements found`">
-                        <template v-slot:prepend>
-                          <v-icon :color="ariaResults.formElementsWithLabelsPercent >= 90 ? 'success' : 'warning'">
-                            {{ ariaResults.formElementsWithLabelsPercent >= 90 ? 'mdi-check-circle' : 'mdi-alert-circle'
-                            }}
-                          </v-icon>
-                        </template>
-                        <template v-slot:append>
-                          <v-chip size="small"
-                            :color="ariaResults.formElementsWithLabelsPercent >= 90 ? 'success' : 'warning'">
-                            {{ ariaResults.formElementsWithLabelsPercent }}% have labels
-                          </v-chip>
+                          <v-btn size="small" variant="tonal" color="primary" to="/pricing">Upgrade</v-btn>
                         </template>
                       </v-list-item>
                     </v-list>
-                  </v-card-text>
-                </v-card>
-              </v-col>
+                  </v-menu>
 
-              <v-col cols="12" md="6">
-                <v-card v-if="ariaResults && ariaResults.issues.length > 0" variant="outlined" class="pa-4 mb-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-alert-circle</v-icon>
-                    ARIA Issues ({{ ariaResults.issues.length }})
-                  </v-card-title>
-                  <v-card-text>
-                    <v-expansion-panels>
-                      <v-expansion-panel v-for="(issue, index) in ariaResults.issues" :key="index">
-                        <v-expansion-panel-title>
-                          <div class="d-flex align-center">
-                            <v-icon :color="issue.severity === 'critical' ? 'error' : 'warning'" class="mr-2">
-                              {{ issue.severity === 'critical' ? 'mdi-alert-circle' : 'mdi-alert' }}
-                            </v-icon>
-                            <div>{{ issue.element }}</div>
-                          </div>
-                        </v-expansion-panel-title>
-                        <v-expansion-panel-text>
-                          <div class="pa-2">
-                            <div class="font-weight-medium mb-2">{{ issue.issue }}</div>
-                            <v-alert type="info" variant="tonal" class="mb-2">
-                              {{ issue.suggestion }}
-                            </v-alert>
-                            <div v-if="issue.code" class="mt-2 pa-3 bg-grey-lighten-4 rounded-lg">
-                              <pre><code>{{ issue.code }}</code></pre>
-                            </div>
-                          </div>
-                        </v-expansion-panel-text>
-                      </v-expansion-panel>
-                    </v-expansion-panels>
-                  </v-card-text>
-                </v-card>
-
-                <v-card v-if="ariaResults" variant="outlined" class="pa-4">
-                  <v-card-title class="text-h6 mb-2">
-                    <v-icon start>mdi-book-open-variant</v-icon>
-                    ARIA Best Practices
-                  </v-card-title>
-                  <v-card-text>
-                    <v-alert type="info" variant="tonal" class="mb-4">
-                      The following are key ARIA practices to consider for your website:
-                    </v-alert>
-                    <v-list density="compact">
-                      <v-list-item prepend-icon="mdi-text-box-check" title="Use Semantic HTML"
-                        subtitle="Prefer native HTML elements with built-in accessibility over custom elements with ARIA">
-                      </v-list-item>
-                      <v-list-item prepend-icon="mdi-label" title="Label Everything"
-                        subtitle="All form fields and interactive elements should have appropriate labels">
-                      </v-list-item>
-                      <v-list-item prepend-icon="mdi-image" title="Alt Text for Images"
-                        subtitle="All images should have meaningful alt text (or empty alt for decorative images)">
-                      </v-list-item>
-                      <v-list-item prepend-icon="mdi-keyboard" title="Keyboard Navigation"
-                        subtitle="Ensure all interactive elements are keyboard accessible">
-                      </v-list-item>
-                      <v-list-item prepend-icon="mdi-arrange-send-backward" title="Focus Management"
-                        subtitle="Manage focus appropriately in interactive components">
-                      </v-list-item>
-                    </v-list>
-                  </v-card-text>
-                </v-card>
+                  <v-slider v-if="isFullscreen && selectedVisionType !== 'normal'" v-model="filterIntensity" :min="0"
+                    :max="100" :step="1" hide-details class="fullscreen-slider ml-2" density="compact" color="primary"
+                    thumb-color="primary" thumb-label @update:model-value="applyVisionFilter">
+                  </v-slider>
+                </div>
               </v-col>
             </v-row>
           </v-card-text>
@@ -750,8 +256,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, watch } from 'vue';
-import premiumFeature from '../components/PremiumFeature.vue';
+import { computed, ref, watch } from 'vue';
 import { useUserStore } from '../stores/userStore';
 
 // @ts-ignore
@@ -786,23 +291,106 @@ const contrast = ref(0);
 
 const textColorPicker = ref('#212121');
 const backgroundColorPicker = ref('#FFFFFF');
-
-const semanticUrl = ref('');
-const semanticLoading = ref(false);
-const semanticResults = ref<any>(null);
-
-const metaUrl = ref('');
-const metaLoading = ref(false);
-const metaResults = ref<any>(null);
-
-const structureUrl = ref('');
-const structureLoading = ref(false);
-const structureResults = ref<any>(null);
-
-const ariaUrl = ref('');
-const ariaLoading = ref(false);
-const ariaResults = ref<any>(null);
 const isPremium = ref(userStore.user?.isPremium || false);
+
+const urlToSimulate = ref('');
+const finalUrl = ref('');
+const selectedVisionType = ref('normal');
+const previewFrame = ref(null);
+const filterIntensity = ref(100);
+const typingTimer = ref<ReturnType<typeof setTimeout> | null>(null);
+const iframeLoading = ref(false);
+
+const visionTypes = [
+  {
+    title: 'Normal vision',
+    value: 'normal',
+    icon: 'mdi-eye'
+  },
+  {
+    title: 'Protanopia (Red-Green)',
+    value: 'protanopia',
+    icon: 'mdi-eye-minus'
+  },
+  {
+    title: 'Deuteranopia (Red-Green)',
+    value: 'deuteranopia',
+    icon: 'mdi-eye-minus'
+  },
+  {
+    title: 'Tritanopia (Blue-Yellow)',
+    value: 'tritanopia',
+    icon: 'mdi-eye-minus'
+  },
+  {
+    title: 'Achromatopsia (Black and White)',
+    value: 'achromatopsia',
+    icon: 'mdi-eye-off'
+  },
+  {
+    title: 'Blur',
+    value: 'blur',
+    icon: 'mdi-blur'
+  }
+];
+
+const availableVisionTypes = computed(() => {
+  if (userStore.isPremium) {
+    return visionTypes;
+  } else {
+    return visionTypes.filter(type => ['normal', 'protanopia'].includes(type.value));
+  }
+});
+
+const filterStyle = computed(() => {
+  const intensity = filterIntensity.value / 100;
+
+  switch (selectedVisionType.value) {
+    case 'protanopia': {
+      const matrix = [
+        0.367 + (1 - 0.367) * (1 - intensity), 0.633 * intensity, 0, 0, 0,
+        0.333 * intensity, 0.667 + (1 - 0.667) * (1 - intensity), 0, 0, 0,
+        0, 0.121 * intensity, 0.879 + (1 - 0.879) * (1 - intensity), 0, 0,
+        0, 0, 0, 1, 0
+      ].join(' ');
+      return {
+        filter: `brightness(1.1) contrast(0.95) saturate(0.9) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feColorMatrix type="matrix" values="${matrix}"/></filter></svg>#f')`
+      };
+    }
+    case 'deuteranopia': {
+      const matrix = [
+        0.625 + (1 - 0.625) * (1 - intensity), 0.375 * intensity, 0, 0, 0,
+        0.7 * intensity, 0.3 + (1 - 0.3) * (1 - intensity), 0, 0, 0,
+        0, 0.3 * intensity, 0.7 + (1 - 0.7) * (1 - intensity), 0, 0,
+        0, 0, 0, 1, 0
+      ].join(' ');
+      return {
+        filter: `brightness(1.05) contrast(0.97) saturate(0.95) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feColorMatrix type="matrix" values="${matrix}"/></filter></svg>#f')`
+      };
+    }
+    case 'tritanopia': {
+      const matrix = [
+        0.95 + (1 - 0.95) * (1 - intensity), 0.05 * intensity, 0, 0, 0,
+        0, 0.433 + (1 - 0.433) * (1 - intensity), 0.567 * intensity, 0, 0,
+        0, 0.475 * intensity, 0.525 + (1 - 0.525) * (1 - intensity), 0, 0,
+        0, 0, 0, 1, 0
+      ].join(' ');
+      return {
+        filter: `brightness(1) contrast(1.1) saturate(0.8) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feColorMatrix type="matrix" values="${matrix}"/></filter></svg>#f')`
+      };
+    }
+    case 'achromatopsia':
+      return {
+        filter: `grayscale(${intensity * 100}%)`
+      };
+    case 'blur':
+      return {
+        filter: `blur(${intensity * 3}px)`
+      };
+    default:
+      return {};
+  }
+});
 
 watch(() => userStore.isAuthenticated, () => {
   if (userStore.user) {
@@ -812,13 +400,36 @@ watch(() => userStore.isAuthenticated, () => {
   }
 });
 
-const structureViewMode = ref('tree');
+watch(() => selectedVisionType.value, (newType) => {
+  if (!userStore.isPremium && !['normal', 'protanopia'].includes(newType)) {
+    selectedVisionType.value = 'protanopia';
+    alert('This simulation is only available for premium users. Upgrade to the premium version to access all types of visual impairments.');
+  }
+});
 
-const expandedNodes = reactive<Record<string, boolean>>({});
+watch(() => urlToSimulate.value, (newValue) => {
+  if (typingTimer.value) {
+    clearTimeout(typingTimer.value);
+  }
 
-const toggleNode = (nodeId: string) => {
-  expandedNodes[nodeId] = !expandedNodes[nodeId];
-};
+  if (!newValue) {
+    finalUrl.value = '';
+    return;
+  }
+
+  typingTimer.value = setTimeout(() => {
+    try {
+      let url = newValue;
+      if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
+
+      new URL(url);
+    } catch (e) {
+      console.error('URL invalide:', e);
+    }
+  }, 300);
+});
 
 const updateTextColor = (color: any) => {
   if (color && typeof color === 'string' && color.startsWith('#') && (color.length === 7 || color.length === 9)) {
@@ -896,12 +507,10 @@ const convertToHex = (colorStr: string): string => {
 const getContrast = async () => {
   const srgbText = extractRGB(textColor.value);
   const srgbBackground = extractRGB(backgroundColor.value);
-  console.log("Couleurs extraites:", srgbText, srgbBackground);
 
   if (srgbText && srgbBackground) {
     const contrastRatio = calculateContrastRatio(srgbText, srgbBackground);
     contrast.value = contrastRatio;
-    console.log("Ratio de contraste:", contrastRatio);
   }
 }
 
@@ -959,12 +568,11 @@ function extractRGB(color: string) {
     }
   }
 
-  console.error("Format de couleur non reconnu:", color);
   return null;
 }
 
 function hslToRgb(h: number, s: number, l: number) {
-  let r, g, b;
+  let r: number, g: number, b: number;
 
   if (s === 0) {
     r = g = b = l;
@@ -1016,207 +624,67 @@ function calculateContrastRatio(srgbText: { red: number, green: number, blue: nu
   return (brighter + 0.05) / (darker + 0.05);
 }
 
-interface Item {
-  [key: string]: any;
+function loadUrl() {
+  if (!urlToSimulate.value) return;
+
+  try {
+    let url = urlToSimulate.value;
+    if (!/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
+      urlToSimulate.value = url;
+    }
+
+    new URL(url);
+
+    iframeLoading.value = true;
+
+    finalUrl.value = url;
+
+    if (isFullscreen.value && selectedVisionType.value !== 'normal') {
+      selectedVisionType.value = 'normal';
+    }
+  } catch (e) {
+    alert('Please enter a valid URL');
+    urlToSimulate.value = '';
+    finalUrl.value = '';
+  }
 }
 
-interface Category {
-  description: string;
-  count: number;
-  items: Item;
-}
-
-interface ResponseData {
-  status: {
-    success: boolean;
-    httpstatuscode: number;
-  };
-  statistics: {
-    allitemcount: number;
-    creditsremaining: number;
-    pagetitle: string;
-    pageurl: string;
-    time: number;
-    totalelements: number;
-    waveurl: string;
-  };
-  categories: {
-    error: Category;
-    contrast: Category;
-    alert: Category;
-    feature: Category;
-    structure: Category;
-    aria: Category;
-    [key: string]: Category;
-  };
-}
-
-const analyzeSemanticStructure = async () => {
-  if (!semanticUrl.value) return;
-
-  semanticLoading.value = true;
-  try {
-    const response = await fetch('/api/analyze/semantic-analyze', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userStore.token}`
-      },
-      body: JSON.stringify({ url: semanticUrl.value })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    semanticResults.value = data;
-    console.log(semanticResults.value);
-  } catch (error) {
-    console.error('Error analyzing semantic structure:', error);
-  } finally {
-    semanticLoading.value = false;
-  }
+const applyVisionFilter = () => {
 };
 
-const getElementTitle = (key: any): string => {
-  const mapping: Record<string, string> = {
-    hasHeader: 'Header Element',
-    hasMain: 'Main Element',
-    hasFooter: 'Footer Element',
-    hasNav: 'Navigation Element',
-    hasArticle: 'Article Element',
-    hasSection: 'Section Element',
-    hasAside: 'Aside Element',
-    hasFigure: 'Figure Element',
-    validH1Usage: 'Proper H1 Usage',
-    validHeadingStructure: 'Valid Heading Structure'
-  };
+const isFullscreen = ref(false);
+const iframeContainer = ref(null);
 
-  const keyStr = String(key);
-  return mapping[keyStr] || keyStr;
-};
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value;
 
-const getScoreColor = (score: number): string => {
-  if (score >= 90) return 'success';
-  if (score >= 70) return 'info';
-  if (score >= 50) return 'warning';
-  return 'error';
-};
-
-const getReadabilityColor = (score: number): string => {
-  if (score >= 80) return 'success';
-  if (score >= 60) return 'info';
-  if (score >= 40) return 'warning';
-  return 'error';
-};
-
-const getHeadingColor = (level: number): string => {
-  const colors = ['primary', 'secondary', 'info', 'success', 'warning', 'error'];
-  return colors[level - 1] || 'grey';
-};
-
-const analyzeMetaTags = async () => {
-  if (!metaUrl.value) return;
-
-  metaLoading.value = true;
-  try {
-    const response = await fetch('/api/analyze/semantic-analyze', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userStore.token}`
-      },
-      body: JSON.stringify({ url: metaUrl.value, type: 'meta' })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    metaResults.value = data;
-    console.log(metaResults.value);
-  } catch (error) {
-    console.error('Error analyzing meta tags:', error);
-  } finally {
-    metaLoading.value = false;
-  }
-};
-
-const analyzeHtmlStructure = async () => {
-  if (!structureUrl.value) return;
-
-  structureLoading.value = true;
-  try {
-    const response = await fetch('/api/analyze/semantic-analyze', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userStore.token}`
-      },
-      body: JSON.stringify({ url: structureUrl.value, type: 'structure' })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    structureResults.value = data;
-    console.log(structureResults.value);
-  } catch (error) {
-    console.error('Error analyzing HTML structure:', error);
-  } finally {
-    structureLoading.value = false;
-  }
-};
-
-const analyzeAriaAttributes = async () => {
-  if (!ariaUrl.value) return;
-
-  ariaLoading.value = true;
-  try {
-    const response = await fetch('/api/analyze/semantic-analyze', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userStore.token}`
-      },
-      body: JSON.stringify({ url: ariaUrl.value, type: 'aria' })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    ariaResults.value = data;
-    console.log(ariaResults.value);
-  } catch (error) {
-    console.error('Error analyzing ARIA attributes:', error);
-  } finally {
-    ariaLoading.value = false;
-  }
-};
-
-function getElementColor(tag: string | number): string {
-  const tagStr = String(tag);
-  const semanticElements = ['header', 'main', 'footer', 'article', 'section', 'nav', 'aside', 'figure', 'figcaption', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-
-  if (semanticElements.includes(tagStr)) {
-    return 'success';
-  } else if (tagStr === 'div') {
-    return 'grey';
-  } else if (tagStr === 'a' || tagStr === 'button' || tagStr === 'input' || tagStr === 'form') {
-    return 'primary';
-  } else if (tagStr === 'img' || tagStr === 'video') {
-    return 'info';
+  if (isFullscreen.value) {
+    document.addEventListener('keydown', handleEscapeKey);
   } else {
-    return 'grey-lighten-1';
+    document.removeEventListener('keydown', handleEscapeKey);
+  }
+};
+
+const handleEscapeKey = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && isFullscreen.value) {
+    toggleFullscreen();
+  }
+};
+
+const reloadIframe = () => {
+  if (previewFrame.value && finalUrl.value) {
+    const iframe = previewFrame.value as HTMLIFrameElement;
+    const currentSrc = iframe.src;
+
+    iframeLoading.value = true;
+
+    iframe.src = '';
+    setTimeout(() => {
+      iframe.src = currentSrc;
+    }, 50);
   }
 }
-
 </script>
 
 <style scoped>
@@ -1225,58 +693,41 @@ function getElementColor(tag: string | number): string {
   margin: 0 auto;
 }
 
-.structure-tree {
-  max-height: 500px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 10px;
-}
-
-.structure-item {
-  padding: 4px;
-  margin: 2px 0;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-}
-
-.semantic-element {
-  background-color: rgba(76, 175, 80, 0.08);
-}
-
-.tag-name {
-  font-family: monospace;
-  font-weight: bold;
-}
-
-.code-block {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  padding: 4px;
-  font-family: monospace;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.tree-node {
-  padding: 4px;
-  margin: 2px 0;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-}
-
-.tree-node:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
 .clickable {
   cursor: pointer;
 }
 
-.node-children {
-  margin-left: 10px;
+.iframe-container {
+  transition: all 0.3s ease;
+}
+
+.fullscreen-mode {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  background-color: white;
+}
+
+.fullscreen-controls {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  background-color: rgba(var(--v-theme-surface), 0.5);
+  padding: 5px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 101;
+}
+
+.fullscreen-slider {
+  width: 150px;
+  margin-top: 0;
+}
+
+.iframe-parent-fullscreen {
+  min-height: 80vh;
 }
 </style>

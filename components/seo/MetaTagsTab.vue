@@ -55,9 +55,8 @@
                 <v-list-item-title>Viewport</v-list-item-title>
                 <v-list-item-subtitle class="d-flex align-center">
                   <span class="text-truncate">{{ result?.viewport || 'Missing' }}</span>
-                  <v-chip size="x-small" :color="result?.mobileCompatibility?.hasViewport ? 'success' : 'error'"
-                    class="ml-2">
-                    {{ result?.mobileCompatibility?.hasViewport ? 'OK' : 'Missing' }}
+                  <v-chip size="x-small" :color="result?.viewport ? 'success' : 'error'" class="ml-2">
+                    {{ result?.viewport ? 'OK' : 'Missing' }}
                   </v-chip>
                 </v-list-item-subtitle>
               </v-list-item>

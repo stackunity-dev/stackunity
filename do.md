@@ -1,0 +1,4 @@
+- Objectif : landing page interactive 
+- Axe : card accessibility de index.vue
+- Crée un truc pour jouer les différentes visions sur la landing page de maniere interactive et simple via la card deja disponible (avec les filtres ec=tc.. de accessibility.vue=)
+- TEXTE EN ANGLAIS

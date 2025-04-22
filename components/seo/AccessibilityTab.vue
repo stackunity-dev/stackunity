@@ -1,38 +1,43 @@
 <template>
-  <div class="pa-4">
-    <h3 class="text-h5 mb-4">Accessibility</h3>
+  <div class="pa-4" role="tabpanel" aria-labelledby="accessibility-tab">
+    <h3 class="text-h5 mb-4" id="accessibility-tab">Accessibility</h3>
 
     <v-row>
       <v-col cols="12" md="6">
         <v-card variant="outlined" class="mb-4">
           <v-card-title class="text-subtitle-1">
-            <v-icon start :color="getScoreColor(calculateAccessibilityScore(props.result))">mdi-eye-check</v-icon>
-            Accessibility Score
+            <v-icon start :color="getScoreColor(calculateAccessibilityScore(props.result))"
+              aria-hidden="true">mdi-eye-check</v-icon>
+            <span id="accessibility-score">Accessibility Score</span>
           </v-card-title>
           <v-card-text>
             <div class="d-flex justify-center align-center pa-4">
               <v-progress-circular :model-value="calculateAccessibilityScore(props.result)"
-                :color="getScoreColor(calculateAccessibilityScore(props.result))" size="150" width="15">
+                :color="getScoreColor(calculateAccessibilityScore(props.result))" size="150" width="15"
+                role="progressbar" :aria-valuenow="calculateAccessibilityScore(props.result)" aria-valuemin="0"
+                aria-valuemax="100" :aria-labelledby="accessibility - score">
                 <div class="text-h4">{{ calculateAccessibilityScore(props.result) }}%</div>
               </v-progress-circular>
             </div>
 
-            <p class="text-body-1 text-center mt-4">
+            <p class="text-body-1 text-center mt-4" role="status">
               {{ getScoreMessage(calculateAccessibilityScore(props.result)) }}
             </p>
 
-            <v-divider class="my-4"></v-divider>
+            <v-divider class="my-4" role="separator"></v-divider>
 
             <v-row class="mt-2">
               <v-col v-for="(item, index) in accessibilityCategories" :key="index" cols="12" sm="6">
                 <div class="d-flex align-center mb-2">
-                  <div class="text-subtitle-2 mr-auto">{{ item.name }}</div>
-                  <div class="text-subtitle-2 font-weight-bold" :class="`text-${getScoreColor(item.score)}`">
+                  <div class="text-subtitle-2 mr-auto" :id="`category-${index}`">{{ item.name }}</div>
+                  <div class="text-subtitle-2 font-weight-bold" :class="`text-${getScoreColor(item.score)}`"
+                    role="status" :aria-labelledby="`category-${index}`">
                     {{ item.score }}%
                   </div>
                 </div>
-                <v-progress-linear :model-value="item.score" :color="getScoreColor(item.score)" height="8"
-                  rounded></v-progress-linear>
+                <v-progress-linear :model-value="item.score" :color="getScoreColor(item.score)" height="8" rounded
+                  role="progressbar" :aria-valuenow="item.score" aria-valuemin="0" aria-valuemax="100"
+                  :aria-labelledby="`category-${index}`"></v-progress-linear>
               </v-col>
             </v-row>
           </v-card-text>
@@ -42,25 +47,26 @@
       <v-col cols="12" md="6">
         <v-card variant="outlined" class="mb-4">
           <v-card-title class="text-subtitle-1">
-            <v-icon start>mdi-list-status</v-icon>
-            Summary of Issues
+            <v-icon start aria-hidden="true">mdi-list-status</v-icon>
+            <span id="issues-summary">Summary of Issues</span>
           </v-card-title>
           <v-card-text>
-            <div v-if="hasNoIssues" class="text-center pa-4">
-              <v-icon color="success" size="large" class="mb-2">mdi-check-circle</v-icon>
+            <div v-if="hasNoIssues" class="text-center pa-4" role="status" aria-live="polite">
+              <v-icon color="success" size="large" class="mb-2" aria-hidden="true">mdi-check-circle</v-icon>
               <p class="text-h6 text-success">No issues detected!</p>
               <p class="text-body-1">Your site seems accessible.</p>
             </div>
-            <div v-else>
+            <div v-else role="region" aria-labelledby="issues-summary">
               <div class="text-center mb-4">
-                <p class="text-body-1">
+                <p class="text-body-1" role="status">
                   <strong>{{ totalIssuesCount }}</strong> accessibility issues detected
                 </p>
               </div>
 
               <v-row>
                 <v-col cols="6" sm="3">
-                  <v-card variant="flat" class="rounded-lg pa-3" color="error-lighten-4" min-height="100">
+                  <v-card variant="flat" class="rounded-lg pa-3" color="error-lighten-4" min-height="100" role="status"
+                    aria-label="ARIA Issues count">
                     <div class="d-flex flex-column justify-center align-center h-100">
                       <div class="text-h4 font-weight-bold text-error">{{ result?.accessibility?.missingAria || 0 }}
                       </div>
@@ -70,7 +76,8 @@
                 </v-col>
 
                 <v-col cols="6" sm="3">
-                  <v-card variant="flat" class="rounded-lg pa-3" color="warning-lighten-4" min-height="100">
+                  <v-card variant="flat" class="rounded-lg pa-3" color="warning-lighten-4" min-height="100"
+                    role="status" aria-label="Missing Alt text count">
                     <div class="d-flex flex-column justify-center align-center h-100">
                       <div class="text-h4 font-weight-bold text-warning">{{ result?.accessibility?.missingAlt || 0 }}
                       </div>
@@ -80,7 +87,8 @@
                 </v-col>
 
                 <v-col cols="6" sm="3">
-                  <v-card variant="flat" class="rounded-lg pa-3" color="info-lighten-4" min-height="100">
+                  <v-card variant="flat" class="rounded-lg pa-3" color="info-lighten-4" min-height="100" role="status"
+                    aria-label="Form Labels issues count">
                     <div class="d-flex flex-column justify-center align-center h-100">
                       <div class="text-h4 font-weight-bold text-info">{{ result?.accessibility?.missingLabels || 0 }}
                       </div>
@@ -90,7 +98,8 @@
                 </v-col>
 
                 <v-col cols="6" sm="3">
-                  <v-card variant="flat" class="rounded-lg pa-3" color="grey-lighten-3" min-height="100">
+                  <v-card variant="flat" class="rounded-lg pa-3" color="grey-lighten-3" min-height="100" role="status"
+                    aria-label="Contrast issues count">
                     <div class="d-flex flex-column justify-center align-center h-100">
                       <div class="text-h4 font-weight-bold">{{ result?.accessibility?.contrastIssues || 0 }}</div>
                       <div class="text-caption text-center">Contrast</div>
@@ -107,8 +116,8 @@
     <!-- ARIA Issues Section -->
     <v-card v-if="hasAriaIssues" variant="outlined" class="mb-4">
       <v-card-title class="text-subtitle-1">
-        <v-icon start color="error">mdi-code-tags</v-icon>
-        ARIA Issues Detected
+        <v-icon start color="error" aria-hidden="true">mdi-code-tags</v-icon>
+        <span id="aria-issues">ARIA Issues Detected</span>
       </v-card-title>
       <v-card-text>
         <p class="text-body-2 mb-4">
@@ -116,18 +125,18 @@
           The following issues were detected:
         </p>
 
-        <v-list>
-          <v-list-item v-for="(issue, index) in ariaIssues" :key="index" class="mb-2 rounded-lg"
-            color="error-lighten-5">
+        <v-list role="list" aria-labelledby="aria-issues">
+          <v-list-item v-for="(issue, index) in ariaIssues" :key="index" class="mb-2 rounded-lg" color="error-lighten-5"
+            role="listitem">
             <template v-slot:prepend>
-              <v-icon color="error">mdi-alert-circle</v-icon>
+              <v-icon color="error" aria-hidden="true">mdi-alert-circle</v-icon>
             </template>
             <v-list-item-title class="font-weight-bold">{{ issue.element }}</v-list-item-title>
             <v-list-item-subtitle>{{ issue.issue }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
 
-        <v-alert v-if="hasHighMissingAria" color="error" class="mt-4" variant="tonal">
+        <v-alert v-if="hasHighMissingAria" color="error" class="mt-4" variant="tonal" role="alert">
           <div class="text-subtitle-1 font-weight-bold mb-2">High number of missing ARIA attributes</div>
           <div class="text-body-2">
             Your page has {{ result?.accessibility?.missingAria }} missing ARIA attributes.
@@ -140,26 +149,26 @@
     <!-- Form Accessibility Issues -->
     <v-card v-if="hasFormIssues" variant="outlined" class="mb-4">
       <v-card-title class="text-subtitle-1">
-        <v-icon start color="warning">mdi-form-textbox</v-icon>
-        Form Accessibility Issues
+        <v-icon start color="warning" aria-hidden="true">mdi-form-textbox</v-icon>
+        <span id="form-issues">Form Accessibility Issues</span>
       </v-card-title>
       <v-card-text>
         <p class="text-body-2 mb-4">
           Forms should be accessible to all users, including those using assistive technologies.
         </p>
 
-        <v-list v-if="hasInputIssues">
+        <v-list v-if="hasInputIssues" role="list" aria-labelledby="form-issues">
           <v-list-item v-for="(issue, index) in inputIssues" :key="index" class="mb-2 rounded-lg"
-            color="warning-lighten-5">
+            color="warning-lighten-5" role="listitem">
             <template v-slot:prepend>
-              <v-icon color="warning">mdi-alert</v-icon>
+              <v-icon color="warning" aria-hidden="true">mdi-alert</v-icon>
             </template>
             <v-list-item-title class="font-weight-bold">{{ issue.element }}</v-list-item-title>
             <v-list-item-subtitle>{{ issue.issue }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
 
-        <v-alert v-if="hasMissingLabels" color="warning" class="mt-4" variant="tonal">
+        <v-alert v-if="hasMissingLabels" color="warning" class="mt-4" variant="tonal" role="alert">
           <div class="text-subtitle-1 font-weight-bold mb-2">Missing Form Labels</div>
           <div class="text-body-2">
             Forms have {{ result?.accessibility?.missingLabels }} missing labels. Form controls should have associated
@@ -167,12 +176,11 @@
           </div>
         </v-alert>
 
-        <v-alert v-if="hasMissingInputAttributes" color="warning" class="mt-4" variant="tonal">
+        <v-alert v-if="hasMissingInputAttributes" color="warning" class="mt-4" variant="tonal" role="alert">
           <div class="text-subtitle-1 font-weight-bold mb-2">Missing Input Attributes</div>
           <div class="text-body-2">
             {{ result?.accessibility?.missingInputAttributes }} input fields are missing required attributes like
-            aria-label
-            or placeholder.
+            aria-label or placeholder.
           </div>
         </v-alert>
       </v-card-text>
@@ -180,13 +188,14 @@
 
     <v-card variant="outlined" class="mb-4">
       <v-card-title class="text-subtitle-1">
-        <v-icon start>mdi-checkbox-marked-circle-auto-outline</v-icon>
-        WCAG Conformity
+        <v-icon start aria-hidden="true">mdi-checkbox-marked-circle-auto-outline</v-icon>
+        <span id="wcag-conformity">WCAG Conformity</span>
       </v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12" sm="4">
-            <v-card variant="flat" class="rounded-lg pa-3" :color="wcagAColor">
+            <v-card variant="flat" class="rounded-lg pa-3" :color="wcagAColor" role="status"
+              aria-label="WCAG Level A conformity status">
               <div class="d-flex flex-column justify-center align-center h-100">
                 <div class="text-h5 font-weight-bold">Level A</div>
                 <div class="text-caption text-center">{{ wcagAConformity }}</div>
@@ -195,7 +204,8 @@
           </v-col>
 
           <v-col cols="12" sm="4">
-            <v-card variant="flat" class="rounded-lg pa-3" :color="wcagAAColor">
+            <v-card variant="flat" class="rounded-lg pa-3" :color="wcagAAColor" role="status"
+              aria-label="WCAG Level AA conformity status">
               <div class="d-flex flex-column justify-center align-center h-100">
                 <div class="text-h5 font-weight-bold">Level AA</div>
                 <div class="text-caption text-center">{{ wcagAAConformity }}</div>
@@ -204,7 +214,8 @@
           </v-col>
 
           <v-col cols="12" sm="4">
-            <v-card variant="flat" class="rounded-lg pa-3" :color="wcagAAAColor">
+            <v-card variant="flat" class="rounded-lg pa-3" :color="wcagAAAColor" role="status"
+              aria-label="WCAG Level AAA conformity status">
               <div class="d-flex flex-column justify-center align-center h-100">
                 <div class="text-h5 font-weight-bold">Level AAA</div>
                 <div class="text-caption text-center">{{ wcagAAAConformity }}</div>
@@ -213,11 +224,25 @@
           </v-col>
         </v-row>
 
-        <p class="text-body-2 mt-4">
-          <span class="font-weight-bold">WCAG</span> (Web Content Accessibility Guidelines) are international
-          recommendations to improve web accessibility. The levels A, AA and AAA represent increasingly stringent
-          compliance criteria.
-        </p>
+        <v-expansion-panels class="mt-4">
+          <v-expansion-panel>
+            <v-expansion-panel-title>
+              <div class="d-flex align-center">
+                <v-icon start aria-hidden="true">mdi-information</v-icon>
+                About WCAG Levels
+              </div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <div class="text-body-2">
+                <p><strong>Level A:</strong> The most basic web accessibility features. Essential for accessibility.</p>
+                <p><strong>Level AA:</strong> Deals with the biggest and most common barriers for disabled users. Most
+                  organizations aim for this level.</p>
+                <p><strong>Level AAA:</strong> The highest level of web accessibility. Provides additional enhancements.
+                </p>
+              </div>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-card-text>
     </v-card>
 
