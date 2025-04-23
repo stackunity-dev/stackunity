@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-md-12 pa-sm-6" fluid>
     <v-responsive class="text-center mx-auto mb-6 mb-md-12" max-width="700">
-      <h2 class="text-md-h4 font-weight-bold mb-4 text-sm-h5">
+      <h2 class="text-h3 text-gradient font-weight-bold mb-4 ">
         Unlimited access for a unique price
       </h2>
 
@@ -25,8 +25,10 @@
               <small class="text-overline">EUR</small>
             </div>
 
-            <v-btn class="mb-5 text-none" color="success" max-height="36" max-width="256" rounded="lg"
-              text="Get access now" to="/login" variant="flat" width="100%" size="large" />
+            <v-btn class="mb-5 text-none" color="secondary" max-height="36" max-width="256" rounded="lg"
+              text="Get access now" to="/login" variant="elevated" width="100%" size="large"
+              :elevation="getElevation('get-access-now', 4, 20)" @mouseenter="setHoverOn('get-access-now')"
+              @mouseleave="setHoverOff('get-access-now')" />
 
             <div class="text-caption text-medium-emphasis w-75 text-center">
               Limited time offer - Normal price: 249€
@@ -40,7 +42,7 @@
           <p class="text-medium-emphasis mb-4">
             Maximize your productivity with StackUnity. This limited time offer will not be available
             in the future. Get access to all current and future features, including full access to all development
-            components and tools.
+            components and tools forever.
           </p>
 
           <div class="d-flex align-center mb-8">
@@ -51,7 +53,7 @@
 
           <v-row dense>
             <v-col v-for="feature in featuresPricing" :key="feature" cols="12" md="6">
-              <v-icon color="success" icon="$success" />
+              <v-icon color="tertiary" icon="$success" />
 
               <span class="text-caption ms-2"> {{ feature }} </span>
             </v-col>
@@ -64,11 +66,37 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
 
 const featuresPricing = ref([
   'Unlimited access to snippets and design studio',
-  'Unlimited SQL generator and monitoring tools',
-  'Unlimited SEO audit and accessibility tools',
+  'Unlimited SQL visualizer and analyzis tools',
+  'Unlimited website audit and accessibility tools',
   'Lifetime access and updates',
 ]);
 </script>
+
+<style scoped>
+.text-gradient {
+  background: linear-gradient(90deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-info)));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 0.65rem;
+  letter-spacing: 0.5px;
+  animation: gradient 3s linear infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
+}
+</style>

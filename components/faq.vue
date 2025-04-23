@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div class="text-center mb-12">
-      <h2 class="text-h3 font-weight-bold mb-3">Frequently asked questions</h2>
+      <h2 class="text-h3 text-gradient font-weight-bold mb-3">Frequently asked questions</h2>
       <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
         You have questions? We have answers.
       </p>
@@ -77,3 +77,28 @@ useHead({
   ]
 })
 </script>
+
+<style scoped>
+.text-gradient {
+  background: linear-gradient(90deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-info)));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 0.65rem;
+  letter-spacing: 0.5px;
+  animation: gradient 3s linear infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
+}
+</style>

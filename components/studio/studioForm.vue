@@ -1,13 +1,43 @@
 <template>
   <v-app>
-    <v-main class="w-100 h-100 overflow-hidden d-flex">
-      <div class="control-panel" style="width: 350px;">
+    <v-main class="w-100 h-100 overflow-hidden d-flex" role="main">
+      <div class="control-panel" role="complementary" aria-label="Card customization panel">
         <v-card flat class="fill-height">
-          <div class="px-4 py-2 d-flex align-center">
-            <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2">Vue.js</v-chip>
-            <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2">Vuetify</v-chip>
+          <div class="px-4 py-2 d-flex align-center" role="group" aria-label="Framework indicators">
+            <v-chip color="primary" prepend-icon="mdi-vuejs" size="small" class="mr-2"
+              aria-label="Vue.js framework">Vue.js</v-chip>
+            <v-chip color="secondary" prepend-icon="mdi-vuetify" size="small" class="mr-2"
+              aria-label="Vuetify framework">Vuetify</v-chip>
+            <v-chip color="tertiary" prepend-icon="mdi-palette" size="small" class="mr-12" aria-label="Studio mode">{{
+              studioMode === 'studio' ? 'Studio' : 'SEO' }}</v-chip>
+            <v-menu offset-y>
+              <template v-slot:activator="{ props }">
+                <v-btn v-if="studioMode === 'studio-seo'" class="ml-7" icon density="comfortable" variant="text"
+                  v-bind="props" color="secondary" aria-label="Test vision impairments" size="small">
+                  <v-icon>{{ visionTypeIcon }}</v-icon>
+                  <v-tooltip activator="parent" location="top">
+                    Try different vision types
+                  </v-tooltip>
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item v-for="type in visionTypes" :key="type.value"
+                  @click="selectedVisionType = type.value; applyVisionFilter()">
+                  <template v-slot:prepend>
+                    <v-icon :icon="type.icon" :color="selectedVisionType === type.value ? 'primary' : ''"></v-icon>
+                  </template>
+                  <v-list-item-title>{{ type.title }}</v-list-item-title>
+                </v-list-item>
+                <v-divider v-if="selectedVisionType !== 'normal'"></v-divider>
+                <v-list-item v-if="selectedVisionType !== 'normal'">
+                  <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" label="Intensity" hide-details
+                    class="px-2 py-0" density="compact" @update:model-value="applyVisionFilter">
+                  </v-slider>
+                </v-list-item>
+              </v-list>
+            </v-menu>
             <PremiumFeature v-if="!userStore.user.isPremium" premium-link="/subscribe" title="Studio components"
-              icon="mdi-palette" type="chip" feature-key="studioComponents" />
+              icon="mdi-palette" type="chip" feature-key="studioComponents" aria-label="Premium feature indicator" />
           </div>
 
           <div class="px-4 py-2 d-flex align-center justify-space-between">
@@ -427,9 +457,11 @@
         </v-card>
       </div>
 
-      <div class="preview-area pa-4 d-flex flex-column">
+      <div class="pa-4 d-flex flex-column"
+        :class="studioMode === 'studio-seo' ? 'preview-area-seo' : 'preview-area-classic'">
         <div class="d-flex justify-space-between align-center mb-3">
-          <v-chip color="primary" variant="flat" size="small" class="mr-2">
+          <v-chip :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="flat" size="small"
+            class="mr-2">
             <v-icon start size="small">mdi-eye</v-icon>
             Live Preview
           </v-chip>
@@ -449,8 +481,8 @@
           </div>
         </div>
 
-        <div class="preview-canvas flex-grow-1 pa-4 bg-grey-darken-4" :class="[
-          'preview-' + previewMode]" :style="{ maxWidth: previewWidth + 'px' }">
+        <div class="preview-canvas pa-4 bg-transparent d-flex justify-center" :class="[
+          'preview-' + previewMode]" :style="{ maxWidth: previewWidth + 'px', ...filterStyle }" height="auto">
           <v-form v-model="formValid" :validate-on-blur="formProperties.validateOnBlur"
             :validate-on-input="formProperties.validateOnInput" class="w-100" :color="formProperties.color"
             style="max-width: 600px" ref="form">
@@ -613,17 +645,25 @@
 <script setup lang="ts">
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/atom-one-dark.css';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, inject, nextTick, onMounted, ref, watch } from 'vue';
 import type { VForm } from 'vuetify/components';
 import Snackbar from '../../components/snackbar.vue';
 import { useUserStore } from '../../stores/userStore';
 import { getFormTemplate } from '../../utils/formTemplates';
 import icons from '../../utils/icons';
 import theme from '../../utils/theme';
-import type { FormField, FormProperties, FormVariant, FormDensity, MessageLocation, ButtonVariant } from '../../utils/studio/form-types';
+import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
+import { StudioModeInjection } from './studio-types';
+import { form, formValid, fieldTypes, fieldVariants, densityOptions, messageLocations, buttonVariants, colors, formFields, formProperties } from './types/types-form';
 
 const emit = defineEmits(['update:content', 'save']);
 
+const studioModeInjection = inject<StudioModeInjection>('studioMode')
+if (!studioModeInjection) {
+  console.error('studioMode injection not found')
+}
+
+const studioMode = computed(() => studioModeInjection?.mode?.value || 'studio')
 
 const tab = ref('content');
 const codeElement = ref<HTMLElement | null>(null);
@@ -633,102 +673,11 @@ const previewMode = ref('desktop');
 const showCodeDialog = ref(false);
 const generatedCode = ref('');
 const snackbarColor = ref('success');
-const formValid = ref(false);
 const showSuccessMessage = ref(false);
 const showSnackbarMessage = ref(false);
 const snackbarText = ref('Code copied to clipboard');
-const form = ref<InstanceType<typeof VForm> | null>(null);
 const codeTab = ref('template');
 const customTemplateName = ref('');
-const customTemplates = ref<{ name: string, fields: FormField[] }[]>([]);
-
-const fieldTypes = [
-  'text',
-  'password',
-  'textarea',
-  'select',
-  'radio',
-  'checkbox',
-  'email'
-];
-
-const fieldVariants: FormVariant[] = ['outlined', 'filled', 'plain', 'underlined', 'solo'];
-const densityOptions: FormDensity[] = ['default', 'comfortable', 'compact'];
-const messageLocations: MessageLocation[] = ['bottom', 'top'];
-const buttonVariants: ButtonVariant[] = ['elevated', 'flat', 'tonal', 'outlined', 'text', 'plain'];
-
-const colors = [
-  { text: 'Default', value: 'default' },
-  { text: 'Primary', value: 'primary' },
-  { text: 'Secondary', value: 'secondary' },
-  { text: 'Success', value: 'success' },
-  { text: 'Info', value: 'info' },
-  { text: 'Warning', value: 'warning' },
-  { text: 'Error', value: 'error' }
-] as const;
-
-const formFields = ref<FormField[]>([
-  {
-    type: 'text',
-    label: 'Email',
-    placeholder: 'Enter your email',
-    value: '',
-    required: true
-  },
-  {
-    type: 'select',
-    label: 'Subject',
-    placeholder: 'Select a subject',
-    value: '',
-    options: 'Information, Support, Other',
-    required: true
-  },
-  {
-    type: 'textarea',
-    label: 'Message',
-    placeholder: 'Enter your message',
-    value: '',
-    required: true
-  }
-]);
-
-const formProperties = ref<FormProperties>({
-  variant: 'outlined',
-  density: 'default',
-  color: 'primary',
-  disabled: false,
-  readonly: false,
-  persistentPlaceholder: false,
-  validateOnBlur: true,
-  validateOnInput: false,
-  successMessage: 'Form submitted successfully!',
-  errorMessage: 'Please correct the errors in the form.',
-  messageLocation: 'bottom',
-  submitButtonText: 'Submit',
-  cancelButtonText: 'Reset',
-  submitButtonColor: 'primary',
-  cancelButtonColor: 'secondary',
-  buttonVariant: 'tonal',
-  blockButtons: false,
-  title: 'Form Title',
-  subtitle: 'Optional subtitle',
-  showGoogleLogin: false,
-  googleLoginText: 'Sign in with Google',
-  showLinkedInLogin: false,
-  linkedInLoginText: 'Sign in with LinkedIn',
-  showDivider: true,
-  dividerText: 'or continue with email',
-  googleButtonVariant: 'outlined',
-  googleButtonColor: 'default',
-  googleButtonSize: 'large',
-  googleButtonRounded: true,
-  googleButtonElevation: 0,
-  linkedInButtonVariant: 'outlined',
-  linkedInButtonColor: 'default',
-  linkedInButtonSize: 'large',
-  linkedInButtonRounded: true,
-  linkedInButtonElevation: 0
-});
 
 const addField = () => {
   formFields.value.push({
@@ -983,7 +932,6 @@ import { ref } from 'vue';
 
 const form = ref({`;
 
-  // Générer les propriétés du modèle de formulaire basées sur les champs actuels
   formFields.value.forEach((field, index) => {
     const fieldName = field.label.toLowerCase().replace(/\s+/g, '_');
     code += `
@@ -1107,7 +1055,6 @@ const saveCurrentTemplate = async () => {
 
 const userStore = useUserStore();
 
-// Fonction pour charger les données du template depuis le store en fonction de l'ID dans l'URL
 const loadTemplateFromStore = () => {
   if (typeof window === 'undefined') return;
 
@@ -1124,7 +1071,6 @@ const loadTemplateFromStore = () => {
     console.log('Template found in store:', template.name);
 
     if (template.content.trim().startsWith('<v-form')) {
-      console.log('HTML content detected, applying directly');
       emit('update:content', template.content);
       return;
     }
@@ -1208,23 +1154,31 @@ watch(previewMode, () => {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.preview-area {
+.preview-area-seo {
   flex: 1;
-  background-color: #f5f5f5;
-  overflow: auto;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(103, 90, 200, 0.4), transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(45, 158, 225, 0.4), transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(200, 80, 190, 0.3), transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(24, 144, 132, 0.3), transparent 35%),
+    linear-gradient(120deg, rgba(10, 15, 30, 0.1), rgba(20, 35, 60, 0.2));
+  overflow: auto
 }
 
-.preview-canvas {
-  border-radius: 8px;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 32px;
+.preview-area-classic {
+  flex: 1;
+  background:
+    radial-gradient(circle at 75% 25%, rgba(var(--v-theme-info), 0.3), transparent 40%),
+    radial-gradient(circle at 25% 75%, rgba(70, 130, 180, 0.3), transparent 35%),
+    radial-gradient(circle at 90% 85%, rgba(60, 179, 113, 0.2), transparent 30%),
+    linear-gradient(135deg, rgba(25, 25, 40, 0.05), rgba(45, 45, 60, 0.1));
   overflow: auto;
-  height: auto;
-  min-height: 400px;
-  max-height: 70vh;
+}
+.preview-canvas {
+  min-height: 60vh;
+  border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 8px;
+  background-image: repeating-linear-gradient(45deg, var(--v-theme-surface) 0, var(--v-theme-surface) 10px, var(--v-theme-surface-variant) 10px, var(--v-theme-surface-variant) 20px);
 }
 
 .preview-desktop {

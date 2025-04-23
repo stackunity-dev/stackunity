@@ -4,13 +4,42 @@
       <div class="control-panel" role="complementary" aria-label="Card customization panel">
         <v-card flat class="fill-height">
           <div class="px-4 py-2 d-flex align-center" role="group" aria-label="Framework indicators">
-            <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2"
+            <v-chip color="primary" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2"
               aria-label="Vue.js framework">Vue.js</v-chip>
-            <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2"
+            <v-chip color="secondary" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2"
               aria-label="Vuetify framework">Vuetify</v-chip>
+            <v-chip color="tertiary" prepend-icon="mdi-palette" size="small" class="mr-12 px-4 py-2"
+              aria-label="Studio mode">{{ studioMode === 'studio' ? 'Studio' : 'SEO' }}</v-chip>
+            <v-menu offset-y>
+              <template v-slot:activator="{ props }">
+                <v-btn v-if="studioMode === 'studio-seo'" class="ml-7" icon density="comfortable" variant="text"
+                  v-bind="props" color="secondary" aria-label="Test vision impairments" size="small">
+                  <v-icon>{{ visionTypeIcon }}</v-icon>
+                  <v-tooltip activator="parent" location="top">
+                    Try different vision types
+                  </v-tooltip>
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item v-for="type in visionTypes" :key="type.value"
+                  @click="selectedVisionType = type.value; applyVisionFilter()">
+                  <template v-slot:prepend>
+                    <v-icon :icon="type.icon" :color="selectedVisionType === type.value ? 'primary' : ''"></v-icon>
+                  </template>
+                  <v-list-item-title>{{ type.title }}</v-list-item-title>
+                </v-list-item>
+                <v-divider v-if="selectedVisionType !== 'normal'"></v-divider>
+                <v-list-item v-if="selectedVisionType !== 'normal'">
+                  <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" label="Intensity" hide-details
+                    class="px-2 py-0" density="compact" @update:model-value="applyVisionFilter">
+                  </v-slider>
+                </v-list-item>
+              </v-list>
+            </v-menu>
             <PremiumFeature v-if="!userStore.user.isPremium" premium-link="/subscribe" title="Studio components"
               icon="mdi-palette" type="chip" feature-key="studioComponents" aria-label="Premium feature indicator" />
           </div>
+
 
           <v-tabs v-model="propertiesTab" color="primary" align-tabs="center" class="px-4" role="tablist"
             aria-label="Card properties tabs">
@@ -18,6 +47,7 @@
             <v-tab value="style" role="tab" aria-controls="style-panel">Style</v-tab>
             <v-tab value="actions" role="tab" aria-controls="actions-panel">Actions</v-tab>
             <v-tab value="data" role="tab" aria-controls="data-panel">Data</v-tab>
+            <v-tab v-if="studioMode === 'studio-seo'" value="ARIA" role="tab" aria-controls="ARIA-panel">ARIA</v-tab>
             <v-tab value="templates" role="tab" aria-controls="templates-panel">Templates</v-tab>
           </v-tabs>
 
@@ -470,22 +500,186 @@
                   </v-btn>
                 </div>
               </v-window-item>
+
+              <v-window-item value="ARIA">
+                <div class="pa-4">
+                  <div class="section-title d-flex align-center mb-3 justify-space-between">
+                    <div class="d-flex align-center">
+                      <v-icon color="primary" class="mr-2">mdi-access-point-check</v-icon>
+                      <span class="text-h6">ARIA Attributes</span>
+                    </div>
+                    <v-tooltip location="bottom">
+                      <template v-slot:activator="{ props }">
+                        <v-btn icon="mdi-help-circle-outline" variant="text" size="small" v-bind="props"></v-btn>
+                      </template>
+                      <span>Add ARIA attributes to your card</span>
+                    </v-tooltip>
+                  </div>
+
+                  <p class="text-body-2 mb-4">Personnalisez les attributs ARIA pour améliorer l'accessibilité de votre
+                    carte.</p>
+
+                  <v-form>
+                    <div class="mb-4">
+                      <label class="text-subtitle-2 mb-2">1. Select the element to improve</label>
+                      <v-select v-model="selectedElement" :items="cardElements" item-title="name" item-value="id"
+                        variant="outlined" density="comfortable" return-object class="mb-2"
+                        prepend-inner-icon="mdi-selection" aria-label="Sélection de l'élément à modifier"></v-select>
+                    </div>
+
+                    <v-divider class="my-4"></v-divider>
+
+                    <div v-if="selectedElement" class="mb-4">
+                      <div class="d-flex align-center mb-3">
+                        <v-icon color="primary" class="mr-2">{{ selectedElement.icon }}</v-icon>
+                        <span class="text-subtitle-1">Configuration for "{{ selectedElement.name }}"</span>
+                      </div>
+
+                      <v-autocomplete v-model="selectedElement.ariaRole" :items="filteredAriaRoles" label="ARIA Role"
+                        item-title="role" item-value="role" variant="outlined" density="comfortable" clearable
+                        prepend-inner-icon="mdi-sitemap" return-object class="mb-4" role="combobox"
+                        aria-label="Sélection du rôle ARIA">
+                        <template v-slot:item="{ item, props }">
+                          <v-list-item v-bind="props" class="role-item">
+                            <template v-slot:prepend>
+                              <v-icon color="primary" size="small">mdi-tag</v-icon>
+                            </template>
+                            <v-list-item-subtitle>{{ item.raw.description }}</v-list-item-subtitle>
+                          </v-list-item>
+                        </template>
+                        <template v-slot:no-data>
+                          <v-list-item>
+                            <v-list-item-title>
+                              No ARIA role found
+                            </v-list-item-title>
+                          </v-list-item>
+                        </template>
+                      </v-autocomplete>
+
+                      <v-expansion-panels variant="accordion" class="mb-4">
+                        <v-expansion-panel title="Attributs ARIA principaux">
+                          <v-expansion-panel-text>
+                            <v-text-field v-model="selectedElement.ariaProps.label" label="aria-label"
+                              variant="outlined" density="comfortable" clearable prepend-inner-icon="mdi-tag-text"
+                              class="mb-2" hint="Concise text description of the element" persistent-hint>
+                              <template v-slot:append>
+                                <v-chip v-if="isRecommendedAttribute('label', selectedElement)" color="success"
+                                  size="x-small" class="ml-1">
+                                  Recommended
+                                </v-chip>
+                              </template>
+                            </v-text-field>
+
+                            <v-text-field v-model="selectedElement.ariaProps.labelledby" label="aria-labelledby"
+                              variant="outlined" density="comfortable" clearable prepend-inner-icon="mdi-tag-multiple"
+                              class="mb-2" hint="ID of an element that labels this element" persistent-hint>
+                              <template v-slot:append>
+                                <v-chip v-if="isRecommendedAttribute('labelledby', selectedElement)" color="success"
+                                  size="x-small" class="ml-1">
+                                  Recommended
+                                </v-chip>
+                              </template>
+                            </v-text-field>
+
+                            <v-text-field v-model="selectedElement.ariaProps.describedby" label="aria-describedby"
+                              variant="outlined" density="comfortable" clearable prepend-inner-icon="mdi-text-box"
+                              class="mb-2" hint="ID of an element that describes this element" persistent-hint>
+                              <template v-slot:append>
+                                <v-chip v-if="isRecommendedAttribute('describedby', selectedElement)" color="success"
+                                  size="x-small" class="ml-1">
+                                  Recommended
+                                </v-chip>
+                              </template>
+                            </v-text-field>
+                          </v-expansion-panel-text>
+                        </v-expansion-panel>
+
+                        <v-expansion-panel title="États et propriétés">
+                          <v-expansion-panel-text>
+                            <div class="d-flex flex-wrap gap-2">
+                              <v-switch v-model="selectedElement.ariaProps.expanded" color="primary"
+                                label="aria-expanded" hide-details class="mr-4 mb-2"></v-switch>
+
+                              <v-switch v-model="selectedElement.ariaProps.hidden" color="primary" label="aria-hidden"
+                                hide-details class="mr-4 mb-2"></v-switch>
+
+                              <v-switch v-model="selectedElement.ariaProps.disabled" color="primary"
+                                label="aria-disabled" hide-details class="mr-4 mb-2"></v-switch>
+
+                              <v-switch v-model="selectedElement.ariaProps.required" color="primary"
+                                label="aria-required" hide-details class="mr-4 mb-2"></v-switch>
+
+                              <v-switch v-model="selectedElement.ariaProps.selected" color="primary"
+                                label="aria-selected" hide-details class="mr-4 mb-2"></v-switch>
+
+                              <v-switch v-model="selectedElement.ariaProps.checked" color="primary" label="aria-checked"
+                                hide-details class="mr-4 mb-2"></v-switch>
+                            </div>
+                          </v-expansion-panel-text>
+                        </v-expansion-panel>
+
+                        <v-expansion-panel title="Relations">
+                          <v-expansion-panel-text>
+                            <v-text-field v-model="selectedElement.ariaProps.controls" label="aria-controls"
+                              variant="outlined" density="comfortable" clearable class="mb-2"
+                              hint="ID of the element controlled by this one" persistent-hint></v-text-field>
+
+                            <v-text-field v-model="selectedElement.ariaProps.owns" label="aria-owns" variant="outlined"
+                              density="comfortable" clearable class="mb-2" hint="ID of the elements owned by this one"
+                              persistent-hint></v-text-field>
+
+                            <v-text-field v-model="selectedElement.ariaProps.flowto" label="aria-flowto"
+                              variant="outlined" density="comfortable" clearable class="mb-2"
+                              hint="ID of the next element in the reading sequence" persistent-hint></v-text-field>
+                          </v-expansion-panel-text>
+                        </v-expansion-panel>
+                      </v-expansion-panels>
+
+                      <v-divider class="my-4"></v-divider>
+
+                      <div class="d-flex align-center mb-4">
+                        <v-icon color="primary" class="mr-2">mdi-eye-outline</v-icon>
+                        <span class="text-subtitle-1">Preview of the ARIA attributes for "{{ selectedElement.name
+                        }}"</span>
+                      </div>
+
+                      <v-alert type="info" variant="tonal" class="mb-4 aria-preview">
+                        <pre v-if="getFormattedAriaAttributesForElement(selectedElement)" class="text-body-2">{{
+                          getFormattedAriaAttributesForElement(selectedElement) }}</pre>
+                        <span v-else>No ARIA attributes defined for this element</span>
+                      </v-alert>
+                    </div>
+
+                    <v-btn color="primary" variant="tonal" class="mr-2" @click="applyAriaToCard">
+                      <v-icon start>mdi-content-save</v-icon>
+                      Apply modifications
+                    </v-btn>
+
+                    <v-btn color="error" variant="text" @click="resetAriaAttributes">
+                      <v-icon start>mdi-refresh</v-icon>
+                      Reset
+                    </v-btn>
+                  </v-form>
+                </div>
+              </v-window-item>
             </v-window>
           </v-card-text>
         </v-card>
       </div>
 
-      <div class="preview-area pa-4 d-flex flex-column">
+      <div class="pa-4 d-flex flex-column"
+        :class="studioMode === 'studio-seo' ? 'preview-area-seo' : 'preview-area-classic'">
         <div class="d-flex justify-space-between align-center mb-3">
           <div>
-            <v-chip color="primary" variant="flat" size="small" class="mr-2">
+            <v-chip :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="flat" size="small"
+              class="mr-2">
               <v-icon start size="small">mdi-eye</v-icon>
               Live preview
             </v-chip>
           </div>
         </div>
 
-        <div class="preview-canvas flex-grow-1 d-flex align-center justify-center pa-4">
+        <div class="preview-canvas flex-grow-1 d-flex align-center justify-center pa-4" :style="filterStyle">
           <v-card :elevation="cardProperties.elevation" :variant="cardVariant"
             :color="cardColor !== 'default' ? cardColor : undefined" :loading="cardProperties.loading"
             :disabled="cardProperties.disabled" class="mx-auto preview-component"
@@ -567,7 +761,7 @@
       </div>
 
       <v-dialog v-model="showCodeDialog" width="800">
-        <v-card class="bg-grey-darken-4">
+        <v-card class="bg-grey-darken-4" :loading="loading">
           <v-card-title class="d-flex justify-space-between align-center pa-4">
             <v-tabs v-model="codeTab" color="primary">
               <v-tab value="template">Template</v-tab>
@@ -599,18 +793,50 @@
       <Snackbar v-model="showSnackbarMessage" :text="snackbarText" :color="snackbarColor" />
     </v-main>
   </v-app>
+
+  <svg width="0" height="0" style="position: absolute; visibility: hidden; z-index: -1;">
+    <filter id="protanopia-filter">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0.567, 0.433, 0, 0, 0
+                0.558, 0.442, 0, 0, 0
+                0, 0.242, 0.758, 0, 0
+                0, 0, 0, 1, 0" />
+    </filter>
+
+    <filter id="deuteranopia-filter">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0.625, 0.375, 0, 0, 0
+                0.7, 0.3, 0, 0, 0
+                0, 0.3, 0.7, 0, 0
+                0, 0, 0, 1, 0" />
+    </filter>
+
+    <filter id="tritanopia-filter">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0.95, 0.05, 0, 0, 0
+                0, 0.433, 0.567, 0, 0
+                0, 0.475, 0.525, 0, 0
+                0, 0, 0, 1, 0" />
+    </filter>
+  </svg>
 </template>
 
 <script setup lang="ts">
-import hljs from 'highlight.js/lib/core';
-import 'highlight.js/styles/atom-one-dark.css';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, inject, nextTick, onMounted, ref, watch, type Ref } from 'vue';
 import PremiumFeature from '../../components/PremiumFeature.vue';
 import Snackbar from '../../components/snackbar.vue';
 import { useUserStore } from '../../stores/userStore';
 import { getCardTemplate } from '../../utils/cardTemplates';
+import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
 import icons from '../../utils/icons';
 import theme from '../../utils/theme';
+import { StudioModeInjection } from './studio-types';
+import { highlightCode, highlightCodeFromSource } from './types/highlight';
+import { CardElement } from './types/types-card';
+import { isRecommendedAttribute, allAriaRoles } from './types/types-aria';
+import { cardVariants, cardColors, buttonVariants, progressSizes, roundedLabels, iconColorIndex, cardVariantIndex, cardColorIndex, buttonColorIndex, buttonVariantIndex, progressSizeIndex, progressColorIndex, cardVariant, cardColor, buttonVariant, buttonColor, progressColor, progressSize, iconColor, cardProperties, progressBgColorIndex, progressBgColor, sparklineColorIndex, sparklineColor, sparklineDataText, sparklineLabelsText, progressPositions, roundedIndexToValue, roundedValueToIndex, cardElements } from './types/types-card';
+
+const generatedCode: Ref<string> = ref('');
+const codeElement: Ref<HTMLElement | null> = ref(null);
+const themeCodeElement: Ref<HTMLElement | null> = ref(null);
+const loading = ref(false);
 
 const props = defineProps({
   initialContent: {
@@ -623,47 +849,63 @@ const props = defineProps({
   }
 })
 
+const studioModeInjection = inject<StudioModeInjection>('studioMode')
+if (!studioModeInjection) {
+  console.error('studioMode injection not found')
+}
+
+const studioMode = computed(() => studioModeInjection?.mode?.value || 'studio')
+
+
 const emit = defineEmits(['update:content', 'save'])
-
-type CardVariant = typeof cardVariants[number]
-type CardColor = typeof cardColors[number]['value']
-type ButtonVariant = typeof buttonVariants[number]
-type ProgressSize = typeof progressSizes[number]
-type RoundedSize = typeof roundedLabels[number]
-
-const cardVariants = ['elevated', 'flat', 'tonal', 'outlined', 'text', 'plain'] as const
-const cardColors = [
-  { text: 'Default', value: 'default' },
-  { text: 'Primary', value: 'primary' },
-  { text: 'Secondary', value: 'secondary' },
-  { text: 'Success', value: 'success' },
-  { text: 'Info', value: 'info' },
-  { text: 'Warning', value: 'warning' },
-  { text: 'Error', value: 'error' }
-] as const
-
-const buttonVariants = ['elevated', 'flat', 'tonal', 'outlined', 'text', 'plain'] as const
-const progressSizes = ['x-small', 'small', 'default', 'large', 'x-large'] as const
-const roundedLabels = ['sm', 'md', 'lg', 'xl', 'pill'] as const
 
 const userStore = useUserStore()
 const propertiesTab = ref('content')
-const iconColorIndex = ref(5)
-const cardVariantIndex = ref(0)
-const cardColorIndex = ref(0)
-const buttonColorIndex = ref(5)
-const buttonVariantIndex = ref(2)
-const progressSizeIndex = ref(2)
-const progressColorIndex = ref(1)
 const showCodeDialog = ref(false)
 const showSnackbarMessage = ref(false)
 const snackbarText = ref('Code copied to clipboard')
 const snackbarColor = ref('success')
 const componentType = ref('card')
-const timelineItemsCount = ref(3)
-const codeElement = ref(null);
-const themeCodeElement = ref(null);
+const codeTab = ref('template')
 
+const timelineItemsCount = ref(3)
+
+const selectedElement = ref<CardElement | null>(null);
+
+const filteredAriaRoles = computed(() => {
+  if (!selectedElement.value) return [];
+
+  return allAriaRoles.value.filter(role =>
+    selectedElement.value?.recommendedRoles.includes(role.role)
+  );
+});
+
+const applyAriaToCard = () => {
+  generateCardCodeSilently();
+
+  snackbarText.value = 'ARIA attributes applied successfully';
+  snackbarColor.value = 'success';
+  showSnackbarMessage.value = true;
+};
+
+const resetAriaAttributes = () => {
+  cardElements.value.forEach(element => {
+    element.ariaRole = null;
+    Object.keys(element.ariaProps).forEach(key => {
+      if (typeof element.ariaProps[key] === 'boolean') {
+        element.ariaProps[key] = false;
+      } else {
+        element.ariaProps[key] = '';
+      }
+    });
+  });
+
+  selectedElement.value = null;
+
+  snackbarText.value = 'ARIA attributes reset';
+  snackbarColor.value = 'info';
+  showSnackbarMessage.value = true;
+};
 
 const timelineItems = ref([
   { title: 'User 1', message: 'Message sent', color: 'primary' },
@@ -672,51 +914,6 @@ const timelineItems = ref([
   { title: 'User 4', message: 'Comment added', color: 'warning' },
   { title: 'User 5', message: 'Status updated', color: 'error' }
 ])
-
-const cardProperties = ref({
-  title: 'Premium features',
-  subtitle: 'Unlock all UI components with a premium plan',
-  text: 'Lifetime access to all premium features and updates for only 300€ one time payment',
-  image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba',
-  icon: 'mdi-crown',
-  elevation: 2,
-  padding: 8,
-  rounded: 'md' as RoundedSize,
-  loading: false,
-  disabled: false,
-  hoverEffect: false,
-  showButtons: true,
-  buttonText: 'Checkout',
-  buttonWidth: 0,
-  buttonLink: '/checkout',
-  buttonPosition: 'start',
-  buttonIcon: 'mdi-cart-outline',
-  showProgress: false,
-  progressValue: 75,
-  indeterminate: false,
-  progressWidth: 6,
-  progressPosition: 'inline',
-  showProgressLabel: false,
-  progressLabelStyle: 'value',
-  progressLabelText: '',
-  showProgressBg: false,
-  showTimeline: false,
-  showSparkline: false,
-  sparklineData: [0, 2, 5, 9, 5, 10, 3, 5, 0, 0, 1, 8, 2, 9, 0],
-  sparklineColor: 'primary',
-  sparklineGradient: false,
-  sparklineLineWidth: 2,
-  sparklineShowLabels: false,
-  sparklineLabels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév', 'Mar']
-})
-
-const cardVariant = computed((): CardVariant => cardVariants[cardVariantIndex.value])
-const cardColor = computed((): CardColor => cardColors[cardColorIndex.value].value)
-const buttonVariant = computed((): ButtonVariant => buttonVariants[buttonVariantIndex.value])
-const buttonColor = computed((): CardColor => cardColors[buttonColorIndex.value].value)
-const progressColor = computed((): CardColor => cardColors[progressColorIndex.value].value)
-const progressSize = computed((): ProgressSize => progressSizes[progressSizeIndex.value])
-const iconColor = computed((): CardColor => cardColors[iconColorIndex.value].value)
 
 const setImage = (type: string) => {
   switch (type) {
@@ -737,28 +934,6 @@ const removeImage = () => {
   cardProperties.value.image = ''
   generateCardCodeSilently()
 }
-
-const progressPositions = [
-  'inline',
-  'top-left',
-  'top-center',
-  'top-right',
-  'center-left',
-  'center',
-  'center-right',
-  'bottom-left',
-  'bottom-center',
-  'bottom-right',
-  'absolute'
-]
-
-const progressBgColorIndex = ref(0)
-const progressBgColor = computed((): CardColor => cardColors[progressBgColorIndex.value].value)
-const sparklineColorIndex = ref(1)
-const sparklineColor = computed((): CardColor => cardColors[sparklineColorIndex.value].value)
-const sparklineDataText = ref(cardProperties.value.sparklineData.join(','))
-const sparklineLabelsText = ref(cardProperties.value.sparklineLabels.join(','))
-const codeTab = ref('template')
 
 const updateSparklineData = () => {
   try {
@@ -808,12 +983,70 @@ function generateTemplateCode() {
   if (card.padding !== 16) code += ` style="padding: ${card.padding}px;"`;
   if (card.hoverEffect) code += ' class="hover-effect"';
 
+  const cardElement = cardElements.value.find(e => e.id === 'card');
+  if (cardElement && cardElement.ariaRole) {
+    code += ` role="${cardElement.ariaRole.role}"`;
+  }
+
+  if (cardElement) {
+    Object.entries(cardElement.ariaProps).forEach(([key, value]) => {
+      if (value !== '' && value !== false) {
+        if (typeof value === 'boolean') {
+          code += ` aria-${key}="true"`;
+        } else {
+          code += ` aria-${key}="${value}"`;
+        }
+      }
+    });
+  }
+
   code += '>';
 
-  if (card.image) code += `\n  <v-img src="${card.image}" height="200" cover></v-img>`;
+  if (card.image) {
+    code += `\n  <v-img src="${card.image}" height="200" cover`;
+
+    const imageElement = cardElements.value.find(e => e.id === 'image');
+    if (imageElement && imageElement.ariaRole) {
+      code += ` role="${imageElement.ariaRole.role}"`;
+    }
+
+    if (imageElement) {
+      Object.entries(imageElement.ariaProps).forEach(([key, value]) => {
+        if (value !== '' && value !== false) {
+          if (typeof value === 'boolean') {
+            code += ` aria-${key}="true"`;
+          } else {
+            code += ` aria-${key}="${value}"`;
+          }
+        }
+      });
+    }
+
+    code += `></v-img>`;
+  }
 
   if (card.title) {
-    code += `\n  <v-card-title>\n`;
+    code += `\n  <v-card-title`;
+
+    const titleElement = cardElements.value.find(e => e.id === 'title');
+    if (titleElement && titleElement.ariaRole) {
+      code += ` role="${titleElement.ariaRole.role}"`;
+    }
+
+    if (titleElement) {
+      Object.entries(titleElement.ariaProps).forEach(([key, value]) => {
+        if (value !== '' && value !== false) {
+          if (typeof value === 'boolean') {
+            code += ` aria-${key}="true"`;
+          } else {
+            code += ` aria-${key}="${value}"`;
+          }
+        }
+      });
+    }
+
+    code += `>\n`;
+
     if (card.icon) {
       code += `<v-icon start`;
       if (cardColors[iconColorIndex.value].value !== 'default') {
@@ -842,6 +1075,24 @@ function generateTemplateCode() {
     code += `\n        padding="16"`;
     code += `\n        auto-draw`;
     code += `\n        smooth`;
+
+    const sparklineElement = cardElements.value.find(e => e.id === 'sparkline');
+    if (sparklineElement && sparklineElement.ariaRole) {
+      code += `\n        role="${sparklineElement.ariaRole.role}"`;
+    }
+
+    if (sparklineElement) {
+      Object.entries(sparklineElement.ariaProps).forEach(([key, value]) => {
+        if (value !== '' && value !== false) {
+          if (typeof value === 'boolean') {
+            code += `\n        aria-${key}="true"`;
+          } else {
+            code += `\n        aria-${key}="${value}"`;
+          }
+        }
+      });
+    }
+
     code += `\n      ></v-sparkline>`;
     code += `\n    </div>`;
     code += `\n  </v-card-text>`;
@@ -850,7 +1101,26 @@ function generateTemplateCode() {
   if (card.showTimeline) {
     code += `\n  <v-card-text>`;
     code += `\n    <div class="font-weight-bold ms-1 mb-2">Today</div>`;
-    code += `\n    <v-timeline align="start" density="compact">`;
+    code += `\n    <v-timeline align="start" density="compact"`;
+
+    const timelineElement = cardElements.value.find(e => e.id === 'timeline');
+    if (timelineElement && timelineElement.ariaRole) {
+      code += ` role="${timelineElement.ariaRole.role}"`;
+    }
+
+    if (timelineElement) {
+      Object.entries(timelineElement.ariaProps).forEach(([key, value]) => {
+        if (value !== '' && value !== false) {
+          if (typeof value === 'boolean') {
+            code += ` aria-${key}="true"`;
+          } else {
+            code += ` aria-${key}="${value}"`;
+          }
+        }
+      });
+    }
+
+    code += `>`;
 
     for (let i = 0; i < timelineItemsCount.value; i++) {
       const item = timelineItems.value[i];
@@ -876,7 +1146,26 @@ function generateTemplateCode() {
   if (card.showButtons || card.showProgress) {
     code += `\n  <v-card-actions${card.buttonPosition !== 'start' ? ` class="justify-${card.buttonPosition}"` : ''}>`;
     if (card.showButtons) {
-      code += `\n    <v-btn ${cardColors[buttonColorIndex.value].value !== 'default' ? `color="${cardColors[buttonColorIndex.value].value}" ` : ''}variant="${buttonVariants[buttonVariantIndex.value]}"${card.buttonWidth > 0 ? ` style="width: ${card.buttonWidth}%"` : ''} ${card.buttonIcon ? `append-icon="${card.buttonIcon}"` : ''} ${card.buttonLink ? `to="${card.buttonLink}"` : ''}>${card.buttonText || 'Action'}</v-btn>`;
+      code += `\n    <v-btn ${cardColors[buttonColorIndex.value].value !== 'default' ? `color="${cardColors[buttonColorIndex.value].value}" ` : ''}variant="${buttonVariants[buttonVariantIndex.value]}"${card.buttonWidth > 0 ? ` style="width: ${card.buttonWidth}%"` : ''} ${card.buttonIcon ? `append-icon="${card.buttonIcon}"` : ''} ${card.buttonLink ? `to="${card.buttonLink}"` : ''}`;
+
+      const buttonElement = cardElements.value.find(e => e.id === 'button');
+      if (buttonElement && buttonElement.ariaRole) {
+        code += ` role="${buttonElement.ariaRole.role}"`;
+      }
+
+      if (buttonElement) {
+        Object.entries(buttonElement.ariaProps).forEach(([key, value]) => {
+          if (value !== '' && value !== false) {
+            if (typeof value === 'boolean') {
+              code += ` aria-${key}="true"`;
+            } else {
+              code += ` aria-${key}="${value}"`;
+            }
+          }
+        });
+      }
+
+      code += `>${card.buttonText || 'Action'}</v-btn>`;
     }
     if (card.showProgress) {
       if (card.progressPosition !== 'inline') {
@@ -894,6 +1183,23 @@ function generateTemplateCode() {
         code += ` bg-color="${cardColors[progressBgColorIndex.value].value}"`;
       }
 
+      const progressElement = cardElements.value.find(e => e.id === 'progress');
+      if (progressElement && progressElement.ariaRole) {
+        code += ` role="${progressElement.ariaRole.role}"`;
+      }
+
+      if (progressElement) {
+        Object.entries(progressElement.ariaProps).forEach(([key, value]) => {
+          if (value !== '' && value !== false) {
+            if (typeof value === 'boolean') {
+              code += ` aria-${key}="true"`;
+            } else {
+              code += ` aria-${key}="${value}"`;
+            }
+          }
+        });
+      }
+
       if (card.showProgressLabel) {
         code += `>\n      <template v-slot:default>\n        <span class="${progressSizes[progressSizeIndex.value] === 'x-small' || progressSizes[progressSizeIndex.value] === 'small' ? 'text-caption' : 'text-body-2'}">${card.progressLabelStyle === 'value' ? `{{ ${card.progressValue} }}%` : card.progressLabelText}</span>\n      </template>\n    </v-progress-circular>`;
       } else {
@@ -905,9 +1211,15 @@ function generateTemplateCode() {
       }
     }
     code += '\n  </v-card-actions>';
+
+    code += '\n</v-card>\n\n';
   }
 
-  return code + '\n</v-card>\n\n';
+  try {
+    return highlightCodeFromSource(code);
+  } finally {
+    loading.value = false;
+  }
 }
 
 function generateCardCodeSilently() {
@@ -916,13 +1228,11 @@ function generateCardCodeSilently() {
 }
 
 const previewCode = () => {
+  generatedCode.value = generateCardCode();
   showCodeDialog.value = true;
   nextTick(() => {
-    if (codeElement.value) {
-      hljs.highlightElement(codeElement.value);
-    }
-    if (themeCodeElement.value) {
-      hljs.highlightElement(themeCodeElement.value);
+    if (codeElement.value && themeCodeElement.value && codeTab.value) {
+      highlightCode(codeElement.value, themeCodeElement.value, codeTab.value);
     }
   });
 };
@@ -1011,6 +1321,33 @@ onMounted(async () => {
             updateSparklineData();
           }
 
+          if (templateData.ariaRole) {
+            const roleObj = allAriaRoles.value.find(r => r.role === templateData.ariaRole);
+            if (roleObj) {
+              const cardElement = cardElements.value.find(e => e.id === 'card');
+              if (cardElement) {
+                cardElement.ariaRole = roleObj;
+                selectedElement.value = cardElement;
+
+                if (templateData.ariaLabel) {
+                  cardElement.ariaProps.label = templateData.ariaLabel;
+                }
+
+                if (templateData.ariaLabelledBy) {
+                  cardElement.ariaProps.labelledby = templateData.ariaLabelledBy;
+                }
+
+                if (templateData.ariaDescribedBy) {
+                  cardElement.ariaProps.describedby = templateData.ariaDescribedBy;
+                }
+
+                if (templateData.ariaControls) {
+                  cardElement.ariaProps.controls = templateData.ariaControls;
+                }
+              }
+            }
+          }
+
           generateCardCodeSilently();
         }
       }
@@ -1020,9 +1357,6 @@ onMounted(async () => {
   }
   generateCardCodeSilently()
 })
-
-const roundedIndexToValue = (index: number): RoundedSize => roundedLabels[index]
-const roundedValueToIndex = (value: RoundedSize): number => roundedLabels.indexOf(value)
 
 const roundedIndex = computed({
   get: () => roundedValueToIndex(cardProperties.value.rounded),
@@ -1183,7 +1517,6 @@ const saveCurrentTemplate = async () => {
 
 onMounted(async () => {
   await userStore.loadData();
-  console.log('Components available:', userStore.studioComponents);
 
   loadTemplateFromStore();
 
@@ -1211,15 +1544,117 @@ const highlightedThemeCode = computed(() => {
   return theme;
 });
 
-watch(codeTab, () => {
+watch(codeTab, (newTab) => {
   nextTick(() => {
-    if (codeTab.value === 'template' && codeElement.value) {
-      hljs.highlightElement(codeElement.value);
-    } else if (codeTab.value === 'theme' && themeCodeElement.value) {
-      hljs.highlightElement(themeCodeElement.value);
+    const element = newTab === 'template' ? codeElement.value : themeCodeElement.value;
+    if (element && codeElement.value && themeCodeElement.value) {
+      highlightCode(codeElement.value, themeCodeElement.value, codeTab.value);
     }
   });
 });
+
+watch([highlightedTemplateCode, highlightedThemeCode], () => {
+  nextTick(() => {
+    if (codeTab.value === 'template' && codeElement.value && themeCodeElement.value) {
+      highlightCode(codeElement.value, themeCodeElement.value, codeTab.value);
+    } else if (codeTab.value === 'theme' && codeElement.value && themeCodeElement.value) {
+      highlightCode(codeElement.value, themeCodeElement.value, codeTab.value);
+    }
+  });
+}, { immediate: true });
+
+onMounted(() => {
+  nextTick(() => {
+    const element = codeTab.value === 'template' ? codeElement.value : themeCodeElement.value;
+    if (element && codeElement.value && themeCodeElement.value) {
+      highlightCode(codeElement.value, themeCodeElement.value, codeTab.value);
+    }
+  });
+});
+
+const getFormattedAriaAttributesForElement = (element: CardElement | null) => {
+  if (!element) return null;
+
+  const attributes: Array<string> = [];
+
+  if (element.ariaRole) {
+    attributes.push(`role="${element.ariaRole.role}"`);
+  }
+
+  Object.entries(element.ariaProps).forEach(([key, value]) => {
+    if (value !== '' && value !== false) {
+      if (typeof value === 'boolean') {
+        attributes.push(`aria-${key}="true"`);
+      } else {
+        attributes.push(`aria-${key}="${value}"`);
+      }
+    }
+  });
+
+  return attributes.length ? attributes.join('\n') : null;
+};
+
+const suggestAriaAttributesForRole = (element: CardElement | null) => {
+  if (!element || !element.ariaRole) return;
+
+  const roleValue = element.ariaRole.role;
+
+  if (roleValue === 'button') {
+    if (!element.ariaProps.pressed) element.ariaProps.pressed = false;
+    if (!element.ariaProps.label && !element.ariaProps.labelledby) element.ariaProps.label = `Bouton ${element.id}`;
+    if (!element.ariaProps.disabled) element.ariaProps.disabled = false;
+  }
+
+  if (roleValue === 'progressbar') {
+    if (!element.ariaProps.valuemin) element.ariaProps.valuemin = '0';
+    if (!element.ariaProps.valuemax) element.ariaProps.valuemax = '100';
+    if (!element.ariaProps.valuenow) element.ariaProps.valuenow = '0';
+  }
+
+  if (roleValue === 'link') {
+    if (!element.ariaProps.label && !element.ariaProps.labelledby) element.ariaProps.label = `Lien ${element.id}`;
+  }
+
+  if (roleValue === 'img' || roleValue === 'image') {
+    if (!element.ariaProps.label && !element.ariaProps.labelledby) element.ariaProps.label = `Image ${element.id}`;
+  }
+
+  if (roleValue === 'heading') {
+    if (!element.ariaProps.level) element.ariaProps.level = '2';
+  }
+
+  if (roleValue === 'checkbox') {
+    if (!element.ariaProps.checked) element.ariaProps.checked = false;
+  }
+
+  if (roleValue === 'combobox' || roleValue === 'listbox') {
+    if (!element.ariaProps.expanded) element.ariaProps.expanded = false;
+    if (!element.ariaProps.controls) element.ariaProps.controls = `${element.id}-list`;
+  }
+
+  if (roleValue === 'grid' || roleValue === 'table') {
+    if (!element.ariaProps.rowcount) element.ariaProps.rowcount = '0';
+    if (!element.ariaProps.colcount) element.ariaProps.colcount = '0';
+  }
+
+  if (roleValue === 'dialog' || roleValue === 'alertdialog') {
+    if (!element.ariaProps.modal) element.ariaProps.modal = true;
+  }
+
+  if (roleValue === 'slider') {
+    if (!element.ariaProps.valuemin) element.ariaProps.valuemin = '0';
+    if (!element.ariaProps.valuemax) element.ariaProps.valuemax = '100';
+    if (!element.ariaProps.valuenow) element.ariaProps.valuenow = '50';
+    if (!element.ariaProps.orientation) element.ariaProps.orientation = 'horizontal';
+  }
+};
+
+watch(() => selectedElement.value?.ariaRole, (newRole, oldRole) => {
+  if (selectedElement.value && newRole && newRole !== oldRole) {
+    suggestAriaAttributesForRole(selectedElement.value);
+  }
+});
+
 </script>
 
 <style scoped>
@@ -1236,11 +1671,27 @@ watch(codeTab, () => {
   overflow-y: auto;
   border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
-.preview-area {
+.preview-area-seo {
   flex: 1;
-  background-color: #f5f5f5;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(103, 90, 200, 0.4), transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(45, 158, 225, 0.4), transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(200, 80, 190, 0.3), transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(24, 144, 132, 0.3), transparent 35%),
+    linear-gradient(120deg, rgba(10, 15, 30, 0.1), rgba(20, 35, 60, 0.2));
   overflow: auto
 }
+
+.preview-area-classic {
+  flex: 1;
+  background:
+    radial-gradient(circle at 75% 25%, rgba(var(--v-theme-info), 0.3), transparent 40%),
+    radial-gradient(circle at 25% 75%, rgba(70, 130, 180, 0.3), transparent 35%),
+    radial-gradient(circle at 90% 85%, rgba(60, 179, 113, 0.2), transparent 30%),
+    linear-gradient(135deg, rgba(25, 25, 40, 0.05), rgba(45, 45, 60, 0.1));
+  overflow: auto;
+}
+
 .preview-canvas {
   min-height: 60vh;
   border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));

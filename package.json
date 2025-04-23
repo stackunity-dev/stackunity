@@ -81,9 +81,11 @@
     "vite-plugin-monaco-editor": "^1.1.0",
     "vite-plugin-vuetify": "^2.1.0",
     "vue": "latest",
+    "vue-and-devices-mocks": "^1.0.0",
     "vue-chartjs": "^5.3.2",
     "vue-echarts": "^7.0.3",
     "vue-router": "latest",
+    "vue-three-d-mockup": "^1.0.2",
     "vuedraggable": "^2.24.3",
     "vuetify": "^3.7.13"
   },

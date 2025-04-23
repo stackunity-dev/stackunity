@@ -1,11 +1,43 @@
 <template>
   <v-app>
-    <v-main class="w-100 h-100 overflow-hidden d-flex">
-      <div class="control-panel" style="width: 350px;">
+    <v-main class="w-100 h-100 overflow-hidden d-flex" role="main">
+      <div class="control-panel" role="complementary" aria-label="Card customization panel">
         <v-card flat class="fill-height">
-          <div class="px-4 py-2 d-flex align-center">
-            <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2">Vue.js</v-chip>
-            <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2">Vuetify</v-chip>
+          <div class="px-4 py-2 d-flex align-center" role="group" aria-label="Framework indicators">
+            <v-chip color="primary" prepend-icon="mdi-vuejs" size="small" class="mr-2"
+              aria-label="Vue.js framework">Vue.js</v-chip>
+            <v-chip color="secondary" prepend-icon="mdi-vuetify" size="small" class="mr-2"
+              aria-label="Vuetify framework">Vuetify</v-chip>
+            <v-chip color="tertiary" prepend-icon="mdi-palette" size="small" class="mr-12" aria-label="Studio mode">{{
+              studioMode === 'studio' ? 'Studio' : 'SEO' }}</v-chip>
+            <v-menu offset-y>
+              <template v-slot:activator="{ props }">
+                <v-btn v-if="studioMode === 'studio-seo'" class="ml-7" icon density="comfortable" variant="text"
+                  v-bind="props" color="secondary" aria-label="Test vision impairments" size="small">
+                  <v-icon>{{ visionTypeIcon }}</v-icon>
+                  <v-tooltip activator="parent" location="top">
+                    Try different vision types
+                  </v-tooltip>
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item v-for="type in visionTypes" :key="type.value"
+                  @click="selectedVisionType = type.value; applyVisionFilter()">
+                  <template v-slot:prepend>
+                    <v-icon :icon="type.icon" :color="selectedVisionType === type.value ? 'primary' : ''"></v-icon>
+                  </template>
+                  <v-list-item-title>{{ type.title }}</v-list-item-title>
+                </v-list-item>
+                <v-divider v-if="selectedVisionType !== 'normal'"></v-divider>
+                <v-list-item v-if="selectedVisionType !== 'normal'">
+                  <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" label="Intensity" hide-details
+                    class="px-2 py-0" density="compact" @update:model-value="applyVisionFilter">
+                  </v-slider>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <PremiumFeature v-if="!userStore.user.isPremium" premium-link="/subscribe" title="Studio components"
+              icon="mdi-palette" type="chip" feature-key="studioComponents" aria-label="Premium feature indicator" />
           </div>
 
           <v-tabs v-model="tab" color="primary" align-tabs="center" class="px-4">
@@ -373,17 +405,18 @@
         </v-card>
       </div>
 
-      <div class="preview-area pa-4 d-flex flex-column">
+      <div class="pa-4 d-flex flex-column"
+        :class="studioMode === 'studio-seo' ? 'preview-area-seo' : 'preview-area-classic'">
         <div class="d-flex justify-space-between align-center mb-3">
-          <v-chip color="primary" variant="flat" size="small" class="mr-2">
+          <v-chip :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="flat" size="small"
+            class="mr-2">
             <v-icon start size="small">mdi-eye</v-icon>
             Live Preview
           </v-chip>
         </div>
 
-        <div class="preview-canvas flex-grow-1 pa-4 bg-grey-darken-4 rounded-lg">
+        <div class="preview-canvas flex-grow-1 pa-4 bg-transparent rounded-lg" :style="filterStyle">
           <div class="d-flex align-center justify-center w-100 h-100">
-            <!-- Button Preview -->
             <v-btn v-if="selectedType === 'button'" :color="properties.color" :variant="properties.variant"
               :size="properties.size" :disabled="properties.disabled" :block="properties.block"
               :rounded="properties.rounded" :prepend-icon="properties.icon" :href="properties.href"
@@ -392,7 +425,6 @@
               {{ properties.text || 'Button' }}
             </v-btn>
 
-            <!-- Badge Preview -->
             <v-badge v-else-if="selectedType === 'badge'" :content="properties.text" :color="properties.color"
               :location="properties.position">
               <v-avatar size="48">
@@ -400,13 +432,11 @@
               </v-avatar>
             </v-badge>
 
-            <!-- Alert Preview -->
             <v-alert v-else-if="selectedType === 'alert'"
               :type="properties.color === 'default' ? undefined : properties.color as AlertType"
               :variant="properties.variant" :title="properties.text" :text="properties.description"
               :icon="properties.icon" class="w-100"></v-alert>
 
-            <!-- Chip Preview -->
             <v-chip v-else-if="selectedType === 'chip'" :color="properties.color" :variant="properties.variant"
               :size="properties.size" :prepend-icon="properties.icon">
               {{ properties.text || 'Chip' }}
@@ -519,15 +549,25 @@ import {
   RadialLinearScale,
   Title, Tooltip
 } from 'chart.js';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, inject, nextTick, ref, watch } from 'vue';
 import { Bar, Doughnut, Line, Pie, PolarArea, Radar } from 'vue-chartjs';
 import Snackbar from '../../components/snackbar.vue';
 import { useUserStore } from '../../stores/userStore';
 import { getUtilsTemplate } from '../../utils/utilsTemplates';
 import theme from '../../utils/theme';
+import { StudioModeInjection } from './studio-types';
+import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
+import { componentTypes, selectedType, variants, sizes, positions, gradients, eventTypes, transitions, buttonTypes, colors, properties, showIconField, showPosition, showDescription, chartData, chartOptions, AlertType } from './types/type-utils';
 
 const emit = defineEmits(['update:content', 'save']);
 const userStore = useUserStore();
+
+const studioModeInjection = inject<StudioModeInjection>('studioMode')
+if (!studioModeInjection) {
+  console.error('studioMode injection not found')
+}
+
+const studioMode = computed(() => studioModeInjection?.mode?.value || 'studio')
 
 const tab = ref('type');
 const codeElement = ref<HTMLElement | null>(null);
@@ -553,181 +593,6 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
-const componentTypes = [
-  { text: 'Button', value: 'button' },
-  { text: 'Badge', value: 'badge' },
-  { text: 'Alert', value: 'alert' },
-  { text: 'Chip', value: 'chip' },
-  { text: 'Date Picker', value: 'date' },
-  { text: 'Data Table', value: 'table' },
-  { text: 'Chart', value: 'chart' },
-  { text: 'File Upload', value: 'file' },
-];
-
-const selectedType = ref('button');
-
-type Variant = 'text' | 'outlined' | 'plain' | 'elevated' | 'tonal' | 'flat';
-type Size = 'x-small' | 'small' | 'default' | 'large' | 'x-large';
-type Position = 'top start' | 'top end' | 'bottom start' | 'bottom end';
-type AlertType = 'success' | 'info' | 'warning' | 'error';
-
-const variants: Variant[] = ['text', 'outlined', 'plain', 'elevated', 'tonal', 'flat'];
-const sizes: Size[] = ['x-small', 'small', 'default', 'large', 'x-large'];
-const positions: Position[] = ['top start', 'top end', 'bottom start', 'bottom end'];
-
-const gradients = [
-  'to top right',
-  'to right',
-  'to bottom right',
-  'to bottom',
-  'to bottom left',
-  'to left',
-  'to top left',
-  'to top'
-];
-
-const eventTypes = [
-  'click',
-  'change',
-  'input',
-  'focus',
-  'blur',
-  'mouseenter',
-  'mouseleave',
-  'submit'
-];
-
-const transitions = [
-  'none',
-  'fade',
-  'slide-x',
-  'slide-y',
-  'scale',
-  'scroll-x',
-  'scroll-y'
-];
-
-const buttonTypes = [
-  'button',
-  'submit',
-  'reset'
-];
-
-const colors = [
-  { text: 'Default', value: 'default' },
-  { text: 'Primary', value: 'primary' },
-  { text: 'Secondary', value: 'secondary' },
-  { text: 'Success', value: 'success' },
-  { text: 'Info', value: 'info' },
-  { text: 'Warning', value: 'warning' },
-  { text: 'Error', value: 'error' }
-] as const;
-
-type ColorValue = typeof colors[number]['value'];
-
-const properties = ref({
-  variant: 'elevated' as Variant,
-  size: 'default' as Size,
-  color: 'primary' as ColorValue,
-  text: '',
-  icon: '',
-  description: '',
-  position: 'top end' as Position,
-  rounded: false,
-  block: false,
-  disabled: false,
-  loading: false,
-  href: '',
-  target: '_self',
-  elevation: 0,
-  gradient: '',
-  date: ref([]),
-  landscape: false,
-  multiple: false,
-  fullWidth: false,
-  showWeek: false,
-  title: '',
-  showAdjacentMonths: true,
-  eventType: 'click',
-  eventHandler: '',
-  stopPropagation: false,
-  preventDefault: false,
-  transition: 'none',
-  transitionDuration: 300,
-  ripple: true,
-  eager: false,
-  closeOnContentClick: false,
-  closeOnBack: false,
-  buttonType: 'button',
-  formAction: '',
-
-  tableHeaders: [
-    { title: 'Name', key: 'name', sortable: true },
-    { title: 'Email', key: 'email', sortable: true },
-    { title: 'Status', key: 'status', sortable: false }
-  ],
-  tableItems: [
-    { name: 'John Doe', email: 'john@example.com', status: 'Active' },
-    { name: 'Jack Smith', email: 'jack@example.com', status: 'Pending' },
-    { name: 'Bob Johnson', email: 'bob@example.com', status: 'Inactive' }
-  ] as Record<string, string>[],
-  itemsPerPage: 5,
-  sortBy: 'name',
-  sortOrder: 'asc' as 'asc' | 'desc',
-  showSelect: false,
-  showFooter: true,
-  dense: false,
-
-  chartType: 'bar',
-  chartData: [12, 19, 3, 5, 2, 3],
-  chartLabels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-  showLegend: true,
-  responsive: true,
-  maintainAspectRatio: true,
-
-  acceptTypes: 'image/*',
-  maxFiles: 5,
-  maxSize: 2,
-  dropzoneText: 'Drop files here or click to upload',
-  showPreview: true,
-  autoUpload: true,
-  chips: true,
-  counter: true,
-  validateOnSelect: true,
-  returnObject: false,
-});
-
-const showIconField = computed(() => ['button', 'badge', 'alert', 'chip'].includes(selectedType.value));
-const showPosition = computed(() => selectedType.value === 'badge');
-const showDescription = computed(() => selectedType.value === 'alert');
-
-const chartData = computed(() => {
-  const chartColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
-
-  return {
-    labels: properties.value.chartLabels,
-    datasets: [{
-      label: 'Dataset',
-      data: properties.value.chartData,
-      backgroundColor: chartColors,
-      borderColor: properties.value.chartType === 'line' ? '#36A2EB' : chartColors,
-      borderWidth: 1
-    }]
-  };
-});
-
-const chartOptions = computed(() => {
-  return {
-    responsive: properties.value.responsive,
-    maintainAspectRatio: properties.value.maintainAspectRatio,
-    plugins: {
-      legend: {
-        display: properties.value.showLegend
-      }
-    }
-  };
-});
 
 const generateUtilsCode = () => {
   const templateCode = generateTemplateCode();
@@ -1264,18 +1129,32 @@ watch(codeTab, () => {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.preview-area {
+
+.preview-area-seo {
   flex: 1;
-  background-color: #f5f5f5;
-  overflow: auto;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(103, 90, 200, 0.4), transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(45, 158, 225, 0.4), transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(200, 80, 190, 0.3), transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(24, 144, 132, 0.3), transparent 35%),
+    linear-gradient(120deg, rgba(10, 15, 30, 0.1), rgba(20, 35, 60, 0.2));
+  overflow: auto
 }
 
+.preview-area-classic {
+  flex: 1;
+  background:
+    radial-gradient(circle at 75% 25%, rgba(var(--v-theme-info), 0.3), transparent 40%),
+    radial-gradient(circle at 25% 75%, rgba(70, 130, 180, 0.3), transparent 35%),
+    radial-gradient(circle at 90% 85%, rgba(60, 179, 113, 0.2), transparent 30%),
+    linear-gradient(135deg, rgba(25, 25, 40, 0.05), rgba(45, 45, 60, 0.1));
+  overflow: auto;
+}
 .preview-canvas {
+  min-height: 60vh;
+  border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-  min-height: 400px;
-  max-height: 70vh;
-  background-color: white;
+  background-image: repeating-linear-gradient(45deg, var(--v-theme-surface) 0, var(--v-theme-surface) 10px, var(--v-theme-surface-variant) 10px, var(--v-theme-surface-variant) 20px);
 }
 
 canvas {

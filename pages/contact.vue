@@ -1,19 +1,21 @@
 <template>
   <v-app>
-    <v-app-bar app flat elevation="2" color="surface">
-      <v-container class="d-flex align-center py-0 my-0">
-        <NuxtLink to="/" class="text-decoration-none">
-          <div class="d-flex align-center">
-            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
-          </div>
-        </NuxtLink>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" to="/" class="ml-4">Back to Home</v-btn>
-      </v-container>
-    </v-app-bar>
+    <header>
+      <v-app-bar app flat elevation="2" color="surface">
+        <v-container class="d-flex align-center py-0 my-0">
+          <NuxtLink to="/" class="text-decoration-none">
+            <div class="d-flex align-center">
+              <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
+            </div>
+          </NuxtLink>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" to="/" class="ml-4">Back to Home</v-btn>
+        </v-container>
+      </v-app-bar>
+    </header>
 
-    <v-main>
-      <v-container class="py-12">
+    <main>
+      <v-container class="py-12 mt-12">
         <v-row justify="center">
           <v-col cols="12" md="10" lg="8">
             <v-card class="pa-8 mb-8 rounded-xl">
@@ -58,17 +60,20 @@
           </v-col>
         </v-row>
       </v-container>
-    </v-main>
+    </main>
 
-    <v-footer class="py-4">
+    <footer class="py-6 bg-surface">
       <v-container>
-        <div class="text-center">
-          <p class="text-body-2 text-medium-emphasis">
+        <div class="d-flex flex-column flex-md-row justify-space-between align-center">
+          <div class="mb-4 mb-md-0">
+            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="120">
+          </div>
+          <div class="text-body-2 text-medium-emphasis">
             &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
-          </p>
+          </div>
         </div>
       </v-container>
-    </v-footer>
+    </footer>
 
     <Snackbar v-model="snackbar.show" :color="snackbar.color" :text="snackbar.text" :timeout="snackbar.timeout" />
   </v-app>

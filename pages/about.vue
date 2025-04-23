@@ -2,15 +2,13 @@
   <v-app>
     <header>
       <v-app-bar app flat elevation="2" color="surface">
-        <nav class="d-flex align-center py-0 my-0">
-          <NuxtLink to="/" class="text-decoration-none">
-            <div class="d-flex align-center">
-              <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
-            </div>
-          </NuxtLink>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" to="/" class="ml-4">Back to Home</v-btn>
-        </nav>
+        <NuxtLink to="/" class="text-decoration-none">
+          <div class="d-flex align-center mx-4">
+            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
+          </div>
+        </NuxtLink>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" to="/" class="mr-4">Back to Home</v-btn>
       </v-app-bar>
     </header>
 

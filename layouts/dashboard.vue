@@ -98,18 +98,51 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar class="border-b page-header px-4" color="primary" flat scroll-behavior="elevate" :elevation="0">
+    <v-app-bar class="border-b page-header px-4" :color="getHeaderColor()" flat scroll-behavior="elevate"
+      :elevation="0">
       <v-app-bar-nav-icon v-if="display.smAndDown.value" @click="drawer = !drawer"
         color="on-surface"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
         <v-icon size="large" class="mr-3">{{ getCurrentPageIcon() }}</v-icon>
-        <div class="text-h5 font-weight-bold">{{ currentPageTitle }}</div>
+        <div class="text-h5 font-weight-bold">{{ currentPageTitle }}
+          <v-menu v-if="currentPageTitle === 'Studio'" offset-y>
+            <template v-slot:activator="{ props }">
+              <v-chip v-bind="props" :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="elevated"
+                size="small" class="ml-2" :elevation="4">
+                <v-icon start size="small">{{ studioMode === 'studio-seo' ? 'mdi-magnify' : 'mdi-palette' }}</v-icon>
+                {{ studioMode === 'studio-seo' ? 'SEO' : 'Studio' }}
+                <v-icon end size="x-small" class="ml-1">mdi-chevron-down</v-icon>
+              </v-chip>
+            </template>
+            <v-list density="compact" width="180">
+              <v-list-item @click="setStudioMode('studio')" :active="studioMode === 'studio'">
+                <template v-slot:prepend>
+                  <v-icon color="primary">mdi-palette</v-icon>
+                </template>
+                <v-list-item-title>Studio Mode</v-list-item-title>
+                <template v-slot:append>
+                  <v-icon v-if="studioMode === 'studio'" color="primary" size="small">mdi-check</v-icon>
+                </template>
+              </v-list-item>
+              <v-list-item @click="setStudioMode('studio-seo')" :active="studioMode === 'studio-seo'">
+                <template v-slot:prepend>
+                  <v-icon color="secondary">mdi-magnify</v-icon>
+                </template>
+                <v-list-item-title>SEO Mode</v-list-item-title>
+                <template v-slot:append>
+                  <v-icon v-if="studioMode === 'studio-seo'" color="secondary" size="small">mdi-check</v-icon>
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
       </div>
+
     </v-app-bar>
 
     <v-main class="pa-0">
       <div class="content-wrapper">
-        <NuxtPage />
+        <NuxtPage :studio-mode="studioMode" />
         <Task v-if="openTask" />
       </div>
     </v-main>
@@ -117,7 +150,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, markRaw, onMounted, ref, watch } from 'vue';
+import { computed, markRaw, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
@@ -133,6 +166,16 @@ const display = useDisplay();
 const drawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
 const openTask = ref(false);
+const studioMode = ref('studio');
+
+// Provide studio mode to child components
+provide('studioMode', {
+  mode: studioMode,
+  isDesignMode: computed(() => studioMode.value === 'studio'),
+  isSEOMode: computed(() => studioMode.value === 'studio-seo'),
+  setMode: (mode: string) => studioMode.value = mode,
+  toggleMode: () => studioMode.value = studioMode.value === 'studio' ? 'studio-seo' : 'studio'
+});
 
 watch(() => route.path, (newPath, oldPath) => {
   if (display.smAndDown.value) {
@@ -316,6 +359,26 @@ const getCurrentPageIcon = () => {
   } else {
     return 'mdi-application';
   }
+};
+
+const getHeaderColor = () => {
+  if (currentPageTitle.value === 'Studio') {
+    return studioMode.value === 'studio-seo' ? 'secondary' : 'primary';
+  } else if (currentPageTitle.value === 'Website analyzer') {
+    return 'secondary';
+  } else if (currentPageTitle.value === 'API Testing Hub') {
+    return 'info';
+  } else {
+    return 'primary';
+  }
+};
+
+const setStudioMode = (mode) => {
+  studioMode.value = mode;
+};
+
+const toggleStudioMode = () => {
+  studioMode.value = studioMode.value === 'studio' ? 'studio-seo' : 'studio';
 };
 
 const closeDrawer = () => {

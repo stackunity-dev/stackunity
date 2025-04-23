@@ -1,14 +1,21 @@
 <template>
-  <div class="terms-page pa-4 pa-sm-6 pa-md-8 pa-lg-12">
-    <v-container>
-      <div class="d-flex flex-column align-center mb-6">
-        <NuxtLink to="/" class="mb-4">
-          <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
-        </NuxtLink>
-        <h1 class="text-h3 font-weight-bold text-center">Terms of Service</h1>
-      </div>
+  <v-app>
+    <header>
+      <v-app-bar app flat elevation="2" color="surface">
+        <v-container class="d-flex align-center py-0 my-0">
+          <NuxtLink to="/" class="text-decoration-none">
+            <div class="d-flex align-center">
+              <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
+            </div>
+          </NuxtLink>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" to="/" class="ml-4">Back to Home</v-btn>
+        </v-container>
+      </v-app-bar>
+    </header>
 
-      <v-card class="pa-6 mb-6">
+    <main>
+      <v-card class="pa-6 mb-6 mt-12">
         <div class="terms-content">
           <h2 class="text-h5 font-weight-bold mb-4">1. Acceptance of Terms</h2>
           <p class="mb-4">
@@ -104,22 +111,23 @@
           </div>
         </div>
       </v-card>
+    </main>
 
-      <div class="text-center">
-        <p class="text-caption text-medium-emphasis">
-          Last updated: {{ new Date().toLocaleDateString() }}
-        </p>
-        <p class="text-caption text-medium-emphasis">
-          &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
-        </p>
-        <div class="d-flex justify-center mt-2 legal-links">
-          <a href="/privacy" class="mx-2 text-caption">Privacy Policy</a>
-          <a href="/notices" class="mx-2 text-caption">Legal Notices</a>
-          <a href="/contact" class="mx-2 text-caption">Contact</a>
+    <footer class="py-6 bg-surface">
+      <v-container>
+        <div class="text-center">
+          <p class="text-body-2 text-medium-emphasis">
+            &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
+          </p>
+          <div class="d-flex justify-center mt-2 legal-links">
+            <a href="/terms" class="mx-2 text-caption">Terms</a>
+            <a href="/notices" class="mx-2 text-caption">Legal Notices</a>
+            <a href="/contact" class="mx-2 text-caption">Contact</a>
+          </div>
         </div>
-      </div>
-    </v-container>
-  </div>
+      </v-container>
+    </footer>
+  </v-app>
 </template>
 
 <script setup lang="ts">

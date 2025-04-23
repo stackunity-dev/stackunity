@@ -96,56 +96,43 @@
           <section class="hero-section py-16" aria-labelledby="hero-heading">
             <v-container>
               <v-row align="center" justify="center">
-                <v-col cols="12" md="6" class="text-center text-md-start">
-                  <h1 id="hero-heading" class="text-h2 font-weight-bold mb-4">
-                    <span class="text-primary">StackUnity</span> - The all-in-one platform for developers
+                <v-col cols="12" md="9"
+                  class="text-center justify-center d-flex flex-column align-center text-md-start">
+                  <h1 id="hero-heading" class="text-h2 text-gradient text-center font-weight-bold mb-4"
+                    style="max-width: 800px">
+                    Simplify your development workflow in just a few clicks and develop faster
                   </h1>
-                  <p class="text-h5 mb-4 text-medium-emphasis">
-                    Create, optimise and monitor your websites with our integrated professional tools.
+                  <p class="text-h5 mb-4 text-medium-emphasis text-center">
+                    Develop faster and simplify your workflow with our integrated professional tools. Build, manage and
+                    optimize your projects for a site that is more accessible, user-friendly and SEO-friendly.
                   </p>
-                  <div class="features-banner d-flex flex-wrap mb-6">
-                    <div class="mini-feature mr-4 mb-2">
-                      <v-icon color="primary" size="small" class="mr-1">mdi-check-circle</v-icon>
-                      <span class="text-body-2">Website audit</span>
-                    </div>
-                    <div class="mini-feature mr-4 mb-2">
-                      <v-icon color="primary" size="small" class="mr-1">mdi-check-circle</v-icon>
-                      <span class="text-body-2">SQL visualizer</span>
-                    </div>
-                    <div class="mini-feature mr-4 mb-2">
-                      <v-icon color="primary" size="small" class="mr-1">mdi-check-circle</v-icon>
-                      <span class="text-body-2">Accessibility</span>
-                    </div>
-                    <div class="mini-feature mb-2">
-                      <v-icon color="primary" size="small" class="mr-1">mdi-check-circle</v-icon>
-                      <span class="text-body-2">API testing hub</span>
+                  <div class="features-banner d-flex flex-wrap justify-center mb-6">
+                    <div class="mini-feature mr-4 mb-2" v-for="feature in heroFeatures" :key="feature">
+                      <v-icon color="tertiary" size="small" class="mr-1">mdi-check-circle</v-icon>
+                      <span class="text-body-2">{{ feature }}</span>
                     </div>
                   </div>
-                  <div class="d-flex flex-column flex-sm-row ga-4 justify-center justify-md-start" role="group"
+                  <div class="d-flex flex-column flex-sm-row ga-4 justify-center" role="group"
                     aria-label="Call to action">
-                    <v-btn color="success" size="x-large" aria-label="Créer un compte" to="/signup" variant="elevated"
+                    <v-btn color="secondary" size="x-large" aria-label="Créer un compte" to="/signup" variant="elevated"
                       class="px-8" :elevation="getElevation('start-free-trial', 6, 20)"
                       @mouseenter="setHoverOn('start-free-trial')" @mouseleave="setHoverOff('start-free-trial')">
                       <v-icon start aria-hidden="true">mdi-rocket-launch-outline</v-icon>
-                      Create an account
-                    </v-btn>
-                    <v-btn variant="elevated" color="info" size="x-large" aria-label="Watch the demo" href="#preview"
-                      class="px-8 mt-3 mt-sm-0 ml-sm-4" :elevation="getElevation('watch-demo', 6, 20)"
-                      @mouseenter="setHoverOn('watch-demo')" @mouseleave="setHoverOff('watch-demo')">
-                      <v-icon start aria-hidden="true">mdi-play-circle-outline</v-icon>
-                      Watch the demo
+                      Simplify your workflow now
                     </v-btn>
                   </div>
-                </v-col>
-                <v-col cols="12" md="6" class="d-none d-md-flex justify-center">
-                  <v-img src="/images/preview-stackunity.avif" max-width="600" class="hero-image rounded-lg"
-                    loading="eager" alt="Aperçu de la plateforme StackUnity" cover></v-img>
                 </v-col>
               </v-row>
             </v-container>
           </section>
         </FadeInSection>
 
+        <FadeInSection>
+          <section class="py-16 d-flex justify-center" aria-labelledby="how-it-works-heading">
+            <img src="/public/images/preview-stackunity.avif" alt="Aperçu de la plateforme StackUnity"
+              class="hero-image rounded-lg" loading="eager" width="80%">
+          </section>
+        </FadeInSection>
 
         <FadeInSection>
           <section class="stats-section py-8" aria-labelledby="stats-heading">
@@ -162,12 +149,49 @@
         </FadeInSection>
 
         <FadeInSection>
+          <section class="py-16 bad-experiences-section" aria-labelledby="bad-experiences-heading">
+            <v-container>
+              <div class="text-center mb-12">
+                <h2 id="bad-experiences-heading" class="text-h3 text-gradient font-weight-bold mb-4">
+                  Don't let bad experiences drive your users away
+                </h2>
+                <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
+                  Discover how our tools can help you create a better user experience
+                </p>
+              </div>
+
+              <v-row class="mx-0">
+                <v-col cols="12" md="4" v-for="(badExperience, index) in badExperiences" :key="badExperience.title">
+                  <v-card class="bad-experience-card h-100" :class="`border-${badExperience.color}`" elevation="0">
+                    <v-card-item>
+                      <v-avatar :color="badExperience.color" size="56" class="mb-4">
+                        <v-icon size="24">{{ badExperience.icon }}</v-icon>
+                      </v-avatar>
+                      <v-card-title class="text-h5 font-weight-bold pt-2">
+                        {{ badExperience.title }}
+                      </v-card-title>
+                      <v-card-subtitle class="pt-2 text-medium-emphasis d-flex flex-wrap">
+                        Did you know that {{ badExperience.ctv }}
+                      </v-card-subtitle>
+                      <v-card-text class="text-body-1">
+                        {{ badExperience.text }}
+                      </v-card-text>
+                    </v-card-item>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-container>
+          </section>
+        </FadeInSection>
+
+        <FadeInSection>
           <section id="features" class="py-16" aria-labelledby="features-heading">
             <v-container>
               <div class="text-center mb-12">
                 <span class="section-subtitle text-uppercase font-weight-medium text-primary mb-2 d-block">Main
                   features</span>
-                <h2 id="features-heading" class="text-h3 font-weight-bold mb-3">Powerful tools for your projects
+                <h2 id="features-heading" class="text-h3 text-gradient font-weight-bold mb-3">Powerful tools for your
+                  projects
                 </h2>
                 <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
                   StackUnity gathers all the tools you need to develop modern web applications on a single platform.
@@ -228,52 +252,47 @@
                   </article>
                 </v-col>
               </v-row>
+              <div class="d-flex justify-center mt-4">
+                <v-btn size="large" color="secondary" variant="elevated" class="px-8 rounded-pill"
+                  :elevation="getElevation('get-started-now', 2, 20)" @mouseenter="setHoverOn('get-started-now')"
+                  @mouseleave="setHoverOff('get-started-now')" to="/signup" aria-label="Get started now" nuxt>
+                  Get started now
+                  <v-icon end aria-hidden="true">mdi-rocket-launch-outline</v-icon>
+                </v-btn>
+              </div>
             </v-container>
           </section>
         </FadeInSection>
 
-        <section class="py-16" aria-labelledby="how-it-works-heading">
+        <section class="py-16 how-it-works-section" aria-labelledby="how-it-works-heading">
           <v-container>
             <div class="text-center mb-12">
-              <h2 id="how-it-works-heading" class="text-h3 font-weight-bold mb-3">How it works</h2>
+              <h2 id="how-it-works-heading" class="text-h3 text-gradient font-weight-bold mb-3">How it works</h2>
               <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
-                Three simple steps to start using StackUnity and transform your development workflow.
+                Three simple steps to transform your development workflow
               </p>
             </div>
 
-            <v-row justify="center" class="mt-8">
-              <v-col v-for="(step, i) in steps" :key="i" cols="12" md="4" class="px-4">
-                <article role="article" aria-labelledby="step-title-{{ i }}">
-                  <v-card class="h-100 rounded-xl" elevation="3" :class="`border-${step.color}`"
-                    style="border-top: #00658b 4px solid;">
-                    <v-card-item>
-                      <v-avatar :color="step.color" size="56" class="mb-4" aria-label="Step {{ i + 1 }}">
-                        <span class="text-h5 font-weight-bold white--text">{{ i + 1 }}</span>
-                      </v-avatar>
-                    </v-card-item>
-                    <v-card-title id="step-title-{{ i }}" class="text-h5 font-weight-bold">{{ step.title
-                    }}</v-card-title>
+            <v-timeline align="center" line-color="secondary" line-width="2" direction="horizontal">
+              <v-timeline-item v-for="(step, i) in steps" :key="i" :dot-color="step.color" size="large"
+                :icon="getStepIcon(i)" line-inset="12">
+                <template v-slot:opposite>
+                  <div class="text-h2 font-weight-bold" :class="`text-${step.color}`">0{{ i + 1 }}</div>
+                </template>
+                <v-card :class="`border-${step.color} timeline-card`" elevation="0">
+                  <v-card-item>
+                    <v-card-title class="text-h5 font-weight-bold">{{ step.title }}</v-card-title>
                     <v-card-text class="text-body-1">{{ step.description }}</v-card-text>
-                    <v-card-actions class="pa-4">
-                      <v-btn :color="step.color" variant="text" class="text-none" :to="step.link"
-                        :aria-label="`Learn more about ${step.title}`">
+                    <v-card-actions>
+                      <v-btn :color="step.color" variant="text" :to="step.link" class="px-0">
                         Learn more
-                        <v-icon right aria-hidden="true">mdi-arrow-right</v-icon>
+                        <v-icon end>mdi-arrow-right</v-icon>
                       </v-btn>
                     </v-card-actions>
-                  </v-card>
-                </article>
-              </v-col>
-            </v-row>
-
-            <div class="d-flex justify-center mt-12">
-              <v-btn size="large" color="info" variant="elevated" class="px-8 rounded-pill"
-                :elevation="getElevation('get-started-now', 2, 20)" @mouseenter="setHoverOn('get-started-now')"
-                @mouseleave="setHoverOff('get-started-now')" to="/signup" aria-label="Get started now" nuxt>
-                Get started now
-                <v-icon end aria-hidden="true">mdi-rocket-launch-outline</v-icon>
-              </v-btn>
-            </div>
+                  </v-card-item>
+                </v-card>
+              </v-timeline-item>
+            </v-timeline>
           </v-container>
         </section>
 
@@ -289,14 +308,16 @@
           <v-container>
             <v-row justify="center">
               <v-col cols="12" md="8" class="text-center">
-                <h2 id="cta-heading" class="text-h3 font-weight-bold white--text mb-4">Ready to start ?</h2>
+                <h2 id="cta-heading" class="text-h3 text-gradient font-weight-bold white--text mb-4">Ready to start ?
+                </h2>
                 <p class="text-subtitle-1 white--text text-opacity-high mb-8">
-                  Join the community that uses StackUnity for their projects.
+                  Simplify your workflow with our tools and get more rest now.
                 </p>
-                <v-btn x-large color="info" variant="elevated" :elevation="getElevation('create-free-account', 2, 20)"
+                <v-btn x-large color="secondary" variant="elevated"
+                  :elevation="getElevation('create-free-account', 2, 20)"
                   @mouseenter="setHoverOn('create-free-account')" @mouseleave="setHoverOff('create-free-account')"
                   class="px-8" aria-label="Create an account" to="/signup">
-                  Create an account
+                  7-day free trial
                 </v-btn>
               </v-col>
             </v-row>
@@ -314,7 +335,7 @@
                 loading="eager">
             </div>
             <p class="text-body-2 text-medium-emphasis mb-4">
-              The all-in-one platform for developers who want to create, manage and optimize their web projects.
+              Simplify your workflow with our tools and get more rest now.
             </p>
             <div class="newsletter-signup mb-6">
               <form class="d-flex" aria-label="Newsletter Subscription">
@@ -390,6 +411,8 @@ import { useUserStore } from '../stores/userStore';
 // @ts-ignore 
 import { definePageMeta, useHead } from '#imports';
 import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
+import { applyVisionFilter, filterStyle, selectedVisionType, visionTypeIcon, visionTypes, filterIntensity } from '../utils/filter';
+
 definePageMeta({
   layout: 'empty'
 })
@@ -428,6 +451,7 @@ useHead({
 const Pricing = defineAsyncComponent(() => import('../components/pricing.vue'));
 const Faq = defineAsyncComponent(() => import('../components/faq.vue'));
 
+const heroFeatures = ['Website audit', 'SQL visualizer', 'Accessibility', 'API testing'];
 const stats = [
   { value: '10x', label: 'Accelerated development' },
   { value: '100%', label: 'Code quality' },
@@ -437,40 +461,40 @@ const stats = [
 
 const features = [
   {
-    title: 'Code snippets',
-    description: 'Create, share and reuse code snippets to accelerate your development.',
+    title: 'Snippets',
+    description: 'Create and manage reusable code snippets for all your projects.',
     icon: 'mdi-code-tags',
     color: 'primary'
   },
   {
-    title: 'SQL visualizer',
-    description: 'Design visually your database schemas and generate the corresponding SQL code.',
-    icon: 'mdi-database',
-    color: 'info'
+    title: 'Studio',
+    description: 'Create modern user interfaces with our integrated design studio.',
+    icon: 'mdi-palette',
+    color: 'secondary'
   },
   {
-    title: 'Website audit',
-    description: 'Analyze and optimize the performance of your websites to improve their visibility.',
-    icon: 'mdi-magnify',
-    color: 'success'
+    title: 'Semantic',
+    description: 'Optimize your website with our semantic and ARIA analysis tools.',
+    icon: 'mdi-semantic-web',
+    color: 'tertiary'
   },
   {
     title: 'API testing',
     description: 'Test your APIs to detect security vulnerabilities and performance issues.',
     icon: 'mdi-api',
-    color: 'warning'
+    color: 'info'
+  },
+  {
+    title: 'Website analysis',
+    description: 'Analyze your website with our tools to improve its performance and accessibility.',
+    icon: 'mdi-magnify',
+    color: 'success'
   },
   {
     title: 'Accessibility',
     description: 'Check and improve the accessibility of your websites for all users.',
     icon: 'mdi-access-point',
-    color: 'error'
-  },
-  {
-    title: 'Design studio',
-    description: 'Create modern user interfaces with our integrated design studio.',
-    icon: 'mdi-palette',
-    color: 'secondary'
+    color: 'warning'
   }
 ];
 
@@ -485,13 +509,13 @@ const steps = [
     title: 'Choose your tools',
     description: 'Select the tools you need for your project from our wide range of features.',
     link: '/signup',
-    color: 'info'
+    color: 'secondary'
   },
   {
     title: 'Develop faster',
     description: 'Use our tools to accelerate your development and improve the quality of your projects.',
     link: '/signup',
-    color: 'success'
+    color: 'tertiary'
   }
 ];
 
@@ -528,6 +552,32 @@ const footerColumns = [
   }
 ];
 
+const badExperiences = [
+  {
+    title: 'Not inclusive',
+    ctv: '8% of the world\'s population have a visual impairment ?',
+    icon: 'mdi-contrast',
+    color: 'primary',
+    text: 'Your users flee because they can\'t access your site due to visual impairments ?\n' +
+      'Inclusivity is a problem that can be solved with our contrast checker and visual impairment simulator.'
+  },
+  {
+    title: 'Not optimized',
+    ctv: 'your site is not optimized for search engines ?',
+    icon: 'mdi-magnify',
+    color: 'secondary',
+    text: 'We can help you optimize the SEO of your site with our semantic and SEO analysis tool.' +
+      'We provide a unique solution that mix the best of the semantic/metadata and user engagement analysis.'
+  },
+  {
+    title: 'Not attractive',
+    ctv: 'your site is not attractive ?',
+    icon: 'mdi-palette',
+    color: 'tertiary',
+    text: 'We can help you make your site more attractive with our design studio and this seo tool.' +
+      'We can also help you with our responsive checker and content analysis tool.'
+  }
+];
 const drawer = ref(false);
 const activeSection = ref('');
 const showAppBar = ref(true);
@@ -581,100 +631,9 @@ const showMessage = (message: string, type = 'info', timeout = 3000) => {
   showSnackbar.value = true;
 };
 
-// Vision filter
-const selectedVisionType = ref('normal');
-const filterIntensity = ref(70);
-
-const visionTypes = [
-  {
-    title: 'Normal vision',
-    value: 'normal',
-    icon: 'mdi-eye'
-  },
-  {
-    title: 'Protanopia (Red-Green)',
-    value: 'protanopia',
-    icon: 'mdi-eye-minus'
-  },
-  {
-    title: 'Deuteranopia (Red-Green)',
-    value: 'deuteranopia',
-    icon: 'mdi-eye-minus'
-  },
-  {
-    title: 'Tritanopia (Blue-Yellow)',
-    value: 'tritanopia',
-    icon: 'mdi-eye-minus'
-  },
-  {
-    title: 'Achromatopsia (B&W)',
-    value: 'achromatopsia',
-    icon: 'mdi-eye-off'
-  },
-  {
-    title: 'Blur',
-    value: 'blur',
-    icon: 'mdi-blur'
-  }
-];
-
-const visionTypeIcon = computed(() => {
-  const type = visionTypes.find(t => t.value === selectedVisionType.value);
-  return type ? type.icon : 'mdi-eye';
-});
-
-const filterStyle = computed(() => {
-  const intensity = filterIntensity.value / 100;
-
-  switch (selectedVisionType.value) {
-    case 'protanopia': {
-      const matrix = [
-        0.367 + (1 - 0.367) * (1 - intensity), 0.633 * intensity, 0, 0, 0,
-        0.333 * intensity, 0.667 + (1 - 0.667) * (1 - intensity), 0, 0, 0,
-        0, 0.121 * intensity, 0.879 + (1 - 0.879) * (1 - intensity), 0, 0,
-        0, 0, 0, 1, 0
-      ].join(' ');
-      return {
-        filter: `brightness(1.1) contrast(0.95) saturate(0.9) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feColorMatrix type="matrix" values="${matrix}"/></filter></svg>#f')`
-      };
-    }
-    case 'deuteranopia': {
-      const matrix = [
-        0.625 + (1 - 0.625) * (1 - intensity), 0.375 * intensity, 0, 0, 0,
-        0.7 * intensity, 0.3 + (1 - 0.3) * (1 - intensity), 0, 0, 0,
-        0, 0.3 * intensity, 0.7 + (1 - 0.7) * (1 - intensity), 0, 0,
-        0, 0, 0, 1, 0
-      ].join(' ');
-      return {
-        filter: `brightness(1.05) contrast(0.97) saturate(0.95) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feColorMatrix type="matrix" values="${matrix}"/></filter></svg>#f')`
-      };
-    }
-    case 'tritanopia': {
-      const matrix = [
-        0.95 + (1 - 0.95) * (1 - intensity), 0.05 * intensity, 0, 0, 0,
-        0, 0.433 + (1 - 0.433) * (1 - intensity), 0.567 * intensity, 0, 0,
-        0, 0.475 * intensity, 0.525 + (1 - 0.525) * (1 - intensity), 0, 0,
-        0, 0, 0, 1, 0
-      ].join(' ');
-      return {
-        filter: `brightness(1) contrast(1.1) saturate(0.8) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feColorMatrix type="matrix" values="${matrix}"/></filter></svg>#f')`
-      };
-    }
-    case 'achromatopsia':
-      return {
-        filter: `grayscale(${intensity * 100}%)`
-      };
-    case 'blur':
-      return {
-        filter: `blur(${intensity * 3}px)`
-      };
-    default:
-      return {};
-  }
-});
-
-const applyVisionFilter = () => {
-  // This function can be expanded for more complex functionality if needed
+const getStepIcon = (index) => {
+  const icons = ['mdi-account-plus', 'mdi-tools', 'mdi-rocket-launch'];
+  return icons[index];
 };
 </script>
 
@@ -860,11 +819,25 @@ const applyVisionFilter = () => {
 
 .text-gradient {
   background: linear-gradient(90deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-info)));
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 0.65rem;
   letter-spacing: 0.5px;
+  animation: gradient 3s linear infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
 }
 
 .custom-nav-menu {
@@ -1120,5 +1093,92 @@ footer h4::after {
 .vision-filter-wrapper {
   display: inline-flex;
   align-items: center;
+}
+
+.bad-experience-card {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(10px);
+  background-color: rgba(var(--v-theme-surface), 0.8);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.bad-experience-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+.bad-experience-card :deep(.v-card-subtitle) {
+  white-space: normal;
+  display: block;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.bad-experience-card :deep(.v-card-title) {
+  line-height: 1.4;
+}
+
+.bad-experience-card :deep(.v-card-text) {
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.border-primary {
+  border-top: 3px solid rgb(var(--v-theme-primary));
+}
+
+.border-secondary {
+  border-top: 3px solid rgb(var(--v-theme-secondary));
+}
+
+.border-tertiary {
+  border-top: 3px solid rgb(var(--v-theme-tertiary));
+}
+
+.how-it-works-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.how-it-works-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(var(--v-theme-secondary), 0.05), transparent 70%),
+    radial-gradient(circle at 80% 50%, rgba(var(--v-theme-primary), 0.05), transparent 70%);
+  z-index: 0;
+}
+
+.timeline-card {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background-color: rgba(var(--v-theme-surface), 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.timeline-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+:deep(.v-timeline-item__body) {
+  max-width: 400px;
+}
+
+:deep(.v-timeline-item__dot) {
+  box-shadow: 0 0 0 4px rgba(var(--v-theme-surface), 0.8);
+}
+
+:deep(.v-timeline-item__inner-dot) {
+  background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
 }
 </style>

@@ -7,6 +7,21 @@
           <v-card-title class="d-flex align-center px-0 py-1">
             <v-icon color="primary" class="mr-2">mdi-lightbulb-on-outline</v-icon>
             <span class="text-h6 text-gradient">Create your website</span>
+            <v-tooltip location="top">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" icon="mdi-help-circle-outline" size="x-small" variant="text" class="ml-1"
+                  color="primary"></v-btn>
+              </template>
+              <div class="pa-2">
+                <div class="font-weight-bold mb-1">User guide</div>
+                <p class="text-caption mb-1">This panel will guide you step by step in the creation of your website.</p>
+                <ul class="text-caption">
+                  <li>The tasks are grouped by category</li>
+                  <li>Complete the tasks in order for the best result</li>
+                  <li>The action buttons are available once the prerequisites are completed</li>
+                </ul>
+              </div>
+            </v-tooltip>
             <v-spacer></v-spacer>
             <v-chip :color="getProgressColor" class="ml-2">
               {{ completedTasks.length }}/{{ tasks.length }}
@@ -22,6 +37,17 @@
 
         <v-expand-transition>
           <div v-if="!isMinimized">
+            <v-card-text class="pt-2 pb-0">
+              <v-alert v-if="!completedAllTasks" type="info" variant="tonal" density="compact" class="mb-2">
+                <div class="d-flex align-center">
+                  <div>
+                    <div class="font-weight-medium">Next recommended task :</div>
+                    <div class="text-body-2">{{ getNextRecommendedTask.title }}</div>
+                  </div>
+                </div>
+              </v-alert>
+            </v-card-text>
+
             <v-card-text class="pt-2 pb-2">
               <v-list>
                 <v-list-group v-for="(group, groupIndex) in taskGroups" :key="groupIndex"
@@ -37,8 +63,11 @@
                     </v-list-item>
                   </template>
 
-                  <v-list-item v-for="(task, index) in group.tasks" :key="task.id"
-                    :class="{ 'completed-task': completedTasks.includes(task.id) }">
+                  <v-list-item v-for="(task, index) in group.tasks" :key="task.id" :class="{
+                    'completed-task': completedTasks.includes(task.id),
+                    'current-task': isCurrentRecommendedTask(task.id),
+                    'locked-task': task.requiresPrevious && !isPreviousCompleted(getGlobalTaskIndex(group, task))
+                  }">
                     <template v-slot:prepend>
                       <v-checkbox v-model="completedTasks" :value="task.id" :color="task.color || 'primary'"
                         hide-details @update:model-value="updateTaskStatus(task.id)"></v-checkbox>
@@ -46,18 +75,32 @@
 
                     <v-list-item-title :class="{ 'text-decoration-line-through': completedTasks.includes(task.id) }">
                       {{ task.title }}
+                      <v-icon v-if="isCurrentRecommendedTask(task.id)" color="info" size="x-small"
+                        class="ml-1">mdi-star</v-icon>
                     </v-list-item-title>
 
                     <v-list-item-subtitle v-if="task.description">
                       {{ task.description }}
                     </v-list-item-subtitle>
 
-                    <template v-slot:append v-if="task.link">
-                      <v-btn variant="text" size="small" density="compact" :to="task.link"
-                        :disabled="task.requiresPrevious && !isPreviousCompleted(getGlobalTaskIndex(group, task))"
-                        color="primary">
-                        <v-icon size="small">mdi-arrow-right</v-icon>
-                      </v-btn>
+                    <template v-slot:append>
+                      <div class="d-flex align-center">
+                        <v-tooltip location="top"
+                          v-if="task.requiresPrevious && !isPreviousCompleted(getGlobalTaskIndex(group, task))">
+                          <template v-slot:activator="{ props }">
+                            <v-icon v-bind="props" size="small" color="grey" class="mr-2">mdi-lock</v-icon>
+                          </template>
+                          <span>Complete the previous tasks first</span>
+                        </v-tooltip>
+                        <v-btn variant="text" size="small" density="compact" :to="task.link"
+                          :disabled="task.requiresPrevious && !isPreviousCompleted(getGlobalTaskIndex(group, task))"
+                          color="primary">
+                          <v-icon size="small">mdi-arrow-right</v-icon>
+                          <v-tooltip activator="parent" location="top">
+                            <span>Access to {{ getTaskDestinationName(task.link) }}</span>
+                          </v-tooltip>
+                        </v-btn>
+                      </div>
                     </template>
                   </v-list-item>
                 </v-list-group>
@@ -77,7 +120,7 @@
       </v-card>
     </v-fade-transition>
 
-    <v-btn v-if="!isVisible" icon="mdi-lightbulb-on-outline" color="primary" size="large" class="show-tasks-btn"
+    <v-btn v-if="!isVisible" icon="mdi-lightbulb-on-outline" color="secondary" size="large" class="show-tasks-btn"
       elevation="8" @click="showCard">
       <template v-slot:append>
         <div class="pulse-effect"></div>
@@ -173,7 +216,16 @@ const taskGroups = ref([
         title: 'Create the database',
         description: 'Create the database and the models to store your data',
         color: 'success',
-        link: '/sql-generator',
+        link: '/database-designer',
+        completed: false,
+        requiresPrevious: true
+      },
+      {
+        id: 4,
+        title: 'Test your API',
+        description: 'Test your API to ensure it is working correctly',
+        color: 'success',
+        link: '/api-testing-hub',
         completed: false,
         requiresPrevious: true
       }
@@ -185,13 +237,22 @@ const taskGroups = ref([
     color: 'orange',
     tasks: [
       {
-        id: 4,
+        id: 5,
         title: 'Check the accessibility and the structure of your application',
         description: 'Check the accessibility and the structure of your application',
         color: 'orange',
         link: '/accessibility',
         completed: false,
         requiresPrevious: false
+      },
+      {
+        id: 6,
+        title: 'Check the semantic and metadata of your application',
+        description: 'Check the semantic and metadata of your application',
+        color: 'orange',
+        link: '/semantic',
+        completed: false,
+        requiresPrevious: true
       }
     ]
   },
@@ -201,16 +262,16 @@ const taskGroups = ref([
     color: 'warning',
     tasks: [
       {
-        id: 5,
-        title: 'Audit the SEO of your application',
-        description: 'Audit the SEO of your application',
+        id: 7,
+        title: 'Audit the performance of your application',
+        description: 'Audit the performance of your application',
         color: 'warning',
-        link: '/seo-audit',
+        link: '/website-analyzer',
         completed: false,
         requiresPrevious: true
       },
       {
-        id: 6,
+        id: 8,
         title: 'Use the robots generator for your application',
         description: 'Use the robots generator for your application',
         color: 'deep-purple',
@@ -222,7 +283,6 @@ const taskGroups = ref([
   }
 ]);
 
-// Flatten tasks for backward compatibility
 const tasks = computed(() => {
   return taskGroups.value.flatMap(group => group.tasks);
 });
@@ -282,24 +342,50 @@ const getProgressColor = computed(() => {
   return 'error';
 });
 
-const finishOnboarding = () => {
-  userStore.updateUserField('onboardingCompleted', true);
-  router.push('/deploy');
-};
-
-// État pour suivre quel groupe est ouvert
 const openedGroup = ref<number | null>(null);
 
-// Fonction pour basculer l'état d'ouverture d'un groupe
 const toggleGroup = (groupIndex: number): void => {
   if (openedGroup.value === groupIndex) {
-    openedGroup.value = null; // Fermer le groupe si déjà ouvert
+    openedGroup.value = null;
   } else {
-    openedGroup.value = groupIndex; // Ouvrir ce groupe et fermer tous les autres
+    openedGroup.value = groupIndex;
   }
 
-  // Sauvegarder l'état dans le localStorage
   localStorage.setItem('openedGroup', openedGroup.value !== null ? openedGroup.value.toString() : '');
+};
+
+const getNextRecommendedTask = computed(() => {
+  for (const group of taskGroups.value) {
+    for (const task of group.tasks) {
+      if (!completedTasks.value.includes(task.id)) {
+        const taskIndex = getGlobalTaskIndex(group, task);
+        if (!task.requiresPrevious || isPreviousCompleted(taskIndex)) {
+          return task;
+        }
+      }
+    }
+  }
+
+  return tasks.value[tasks.value.length - 1];
+});
+
+const isCurrentRecommendedTask = (taskId) => {
+  return getNextRecommendedTask.value.id === taskId;
+};
+
+const getTaskDestinationName = (link) => {
+  const destinations = {
+    '/studio': 'Studio of design',
+    '/responsive': 'Test of responsive',
+    '/database-designer': 'Database designer',
+    '/api-testing-hub': 'API testing hub',
+    '/accessibility': 'Accessibility check',
+    '/semantic': 'Semantic check',
+    '/website-analyzer': 'Website analyzer',
+    '/robots': 'Robots generator',
+  };
+
+  return destinations[link] || link;
 };
 </script>
 
@@ -425,5 +511,30 @@ const toggleGroup = (groupIndex: number): void => {
 
 .v-list-group__activator {
   cursor: pointer;
+}
+
+.current-task {
+  background-color: rgba(var(--v-theme-primary), 0.08);
+  border-right: 3px solid var(--v-theme-info);
+  position: relative;
+}
+
+.current-task::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid var(--v-theme-info);
+  opacity: 0.7;
+}
+
+.locked-task {
+  opacity: 0.7;
+  background-color: rgba(var(--v-theme-surface-variant), 0.3);
 }
 </style>

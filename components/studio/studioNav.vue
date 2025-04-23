@@ -1,13 +1,43 @@
 <template>
   <v-app>
     <v-main class="w-100 h-100 overflow-hidden d-flex" role="main">
-      <div class="control-panel" style="width: 350px;" role="complementary" aria-label="Navigation control panel">
+      <div class="control-panel" role="complementary" aria-label="Card customization panel">
         <v-card flat class="fill-height">
           <div class="px-4 py-2 d-flex align-center" role="group" aria-label="Framework indicators">
-            <v-chip color="success" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2"
+            <v-chip color="primary" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2"
               aria-label="Vue.js framework">Vue.js</v-chip>
-            <v-chip color="info" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2"
+            <v-chip color="secondary" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2"
               aria-label="Vuetify framework">Vuetify</v-chip>
+            <v-chip color="tertiary" prepend-icon="mdi-palette" size="small" class="mr-12 px-4 py-2"
+              aria-label="Studio mode">{{ studioMode === 'studio' ? 'Studio' : 'SEO' }}</v-chip>
+            <v-menu offset-y>
+              <template v-slot:activator="{ props }">
+                <v-btn v-if="studioMode === 'studio-seo'" class="ml-7" icon density="comfortable" variant="text"
+                  v-bind="props" color="secondary" aria-label="Test vision impairments" size="small">
+                  <v-icon>{{ visionTypeIcon }}</v-icon>
+                  <v-tooltip activator="parent" location="top">
+                    Try different vision types
+                  </v-tooltip>
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item v-for="type in visionTypes" :key="type.value"
+                  @click="selectedVisionType = type.value; applyVisionFilter()">
+                  <template v-slot:prepend>
+                    <v-icon :icon="type.icon" :color="selectedVisionType === type.value ? 'primary' : ''"></v-icon>
+                  </template>
+                  <v-list-item-title>{{ type.title }}</v-list-item-title>
+                </v-list-item>
+                <v-divider v-if="selectedVisionType !== 'normal'"></v-divider>
+                <v-list-item v-if="selectedVisionType !== 'normal'">
+                  <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" label="Intensity" hide-details
+                    class="px-2 py-0" density="compact" @update:model-value="applyVisionFilter">
+                  </v-slider>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <PremiumFeature v-if="!userStore.user.isPremium" premium-link="/subscribe" title="Studio components"
+              icon="mdi-palette" type="chip" feature-key="studioComponents" aria-label="Premium feature indicator" />
           </div>
 
           <v-tabs v-model="tab" color="primary" align-tabs="center" class="px-4" role="tablist"
@@ -311,15 +341,17 @@
         </v-card>
       </div>
 
-      <div class="preview-area pa-4 d-flex flex-column">
+      <div class="pa-4 d-flex flex-column"
+        :class="studioMode === 'studio-seo' ? 'preview-area-seo' : 'preview-area-classic'">
         <div class="d-flex justify-space-between align-center mb-3">
-          <v-chip color="primary" variant="flat" size="small" class="mr-2">
+          <v-chip :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="flat" size="small"
+            class="mr-2">
             <v-icon start size="small">mdi-eye</v-icon>
             Live preview
           </v-chip>
         </div>
 
-        <div class="preview-canvas flex-grow-1 pa-4" :style="{ maxWidth: previewWidth }">
+        <div class="preview-canvas flex-grow-1 pa-4" :style="filterStyle">
           <v-layout class="rounded border" style="height: 100%;">
             <v-app-bar v-if="navProperties.addAppBar && appBar.length > 0" v-for="(item, index) in appBar" :key="index"
               :color="appBarColors[navProperties.appBarColor].value !== 'default' ? appBarColors[navProperties.appBarColor].value : undefined"
@@ -433,29 +465,25 @@
 <script setup lang="ts">
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/atom-one-dark.css';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, inject, nextTick, onMounted, ref, watch } from 'vue';
 import Snackbar from '../../components/snackbar.vue';
 import { useUserStore } from '../../stores/userStore';
-import icons from '../../utils/icons';
+import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
 import { getNavTemplate } from '../../utils/navTemplates';
 import theme from '../../utils/theme';
+import { StudioModeInjection } from './studio-types';
+import { navItems, navHeader, appBar, navIcons, appBarColors, colors, navProperties } from './types/types-nav';
 
 const emit = defineEmits(['update:content', 'save']);
 
 const userStore = useUserStore();
 
-interface AppBar {
-  title: string;
-  icon: string;
-}
-interface NavItem {
-  icon: string;
-  title: string;
+const studioModeInjection = inject<StudioModeInjection>('studioMode')
+if (!studioModeInjection) {
+  console.error('studioMode injection not found')
 }
 
-interface NavHeader {
-  title: string;
-}
+const studioMode = computed(() => studioModeInjection?.mode?.value || 'studio')
 
 const tab = ref('content');
 const codeElement = ref<HTMLElement | null>(null);
@@ -468,67 +496,6 @@ const generatedCode = ref('');
 const showSnackbarMessage = ref(false);
 const snackbarText = ref('');
 const snackbarColor = ref('success');
-const navItems = ref<NavItem[]>([]);
-const navHeader = ref<NavHeader[]>([]);
-const appBar = ref<AppBar[]>([]);
-const navIcons = ref(icons);
-
-const appBarColors = ([
-  { value: 'default', color: 'default' },
-  { value: 'primary', color: 'primary' },
-  { value: 'secondary', color: 'secondary' },
-  { value: 'success', color: 'success' },
-  { value: 'info', color: 'info' },
-  { value: 'warning', color: 'warning' },
-  { value: 'error', color: 'error' }
-]);
-
-const colors = [
-  'default',
-  'primary',
-  'secondary',
-  'success',
-  'info',
-  'warning',
-  'error'
-];
-
-const previewWidth = computed(() => {
-  switch (previewMode.value) {
-    case 'mobile': return '320px';
-    case 'tablet': return '600px';
-    default: return '900px';
-  }
-});
-
-const navProperties = ref({
-  model: true,
-  addAppBar: false,
-  appBarColor: 1,
-  permanent: false,
-  expandOnHover: false,
-  location: 'left' as 'left' | 'right' | 'top' | 'bottom' | 'start' | 'end',
-  width: 256,
-  color: 'default',
-  elevation: 4,
-  rounded: false,
-  floating: false,
-  rail: false,
-  clipped: false,
-  mobile: false,
-  temporary: false,
-  image: '',
-  showSubheader: false,
-  subheaderText: '',
-  showIconItems: false,
-  showLinkItem: false,
-  linkIcon: '',
-  linkTitle: '',
-  linkUrl: '',
-  linkExternal: false,
-  transition: 'fade',
-  transitionDuration: 250
-});
 
 const customTemplateName = ref('');
 
@@ -931,20 +898,32 @@ onMounted(() => {
   height: 100%;
 }
 
-.preview-area {
+.preview-area-seo {
   flex: 1;
-  background-color: #f5f5f5;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(103, 90, 200, 0.4), transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(45, 158, 225, 0.4), transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(200, 80, 190, 0.3), transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(24, 144, 132, 0.3), transparent 35%),
+    linear-gradient(120deg, rgba(10, 15, 30, 0.1), rgba(20, 35, 60, 0.2));
+  overflow: auto
+}
+
+.preview-area-classic {
+  flex: 1;
+  background:
+    radial-gradient(circle at 75% 25%, rgba(var(--v-theme-info), 0.3), transparent 40%),
+    radial-gradient(circle at 25% 75%, rgba(70, 130, 180, 0.3), transparent 35%),
+    radial-gradient(circle at 90% 85%, rgba(60, 179, 113, 0.2), transparent 30%),
+    linear-gradient(135deg, rgba(25, 25, 40, 0.05), rgba(45, 45, 60, 0.1));
   overflow: auto;
 }
-
 .preview-canvas {
-  background-color: white;
+  min-height: 60vh;
+  border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
+  background-image: repeating-linear-gradient(45deg, var(--v-theme-surface) 0, var(--v-theme-surface) 10px, var(--v-theme-surface-variant) 10px, var(--v-theme-surface-variant) 20px);
 }
-
 .code-block {
   margin: 0;
   padding: 0;

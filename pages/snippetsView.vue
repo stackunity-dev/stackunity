@@ -149,7 +149,7 @@
 import { definePageMeta, navigateTo, useHead, useRoute } from '#imports';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
-import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue';
+import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue';
 import Snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 
