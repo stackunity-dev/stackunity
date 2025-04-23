@@ -1,9 +1,10 @@
 // @ts-ignore
 import { defineNuxtPlugin } from '#app';
 import { useRouter } from 'vue-router';
-import { TokenManager } from '../server/utils/TokenManager';
 import { AUTO_REFRESH_THRESHOLD } from '../server/utils/auth-config';
+import { TokenManager } from '../server/utils/TokenManager';
 import { useUserStore } from '../stores/userStore';
+import { TokenUtils } from '../utils/token';
 
 interface RefreshResponse {
   accessToken: string;
@@ -146,6 +147,37 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const originalFetch = window.fetch;
     window.fetch = async (input, init) => {
       const inputUrl = input instanceof Request ? input.url : input.toString();
+
+      if (inputUrl.includes('/api/auth/check-trial')) {
+        return originalFetch(input, init);
+      }
+
+      const requiresAuth = init?.headers && (init.headers as any)['Authorization'];
+      if (requiresAuth) {
+        try {
+          const token = TokenUtils.retrieveToken();
+          if (token) {
+            const trialResponse = await originalFetch('/api/auth/check-trial', {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+
+            if (trialResponse.ok) {
+              const trialData = await trialResponse.json();
+              if (trialData.success) {
+                userStore.isPremium = trialData.isPremium;
+                if (userStore.user) {
+                  userStore.user.isPremium = trialData.isPremium;
+                }
+                userStore.persistData();
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Erreur lors de la vérification de la période d\'essai:', error);
+        }
+      }
 
       if (inputUrl.includes('/api/') && userStore.isAuthenticated) {
         const token = TokenManager.retrieveToken();

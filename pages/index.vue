@@ -419,17 +419,17 @@ definePageMeta({
 
 useHead({
   htmlAttrs: {
-    lang: 'fr'
+    lang: 'en'
   },
-  title: 'StackUnity - Créez, gérez et optimisez vos projets web',
+  title: 'StackUnity - Simplify your development workflow',
   meta: [
-    { name: 'description', content: 'StackUnity est la plateforme tout-en-un pour les développeurs qui souhaitent créer, gérer et optimiser leurs projets web.' },
-    { name: 'keywords', content: 'développement web, plateforme développeurs, outils développement, audit SEO, générateur SQL, accessibilité' },
+    { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { name: 'keywords', content: 'web development, developer platform, development tools, SEO audit, SQL generator, accessibility' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { property: 'og:title', content: 'StackUnity - La plateforme tout-en-un pour développeurs web' },
-    { property: 'og:description', content: 'StackUnity est la plateforme tout-en-un pour les développeurs qui souhaitent créer, gérer et optimiser leurs projets web.' },
+    { property: 'og:title', content: 'StackUnity - Simplify your development workflow' },
+    { property: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
     { property: 'og:image', content: '/images/preview.png' },
     { property: 'og:url', content: 'https://stackunity.tech' },
     { property: 'og:site_name', content: 'StackUnity' },
@@ -439,8 +439,8 @@ useHead({
     { property: 'og:image:alt', content: 'Logo StackUnity' },
     { property: 'og:image:secure_url', content: 'https://stackunity.tech/images/preview.png' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'StackUnity - La plateforme tout-en-un pour développeurs web' },
-    { name: 'twitter:description', content: 'StackUnity est la plateforme tout-en-un pour les développeurs qui souhaitent créer, gérer et optimiser leurs projets web.' },
+    { name: 'twitter:title', content: 'StackUnity - Simplify your development workflow' },
+    { name: 'twitter:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
     { name: 'twitter:image', content: '/images/preview.png' },
   ],
   link: [

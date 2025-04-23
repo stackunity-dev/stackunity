@@ -47,6 +47,26 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
+      const [userDetails] = await pool.execute<UserRow[]>(
+        'SELECT created_at, isBuying FROM users WHERE id = ?',
+        [user.id]
+      );
+
+      if (userDetails && userDetails.length > 0) {
+        const createdAt = new Date(userDetails[0].created_at);
+        const now = new Date();
+        const diffTime = Math.abs(now.getTime() - createdAt.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (userDetails[0].isBuying === 0 && diffDays > 7) {
+          await pool.execute(
+            'UPDATE users SET isPremium = 0 WHERE id = ?',
+            [user.id]
+          );
+          user.isPremium = 0;
+        }
+      }
+
       const isPremiumValue = user.isPremium === 1;
       const isAdminValue = user.isAdmin === 1;
       console.log(isPremiumValue, isAdminValue);

@@ -91,6 +91,10 @@
         <v-list-item v-if="!userStore.user.isPremium" to="/checkout" prepend-icon="mdi-credit-card-outline"
           title="Premium" rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer" />
 
+        <v-list-item v-if="userStore.user.isPremium && !trialLoading && trialDaysLeft !== null && !isBuying"
+          prepend-icon="mdi-clock-outline" :title="`Trial : ${trialDaysLeft} days left`" rounded="lg" class="mb-1"
+          :class="trialDaysLeft <= 2 ? 'text-warning' : 'text-info'" />
+
         <v-list-item to="/settings" prepend-icon="mdi-cog-outline" title="Settings" rounded="lg" class="mb-1"
           color="primary" nuxt @click="closeDrawer" />
 
@@ -105,6 +109,11 @@
       <div class="d-flex align-center">
         <v-icon size="large" class="mr-3">{{ getCurrentPageIcon() }}</v-icon>
         <div class="text-h5 font-weight-bold">{{ currentPageTitle }}
+          <v-chip v-if="currentPageTitle === 'API Testing Hub'" color="secondary" variant="elevated" size="small"
+            class="ml-2">
+            <v-icon start size="small">mdi-information</v-icon>
+            beta version
+          </v-chip>
           <v-menu v-if="currentPageTitle === 'Studio'" offset-y>
             <template v-slot:activator="{ props }">
               <v-chip v-bind="props" :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="elevated"
@@ -156,6 +165,7 @@ import { useDisplay } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
 import Task from '../components/task.vue';
 import { useUserStore } from '../stores/userStore';
+import { TokenUtils } from '../utils/token';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -167,8 +177,10 @@ const drawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
 const openTask = ref(false);
 const studioMode = ref('studio');
+const trialDaysLeft = ref(null);
+const trialLoading = ref(true);
+const isBuying = ref(false);
 
-// Provide studio mode to child components
 provide('studioMode', {
   mode: studioMode,
   isDesignMode: computed(() => studioMode.value === 'studio'),
@@ -397,12 +409,43 @@ const logout = async () => {
   }
 };
 
+const checkTrialStatus = async () => {
+  try {
+    const token = TokenUtils.retrieveToken();
+    if (token) {
+      const response = await fetch('/api/auth/check-trial', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          trialDaysLeft.value = data.daysLeft;
+          isBuying.value = data.isBuying || false;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Erreur lors de la vérification de la période d\'essai:', error);
+  } finally {
+    trialLoading.value = false;
+  }
+};
+
 onMounted(() => {
   userStore.loadSnippets();
   userStore.loadSQLSchemas();
   updatePageTitle();
   openTask.value = true;
+  checkTrialStatus();
 });
+
+// Vérifier le statut de l'essai toutes les heures
+if (process.client) {
+  setInterval(checkTrialStatus, 3600000);
+}
 
 function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string): any {
   if (userStore.user?.isPremium) {

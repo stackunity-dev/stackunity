@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody } from 'h3';
 import Stripe from 'stripe';
+import { pool } from '../db';
 
 const promoCodes = {
   'WELCOME20': { type: 'percentage', value: 20, description: '20% OFF now' },
@@ -15,8 +16,10 @@ export default defineEventHandler(async (event) => {
       country_code = 'FR',
       vat_number = '',
       is_business = false,
-      promo_code = ''
+      promo_code = '',
     } = body;
+
+    const userId = event.context.user.userId;
 
     if (!currency) {
       return {
@@ -250,9 +253,17 @@ export default defineEventHandler(async (event) => {
           discount_description: discountDescription,
           discounted_base_amount: discountedBaseAmount.toString(),
           tax_amount: taxCalculation.tax_amount_exclusive.toString(),
+          total_amount: taxCalculation.amount_total.toString(),
           promo_code: promo_code || 'none'
         }
       });
+
+      if (userId) {
+        await pool.execute(
+          'UPDATE users SET isBuying = 1 WHERE id = ?',
+          [userId]
+        );
+      }
 
       const taxPercentage = taxCalculation.tax_breakdown?.[0]?.tax_rate_percentage || 0;
       const isVatExempt = is_business && vat_number && country_code !== 'FR' && taxPercentage === 0;

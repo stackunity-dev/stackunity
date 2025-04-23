@@ -107,109 +107,87 @@ onErrorCaptured((err, instance, info) => {
   return true;
 });
 
-async function restoreUserSession() {
-  if (!isClient) return false;
-
-  // Protect against infinite restoration loops
-  if (restorationAttemptCount.value >= maxRestorationAttempts) {
-    console.log('Maximum restoration attempts reached');
-    return false;
-  }
-
-  // Incrémenter le compteur de tentatives
-  restorationAttemptCount.value++;
-  sessionRestorationAttempted.value = true;
-
+const restoreUserSession = async () => {
   try {
-    // Vérifier le token et les données utilisateur
-    const storedToken = TokenUtils.retrieveToken();
-    const storedUserData = localStorage.getItem('user_data');
-
-    // Si aucune donnée n'est disponible, arrêter la restauration
-    if (!storedToken || !storedUserData) {
-      console.log('Aucune donnée de session trouvée, arrêt de la restauration');
+    if (!isClient || sessionRestorationAttempted.value) {
       return false;
     }
 
-    // S'assurer que l'utilisateur existe toujours
-    if (!userStore.user) {
-      userStore.user = {
-        id: 0,
-        username: '',
-        email: '',
-        isPremium: false,
-        isAdmin: false
-      };
+    sessionRestorationAttempted.value = true;
+    restorationAttemptCount.value++;
+
+    const token = TokenUtils.retrieveToken();
+    if (!token) {
+      return false;
     }
 
+    try {
+      const validationResult = await userStore.validateToken();
+
+      if (validationResult && validationResult.valid) {
+        console.log('Token valide, chargement des données utilisateur');
+        await userStore.loadData();
+        userStore.isAuthenticated = true;
+
+        // Vérification de la période d'essai
+        const trialResponse = await fetch('/api/auth/check-trial', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (trialResponse.ok) {
+          const trialData = await trialResponse.json();
+          if (trialData.success) {
+            userStore.isPremium = trialData.isPremium;
+            if (userStore.user) {
+              userStore.user.isPremium = trialData.isPremium;
+            }
+            userStore.persistData();
+          }
+        }
+
+        return true;
+      }
+    } catch (validationError) {
+      console.error('Erreur lors de la validation du token:', validationError);
+    }
 
     try {
-      const userData = JSON.parse(storedUserData);
-      if (userData && userData.user) {
+      const refreshResponse = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        credentials: 'include'
+      });
 
-        const restoreResult = await userStore.restoreUserData();
-        userStore.token = storedToken;
-
-        userStore.isPremium = Boolean(userStore.user?.isPremium) || Boolean(userStore.isPremium) || false;
-        userStore.isAdmin = Boolean(userStore.user?.isAdmin) || Boolean(userStore.isAdmin) || false;
-
-        try {
-          const validationResult = await userStore.validateToken();
-
-          if (validationResult && validationResult.valid) {
-            console.log('Token valide, chargement des données utilisateur');
-            await userStore.loadData();
-            userStore.isAuthenticated = true;
-
-            userStore.isPremium = Boolean(userStore.user?.isPremium) || Boolean(userStore.isPremium) || false;
-            userStore.isAdmin = Boolean(userStore.user?.isAdmin) || Boolean(userStore.isAdmin) || false;
-
-            return true;
-          }
-        } catch (validationError) {
-          console.error('Erreur lors de la validation du token:', validationError);
-        }
-
-
-        try {
-          const refreshResponse = await fetch('/api/auth/refresh', {
-            method: 'POST',
-            credentials: 'include'
-          });
-
-          if (!refreshResponse.ok) {
-            return false;
-          }
-
-          const refreshData = await refreshResponse.json();
-
-          if (!refreshData.success || !refreshData.accessToken) {
-            return false;
-          }
-
-          // Stocker le nouveau token
-          TokenUtils.storeToken(refreshData.accessToken);
-          userStore.setToken(refreshData.accessToken);
-
-          if (refreshData.user) {
-            userStore.user = {
-              ...refreshData.user,
-              isPremium: Boolean(refreshData.user.isPremium),
-              isAdmin: Boolean(refreshData.user.isAdmin)
-            };
-            userStore.isAuthenticated = true;
-            userStore.isPremium = Boolean(refreshData.user.isPremium);
-            userStore.isAdmin = Boolean(refreshData.user.isAdmin);
-            userStore.persistData();
-
-            return true;
-          }
-        } catch (refreshError) {
-          console.error('Erreur lors du rafraîchissement du token:', refreshError);
-        }
+      if (!refreshResponse.ok) {
+        return false;
       }
-    } catch (restoreError) {
-      console.error('Erreur lors de la restauration des données utilisateur:', restoreError);
+
+      const refreshData = await refreshResponse.json();
+
+      if (!refreshData.success || !refreshData.accessToken) {
+        return false;
+      }
+
+      // Stocker le nouveau token
+      TokenUtils.storeToken(refreshData.accessToken);
+      userStore.setToken(refreshData.accessToken);
+
+      if (refreshData.user) {
+        userStore.user = {
+          ...refreshData.user,
+          isPremium: Boolean(refreshData.user.isPremium),
+          isAdmin: Boolean(refreshData.user.isAdmin)
+        };
+        userStore.isAuthenticated = true;
+        userStore.isPremium = Boolean(refreshData.user.isPremium);
+        userStore.isAdmin = Boolean(refreshData.user.isAdmin);
+        userStore.persistData();
+
+        return true;
+      }
+    } catch (refreshError) {
+      console.error('Erreur lors du rafraîchissement du token:', refreshError);
     }
   } catch (error) {
     console.error('Erreur générale lors de la restauration de la session:', error);
