@@ -165,7 +165,7 @@
                   </template>
                 </v-select>
 
-                <v-alert v-if="!userStore.isPremium && selectedVisionType !== 'normal'" color="info" variant="tonal"
+                <v-alert v-if="!userStore.isStandard && selectedVisionType !== 'normal'" color="info" variant="tonal"
                   class="mt-4">
                   <template v-slot:prepend>
                     <v-icon>mdi-information</v-icon>
@@ -175,7 +175,7 @@
                       <div class="text-subtitle-1 mb-1">Limited access</div>
                       <p class="mb-0">Upgrade to the premium version to access all types of visual impairments.</p>
                     </div>
-                    <v-btn color="primary" variant="tonal" size="small" to="/checkout">Upgrade</v-btn>
+                    <v-btn color="primary" variant="tonal" size="small" @click="goToPricingPage">Upgrade</v-btn>
                   </div>
                 </v-alert>
 
@@ -193,11 +193,11 @@
                     <div v-else-if="iframeLoading" class="d-flex align-center justify-center"
                       style="height: 100%; background: #f5f5f5;">
                       <v-progress-circular indeterminate color="primary"></v-progress-circular>
-                      <div class="text-h6 text-grey ml-2">Chargement en cours...</div>
+                      <div class="text-h6 text-grey ml-2">Loading...</div>
                     </div>
                     <div v-else class="d-flex align-center justify-center" style="height: 100%; background: #f5f5f5;">
                       <v-icon size="64" color="grey">mdi-web</v-icon>
-                      <div class="text-h6 text-grey ml-2">Entrez une URL pour commencer</div>
+                      <div class="text-h6 text-grey ml-2">Enter an URL to start</div>
                     </div>
                   </div>
                 </div>
@@ -227,15 +227,15 @@
                         <v-list-item-title>{{ type.title }}</v-list-item-title>
                       </v-list-item>
 
-                      <v-divider v-if="!userStore.isPremium"></v-divider>
+                      <v-divider v-if="!userStore.isStandard"></v-divider>
 
-                      <v-list-item v-if="!userStore.isPremium" density="comfortable">
+                      <v-list-item v-if="!userStore.isStandard" density="comfortable">
                         <template v-slot:prepend>
                           <v-icon color="warning">mdi-lock</v-icon>
                         </template>
-                        <v-list-item-title>Other types (Premium)</v-list-item-title>
+                        <v-list-item-title>Other types (Standard)</v-list-item-title>
                         <template v-slot:append>
-                          <v-btn size="small" variant="tonal" color="primary" to="/pricing">Upgrade</v-btn>
+                          <v-btn size="small" variant="tonal" color="primary" @click="goToPricingPage">Upgrade</v-btn>
                         </template>
                       </v-list-item>
                     </v-list>
@@ -258,11 +258,12 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import { useUserStore } from '../stores/userStore';
-
+import { useRouter } from 'vue-router';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 
 const userStore = useUserStore();
+const router = useRouter();
 
 definePageMeta({
   layout: 'dashboard'
@@ -291,7 +292,7 @@ const contrast = ref(0);
 
 const textColorPicker = ref('#212121');
 const backgroundColorPicker = ref('#FFFFFF');
-const isPremium = ref(userStore.user?.isPremium || false);
+const isStandard = ref(userStore.user?.isStandard || false);
 
 const urlToSimulate = ref('');
 const finalUrl = ref('');
@@ -335,7 +336,7 @@ const visionTypes = [
 ];
 
 const availableVisionTypes = computed(() => {
-  if (userStore.isPremium) {
+  if (userStore.isStandard) {
     return visionTypes;
   } else {
     return visionTypes.filter(type => ['normal', 'protanopia'].includes(type.value));
@@ -394,16 +395,16 @@ const filterStyle = computed(() => {
 
 watch(() => userStore.isAuthenticated, () => {
   if (userStore.user) {
-    isPremium.value = userStore.user.isPremium || false;
+    isStandard.value = userStore.user.isStandard || false;
   } else {
-    isPremium.value = false;
+    isStandard.value = false;
   }
 });
 
 watch(() => selectedVisionType.value, (newType) => {
-  if (!userStore.isPremium && !['normal', 'protanopia'].includes(newType)) {
+  if (!userStore.isStandard && !['normal', 'protanopia'].includes(newType)) {
     selectedVisionType.value = 'protanopia';
-    alert('This simulation is only available for premium users. Upgrade to the premium version to access all types of visual impairments.');
+    alert('This simulation is only available for standard users. Upgrade to the standard version to access all types of visual impairments.');
   }
 });
 
@@ -685,6 +686,17 @@ const reloadIframe = () => {
     }, 50);
   }
 }
+
+const goToPricingPage = () => {
+  router.push('/#pricing').then(() => {
+    setTimeout(() => {
+      const element = document.getElementById('pricing');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  });
+};
 </script>
 
 <style scoped>

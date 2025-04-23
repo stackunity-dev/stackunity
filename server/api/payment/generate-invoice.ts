@@ -16,6 +16,7 @@ interface InvoiceData {
   totalAmount: number;
   taxPercentage: number;
   isVatExempt: boolean;
+  selectedPlan: string;
   date: string;
 }
 
@@ -42,8 +43,6 @@ export default defineEventHandler(async (event) => {
           if (!invoiceData.customerEmail || invoiceData.customerEmail.trim() === '') {
             invoiceData.customerEmail = rows[0].email;
           }
-
-          console.log(`Informations utilisateur récupérées depuis la base de données: ${rows[0].username} (${rows[0].email})`);
         }
       } catch (dbError) {
         console.error('Erreur lors de la récupération des informations utilisateur:', dbError);
@@ -63,7 +62,7 @@ export default defineEventHandler(async (event) => {
 
     return {
       success: true,
-      message: 'Facture générée et envoyée avec succès'
+      message: 'Invoice generated and sent successfully'
     };
   } catch (error) {
     console.error('Erreur lors de la génération/envoi de la facture:', error);
@@ -128,7 +127,7 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
       currentY += 10;
 
       doc.font('Helvetica');
-      doc.text('Premium DevUnity subscription (lifetime)', tableX, currentY, {
+      doc.text(`${invoiceData.selectedPlan} StackUnity subscription (lifetime)`, tableX, currentY, {
         width: tableWidths[0],
         align: 'left'
       });

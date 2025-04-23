@@ -4,7 +4,6 @@ import { pool } from '../db';
 
 const promoCodes = {
   'WELCOME20': { type: 'percentage', value: 20, description: '20% OFF now' },
-  'TUESDAY50': { type: 'percentage', value: 50, description: '50% OFF now' },
 };
 
 export default defineEventHandler(async (event) => {
@@ -17,6 +16,7 @@ export default defineEventHandler(async (event) => {
       vat_number = '',
       is_business = false,
       promo_code = '',
+      selectedPlan = ''
     } = body;
 
     const userId = event.context.user.userId;
@@ -50,8 +50,14 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Prix de base
-    let baseAmount = 19999;
+    let baseAmount = 0;
+
+    if (selectedPlan === 'premium') {
+      baseAmount = 17999;
+    } else if (selectedPlan === 'standard') {
+      baseAmount = 7999;
+    }
+
     let discountAmount = 0;
     let discountDescription = '';
 
@@ -76,7 +82,6 @@ export default defineEventHandler(async (event) => {
     const discountedBaseAmount = baseAmount - discountAmount;
 
     if (process.env.NODE_ENV === 'development' && stripeSecretKey.startsWith('sk_test_')) {
-      console.log('Development mode: returning mock tax details without Stripe API call');
 
       let estimatedTaxRate = 0;
 
@@ -114,7 +119,7 @@ export default defineEventHandler(async (event) => {
 
     try {
       const customerData: any = {
-        name: customer_name || 'DevUnity Client',
+        name: customer_name || 'StackUnity Client',
         address: {
           country: country_code,
         }
@@ -139,6 +144,17 @@ export default defineEventHandler(async (event) => {
       }
 
       const customer = await stripe.customers.create(customerData);
+
+      if (userId) {
+        try {
+          await pool.execute(
+            'INSERT INTO stripe_customers (user_id, customer_id) VALUES (?, ?)',
+            [userId, customer.id]
+          );
+        } catch (dbError) {
+          console.warn('Failed to save Stripe customer association:', dbError);
+        }
+      }
 
       let taxCalculation;
       try {
@@ -244,6 +260,8 @@ export default defineEventHandler(async (event) => {
         currency,
         customer: customer.id,
         metadata: {
+          userId: userId.toString(),
+          selectedPlan: selectedPlan,
           customer_name: customer_name || 'Unidentified client',
           country_code,
           is_business: is_business ? 'true' : 'false',
@@ -260,7 +278,9 @@ export default defineEventHandler(async (event) => {
 
       if (userId) {
         await pool.execute(
-          'UPDATE users SET isBuying = 1 WHERE id = ?',
+          `UPDATE users SET 
+           payment_status = 'pending'
+           WHERE id = ?`,
           [userId]
         );
       }

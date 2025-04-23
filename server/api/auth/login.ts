@@ -9,8 +9,14 @@ interface UserRow extends RowDataPacket {
   username: string;
   email: string;
   password: string;
+  created_at: Date;
+  isStandard: number;
   isPremium: number;
   isAdmin: number;
+  trial_start_date: Date;
+  trial_end_date: Date;
+  subscription_status: string;
+  payment_status: string;
 }
 
 export default defineEventHandler(async (event) => {
@@ -18,20 +24,23 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
 
     if (!body.email || !body.password) {
-      console.log('[LOGIN] Champs manquants');
       return {
         success: false,
-        message: 'Email et mot de passe requis'
+        message: 'Email and password required'
       };
     }
 
-    const [rows] = await pool.execute<UserRow[]>('SELECT id, username, email, password, isPremium, isAdmin FROM users WHERE email = ?', [body.email]);
+    const [rows] = await pool.execute<UserRow[]>(
+      `SELECT id, username, email, password, created_at, isStandard, isPremium, isAdmin,
+       trial_start_date, trial_end_date, subscription_status, payment_status
+       FROM users WHERE email = ?`,
+      [body.email]
+    );
 
     if (!rows || rows.length === 0) {
-      console.log('[LOGIN] Utilisateur non trouvé');
       return {
         success: false,
-        message: 'Identifiants invalides'
+        message: 'Invalid credentials'
       };
     }
 
@@ -39,57 +48,110 @@ export default defineEventHandler(async (event) => {
 
     const validPassword = await bcrypt.compare(body.password, user.password);
     if (!validPassword) {
-      console.log('[LOGIN] Mot de passe invalide');
       return {
         success: false,
-        message: 'Identifiants invalides'
+        message: 'Invalid credentials'
       };
     }
 
     try {
-      const [userDetails] = await pool.execute<UserRow[]>(
-        'SELECT created_at, isBuying FROM users WHERE id = ?',
-        [user.id]
-      );
+      const now = new Date();
+      let isPremiumValue = user.isPremium === 1;
+      let isStandardValue = user.isStandard === 1;
+      let subscriptionStatus = user.subscription_status;
 
-      if (userDetails && userDetails.length > 0) {
-        const createdAt = new Date(userDetails[0].created_at);
-        const now = new Date();
-        const diffTime = Math.abs(now.getTime() - createdAt.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (user.trial_start_date && new Date(user.trial_start_date) > now) {
+        const correctedStartDate = new Date(user.created_at || now);
+        const correctedEndDate = new Date(correctedStartDate);
+        correctedEndDate.setDate(correctedStartDate.getDate() + 7);
 
-        if (userDetails[0].isBuying === 0 && diffDays > 7) {
+        await pool.execute(
+          `UPDATE users SET 
+           trial_start_date = ?,
+           trial_end_date = ? 
+           WHERE id = ?`,
+          [correctedStartDate, correctedEndDate, user.id]
+        );
+
+        user.trial_start_date = correctedStartDate;
+        user.trial_end_date = correctedEndDate;
+      }
+
+      if (user.payment_status !== 'paid' && user.subscription_status === 'trial') {
+        let trialEndDate = new Date(user.trial_end_date);
+
+        if (isNaN(trialEndDate.getTime())) {
+          const newEndDate = new Date(user.created_at || now);
+          newEndDate.setDate(newEndDate.getDate() + 7);
+
           await pool.execute(
-            'UPDATE users SET isPremium = 0 WHERE id = ?',
+            `UPDATE users SET trial_end_date = ? WHERE id = ?`,
+            [newEndDate, user.id]
+          );
+
+          trialEndDate = newEndDate;
+        }
+
+        // Si la date de fin est dépassée
+        if (trialEndDate < now) {
+          await pool.execute(
+            `UPDATE users 
+             SET isPremium = 0, isStandard = 0, subscription_status = 'expired' 
+             WHERE id = ? AND payment_status != 'paid'`,
             [user.id]
           );
-          user.isPremium = 0;
+
+          isPremiumValue = false;
+          isStandardValue = false;
+          subscriptionStatus = 'expired';
+        } else {
+          isPremiumValue = true;
+          subscriptionStatus = 'trial';
         }
       }
 
-      const isPremiumValue = user.isPremium === 1;
       const isAdminValue = user.isAdmin === 1;
-      console.log(isPremiumValue, isAdminValue);
 
       const accessToken = ServerTokenManager.generateAccessToken({
         userId: user.id,
         username: user.username,
         email: user.email,
         isPremium: isPremiumValue,
+        isStandard: isStandardValue,
         isAdmin: isAdminValue,
         isRememberMe: body.rememberMe || false
       });
 
-      const userData = {
+      const userData: {
+        id: number;
+        username: string;
+        email: string;
+        isPremium: boolean;
+        isStandard: boolean;
+        isAdmin: boolean;
+        subscription_status: string;
+        payment_status: string;
+        isRememberMe: boolean;
+        daysLeft?: number;
+      } = {
         id: user.id,
         username: user.username,
         email: user.email,
         isPremium: isPremiumValue,
+        isStandard: isStandardValue,
         isAdmin: isAdminValue,
+        subscription_status: subscriptionStatus,
+        payment_status: user.payment_status,
         isRememberMe: body.rememberMe || false
       };
 
-      console.log(`[LOGIN] Connexion réussie pour ${user.email}${body.rememberMe ? ' avec "Remember me" activé' : ''}`);
+      if (subscriptionStatus === 'trial') {
+        const trialEndDate = new Date(user.trial_end_date);
+        const diffTime = trialEndDate.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        userData.daysLeft = diffDays > 0 ? diffDays : 0;
+      }
 
       return {
         success: true,

@@ -85,10 +85,14 @@ interface User {
   email: string;
   isAdmin?: boolean;
   isPremium: boolean;
-  company?: string;
-  website?: string;
-  bio?: string;
+  isStandard: boolean;
+  isBuying?: boolean;
   userId?: number;
+  subscription_status?: 'active' | 'trial' | 'expired' | 'none';
+  payment_status?: 'paid' | 'pending' | 'none';
+  trial_start_date?: Date | string;
+  trial_end_date?: Date | string;
+  daysLeft?: number;
 }
 
 interface DeleteSnippetResponse {
@@ -191,7 +195,13 @@ export const useUserStore = defineStore('user', {
     seoError: '',
     isSeoLoading: false,
     isPremium: false,
-    isAdmin: false
+    isStandard: false,
+    isAdmin: false,
+    isBuying: false,
+    subscription_status: 'none' as 'active' | 'trial' | 'expired' | 'none',
+    payment_status: 'none' as 'paid' | 'pending' | 'none',
+    trial_end_date: null as Date | null,
+    daysLeft: 0
   }),
   getters: {
     isUserAuthenticated: (state) => state.isAuthenticated && !!state.token,
@@ -222,6 +232,13 @@ export const useUserStore = defineStore('user', {
               (typeof parsedData.user.isPremium === 'string' && (parsedData.user.isPremium === '1' || parsedData.user.isPremium === 'true'));
           }
 
+          let isStandardValue = false;
+          if (parsedData.user?.isStandard !== undefined) {
+            isStandardValue = parsedData.user.isStandard === true ||
+              (typeof parsedData.user.isStandard === 'number' && parsedData.user.isStandard === 1) ||
+              (typeof parsedData.user.isStandard === 'string' && (parsedData.user.isStandard === '1' || parsedData.user.isStandard === 'true'));
+          }
+
           let isAdminValue = false;
           if (parsedData.user?.isAdmin !== undefined) {
             isAdminValue = parsedData.user.isAdmin === true ||
@@ -229,14 +246,29 @@ export const useUserStore = defineStore('user', {
               (typeof parsedData.user.isAdmin === 'string' && (parsedData.user.isAdmin === '1' || parsedData.user.isAdmin === 'true'));
           }
 
+          const subscription_status = parsedData.user?.subscription_status || 'none';
+          const payment_status = parsedData.user?.payment_status || 'none';
+          const trial_end_date = parsedData.user?.trial_end_date ? new Date(parsedData.user.trial_end_date) : null;
+          const daysLeft = parsedData.user?.daysLeft || 0;
+
           this.user = {
             ...parsedData.user,
             isPremium: isPremiumValue,
-            isAdmin: isAdminValue
+            isStandard: isStandardValue,
+            isAdmin: isAdminValue,
+            subscription_status,
+            payment_status,
+            trial_end_date,
+            daysLeft
           };
           this.isAuthenticated = true;
           this.isPremium = isPremiumValue;
+          this.isStandard = isStandardValue;
           this.isAdmin = isAdminValue;
+          this.subscription_status = subscription_status;
+          this.payment_status = payment_status;
+          this.trial_end_date = trial_end_date;
+          this.daysLeft = daysLeft;
           this.token = token;
 
           await this.loadData();
@@ -296,6 +328,13 @@ export const useUserStore = defineStore('user', {
               (typeof decodedData.isPremium === 'string' && (decodedData.isPremium === '1' || decodedData.isPremium === 'true'));
           }
 
+          let isStandardValue = false;
+          if (decodedData.isStandard !== undefined) {
+            isStandardValue = decodedData.isStandard === true ||
+              (typeof decodedData.isStandard === 'number' && decodedData.isStandard === 1) ||
+              (typeof decodedData.isStandard === 'string' && (decodedData.isStandard === '1' || decodedData.isStandard === 'true'));
+          }
+
           let isAdminValue = false;
           if (decodedData.isAdmin !== undefined) {
             isAdminValue = decodedData.isAdmin === true ||
@@ -304,6 +343,7 @@ export const useUserStore = defineStore('user', {
           }
 
           this.isPremium = isPremiumValue;
+          this.isStandard = isStandardValue;
           this.isAdmin = isAdminValue;
 
           if (!this.user) {
@@ -313,11 +353,13 @@ export const useUserStore = defineStore('user', {
               username: decodedData.username || '',
               email: decodedData.email || '',
               isPremium: isPremiumValue,
+              isStandard: isStandardValue,
               isAdmin: isAdminValue
             };
             this.user.userId = this.user.id;
           } else {
             this.user.isPremium = isPremiumValue;
+            this.user.isStandard = isStandardValue;
             this.user.isAdmin = isAdminValue;
             this.user.userId = this.user.id;
           }
@@ -342,6 +384,12 @@ export const useUserStore = defineStore('user', {
             (typeof this.user.isPremium === 'number' && this.user.isPremium === 1);
         }
 
+        let isStandardValue = false;
+        if (this.user?.isStandard !== undefined) {
+          isStandardValue = this.user.isStandard === true ||
+            (typeof this.user.isStandard === 'number' && this.user.isStandard === 1);
+        }
+
         const userData = {
           user: {
             id: this.user?.id || 0,
@@ -349,7 +397,9 @@ export const useUserStore = defineStore('user', {
             username: this.user?.username || '',
             email: this.user?.email || '',
             isAdmin: isAdminValue,
-            isPremium: isPremiumValue
+            isPremium: isPremiumValue,
+            isStandard: isStandardValue,
+            isBuying: this.user?.isBuying || false
           },
           isAuthenticated: this.isAuthenticated
         };
@@ -361,21 +411,23 @@ export const useUserStore = defineStore('user', {
     },
 
     restoreUserData() {
-      try {
-        const storedData = localStorage.getItem('user_data');
-        if (storedData) {
-          const userData = JSON.parse(storedData);
-
-          if (!userData.user) {
-            console.warn('[STORE] Données utilisateur invalides dans le localStorage');
-            return false;
-          }
+      const response = localStorage.getItem('user_data');
+      if (response) {
+        try {
+          const userData = JSON.parse(response);
 
           let isPremiumValue = false;
           if (userData.user?.isPremium !== undefined) {
             isPremiumValue = userData.user.isPremium === true ||
               (typeof userData.user.isPremium === 'number' && userData.user.isPremium === 1) ||
               (typeof userData.user.isPremium === 'string' && (userData.user.isPremium === '1' || userData.user.isPremium === 'true'));
+          }
+
+          let isStandardValue = false;
+          if (userData.user?.isStandard !== undefined) {
+            isStandardValue = userData.user.isStandard === true ||
+              (typeof userData.user.isStandard === 'number' && userData.user.isStandard === 1) ||
+              (typeof userData.user.isStandard === 'string' && (userData.user.isStandard === '1' || userData.user.isStandard === 'true'));
           }
 
           let isAdminValue = false;
@@ -385,29 +437,42 @@ export const useUserStore = defineStore('user', {
               (typeof userData.user.isAdmin === 'string' && (userData.user.isAdmin === '1' || userData.user.isAdmin === 'true'));
           }
 
-          this.user = {
-            id: userData.user.id || 0,
-            userId: userData.user.id || 0,
-            username: userData.user.username || '',
-            email: userData.user.email || '',
-            isAdmin: isAdminValue,
-            isPremium: isPremiumValue,
-            company: userData.user.company || '',
-            website: userData.user.website || '',
-            bio: userData.user.bio || ''
-          };
-          this.isAuthenticated = userData.isAuthenticated || false;
-          this.isPremium = isPremiumValue;
-          this.isAdmin = isAdminValue;
+          let isBuyingValue = false;
+          if (userData.user?.isBuying !== undefined) {
+            isBuyingValue = userData.user.isBuying === true ||
+              (typeof userData.user.isBuying === 'number' && userData.user.isBuying === 1) ||
+              (typeof userData.user.isBuying === 'string' && (userData.user.isBuying === '1' || userData.user.isBuying === 'true'));
+          }
 
-          return true;
-        } else {
-          console.log('[STORE] Aucune donnée utilisateur trouvée dans le localStorage');
-          return false;
+          const subscription_status = userData.user?.subscription_status || 'none';
+          const payment_status = userData.user?.payment_status || 'none';
+          const trial_end_date = userData.user?.trial_end_date ? new Date(userData.user.trial_end_date) : null;
+          const daysLeft = userData.user?.daysLeft || 0;
+
+          this.token = userData.token;
+          this.user = {
+            ...userData.user,
+            isPremium: isPremiumValue,
+            isStandard: isStandardValue,
+            isAdmin: isAdminValue,
+            isBuying: isBuyingValue,
+            subscription_status,
+            payment_status,
+            trial_end_date,
+            daysLeft
+          };
+          this.isAuthenticated = true;
+          this.isPremium = isPremiumValue;
+          this.isStandard = isStandardValue;
+          this.isAdmin = isAdminValue;
+          this.isBuying = isBuyingValue;
+          this.subscription_status = subscription_status;
+          this.payment_status = payment_status;
+          this.trial_end_date = trial_end_date;
+          this.daysLeft = daysLeft;
+        } catch (error) {
+          console.error('Erreur lors de la restauration des données utilisateur:', error);
         }
-      } catch (error) {
-        console.warn('[STORE] Erreur lors de la restauration des données utilisateur:', error);
-        return false;
       }
     },
 
@@ -438,11 +503,23 @@ export const useUserStore = defineStore('user', {
 
           const isPremiumValue = data.user.isPremium === true || data.user.isPremium === 1;
           const isAdminValue = data.user.isAdmin === true || data.user.isAdmin === 1;
+          const isStandardValue = data.user.isStandard === true || data.user.isStandard === 1;
+          const isBuyingValue = data.user.isBuying === true || data.user.isBuying === 1;
+          const subscription_status = data.user.subscription_status || 'none';
+          const payment_status = data.user.payment_status || 'none';
+          const trial_end_date = data.user.trial_end_date ? new Date(data.user.trial_end_date) : null;
+          const daysLeft = data.user.daysLeft || 0;
 
           this.user = {
             ...data.user,
             isPremium: isPremiumValue,
-            isAdmin: isAdminValue
+            isStandard: isStandardValue,
+            isAdmin: isAdminValue,
+            isBuying: isBuyingValue,
+            subscription_status,
+            payment_status,
+            trial_end_date,
+            daysLeft
           };
 
           this.user.userId = this.user.id;
@@ -451,7 +528,12 @@ export const useUserStore = defineStore('user', {
           this.isAuthenticated = true;
           this.isPremium = isPremiumValue;
           this.isAdmin = isAdminValue;
-
+          this.isStandard = isStandardValue;
+          this.isBuying = isBuyingValue;
+          this.subscription_status = subscription_status;
+          this.payment_status = payment_status;
+          this.trial_end_date = trial_end_date;
+          this.daysLeft = daysLeft;
           this.persistData();
           await this.loadData();
 
@@ -491,6 +573,7 @@ export const useUserStore = defineStore('user', {
           this.isAuthenticated = true;
           this.isPremium = data.user.isPremium;
           this.isAdmin = data.user.isAdmin;
+          this.isStandard = data.user.isStandard;
 
           this.persistData();
 
@@ -539,6 +622,13 @@ export const useUserStore = defineStore('user', {
                 (typeof data.user.isPremium === 'string' && (data.user.isPremium === '1' || data.user.isPremium === 'true'));
             }
 
+            let isStandardValue = false;
+            if (data.user.isStandard !== undefined) {
+              isStandardValue = data.user.isStandard === true ||
+                (typeof data.user.isStandard === 'number' && data.user.isStandard === 1) ||
+                (typeof data.user.isStandard === 'string' && (data.user.isStandard === '1' || data.user.isStandard === 'true'));
+            }
+
             let isAdminValue = false;
             if (data.user.isAdmin !== undefined) {
               isAdminValue = data.user.isAdmin === true ||
@@ -553,6 +643,7 @@ export const useUserStore = defineStore('user', {
                 username: data.user.username || '',
                 email: data.user.email || '',
                 isPremium: isPremiumValue,
+                isStandard: isStandardValue,
                 isAdmin: isAdminValue
               };
             } else {
@@ -561,12 +652,13 @@ export const useUserStore = defineStore('user', {
               this.user.username = data.user.username || this.user.username;
               this.user.email = data.user.email || this.user.email;
               this.user.isPremium = isPremiumValue;
+              this.user.isStandard = isStandardValue;
               this.user.isAdmin = isAdminValue;
             }
 
             this.isPremium = isPremiumValue;
             this.isAdmin = isAdminValue;
-
+            this.isStandard = isStandardValue;
 
             this.persistData();
           }
@@ -679,15 +771,17 @@ export const useUserStore = defineStore('user', {
 
             const isPremiumValue = validationData.user.isPremium === 1 || validationData.user.isPremium === true;
             const isAdminValue = validationData.user.isAdmin === 1 || validationData.user.isAdmin === true;
-
+            const isStandardValue = validationData.user.isStandard === 1 || validationData.user.isStandard === true;
             this.user = {
               ...validationData.user,
               isPremium: isPremiumValue,
+              isStandard: isStandardValue,
               isAdmin: isAdminValue
             };
 
             this.isAuthenticated = true;
             this.isPremium = isPremiumValue;
+            this.isStandard = isStandardValue;
             this.isAdmin = isAdminValue;
             this.error = null;
             this.token = token;
@@ -697,7 +791,6 @@ export const useUserStore = defineStore('user', {
           }
         }
 
-        console.log('Tentative avec /api/auth/session');
         const sessionResponse = await fetch('/api/auth/session', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -720,6 +813,13 @@ export const useUserStore = defineStore('user', {
             ? sessionData.user.isPremium === 1
             : !!sessionData.user.isPremium;
 
+          let isStandardValue = false;
+          if (sessionData.user?.isStandard !== undefined) {
+            isStandardValue = sessionData.user.isStandard === true ||
+              (typeof sessionData.user.isStandard === 'number' && sessionData.user.isStandard === 1) ||
+              (typeof sessionData.user.isStandard === 'string' && (sessionData.user.isStandard === '1' || sessionData.user.isStandard === 'true'));
+          }
+
           const isAdminValue = typeof sessionData.user.isAdmin === 'number'
             ? sessionData.user.isAdmin === 1
             : !!sessionData.user.isAdmin;
@@ -727,11 +827,13 @@ export const useUserStore = defineStore('user', {
           this.user = {
             ...sessionData.user,
             isPremium: isPremiumValue,
+            isStandard: isStandardValue,
             isAdmin: isAdminValue
           };
 
           this.isAuthenticated = true;
           this.isPremium = isPremiumValue;
+          this.isStandard = isStandardValue;
           this.isAdmin = isAdminValue;
           this.error = null;
           this.token = token;
@@ -1565,7 +1667,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async updatePremiumStatus() {
+    async updatePremiumStatus(selectedPlan: string) {
       try {
         if (!this.user) {
           return { success: false, error: 'user not found' };
@@ -1574,11 +1676,9 @@ export const useUserStore = defineStore('user', {
         const userId = this.user.id || this.user.userId;
 
         if (!userId) {
-          console.error('ID utilisateur manquant pour la mise à jour du statut premium');
-          return { success: false, error: 'ID utilisateur manquant' };
+          console.error('User ID missing for premium status update');
+          return { success: false, error: 'User ID missing' };
         }
-
-        console.log('Mise à jour du statut premium pour l\'utilisateur:', userId);
 
         const response = await fetch('/api/user/premium-status', {
           method: 'POST',
@@ -1586,34 +1686,70 @@ export const useUserStore = defineStore('user', {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token}`
           },
-          body: JSON.stringify({ userId })
+          body: JSON.stringify({ userId, selectedPlan })
         });
 
         if (!response.ok) {
-          return { success: false, error: `Erreur serveur: ${response.status}` };
+          return { success: false, error: `Server error: ${response.status}` };
         }
 
         const data = await response.json();
 
         if (data.success) {
           if (this.user) {
-            this.user.isPremium = true;
-            this.isPremium = true;
+            if (selectedPlan === 'premium') {
+              this.user.isPremium = true;
+              this.user.isStandard = false;
+              this.isPremium = true;
+              this.isStandard = false;
+            } else if (selectedPlan === 'standard') {
+              this.user.isPremium = false;
+              this.user.isStandard = true;
+              this.isPremium = false;
+              this.isStandard = true;
+            }
+
+            if (data.subscription_status) {
+              this.user.subscription_status = data.subscription_status;
+              this.subscription_status = data.subscription_status;
+            }
+
+            if (data.payment_status) {
+              this.user.payment_status = data.payment_status;
+              this.payment_status = data.payment_status;
+            }
+
+            if (data.trial_end_date) {
+              this.user.trial_end_date = new Date(data.trial_end_date);
+              this.trial_end_date = new Date(data.trial_end_date);
+            }
+
+            if (data.daysLeft !== undefined) {
+              this.user.daysLeft = data.daysLeft;
+              this.daysLeft = data.daysLeft;
+            }
+
             this.persistData();
           }
 
-          return { success: true, isPremium: true, requireRelogin: true };
+          return {
+            success: true,
+            isPremium: selectedPlan === 'premium',
+            isStandard: selectedPlan === 'standard',
+            subscription_status: data.subscription_status,
+            requireRelogin: true
+          };
         } else {
-          console.error('Échec mise à jour premium:', data.error);
+          console.error('Premium update failed:', data.error);
           return { success: false, error: data.error };
         }
       } catch (error) {
-        console.error('Exception lors de la mise à jour du statut premium:', error);
-        return { success: false, error: 'Erreur technique' };
+        console.error('Exception during premium status update:', error);
+        return { success: false, error: 'Technical error' };
       }
     },
 
-    async checkout(cardholderName: string, countryCode: string = 'FR', isBusinessCustomer: boolean = false, vatNumber: string = '', promoCode: string = ''): Promise<{
+    async checkout(cardholderName: string, countryCode: string = 'FR', isBusinessCustomer: boolean = false, vatNumber: string = '', promoCode: string = '', selectedPlan: string = ''): Promise<{
       success: boolean;
       clientSecret?: string;
       error?: string;
@@ -1627,6 +1763,7 @@ export const useUserStore = defineStore('user', {
         discountAmount?: number;
         discountDescription?: string;
         discountedBaseAmount?: number;
+        selectedPlan?: string;
       }
     }> {
       const currency = 'eur';
@@ -1639,7 +1776,8 @@ export const useUserStore = defineStore('user', {
             country_code: countryCode,
             is_business: isBusinessCustomer,
             vat_number: vatNumber,
-            promo_code: promoCode
+            promo_code: promoCode,
+            selected_plan: selectedPlan
           }
         });
 
@@ -1660,6 +1798,7 @@ export const useUserStore = defineStore('user', {
                 discountAmount?: number;
                 discountDescription?: string;
                 discountedBaseAmount?: number;
+                selectedPlan?: string;
               } | undefined
             };
           }
@@ -1729,7 +1868,8 @@ export const useUserStore = defineStore('user', {
       taxAmount: number,
       totalAmount: number,
       taxPercentage: number,
-      isVatExempt: boolean
+      isVatExempt: boolean,
+      selectedPlan: string
     ): Promise<{ success: boolean; error?: string }> {
       try {
         const response = await $fetch('/api/payment/generate-invoice', {
@@ -1746,6 +1886,7 @@ export const useUserStore = defineStore('user', {
             totalAmount,
             taxPercentage,
             isVatExempt,
+            selectedPlan,
             date: new Date().toLocaleDateString('fr-FR')
           }
         });
@@ -1759,13 +1900,13 @@ export const useUserStore = defineStore('user', {
 
         return {
           success: false,
-          error: 'Réponse du serveur invalide'
+          error: 'Invalid server response'
         };
       } catch (error) {
         console.error('Error generating invoice:', error);
         return {
           success: false,
-          error: error instanceof Error ? error.message : 'Erreur inconnue lors de la génération de la facture'
+          error: error instanceof Error ? error.message : 'Unknown error generating invoice'
         };
       }
     },

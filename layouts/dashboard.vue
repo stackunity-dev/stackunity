@@ -88,8 +88,9 @@
           </v-list-group>
         </client-only>
 
-        <v-list-item v-if="!userStore.user.isPremium" to="/checkout" prepend-icon="mdi-credit-card-outline"
-          title="Premium" rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer" />
+        <v-list-item v-if="!userStore.user.isPremium || !userStore.user.isStandard" to="/checkout"
+          prepend-icon="mdi-credit-card-outline" title="Premium" rounded="lg" class="mb-1" color="primary" nuxt
+          @click="closeDrawer" />
 
         <v-list-item v-if="userStore.user.isPremium && !trialLoading && trialDaysLeft !== null && !isBuying"
           prepend-icon="mdi-clock-outline" :title="`Trial : ${trialDaysLeft} days left`" rounded="lg" class="mb-1"
@@ -179,7 +180,7 @@ const openTask = ref(false);
 const studioMode = ref('studio');
 const trialDaysLeft = ref(null);
 const trialLoading = ref(true);
-const isBuying = ref(false);
+const isBuying = ref(userStore.user?.isBuying);
 
 provide('studioMode', {
   mode: studioMode,
@@ -389,10 +390,6 @@ const setStudioMode = (mode) => {
   studioMode.value = mode;
 };
 
-const toggleStudioMode = () => {
-  studioMode.value = studioMode.value === 'studio' ? 'studio-seo' : 'studio';
-};
-
 const closeDrawer = () => {
   if (display.smAndDown.value) {
     drawer.value = false;
@@ -447,16 +444,40 @@ if (process.client) {
   setInterval(checkTrialStatus, 3600000);
 }
 
-function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string): any {
+function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string, planType: 'standard' | 'premium' = 'premium'): any {
   if (userStore.user?.isPremium) {
     return {
       title: title,
       link: link,
       icon: icon
     };
+  } else if (userStore.user?.isStandard) {
+    if (planType === 'standard') {
+      return {
+        title: title,
+        link: link,
+        icon: icon
+      };
+    } else {
+      return {
+        title: `${title} (Premium)`,
+        link: '#',
+        icon: icon,
+        component: {
+          component: markRaw(premiumFeatures),
+          props: {
+            type: 'list-item' as 'list-item',
+            title: title,
+            icon: icon,
+            featureKey: featureKey,
+            planType: 'premium'
+          }
+        }
+      };
+    }
   } else {
     return {
-      title: `${title} (Premium)`,
+      title: `${title} (${planType === 'premium' ? 'Premium' : 'Standard'})`,
       link: '#',
       icon: icon,
       component: {
@@ -465,7 +486,8 @@ function createPremiumMenuItem(title: string, link: string, icon: string, featur
           type: 'list-item' as 'list-item',
           title: title,
           icon: icon,
-          featureKey: featureKey
+          featureKey: featureKey,
+          planType: planType
         }
       }
     };
@@ -480,7 +502,7 @@ const items = computed(() => [
     children: [
       { title: 'Snippets', link: '/snippets', icon: 'mdi-code-tags' },
       { title: 'Studio', link: '/studio', icon: 'mdi-palette' },
-      createPremiumMenuItem('Semantic', '/semantic', 'mdi-semantic-web', 'semantic')
+      createPremiumMenuItem('Semantic', '/semantic', 'mdi-semantic-web', 'semantic', 'premium')
     ]
   },
   {
@@ -488,7 +510,7 @@ const items = computed(() => [
     prependIcon: 'mdi-database-outline',
     link: true,
     children: [
-      createPremiumMenuItem('Database Designer', '/database-designer', 'mdi-database', 'databaseDesigner'),
+      createPremiumMenuItem('Database Designer', '/database-designer', 'mdi-database', 'databaseDesigner', 'standard'),
       { title: 'API Testing Hub', link: '/api-testing-hub', icon: 'mdi-api' }
     ]
   },
@@ -499,7 +521,7 @@ const items = computed(() => [
     children: [
       { title: 'Responsive', link: '/responsive', icon: 'mdi-responsive' },
       { title: 'Accessibility', link: '/accessibility', icon: 'mdi-access-point' },
-      createPremiumMenuItem('User Engagement', '/user-engagement', 'mdi-account-group', 'userEngagement')
+      createPremiumMenuItem('User Engagement', '/user-engagement', 'mdi-account-group', 'userEngagement', 'premium')
     ]
   },
   {
@@ -507,11 +529,15 @@ const items = computed(() => [
     prependIcon: 'mdi-rocket-launch-outline',
     link: true,
     children: [
-      createPremiumMenuItem('Website analyzer', '/website-analyzer', 'mdi-magnify', 'websiteAnalyzer'),
-      createPremiumMenuItem('Robots & Schema', '/robots', 'mdi-robot', 'robots')
+      createPremiumMenuItem('Website analyzer', '/website-analyzer', 'mdi-magnify', 'websiteAnalyzer', 'premium'),
+      createPremiumMenuItem('Robots & Schema', '/robots', 'mdi-robot', 'robots', 'standard')
     ]
   },
 ]);
+
+onMounted(() => {
+  console.log(userStore.user);
+});
 </script>
 
 <style scoped>

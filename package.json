@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "stackunity",
   "private": true,
   "type": "module",
   "engines": {
@@ -15,7 +15,7 @@
     "start": "node .output/server/index.mjs",
     "upload-chromium": "node scripts/upload-chromium.js",
     "git": "git add . && git commit -m 'build' && git push origin main",
-    "git-remove": "git rm --cached -r server/api/payment server/api/auth \".cursor\" \"server/middleware/auth.ts\" \"server/utils/\"  \"utils/token.ts\" \"server/api/seo-audit.pdf.post.ts\" \"server/api/payment/generate-invoice.ts\" \"server/api/analyze\" \"server/api/upload.ts\" \"pages/admin/newsletter-admin.vue\" \"pages/website-analyzer.vue\" \"pages/database-designer.vue\"  \"pages/checkout.vue\" \"pages/login.vue\" \"pages/admin\" \"components/seo\" \"stores/userStore.ts\" \"utils/seo\" &&  git commit -m \"Remove premium features and authentication from git tracking\" && git push origin main"
+    "git-remove": "git rm -r --cached 'server/api/utils' 'server/api/payment' 'server/api/auth' 'server/api/user' 'server/api/analyze' 'stores/' 'do.md' 'pages/website-analyzer' 'components/seo' && git commit -m 'build' && git push origin main"
   },
   "config": {
     "rollup": {

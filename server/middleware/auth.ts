@@ -1,5 +1,8 @@
-import { createError, defineEventHandler, getRequestHeaders, H3Event } from 'h3'
+import { defineEventHandler, getRequestHeaders, H3Event } from 'h3'
+import { ErrorLogger } from '../utils/ErrorLogger'
+import { createForbiddenError, createUnauthorizedError } from '../utils/GlobalErrorHandler'
 import { ServerTokenManager } from '../utils/ServerTokenManager'
+
 
 const publicRoutes = [
   '/api/auth/',
@@ -36,12 +39,16 @@ const premiumRoutes = [
   '/seo-audit',
   '/robots',
   '/api/seo-audit',
-  '/api/seo-audit.pdf',
-  '/api/sql-schema'
+  '/api/seo-audit.pdf'
 ]
 
 export default defineEventHandler(async (event: H3Event) => {
   const url = event.node.req.url || '';
+
+  // Si c'est une requête de page (pas une API), on la laisse passer
+  if (!url.startsWith('/api/')) {
+    return;
+  }
 
   const isPublicRoute = (url: string): boolean => {
     if (url.startsWith('/api/Studio/')) {
@@ -67,9 +74,6 @@ export default defineEventHandler(async (event: H3Event) => {
       return url === route || url.startsWith(route + '/');
     });
 
-    if (isPublic) {
-    }
-
     return isPublic;
   };
 
@@ -80,45 +84,26 @@ export default defineEventHandler(async (event: H3Event) => {
   const authHeader = getRequestHeaders(event).authorization;
   const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-
   if (!token) {
     if (!adminRoutes.some(route => url.includes(route)) &&
       !premiumRoutes.some(route => url.includes(route))) {
       return;
     }
-
-    throw createError({
-      statusCode: 401,
-      message: 'Authentification requise'
-    });
+    console.log('Authentification requise');
+    throw createUnauthorizedError('Authentification requise');
   }
 
   try {
-    const decodedToken = ServerTokenManager.verifyAccessToken(token);
-
-
-    if (!decodedToken) {
-      throw createError({
-        statusCode: 401,
-        message: 'Token invalide ou expiré'
-      });
-    }
+    const decodedToken = await ServerTokenManager.verifyToken(token);
+    event.context.user = decodedToken;
 
     if (adminRoutes.some(route => url.includes(route)) && !decodedToken.isAdmin) {
-      throw createError({
-        statusCode: 403,
-        message: 'Accès refusé - Permissions administrateur requises'
-      });
+      throw createForbiddenError('Accès refusé - Permissions administrateur requises');
     }
 
-    if (premiumRoutes.some(route => url.includes(route)) && !decodedToken.isPremium) {
-      throw createError({
-        statusCode: 403,
-        message: 'Accès refusé - Compte premium requis'
-      });
+    if (premiumRoutes.some(route => url.includes(route)) && !decodedToken.isPremium && !decodedToken.isStandard) {
+      throw createForbiddenError('Accès refusé - Compte premium requis');
     }
-
-    event.context.user = decodedToken;
 
     setResponseHeaders(event, {
       'Access-Control-Allow-Origin': '*',
@@ -128,28 +113,23 @@ export default defineEventHandler(async (event: H3Event) => {
     });
 
   } catch (error: any) {
-    console.error('[stackunity]', `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}]`, 'Erreur d\'authentification:', error);
+    await ErrorLogger.logError(error, {
+      context: 'Middleware d\'authentification',
+      url,
+      timestamp: new Date().toISOString()
+    }, event);
 
     if (isPublicRoute(url)) {
       return;
     }
 
     if (error.name === 'TokenExpiredError') {
-      throw createError({
-        statusCode: 401,
-        message: 'Token expiré'
-      });
+      throw createUnauthorizedError('Token expiré');
     }
     if (error.name === 'JsonWebTokenError') {
-      throw createError({
-        statusCode: 401,
-        message: 'Token invalide'
-      });
+      throw createUnauthorizedError('Token invalide');
     }
-    throw createError({
-      statusCode: 401,
-      message: error.message || 'Erreur d\'authentification'
-    });
+    throw createUnauthorizedError(error.message || 'Erreur d\'authentification');
   }
 });
 

@@ -1,21 +1,22 @@
 <template>
   <div>
     <v-btn v-if="type === 'button'" :color="color" :variant="variant" :disabled="disabled" @click="showDialog = true"
-      class="premium-btn" elevation="2" :size="size" :aria-label="`${title} - Premium feature`">
+      class="premium-btn" elevation="2" :size="size" :aria-label="`${title} - ${planType} feature`">
       <v-icon :icon="icon" class="crown-icon" aria-hidden="true" />
       <span class="premium-text">{{ title }}</span>
     </v-btn>
 
     <v-list-item v-else-if="type === 'list-item'" prepend-icon="mdi-crown" @click="showDialog = true" rounded="lg"
-      density="compact" class="gold-gradient-item" role="button" :aria-label="`${title} - Premium feature`">
+      density="compact" class="gold-gradient-item" role="button" :aria-label="`${title} - ${planType} feature`">
       <v-list-item-title>{{ title }}</v-list-item-title>
     </v-list-item>
 
     <v-chip v-else-if="type === 'chip'" prepend-icon="mdi-crown" color="warning" @click="showDialog = true" size="small"
-      class="gold-gradient-chip" role="button" aria-label="Premium feature">Premium </v-chip>
+      class="gold-gradient-chip" role="button" aria-label="Premium feature">{{ planType === 'premium' ? 'Premium' :
+        'Standard' }}</v-chip>
 
     <v-tab v-else-if="type === 'tab'" prepend-icon="mdi-crown" class="gold-gradient-item" @click="showDialog = true"
-      role="tab" :aria-label="`${title} - Premium feature`">
+      role="tab" :aria-label="`${title} - ${planType} feature`">
       {{ title }}
     </v-tab>
 
@@ -24,7 +25,7 @@
         <v-card-title id="premium-dialog-title"
           class="bg-primary text-white py-4 px-4 rounded-t-lg d-flex align-center">
           <v-icon color="white" class="mr-2" size="24" aria-hidden="true">{{ icon }}</v-icon>
-          {{ title || 'Premium feature' }}
+          {{ title || `${planType} feature` }}
         </v-card-title>
 
         <v-card-text class="pa-0">
@@ -32,10 +33,11 @@
             aria-label="Feature description">
             <div class="text-center mb-4">
               <v-icon :icon="icon" size="64" color="warning" class="mb-2 premium-icon" aria-hidden="true"></v-icon>
-              <div class="text-h5 font-weight-bold mb-2" role="heading" aria-level="2">{{ title || 'Premium feature' }}
+              <div class="text-h5 font-weight-bold mb-2" role="heading" aria-level="2">{{ title || `${planType} feature`
+              }}
               </div>
               <div class="text-subtitle-2 text-medium-emphasis mx-auto" style="max-width: 400px">
-                Unlock this premium feature and access all advanced tools to optimize your web development.
+                Unlock this {{ planType }} feature and access all {{ planType }} tools to optimize your web development.
               </div>
             </div>
           </div>
@@ -71,18 +73,23 @@
                 <v-card class="price-card mb-3 pa-4" color="surface" rounded="lg" elevation="1" role="region"
                   aria-label="Pricing information">
                   <div class="d-flex justify-space-between align-center mb-2">
-                    <div class="text-h4 font-weight-bold" role="text" aria-label="Price: 199 euros">199€</div>
-                    <v-chip color="success" size="small" aria-label="Discount: Save 25%">Save 25%</v-chip>
+                    <div class="text-h4 font-weight-bold" role="text" :aria-label="`Price: ${getPlanPrice()}`">{{
+                      getPlanPrice() }}
+                    </div>
+                    <v-chip color="success" size="small" aria-label="Lifetime access">{{ getPlanDuration() }}</v-chip>
                   </div>
                   <div class="text-body-2 text-medium-emphasis mb-4">Unlimited access for life</div>
-                  <v-btn color="warning" variant="elevated" block size="large" height="48" @click="goToPricingPage"
-                    class="premium-action-btn text-uppercase font-weight-bold" aria-label="Get premium access now">
-                    <v-icon start aria-hidden="true">mdi-crown</v-icon>
-                    Get now
+                  <v-btn :color="planType === 'premium' ? 'warning' : 'primary'" variant="elevated" block size="large"
+                    height="48" @click="goToPricingPage" class="premium-action-btn text-uppercase font-weight-bold"
+                    aria-label="Get access now">
+                    <v-icon start aria-hidden="true">{{ planType === 'premium' ? 'mdi-crown' : 'mdi-star' }}</v-icon>
+                    Get {{ planType }}
                   </v-btn>
                   <div class="d-flex align-center justify-center mt-3" role="text" aria-label="Additional benefits">
                     <v-icon size="small" color="success" class="mr-1" aria-hidden="true">mdi-check-circle</v-icon>
-                    <span class="text-caption">Single payment • Unlimited access • Priority support</span>
+                    <span class="text-caption">Single payment • Unlimited access • {{ planType === 'premium' ?
+                      'Priority' : 'Basic' }}
+                      support</span>
                   </div>
                 </v-card>
 
@@ -115,6 +122,7 @@ interface Props {
   type?: 'button' | 'list-item' | 'chip';
   featureKey?: string;
   size?: 'x-small' | 'small' | 'default' | 'large' | 'x-large';
+  planType?: 'standard' | 'premium';
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -126,7 +134,8 @@ const props = withDefaults(defineProps<Props>(), {
   premiumLink: '/premium',
   type: 'button',
   featureKey: '',
-  size: 'default'
+  size: 'default',
+  planType: 'premium'
 });
 
 const showDialog = ref(false);
@@ -170,54 +179,54 @@ type FeatureMap = {
 
 const features: FeatureMap = {
   databaseDesigner: [
-    "Visual database schema creation",
-    "SQL generation with optimized indexes",
-    "Multiple database engine support",
-    "Export schemas as SQL or diagrams"
+    "Visual database schema creation (Standard)",
+    "SQL generation with optimized indexes (Standard)",
+    "Multiple database engine support (Standard)",
+    "Export schemas as SQL or diagrams (Standard)"
   ],
   websiteAnalyzer: [
-    "Complete website SEO audit",
-    "Technical SEO recommendations",
-    "Content optimization suggestions",
-    "Full website analysis"
+    "Complete website SEO audit (Premium)",
+    "Technical SEO recommendations (Premium)",
+    "Content optimization suggestions (Premium)",
+    "Full website analysis (Premium)"
   ],
   robots: [
-    "robots.txt generator",
-    "Schema.org markup generator",
-    "Structured data validation",
-    "Search engine visibility control"
+    "robots.txt generator (Standard)",
+    "Schema.org markup generator (Standard)",
+    "Structured data validation (Standard)",
+    "Search engine visibility control (Standard)"
   ],
   studioComponents: [
-    "Access to all UI components",
-    "Navigation drawer builder",
-    "Timeline component creator",
-    "Form builder with validation",
-    "Advanced UI utilities"
+    "Access to all UI components (Standard)",
+    "Navigation drawer builder (Standard)",
+    "Timeline component creator (Standard)",
+    "Form builder with validation (Standard)",
+    "Advanced UI utilities (Standard)"
   ],
   accessibility: [
-    "Accessibility audit",
-    "Semantic structure analysis",
-    "Metadata analysis",
-    "ARIA analysis"
+    "Accessibility audit (Premium)",
+    "Semantic structure analysis (Premium)",
+    "Metadata analysis (Premium)",
+    "ARIA analysis (Premium)"
   ],
   security: [
-    "Complete security vulnerability analysis",
-    "CSRF vulnerability detection",
-    "JWT analysis and validation",
-    "Multi-factor authentication testing",
-    "Command injection detection"
+    "Complete security vulnerability analysis (Premium)",
+    "CSRF vulnerability detection (Premium)",
+    "JWT analysis and validation (Premium)",
+    "Multi-factor authentication testing (Premium)",
+    "Command injection detection (Premium)"
   ],
   semantic: [
-    "Semantic structure analysis",
-    "Metadata analysis",
-    "ARIA analysis",
-    "SEO optimization suggestions"
+    "Semantic structure analysis (Premium)",
+    "Metadata analysis (Premium)",
+    "ARIA analysis (Premium)",
+    "SEO optimization suggestions (Premium)"
   ],
   userEngagement: [
-    "User engagement analysis",
-    "User engagement optimization suggestions",
-    "User engagement metrics",
-    "User engagement reports"
+    "User engagement analysis (Premium)",
+    "User engagement optimization suggestions (Premium)",
+    "User engagement metrics (Premium)",
+    "User engagement reports (Premium)"
   ],
   default: [
     "Unlimited access to all features",
@@ -255,8 +264,32 @@ const getFeatureImage = (type: string): string => {
   }
 };
 
+const getPlanPrice = () => {
+  if (props.planType === 'premium') {
+    return '€179.99';
+  } else {
+    return '€79.99';
+  }
+};
+
+const getPlanDuration = () => {
+  if (props.planType === 'premium') {
+    return 'Lifetime access';
+  } else {
+    return 'Par mois';
+  }
+};
+
 const goToPricingPage = () => {
-  router.push('/checkout');
+  router.push('/#pricing').then(() => {
+    setTimeout(() => {
+      const element = document.getElementById('pricing');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  });
+
   showDialog.value = false;
 };
 </script>

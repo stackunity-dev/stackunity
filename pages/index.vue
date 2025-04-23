@@ -296,9 +296,9 @@
           </v-container>
         </section>
 
-        <section id="pricing" class="py-16">
+        <FadeInSection>
           <Pricing />
-        </section>
+        </FadeInSection>
 
         <section id="faq" class="py-16">
           <Faq />
@@ -403,15 +403,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
-import { useDisplay } from 'vuetify';
-import FadeInSection from '../components/FadeInSection.vue';
-import Snackbar from '../components/snackbar.vue';
-import { useUserStore } from '../stores/userStore';
 // @ts-ignore 
 import { definePageMeta, useHead } from '#imports';
+import FadeInSection from '../components/FadeInSection.vue';
+import { defineAsyncComponent, onMounted, ref } from 'vue';
+import { useDisplay } from 'vuetify';
+import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
+import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../utils/filter';
 import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
-import { applyVisionFilter, filterStyle, selectedVisionType, visionTypeIcon, visionTypes, filterIntensity } from '../utils/filter';
 
 definePageMeta({
   layout: 'empty'
@@ -747,44 +747,36 @@ const getStepIcon = (index) => {
 }
 
 .pricing-card {
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+.pricing-card:hover {
+  transform: translateY(-8px);
+}
+
+.premium-plan {
   position: relative;
   overflow: hidden;
 }
 
-.pricing-card--popular {
-  transform: scale(1.05);
-  z-index: 2;
-  border: 2px solid rgba(var(--v-theme-primary), 0.5);
-}
-
-.popular-badge {
+.premium-plan::before {
+  content: 'MOST POPULAR';
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background-color: var(--v-theme-primary);
+  top: 20px;
+  right: -35px;
+  background: var(--v-theme-secondary);
   color: white;
+  padding: 8px 40px;
   font-size: 12px;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 16px;
+  font-weight: bold;
+  transform: rotate(45deg);
+  z-index: 1;
 }
 
-.testimonial-card {
-  transition: all 0.3s ease;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
-}
-
-.testimonial-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
-  border: 1px solid rgba(var(--v-theme-primary), 0.3);
-}
-
-@media (max-width: 960px) {
-  .pricing-card--popular {
-    transform: scale(1);
-  }
+.guarantee-card {
+  background: rgba(var(--v-theme-warning), 0.1);
+  border: 1px solid rgba(var(--v-theme-warning), 0.2);
 }
 
 .nav-bar {

@@ -5,6 +5,7 @@ export interface TokenPayload {
   username?: string;
   email?: string;
   isPremium?: boolean | number;
+  isStandard?: boolean | number;
   isAdmin?: boolean | number;
   tokenId?: string;
   exp?: number;

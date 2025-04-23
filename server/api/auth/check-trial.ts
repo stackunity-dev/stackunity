@@ -6,8 +6,12 @@ import { pool } from '../db';
 interface UserRow extends RowDataPacket {
   id: number;
   created_at: Date;
-  isBuying: number;
+  trial_start_date: Date;
+  trial_end_date: Date;
+  payment_status: string;
+  subscription_status: string;
   isPremium: number;
+  isStandard: number;
 }
 
 export default defineEventHandler(async (event) => {
@@ -18,7 +22,7 @@ export default defineEventHandler(async (event) => {
     if (!token) {
       return {
         success: false,
-        message: 'Aucun token fourni'
+        message: 'No token provided'
       };
     }
 
@@ -27,66 +31,129 @@ export default defineEventHandler(async (event) => {
     if (!decodedToken) {
       return {
         success: false,
-        message: 'Token invalide ou expiré'
+        message: 'Invalid or expired token'
       };
     }
 
     const userId = decodedToken.userId;
 
     const [rows] = await pool.execute<UserRow[]>(
-      'SELECT id, created_at, isBuying, isPremium FROM users WHERE id = ?',
+      `SELECT id, created_at, trial_start_date, trial_end_date, payment_status, 
+       subscription_status, isPremium, isStandard
+       FROM users WHERE id = ?`,
       [userId]
     );
 
     if (!rows || rows.length === 0) {
       return {
         success: false,
-        message: 'Utilisateur non trouvé'
+        message: 'User not found'
       };
     }
 
     const user = rows[0];
+    const now = new Date();
 
-    // Si l'utilisateur a déjà payé, on ne fait rien
-    if (user.isBuying === 1) {
+    if (user.trial_start_date && new Date(user.trial_start_date) > now) {
+      const correctedStartDate = new Date(user.created_at || now);
+      const correctedEndDate = new Date(correctedStartDate);
+      correctedEndDate.setDate(correctedStartDate.getDate() + 7);
+
+      await pool.execute(
+        `UPDATE users SET 
+         trial_start_date = ?,
+         trial_end_date = ? 
+         WHERE id = ?`,
+        [correctedStartDate, correctedEndDate, userId]
+      );
+
+      user.trial_start_date = correctedStartDate;
+      user.trial_end_date = correctedEndDate;
+    }
+
+    if (user.payment_status === 'paid') {
       return {
         success: true,
-        isPremium: true,
-        message: 'Utilisateur premium payant'
+        isPremium: user.isPremium === 1,
+        isStandard: user.isStandard === 1,
+        subscription_status: user.subscription_status,
+        message: 'Paid subscription active'
       };
     }
 
-    const createdAt = new Date(user.created_at);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - createdAt.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (user.subscription_status === 'trial') {
+      const trialEndDate = new Date(user.trial_end_date);
 
-    // Si la période d'essai est terminée
-    if (diffDays > 7) {
-      // On retire les privilèges premium
-      await pool.execute(
-        'UPDATE users SET isPremium = 0 WHERE id = ? AND isBuying = 0',
-        [userId]
-      );
+      if (isNaN(trialEndDate.getTime())) {
+        console.error(`Date de fin d'essai invalide pour l'utilisateur ${userId}`);
 
-      return {
-        success: true,
-        isPremium: false,
-        message: 'Période d\'essai terminée'
-      };
+        const newEndDate = new Date(user.created_at || now);
+        newEndDate.setDate(newEndDate.getDate() + 7);
+
+        await pool.execute(
+          `UPDATE users SET 
+           trial_end_date = ? 
+           WHERE id = ?`,
+          [newEndDate, userId]
+        );
+
+        if (newEndDate > now) {
+          const diffTime = newEndDate.getTime() - now.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          return {
+            success: true,
+            isPremium: true,
+            isStandard: false,
+            subscription_status: 'trial',
+            message: 'Trial in progress (corrected date)',
+            daysLeft: diffDays
+          };
+        }
+      }
+
+      if (trialEndDate > now) {
+        const diffTime = trialEndDate.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        return {
+          success: true,
+          isPremium: true,
+          isStandard: false,
+          subscription_status: 'trial',
+          message: 'Trial in progress',
+          daysLeft: diffDays
+        };
+      } else {
+        await pool.execute(
+          `UPDATE users 
+           SET isPremium = 0, isStandard = 0, subscription_status = 'expired' 
+           WHERE id = ? AND payment_status != 'paid'`,
+          [userId]
+        );
+
+        return {
+          success: true,
+          isPremium: false,
+          isStandard: false,
+          subscription_status: 'expired',
+          message: 'Trial ended'
+        };
+      }
     }
 
     return {
       success: true,
-      isPremium: true,
-      message: 'Période d\'essai en cours',
-      daysLeft: 7 - diffDays
+      isPremium: user.isPremium === 1,
+      isStandard: user.isStandard === 1,
+      subscription_status: user.subscription_status,
+      message: `Current status: ${user.subscription_status}`
     };
   } catch (error) {
-    console.error('[CHECK-TRIAL] Erreur:', error);
+    console.error('Error checking trial:', error);
     return {
       success: false,
-      message: 'Erreur lors de la vérification de la période d\'essai'
+      message: 'Error checking subscription status'
     };
   }
 }); 

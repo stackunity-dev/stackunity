@@ -3,6 +3,7 @@ export interface TokenData {
   username?: string;
   email?: string;
   isPremium?: boolean;
+  isStandard?: boolean;
   isAdmin?: boolean;
 }
 
@@ -37,6 +38,7 @@ export class TokenUtils {
         username: decodedData.username,
         email: decodedData.email,
         isPremium: decodedData.isPremium,
+        isStandard: decodedData.isStandard,
         isAdmin: decodedData.isAdmin
       };
     } catch (error) {

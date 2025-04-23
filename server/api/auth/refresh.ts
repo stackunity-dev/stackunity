@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const [userRows] = await pool.execute<RowDataPacket[]>(
-      'SELECT id, username, email, isAdmin, isPremium FROM users WHERE id = ?',
+      'SELECT id, username, email, isAdmin, isPremium, isStandard, subscription_status, payment_status FROM users WHERE id = ?',
       [userId]
     );
 
@@ -42,12 +42,20 @@ export default defineEventHandler(async (event) => {
 
     const user = userRows[0];
 
+    const isPremiumValue = user.isPremium === 1 || user.isPremium === true;
+    const isStandardValue = user.isStandard === 1 || user.isStandard === true;
+    const isAdminValue = user.isAdmin === 1 || user.isAdmin === true;
+
+    console.log(`[REFRESH] Utilisateur ${userId} - isPremium: ${user.isPremium} (${typeof user.isPremium}), isStandard: ${user.isStandard} (${typeof user.isStandard})`);
+    console.log(`[REFRESH] Valeurs converties - isPremium: ${isPremiumValue}, isStandard: ${isStandardValue}`);
+
     const accessToken = ServerTokenManager.generateAccessToken({
       userId: user.id,
       username: user.username,
       email: user.email,
-      isPremium: user.isPremium === 1,
-      isAdmin: user.isAdmin === 1
+      isPremium: isPremiumValue,
+      isStandard: isStandardValue,
+      isAdmin: isAdminValue
     });
 
     const newRefreshTokenId = uuidv4();
@@ -68,8 +76,11 @@ export default defineEventHandler(async (event) => {
         id: user.id,
         username: user.username,
         email: user.email,
-        isAdmin: user.isAdmin === 1,
-        isPremium: user.isPremium === 1
+        isAdmin: isAdminValue,
+        isPremium: isPremiumValue,
+        isStandard: isStandardValue,
+        subscription_status: user.subscription_status,
+        payment_status: user.payment_status
       }
     };
   } catch (error) {

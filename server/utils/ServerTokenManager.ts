@@ -8,6 +8,8 @@ import {
 } from './auth-config';
 import { TokenPayload } from './TokenManager';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
 export class ServerTokenManager {
   static generateAccessToken(payload: TokenPayload & { isRememberMe?: boolean }): string {
     const expiresIn = payload.isRememberMe ? ACCESS_TOKEN_EXPIRY_REMEMBER : ACCESS_TOKEN_EXPIRY_DEFAULT;
@@ -31,7 +33,6 @@ export class ServerTokenManager {
     }
   }
 
-
   static verifyRefreshToken(token: string): { userId: number, tokenId: string } | null {
     try {
       return jwt.verify(token, REFRESH_TOKEN_SECRET as string) as { userId: number, tokenId: string };
@@ -39,5 +40,21 @@ export class ServerTokenManager {
       console.error('Erreur de vérification du token de rafraîchissement:', error);
       return null;
     }
+  }
+
+  static verifyToken(token: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded);
+        }
+      });
+    });
+  }
+
+  static generateToken(payload: any): string {
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
   }
 } 

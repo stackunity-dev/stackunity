@@ -34,16 +34,38 @@
                 <v-card-text class="pa-6">
                   <div class="d-flex justify-space-between align-center mb-4">
                     <div>
-                      <h2 class="text-h5 font-weight-bold mb-1">Premium Lifetime</h2>
-                      <div class="text-subtitle-1 text-medium-emphasis">Unlimited access to all premium features</div>
+                      <h2 class="text-h5 font-weight-bold mb-1">{{ selectedPlan === 'premium' ? 'Premium Lifetime' :
+                        'Standard Lifetime' }}</h2>
+                      <div class="text-subtitle-1 text-medium-emphasis">{{ selectedPlan === 'premium' ?
+                        'Unlimited access to all premium features' : 'Access to standard features' }}</div>
                     </div>
-                    <v-chip color="primary" size="large" class="ml-2">
+                    <v-chip color="primary" size="large" class="ml-2" v-if="selectedPlan === 'premium'">
                       <v-icon start>mdi-crown</v-icon>
                       Best choice
                     </v-chip>
                   </div>
 
                   <v-divider class="mb-4"></v-divider>
+
+                  <div class="plan-switch mb-4">
+                    <v-btn-toggle v-model="selectedPlan" mandatory color="primary" class="rounded-lg"
+                      @update:model-value="updateTaxRates">
+                      <v-btn value="standard" class="text-none">
+                        Standard
+                        <v-tooltip activator="parent" location="top">
+                          <div class="text-caption">Lifetime access</div>
+                          <div class="text-caption">Access to standard features</div>
+                        </v-tooltip>
+                      </v-btn>
+                      <v-btn value="premium" class="text-none">
+                        Premium
+                        <v-tooltip activator="parent" location="top">
+                          <div class="text-caption">Lifetime access</div>
+                          <div class="text-caption">All premium features included</div>
+                        </v-tooltip>
+                      </v-btn>
+                    </v-btn-toggle>
+                  </div>
 
                   <div class="price-details">
                     <div class="d-flex justify-space-between align-center mb-2">
@@ -201,8 +223,7 @@
 
 <script setup lang="ts">
 import { loadStripe } from '@stripe/stripe-js';
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted, ref } from 'vue';
 import snackBar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
@@ -228,7 +249,6 @@ useHead({
   ]
 })
 
-const router = useRouter();
 const userStore = useUserStore();
 
 const cardholderName = ref('');
@@ -246,6 +266,7 @@ const vatNumber = ref('');
 const promoCode = ref('');
 const promoCodeMessage = ref('');
 const promoCodeSuccess = ref(false);
+const selectedPlan = ref('premium');
 
 const countries = [
   { code: 'FR', name: 'France' },
@@ -305,37 +326,69 @@ const taxDetails = ref({
   discountedBaseAmount: 300
 });
 
-const benefits = [
-  'Unlimited access to all premium features',
-  'Priority support and updates',
-  'Advanced SEO analysis tools',
-  'Custom development tools',
-  'Team collaboration features',
-  'No recurring fees - pay once, use forever'
-];
 
-const features = [
-  {
-    icon: 'mdi-rocket-launch',
-    title: 'Advanced Development Tools',
-    description: 'Access to premium development tools and features'
-  },
-  {
-    icon: 'mdi-shield-check',
-    title: 'Priority Support',
-    description: 'Get priority support for all your questions'
-  },
-  {
-    icon: 'mdi-update',
-    title: 'Regular Updates',
-    description: 'Stay ahead with the latest features and improvements'
-  },
-  {
-    icon: 'mdi-account-group',
-    title: 'Team Collaboration',
-    description: 'Work seamlessly with your team members'
-  }
-];
+
+const benefits = computed(() => {
+  return selectedPlan.value === 'premium' ? [
+    'Unlimited access to all premium features',
+    'Priority support and updates',
+    'Advanced SEO analysis tools',
+    'Custom development tools',
+    'Team collaboration features',
+    'No recurring fees - pay once, use forever'
+  ] : [
+    'Access to standard features',
+    'Regular updates',
+    'Basic support',
+    'Team collaboration features',
+  ];
+});
+
+const features = computed(() => {
+  return selectedPlan.value === 'premium' ? [
+    {
+      icon: 'mdi-rocket-launch',
+      title: 'Advanced Development Tools',
+      description: 'Access to premium development tools and features'
+    },
+    {
+      icon: 'mdi-shield-check',
+      title: 'Priority Support',
+      description: 'Get priority support for all your questions'
+    },
+    {
+      icon: 'mdi-update',
+      title: 'Regular Updates',
+      description: 'Stay ahead with the latest features and improvements'
+    },
+    {
+      icon: 'mdi-account-group',
+      title: 'Team Collaboration',
+      description: 'Work seamlessly with your team members'
+    }
+  ] : [
+    {
+      icon: 'mdi-star',
+      title: 'Standard Development Tools',
+      description: 'Access to standard development tools and features'
+    },
+    {
+      icon: 'mdi-help-circle',
+      title: 'Basic Support',
+      description: 'Get basic support for your questions'
+    },
+    {
+      icon: 'mdi-update',
+      title: 'Regular Updates',
+      description: 'Stay updated with new features'
+    },
+    {
+      icon: 'mdi-account-group',
+      title: 'Team Collaboration',
+      description: 'Work with your team members'
+    }
+  ];
+});
 
 const updateTaxRates = async () => {
   try {
@@ -347,7 +400,8 @@ const updateTaxRates = async () => {
       billingCountry.value,
       isBusinessCustomer.value,
       vatNumber.value,
-      promoCode.value
+      promoCode.value,
+      selectedPlan.value
     );
 
     if (response.success && response.taxDetails) {
@@ -479,7 +533,8 @@ const processPayment = async () => {
       billingCountry.value,
       isBusinessCustomer.value,
       vatNumber.value,
-      promoCode.value
+      promoCode.value,
+      selectedPlan.value
     );
 
     if (!result.success || !result.clientSecret) {
@@ -521,7 +576,7 @@ const processPayment = async () => {
 
     if (paymentIntent.status === 'succeeded') {
       try {
-        const updateResult = await userStore.updatePremiumStatus();
+        const updateResult = await userStore.updatePremiumStatus(selectedPlan.value);
         if (!updateResult.success) {
           console.error('Erreur lors de la mise à jour du statut premium:', updateResult.error);
           showSnackbar.value = true;
@@ -530,7 +585,6 @@ const processPayment = async () => {
         }
 
         if (updateResult.requireRelogin) {
-          console.log('Reconnexion requise suite à la mise à jour du statut premium');
           showSnackbar.value = true;
           snackbarColor.value = 'info';
           snackbarText.value = 'Your premium status has been updated. Please log in again to access your premium features.';
@@ -543,7 +597,6 @@ const processPayment = async () => {
         }
 
         await userStore.loadData();
-        console.log('Statut premium après paiement:', userStore.user?.isPremium);
 
         const response = await userStore.generateInvoice(
           paymentIntent.id,
@@ -556,7 +609,8 @@ const processPayment = async () => {
           taxDetails.value.taxAmount,
           taxDetails.value.totalAmount,
           taxDetails.value.taxPercentage,
-          taxDetails.value.isVatExempt
+          taxDetails.value.isVatExempt,
+          selectedPlan.value
         );
 
         if (response.success) {
@@ -622,7 +676,8 @@ const applyPromoCode = async () => {
       billingCountry.value,
       isBusinessCustomer.value,
       vatNumber.value,
-      promoCode.value // Ajouter le code promo
+      promoCode.value, // Ajouter le code promo
+      selectedPlan.value
     );
 
     if (response.success && response.taxDetails) {
@@ -789,5 +844,33 @@ const applyPromoCode = async () => {
   background: rgba(var(--v-theme-surface-variant), 0.1);
   padding: 16px;
   border-radius: 8px;
+}
+
+.plan-switch {
+  background: rgba(var(--v-theme-surface-variant), 0.1);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.plan-switch .v-btn-toggle {
+  width: 100%;
+}
+
+.plan-switch .v-btn {
+  flex: 1;
+  height: 48px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.plan-switch .v-btn:hover {
+  transform: translateY(-2px);
+}
+
+.plan-switch .v-btn--active {
+  background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-info)));
+  color: white;
+  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.3);
 }
 </style>

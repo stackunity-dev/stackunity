@@ -1,6 +1,7 @@
 import axios from 'axios';
-import * as cheerio from 'cheerio';
-import { type CheerioAPI } from 'cheerio';
+// @ts-ignore
+import type { CheerioAPI } from 'cheerio';
+import { load } from 'cheerio';
 import { performance } from 'perf_hooks';
 import type { CheerioSelector, StructuredData, WebsiteAnalysisResult } from './analyzer-types';
 
@@ -19,7 +20,7 @@ export async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult
 
   const loadTime = performance.now() - startTime;
   const html = response.data;
-  const $ = cheerio.load(html);
+  const $ = load(html);
 
   const cls = calculateCLS($);
 
@@ -228,6 +229,15 @@ export async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult
       description: 'HTTPS is a secure communication protocol that protects the integrity and privacy of data between the user\'s computer and the site.',
       recommendation: 'Configure the site to use HTTPS by installing an SSL certificate.',
       category: 'Security'
+    });
+  }
+
+  if (!technical.meta.language) {
+    issues.push({
+      type: 'error',
+      message: 'The language of the page is not specified. Add a lang attribute to the HTML tag or a content-language header.',
+      severity: 'high',
+      description: 'Specifying the language is important for accessibility and SEO.'
     });
   }
 
@@ -482,7 +492,7 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
                   content.includes('<sitemapindex') ||
                   content.includes('<?xml') && content.toLowerCase().includes('sitemap'))) {
 
-                const $ = cheerio.load(content, { xmlMode: true });
+                const $ = load(content, { xmlMode: true });
 
                 let urlCount = $('url').length;
 
@@ -524,7 +534,7 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
                       if (subSitemapResponse.status === 200 && subSitemapResponse.data) {
                         const subContent = subSitemapResponse.data;
-                        const $sub = cheerio.load(subContent, { xmlMode: true });
+                        const $sub = load(subContent, { xmlMode: true });
                         urlCount = $sub('url').length;
                         if (urlCount === 0) {
                           urlCount = $sub('*[loc]').length;
@@ -572,7 +582,7 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
               content.includes('<sitemapindex') ||
               content.includes('<?xml') && content.toLowerCase().includes('sitemap'))) {
 
-            const $ = cheerio.load(content, { xmlMode: true });
+            const $ = load(content, { xmlMode: true });
 
             let urlCount = $('url').length;
 
@@ -614,7 +624,7 @@ export async function checkSitemap(baseUrl: string): Promise<{ found: boolean; u
 
                   if (subSitemapResponse.status === 200 && subSitemapResponse.data) {
                     const subContent = subSitemapResponse.data;
-                    const $sub = cheerio.load(subContent, { xmlMode: true });
+                    const $sub = load(subContent, { xmlMode: true });
                     urlCount = $sub('url').length;
                     if (urlCount === 0) {
                       urlCount = $sub('*[loc]').length;

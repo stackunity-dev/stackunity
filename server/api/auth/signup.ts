@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   if (!body.username || !body.email || !body.password) {
     return {
       success: false,
-      error: 'Tous les champs sont requis'
+      error: 'All fields are required'
     };
   }
 
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     if (existingUsers.length > 0) {
       return {
         success: false,
-        error: 'Cet email est déjà utilisé'
+        error: 'This email is already taken'
       };
     }
 
@@ -38,25 +38,51 @@ export default defineEventHandler(async (event) => {
     if (existingUsernames.length > 0) {
       return {
         success: false,
-        error: 'Ce nom d\'utilisateur est déjà utilisé'
+        error: 'This username is already taken'
       };
     }
 
     const hashedPassword = await bcrypt.hash(body.password, 10);
 
+    const now = new Date();
+    const trialEndDate = new Date(now);
+    trialEndDate.setDate(now.getDate() + 7);
+
     const [userRows] = await pool.execute<ResultSetHeader>(
-      'INSERT INTO users (username, email, password, isAdmin) VALUES (?, ?, ?, ?)',
-      [body.username, body.email, hashedPassword, 0]
+      `INSERT INTO users (
+        username, 
+        email, 
+        password, 
+        isPremium, 
+        isStandard, 
+        trial_start_date, 
+        trial_end_date, 
+        subscription_status, 
+        payment_status, 
+        isAdmin
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        body.username,
+        body.email,
+        hashedPassword,
+        1,
+        0,
+        now,
+        trialEndDate,
+        'trial',
+        'none',
+        0
+      ]
     );
 
     const userId = userRows.insertId;
-
 
     const accessToken = ServerTokenManager.generateAccessToken({
       userId: userId,
       username: body.username,
       email: body.email,
-      isPremium: false,
+      isStandard: false,
+      isPremium: true,
       isAdmin: false
     });
 
@@ -78,7 +104,10 @@ export default defineEventHandler(async (event) => {
         username: body.username,
         email: body.email,
         isAdmin: false,
-        isPremium: false
+        isStandard: false,
+        isPremium: true,
+        subscription_status: 'trial',
+        trial_end_date: trialEndDate.toISOString()
       }
     };
   }
@@ -86,7 +115,7 @@ export default defineEventHandler(async (event) => {
     console.error("Error api signup : ", err.message, err.stack);
     return {
       success: false,
-      error: err.message || 'Erreur lors de l\'inscription'
+      error: err.message || 'Error during signup'
     };
   }
 });

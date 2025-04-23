@@ -421,7 +421,7 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
     },
     meta: {
       charset: $('meta[charset]').attr('charset') || '',
-      language: $('html').attr('lang') || ''
+      language: $('html').attr('lang') || response.headers['content-language'] || ''
     },
     response: {
       headers: response.headers as Record<string, string>,

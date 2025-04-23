@@ -166,6 +166,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             if (trialResponse.ok) {
               const trialData = await trialResponse.json();
               if (trialData.success) {
+
                 userStore.isPremium = trialData.isPremium;
                 if (userStore.user) {
                   userStore.user.isPremium = trialData.isPremium;
@@ -268,9 +269,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       return response;
     };
 
-    router.beforeEach((to, from, next) => {
+    router.beforeEach(async (to, from, next) => {
       const adminRoutes = ['/newsletter-admin', '/admin'];
-      const authRoutes = ['/dashboard', '/profile', '/snippets', '/snippetsView', '/studio'];
+      const authRoutes = ['/dashboard', '/profile', '/snippets', '/snippetsView', '/studio', '/checkout'];
       const premiumRoutes = ['/sql-generator', '/seo-audit', '/robots'];
       const publicRoutes = ['/', '/login', '/signup', '/about', '/contact', '/pricing'];
 
@@ -281,6 +282,25 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
       const isLoggedIn = userStore.isUserAuthenticated;
 
+      // Log des tentatives d'accès non autorisées
+      const logUnauthorizedAccess = async () => {
+        try {
+          await fetch('/api/auth/log-access', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              path: to.path,
+              timestamp: new Date().toISOString(),
+              type: 'unauthorized_access'
+            })
+          });
+        } catch (error) {
+          console.error('Erreur lors du log d\'accès non autorisé:', error);
+        }
+      };
+
       if (adminRoutes.some(route => {
         const normalizedRoute = route.toLowerCase();
         const normalizedPath = to.path.toLowerCase();
@@ -289,6 +309,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         const isAdminUser = isLoggedIn && userStore.user?.isAdmin === true;
 
         if (!isAdminUser) {
+          await logUnauthorizedAccess();
           next('/login');
           return;
         }
@@ -302,6 +323,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         const isPremiumUser = isLoggedIn && userStore.user?.isPremium === true;
 
         if (!isPremiumUser) {
+          await logUnauthorizedAccess();
           next('/subscription');
           return;
         }
@@ -316,6 +338,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       });
 
       if (isAuthRoute && !isLoggedIn) {
+        await logUnauthorizedAccess();
         next('/login');
         return;
       }
