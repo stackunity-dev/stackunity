@@ -68,7 +68,13 @@ export async function sendToMake() {
       throw new Error(`Erreur lors de l'envoi à make.com: ${response.statusText}`);
     }
 
-    return await response.json();
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    } else {
+      const textResponse = await response.text();
+      return { success: true, message: textResponse };
+    }
   } catch (error) {
     console.error('Erreur lors de l\'envoi des données à make.com:', error);
     throw error;

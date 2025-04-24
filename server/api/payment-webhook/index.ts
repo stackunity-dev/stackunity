@@ -55,7 +55,11 @@ export default defineEventHandler(async (event) => {
         payment_status: 'completed'
       });
 
-      await sendToMake();
+      try {
+        await sendToMake();
+      } catch (makeError) {
+        console.error('Erreur lors de l\'envoi à Make mais le paiement a été enregistré:', makeError);
+      }
 
       return {
         statusCode: 200,
