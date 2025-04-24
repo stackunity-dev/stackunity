@@ -391,10 +391,11 @@ const features = computed(() => {
 });
 
 const updateTaxRates = async () => {
-  try {
-    loading.value = true;
-    cardError.value = '';
+  if (loading.value) return;
+  loading.value = true;
 
+  try {
+    console.log('Updating tax rates with plan:', selectedPlan.value);
     const response = await userStore.checkout(
       cardholderName.value,
       billingCountry.value,
@@ -440,6 +441,7 @@ const updateTaxRates = async () => {
 
 onMounted(async () => {
   try {
+    console.log('Initial plan value:', selectedPlan.value);
     if (window.location.protocol !== 'https:' && process.env.NODE_ENV === 'production') {
       console.warn('Warning: Stripe requires HTTPS for live integrations. Please use a secure connection.');
     }

@@ -1,0 +1,2 @@
+- Objectif : crée un funnel automatiser a chaque paiement stripe 
+- Process : création du paiement (create-intnet.ts) > envoie des donnée a payment-webhook/index > envoie des donée a un nouveau fichier qui va enregistrer ca en base de donée (fourni le code de la table) > dans un nouveau fichier on va recuperer toutes les donée (a chaque paiement) en base et les merger de sorte a avoir, le amount total, tva total, reduction total mais aussi les customers mails... > puis on va envoyer ce pdf a make via index.ts

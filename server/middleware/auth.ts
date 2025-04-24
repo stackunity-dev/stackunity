@@ -1,6 +1,6 @@
 import { defineEventHandler, getRequestHeaders, H3Event } from 'h3'
-import { ErrorLogger } from '../utils/ErrorLogger'
-import { createForbiddenError, createUnauthorizedError } from '../utils/GlobalErrorHandler'
+import { ErrorLogger } from '../api/error/ErrorLogger'
+import { createForbiddenError, createUnauthorizedError } from '../api/error/GlobalErrorHandler'
 import { ServerTokenManager } from '../utils/ServerTokenManager'
 
 

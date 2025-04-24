@@ -1,6 +1,6 @@
 import { defineEventHandler, getQuery } from 'h3';
-import { ErrorDatabase } from '../../utils/ErrorDatabase';
-import { createForbiddenError, createUnauthorizedError } from '../../utils/GlobalErrorHandler';
+import { ErrorDatabase } from './ErrorDatabase';
+import { createForbiddenError, createUnauthorizedError } from './GlobalErrorHandler';
 
 export default defineEventHandler(async (event) => {
   const user = event.context.user;

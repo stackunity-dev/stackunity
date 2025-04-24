@@ -79,10 +79,10 @@
         </div>
 
         <div class="drawer-footer mt-auto pt-6">
-          <v-btn block color="primary" to="/signup" aria-label="Get started" class="mb-4" size="large" rounded="pill"
-            elevation="2">
-            <v-icon start aria-hidden="true">mdi-rocket-launch-outline</v-icon>
-            Get started
+          <v-btn block color="secondary" to="/signup" aria-label="Get started" class="mb-4"
+            @mouseenter="setHoverOn('start-free-trial')" @mouseleave="setHoverOff('start-free-trial')"
+            :elevation="getElevation('start-free-trial', 6, 20)">
+            Get started for free
           </v-btn>
           <p class="text-caption text-center text-medium-emphasis">Join our community of developers and propulse your
             web projects to new horizons.</p>
@@ -115,7 +115,7 @@
                   <div class="d-flex flex-column flex-sm-row ga-4 justify-center" role="group"
                     aria-label="Call to action">
                     <v-btn color="secondary" size="x-large" aria-label="Créer un compte" to="/signup" variant="elevated"
-                      class="px-8" :elevation="getElevation('start-free-trial', 6, 20)"
+                      class="px-8 my-4" :elevation="getElevation('start-free-trial', 6, 20)"
                       @mouseenter="setHoverOn('start-free-trial')" @mouseleave="setHoverOff('start-free-trial')">
                       <v-icon start aria-hidden="true">mdi-rocket-launch-outline</v-icon>
                       Simplify your workflow now
@@ -273,7 +273,8 @@
               </p>
             </div>
 
-            <v-timeline align="center" line-color="secondary" line-width="2" direction="horizontal">
+            <v-timeline align="center" line-color="secondary" line-width="2"
+              :direction="display.smAndDown.value ? 'vertical' : 'horizontal'">
               <v-timeline-item v-for="(step, i) in steps" :key="i" :dot-color="step.color" size="large"
                 :icon="getStepIcon(i)" line-inset="12">
                 <template v-slot:opposite>
@@ -405,9 +406,9 @@
 <script lang="ts" setup>
 // @ts-ignore 
 import { definePageMeta, useHead } from '#imports';
-import FadeInSection from '../components/FadeInSection.vue';
 import { defineAsyncComponent, onMounted, ref } from 'vue';
 import { useDisplay } from 'vuetify';
+import FadeInSection from '../components/FadeInSection.vue';
 import Snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../utils/filter';

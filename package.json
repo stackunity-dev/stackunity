@@ -15,7 +15,7 @@
     "start": "node .output/server/index.mjs",
     "upload-chromium": "node scripts/upload-chromium.js",
     "git": "git add . && git commit -m 'build' && git push origin main",
-    "git-remove": "git rm -r --cached 'server/api/utils' 'server/api/payment' 'server/api/auth' 'server/api/user' 'server/api/analyze' 'stores/' 'do.md' 'pages/website-analyzer' 'components/seo' && git commit -m 'build' && git push origin main"
+    "git-remove": "git rm -r --cached server/utils server/api/payment server/api/auth server/api/user server/api/analyze stores/ do.md pages/website-analyzer.vue components/seo && git commit -m \"Remove sensitive files\" && git push origin main"
   },
   "config": {
     "rollup": {

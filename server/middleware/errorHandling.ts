@@ -1,6 +1,6 @@
 import { defineEventHandler } from 'h3';
-import { ErrorLogger } from '../utils/ErrorLogger';
-import { ExtendedError } from '../utils/GlobalErrorHandler';
+import { ErrorLogger } from '../api/error/ErrorLogger';
+import { ExtendedError } from '../api/error/GlobalErrorHandler';
 
 export default defineEventHandler(async (event) => {
   try {

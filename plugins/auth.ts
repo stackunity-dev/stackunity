@@ -1,7 +1,6 @@
 // @ts-ignore
 import { defineNuxtPlugin } from '#app';
 import { useRouter } from 'vue-router';
-import { AUTO_REFRESH_THRESHOLD } from '../server/utils/auth-config';
 import { TokenManager } from '../server/utils/TokenManager';
 import { useUserStore } from '../stores/userStore';
 import { TokenUtils } from '../utils/token';
@@ -21,19 +20,16 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   const shouldRefreshToken = async (token: string) => {
     try {
-      const response = await $fetch<ValidateResponse>('/api/auth/validate', {
+      const response = await fetch('/api/auth/validate', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
-      if (!response.valid || !response.exp) return false;
-
-      const expirationTime = response.exp * 1000;
-      const currentTime = Date.now();
-      const timeUntilExpiration = expirationTime - currentTime;
-
-      return timeUntilExpiration > 0 && timeUntilExpiration <= AUTO_REFRESH_THRESHOLD * 1000;
+      const data = await response.json() as ValidateResponse;
+      if (!data.valid || !data.exp) {
+        return true;
+      }
+      return Date.now() >= (data.exp * 1000) - 60000;
     } catch {
       return false;
     }
@@ -41,19 +37,19 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   const refreshToken = async () => {
     try {
-      const response = await $fetch<RefreshResponse>('/api/auth/refresh', {
+      const response = await fetch('/api/auth/refresh', {
         method: 'POST',
         credentials: 'include'
       });
-
-      if (response.accessToken) {
-        TokenManager.storeToken(response.accessToken);
+      const data = await response.json() as RefreshResponse;
+      if (data.accessToken) {
+        TokenManager.storeToken(data.accessToken);
       }
     } catch (error) {
     }
   };
 
-  if (process.client) {
+  if (typeof window !== 'undefined') {
     setInterval(async () => {
       const currentToken = TokenManager.retrieveToken();
       if (currentToken) {
@@ -132,7 +128,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     }
   };
 
-  if (process.client) {
+  if (typeof window !== 'undefined') {
     if (userStore.isAuthenticated || localStorage.getItem('user_data')) {
       await userStore.initializeStore();
       const currentToken = TokenManager.retrieveToken();
