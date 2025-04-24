@@ -1,4 +1,4 @@
-import { defineEventHandler, getHeader, readBody } from 'h3';
+import { defineEventHandler, getHeader, readRawBody } from 'h3';
 import Stripe from 'stripe';
 import { sendToMake } from '../payment/make-sender';
 import { recordPayment } from '../payment/payment-recorder';
@@ -9,7 +9,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 
 export default defineEventHandler(async (event) => {
   try {
-    const body = await readBody(event);
+    const rawBody = await readRawBody(event);
+
+    if (!rawBody) {
+      throw new Error('Corps de la requête vide');
+    }
+
     const signature = getHeader(event, 'stripe-signature');
 
     if (!signature) {
@@ -21,7 +26,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const stripeEvent = stripe.webhooks.constructEvent(
-      JSON.stringify(body),
+      rawBody,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
