@@ -183,8 +183,9 @@
                                           : 'mdi-check-circle' }} </v-icon>
                                     </template>
                                     <v-list-item-title>Interactive elements with ARIA</v-list-item-title>
-                                    <v-list-item-subtitle>{{ result.accessibility.interactiveElementsWithAriaPercent
-                                    }}%</v-list-item-subtitle>
+                                    <v-list-item-subtitle>{{
+                                      result.accessibility.interactiveElementsWithAriaPercent.toFixed(2)
+                                      }}%</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>

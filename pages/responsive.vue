@@ -100,7 +100,6 @@ interface Device {
   icon: string;
   width: number;
   height: number;
-  scale: number;
 }
 
 interface IframeRefs {
@@ -142,12 +141,12 @@ const refreshIntervals: RefreshInterval[] = [
 ];
 
 const devices: Device[] = [
-  { id: 'iphone', name: 'iPhone', icon: 'mdi-cellphone', scale: 1, width: 375, height: 667 },
-  { id: 'android', name: 'Android', icon: 'mdi-android', scale: 1, width: 360, height: 640 },
-  { id: 'ipad', name: 'iPad', icon: 'mdi-apple', scale: 1, width: 768, height: 1024 },
-  { id: 'tablet', name: 'Tablet', icon: 'mdi-tablet', scale: 1, width: 600, height: 960 },
-  { id: 'laptop', name: 'Laptop', icon: 'mdi-laptop', scale: 0.8, width: 1024, height: 768 },
-  { id: 'desktop', name: 'Desktop', icon: 'mdi-monitor', scale: 0.7, width: 1280, height: 800 },
+  { id: 'iphone', name: 'iPhone', icon: 'mdi-cellphone', width: 375, height: 667 },
+  { id: 'android', name: 'Android', icon: 'mdi-android', width: 360, height: 640 },
+  { id: 'ipad', name: 'iPad', icon: 'mdi-apple', width: 768, height: 1024 },
+  { id: 'tablet', name: 'Tablet', icon: 'mdi-tablet', width: 600, height: 960 },
+  { id: 'laptop', name: 'Laptop', icon: 'mdi-laptop', width: 1024, height: 768 },
+  { id: 'desktop', name: 'Desktop', icon: 'mdi-monitor', width: 1280, height: 800 },
 ];
 
 const isValidUrl = computed(() => {
@@ -174,16 +173,12 @@ const getDeviceDimensions = (deviceId: string): string => {
 
 const getIframeStyle = (deviceId: string): { width: string; height: string; maxWidth?: string; transform?: string } => {
   const device = getDeviceById(deviceId);
-  const isLargeDevice = device.id === 'laptop' || device.id === 'desktop';
-
-  const transform = isLargeDevice ? `scale(${device.scale})` : undefined;
 
   if (orientation.value === 'landscape') {
     return {
       width: `${device.height}px`,
       height: `${device.width}px`,
       maxWidth: '100%',
-      transform
     };
   }
 
@@ -191,7 +186,6 @@ const getIframeStyle = (deviceId: string): { width: string; height: string; maxW
     width: `${device.width}px`,
     height: `${device.height}px`,
     maxWidth: '100%',
-    transform
   };
 };
 
@@ -237,7 +231,6 @@ const refreshCurrentIframe = (): void => {
 };
 
 const handleIframeLoad = (deviceId: string): void => {
-  console.log(`Iframe chargée pour l'appareil ${deviceId}`);
 };
 
 const setupAutoRefresh = (): void => {

@@ -9,7 +9,7 @@
           </div>
           <div>
             <div class="text-h6 font-weight-bold">StackUnity</div>
-            <div class="text-caption text-medium-emphasis">v1.0.1</div>
+            <div class="text-caption text-medium-emphasis">v1.0.2</div>
           </div>
         </div>
 
@@ -439,8 +439,7 @@ onMounted(() => {
   checkTrialStatus();
 });
 
-// Vérifier le statut de l'essai toutes les heures
-if (process.client) {
+if (typeof window !== 'undefined') {
   setInterval(checkTrialStatus, 3600000);
 }
 

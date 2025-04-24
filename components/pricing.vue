@@ -8,7 +8,7 @@
           Start with a 7-day free trial. No credit card required.
         </p>
 
-        <v-chip-group v-model="selectedCurrency" class="justify-center my-6">
+        <v-chip-group v-model="selectedCurrency" class="d-flex justify-center text-center my-6">
           <v-chip v-for="currency in currencies" :key="currency.symbol" :value="currency.symbol" filter>
             {{ currency.symbol }} ({{ currency.code }})
           </v-chip>
