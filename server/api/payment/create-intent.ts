@@ -64,7 +64,7 @@ export default defineEventHandler(async (event) => {
     if (selected_plan === 'premium') {
       baseAmount = 17999; // 179.99€
     } else if (selected_plan === 'standard') {
-      baseAmount = 120; // 99.99€
+      baseAmount = 7999; // 79.99€
     }
 
     let discountAmount = 0;
