@@ -41,22 +41,7 @@
         <v-col cols="12" class="mb-6">
           <h2 id="analysis-results">Analysis Results</h2>
 
-          <v-alert type="info" variant="tonal" class="mt-4 mb-6" :color="globalScore >= 90 ? 'success' : 'warning'"
-            aria-label="Semantic analysis results" :icon="globalScore >= 90 ? 'mdi-check-circle' : 'mdi-alert-circle'"
-            :title="globalScore >= 90 ? 'Your site is optimized' : 'Your site is not optimized'">
-            {{ globalScore >= 90 ? 'Your site is optimized, now check the user engagement score with the tool below' :
-              'Your site is not optimized, please check the issues and fix them' }}
-            <v-btn color="secondary" variant="tonal" class="ml-2" href="https://stackunity.tech/user-engagement"
-              aria-label="User Engagement">
-              User Engagement
-            </v-btn>
-          </v-alert>
-
-          <v-alert type="info" variant="tonal" class="mt-4 mb-6" color="secondary"
-            aria-label="Semantic analysis results" :icon="globalScore >= 90 ? 'mdi-check-circle' : 'mdi-alert-circle'"
-            :title="globalScore >= 90 ? 'Your site is optimized' : 'Your site is not optimized'">
-            {{ globalScore >= 90 ? 'Your site is optimized, now check the user engagement score with the tool below' :
-              'Your site is not optimized, please check the issues and fix them' }}
+          <v-alert type="info" variant="tonal" class="mt-4 mb-6" aria-label="Semantic analysis results">
           </v-alert>
 
           <v-card class="mt-4 mb-6" variant="outlined">
@@ -304,32 +289,31 @@
                                 <div class="text-subtitle-1 font-weight-bold mb-2" id="aria-issues">Elements to complete
                                   with ARIA</div>
                                 <v-expansion-panels aria-labelledby="aria-issues">
-                                  <v-expansion-panel v-for="(issue, index) in result.accessibility.issues" :key="index">
+                                  <v-expansion-panel v-for="(issue, index) in result.accessibility.issues" :key="index"
+                                    class="mb-2">
                                     <v-expansion-panel-title>
-                                      <v-icon :color="getIssueSeverityColor(issue.severity)" class="mr-2"
-                                        aria-hidden="true">
-                                        {{ getIssueSeverityIcon(issue.severity) }}
-                                      </v-icon>
-                                      <span class="font-weight-medium">{{ issue.element }} - {{ issue.issue }}</span>
+                                      <div class="d-flex align-center">
+                                        <v-icon :color="getIssueSeverityColor(issue.severity)" class="mr-2"
+                                          :icon="getIssueSeverityIcon(issue.severity)"></v-icon>
+                                        {{ issue.message }}
+                                      </div>
                                     </v-expansion-panel-title>
                                     <v-expansion-panel-text>
-                                      <p class="text-body-1 font-weight-medium"><strong>Suggestion:</strong> {{
-                                        issue.suggestion }}</p>
-                                      <v-alert v-if="issue.code" type="info" variant="tonal" class="mt-2" role="region"
-                                        aria-label="Example code">
-                                        <pre><code>{{ issue.code }}</code></pre>
-                                      </v-alert>
-                                      <div v-if="issue.context" class="mt-3 pa-3 context-box rounded">
-                                        <p class="text-body-1 font-weight-medium"><strong>Context:</strong></p>
-                                        <p class="text-body-2" v-if="issue.context.includes('points to')">
-                                          The link points to: <code>{{ getContextLink(issue.context) }}</code>
-                                        </p>
-                                        <p class="text-body-2" v-else-if="issue.context.includes('pointe vers')">
-                                          The link points to: <code>{{ getContextLink(issue.context) }}</code>
-                                        </p>
-                                        <p class="text-body-2" v-else>
-                                          {{ issue.context }}
-                                        </p>
+                                      <div v-if="issue.element" class="py-2">
+                                        <p class="text-subtitle-2 font-weight-bold mb-1">Élément concerné:</p>
+                                        <code class="d-block pa-2 mb-2">{{ issue.element }}</code>
+                                      </div>
+                                      <div v-if="issue.context" class="context-box pa-3 mb-2 rounded">
+                                        <p class="text-subtitle-2 font-weight-bold mb-1">Contexte:</p>
+                                        <p>{{ issue.context }}</p>
+                                        <v-chip v-if="getContextLink(issue.context) !== issue.context" color="primary"
+                                          size="small" class="mt-2" prepend-icon="mdi-link-variant">
+                                          {{ getContextLink(issue.context) }}
+                                        </v-chip>
+                                      </div>
+                                      <div v-if="issue.suggestion" class="mt-2">
+                                        <p class="text-subtitle-2 font-weight-bold mb-1">Suggestion:</p>
+                                        <p class="font-weight-medium">{{ issue.suggestion }}</p>
                                       </div>
                                     </v-expansion-panel-text>
                                   </v-expansion-panel>
@@ -572,7 +556,6 @@ const url = ref('');
 const loading = ref(false);
 const results = ref<any[]>([]);
 const activeTab = ref('html');
-const globalScore = ref(0);
 
 const getScoreColor = (score: number) => {
   if (score >= 90) return 'success';
@@ -647,13 +630,13 @@ const getIssueSeverityColor = (severity: string): string => {
 
 const getContextLink = (context: string): string => {
   // Extraire l'URL après "points to" ou "pointe vers"
-  const pointsToMatch = context.match(/(?:points to|pointe vers)\s*:\s*(.+)/i);
+  const pointsToMatch = context.match(/(?:points to|pointe vers)\s*:?\s*([^\s,;]+)/i);
   if (pointsToMatch && pointsToMatch[1]) {
     return pointsToMatch[1].trim();
   }
 
   // Rechercher directement une URL dans la chaîne de contexte
-  const urlMatch = context.match(/(https?:\/\/[^\s]+|\/[^\s]+)/);
+  const urlMatch = context.match(/(https?:\/\/[^\s,;]+|\/[^\s,;]+)/);
   if (urlMatch && urlMatch[1]) {
     return urlMatch[1];
   }
@@ -709,15 +692,12 @@ function calculateAverageByType(type: 'html' | 'aria' | 'meta'): number {
     if (type === 'html') {
       sum += result.score || 0;
       count++;
-      globalScore.value += result.score || 0;
     } else if (type === 'aria' && result.accessibility?.ariaScore) {
       sum += result.accessibility.ariaScore;
       count++;
-      globalScore.value += result.accessibility.ariaScore;
     } else if (type === 'meta' && result.metaTags?.score) {
       sum += result.metaTags.score;
       count++;
-      globalScore.value += result.metaTags.score;
     }
   });
 
