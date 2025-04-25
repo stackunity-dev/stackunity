@@ -43,7 +43,7 @@
 
           <v-card class="mt-4 mb-6" variant="outlined">
             <v-card-item>
-              <v-card-title class="d-flex align-center">
+              <v-card-title class="d-flex align-center mb-4">
                 <v-icon icon="mdi-chart-areaspline" color="primary" class="mr-2" aria-hidden="true" />
                 Average Score
                 <v-chip :color="getScoreColor(calculateGlobalAverage())" class="ml-4"
@@ -211,7 +211,7 @@
                                     </template>
                                     <v-list-item-title>Missing ARIA attributes</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingAriaCount
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -223,7 +223,7 @@
                                     </template>
                                     <v-list-item-title>Missing labels</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingLabels
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -236,7 +236,7 @@
                                     </template>
                                     <v-list-item-title>Form elements with labels</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.formElementsWithLabelsPercent
-                                    }}%</v-list-item-subtitle>
+                                      }}%</v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -253,7 +253,7 @@
                                     </template>
                                     <v-list-item-title>Invalid ARIA attributes</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.invalidAriaCount
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -267,7 +267,7 @@
                                     <v-list-item-title>Interactive elements with ARIA</v-list-item-title>
                                     <v-list-item-subtitle>{{
                                       result.accessibility.interactiveElementsWithAriaPercent.toFixed(2)
-                                    }}%</v-list-item-subtitle>
+                                      }}%</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -276,7 +276,7 @@
                                     </template>
                                     <v-list-item-title>Total interactive elements</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.interactiveElementsCount
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -299,15 +299,15 @@
                                         issue.suggestion }}</p>
                                       <v-alert v-if="issue.code" type="info" variant="tonal" class="mt-2" role="region"
                                         aria-label="Example code">
-                                        <pre><code>{{ issue.code }}</code></pre>
+                                        <pre class="highlighted-code"><code>{{ issue.code }}</code></pre>
                                       </v-alert>
                                       <div v-if="issue.context" class="mt-3 pa-3 context-box rounded">
-                                        <p class="text-body-1 font-weight-medium"><strong>Contexte:</strong></p>
+                                        <p class="text-body-1 font-weight-medium"><strong>Context:</strong></p>
                                         <p class="text-body-2" v-if="issue.context.includes('points to')">
-                                          Le lien pointe vers: <code>{{ getContextLink(issue.context) }}</code>
+                                          The link points to: <code>{{ getContextLink(issue.context) }}</code>
                                         </p>
                                         <p class="text-body-2" v-else-if="issue.context.includes('pointe vers')">
-                                          Le lien pointe vers: <code>{{ getContextLink(issue.context) }}</code>
+                                          The link points to: <code>{{ getContextLink(issue.context) }}</code>
                                         </p>
                                         <p class="text-body-2" v-else>
                                           {{ issue.context }}
@@ -343,7 +343,7 @@
                                 <v-card variant="outlined">
                                   <v-card-title class="text-subtitle-1">
                                     <v-icon icon="mdi-check-circle" color="success" class="mr-2" aria-hidden="true" />
-                                    Score détaillé
+                                    Detailed score
                                   </v-card-title>
                                   <v-card-text>
                                     <v-list density="compact">
@@ -356,7 +356,7 @@
                                         </template>
                                         <v-list-item-title>Essential tags</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.essential
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -368,7 +368,7 @@
                                         </template>
                                         <v-list-item-title>Social tags</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.social
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -380,7 +380,7 @@
                                         </template>
                                         <v-list-item-title>Technical tags</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.technical
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -392,7 +392,7 @@
                                         </template>
                                         <v-list-item-title>Content</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.content
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
                                     </v-list>
                                   </v-card-text>
@@ -441,7 +441,7 @@
                                               </template>
                                               <v-list-item-title>{{ tag.name }}</v-list-item-title>
                                               <v-list-item-subtitle>{{ tag.content || 'Non défini'
-                                              }}</v-list-item-subtitle>
+                                                }}</v-list-item-subtitle>
                                             </v-list-item>
                                           </v-list>
                                         </v-col>
@@ -457,7 +457,7 @@
                                               </template>
                                               <v-list-item-title>{{ tag.name }}</v-list-item-title>
                                               <v-list-item-subtitle>{{ tag.content || 'Non défini'
-                                              }}</v-list-item-subtitle>
+                                                }}</v-list-item-subtitle>
                                             </v-list-item>
                                           </v-list>
                                         </v-col>
@@ -472,7 +472,7 @@
                                     </v-expansion-panel-title>
                                     <v-expansion-panel-text>
                                       <v-alert type="info" variant="tonal" class="mt-2">
-                                        <pre><code>{{ result.metaTags.metaHtml }}</code></pre>
+                                        <pre class="highlighted-code"><code>{{ result.metaTags.metaHtml }}</code></pre>
                                       </v-alert>
                                     </v-expansion-panel-text>
                                   </v-expansion-panel>
@@ -527,9 +527,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 // @ts-ignore 
 import { definePageMeta, useHead } from '#imports';
+import hljs from 'highlight.js/lib/core';
+import xml from 'highlight.js/lib/languages/xml';
+import 'highlight.js/styles/atom-one-dark.css';
+
+hljs.registerLanguage('xml', xml);
 
 definePageMeta({
   layout: 'dashboard',
@@ -555,6 +560,23 @@ const loading = ref(false);
 const results = ref<any[]>([]);
 const activeTab = ref('html');
 
+const applyHighlighting = async () => {
+  await nextTick();
+  document.querySelectorAll('pre.highlighted-code code').forEach((block) => {
+    hljs.highlightElement(block as HTMLElement);
+  });
+};
+
+watch(results, async () => {
+  if (results.value.length > 0) {
+    await applyHighlighting();
+  }
+}, { deep: true });
+
+watch(activeTab, async () => {
+  await applyHighlighting();
+});
+
 const getScoreColor = (score: number) => {
   if (score >= 90) return 'success';
   if (score >= 70) return 'warning';
@@ -575,8 +597,8 @@ const analyzeUrl = async () => {
     if (!response.ok) {
       throw new Error('Error during analysis');
     }
-
     results.value = await response.json();
+    console.log(results.value);
   } catch (error) {
     console.error('Error:', error);
   } finally {
@@ -627,13 +649,11 @@ const getIssueSeverityColor = (severity: string): string => {
 };
 
 const getContextLink = (context: string): string => {
-  // Extraire l'URL après "points to" ou "pointe vers"
   const pointsToMatch = context.match(/(?:points to|pointe vers)\s*:\s*(.+)/i);
   if (pointsToMatch && pointsToMatch[1]) {
     return pointsToMatch[1].trim();
   }
 
-  // Rechercher directement une URL dans la chaîne de contexte
   const urlMatch = context.match(/(https?:\/\/[^\s]+|\/[^\s]+)/);
   if (urlMatch && urlMatch[1]) {
     return urlMatch[1];
@@ -788,5 +808,24 @@ code {
 
 :deep(.v-expansion-panel-title) {
   font-weight: 500;
+}
+
+pre.highlighted-code {
+  margin: 1rem 0;
+  padding: 0;
+  overflow: auto;
+  border-radius: 4px;
+  background-color: #282c34;
+}
+
+pre.highlighted-code code {
+  padding: 1rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  background-color: transparent;
+  color: #abb2bf;
+  display: block;
+  width: 100%;
 }
 </style>

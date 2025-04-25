@@ -798,15 +798,25 @@ export function analyzeAccessibility($: CheerioAPI): {
   contrastIssues: number;
   ariaIssues: Array<{ element: string, issue: string }>;
   inputIssues: Array<{ element: string, issue: string }>;
+  elementsWithoutAria: Array<{ element: string, html: string }>;
   accessibilityScore: number;
 } {
   const missingAlt = $('img:not([alt])').length;
   const missingLabels = $('input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]):not([aria-label]):not([aria-labelledby])').not('label input').not('label + input').length;
 
   const interactiveElements = $('button, a[href], [role="button"], [role="link"], [role="tab"], [role="menuitem"]');
-  const missingAria = interactiveElements.filter(function () {
+
+  const elementsWithoutAria: Array<{ element: string, html: string }> = [];
+  interactiveElements.filter(function () {
     return !$(this).attr('aria-label') && !$(this).attr('aria-labelledby');
-  }).length;
+  }).each(function () {
+    elementsWithoutAria.push({
+      element: $(this).prop('tagName')?.toLowerCase() || '',
+      html: $.html(this)
+    });
+  });
+
+  const missingAria = elementsWithoutAria.length;
 
   const missingInputAttributes = $('input[type="text"], input[type="email"], input[type="password"], input[type="search"], input[type="tel"], input[type="url"], input[type="number"]')
     .filter(function () {
@@ -852,6 +862,7 @@ export function analyzeAccessibility($: CheerioAPI): {
     contrastIssues,
     ariaIssues,
     inputIssues,
+    elementsWithoutAria,
     accessibilityScore
   };
 }
