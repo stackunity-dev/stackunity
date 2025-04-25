@@ -8,7 +8,7 @@
               <img src="/logo/stackunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="150"
                 class="logo-image">
               <div class="brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left">
-                <span class="text-caption font-weight-medium text-gradient">PROPULSE YOUR CODE</span>
+                <span class="text-caption font-weight-medium text-gradient">OPTIMIZE YOUR WORKFLOW</span>
               </div>
             </div>
           </NuxtLink>
