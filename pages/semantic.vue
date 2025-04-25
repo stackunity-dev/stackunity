@@ -38,8 +38,62 @@
       </v-row>
 
       <v-row v-else-if="results.length">
-        <v-col cols="12">
+        <v-col cols="12" class="mb-6">
           <h2 id="analysis-results">Analysis Results</h2>
+
+          <v-card class="mt-4 mb-6" variant="outlined">
+            <v-card-item>
+              <v-card-title class="d-flex align-center">
+                <v-icon icon="mdi-chart-areaspline" color="primary" class="mr-2" aria-hidden="true" />
+                Average Score
+                <v-chip :color="getScoreColor(calculateGlobalAverage())" class="ml-4"
+                  aria-label="Score moyen global: {{ calculateGlobalAverage() }}%">
+                  {{ calculateGlobalAverage() }}%
+                </v-chip>
+              </v-card-title>
+
+              <v-card-text>
+                <v-row>
+                  <v-col cols="12" sm="4">
+                    <div class="text-center">
+                      <v-progress-circular :model-value="calculateAverageByType('html')"
+                        :color="getScoreColor(calculateAverageByType('html'))" :size="100" :width="10">
+                        <div>
+                          <div class="text-subtitle-1 font-weight-bold">HTML</div>
+                          <div class="text-h6">{{ calculateAverageByType('html') }}%</div>
+                        </div>
+                      </v-progress-circular>
+                    </div>
+                  </v-col>
+
+                  <v-col cols="12" sm="4">
+                    <div class="text-center">
+                      <v-progress-circular :model-value="calculateAverageByType('aria')"
+                        :color="getScoreColor(calculateAverageByType('aria'))" :size="100" :width="10">
+                        <div>
+                          <div class="text-subtitle-1 font-weight-bold">ARIA</div>
+                          <div class="text-h6">{{ calculateAverageByType('aria') }}%</div>
+                        </div>
+                      </v-progress-circular>
+                    </div>
+                  </v-col>
+
+                  <v-col cols="12" sm="4">
+                    <div class="text-center">
+                      <v-progress-circular :model-value="calculateAverageByType('meta')"
+                        :color="getScoreColor(calculateAverageByType('meta'))" :size="100" :width="10">
+                        <div>
+                          <div class="text-subtitle-1 font-weight-bold">META</div>
+                          <div class="text-h6">{{ calculateAverageByType('meta') }}%</div>
+                        </div>
+                      </v-progress-circular>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card-item>
+          </v-card>
+
           <v-expansion-panels aria-labelledby="analysis-results">
             <v-expansion-panel v-for="(result, index) in results" :key="index">
               <v-expansion-panel-title>
@@ -573,6 +627,55 @@ const calculateAverageScore = (result) => {
   const avgScore = Math.round((htmlScore + ariaScore + metaScore) / 3);
   return avgScore;
 };
+
+function calculateGlobalAverage(): number {
+  if (!results.value.length) return 0;
+
+  let sum = 0;
+  let count = 0;
+
+  results.value.forEach(result => {
+    // Ajoute le score HTML
+    sum += result.score || 0;
+    count++;
+
+    // Ajoute le score ARIA
+    if (result.accessibility?.ariaScore) {
+      sum += result.accessibility.ariaScore;
+      count++;
+    }
+
+    // Ajoute le score META
+    if (result.metaTags?.score) {
+      sum += result.metaTags.score;
+      count++;
+    }
+  });
+
+  return Math.round(sum / count) || 0;
+}
+
+function calculateAverageByType(type: 'html' | 'aria' | 'meta'): number {
+  if (!results.value.length) return 0;
+
+  let sum = 0;
+  let count = 0;
+
+  results.value.forEach(result => {
+    if (type === 'html') {
+      sum += result.score || 0;
+      count++;
+    } else if (type === 'aria' && result.accessibility?.ariaScore) {
+      sum += result.accessibility.ariaScore;
+      count++;
+    } else if (type === 'meta' && result.metaTags?.score) {
+      sum += result.metaTags.score;
+      count++;
+    }
+  });
+
+  return Math.round(sum / count) || 0;
+}
 </script>
 
 <style scoped>
