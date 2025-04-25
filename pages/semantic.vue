@@ -41,18 +41,6 @@
         <v-col cols="12" class="mb-6">
           <h2 id="analysis-results">Analysis Results</h2>
 
-          <v-alert variant="tonal" class="mt-4 mb-6" role="alert" :color="globalScore > 90 ? 'success' : 'secondary'"
-            aria-label="Semantic analysis results">
-            <v-icon :icon="globalScore > 90 ? 'mdi-check-circle' : 'mdi-alert-circle'" color="success" class="mr-2"
-              aria-hidden="true" />
-            {{ globalScore > 90 ?
-              'Congratulations! Your website is semantic analysis results, check the user engagement now!' :
-              'Some issues were found in your website, please fix them with the following suggestions.' }}
-            <v-btn variant="tonal" color="secondary" class="ml-2" to="/user-engagement">
-              Check the user engagement now!
-            </v-btn>
-          </v-alert>
-
           <v-card class="mt-4 mb-6" variant="outlined">
             <v-card-item>
               <v-card-title class="d-flex align-center">
@@ -566,7 +554,6 @@ const url = ref('');
 const loading = ref(false);
 const results = ref<any[]>([]);
 const activeTab = ref('html');
-const globalScore = ref(0);
 
 const getScoreColor = (score: number) => {
   if (score >= 90) return 'success';
@@ -703,15 +690,12 @@ function calculateAverageByType(type: 'html' | 'aria' | 'meta'): number {
     if (type === 'html') {
       sum += result.score || 0;
       count++;
-      globalScore.value += result.score || 0;
     } else if (type === 'aria' && result.accessibility?.ariaScore) {
       sum += result.accessibility.ariaScore;
       count++;
-      globalScore.value += result.accessibility.ariaScore;
     } else if (type === 'meta' && result.metaTags?.score) {
       sum += result.metaTags.score;
       count++;
-      globalScore.value += result.metaTags.score;
     }
   });
 
