@@ -41,6 +41,24 @@
         <v-col cols="12" class="mb-6">
           <h2 id="analysis-results">Analysis Results</h2>
 
+          <v-alert type="info" variant="tonal" class="mt-4 mb-6" :color="globalScore >= 90 ? 'success' : 'warning'"
+            aria-label="Semantic analysis results" :icon="globalScore >= 90 ? 'mdi-check-circle' : 'mdi-alert-circle'"
+            :title="globalScore >= 90 ? 'Your site is optimized' : 'Your site is not optimized'">
+            {{ globalScore >= 90 ? 'Your site is optimized, now check the user engagement score with the tool below' :
+              'Your site is not optimized, please check the issues and fix them' }}
+            <v-btn color="secondary" variant="tonal" class="ml-2" href="https://stackunity.tech/user-engagement"
+              aria-label="User Engagement">
+              User Engagement
+            </v-btn>
+          </v-alert>
+
+          <v-alert type="info" variant="tonal" class="mt-4 mb-6" color="secondary"
+            aria-label="Semantic analysis results" :icon="globalScore >= 90 ? 'mdi-check-circle' : 'mdi-alert-circle'"
+            :title="globalScore >= 90 ? 'Your site is optimized' : 'Your site is not optimized'">
+            {{ globalScore >= 90 ? 'Your site is optimized, now check the user engagement score with the tool below' :
+              'Your site is not optimized, please check the issues and fix them' }}
+          </v-alert>
+
           <v-card class="mt-4 mb-6" variant="outlined">
             <v-card-item>
               <v-card-title class="d-flex align-center">
@@ -283,7 +301,8 @@
 
                               <v-col cols="12">
                                 <v-divider class="my-4" aria-hidden="true"></v-divider>
-                                <div class="text-subtitle-1 mb-2" id="aria-issues">Elements to complete with ARIA</div>
+                                <div class="text-subtitle-1 font-weight-bold mb-2" id="aria-issues">Elements to complete
+                                  with ARIA</div>
                                 <v-expansion-panels aria-labelledby="aria-issues">
                                   <v-expansion-panel v-for="(issue, index) in result.accessibility.issues" :key="index">
                                     <v-expansion-panel-title>
@@ -291,16 +310,27 @@
                                         aria-hidden="true">
                                         {{ getIssueSeverityIcon(issue.severity) }}
                                       </v-icon>
-                                      {{ issue.element }} - {{ issue.issue }}
+                                      <span class="font-weight-medium">{{ issue.element }} - {{ issue.issue }}</span>
                                     </v-expansion-panel-title>
                                     <v-expansion-panel-text>
-                                      <p><strong>Suggestion:</strong> {{ issue.suggestion }}</p>
+                                      <p class="text-body-1 font-weight-medium"><strong>Suggestion:</strong> {{
+                                        issue.suggestion }}</p>
                                       <v-alert v-if="issue.code" type="info" variant="tonal" class="mt-2" role="region"
                                         aria-label="Example code">
                                         <pre><code>{{ issue.code }}</code></pre>
                                       </v-alert>
-                                      <p v-if="issue.context" class="mt-2"><strong>Context:</strong> {{ issue.context
-                                      }}</p>
+                                      <div v-if="issue.context" class="mt-3 pa-3 context-box rounded">
+                                        <p class="text-body-1 font-weight-medium"><strong>Context:</strong></p>
+                                        <p class="text-body-2" v-if="issue.context.includes('points to')">
+                                          The link points to: <code>{{ getContextLink(issue.context) }}</code>
+                                        </p>
+                                        <p class="text-body-2" v-else-if="issue.context.includes('pointe vers')">
+                                          The link points to: <code>{{ getContextLink(issue.context) }}</code>
+                                        </p>
+                                        <p class="text-body-2" v-else>
+                                          {{ issue.context }}
+                                        </p>
+                                      </div>
                                     </v-expansion-panel-text>
                                   </v-expansion-panel>
                                 </v-expansion-panels>
@@ -542,6 +572,7 @@ const url = ref('');
 const loading = ref(false);
 const results = ref<any[]>([]);
 const activeTab = ref('html');
+const globalScore = ref(0);
 
 const getScoreColor = (score: number) => {
   if (score >= 90) return 'success';
@@ -614,6 +645,22 @@ const getIssueSeverityColor = (severity: string): string => {
   }
 };
 
+const getContextLink = (context: string): string => {
+  // Extraire l'URL après "points to" ou "pointe vers"
+  const pointsToMatch = context.match(/(?:points to|pointe vers)\s*:\s*(.+)/i);
+  if (pointsToMatch && pointsToMatch[1]) {
+    return pointsToMatch[1].trim();
+  }
+
+  // Rechercher directement une URL dans la chaîne de contexte
+  const urlMatch = context.match(/(https?:\/\/[^\s]+|\/[^\s]+)/);
+  if (urlMatch && urlMatch[1]) {
+    return urlMatch[1];
+  }
+
+  return context;
+};
+
 const getAverageScoreColor = (result) => {
   const avgScore = calculateAverageScore(result);
   return getScoreColor(avgScore);
@@ -635,17 +682,14 @@ function calculateGlobalAverage(): number {
   let count = 0;
 
   results.value.forEach(result => {
-    // Ajoute le score HTML
     sum += result.score || 0;
     count++;
 
-    // Ajoute le score ARIA
     if (result.accessibility?.ariaScore) {
       sum += result.accessibility.ariaScore;
       count++;
     }
 
-    // Ajoute le score META
     if (result.metaTags?.score) {
       sum += result.metaTags.score;
       count++;
@@ -665,12 +709,15 @@ function calculateAverageByType(type: 'html' | 'aria' | 'meta'): number {
     if (type === 'html') {
       sum += result.score || 0;
       count++;
+      globalScore.value += result.score || 0;
     } else if (type === 'aria' && result.accessibility?.ariaScore) {
       sum += result.accessibility.ariaScore;
       count++;
+      globalScore.value += result.accessibility.ariaScore;
     } else if (type === 'meta' && result.metaTags?.score) {
       sum += result.metaTags.score;
       count++;
+      globalScore.value += result.metaTags.score;
     }
   });
 
@@ -745,5 +792,23 @@ function calculateAverageByType(type: 'html' | 'aria' | 'meta'): number {
   100% {
     background-position: 200% 0;
   }
+}
+
+.context-box {
+  background-color: rgba(var(--v-theme-primary), 0.05);
+  border-left: 4px solid var(--v-theme-primary);
+}
+
+code {
+  background-color: rgba(var(--v-theme-surface-variant), 0.7);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+:deep(.v-expansion-panel-title) {
+  font-weight: 500;
 }
 </style>

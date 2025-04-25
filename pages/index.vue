@@ -19,7 +19,8 @@
               <div class="nav-links-wrapper" role="menubar">
                 <v-btn v-for="item in menuItems" :key="item.href" class="nav-btn custom-btn" :href="item.href"
                   :class="{ 'active-nav-btn': activeSection === item.href.substring(1) }" variant="text" role="menuitem"
-                  :aria-current="activeSection === item.href.substring(1) ? 'page' : undefined">
+                  :aria-current="activeSection === item.href.substring(1) ? 'page' : undefined"
+                  aria-label="Navigation item">
                   <span class="nav-text">{{ item.title }}</span>
                   <span class="nav-btn-background"></span>
                 </v-btn>
@@ -41,9 +42,6 @@
               <v-btn icon @click="drawer = !drawer" class="menu-toggle-btn" aria-label="Toggle navigation menu"
                 :aria-expanded="drawer">
                 <div class="hamburger-icon" :class="{ 'active': drawer }" aria-hidden="true">
-                  <span></span>
-                  <span></span>
-                  <span></span>
                 </div>
               </v-btn>
             </div>
@@ -344,7 +342,8 @@
                 <v-text-field v-model="email" density="compact" placeholder="Your email address"
                   aria-label="Your email address" variant="outlined" hide-details class="mr-2"
                   prepend-inner-icon="mdi-email-outline"></v-text-field>
-                <v-btn color="info" variant="tonal" class="ml-n1" :loading="loading" @click="submitEmail" type="submit">
+                <v-btn color="info" variant="tonal" class="ml-n1" :loading="loading" @click="submitEmail" type="submit"
+                  aria-label="Subscribe to newsletter">
                   Subscribe
                 </v-btn>
               </form>
@@ -377,7 +376,7 @@
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"
-                    class="footer-link d-block mb-3">
+                    class="footer-link d-block mb-3" aria-label="Footer link">
                     {{ link.title }}
                   </NuxtLink>
                 </nav>
@@ -425,13 +424,13 @@ useHead({
   },
   title: 'StackUnity - Simplify your development workflow',
   meta: [
-    { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to simplify their development workflow and develop faster.' },
     { name: 'keywords', content: 'web development, developer platform, development tools, SEO audit, SQL generator, accessibility' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { property: 'og:title', content: 'StackUnity - Simplify your development workflow' },
-    { property: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { property: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to simplify their development workflow and develop faster.' },
     { property: 'og:image', content: '/images/preview.png' },
     { property: 'og:url', content: 'https://stackunity.tech' },
     { property: 'og:site_name', content: 'StackUnity' },
@@ -440,10 +439,14 @@ useHead({
     { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: 'Logo StackUnity' },
     { property: 'og:image:secure_url', content: 'https://stackunity.tech/images/preview.png' },
+    { property: 'og:locale', content: 'en_US' },
+    { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: 'StackUnity - Simplify your development workflow' },
-    { name: 'twitter:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
+    { name: 'twitter:description', content: 'StackUnity is the all-in-one platform for developers who want to simplify their development workflow and develop faster.' },
     { name: 'twitter:image', content: '/images/preview.png' },
+    { name: 'twitter:creator', content: '@stackunity' },
+    { name: 'twitter:site', content: '@stackunity' },
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.tech' }

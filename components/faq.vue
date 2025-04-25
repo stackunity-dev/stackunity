@@ -11,11 +11,14 @@
       <v-col cols="12" md="8">
         <v-expansion-panels variant="accordion">
           <v-expansion-panel v-for="(item, i) in faqItems" :key="i">
-            <v-expansion-panel-title class="text-subtitle-1 font-weight-medium">
+            <v-expansion-panel-title class="text-subtitle-1 font-weight-medium"
+              aria-label="Question : {{ item.question }}">
               {{ item.question }}
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <p class="text-body-1 pt-2">{{ item.answer }}</p>
+              <p class="text-body-1 pt-2" aria-label="Answer : {{ item.answer }}">
+                {{ item.answer }}
+              </p>
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>

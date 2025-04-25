@@ -50,7 +50,8 @@
 
       <v-row class="mt-12 justify-center">
         <v-col cols="12" class="text-center">
-          <v-btn color="primary" variant="outlined" @click="showFeatureComparison = !showFeatureComparison">
+          <v-btn color="primary" variant="outlined" @click="showFeatureComparison = !showFeatureComparison"
+            aria-label="Show full feature comparison">
             {{ showFeatureComparison ? 'Hide' : 'Show' }} Full Feature Comparison
             <v-icon end>{{ showFeatureComparison ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
           </v-btn>
