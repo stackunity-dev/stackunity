@@ -1,18 +1,20 @@
 <template>
   <v-app>
-    <v-app-bar app flat elevation="2" color="surface" role="navigation" aria-label="Main Navigation">
-      <v-container class="d-flex align-center py-0 my-0">
-        <NuxtLink to="/" class="text-decoration-none" aria-label="Go to homepage">
-          <div class="d-flex align-center">
-            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
-          </div>
-        </NuxtLink>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" to="/" class="ml-4" aria-label="Back to home">Back to home</v-btn>
-      </v-container>
-    </v-app-bar>
+    <header>
+      <v-app-bar app flat elevation="2" color="surface" role="navigation" aria-label="Main Navigation">
+        <v-container class="d-flex align-center py-0 my-0">
+          <NuxtLink to="/" class="text-decoration-none" aria-label="Go to homepage">
+            <div class="d-flex align-center">
+              <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
+            </div>
+          </NuxtLink>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" to="/" class="ml-4" aria-label="Back to home">Back to home</v-btn>
+        </v-container>
+      </v-app-bar>
+    </header>
 
-    <v-main role="main">
+    <main role="main">
       <div class="notices-hero py-16" role="banner" aria-labelledby="page-title">
         <v-container>
           <v-row justify="center">
@@ -63,7 +65,7 @@
                   In accordance with the applicable legislation, you have the right to access, rectify, delete and
                   oppose the processing of your personal data. To exercise these rights, please contact us at
                   <a href="mailto:privacy@stackunity.tech"
-                    aria-label="Email privacy@stackunity.tech">privacy@stackunity.tech</a>.
+                    aria-label="Send email to privacy@stackunity.tech">privacy@stackunity.tech</a>.
                 </p>
                 <div class="d-flex align-center mt-6">
                   <v-btn color="primary" to="/privacy" size="small" variant="tonal" class="mr-3"
@@ -81,17 +83,17 @@
                 </div>
               </section>
 
-              <v-divider class="mb-12"></v-divider>
+              <v-divider class="mb-12" aria-hidden="true"></v-divider>
 
-              <section class="mb-12" id="cookies">
-                <h2 class="text-h4 font-weight-bold mb-6 primary--text">Cookie Policy</h2>
+              <section class="mb-12" id="cookies" aria-labelledby="cookies-heading">
+                <h2 id="cookies-heading" class="text-h4 font-weight-bold mb-6 primary--text">Cookie Policy</h2>
                 <p class="text-body-1 mb-4">
                   Our site uses cookies to improve your experience and analyze traffic. Cookies are small text files
                   stored on your browser that allow us to personalize your experience and understand how you use our
                   site.
                 </p>
                 <h3 class="text-h6 font-weight-bold mt-6 mb-4">Types of Cookies Used</h3>
-                <ul class="text-body-1 mb-4 pl-4">
+                <ul class="text-body-1 mb-4 pl-4" aria-label="Types of cookies used on our site">
                   <li class="mb-2">Essential Cookies: necessary for the site to function</li>
                   <li class="mb-2">Analytical Cookies: to understand how users interact with our site</li>
                   <li class="mb-2">Preference Cookies: to remember your choices and personalizations</li>
@@ -100,7 +102,7 @@
                   You can manage your cookie preferences at any time from the settings of your browser.
                 </p>
                 <div class="text-caption text-medium-emphasis structured-data-info" itemscope
-                  itemtype="http://schema.org/WebSite">
+                  itemtype="http://schema.org/WebSite" aria-hidden="true">
                   <meta itemprop="name" content="StackUnity" />
                   <meta itemprop="url" content="https://stackunity.tech" />
                   <div itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
@@ -110,17 +112,17 @@
                 </div>
               </section>
 
-              <v-divider class="mb-12"></v-divider>
+              <v-divider class="mb-12" aria-hidden="true"></v-divider>
 
-              <section class="mb-12" id="credits">
-                <h2 class="text-h4 font-weight-bold mb-6 primary--text">Credits & Open Source</h2>
+              <section class="mb-12" id="credits" aria-labelledby="credits-heading">
+                <h2 id="credits-heading" class="text-h4 font-weight-bold mb-6 primary--text">Credits & Open Source</h2>
                 <p class="text-body-1 mb-4">
                   StackUnity is proud to use and contribute to the open source ecosystem. Our platform relies on several
                   open source libraries
                   and frameworks, whose copyright belong to their respective authors.
                 </p>
 
-                <v-expansion-panels variant="accordion" class="mb-6">
+                <v-expansion-panels variant="accordion" class="mb-6" aria-label="Open source licenses">
                   <v-expansion-panel>
                     <v-expansion-panel-title>
                       Vuetify MIT License
@@ -140,23 +142,25 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                   </v-expansion-panel>
                 </v-expansion-panels>
 
-                <h3 class="text-h6 font-weight-bold mt-6 mb-4">Frameworks & Libraries</h3>
-                <div class="libraries-grid">
+                <h3 class="text-h6 font-weight-bold mt-6 mb-4" id="frameworks-libraries">Frameworks & Libraries</h3>
+                <div class="libraries-grid" aria-labelledby="frameworks-libraries">
                   <v-row>
                     <v-col cols="12" sm="6" md="4" v-for="(lib, index) in libraries.slice(0, 6)" :key="index">
                       <v-card flat class="library-card pa-4 h-100">
                         <div class="d-flex align-center mb-2">
-                          <v-avatar :color="lib.color" size="36" class="mr-3">
+                          <v-avatar :color="lib.color" size="36" class="mr-3" aria-hidden="true">
                             <v-icon dark size="20">{{ lib.icon }}</v-icon>
                           </v-avatar>
                           <h4 class="text-subtitle-1 font-weight-bold">{{ lib.name }}</h4>
                         </div>
                         <p class="text-caption mb-2">{{ lib.description }}</p>
                         <div class="d-flex align-center">
-                          <v-chip size="x-small" :color="lib.color" class="mr-2">{{ lib.license }}</v-chip>
+                          <v-chip size="x-small" :color="lib.color" class="mr-2"
+                            aria-label="License: {{ lib.license }}">{{ lib.license }}</v-chip>
                           <v-spacer></v-spacer>
-                          <v-btn size="small" variant="text" color="primary" :href="lib.url" target="_blank">
-                            <v-icon size="small">mdi-open-in-new</v-icon>
+                          <v-btn size="small" variant="text" color="primary" :href="lib.url" target="_blank"
+                            aria-label="Visit {{ lib.name }} website">
+                            <v-icon size="small" aria-hidden="true">mdi-open-in-new</v-icon>
                           </v-btn>
                         </div>
                       </v-card>
@@ -164,29 +168,31 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                   </v-row>
                 </div>
 
-                <v-expansion-panels variant="accordion" class="mt-6">
+                <v-expansion-panels variant="accordion" class="mt-6" aria-label="All libraries list">
                   <v-expansion-panel>
                     <v-expansion-panel-title>
                       See all libraries ({{ libraries.length }})
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
-                      <v-table>
+                      <v-table aria-label="Complete list of libraries used">
                         <thead>
                           <tr>
-                            <th>Library</th>
-                            <th>License</th>
-                            <th>Description</th>
-                            <th>Link</th>
+                            <th scope="col">Library</th>
+                            <th scope="col">License</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Link</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr v-for="(lib, index) in libraries" :key="index">
                             <td class="font-weight-medium">{{ lib.name }}</td>
-                            <td><v-chip size="x-small" :color="lib.color">{{ lib.license }}</v-chip></td>
+                            <td><v-chip size="x-small" :color="lib.color" aria-label="License: {{ lib.license }}">{{
+                              lib.license }}</v-chip></td>
                             <td class="text-caption">{{ lib.description }}</td>
                             <td>
-                              <v-btn size="x-small" variant="text" :href="lib.url" target="_blank" icon>
-                                <v-icon size="small">mdi-open-in-new</v-icon>
+                              <v-btn size="x-small" variant="text" :href="lib.url" target="_blank" icon
+                                aria-label="Visit {{ lib.name }} website">
+                                <v-icon size="small" aria-hidden="true">mdi-open-in-new</v-icon>
                               </v-btn>
                             </td>
                           </tr>
@@ -196,7 +202,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                   </v-expansion-panel>
                 </v-expansion-panels>
 
-                <div class="quote-block my-8 pa-6 rounded-lg">
+                <div class="quote-block my-8 pa-6 rounded-lg" role="note"
+                  aria-label="Thank you note to open source contributors">
                   <p class="text-body-1 font-italic mb-0">
                     We thank all open source contributors whose work made it possible to create StackUnity.
                     If you think a library is not correctly attributed, please contact us at legal@stackunity.tech.
@@ -204,25 +211,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 </div>
               </section>
 
-              <v-divider class="mb-12"></v-divider>
+              <v-divider class="mb-12" aria-hidden="true"></v-divider>
 
-              <section>
-                <h2 class="text-h4 font-weight-bold mb-6 primary--text">Contact</h2>
+              <section id="contact-section" aria-labelledby="contact-heading">
+                <h2 id="contact-heading" class="text-h4 font-weight-bold mb-6 primary--text">Contact</h2>
                 <p class="text-body-1 mb-6">
                   For any question concerning our legal notices, our privacy policy or our credits, please contact us.
                 </p>
-                <v-btn color="primary" to="/contact" size="large" class="px-8 py-3 rounded-pill" elevation="2">
+                <v-btn color="primary" to="/contact" size="large" class="px-8 py-3 rounded-pill" elevation="2"
+                  aria-label="Navigate to contact page">
                   Contact Us
-                  <v-icon end>mdi-arrow-right</v-icon>
+                  <v-icon end aria-hidden="true">mdi-arrow-right</v-icon>
                 </v-btn>
               </section>
             </v-card>
           </v-col>
         </v-row>
       </v-container>
-    </v-main>
+    </main>
 
-    <v-footer class="py-6 bg-surface">
+    <footer class="py-6 bg-surface" role="contentinfo">
       <v-container>
         <div class="d-flex flex-column flex-md-row justify-space-between align-center">
           <div class="mb-4 mb-md-0">
@@ -233,7 +241,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
           </div>
         </div>
       </v-container>
-    </v-footer>
+    </footer>
   </v-app>
 </template>
 

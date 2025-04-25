@@ -10,12 +10,12 @@
 
       <v-row>
         <v-col cols="12">
-          <v-form @submit.prevent="analyzeUrl">
+          <v-form @submit.prevent="analyzeUrl" role="search" aria-label="Website semantic analysis form">
             <v-text-field v-model="url" label="Website URL" density="comfortable" prepend-inner-icon="mdi-web"
               placeholder="https://exemple.com"
               :rules="[v => !!v || 'URL required', v => v.startsWith('http') || v.startsWith('https') || 'The URL must start with http or https']"
-              required :loading="loading" />
-            <v-btn type="submit" color="primary" :loading="loading" :disabled="!url">
+              required :loading="loading" aria-required="true" />
+            <v-btn type="submit" color="primary" :loading="loading" :disabled="!url" aria-label="Analyze website">
               Analyze
             </v-btn>
           </v-form>
@@ -24,40 +24,41 @@
 
       <v-row v-if="loading">
         <v-col cols="12">
-          <v-skeleton-loader type="article, actions" />
+          <v-skeleton-loader type="article, actions" aria-label="Loading analysis results" />
           <v-row>
             <v-col cols="12" md="6">
-              <v-skeleton-loader type="card" />
+              <v-skeleton-loader type="card" aria-hidden="true" />
             </v-col>
             <v-col cols="12" md="6">
-              <v-skeleton-loader type="card" />
+              <v-skeleton-loader type="card" aria-hidden="true" />
             </v-col>
           </v-row>
-          <v-skeleton-loader type="table" />
+          <v-skeleton-loader type="table" aria-hidden="true" />
         </v-col>
       </v-row>
 
       <v-row v-else-if="results.length">
         <v-col cols="12">
-          <h2>Analysis Results</h2>
-          <v-expansion-panels>
+          <h2 id="analysis-results">Analysis Results</h2>
+          <v-expansion-panels aria-labelledby="analysis-results">
             <v-expansion-panel v-for="(result, index) in results" :key="index">
               <v-expansion-panel-title>
-                <v-row no-gutters>
+                <v-row no-gutters align="center">
                   <v-col cols="8" class="text-body-1">{{ result.url }}</v-col>
-                  <v-col cols="4" class="text-right">
-                    <v-chip :color="getScoreColor(result.score)" class="mr-2">
-                      Score: {{ result.score }}%
+                  <v-col cols="4" class="text-right d-flex align-center justify-end flex-wrap">
+                    <v-chip :color="getAverageScoreColor(result)" class="mr-2"
+                      aria-label="Average score: {{ calculateAverageScore(result) }}%">
+                      Score: {{ calculateAverageScore(result) }}%
                     </v-chip>
                   </v-col>
                 </v-row>
               </v-expansion-panel-title>
 
               <v-expansion-panel-text>
-                <v-tabs v-model="activeTab" color="primary">
-                  <v-tab value="html">HTML Structure</v-tab>
-                  <v-tab value="aria">Accessibility ARIA</v-tab>
-                  <v-tab value="meta">Meta-tags</v-tab>
+                <v-tabs v-model="activeTab" color="primary" aria-label="Analysis categories">
+                  <v-tab value="html" aria-label="HTML Structure tab">HTML Structure</v-tab>
+                  <v-tab value="aria" aria-label="Accessibility ARIA tab">Accessibility ARIA</v-tab>
+                  <v-tab value="meta" aria-label="Meta-tags tab">Meta-tags</v-tab>
                 </v-tabs>
 
                 <v-window v-model="activeTab">
@@ -65,14 +66,23 @@
                     <v-row>
                       <v-col cols="12" md="6">
                         <v-card>
-                          <v-card-title>HTML Structure</v-card-title>
+                          <v-card-title class="d-flex align-center">
+                            <v-icon icon="mdi-language-html5" class="mr-2" aria-hidden="true" />
+                            HTML Structure
+                            <v-chip :color="getScoreColor(result.score)" class="ml-4"
+                              aria-label="HTML structure score: {{ result.score }}%">
+                              Score: {{ result.score }}%
+                            </v-chip>
+                          </v-card-title>
                           <v-card-text>
-                            <div class="d-flex flex-wrap gap-2">
+                            <div class="d-flex flex-wrap gap-2" role="list" aria-label="HTML structure elements">
                               <v-chip v-for="(value, key) in result.structure" :key="key"
-                                :color="value ? 'success' : 'error'" variant="tonal" class="ma-1">
-                                <v-icon :icon="value ? 'mdi-check-circle' : 'mdi-alert-circle'" class="mr-2" /> {{
-                                  getElementTitle(key)
-                                }}
+                                :color="value ? 'success' : 'error'" variant="tonal" class="ma-1" role="listitem"
+                                :aria-label="getElementTitle(key) + ' is ' + (value ? 'present' : 'missing')">
+                                <v-icon :icon="value ? 'mdi-check-circle' : 'mdi-alert-circle'" class="mr-2"
+                                  aria-hidden="true" /> {{
+                                    getElementTitle(key)
+                                  }}
                               </v-chip>
                             </div>
                           </v-card-text>
@@ -81,24 +91,37 @@
 
                       <v-col cols="12" md="6">
                         <v-card>
-                          <v-card-title>Readability Analysis</v-card-title>
+                          <v-card-title class="d-flex align-center">
+                            <v-icon icon="mdi-book-open-variant" class="mr-2" aria-hidden="true" />
+                            Readability Analysis
+                          </v-card-title>
                           <v-card-text>
-                            <p><strong>Score:</strong> {{ result.readabilityAnalysis.score.toFixed(2) }}</p>
-                            <p><strong>Grade:</strong> {{ result.readabilityAnalysis.grade }}</p>
-                            <p><strong>Words:</strong> {{ result.readabilityAnalysis.wordCount }}</p>
-                            <p><strong>Sentences:</strong> {{ result.readabilityAnalysis.sentenceCount }}</p>
+                            <dl>
+                              <dt><strong>Score:</strong></dt>
+                              <dd>{{ result.readabilityAnalysis.score.toFixed(2) }}</dd>
+                              <dt><strong>Grade:</strong></dt>
+                              <dd>{{ result.readabilityAnalysis.grade }}</dd>
+                              <dt><strong>Words:</strong></dt>
+                              <dd>{{ result.readabilityAnalysis.wordCount }}</dd>
+                              <dt><strong>Sentences:</strong></dt>
+                              <dd>{{ result.readabilityAnalysis.sentenceCount }}</dd>
+                            </dl>
                           </v-card-text>
                         </v-card>
                       </v-col>
 
                       <v-col cols="12">
                         <v-card v-if="result.headingStructure.length">
-                          <v-card-title>Heading Structure</v-card-title>
+                          <v-card-title class="d-flex align-center">
+                            <v-icon icon="mdi-format-header-1" class="mr-2" aria-hidden="true" />
+                            Heading Structure
+                          </v-card-title>
                           <v-card-text>
-                            <div class="heading-structure">
+                            <div class="heading-structure" role="tree" aria-label="Page heading structure">
                               <div v-for="heading in result.headingStructure" :key="heading.order"
-                                :style="{ marginLeft: `${(heading.level - 1) * 20}px` }" class="heading-item">
-                                <span class="heading-level">H{{ heading.level }}</span>
+                                :style="{ marginLeft: `${(heading.level - 1) * 20}px` }" class="heading-item"
+                                role="treeitem" :aria-level="heading.level">
+                                <span class="heading-level" aria-hidden="true">H{{ heading.level }}</span>
                                 {{ heading.text }}
                               </div>
                             </div>
@@ -113,20 +136,21 @@
                       <v-col cols="12">
                         <v-card>
                           <v-card-title class="d-flex align-center">
-                            <v-icon icon="mdi-wheelchair-accessibility" class="mr-2" />
+                            <v-icon icon="mdi-wheelchair-accessibility" class="mr-2" aria-hidden="true" />
                             Accessibility ARIA
-                            <v-chip :color="getScoreColor(result.accessibility.ariaScore)" class="ml-4">
+                            <v-chip :color="getScoreColor(result.accessibility.ariaScore)" class="ml-4"
+                              aria-label="ARIA score: {{ result.accessibility.ariaScore }}%">
                               Score: {{ result.accessibility.ariaScore }}%
                             </v-chip>
                           </v-card-title>
                           <v-card-text>
                             <v-row>
                               <v-col cols="12" md="6">
-                                <v-list density="compact">
+                                <v-list density="compact" aria-label="Accessibility metrics - part 1">
                                   <v-list-item>
                                     <template v-slot:prepend>
-                                      <v-icon
-                                        :color="result.accessibility.missingAriaCount > 0 ? 'warning' : 'success'">
+                                      <v-icon :color="result.accessibility.missingAriaCount > 0 ? 'warning' : 'success'"
+                                        aria-hidden="true">
                                         {{ result.accessibility.missingAriaCount > 0 ? 'mdi-alert' : 'mdi-check-circle'
                                         }}
                                       </v-icon>
@@ -138,7 +162,8 @@
 
                                   <v-list-item>
                                     <template v-slot:prepend>
-                                      <v-icon :color="result.accessibility.missingLabels > 0 ? 'warning' : 'success'">
+                                      <v-icon :color="result.accessibility.missingLabels > 0 ? 'warning' : 'success'"
+                                        aria-hidden="true">
                                         {{ result.accessibility.missingLabels > 0 ? 'mdi-alert' : 'mdi-check-circle' }}
                                       </v-icon>
                                     </template>
@@ -150,7 +175,8 @@
                                   <v-list-item>
                                     <template v-slot:prepend>
                                       <v-icon
-                                        :color="result.accessibility.formElementsWithLabelsPercent < 100 ? 'warning' : 'success'">
+                                        :color="result.accessibility.formElementsWithLabelsPercent < 100 ? 'warning' : 'success'"
+                                        aria-hidden="true">
                                         {{ result.accessibility.formElementsWithLabelsPercent < 100 ? 'mdi-alert'
                                           : 'mdi-check-circle' }} </v-icon>
                                     </template>
@@ -162,10 +188,11 @@
                               </v-col>
 
                               <v-col cols="12" md="6">
-                                <v-list density="compact">
+                                <v-list density="compact" aria-label="Accessibility metrics - part 2">
                                   <v-list-item>
                                     <template v-slot:prepend>
-                                      <v-icon :color="result.accessibility.invalidAriaCount > 0 ? 'error' : 'success'">
+                                      <v-icon :color="result.accessibility.invalidAriaCount > 0 ? 'error' : 'success'"
+                                        aria-hidden="true">
                                         {{ result.accessibility.invalidAriaCount > 0 ? 'mdi-alert-circle' :
                                           'mdi-check-circle' }}
                                       </v-icon>
@@ -178,19 +205,20 @@
                                   <v-list-item>
                                     <template v-slot:prepend>
                                       <v-icon
-                                        :color="result.accessibility.interactiveElementsWithAriaPercent < 100 ? 'warning' : 'success'">
+                                        :color="result.accessibility.interactiveElementsWithAriaPercent < 100 ? 'warning' : 'success'"
+                                        aria-hidden="true">
                                         {{ result.accessibility.interactiveElementsWithAriaPercent < 100 ? 'mdi-alert'
                                           : 'mdi-check-circle' }} </v-icon>
                                     </template>
                                     <v-list-item-title>Interactive elements with ARIA</v-list-item-title>
                                     <v-list-item-subtitle>{{
                                       result.accessibility.interactiveElementsWithAriaPercent.toFixed(2)
-                                      }}%</v-list-item-subtitle>
+                                    }}%</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
                                     <template v-slot:prepend>
-                                      <v-icon color="info">mdi-counter</v-icon>
+                                      <v-icon color="info" aria-hidden="true">mdi-counter</v-icon>
                                     </template>
                                     <v-list-item-title>Total interactive elements</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.interactiveElementsCount
@@ -200,19 +228,21 @@
                               </v-col>
 
                               <v-col cols="12">
-                                <v-divider class="my-4"></v-divider>
-                                <div class="text-subtitle-1 mb-2">Elements to complete with ARIA</div>
-                                <v-expansion-panels>
+                                <v-divider class="my-4" aria-hidden="true"></v-divider>
+                                <div class="text-subtitle-1 mb-2" id="aria-issues">Elements to complete with ARIA</div>
+                                <v-expansion-panels aria-labelledby="aria-issues">
                                   <v-expansion-panel v-for="(issue, index) in result.accessibility.issues" :key="index">
                                     <v-expansion-panel-title>
-                                      <v-icon :color="getIssueSeverityColor(issue.severity)" class="mr-2">
+                                      <v-icon :color="getIssueSeverityColor(issue.severity)" class="mr-2"
+                                        aria-hidden="true">
                                         {{ getIssueSeverityIcon(issue.severity) }}
                                       </v-icon>
                                       {{ issue.element }} - {{ issue.issue }}
                                     </v-expansion-panel-title>
                                     <v-expansion-panel-text>
                                       <p><strong>Suggestion:</strong> {{ issue.suggestion }}</p>
-                                      <v-alert v-if="issue.code" type="info" variant="tonal" class="mt-2">
+                                      <v-alert v-if="issue.code" type="info" variant="tonal" class="mt-2" role="region"
+                                        aria-label="Example code">
                                         <pre><code>{{ issue.code }}</code></pre>
                                       </v-alert>
                                       <p v-if="issue.context" class="mt-2"><strong>Context:</strong> {{ issue.context
@@ -233,9 +263,10 @@
                       <v-col cols="12">
                         <v-card>
                           <v-card-title class="d-flex align-center">
-                            <v-icon icon="mdi-tag-multiple" class="mr-2" />
+                            <v-icon icon="mdi-tag-multiple" class="mr-2" aria-hidden="true" />
                             Meta-tags Analysis
-                            <v-chip :color="getScoreColor(result.metaTags.score)" class="ml-4">
+                            <v-chip :color="getScoreColor(result.metaTags.score)" class="ml-4"
+                              aria-label="Meta-tags score: {{ result.metaTags.score }}%">
                               Score: {{ result.metaTags.score }}%
                             </v-chip>
                           </v-card-title>
@@ -245,7 +276,7 @@
                               <v-col cols="12" md="6">
                                 <v-card variant="outlined">
                                   <v-card-title class="text-subtitle-1">
-                                    <v-icon icon="mdi-check-circle" color="success" class="mr-2" />
+                                    <v-icon icon="mdi-check-circle" color="success" class="mr-2" aria-hidden="true" />
                                     Score détaillé
                                   </v-card-title>
                                   <v-card-text>
@@ -527,6 +558,20 @@ const getIssueSeverityColor = (severity: string): string => {
     default:
       return 'grey';
   }
+};
+
+const getAverageScoreColor = (result) => {
+  const avgScore = calculateAverageScore(result);
+  return getScoreColor(avgScore);
+};
+
+const calculateAverageScore = (result) => {
+  const htmlScore = result.score || 0;
+  const ariaScore = result.accessibility?.ariaScore || 0;
+  const metaScore = result.metaTags?.score || 0;
+
+  const avgScore = Math.round((htmlScore + ariaScore + metaScore) / 3);
+  return avgScore;
 };
 </script>
 
