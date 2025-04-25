@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
 
         if (rows.length > 0) {
           if (!invoiceData.customerName || invoiceData.customerName.trim() === '') {
-            invoiceData.customerName = rows[0].username || 'Client DevUnity';
+            invoiceData.customerName = rows[0].username || 'Client StackUnity';
           }
 
           if (!invoiceData.customerEmail || invoiceData.customerEmail.trim() === '') {
@@ -45,30 +45,47 @@ export default defineEventHandler(async (event) => {
           }
         }
       } catch (dbError) {
-        console.error('Erreur lors de la récupération des informations utilisateur:', dbError);
+        console.error('Error retrieving user information:', dbError);
       }
     }
 
     if (!invoiceData.customerEmail || !invoiceData.customerName) {
       return {
         success: false,
-        error: 'Données client incomplètes'
+        error: 'Customer data is incomplete'
       };
     }
 
     const pdfBuffer = await generateInvoicePDF(invoiceData);
 
-    const emailSent = await sendInvoiceEmail(invoiceData, pdfBuffer);
+    const emailResult = await sendInvoiceEmail(invoiceData, pdfBuffer);
+
+    if (typeof emailResult === 'boolean') {
+      if (!emailResult) {
+        return {
+          success: false,
+          error: 'Error while sending the invoice email'
+        };
+      }
+    } else if (!emailResult.success) {
+      return {
+        success: false,
+        error: 'Error while sending the invoice email'
+      };
+    }
 
     return {
       success: true,
-      message: 'Invoice generated and sent successfully'
+      message: 'Invoice generated and sent successfully',
+      emailSent: true,
+      emailId: typeof emailResult === 'object' ? emailResult.emailId : undefined,
+      emailRecipient: invoiceData.customerEmail
     };
   } catch (error) {
-    console.error('Erreur lors de la génération/envoi de la facture:', error);
+    console.error('Error while generating/sending the invoice:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erreur lors de la génération de la facture'
+      error: error instanceof Error ? error.message : 'Error while generating the invoice'
     };
   }
 });
@@ -86,9 +103,9 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
       doc.fontSize(20).font('Helvetica-Bold').text('FACTURE', { align: 'center' });
       doc.moveDown();
 
-      doc.fontSize(12).font('Helvetica-Bold').text('DevUnity SAS', { align: 'left' });
+      doc.fontSize(12).font('Helvetica-Bold').text('StackUnity SAS', { align: 'left' });
       doc.text('86000 Poitiers, France');
-      doc.text('Email: support@devunity.com');
+      doc.text('Email: support@stackunity.tech');
       doc.text('SIRET: 93872035600014 ');
       doc.text('TVA Intracommunautaire: FR44938720356');
       doc.moveDown(2);
@@ -210,12 +227,12 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
   });
 }
 
-async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Promise<boolean> {
+async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Promise<boolean | { success: boolean, emailId?: string }> {
   try {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
       console.error('Resend API key missing');
-      return false;
+      return { success: false };
     }
 
     const resend = new Resend(resendApiKey);
@@ -247,6 +264,7 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
             <li>SEO Audit</li>
             <li>Robots & Schema</li>
             <li>Premium Components</li>
+            <li>Semantic and ARIA analysis</li>
           </ul>
           
           <p>If you have any questions regarding your invoice or your subscription, please contact our support team at <a href="mailto:support@stackunity.tech">support@stackunity.tech</a>.</p>
@@ -269,14 +287,14 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
 
     if (error) {
       console.error('Erreur Resend:', error);
-      return false;
+      return { success: false };
     }
 
     console.log('Email envoyé avec Resend, ID:', data?.id);
-    return true;
+    return { success: true, emailId: data?.id };
   } catch (error) {
     console.error('Erreur lors de l\'envoi de l\'email:', error);
-    return false;
+    return { success: false };
   }
 }
 
