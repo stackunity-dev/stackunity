@@ -14,9 +14,8 @@
           </NuxtLink>
           <v-spacer></v-spacer>
 
-          <div v-show="isClient" class="d-flex align-center">
-            <nav v-if="isClient && display.smAndUp.value" class="d-flex align-center custom-nav-menu"
-              aria-label="Main Navigation">
+          <div v-if="isClient" class="d-flex align-center">
+            <nav v-if="display.smAndUp.value" class="d-flex align-center custom-nav-menu" aria-label="Main Navigation">
               <div class="nav-links-wrapper" role="menubar">
                 <v-btn v-for="item in menuItems" :key="item.href" class="nav-btn custom-btn" :href="item.href"
                   :class="{ 'active-nav-btn': activeSection === item.href.substring(1) }" variant="text" role="menuitem"
@@ -34,7 +33,7 @@
               </div>
             </nav>
 
-            <div v-else-if="isClient && !display.smAndUp.value" class="d-flex align-center">
+            <div v-else class="d-flex align-center">
               <v-btn color="primary" class="mr-2" to="/login" aria-label="Login" size="small" rounded="pill">
                 <v-icon size="small" class="mr-1">mdi-login</v-icon>
                 Login
@@ -53,7 +52,8 @@
       </v-app-bar>
     </header>
 
-    <nav location="right" temporary class="mobile-nav-drawer d-md-none" aria-label="Mobile Navigation">
+    <nav location="right" temporary class="mobile-nav-drawer d-md-none" :class="{ 'client-ready': isClient }"
+      aria-label="Mobile Navigation">
       <v-navigation-drawer v-model="drawer" location="right" temporary
         class="v-navigation-drawer v-navigation-drawer--right v-navigation-drawer--temporary v-theme--dark v-theme--dark pa-6"
         role="dialog" aria-modal="true">
@@ -959,9 +959,15 @@ const getStepIcon = (index) => {
 }
 
 .mobile-nav-drawer {
+  opacity: 0;
+  transition: opacity 0.3s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.mobile-nav-drawer.client-ready {
+  opacity: 1;
 }
 
 .mobile-nav-item {
