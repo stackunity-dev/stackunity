@@ -16,7 +16,7 @@
 
           <div v-if="isClient" class="d-flex align-center">
             <nav v-if="display.smAndUp.value" class="d-flex align-center custom-nav-menu" aria-label="Main Navigation">
-              <div class="nav-links-wrapper" role="menubar">
+              <div class="nav-links-wrapper" role="menubar" aria-label="Main Navigation">
                 <v-btn v-for="item in menuItems" :key="item.href" class="nav-btn custom-btn" :href="item.href"
                   :class="{ 'active-nav-btn': activeSection === item.href.substring(1) }" variant="text" role="menuitem"
                   :aria-current="activeSection === item.href.substring(1) ? 'page' : undefined"
@@ -378,7 +378,7 @@
             <v-row class="footer-columns-container">
               <v-col v-for="(column, index) in footerColumns" :key="index" cols="6" md="4" class="footer-column px-4">
                 <h4 id="footer-column-heading-{{index}}" class="text-subtitle-1 font-weight-bold mb-4">{{ column.title
-                  }}
+                }}
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"

@@ -10,9 +10,13 @@ export default defineEventHandler(async (event) => {
     throw new Error('URL is required');
   }
 
+  function normalizeUrl(url: string): string {
+    return url.replace(/\/+$/, '') || '/';
+  }
+
   async function crawlUrl(url: string) {
     const visitedUrls = new Set<string>();
-    const urlsToVisit = [url];
+    const urlsToVisit = [normalizeUrl(url)];
     const baseUrl = new URL(url).origin;
     const excludePatterns = [
       'cdn-cgi',
@@ -58,6 +62,8 @@ export default defineEventHandler(async (event) => {
               fullUrl = `${baseUrl}/${link}`;
             }
 
+            fullUrl = normalizeUrl(fullUrl);
+
             const linkUrl = new URL(fullUrl);
             if (
               linkUrl.origin === baseUrl &&
@@ -77,6 +83,7 @@ export default defineEventHandler(async (event) => {
 
     return Array.from(visitedUrls);
   }
+
 
   const urlList = await crawlUrl(body.url);
   const semanticAnalysis = await Promise.all(urlList.map(async (url) => {

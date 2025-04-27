@@ -8,8 +8,10 @@
           Start with a 7-day free trial. No credit card required.
         </p>
 
-        <v-chip-group v-model="selectedCurrency" class="d-flex justify-center text-center my-6">
-          <v-chip v-for="currency in currencies" :key="currency.symbol" :value="currency.symbol" filter>
+        <v-chip-group v-model="selectedCurrency" class="d-flex justify-center text-center my-6"
+          aria-label="Select currency">
+          <v-chip v-for="currency in currencies" :key="currency.symbol" :value="currency.symbol" filter
+            aria-label="Currency">
             {{ currency.symbol }} ({{ currency.code }})
           </v-chip>
         </v-chip-group>
@@ -124,7 +126,7 @@ const freePlan = ref({
   hasDiscount: false,
   freeTrialDays: 0,
   features: [
-    'Basic snippets management',
+    'CSS playground',
     'Simple Studio features',
     'Basic API testing',
     'Contrast ratio checker',
@@ -185,7 +187,7 @@ const guarantee = ref({
 });
 
 const comparisonFeatures = ref([
-  { name: 'Snippets Management', free: true, standard: true, premium: true },
+  { name: 'CSS playground', free: true, standard: true, premium: true },
   { name: 'Simple Studio Features', free: true, standard: true, premium: true },
   { name: 'API Testing', free: true, standard: true, premium: true },
   { name: 'Contrast Ratio Checker', free: true, standard: true, premium: true },

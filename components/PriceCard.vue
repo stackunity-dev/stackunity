@@ -13,9 +13,10 @@
       </div>
       <div class="text-h3 font-weight-bold mb-4">
         {{ selectedCurrency }}{{ displayPrice }}
-        <span class="text-subtitle-1 text-medium-emphasis">/lifetime</span>
+        <span class="text-subtitle-1 text-medium-emphasis" aria-label="Lifetime"> /lifetime</span>
       </div>
-      <v-chip v-if="plan.freeTrialDays" color="info" variant="elevated" :elevation="5" class="mb-4">
+      <v-chip v-if="plan.freeTrialDays" color="info" variant="elevated" :elevation="5" class="mb-4"
+        aria-label="Free trial included">
         {{ plan.freeTrialDays }} days free trial included
       </v-chip>
       <v-divider class="mb-4"></v-divider>
@@ -29,7 +30,7 @@
       </v-list>
     </v-card-item>
     <v-card-actions class="pa-6 pt-0">
-      <v-btn block :color="btnColor" variant="elevated" :to="btnTo" class="btn-action">
+      <v-btn block :color="btnColor" variant="elevated" :to="btnTo" class="btn-action" aria-label="Get started">
         {{ btnText }}
         <v-icon v-if="btnIcon" end>{{ btnIcon }}</v-icon>
       </v-btn>

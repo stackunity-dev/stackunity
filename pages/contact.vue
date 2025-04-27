@@ -98,13 +98,13 @@ definePageMeta({
 useHead({
   title: 'Contact StackUnity | Get Support',
   meta: [
-    { name: 'description', content: 'Reach out to the StackUnity team for support, feature requests, partnership inquiries or general questions. We\'re here to help you succeed with our web development tools.' },
+    { name: 'description', content: 'Reach out to the StackUnity team for support, feature requests or general questions. We\'re here to help you succeed with our web development tools.' },
     { name: 'keywords', content: 'StackUnity contact, web development support, technical assistance, feature requests, developer help, contact form, web tools support, developer platform support, get in touch, contact page' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { property: 'og:title', content: 'Contact StackUnity | Get Support' },
-    { property: 'og:description', content: 'Reach out to the StackUnity team for support, feature requests, partnership inquiries or general questions. We\'re here to help you succeed with our web development tools.' },
+    { property: 'og:description', content: 'Reach out to the StackUnity team for support, feature requests or general questions. We\'re here to help you succeed with our web development tools.' },
     { property: 'og:image', content: '/images/preview.png' },
     { property: 'og:type', content: 'website' },
     { property: 'og:url', content: 'https://stackunity.com/contact' },

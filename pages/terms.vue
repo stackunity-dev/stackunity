@@ -160,7 +160,7 @@ import { useHead } from '#imports';
 useHead({
   title: 'Terms of Service - StackUnity',
   meta: [
-    { name: 'description', content: 'Official Terms of Service for the StackUnity web development platform. Understand your rights and obligations when using our services. Legal agreement between you and StackUnity.' },
+    { name: 'description', content: 'Official Terms of Service for the StackUnity web development platform. Understand your rights and obligations when using our services.' },
     { name: 'author', content: 'StackUnity' },
     { name: 'keywords', content: 'StackUnity, terms of service, user agreement, legal terms, acceptable use policy, intellectual property, liability limitations, indemnification, platform usage, web development terms' },
     { name: 'robots', content: 'index,follow,max-image-preview:large' },
