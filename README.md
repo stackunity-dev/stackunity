@@ -1,6 +1,6 @@
-# DevUnity
+# StackUnity
 
-DevUnity is an all-in-one platform for developers who want to create, manage and optimize their web projects. It combines development tools, monitoring, SEO audit, and more.
+StackUnity is an all-in-one platform for developers who want to create, manage and optimize their web projects. It combines development tools, monitoring, SEO audit, and more.
 
 ## Features
 

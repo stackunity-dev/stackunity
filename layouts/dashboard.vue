@@ -24,37 +24,12 @@
           class="mb-1" color="primary" nuxt @click="closeDrawer" data-plausible-feature="dashboard_menu">
         </v-list-item>
 
-        <v-list-group value="Recent Projects" class="mb-1" prepend-icon="mdi-history">
-          <template #activator="{ props }">
-            <v-list-item v-bind="props" title="Recent Projects" rounded="lg" color="primary" />
-          </template>
+        <v-list-item v-if="userStore.user?.isPremium" to="/website" prepend-icon="mdi-web" title="Website" rounded="lg"
+          class="mb-1" color="primary" nuxt @click="closeDrawer" data-plausible-feature="website_menu">
+        </v-list-item>
 
-          <v-list-item v-for="(snippet, index) in recentSnippets" :key="index" :to="`/snippets?id=${snippet.id}`"
-            :title="snippet.title" :prepend-icon="getFrameworkIcon(snippet.framework)" class="ml-4" rounded="lg"
-            color="primary" nuxt @click="closeDrawer">
-            <template #subtitle>
-              <span class="text-caption">{{ getSnippetDate(snippet) }}</span>
-            </template>
-          </v-list-item>
-
-          <v-list-item v-if="recentSnippets.length === 0" class="ml-4" title="No recent projects" disabled />
-        </v-list-group>
-
-        <v-list-group value="Recent SQL schemas" class="mb-1" prepend-icon="mdi-database-outline">
-          <template #activator="{ props }">
-            <v-list-item v-bind="props" title="Recent SQL schemas" rounded="lg" color="primary" />
-          </template>
-
-          <v-list-item v-for="(schema, index) in recentSQLSchemas" :key="index"
-            :to="`/database-designer?id=${schema.id}`" :title="schema.database_name" prepend-icon="mdi-database"
-            class="ml-4" rounded="lg" color="primary" nuxt @click="closeDrawer">
-            <template #subtitle>
-              <span class="text-caption">{{ getSchemaTablesCount(schema) }} tables</span>
-            </template>
-          </v-list-item>
-
-          <v-list-item v-if="recentSQLSchemas.length === 0" class="ml-4" title="No recent SQL schemas" disabled />
-        </v-list-group>
+        <PremiumFeature v-if="!userStore.user?.isPremium" type="list-item" title="Website" icon="mdi-web"
+          feature-key="website" plan-type="premium" />
 
         <v-list-subheader class="mt-2 text-uppercase font-weight-bold text-caption">Applications</v-list-subheader>
 
@@ -92,9 +67,10 @@
           prepend-icon="mdi-credit-card-outline" title="Premium" rounded="lg" class="mb-1" color="primary" nuxt
           @click="closeDrawer" />
 
-        <v-list-item v-if="userStore.user.isPremium && !trialLoading && trialDaysLeft !== null && !isBuying"
-          prepend-icon="mdi-clock-outline" :title="`Trial : ${trialDaysLeft} days left`" rounded="lg" class="mb-1"
-          :class="trialDaysLeft <= 2 ? 'text-warning' : 'text-info'" />
+        <v-list-item
+          v-if="userStore.user && userStore.user.daysLeft !== undefined && userStore.user.daysLeft > 0 && !userStore.user.isBuying"
+          prepend-icon="mdi-clock-outline" :title="`Trial : ${userStore.user.daysLeft} days left`" rounded="lg"
+          class="mb-1" :class="userStore.user.daysLeft <= 2 ? 'text-warning' : 'text-info'" />
 
         <v-list-item to="/settings" prepend-icon="mdi-cog-outline" title="Settings" rounded="lg" class="mb-1"
           color="primary" nuxt @click="closeDrawer" />
@@ -153,7 +129,6 @@
     <v-main class="pa-0">
       <div class="content-wrapper">
         <NuxtPage :studio-mode="studioMode" />
-        <Task v-if="openTask" />
       </div>
     </v-main>
   </v-app>
@@ -164,9 +139,7 @@ import { computed, markRaw, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
-import Task from '../components/task.vue';
 import { useUserStore } from '../stores/userStore';
-import { TokenUtils } from '../utils/token';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -176,11 +149,8 @@ const search = ref('');
 const display = useDisplay();
 const drawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
-const openTask = ref(false);
 const studioMode = ref('studio');
-const trialDaysLeft = ref(null);
-const trialLoading = ref(true);
-const isBuying = ref(userStore.user?.isBuying);
+const isSmall = computed(() => display.smAndDown.value);
 
 provide('studioMode', {
   mode: studioMode,
@@ -190,14 +160,12 @@ provide('studioMode', {
   toggleMode: () => studioMode.value = studioMode.value === 'studio' ? 'studio-seo' : 'studio'
 });
 
-watch(() => route.path, (newPath, oldPath) => {
+watch(() => route.path, () => {
   if (display.smAndDown.value) {
     drawer.value = false;
   }
   updatePageTitle();
 });
-
-const isSmall = computed(() => display.smAndDown.value);
 
 watch(isSmall, (isSmall) => {
   if (!isSmall) {
@@ -210,8 +178,8 @@ const updatePageTitle = () => {
 
   if (path === '/dashboard') {
     currentPageTitle.value = 'Dashboard';
-  } else if (path.includes('/snippets')) {
-    currentPageTitle.value = 'Snippets';
+  } else if (path.includes('/animations')) {
+    currentPageTitle.value = 'CSS playground';
   } else if (path.includes('/database-designer')) {
     currentPageTitle.value = 'Database Designer';
   } else if (path.includes('/studio')) {
@@ -236,117 +204,13 @@ const updatePageTitle = () => {
   }
 };
 
-const recentSnippets = computed(() => {
-  return [...userStore.personalSnippets]
-    .sort((a, b) => {
-      const dateA = getDateValue(a);
-      const dateB = getDateValue(b);
-      return dateB - dateA;
-    })
-    .slice(0, 5);
-});
-
-const recentSQLSchemas = computed(() => {
-  return [...userStore.sqlSchemas]
-    .slice(0, 5);
-});
-
-const getSchemaTablesCount = (schema: any): number => {
-  if (schema && schema.schema_data) {
-    try {
-      const data = typeof schema.schema_data === 'string'
-        ? JSON.parse(schema.schema_data)
-        : schema.schema_data;
-
-      return data.tables ? data.tables.length : 0;
-    } catch (e) {
-      console.error('Error parsing schema data:', e);
-      return 0;
-    }
-  }
-  return 0;
-};
-
-const getDateValue = (snippet: any): number => {
-  if (snippet) {
-    const dateStr = snippet.date || snippet.snippet_date;
-    if (dateStr) {
-      const date = new Date(dateStr);
-      if (!isNaN(date.getTime())) {
-        return date.getTime();
-      }
-    }
-  }
-  return 0;
-};
-
-const getSnippetDate = (snippet: any): string => {
-  if (snippet) {
-    const dateStr = snippet.date || snippet.snippet_date;
-    if (dateStr) {
-      return formatDate(dateStr);
-    }
-  }
-  return 'Date unknown';
-};
-
-const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return 'Date unknown';
-
-  try {
-    const date = new Date(dateString);
-
-    if (isNaN(date.getTime())) {
-      return 'Invalid date';
-    }
-
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return `${diffDays} days ago`;
-    } else {
-      return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-    }
-  } catch (error) {
-    console.error('Error formatting date:', error);
-    return 'Date error';
-  }
-};
-
-const getFrameworkIcon = (framework: string) => {
-  switch (framework?.toLowerCase()) {
-    case 'react':
-      return 'mdi-react';
-    case 'vue.js 3':
-    case 'vue':
-      return 'mdi-vuejs';
-    case 'angular':
-      return 'mdi-angular';
-    case 'nest.js':
-      return 'mdi-nodejs';
-    case 'nuxt 3':
-    case 'nuxt':
-      return 'mdi-nuxt';
-    default:
-      return 'mdi-code-tags';
-  }
-};
-
 const getCurrentPageIcon = () => {
   const path = route.path;
 
   if (path === '/dashboard') {
     return 'mdi-view-dashboard-outline';
-  } else if (path.includes('/snippets')) {
-    return 'mdi-code-tags';
+  } else if (path.includes('/animations')) {
+    return 'mdi-animation';
   } else if (path.includes('/database-designer')) {
     return 'mdi-database-cog';
   } else if (path.includes('/api-testing-hub')) {
@@ -406,42 +270,11 @@ const logout = async () => {
   }
 };
 
-const checkTrialStatus = async () => {
-  try {
-    const token = TokenUtils.retrieveToken();
-    if (token) {
-      const response = await fetch('/api/auth/check-trial', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          trialDaysLeft.value = data.daysLeft;
-          isBuying.value = data.isBuying || false;
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Erreur lors de la vérification de la période d\'essai:', error);
-  } finally {
-    trialLoading.value = false;
-  }
-};
-
 onMounted(() => {
-  userStore.loadSnippets();
   userStore.loadSQLSchemas();
+  userStore.loadWebsiteData();
   updatePageTitle();
-  openTask.value = true;
-  checkTrialStatus();
 });
-
-if (typeof window !== 'undefined') {
-  setInterval(checkTrialStatus, 3600000);
-}
 
 function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string, planType: 'standard' | 'premium' = 'premium'): any {
   if (userStore.user?.isPremium) {
@@ -496,10 +329,10 @@ function createPremiumMenuItem(title: string, link: string, icon: string, featur
 const items = computed(() => [
   {
     title: 'Frontend',
-    prependIcon: 'mdi-web',
+    prependIcon: 'mdi-language-html5',
     link: true,
     children: [
-      { title: 'Snippets', link: '/snippets', icon: 'mdi-code-tags' },
+      { title: 'CSS playground', link: '/animations', icon: 'mdi-animation' },
       { title: 'Studio', link: '/studio', icon: 'mdi-palette' },
       createPremiumMenuItem('Semantic', '/semantic', 'mdi-semantic-web', 'semantic', 'premium')
     ]
@@ -533,10 +366,6 @@ const items = computed(() => [
     ]
   },
 ]);
-
-onMounted(() => {
-  console.log(userStore.user);
-});
 </script>
 
 <style scoped>

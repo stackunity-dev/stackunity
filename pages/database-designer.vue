@@ -566,7 +566,7 @@ import { getSQLTemplate, getSQLTemplateNames } from '../utils/sqlTemplates';
 import { definePageMeta, useHead } from '#imports';
 import javascript from 'highlight.js/lib/languages/javascript';
 import sql from 'highlight.js/lib/languages/sql';
-import { DatabaseType, SQLSchema, StoredTable } from '../utils/sql/types';
+import { DatabaseType, SQLSchema, StoredTable, Table, Column } from '../utils/sql/types';
 
 useHead({
   title: 'SQL Designer - StackUnity',
@@ -586,46 +586,6 @@ definePageMeta({
   ssr: false,
   requiresPremium: true
 });
-
-interface Column {
-  name: string;
-  type: string;
-  nullable: boolean;
-  default?: string;
-  defaultType?: string;
-  primaryKey: boolean;
-  foreignKey?: boolean;
-  notNull?: boolean;
-  unique: boolean;
-  autoIncrement: boolean;
-  referencedTable?: string;
-  referencedColumn?: string;
-  constraints?: string[];
-}
-
-interface ForeignKey {
-  id: string;
-  columnName: string;
-  referenceTable: string;
-  referenceColumn: string;
-  onDelete: string;
-  onUpdate: string;
-}
-
-interface DefaultOptions {
-  title: string;
-  nullable: boolean;
-  current_timestamp: boolean;
-  custom: boolean;
-}
-
-interface Table {
-  id: string;
-  name: string;
-  columns: Column[];
-  foreignKeys: ForeignKey[];
-  defaultOptions: DefaultOptions[];
-}
 
 const userStore = useUserStore();
 const activeTab = ref('config');
@@ -1119,15 +1079,11 @@ const loadSelectedSchema = (schema: any) => {
   generateSQL();
 };
 
-// Conversion state
 const currentDatabaseType = ref<DatabaseType>(DatabaseType.SQL);
-const convertedCode = ref<string>('');
 
-// Diagramme ER variables
 const tablePositions = ref<Map<string, { x: number, y: number }>>(new Map());
 const draggingTable = ref<{ table: any, startX: number, startY: number, offsetX: number, offsetY: number } | null>(null);
 
-// Fonctions pour le diagramme ER
 const getTablePosition = (index: number) => {
   const table = tables.value[index];
   if (tablePositions.value.has(table.id)) {
@@ -1137,7 +1093,6 @@ const getTablePosition = (index: number) => {
       top: `${position?.y}px`
     };
   }
-  // Position par défaut (en grille)
   const cols = 4;
   const row = Math.floor(index / cols);
   const col = index % cols;
@@ -1151,7 +1106,7 @@ const startDrag = (event: MouseEvent, table: any) => {
   if (event.target instanceof HTMLElement) {
     const targetIsHeader = event.target.closest('.er-table-header');
     if (!targetIsHeader) {
-      return; // Autoriser le déplacement uniquement depuis l'en-tête
+      return;
     }
   }
 
@@ -1176,8 +1131,6 @@ const onDrag = (event: MouseEvent) => {
   if (!diagramContainer) return;
 
   const containerRect = diagramContainer.getBoundingClientRect();
-  const scrollLeft = diagramContainer.scrollLeft;
-  const scrollTop = diagramContainer.scrollTop;
 
   const dx = event.clientX - draggingTable.value.startX;
   const dy = event.clientY - draggingTable.value.startY;
@@ -1187,7 +1140,6 @@ const onDrag = (event: MouseEvent) => {
 
   tablePositions.value.set(draggingTable.value.table.id, { x: newX, y: newY });
 
-  // Si la table approche des bords, faire défiler automatiquement
   const padding = 50;
   if (event.clientX > containerRect.right - padding) {
     diagramContainer.scrollLeft += 10;
@@ -1221,20 +1173,17 @@ const getRelationCoords = (table: any, column: any) => {
   const sourcePosition = tablePositions.value.get(sourceTable.id) || { x: 0, y: 0 };
   const targetPosition = tablePositions.value.get(targetTable.id) || { x: 0, y: 0 };
 
-  // Position de départ (centre-droite de la table source)
-  result.x1 = sourcePosition.x + 220; // Largeur de la table
-  result.y1 = sourcePosition.y + 50;  // Au milieu de la hauteur supposée
+  result.x1 = sourcePosition.x + 220;
+  result.y1 = sourcePosition.y + 50;
 
-  // Position d'arrivée (centre-gauche de la table cible)
   result.x2 = targetPosition.x;
-  result.y2 = targetPosition.y + 50;  // Au milieu de la hauteur supposée
+  result.y2 = targetPosition.y + 50;
 
   return result;
 };
 
 const autoArrangeTables = () => {
-  // Disposition en cercle
-  const centerX = 1000; // Centre du diagramme
+  const centerX = 1000;
   const centerY = 750;
   const radius = tables.value.length <= 4 ? 250 : 400;
 
@@ -1259,34 +1208,24 @@ const exportDiagram = async (format: 'png' | 'svg') => {
   }
 };
 
-// Conversion functions
 async function convertToNoSQLHandler(type: string) {
   try {
-    // Dynamically import the NoSQL conversion module
     const { convertToNoSQL } = await import('../utils/sql/nosql');
 
-    // Create schema from current data
     const schema: SQLSchema = {
       database_name: databaseName.value,
       tables: tables.value
     };
 
-    // Update current database type
     currentDatabaseType.value = DatabaseType.NOSQL;
 
-    // Perform the conversion
     const result = convertToNoSQL(schema, {
       nosqlType: type as any,
       includeTimestamps: true
     });
 
-    // Save original SQL if needed
-    const originalSQL = generatedSQL.value;
-
-    // Update the displayed code
     generatedSQL.value = result;
 
-    // Apply syntax highlighting for JavaScript
     setTimeout(() => {
       const codeElement = document.querySelector('.bg-grey-darken-4 pre code');
       if (codeElement) {
@@ -1294,14 +1233,12 @@ async function convertToNoSQLHandler(type: string) {
       }
     }, 0);
 
-    // Show success notification
     snackbarText.value = `SQL converted to NoSQL (${type})`;
     snackbarColor.value = 'success';
     showSnackbar.value = true;
   } catch (error: any) {
     console.error('Error converting NoSQL:', error);
 
-    // Show error notification
     snackbarText.value = `Error converting: ${error.message}`;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
@@ -1310,28 +1247,22 @@ async function convertToNoSQLHandler(type: string) {
 
 async function convertToORMHandler(type: string) {
   try {
-    // Dynamically import the ORM conversion module
     const { convertToORM } = await import('../utils/sql/orm');
 
-    // Create schema from current data
     const schema: SQLSchema = {
       database_name: databaseName.value,
       tables: tables.value
     };
 
-    // Update current database type
     currentDatabaseType.value = DatabaseType.ORM;
 
-    // Perform the conversion
     const result = convertToORM(schema, {
       ormType: type as any,
       includeTimestamps: true
     });
 
-    // Update the displayed code
     generatedSQL.value = result;
 
-    // Apply syntax highlighting for JavaScript
     setTimeout(() => {
       const codeElement = document.querySelector('.bg-grey-darken-4 pre code');
       if (codeElement) {
@@ -1339,21 +1270,18 @@ async function convertToORMHandler(type: string) {
       }
     }, 0);
 
-    // Show success notification
     snackbarText.value = `SQL converted to ORM (${type})`;
     snackbarColor.value = 'success';
     showSnackbar.value = true;
   } catch (error: any) {
     console.error('Error converting ORM:', error);
 
-    // Show error notification
     snackbarText.value = `Error converting: ${error.message}`;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   }
 }
 
-// Register highlight.js languages
 hljs.registerLanguage('sql', sql);
 hljs.registerLanguage('javascript', javascript);
 
@@ -1383,14 +1311,12 @@ watch(() => route.query.id, async (newId) => {
   }
 });
 
-// Add export function
-const exportDatabase = (format) => {
+const exportDatabase = (format: 'json' | 'sql' | 'schema') => {
   let content = '';
   let filename = `${databaseName.value}_export`;
   let contentType = 'application/json';
 
   if (format === 'json') {
-    // Export as JSON format
     const exportObj = {
       database_name: databaseName.value,
       tables: tables.value
@@ -1398,7 +1324,6 @@ const exportDatabase = (format) => {
     content = JSON.stringify(exportObj, null, 2);
     filename += '.json';
   } else if (format === 'sql') {
-    // Export as SQL format
     content = generatedSQL.value;
     filename += '.sql';
     contentType = 'text/plain';

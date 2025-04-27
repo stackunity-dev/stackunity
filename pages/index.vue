@@ -42,6 +42,9 @@
               <v-btn icon @click="drawer = !drawer" class="menu-toggle-btn" aria-label="Toggle navigation menu"
                 :aria-expanded="drawer">
                 <div class="hamburger-icon" :class="{ 'active': drawer }" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
               </v-btn>
             </div>
@@ -100,8 +103,7 @@
                     style="max-width: 800px">
                     Simplify your development workflow in just a few clicks and develop faster
                   </h1>
-                  <p class="text-h5 mb-4 text-medium-emphasis"
-                    :class="display.smAndDown.value ? 'text-center' : 'text-left'">
+                  <p class="text-h5 text-center mb-4 text-medium-emphasis">
                     Develop faster and simplify your workflow with our integrated professional tools. Build, manage and
                     optimize your projects for a site that is more accessible, user-friendly and SEO-friendly.
                   </p>
@@ -113,11 +115,12 @@
                   </div>
                   <div class="d-flex flex-column flex-sm-row ga-4 justify-center" role="group"
                     aria-label="Call to action">
-                    <v-btn color="secondary" size="x-large" aria-label="Créer un compte" to="/signup" variant="elevated"
-                      class="px-8 my-4" :elevation="getElevation('start-free-trial', 6, 20)"
-                      @mouseenter="setHoverOn('start-free-trial')" @mouseleave="setHoverOff('start-free-trial')">
+                    <v-btn color="secondary" size="x-large" aria-label="Get started" to="/signup" variant="elevated"
+                      class="px-16 my-4" :elevation="getElevation('start-free-trial', 6, 20)"
+                      @mouseenter="setHoverOn('start-free-trial')" @mouseleave="setHoverOff('start-free-trial')"
+                      width="80%">
                       <v-icon start aria-hidden="true">mdi-rocket-launch-outline</v-icon>
-                      Simplify your workflow now
+                      {{ display.smAndDown.value ? 'Try for free' : 'Simplify your workflow now' }}
                     </v-btn>
                   </div>
                 </v-col>
@@ -127,9 +130,9 @@
         </FadeInSection>
 
         <FadeInSection>
-          <section class="py-16 d-flex justify-center" aria-labelledby="how-it-works-heading">
+          <section class="pt-16 d-flex justify-center" aria-labelledby="how-it-works-heading">
             <img src="/public/images/preview-stackunity.avif" alt="Aperçu de la plateforme StackUnity"
-              class="hero-image rounded-lg" loading="eager" width="80%">
+              class="hero-image rounded-lg" loading="eager" width="80%" height="auto">
           </section>
         </FadeInSection>
 
@@ -341,7 +344,8 @@
               <form class="d-flex" aria-label="Newsletter Subscription">
                 <v-text-field v-model="email" density="compact" placeholder="Your email address"
                   aria-label="Your email address" variant="outlined" hide-details class="mr-2"
-                  prepend-inner-icon="mdi-email-outline"></v-text-field>
+                  prepend-inner-icon="mdi-email-outline"
+                  :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'Email must be valid']"></v-text-field>
                 <v-btn color="info" variant="tonal" class="ml-n1" :loading="loading" @click="submitEmail" type="submit"
                   aria-label="Subscribe to newsletter">
                   Subscribe
@@ -406,13 +410,27 @@
 <script lang="ts" setup>
 // @ts-ignore 
 import { definePageMeta, useHead } from '#imports';
-import { defineAsyncComponent, onMounted, ref } from 'vue';
+import { defineAsyncComponent, onMounted, provide, ref } from 'vue';
 import { useDisplay } from 'vuetify';
 import FadeInSection from '../components/FadeInSection.vue';
 import Snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../utils/filter';
 import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
+
+const Pricing = defineAsyncComponent({
+  loader: () => import('../components/pricing.vue'),
+  delay: 0,
+  suspensible: false,
+  timeout: 10000
+});
+
+const Faq = defineAsyncComponent({
+  loader: () => import('../components/faq.vue'),
+  delay: 0,
+  suspensible: false,
+  timeout: 10000
+});
 
 definePageMeta({
   layout: 'empty'
@@ -446,17 +464,15 @@ useHead({
     { name: 'twitter:description', content: 'StackUnity is the all-in-one platform for developers who want to simplify their development workflow and develop faster.' },
     { name: 'twitter:image', content: '/images/preview.png' },
     { name: 'twitter:creator', content: '@stackunity' },
-    { name: 'twitter:site', content: '@stackunity' },
+    { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
-    { rel: 'canonical', href: 'https://stackunity.tech' }
-  ]
+    { rel: 'canonical', href: 'https://stackunity.tech' },
+    { rel: 'preload', href: '/logo/stackunity-title.png', as: 'image' }
+  ],
 })
 
-const Pricing = defineAsyncComponent(() => import('../components/pricing.vue'));
-const Faq = defineAsyncComponent(() => import('../components/faq.vue'));
-
-const heroFeatures = ['Website audit', 'SQL visualizer', 'Accessibility', 'API testing'];
+const heroFeatures = ['Website management', 'SQL visualizer', 'Accessibility', 'API testing'];
 const stats = [
   { value: '10x', label: 'Accelerated development' },
   { value: '100%', label: 'Code quality' },
@@ -466,9 +482,9 @@ const stats = [
 
 const features = [
   {
-    title: 'Snippets',
-    description: 'Create and manage reusable code snippets for all your projects.',
-    icon: 'mdi-code-tags',
+    title: 'CSS animations',
+    description: 'Create and manage CSS animations for all your projects.',
+    icon: 'mdi-animation',
     color: 'primary'
   },
   {
@@ -593,6 +609,7 @@ const snackbarColor = ref('');
 const snackbarTimeout = ref(2000);
 const loading = ref(false);
 const isClient = ref(false);
+const pageReady = ref(false);
 
 const userStore = useUserStore();
 
@@ -600,7 +617,13 @@ const display = useDisplay();
 
 onMounted(() => {
   isClient.value = true;
+
+  document.documentElement.classList.add('page-loaded');
+
+  pageReady.value = true;
 });
+
+provide('pageReady', pageReady);
 
 const submitEmail = async () => {
   if (!email.value) {
@@ -652,6 +675,15 @@ const getStepIcon = (index) => {
   background-color: rgb(var(--v-theme-surface));
   position: relative;
   overflow: hidden;
+}
+
+.hero-section {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.v-application {
+  transition: opacity 0.2s ease;
 }
 
 .main-content::before {

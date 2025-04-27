@@ -2,192 +2,17 @@ import { $fetch } from 'ofetch';
 import { defineStore } from 'pinia';
 import type { PersistenceOptions } from 'pinia-plugin-persistedstate';
 import { TokenUtils } from '../utils/token';
-
-interface TableColumn {
-  name: string;
-  type: string;
-  primaryKey: boolean;
-  foreignKey: boolean;
-  notNull: boolean;
-  unique: boolean;
-  autoIncrement: boolean;
-  referencedTable?: string;
-  referencedColumn?: string;
-}
-
-interface Table {
-  name: string;
-  columns: Array<TableColumn>;
-}
-
-interface DeleteResponse {
-  success: boolean;
-  error?: string;
-  message?: string;
-}
-
-interface BaseSnippet {
-  id: number;
-  publishWorld: string;
-  publishPersonal: string;
-  title: string;
-  description: string;
-  username: string;
-  framework: string;
-  img: string | null;
-  imgFile: string;
-  content: string;
-  snippet_date: string;
-  date?: string;
-  like?: number;
-  favoris?: number;
-  sourceType?: 'world' | 'personal';
-  isFavorite?: boolean;
-}
-
-interface FavoriteSnippet {
-  id: number;
-  snippet_id: number;
-  user_id: number;
-}
-
-interface SQLTable {
-  name: string;
-  columns: Array<TableColumn>;
-}
-
-interface SQLSchema {
-  id?: number;
-  database_name: string;
-  tables: Array<SQLTable>;
-}
-
-interface StudioComponent {
-  id: number;
-  name: string;
-  content: string;
-  component_type: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface EmailHistoryItem {
-  id: number;
-  subject: string;
-  date: string;
-  status: string;
-  opens: number;
-}
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  isAdmin?: boolean;
-  isPremium: boolean;
-  isStandard: boolean;
-  isBuying?: boolean;
-  userId?: number;
-  subscription_status?: 'active' | 'trial' | 'expired' | 'none';
-  payment_status?: 'paid' | 'pending' | 'none';
-  trial_start_date?: Date | string;
-  trial_end_date?: Date | string;
-  daysLeft?: number;
-}
-
-interface DeleteSnippetResponse {
-  success: boolean;
-  message?: string;
-  error?: string;
-}
-
-interface CrawlReport {
-  urlMap: Record<string, string[]>;
-  visitedURLs: string[];
-  seoResults: Record<string, any>;
-  summary: {
-    totalPages: number;
-    averageLoadTime: number;
-    totalWarnings: number;
-    missingTitles: number;
-    missingDescriptions: number;
-    missingAltTags: number;
-    averageFCP: number;
-    averageLCP: number;
-    averageTTFB: number;
-    pagesWithStructuredData: number;
-    pagesWithSocialTags: number;
-    mobileCompatiblePages: number;
-    securePages: number;
-    totalIssues: number;
-    criticalIssues: number;
-    highIssues: number;
-    mediumIssues: number;
-    lowIssues: number;
-    resourceIssues: {
-      css: number;
-      js: number;
-      images: number;
-    };
-  };
-  generatedSitemap: string;
-  rankedUrls: string[];
-  issues: Array<{
-    type: string;
-    message: string;
-    severity: 'critical' | 'high' | 'medium' | 'low';
-  }>;
-  resources: {
-    css: {
-      total: number;
-      minified: number;
-      recommendations: string[];
-    };
-    js: {
-      total: number;
-      minified: number;
-      recommendations: string[];
-    };
-    images: {
-      total: number;
-      optimized: number;
-      unoptimized: number;
-      totalSize: number;
-      recommendations: string[];
-    };
-  };
-}
-
-interface SEOAuditResult {
-  success: boolean;
-  message?: string;
-  result?: CrawlReport;
-}
-
-interface LoginResponse {
-  success: boolean;
-  message?: string;
-}
-
-interface RandomData {
-  totalWarnings: number;
-  criticalCount: number;
-  majorCount: number;
-  minorCount: number;
-  infoCount: number;
-}
+import { SQLSchema, StudioComponent, EmailHistoryItem, RandomData, WebsiteData, CrawlReport, SEOAuditResult, LoginResponse, User, Table, DeleteResponse } from './types';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
     user: null as User | null,
     token: null as string | null,
-    personalSnippets: [] as BaseSnippet[],
-    worldSnippets: [] as BaseSnippet[],
-    favoritesSnippets: [] as FavoriteSnippet[],
     sqlSchemas: [] as SQLSchema[],
     studioComponents: [] as StudioComponent[],
     emailHistory: [] as EmailHistoryItem[],
     randomData: null as RandomData | null,
+    websiteData: null as WebsiteData | null,
     isAuthenticated: false,
     loading: false,
     error: null,
@@ -973,81 +798,6 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async loadSnippets(retryCount = 0) {
-      const MAX_RETRIES = 2;
-
-      try {
-        const token = TokenUtils.retrieveToken();
-        if (!token) {
-          return { success: false, error: 'Authentification requise' };
-        }
-
-
-        const response = await fetch('/api/snippets/loadSnippets', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
-        });
-
-        if (response.status === 401 && retryCount < MAX_RETRIES) {
-          try {
-            const validationResult = await this.validateToken();
-            if (validationResult.valid) {
-              return this.loadSnippets(retryCount + 1);
-            }
-
-            const refreshResponse = await fetch('/api/auth/refresh', {
-              method: 'POST',
-              credentials: 'include'
-            });
-
-            if (refreshResponse.ok) {
-              const refreshData = await refreshResponse.json();
-              if (refreshData.success && refreshData.accessToken) {
-                TokenUtils.storeToken(refreshData.accessToken);
-                this.token = refreshData.accessToken;
-
-                if (refreshData.user) {
-                  this.user = refreshData.user;
-                  this.isAuthenticated = true;
-                  this.isPremium = !!refreshData.user.isPremium;
-                  this.isAdmin = !!refreshData.user.isAdmin;
-                  this.persistData();
-                }
-
-                return this.loadSnippets(retryCount + 1);
-              }
-            }
-
-            return { success: false, error: 'Échec du rafraîchissement du token' };
-          } catch (refreshError) {
-            return { success: false, error: 'Erreur lors du rafraîchissement du token' };
-          }
-        }
-
-        if (!response.ok) {
-          console.error(`[STORE] Erreur lors du chargement des snippets: ${response.status}`);
-          return { success: false, error: `Erreur HTTP ${response.status}` };
-        }
-
-        const data = await response.json();
-
-        if (data.success) {
-          this.personalSnippets = data.data.personalSnippets || [];
-          this.worldSnippets = data.data.worldSnippets || [];
-          this.favoritesSnippets = data.data.favoritesSnippets || [];
-          this.markFavoriteSnippets();
-        }
-
-        return data;
-      } catch (err) {
-        console.error('[STORE] Erreur lors du chargement des snippets:', err);
-        return { success: false, error: err instanceof Error ? err.message : 'Erreur inconnue' };
-      }
-    },
-
     async uploadImage(file: File) {
       const formData = new FormData();
       formData.append('file', file);
@@ -1065,141 +815,6 @@ export const useUserStore = defineStore('user', {
         return data.url;
       }
       throw new Error(data.error || "Erreur lors de l'upload de l'image");
-    },
-
-    async addSnippets(title: string, description: string, framework: string, file: File, publishWorld: string, publishPersonal: string) {
-      try {
-        const userId = this.user.userId;
-        const username = this.user?.username || '';
-        const date = new Date().toISOString().slice(0, 10);
-        const imageUrl = await this.uploadImage(file);
-
-        const response = await $fetch('/api/snippets/addSnippets', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.token}`,
-          },
-          body: {
-            username,
-            date,
-            title,
-            description,
-            framework,
-            img: imageUrl,
-            publishWorld,
-            publishPersonal,
-            userId
-          }
-        });
-
-        if (!response) {
-          throw new Error('Pas de réponse du serveur');
-        }
-
-        await this.loadData();
-
-        return response;
-      }
-      catch (err: any) {
-        console.error('Erreur lors de l\'ajout du snippet:', err.message, err.stack);
-        throw err;
-      }
-    },
-
-    async updateSnippet(id: number, code: string, type: 'world' | 'personal') {
-      try {
-        const userId = this.user.userId;
-        const response: any = await $fetch('/api/snippets/updateSnippet', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.token}`,
-          },
-          body: { id, code, type, userId }
-        });
-
-        console.table(response);
-
-        await this.loadData();
-      }
-      catch (err: any) {
-        console.error(err.message, err.stack)
-      }
-    },
-
-    async deleteSnippet(id: number, type: 'world' | 'personal') {
-      try {
-        console.log(this.user);
-        const userId = this.user.userId;
-        console.log('[STORE] Suppression du snippet', id, 'pour l\'utilisateur', userId);
-
-        const response = await $fetch<DeleteSnippetResponse>('/api/snippets/deleteSnippet', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.token}`,
-          },
-          body: { id, type, userId }
-        });
-
-        if (!response || !response.success) {
-          throw new Error(response?.error || 'Échec de la suppression du snippet');
-        }
-
-        console.log('[STORE] Snippet supprimé avec succès');
-        await this.loadData();
-        return response;
-      } catch (err) {
-        console.error('[STORE] Erreur lors de la suppression du snippet:', err);
-        throw err;
-      }
-    },
-
-    markFavoriteSnippets() {
-      const favoriteIds = this.favoritesSnippets.map(fav => fav.snippet_id);
-
-      this.worldSnippets.forEach(snippet => {
-        snippet.isFavorite = favoriteIds.includes(snippet.id);
-      });
-    },
-
-    async addFavorite(snippetId: number, type: 'world' | 'personal') {
-      try {
-        const userId = this.user.userId;
-        const response = await fetch('/api/snippets/addFavorite', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}`
-          },
-          body: JSON.stringify({ snippetId, type, userId })
-        });
-
-        return response;
-      } catch (err: any) {
-        console.error('Erreur lors de l\'ajout du favori:', err.message, err.stack);
-        return null;
-      }
-    },
-
-    async removeFavorite(snippetId: number) {
-      try {
-        const userId = this.user.userId;
-        const response = await fetch('/api/snippets/removeFavorite', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}`
-          },
-          body: JSON.stringify({ snippetId, userId })
-        });
-
-        return response;
-      } catch (err: any) {
-        console.error('Erreur lors de la suppression du favori:', err.message, err.stack);
-        return null;
-      }
     },
 
     async deleteSQLSchema(databaseId: number) {
@@ -1421,7 +1036,6 @@ export const useUserStore = defineStore('user', {
       const mediumIssues = issues.filter(issue => issue.severity === 'medium').length;
       const lowIssues = issues.filter(issue => issue.severity === 'low').length;
 
-      // Calculer les scores moyens de sécurité et d'engagement
       let totalSecurityScore = 0;
       let pagesWithSecurityScore = 0;
       let totalEngagementScore = 0;
@@ -1943,8 +1557,55 @@ export const useUserStore = defineStore('user', {
         };
       }
     },
-  },
 
+    async insertWebsiteData(name: string, url: string, analyzisUrls: string[], sitemapContent: string) {
+      try {
+        const userId = this.user.userId;
+        const response = await $fetch('/api/website/insert-website-data', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          },
+          body: {
+            name,
+            url,
+            analyzisUrls,
+            sitemapContent,
+            userId
+          }
+        });
+
+        return response;
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour des données du site web:', error);
+        return null;
+      }
+    },
+
+    async loadWebsiteData() {
+      try {
+        const response = await $fetch('/api/website/load-website-data', {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+
+        if (response && typeof response === 'object' && 'success' in response) {
+          this.websiteData = response.data[0] as WebsiteData;
+          return {
+            success: response.success as boolean,
+            data: response.data[0] as WebsiteData
+          };
+        }
+
+        return { success: false, error: 'Invalid server response' };
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données du site web:', error);
+        return null;
+      }
+    }
+
+  },
   persist: {
     enabled: true
   } as PersistenceOptions

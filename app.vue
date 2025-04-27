@@ -23,7 +23,6 @@ const cookieStore = useCookieStore();
 const plausible = usePlausible();
 const isClient = typeof window !== 'undefined';
 const sessionRestorationAttempted = ref(false);
-const maxRestorationAttempts = 2;
 const restorationAttemptCount = ref(0);
 
 if (!userStore.user) {
@@ -35,7 +34,6 @@ if (!userStore.user) {
     isAdmin: false,
   };
 }
-
 
 userStore.isPremium = userStore.isPremium || false;
 userStore.isAdmin = userStore.isAdmin || false;
@@ -90,9 +88,7 @@ plausible('page_view', {
   }
 });
 
-onErrorCaptured((err, instance, info) => {
-  console.log('Erreur capturée:', err.message);
-
+onErrorCaptured((err) => {
   if (
     err instanceof TypeError &&
     (err.message.includes("'parentNode'") ||
@@ -129,7 +125,6 @@ const restoreUserSession = async () => {
         await userStore.loadData();
         userStore.isAuthenticated = true;
 
-        // Vérification de la période d'essai
         const trialResponse = await fetch('/api/auth/check-trial', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -169,7 +164,6 @@ const restoreUserSession = async () => {
         return false;
       }
 
-      // Stocker le nouveau token
       TokenUtils.storeToken(refreshData.accessToken);
       userStore.setToken(refreshData.accessToken);
 

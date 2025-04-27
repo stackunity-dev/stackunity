@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { defineEventHandler, readBody, setCookie } from 'h3';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
+import { EmailService } from '../../utils/EmailService';
 import { ServerTokenManager } from '../../utils/ServerTokenManager';
 import { TokenService } from '../../utils/TokenService';
 import { REFRESH_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_OPTIONS } from '../../utils/auth-config';
@@ -93,6 +94,12 @@ export default defineEventHandler(async (event) => {
     });
 
     await TokenService.saveRefreshToken(refreshTokenId, userId);
+
+    try {
+      await EmailService.sendWelcomeEmail(body.email, body.username);
+    } catch (emailError) {
+      console.error("Erreur lors de l'envoi de l'email de bienvenue:", emailError);
+    }
 
     setCookie(event, REFRESH_TOKEN_COOKIE_NAME, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 

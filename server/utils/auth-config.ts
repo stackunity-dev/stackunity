@@ -5,7 +5,7 @@ export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 export const REFRESH_TOKEN_EXPIRY = '30d';
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
-export const REFRESH_TOKEN_COOKIE_NAME = 'devunity_refresh_token';
+export const REFRESH_TOKEN_COOKIE_NAME = 'stackunity_refresh_token';
 export const REFRESH_TOKEN_COOKIE_OPTIONS = {
   httpOnly: true,
   path: '/',

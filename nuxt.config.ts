@@ -80,11 +80,19 @@ export default defineNuxtConfig({
         {
           src: 'https://plausible.io/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js',
           defer: true,
-          'data-domain': 'stackunity.tech'
+          'data-domain': 'stackunity.tech',
+          'data-cache': 'true',
+          crossorigin: 'anonymous'
         },
         {
           key: 'plausible-setup',
-          innerHTML: 'window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }'
+          innerHTML: 'window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }',
+          'data-hid': 'plausible-setup',
+          nonce: '{{nonce}}'
+        },
+        {
+          src: '/sw-register.js',
+          defer: true
         }
       ],
       meta: [
@@ -93,7 +101,8 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap' }
       ]
     },
     buildAssetsDir: '/_nuxt/',
@@ -102,6 +111,15 @@ export default defineNuxtConfig({
 
   experimental: {
     payloadExtraction: true,
-    renderJsonPayloads: false
+    renderJsonPayloads: false,
+  },
+
+  routeRules: {
+    '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/favicon.ico': { headers: { 'cache-control': 'public, max-age=86400' } },
+    '/logo/**': { headers: { 'cache-control': 'public, max-age=86400' } },
+    '/images/**': { headers: { 'cache-control': 'public, max-age=86400' } },
+    '/plausible-proxy.js': { headers: { 'cache-control': 'public, max-age=86400' } },
+    '/sw-register.js': { headers: { 'cache-control': 'public, max-age=86400' } },
   }
 });

@@ -7,6 +7,8 @@
         <v-text-field v-model="url" label="Enter a URL" density="comfortable" prepend-inner-icon="mdi-web"
           variant="outlined" placeholder="https://example.com" clearable @keyup.enter="loadUrl"
           :rules="[v => !!v || 'URL required', v => v.startsWith('http') || v.startsWith('https') || 'The URL must start with http or https']" />
+        <v-select v-model="url" :items="availableUrls" label="Select a URL" density="comfortable"
+          prepend-inner-icon="mdi-bookmark-outline" variant="outlined" hide-details @update:model-value="loadUrl" />
         <div class="d-flex flex-wrap justify-space-between align-center mt-2">
           <div class="d-flex align-center">
             <v-switch v-model="autoRefresh" color="primary" hide-details label="Auto-refresh" class="mr-4"></v-switch>
@@ -68,11 +70,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import snackBar from '../components/snackbar.vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+import { useUserStore } from '../stores/userStore';
 
 definePageMeta({
   layout: 'dashboard',
@@ -112,13 +115,24 @@ interface RefreshInterval {
 }
 
 const display = useDisplay();
+const userStore = useUserStore();
 
 const isMobileView = computed(() => {
   return display.mdAndDown.value;
 });
-const showMobileControls = ref(!isMobileView.value);
 
-const url = ref<string>('');
+const showMobileControls = ref(!isMobileView.value);
+const websiteData = computed(() => userStore.websiteData);
+
+const availableUrls = computed(() => {
+  if (typeof websiteData.value?.all_urls === 'string') {
+    return JSON.parse(websiteData.value?.all_urls);
+  } else {
+    return websiteData.value?.all_urls || [];
+  }
+});
+
+const url = ref<string>(websiteData.value?.main_url || '');
 const displayUrl = ref<string>('');
 const tab = ref<string>('mobile');
 const iframeRefs = ref<IframeRefs>({});

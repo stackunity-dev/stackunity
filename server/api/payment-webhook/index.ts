@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { sendToMake } from '../payment/make-sender';
 import { recordPayment } from '../payment/payment-recorder';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2025-03-31.basil',
 });
 

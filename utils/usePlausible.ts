@@ -1,35 +1,36 @@
 export function usePlausible() {
-  if (process.client) {
-    // @ts-ignore
-    const plausible = window.plausible;
+  if (typeof window === 'undefined') return () => { };
 
-    return (event: string, options?: { props?: Record<string, any> }) => {
-      if (plausible && typeof plausible === 'function') {
-        const enrichedOptions = {
+  const plausible = window.plausible;
+
+  const trackEvent = (event: string, options: Record<string, any> = {}) => {
+    if (plausible && typeof plausible === 'function') {
+      try {
+        const enrichedOptions: Record<string, any> = {
+          ...options,
           props: {
-            url: window.location.href,
-            referrer: document.referrer || '',
-            viewport_width: window.innerWidth,
-            viewport_height: window.innerHeight,
+            ...options?.props,
             timestamp: new Date().toISOString(),
-            user_agent: navigator.userAgent,
-            language: navigator.language,
-            ...options?.props
+            path: window.location.pathname,
+            referrer: document.referrer || 'direct'
           }
         };
 
-        try {
-          plausible(event, enrichedOptions);
-          console.debug('[Plausible] Event tracked:', event, enrichedOptions);
-        } catch (error) {
-          console.error('[Plausible] Error tracking event:', error);
-        }
-      } else {
-        console.warn('[Plausible] Analytics not available');
+        plausible(event, enrichedOptions);
+        console.debug('[Plausible] Event tracked:', event, enrichedOptions);
+      } catch (error) {
+        console.error('[Plausible] Error tracking event:', error);
       }
-    };
-  }
-
-  return (event: string, options?: { props?: Record<string, any> }) => {
+    } else {
+      console.warn('[Plausible] Analytics not available');
+    }
   };
+
+  return trackEvent;
+}
+
+declare global {
+  interface Window {
+    plausible?: (event: string, options?: Record<string, any>) => void;
+  }
 } 

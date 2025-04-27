@@ -76,7 +76,7 @@
                     <div class="text-h4 font-weight-bold" role="text" :aria-label="`Price: ${getPlanPrice()}`">{{
                       getPlanPrice() }}
                     </div>
-                    <v-chip color="success" size="small" aria-label="Lifetime access">{{ getPlanDuration() }}</v-chip>
+                    <v-chip color="success" size="small" aria-label="Lifetime access">Lifetime access</v-chip>
                   </div>
                   <div class="text-body-2 text-medium-emphasis mb-4">Unlimited access for life</div>
                   <v-btn :color="planType === 'premium' ? 'warning' : 'primary'" variant="elevated" block size="large"
@@ -175,6 +175,7 @@ type FeatureMap = {
   userEngagement: string[];
   security: string[];
   default: string[];
+  website: string[];
 };
 
 const features: FeatureMap = {
@@ -233,6 +234,12 @@ const features: FeatureMap = {
     "Priority support",
     "Early access to updates",
     "Exclusive features"
+  ],
+  website: [
+    "Website analyzer (Premium)",
+    "Website SEO audit (Premium)",
+    "Website sitemap generator (Premium)",
+    "Website social media integration (Premium)"
   ]
 };
 
@@ -246,6 +253,7 @@ const getFeatures = (type: string): string[] => {
     case 'semantic': return features.semantic;
     case 'security': return features.security;
     case 'userEngagement': return features.userEngagement;
+    case 'website': return features.website;
     default: return features.default;
   }
 };
@@ -269,14 +277,6 @@ const getPlanPrice = () => {
     return '€179.99';
   } else {
     return '€79.99';
-  }
-};
-
-const getPlanDuration = () => {
-  if (props.planType === 'premium') {
-    return 'Lifetime access';
-  } else {
-    return 'Par mois';
   }
 };
 

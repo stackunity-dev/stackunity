@@ -77,11 +77,11 @@ const router = useRouter();
 
 const launchpadItems = computed(() => [
   {
-    title: 'Snippets',
-    description: 'Create and manage reusable code snippets for all your projects',
-    icon: 'mdi-code-tags',
+    title: 'CSS animations',
+    description: 'Create and manage CSS animations for all your projects',
+    icon: 'mdi-animation',
     color: 'primary',
-    route: '/snippets',
+    route: '/animations',
     disabled: false
   },
   {
