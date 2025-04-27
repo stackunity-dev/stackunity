@@ -114,7 +114,8 @@
             <h2 id="section-contact" class="text-h5 font-weight-bold mb-4">10. Contact Us</h2>
             <p class="mb-4">
               If you have any questions about these Terms, please contact us at
-              <a href="mailto:legal@stackunity.com" class="text-decoration-underline">legal@stackunity.com</a>.
+              <a href="mailto:legal@stackunity.com" class="text-decoration-underline"
+                aria-label="Contact us at legal@stackunity.com">legal@stackunity.com</a>.
             </p>
           </section>
 
@@ -142,9 +143,9 @@
             &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
           </p>
           <div class="d-flex justify-center mt-2 legal-links">
-            <a href="/terms" class="mx-2 text-caption" aria-current="page">Terms</a>
-            <a href="/notices" class="mx-2 text-caption">Legal Notices</a>
-            <a href="/contact" class="mx-2 text-caption">Contact</a>
+            <a href="/terms" class="mx-2 text-caption" aria-current="page" aria-label="Terms of Service">Terms</a>
+            <a href="/notices" class="mx-2 text-caption" aria-label="Legal Notices">Legal Notices</a>
+            <a href="/contact" class="mx-2 text-caption" aria-label="Contact">Contact</a>
           </div>
         </div>
       </v-container>
@@ -157,21 +158,27 @@
 import { useHead } from '#imports';
 
 useHead({
-  title: 'Terms of Service - StackUnity | User Agreement & Policies',
+  title: 'Terms of Service - StackUnity',
   meta: [
     { name: 'description', content: 'Official Terms of Service for the StackUnity web development platform. Understand your rights and obligations when using our services. Legal agreement between you and StackUnity.' },
     { name: 'author', content: 'StackUnity' },
     { name: 'keywords', content: 'StackUnity, terms of service, user agreement, legal terms, acceptable use policy, intellectual property, liability limitations, indemnification, platform usage, web development terms' },
     { name: 'robots', content: 'index,follow,max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Terms of Service - StackUnity | User Agreement & Policies' },
-    { name: 'og:description', content: 'Official Terms of Service for the StackUnity web development platform. Understand your rights and obligations when using our services.' },
-    { name: 'og:image', content: '/logo/stackunity-title.png' },
-    { name: 'og:type', content: 'website' },
-    { name: 'og:url', content: 'https://stackunity.com/terms' },
+    { property: 'og:title', content: 'Terms of Service - StackUnity | User Agreement & Policies' },
+    { property: 'og:description', content: 'Official Terms of Service for the StackUnity web development platform. Understand your rights and obligations when using our services.' },
+    { property: 'og:image', content: '/images/preview.png' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://stackunity.com/terms' },
+    { property: 'og:site_name', content: 'StackUnity' },
+    { property: 'og:locale', content: 'en_US' },
+    { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: 'Terms of Service - StackUnity' },
     { name: 'twitter:description', content: 'Read the Terms of Service for the StackUnity platform. By using our services, you agree to be bound by these terms.' },
+    { name: 'twitter:image', content: '/images/preview.png' },
+    { name: 'twitter:creator', content: '@stackunity' },
+    { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/terms' }

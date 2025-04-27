@@ -31,14 +31,15 @@
                   <v-col cols="12" md="6">
                     <v-text-field v-model="form.name" label="Your name" variant="outlined"
                       :rules="[v => !!v || 'Name is required']" hide-details="auto" class="mb-4" aria-required="true"
-                      id="contact-name"></v-text-field>
+                      id="contact-name" aria-label="Your name"></v-text-field>
                   </v-col>
 
                   <v-col cols="12" md="6">
                     <v-text-field v-model="form.email" label="Your email" variant="outlined" type="email" :rules="[
                       v => !!v || 'Email is required',
                       v => /.+@.+\..+/.test(v) || 'Invalid email'
-                    ]" hide-details="auto" class="mb-4" aria-required="true" id="contact-email"></v-text-field>
+                    ]" hide-details="auto" class="mb-4" aria-required="true" id="contact-email"
+                      aria-label="Your email"></v-text-field>
                   </v-col>
 
                   <v-col cols="12">
@@ -49,7 +50,7 @@
                   <v-col cols="12">
                     <v-textarea v-model="form.message" label="Your message" variant="outlined"
                       :rules="[v => !!v || 'Message is required']" hide-details="auto" rows="5" class="mb-4"
-                      aria-required="true" id="contact-message"></v-textarea>
+                      aria-required="true" id="contact-message" aria-label="Your message"></v-textarea>
                   </v-col>
                 </v-row>
 
@@ -95,21 +96,27 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Contact StackUnity | Get Support & Connect With Our Team',
+  title: 'Contact StackUnity | Get Support',
   meta: [
     { name: 'description', content: 'Reach out to the StackUnity team for support, feature requests, partnership inquiries or general questions. We\'re here to help you succeed with our web development tools.' },
     { name: 'keywords', content: 'StackUnity contact, web development support, technical assistance, feature requests, developer help, contact form, web tools support, developer platform support, get in touch, contact page' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Contact StackUnity | Get Support & Connect With Our Team' },
-    { name: 'og:description', content: 'Reach out to the StackUnity team for support, feature requests, partnership inquiries or general questions. We\'re here to help you succeed with our web development tools.' },
-    { name: 'og:image', content: '/logo/stackunity-title.png' },
-    { name: 'og:type', content: 'website' },
-    { name: 'og:url', content: 'https://stackunity.com/contact' },
+    { property: 'og:title', content: 'Contact StackUnity | Get Support' },
+    { property: 'og:description', content: 'Reach out to the StackUnity team for support, feature requests, partnership inquiries or general questions. We\'re here to help you succeed with our web development tools.' },
+    { property: 'og:image', content: '/images/preview.png' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://stackunity.com/contact' },
+    { property: 'og:site_name', content: 'StackUnity' },
+    { property: 'og:locale', content: 'en_US' },
+    { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'Contact StackUnity Support' },
+    { property: 'twitter:title', content: 'Contact StackUnity Support' },
     { name: 'twitter:description', content: 'Get in touch with our team for support, feature requests or partnership opportunities.' },
+    { name: 'twitter:image', content: '/images/preview.png' },
+    { name: 'twitter:creator', content: '@stackunity' },
+    { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/contact' }

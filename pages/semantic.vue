@@ -815,7 +815,6 @@ pre.highlighted-code {
   padding: 0;
   overflow: auto;
   border-radius: 4px;
-  background-color: #282c34;
 }
 
 pre.highlighted-code code {
@@ -824,7 +823,6 @@ pre.highlighted-code code {
   font-size: 0.9rem;
   line-height: 1.5;
   background-color: transparent;
-  color: #abb2bf;
   display: block;
   width: 100%;
 }

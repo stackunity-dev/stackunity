@@ -1,14 +1,16 @@
 <template>
   <section class="auth-screen">
-    <v-container fluid class="fill-height pa-0">
+    <main class="fill-height pa-0">
       <v-row class="fill-height ma-0">
         <v-col cols="12" md="6" class="d-none d-md-flex left-panel-signup align-center justify-center">
           <div class="left-content text-center">
-            <h1>
-              <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
-                class="logo mb-8" width="350" />
-              <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
-            </h1>
+            <header>
+              <h1>
+                <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
+                  class="logo mb-8" width="350" />
+                <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
+              </h1>
+            </header>
 
             <div class="features-list">
               <div v-for="(feature, index) in features" :key="index" class="feature-item d-flex align-center"
@@ -35,13 +37,14 @@
             <v-form @submit.prevent="handleSignup">
               <v-text-field v-model="form.username" label="Username" type="text" variant="outlined"
                 density="comfortable" prepend-inner-icon="mdi-account-outline" class="mb-3"
-                :rules="[v => !!v || 'Username required']" hide-details="auto"></v-text-field>
+                :rules="[v => !!v || 'Username required']" hide-details="auto" aria-required="true"
+                aria-label="Username"></v-text-field>
 
               <v-text-field v-model="form.email" label="Email address" type="email" variant="outlined"
                 density="comfortable" prepend-inner-icon="mdi-email-outline" class="mb-3" :rules="[
                   v => !!v || 'Email required',
                   v => /.+@.+\..+/.test(v) || 'Invalid email format'
-                ]" hide-details="auto"></v-text-field>
+                ]" hide-details="auto" aria-required="true" aria-label="Email address"></v-text-field>
 
               <v-text-field v-model="form.password" :type="showPassword ? 'text' : 'password'" label="Password"
                 variant="outlined" prepend-inner-icon="mdi-lock-outline" density="comfortable"
@@ -49,10 +52,10 @@
                 @click:append-inner="togglePasswordVisibility" class="mb-5" :rules="[
                   v => !!v || 'Password required',
                   v => v.length >= 8 || 'Password must contain at least 8 characters'
-                ]" hide-details="auto"></v-text-field>
+                ]" hide-details="auto" aria-required="true" aria-label="Password"></v-text-field>
 
               <v-btn block color="primary" type="submit" :loading="loading" min-height="44"
-                class="text-none font-weight-medium">
+                class="text-none font-weight-medium" aria-label="Create account">
                 Create account
                 <template v-slot:loader>
                   <v-progress-circular indeterminate></v-progress-circular>
@@ -61,7 +64,7 @@
 
               <div class="text-center mt-6">
                 <span class="text-medium-emphasis">Already have an account?</span>
-                <NuxtLink class="text-decoration-none ml-1 font-weight-medium" to="/login">
+                <NuxtLink class="text-decoration-none ml-1 font-weight-medium" to="/login" aria-label="Sign up">
                   Sign in
                 </NuxtLink>
               </div>
@@ -69,7 +72,7 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
+    </main>
   </section>
 </template>
 
@@ -88,12 +91,23 @@ useHead({
   title: 'Create Account - StackUnity',
   meta: [
     { name: 'author', content: 'Nûr' },
-    { name: 'description', content: 'Create your StackUnity account to access all features' },
+    { name: 'description', content: 'Create your StackUnity account to access all features, and start your experience' },
     { name: 'robots', content: 'index,follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Create Account - StackUnity' },
-    { name: 'og:description', content: 'Create your StackUnity account to access all features' },
-    { name: 'og:image', content: '/logo/stackunity-title.png' },
+    { property: 'og:title', content: 'Create Account - StackUnity' },
+    { property: 'og:description', content: 'Create your StackUnity account to access all features, and start your experience' },
+    { property: 'og:image', content: '/images/preview.png' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://stackunity.com/signup' },
+    { property: 'og:site_name', content: 'StackUnity' },
+    { property: 'og:locale', content: 'en_US' },
+    { property: 'og:locale:alternate', content: 'fr_FR' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'Create Account - StackUnity' },
+    { name: 'twitter:description', content: 'Create your StackUnity account to access all features, and start your experience' },
+    { name: 'twitter:image', content: '/images/preview.png' },
+    { name: 'twitter:creator', content: '@stackunity' },
+    { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/signup' }

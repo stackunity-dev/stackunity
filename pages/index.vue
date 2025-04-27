@@ -21,8 +21,8 @@
                   :class="{ 'active-nav-btn': activeSection === item.href.substring(1) }" variant="text" role="menuitem"
                   :aria-current="activeSection === item.href.substring(1) ? 'page' : undefined"
                   aria-label="Navigation item">
-                  <span class="nav-text">{{ item.title }}</span>
-                  <span class="nav-btn-background"></span>
+                  <span class="nav-text" aria-hidden="true">{{ item.title }}</span>
+                  <span class="nav-btn-background" aria-hidden="true"></span>
                 </v-btn>
               </div>
 
@@ -41,10 +41,11 @@
               </v-btn>
               <v-btn icon @click="drawer = !drawer" class="menu-toggle-btn" aria-label="Toggle navigation menu"
                 :aria-expanded="drawer">
-                <div class="hamburger-icon" :class="{ 'active': drawer }" aria-hidden="true">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+                <div class="hamburger-icon" :class="{ 'active': drawer }" aria-hidden="true"
+                  aria-label="Toggle navigation menu">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
                 </div>
               </v-btn>
             </div>
@@ -70,7 +71,8 @@
           <v-list nav role="menu">
             <v-list-item v-for="item in menuItems" :key="item.href" :href="item.href" @click="drawer = false"
               class="mobile-nav-item mb-3" rounded="lg" role="menuitem"
-              :aria-current="activeSection === item.href.substring(1) ? 'page' : undefined">
+              :aria-current="activeSection === item.href.substring(1) ? 'page' : undefined"
+              aria-label="Navigation item">
               <template v-slot:prepend>
                 <v-icon class="mr-2" :icon="item.icon" color="primary" aria-hidden="true"></v-icon>
               </template>
@@ -380,7 +382,7 @@
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"
-                    class="footer-link d-block mb-3" aria-label="Footer link">
+                    class="footer-link d-block mb-3" :aria-label="link.ariaLabel">
                     {{ link.title }}
                   </NuxtLink>
                 </nav>
@@ -550,25 +552,25 @@ const footerColumns = [
   {
     title: 'Product',
     links: [
-      { title: 'Features', to: '#features' },
-      { title: 'Pricing', to: '#pricing' },
-      { title: 'FAQ', to: '#faq' }
+      { title: 'Features', to: '#features', ariaLabel: 'Features' },
+      { title: 'Pricing', to: '#pricing', ariaLabel: 'Pricing' },
+      { title: 'FAQ', to: '#faq', ariaLabel: 'FAQ' }
     ]
   },
   {
     title: 'Company',
     links: [
-      { title: 'About', to: '/about' },
-      { title: 'Contact', to: '/contact' },
-      { title: 'Blog', to: '/' }
+      { title: 'About', to: '/about', ariaLabel: 'About' },
+      { title: 'Contact', to: '/contact', ariaLabel: 'Contact' },
+      { title: 'Blog', to: '/blog', ariaLabel: 'Blog' }
     ]
   },
   {
     title: 'Legal',
     links: [
-      { title: 'Privacy', to: '/privacy' },
-      { title: 'Terms', to: '/terms' },
-      { title: 'Notices', to: '/notices' }
+      { title: 'Privacy', to: '/privacy', ariaLabel: 'Privacy' },
+      { title: 'Terms', to: '/terms', ariaLabel: 'Terms' },
+      { title: 'Notices', to: '/notices', ariaLabel: 'Notices' }
     ]
   }
 ];

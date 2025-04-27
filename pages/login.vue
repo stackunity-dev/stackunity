@@ -1,14 +1,16 @@
 <template>
   <section class="auth-screen">
-    <v-container fluid class="fill-height pa-0">
+    <main class="fill-height pa-0">
       <v-row class="fill-height ma-0">
         <v-col cols="12" md="6" class="d-none d-md-flex left-panel align-center justify-center">
           <div class="left-content text-center">
-            <h1>
-              <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
-                class="logo mb-8" width="350" />
-              <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
-            </h1>
+            <header>
+              <h1>
+                <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
+                  class="logo mb-8" width="350" />
+                <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
+              </h1>
+            </header>
             <div class="features-list">
               <div v-for="(feature, index) in features" :key="index" class="feature-item d-flex align-center"
                 :class="{ 'mb-6': index !== features.length - 1 }">
@@ -32,32 +34,33 @@
             <p class="text-subtitle-1 text-medium-emphasis mb-6">Pick up where you left off</p>
 
             <v-form @submit.prevent="handleSignin">
-              <input type="hidden" name="_csrf" :value="csrfToken">
+              <input type="hidden" name="_csrf" :value="csrfToken" aria-hidden="true" aria-label="CSRF token">
 
               <v-text-field v-model="form.email" label="Email address" type="email" variant="outlined"
                 prepend-inner-icon="mdi-email-outline" density="comfortable"
                 :rules="[v => !!v || 'Email required', v => /.+@.+\..+/.test(v) || 'Invalid email format']"
-                hide-details="auto" autocomplete="email"></v-text-field>
+                hide-details="auto" autocomplete="email" aria-required="true" aria-label="Email address"></v-text-field>
 
               <v-text-field v-model="form.password" :type="showPassword ? 'text' : 'password'" label="Password"
                 variant="outlined" prepend-inner-icon="mdi-lock-outline" density="comfortable"
                 :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append-inner="togglePasswordVisibility" class="mb-2 mt-4"
-                :rules="[v => !!v || 'Password required']" hide-details="auto"></v-text-field>
+                :rules="[v => !!v || 'Password required']" hide-details="auto" aria-required="true"
+                aria-label="Password"></v-text-field>
 
               <div class="d-flex justify-space-between align-center mb-6">
-                <v-checkbox v-model="rememberMe" label="Remember me" color="primary" density="compact"
-                  hide-details></v-checkbox>
+                <v-checkbox v-model="rememberMe" label="Remember me" color="primary" density="compact" hide-details
+                  aria-required="true" aria-label="Remember me"></v-checkbox>
               </div>
 
               <v-btn block color="primary" type="submit" :loading="loading" min-height="44"
-                class="text-none font-weight-medium">
+                class="text-none font-weight-medium" aria-label="Sign in">
                 Sign in
               </v-btn>
 
               <div class="text-center mt-6">
                 <span class="text-medium-emphasis">Don't have an account?</span>
-                <NuxtLink class="text-decoration-none ml-1 font-weight-medium" to="/signup">
+                <NuxtLink class="text-decoration-none ml-1 font-weight-medium" to="/signup" aria-label="Create account">
                   Create account
                 </NuxtLink>
               </div>
@@ -65,7 +68,7 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
+    </main>
 
     <Snackbar v-model="showSnackbar" :color="snackbarColor" :text="snackbarText" :timeout="3000" />
   </section>
@@ -88,16 +91,27 @@ useHead({
   title: 'Sign In - StackUnity',
   meta: [
     { name: 'author', content: 'Nûr' },
-    { name: 'description', content: 'Sign in to your StackUnity account to access all features' },
+    { name: 'description', content: 'Sign in to your StackUnity account to access all features, and start your experience' },
     { name: 'robots', content: 'index,follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Sign In - StackUnity' },
-    { name: 'og:description', content: 'Sign in to your StackUnity account to access all features' },
-    { name: 'og:image', content: '/logo/stackunity-title.png' },
-    { name: 'og:image:width', content: '1200' },
-    { name: 'og:image:height', content: '630' },
-    { name: 'og:image:alt', content: 'StackUnity Logo' },
-    { name: 'og:image:secure_url', content: 'https://stackunity.tech/logo/stackunity-title.png' },
+    { property: 'og:title', content: 'Sign In - StackUnity' },
+    { property: 'og:description', content: 'Sign in to your StackUnity account to access all features, and start your experience' },
+    { property: 'og:image', content: '/images/preview.png' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { property: 'og:image:alt', content: 'StackUnity Logo' },
+    { property: 'og:image:secure_url', content: 'https://stackunity.tech/logo/stackunity-title.png' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://stackunity.tech/login' },
+    { property: 'og:site_name', content: 'StackUnity' },
+    { property: 'og:locale', content: 'en_US' },
+    { property: 'og:locale:alternate', content: 'fr_FR' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'Sign In - StackUnity' },
+    { name: 'twitter:description', content: 'Sign in to your StackUnity account to access all features' },
+    { name: 'twitter:image', content: '/logo/stackunity-title.png' },
+    { name: 'twitter:creator', content: '@stackunity' },
+    { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.tech/login' }

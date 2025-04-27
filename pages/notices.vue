@@ -3,7 +3,8 @@
     <header>
       <v-app-bar app flat elevation="2" color="surface" role="navigation" aria-label="Main Navigation">
         <v-container class="d-flex align-center py-0 my-0">
-          <NuxtLink to="/" class="text-decoration-none" aria-label="Go to homepage">
+          <NuxtLink to="/" class="text-decoration-none" aria-label="Go to homepage"
+            aria-roledescription="Go to homepage">
             <div class="d-flex align-center">
               <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
             </div>
@@ -64,8 +65,8 @@
                 <p class="text-body-1 mb-4">
                   In accordance with the applicable legislation, you have the right to access, rectify, delete and
                   oppose the processing of your personal data. To exercise these rights, please contact us at
-                  <a href="mailto:privacy@stackunity.tech"
-                    aria-label="Send email to privacy@stackunity.tech">privacy@stackunity.tech</a>.
+                  <a href="mailto:privacy@stackunity.tech" aria-label="Send email to privacy@stackunity.tech"
+                    aria-describedby="email-description">privacy@stackunity.tech</a>.
                 </p>
                 <div class="d-flex align-center mt-6">
                   <v-btn color="primary" to="/privacy" size="small" variant="tonal" class="mr-3"
@@ -124,7 +125,7 @@
 
                 <v-expansion-panels variant="accordion" class="mb-6" aria-label="Open source licenses">
                   <v-expansion-panel>
-                    <v-expansion-panel-title>
+                    <v-expansion-panel-title aria-label="Vuetify MIT License">
                       Vuetify MIT License
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
@@ -170,7 +171,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 <v-expansion-panels variant="accordion" class="mt-6" aria-label="All libraries list">
                   <v-expansion-panel>
-                    <v-expansion-panel-title>
+                    <v-expansion-panel-title aria-label="See all libraries ({{ libraries.length }})">
                       See all libraries ({{ libraries.length }})
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
@@ -254,21 +255,27 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Legal Notices & Credits - StackUnity | Open Source Licenses & GDPR Compliance',
+  title: 'Legal Notices & Credits - StackUnity',
   meta: [
-    { name: 'description', content: 'Official legal notices, GDPR privacy policy compliance information, and open source credits for StackUnity web development platform. Transparency & compliance information.' },
+    { name: 'description', content: 'Official legal notices, GDPR privacy policy compliance information, and open source credits for StackUnity web development platform.' },
     { name: 'keywords', content: 'StackUnity legal notices, terms of service, GDPR compliance, privacy policy, data protection, cookies policy, open source licenses, MIT license, technical credits, web development compliance' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Legal Notices & Credits - StackUnity | Open Source Licenses & GDPR' },
-    { name: 'og:description', content: 'Official legal notices, privacy policy (GDPR compliance) and open source credits for StackUnity web development platform.' },
-    { name: 'og:image', content: '/logo/stackunity-title.png' },
-    { name: 'og:type', content: 'website' },
-    { name: 'og:url', content: 'https://stackunity.com/notices' },
+    { property: 'og:title', content: 'Legal Notices & Credits - StackUnity' },
+    { property: 'og:description', content: 'Official legal notices, privacy policy (GDPR compliance) and open source credits for StackUnity web development platform.' },
+    { property: 'og:image', content: '/images/preview.png' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://stackunity.com/notices' },
+    { property: 'og:site_name', content: 'StackUnity' },
+    { property: 'og:locale', content: 'en_US' },
+    { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: 'Legal Notices & Credits - StackUnity' },
-    { name: 'twitter:description', content: 'Official legal notices, privacy policy and open source credits for the StackUnity platform.' }
+    { name: 'twitter:description', content: 'Official legal notices, privacy policy and open source credits for the StackUnity platform.' },
+    { name: 'twitter:image', content: '/images/preview.png' },
+    { name: 'twitter:creator', content: '@stackunity' },
+    { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/notices' }

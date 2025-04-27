@@ -107,7 +107,7 @@
                   how
                   you use our services, and personalize our offerings. You can manage your cookie preferences in your
                   browser settings. For more information, see our <NuxtLink to="/cookies"
-                    class="text-decoration-underline">Cookie Policy</NuxtLink>.
+                    class="text-decoration-underline" aria-label="Cookie Policy">Cookie Policy</NuxtLink>.
                 </p>
               </section>
 
@@ -155,9 +155,9 @@
             &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
           </p>
           <div class="d-flex justify-center mt-2 legal-links">
-            <a href="/terms" class="mx-2 text-caption">Terms</a>
-            <a href="/notices" class="mx-2 text-caption">Legal Notices</a>
-            <a href="/contact" class="mx-2 text-caption">Contact</a>
+            <a href="/terms" class="mx-2 text-caption" aria-label="Terms of Service">Terms</a>
+            <a href="/notices" class="mx-2 text-caption" aria-label="Legal Notices">Legal Notices</a>
+            <a href="/contact" class="mx-2 text-caption" aria-label="Contact">Contact</a>
           </div>
         </div>
       </v-container>
@@ -174,21 +174,27 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Privacy Policy - StackUnity | GDPR Compliance & Data Protection',
+  title: 'Privacy Policy - StackUnity',
   meta: [
-    { name: 'description', content: 'Comprehensive Privacy Policy for StackUnity. Learn about our GDPR compliance, how we collect, process, protect and manage your personal data, and your privacy rights.' },
+    { name: 'description', content: 'Comprehensive Privacy Policy for StackUnity. Learn about our GDPR compliance, how we collect, process, protect and manage your personal data.' },
     { name: 'keywords', content: 'StackUnity privacy policy, GDPR compliance, data protection, personal data collection, data security, privacy rights, web development platform, cookies policy, user data' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Privacy Policy - StackUnity | GDPR Compliance' },
-    { name: 'og:description', content: 'Comprehensive Privacy Policy for StackUnity. Learn about our GDPR compliance, how we collect, process, protect and manage your personal data, and your privacy rights.' },
-    { name: 'og:image', content: '/logo/stackunity-title.png' },
-    { name: 'og:type', content: 'website' },
-    { name: 'og:url', content: 'https://stackunity.com/privacy' },
+    { property: 'og:title', content: 'Privacy Policy - StackUnity | GDPR Compliance' },
+    { property: 'og:description', content: 'Comprehensive Privacy Policy for StackUnity. Learn about our GDPR compliance, how we collect, process, protect and manage your personal data.' },
+    { property: 'og:image', content: '/images/preview.png' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://stackunity.com/privacy' },
+    { property: 'og:site_name', content: 'StackUnity' },
+    { property: 'og:locale', content: 'en_US' },
+    { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: 'Privacy Policy - StackUnity' },
     { name: 'twitter:description', content: 'Learn how StackUnity collects, uses, and protects your personal data.' },
+    { name: 'twitter:image', content: '/images/preview.png' },
+    { name: 'twitter:creator', content: '@stackunity' },
+    { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/privacy' }

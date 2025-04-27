@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 import { EmailTemplates } from './EmailTemplates';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 
 export class EmailService {

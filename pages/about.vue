@@ -2,13 +2,13 @@
   <v-app>
     <header>
       <v-app-bar app flat elevation="2" color="surface">
-        <NuxtLink to="/" class="text-decoration-none">
+        <NuxtLink to="/" class="text-decoration-none" aria-label="Go to homepage">
           <div class="d-flex align-center mx-4">
             <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
           </div>
         </NuxtLink>
         <v-spacer></v-spacer>
-        <v-btn color="primary" to="/" class="mr-4">Back to Home</v-btn>
+        <v-btn color="primary" to="/" class="mr-4" aria-label="Back to Home">Back to Home</v-btn>
       </v-app-bar>
     </header>
 
@@ -117,21 +117,27 @@ definePageMeta({
 });
 
 useHead({
-  title: 'About StackUnity | Our Mission, Values & Vision for Web Development',
+  title: 'About - StackUnity',
   meta: [
-    { name: 'description', content: 'Learn about StackUnity\'s mission to empower developers with integrated tools for building exceptional web applications. Discover our values and vision for the future of web development.' },
+    { name: 'description', content: 'Learn about StackUnity\'s mission to empower developers with integrated tools for building exceptional web applications.' },
     { name: 'keywords', content: 'StackUnity, web development platform, developer tools, mission statement, company values, web application tools, tech company, development ecosystem, developer empowerment, accessible web development' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'About StackUnity | Our Mission, Values & Vision' },
-    { name: 'og:description', content: 'Learn about StackUnity\'s mission to empower developers with integrated tools for building exceptional web applications. Discover our values and vision for the future of web development.' },
-    { name: 'og:image', content: '/logo/stackunity-title.png' },
-    { name: 'og:type', content: 'website' },
-    { name: 'og:url', content: 'https://stackunity.com/about' },
+    { property: 'og:title', content: 'About StackUnity | Our Mission, Values & Vision' },
+    { property: 'og:description', content: 'Learn about StackUnity\'s mission to empower developers with integrated tools for building exceptional web applications.' },
+    { property: 'og:image', content: '/images/preview.png' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://stackunity.com/about' },
+    { property: 'og:site_name', content: 'StackUnity' },
+    { property: 'og:locale', content: 'en_US' },
+    { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: 'About StackUnity | Our Mission & Values' },
     { name: 'twitter:description', content: 'Learn about StackUnity\'s mission and values for empowering developers with integrated web development tools.' },
+    { name: 'twitter:image', content: '/images/preview.png' },
+    { name: 'twitter:creator', content: '@stackunity' },
+    { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/about' }
