@@ -2,7 +2,7 @@
   <v-card class="h-100 pricing-card" :class="cardClass" :elevation="isPopular ? 8 : 2">
     <div v-if="isPopular" class="popular-badge">MOST POPULAR</div>
     <v-card-item>
-      <div class="d-flex align-center mb-4">
+      <div class="d-flex align-center mb-4" aria-label="Plan details">
         <v-avatar :color="plan.avatarColor" size="48" class="mr-4">
           <v-icon>{{ plan.icon }}</v-icon>
         </v-avatar>

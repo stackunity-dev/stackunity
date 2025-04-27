@@ -39,10 +39,10 @@
                 <p class="text-body-1 mb-4">
                   Publisher : Nûr Djedidi
                 </p>
-                <p class="text-body-1 mb-4">
+                <p class="text-body-1 mb-4" aria-label="Contact">
                   Contact : support@stackunity.tech
                 </p>
-                <p class="text-body-1 mb-4">
+                <p class="text-body-1 mb-4" aria-label="Host">
                   Host : DigitalOcean, 101 Avenue of the Americas, New York, NY 10013, United States
                 </p>
               </section>
@@ -205,7 +205,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 <div class="quote-block my-8 pa-6 rounded-lg" role="note"
                   aria-label="Thank you note to open source contributors">
-                  <p class="text-body-1 font-italic mb-0">
+                  <p class="text-body-1 font-italic mb-0" aria-label="Thank you note to open source contributors">
                     We thank all open source contributors whose work made it possible to create StackUnity.
                     If you think a library is not correctly attributed, please contact us at legal@stackunity.tech.
                   </p>

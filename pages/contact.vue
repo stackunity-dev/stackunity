@@ -112,7 +112,7 @@ useHead({
     { property: 'og:locale', content: 'en_US' },
     { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { property: 'twitter:title', content: 'Contact StackUnity Support' },
+    { name: 'twitter:title', content: 'Contact StackUnity Support' },
     { name: 'twitter:description', content: 'Get in touch with our team for support, feature requests or partnership opportunities.' },
     { name: 'twitter:image', content: '/images/preview.png' },
     { name: 'twitter:creator', content: '@stackunity' },

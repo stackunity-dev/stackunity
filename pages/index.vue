@@ -14,15 +14,15 @@
           </NuxtLink>
           <v-spacer></v-spacer>
 
-          <div v-if="isClient" class="d-flex align-center">
+          <div v-if="isClient" class="d-flex align-center" aria-label="Main Navigation">
             <nav v-if="display.smAndUp.value" class="d-flex align-center custom-nav-menu" aria-label="Main Navigation">
               <div class="nav-links-wrapper" role="menubar" aria-label="Main Navigation">
                 <v-btn v-for="item in menuItems" :key="item.href" class="nav-btn custom-btn" :href="item.href"
                   :class="{ 'active-nav-btn': activeSection === item.href.substring(1) }" variant="text" role="menuitem"
                   :aria-current="activeSection === item.href.substring(1) ? 'page' : undefined"
                   aria-label="Navigation item">
-                  <span class="nav-text" aria-hidden="true">{{ item.title }}</span>
-                  <span class="nav-btn-background" aria-hidden="true"></span>
+                  <span class="nav-text" aria-hidden="true" aria-label="Navigation item">{{ item.title }}</span>
+                  <span class="nav-btn-background" aria-hidden="true" aria-label="Navigation item"></span>
                 </v-btn>
               </div>
 
@@ -43,9 +43,9 @@
                 :aria-expanded="drawer">
                 <div class="hamburger-icon" :class="{ 'active': drawer }" aria-hidden="true"
                   aria-label="Toggle navigation menu">
-                  <span aria-hidden="true"></span>
-                  <span aria-hidden="true"></span>
-                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true" aria-label="Toggle navigation menu"></span>
+                  <span aria-hidden="true" aria-label="Toggle navigation menu"></span>
+                  <span aria-hidden="true" aria-label="Toggle navigation menu"></span>
                 </div>
               </v-btn>
             </div>
@@ -67,7 +67,7 @@
           </v-btn>
         </div>
 
-        <div class="mobile-nav-links">
+        <div class="mobile-nav-links" aria-label="Mobile Navigation">
           <v-list nav role="menu">
             <v-list-item v-for="item in menuItems" :key="item.href" :href="item.href" @click="drawer = false"
               class="mobile-nav-item mb-3" rounded="lg" role="menuitem"
@@ -289,7 +289,7 @@
                     <v-card-title class="text-h5 font-weight-bold">{{ step.title }}</v-card-title>
                     <v-card-text class="text-body-1">{{ step.description }}</v-card-text>
                     <v-card-actions>
-                      <v-btn :color="step.color" variant="text" :to="step.link" class="px-0">
+                      <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="px-0">
                         Learn more
                         <v-icon end>mdi-arrow-right</v-icon>
                       </v-btn>
@@ -378,7 +378,7 @@
             <v-row class="footer-columns-container">
               <v-col v-for="(column, index) in footerColumns" :key="index" cols="6" md="4" class="footer-column px-4">
                 <h4 id="footer-column-heading-{{index}}" class="text-subtitle-1 font-weight-bold mb-4">{{ column.title
-                }}
+                  }}
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"
@@ -398,8 +398,8 @@
             &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
           </div>
           <div class="d-flex align-center">
-            <a href="mailto:contact@stackunity.com"
-              class="text-body-2 text-decoration-none text-medium-emphasis">support@stackunity.tech</a>
+            <a href="mailto:contact@stackunity.com" class="text-body-2 text-decoration-none text-medium-emphasis"
+              aria-label="Contact us">support@stackunity.tech</a>
           </div>
         </div>
       </v-container>
