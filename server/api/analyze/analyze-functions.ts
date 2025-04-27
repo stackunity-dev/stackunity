@@ -1580,7 +1580,18 @@ export function analyzeAriaAttributes($: CheerioAPI): {
       } else if (tagName === 'input') {
         context = 'The input type is : ' + $el.attr('type');
       } else {
-        context = 'The next element is : ' + $el.next().text().trim();
+        const nextElement = $el.next();
+        const parentElement = $el.parent();
+
+        if (nextElement.length > 0) {
+          const nextText = nextElement.text().trim().substring(0, 100);
+          context = `Next element: ${nextElement.prop('tagName') || 'Unknown'} with text: ${nextText || 'empty'}`;
+        } else if (parentElement.length > 0) {
+          const parentText = parentElement.text().trim().substring(0, 100);
+          context = `Parent element: ${parentElement.prop('tagName') || 'Unknown'} with text: ${parentText || 'empty'}`;
+        } else {
+          context = 'No context available for this element';
+        }
       }
 
       issues.push({

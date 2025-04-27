@@ -289,8 +289,7 @@
                     <v-card-title class="text-h5 font-weight-bold">{{ step.title }}</v-card-title>
                     <v-card-text class="text-body-1">{{ step.description }}</v-card-text>
                     <v-card-actions>
-                      <v-btn :color="step.color" variant="text" :to="step.link" class="px-0"
-                        :aria-label="`Learn more about ${step.title}`">
+                      <v-btn :color="step.color" variant="text" :to="step.link" class="px-0">
                         Learn more
                         <v-icon end>mdi-arrow-right</v-icon>
                       </v-btn>
@@ -379,7 +378,7 @@
             <v-row class="footer-columns-container">
               <v-col v-for="(column, index) in footerColumns" :key="index" cols="6" md="4" class="footer-column px-4">
                 <h4 id="footer-column-heading-{{index}}" class="text-subtitle-1 font-weight-bold mb-4">{{ column.title
-                }}
+                  }}
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"
