@@ -205,7 +205,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 <div class="quote-block my-8 pa-6 rounded-lg" role="note"
                   aria-label="Thank you note to open source contributors">
-                  <p class="text-body-1 font-italic mb-0" aria-label="Thank you note to open source contributors">
+                  <p class="text-body-1 font-italic mb-0">
                     We thank all open source contributors whose work made it possible to create StackUnity.
                     If you think a library is not correctly attributed, please contact us at legal@stackunity.tech.
                   </p>
