@@ -289,7 +289,8 @@
                     <v-card-title class="text-h5 font-weight-bold">{{ step.title }}</v-card-title>
                     <v-card-text class="text-body-1">{{ step.description }}</v-card-text>
                     <v-card-actions>
-                      <v-btn :color="step.color" variant="text" :to="step.link" class="px-0">
+                      <v-btn :color="step.color" variant="text" :to="step.link" class="px-0"
+                        :aria-label="`Learn more about ${step.title}`">
                         Learn more
                         <v-icon end>mdi-arrow-right</v-icon>
                       </v-btn>

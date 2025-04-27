@@ -1579,6 +1579,8 @@ export function analyzeAriaAttributes($: CheerioAPI): {
         context = 'The link points to : ' + $el.attr('href');
       } else if (tagName === 'input') {
         context = 'The input type is : ' + $el.attr('type');
+      } else {
+        context = 'The next element is : ' + $el.next().text().trim();
       }
 
       issues.push({
