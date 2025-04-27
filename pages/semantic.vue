@@ -211,7 +211,7 @@
                                     </template>
                                     <v-list-item-title>Missing ARIA attributes</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingAriaCount
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -223,7 +223,7 @@
                                     </template>
                                     <v-list-item-title>Missing labels</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingLabels
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -236,7 +236,7 @@
                                     </template>
                                     <v-list-item-title>Form elements with labels</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.formElementsWithLabelsPercent
-                                    }}%</v-list-item-subtitle>
+                                      }}%</v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -253,7 +253,7 @@
                                     </template>
                                     <v-list-item-title>Invalid ARIA attributes</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.invalidAriaCount
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -267,7 +267,7 @@
                                     <v-list-item-title>Interactive elements with ARIA</v-list-item-title>
                                     <v-list-item-subtitle>{{
                                       result.accessibility.interactiveElementsWithAriaPercent.toFixed(2)
-                                    }}%</v-list-item-subtitle>
+                                      }}%</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -276,7 +276,7 @@
                                     </template>
                                     <v-list-item-title>Total interactive elements</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.interactiveElementsCount
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -309,9 +309,13 @@
                                         <p class="text-body-2" v-else-if="issue.context.includes('pointe vers')">
                                           The link points to: <code>{{ getContextLink(issue.context) }}</code>
                                         </p>
-                                        <p class="text-body-2" v-else>
-                                          {{ issue.context }}
-                                        </p>
+                                        <template v-else-if="issue.context.includes('cdn-cgi')">
+                                          <v-tooltip location="top" text="Cloudflare protection">
+                                            <template #activator="{ props }">
+                                              <p class="text-body-2" v-bind="props">{{ issue.context }}</p>
+                                            </template>
+                                          </v-tooltip>
+                                        </template>
                                       </div>
                                     </v-expansion-panel-text>
                                   </v-expansion-panel>
@@ -356,7 +360,7 @@
                                         </template>
                                         <v-list-item-title>Essential tags</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.essential
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -368,7 +372,7 @@
                                         </template>
                                         <v-list-item-title>Social tags</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.social
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -380,7 +384,7 @@
                                         </template>
                                         <v-list-item-title>Technical tags</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.technical
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -392,7 +396,7 @@
                                         </template>
                                         <v-list-item-title>Content</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.content
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
                                     </v-list>
                                   </v-card-text>
@@ -441,7 +445,7 @@
                                               </template>
                                               <v-list-item-title>{{ tag.name }}</v-list-item-title>
                                               <v-list-item-subtitle>{{ tag.content || 'Non défini'
-                                              }}</v-list-item-subtitle>
+                                                }}</v-list-item-subtitle>
                                             </v-list-item>
                                           </v-list>
                                         </v-col>
@@ -457,7 +461,7 @@
                                               </template>
                                               <v-list-item-title>{{ tag.name }}</v-list-item-title>
                                               <v-list-item-subtitle>{{ tag.content || 'Non défini'
-                                              }}</v-list-item-subtitle>
+                                                }}</v-list-item-subtitle>
                                             </v-list-item>
                                           </v-list>
                                         </v-col>
