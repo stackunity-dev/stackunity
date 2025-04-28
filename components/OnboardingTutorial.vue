@@ -115,7 +115,8 @@ function getPositionStyle() {
   const step = steps[currentStep.value];
   const target = document.getElementById(step.target);
 
-  if (!target && step.position !== 'center') {
+  // Toujours positionner la première carte au centre pour qu'elle soit entièrement visible
+  if (currentStep.value === 0 || step.position === 'center' || !target) {
     return {
       top: '50%',
       left: '50%',
@@ -123,70 +124,93 @@ function getPositionStyle() {
     };
   }
 
-  if (step.position === 'center') {
-    return {
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)'
-    };
-  }
+  const rect = target.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
+  const windowWidth = window.innerWidth;
+  const cardHeight = 280; // Hauteur approximative de la carte
+  const cardWidth = 280; // Largeur de la carte
 
-  const rect = target!.getBoundingClientRect();
+  // Assurer que la carte reste dans les limites de l'écran
+  const ensureInViewport = (position: any) => {
+    // Ajuster la position verticale si nécessaire
+    if (position.top < 20) position.top = 20;
+    if (position.top > windowHeight - cardHeight - 20)
+      position.top = windowHeight - cardHeight - 20;
+
+    // Ajuster la position horizontale si nécessaire
+    if (position.left < 20) position.left = 20;
+    if (position.left > windowWidth - cardWidth - 20)
+      position.left = windowWidth - cardWidth - 20;
+
+    return position;
+  };
+
+  let position;
 
   switch (step.position) {
     case 'top':
-      return {
-        top: `${rect.top - 200}px`,
+      position = {
+        top: `${Math.max(rect.top - 220, 20)}px`,
         left: `${rect.left + rect.width / 2}px`,
         transform: 'translateX(-50%)'
       };
+      break;
     case 'right':
-      return {
+      position = {
         top: `${rect.top + rect.height / 2}px`,
-        left: `${rect.right + 20}px`,
+        left: `${Math.min(rect.right + 20, windowWidth - cardWidth - 20)}px`,
         transform: 'translateY(-50%)'
       };
+      break;
     case 'bottom':
-      return {
-        top: `${rect.bottom + 20}px`,
+      position = {
+        top: `${Math.min(rect.bottom + 20, windowHeight - cardHeight - 20)}px`,
         left: `${rect.left + rect.width / 2}px`,
         transform: 'translateX(-50%)'
       };
+      break;
     case 'left':
-      return {
+      position = {
         top: `${rect.top + rect.height / 2}px`,
-        left: `${rect.left - 300}px`,
+        left: `${Math.max(rect.left - cardWidth - 20, 20)}px`,
         transform: 'translateY(-50%)'
       };
+      break;
     case 'top-right':
-      return {
-        top: `${rect.top - 200}px`,
-        left: `${rect.right}px`,
+      position = {
+        top: `${Math.max(rect.top - 220, 20)}px`,
+        left: `${Math.min(rect.right, windowWidth - cardWidth - 20)}px`,
         transform: 'translateX(-100%)'
       };
+      break;
     case 'bottom-right':
-      return {
-        top: `${rect.bottom + 20}px`,
-        left: `${rect.right}px`,
+      position = {
+        top: `${Math.min(rect.bottom + 20, windowHeight - cardHeight - 20)}px`,
+        left: `${Math.min(rect.right, windowWidth - cardWidth - 20)}px`,
         transform: 'translateX(-100%)'
       };
+      break;
     case 'bottom-left':
-      return {
-        top: `${rect.bottom + 20}px`,
-        left: `${rect.left}px`,
+      position = {
+        top: `${Math.min(rect.bottom + 20, windowHeight - cardHeight - 20)}px`,
+        left: `${Math.max(rect.left, 20)}px`,
       };
+      break;
     case 'top-left':
-      return {
-        top: `${rect.top - 200}px`,
-        left: `${rect.left}px`,
+      position = {
+        top: `${Math.max(rect.top - 220, 20)}px`,
+        left: `${Math.max(rect.left, 20)}px`,
       };
+      break;
     default:
-      return {
+      position = {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)'
       };
   }
+
+  return position;
 }
 
 function getCardColor() {

@@ -127,21 +127,7 @@
       </div>
     </v-main>
 
-    <!-- Tutoriel d'onboarding pour les nouveaux utilisateurs -->
     <OnboardingTutorial :show-onboarding="showOnboarding" @close="showOnboarding = false" />
-
-    <div class="pa-3" id="user-settings">
-      <div class="d-flex align-center justify-space-between">
-        <div>
-          <div class="text-subtitle-2">{{ userStore.user?.displayName || userStore.user?.email }}</div>
-          <div class="text-caption text-grey">{{ userStore.user?.subscriptionPlan }}</div>
-        </div>
-      </div>
-    </div>
-
-    <v-card class="mb-4 mt-4 rounded-lg elevation-2" id="website-metrics" v-if="route.path === '/website'">
-      <!-- Website metrics content -->
-    </v-card>
   </v-app>
 </template>
 
