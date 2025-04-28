@@ -559,7 +559,7 @@ import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/atom-one-dark.css';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import snackBar from '../components/snackBar.vue';
+import snackBar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 import { getSQLTemplate, getSQLTemplateNames } from '../utils/sqlTemplates';
 // @ts-ignore

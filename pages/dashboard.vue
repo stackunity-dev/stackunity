@@ -205,7 +205,7 @@ import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead, useRouter } from '#imports';
 import { TokenUtils } from '../utils/token';
-import snackBar from '../components/snackBar.vue';
+import snackBar from '../components/snackbar.vue';
 
 definePageMeta({
   layout: 'dashboard'
