@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-navigation-drawer v-model="drawer" :mobile-breakpoint="960" :permanent="!display.smAndDown.value"
-      :temporary="display.smAndDown.value" location="left" class="dashboard-drawer">
+      :temporary="display.smAndDown.value" location="left" class="dashboard-drawer" id="main-navigation">
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-2">
           <div class="logo-container mr-3">
@@ -74,8 +74,8 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar class="border-b page-header px-4" :color="getHeaderColor()" flat scroll-behavior="elevate"
-      :elevation="0">
+    <v-app-bar class="border-b page-header px-4" :color="getHeaderColor()" flat scroll-behavior="elevate" :elevation="0"
+      id="dashboard-title">
       <v-app-bar-nav-icon v-if="display.smAndDown.value" @click="drawer = !drawer"
         color="on-surface"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
@@ -126,6 +126,22 @@
         <NuxtPage :studio-mode="studioMode" />
       </div>
     </v-main>
+
+    <!-- Tutoriel d'onboarding pour les nouveaux utilisateurs -->
+    <OnboardingTutorial :show-onboarding="showOnboarding" @close="showOnboarding = false" />
+
+    <div class="pa-3" id="user-settings">
+      <div class="d-flex align-center justify-space-between">
+        <div>
+          <div class="text-subtitle-2">{{ userStore.user?.displayName || userStore.user?.email }}</div>
+          <div class="text-caption text-grey">{{ userStore.user?.subscriptionPlan }}</div>
+        </div>
+      </div>
+    </div>
+
+    <v-card class="mb-4 mt-4 rounded-lg elevation-2" id="website-metrics" v-if="route.path === '/website'">
+      <!-- Website metrics content -->
+    </v-card>
   </v-app>
 </template>
 
@@ -133,6 +149,7 @@
 import { computed, markRaw, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
+import OnboardingTutorial from '../components/OnboardingTutorial.vue';
 import premiumFeatures from '../components/PremiumFeature.vue';
 import { useUserStore } from '../stores/userStore';
 
@@ -145,6 +162,7 @@ const drawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
 const studioMode = ref('studio');
 const isSmall = computed(() => display.smAndDown.value);
+const showOnboarding = ref(false);
 
 provide('studioMode', {
   mode: studioMode,
@@ -280,6 +298,20 @@ onMounted(() => {
   userStore.loadSQLSchemas();
   userStore.loadWebsiteData();
   updatePageTitle();
+
+  // Vérifier si l'utilisateur vient de s'inscrire
+  const fromSignup = localStorage.getItem('fromSignup') === 'true';
+
+  if (fromSignup) {
+    // Afficher le tutoriel et réinitialiser le flag
+    showOnboarding.value = true;
+    localStorage.removeItem('fromSignup');
+  }
+
+  // Vérifier si on veut forcer l'affichage du tutoriel via un paramètre d'URL
+  if (route.query.showTutorial === 'true') {
+    showOnboarding.value = true;
+  }
 });
 
 function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string, planType: 'standard' | 'premium' = 'premium'): any {

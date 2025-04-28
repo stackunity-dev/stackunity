@@ -1,9 +1,6 @@
 <template>
   <v-app>
     <v-main>
-      <v-overlay v-model="isLoading" class="align-center justify-center">
-        <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
-      </v-overlay>
 
       <v-dialog v-model="showSessionDialog" persistent max-width="400">
         <v-card>
