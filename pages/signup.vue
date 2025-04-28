@@ -156,7 +156,7 @@ const handleSignup = async () => {
   loading.value = true
   try {
     await userStore.signUp(form.value.username, form.value.email, form.value.password);
-    router.push('/dashboard');
+    router.push('/settings');
   } catch (err: any) {
     console.error(err.message)
   } finally {

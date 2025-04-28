@@ -341,8 +341,8 @@ const allMetrics = computed(() => {
 
   return [
     { label: 'Semantic Structure', value: Math.round(avgScores.value.semantic) },
-    { label: 'Content Quality', value: Math.round(avgScores.value.content) },
     { label: 'Security Score', value: Math.round(avgScores.value.security) },
+    { label: 'Content Quality', value: Math.round(avgScores.value.content) },
     { label: 'User Engagement', value: Math.round(avgScores.value.engagement) }
   ];
 });
