@@ -49,7 +49,7 @@
         <v-col cols="12" class="mb-6">
           <h2 id="analysis-results">Performance Analysis Results</h2>
 
-          <v-card class="mt-4 mb-6" variant="outlined">
+          <v-card class="mt-4 mb-6 bg-surface">
             <v-card-item>
               <v-card-title class="d-flex align-center mb-4">
                 <v-icon icon="mdi-speedometer" color="primary" class="mr-2" aria-hidden="true" />
@@ -212,8 +212,8 @@
                             Performance Score Breakdown
                           </v-card-title>
                           <v-card-text>
-                            <v-progress-linear v-model="result.overallScore" color="primary" height="25"
-                              :aria-label="`Overall score: ${result.overallScore}%`">
+                            <v-progress-linear v-model="result.overallScore" :color="getScoreColor(result.overallScore)"
+                              height="25" :aria-label="`Overall score: ${result.overallScore}%`">
                               <template v-slot:default="{ value }">
                                 <strong>{{ value }}%</strong>
                               </template>
