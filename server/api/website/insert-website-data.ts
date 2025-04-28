@@ -5,10 +5,10 @@ export default defineEventHandler(async (event) => {
   const { name, url, analyzisUrls, sitemapContent, userId } = await readBody(event);
 
   try {
-    const result = await pool.execute('INSERT INTO website_data (website_name, main_url, all_urls, generated_sitemap, user_id) VALUES (?, ?, ?, ?, ?)', [name, url, analyzisUrls, sitemapContent, userId]);
+    const result = await pool.execute('UPDATE website_data SET website_name = ?, main_url = ?, all_urls = ?, generated_sitemap = ? WHERE user_id = ?', [name, url, analyzisUrls, sitemapContent, userId]);
     return {
       success: true,
-      message: 'Données insérées avec succès',
+      message: 'Données mises à jour avec succès',
       data: result
     };
   } catch (error) {

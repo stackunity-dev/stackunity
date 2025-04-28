@@ -189,6 +189,11 @@ export interface SEOResult {
     message: string;
     severity: 'critical' | 'high' | 'medium' | 'low'
   }>;
+  contentIssues?: Array<{
+    title: string;
+    description: string;
+    severity: 'high' | 'medium' | 'low' | 'info';
+  }>;
 
   // Structure imbriquée spécifique à l'API
   seo?: {

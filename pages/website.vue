@@ -102,11 +102,11 @@
                     <v-card class="mb-4 rounded-lg elevation-2">
                       <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg">
                         <v-icon color="white" class="mr-2">mdi-chart-donut</v-icon>
-                        Global metrics
+                        SSUC metrics
                       </v-card-title>
                       <v-card-text class="pa-4">
                         <v-row>
-                          <v-col cols="12" sm="6" md="4" v-for="i in 3" :key="i">
+                          <v-col cols="12" sm="6" md="3" v-for="i in 4" :key="i">
                             <v-card variant="outlined" class="mb-4">
                               <v-card-text>
                                 <div class="d-flex flex-column align-center justify-center py-3">
@@ -129,21 +129,25 @@
                       <v-card class="mb-4 rounded-lg elevation-2">
                         <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg">
                           <v-icon color="white" class="mr-2">mdi-chart-donut</v-icon>
-                          Global metrics
+                          SSUC metrics
                         </v-card-title>
                         <v-card-text class="pa-4">
                           <v-row>
-                            <v-col v-for="(metric, index) in metrics" :key="index" cols="12" sm="6" md="4">
+                            <v-col v-for="(metric, index) in allMetrics" :key="index" cols="12" sm="6" md="3">
                               <v-card variant="outlined" class="mb-4">
                                 <v-card-text>
                                   <div class="d-flex flex-column align-center justify-center py-3">
                                     <v-progress-circular :model-value="metric.value"
-                                      :color="getScoreColor(metric.value)" size="100" width="12">
+                                      :color="getScoreColor(metric.value)" size="100" width="12"
+                                      :aria-label="metric.label + ' score'">
                                       <span class="text-h6 font-weight-bold">{{ metric.value }}%</span>
                                     </v-progress-circular>
                                     <div class="text-h6 mt-4 text-center"
                                       :class="`text-${getScoreColor(metric.value)}`">
                                       {{ metric.label }}
+                                    </div>
+                                    <div class="text-subtitle-2 text-center mt-1 text-grey">
+                                      Average of {{ semanticData.length }} URLs
                                     </div>
                                   </div>
                                 </v-card-text>
@@ -191,9 +195,11 @@ import { useHead } from '#imports';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import snackBar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
-import { useRouter } from 'vue-router';
+import { calculateContentScore } from '../utils/seo/content-view';
+import { calculateEngagementScore, calculateSecurityScore } from '../utils/seo/metrics';
 
 interface SemanticDataItem {
   url: string;
@@ -219,6 +225,17 @@ interface SemanticDataItem {
     }>;
     score?: number;
   };
+  contentStats?: {
+    readabilityScore: number;
+    wordCount: number;
+    keywordDensity: number | Record<string, number>;
+  };
+  securityChecks?: {
+    https: boolean;
+    securityHeaders?: Array<{ name: string; value: string }>;
+    securityIssues?: Array<{ severity: string; description: string }>;
+    securityScore?: number;
+  };
 }
 
 interface EngagementDataItem {
@@ -237,6 +254,14 @@ const userStore = useUserStore();
 const loading = ref(true);
 const semanticData = ref<SemanticDataItem[]>([]);
 const engagementData = ref<EngagementDataItem[]>([]);
+const contentData = ref<any[]>([]);
+const securityData = ref<any[]>([]);
+const avgScores = ref({
+  semantic: 0,
+  content: 0,
+  security: 0,
+  engagement: 0
+});
 const snackbar = ref({
   show: false,
   text: '',
@@ -311,48 +336,20 @@ const urlsForDisplay = computed<UrlItem[]>(() => {
   return urls.map((url: string) => ({ url }));
 });
 
-const metrics = computed(() => {
-  loading.value = true;
+const allMetrics = computed(() => {
   if (semanticData.value.length === 0) return [];
 
-  const avgSemanticScore = semanticData.value.reduce((acc, item) => {
-    const score = item.semanticScore !== undefined ? item.semanticScore : item.score;
-    return acc + (score || 0);
-  }, 0) / semanticData.value.length;
-
-  const avgAccessibilityScore = semanticData.value.reduce((acc, item) =>
-    acc + (item.accessibility?.ariaScore || 0), 0) / semanticData.value.length;
-
-  const avgEngagementScore = semanticData.value.reduce((acc, item) => {
-    const engagementEntry = engagementData.value.find(e => e.url === item.url);
-
-    let engagementScore = 0;
-    if (engagementEntry) {
-      if (typeof engagementEntry.score === 'number') {
-        engagementScore = engagementEntry.score;
-      } else if (engagementEntry.engagement && typeof engagementEntry.engagement.engagementScore === 'number') {
-        engagementScore = engagementEntry.engagement.engagementScore;
-      } else if (Array.isArray(engagementEntry) && engagementEntry.length > 0) {
-        const firstEntry = engagementEntry[0];
-        engagementScore = firstEntry.score || firstEntry.engagement?.engagementScore || 0;
-      }
-    }
-
-    loading.value = false;
-    return acc + engagementScore;
-  }, 0) / semanticData.value.length;
-
   return [
-    { label: 'Semantic Structure', value: Math.round(avgSemanticScore) },
-    { label: 'Accessibility', value: Math.round(avgAccessibilityScore) },
-    { label: 'User Engagement', value: Math.round(avgEngagementScore) }
+    { label: 'Semantic Structure', value: Math.round(avgScores.value.semantic) },
+    { label: 'Content Quality', value: Math.round(avgScores.value.content) },
+    { label: 'Security Score', value: Math.round(avgScores.value.security) },
+    { label: 'User Engagement', value: Math.round(avgScores.value.engagement) }
   ];
 });
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return 'success';
-  if (score >= 60) return 'info';
-  if (score >= 40) return 'warning';
+  if (score >= 90) return 'success';
+  if (score >= 60) return 'warning';
   return 'error';
 }
 
@@ -378,6 +375,12 @@ async function analyzeSite(): Promise<void> {
   try {
     loading.value = true;
 
+    const urls = Array.isArray(websiteData.value.all_urls)
+      ? websiteData.value.all_urls
+      : (typeof websiteData.value.all_urls === 'string'
+        ? JSON.parse(websiteData.value.all_urls)
+        : []);
+
     const semanticResponse = await fetch('/api/analyze/semantic-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -385,13 +388,63 @@ async function analyzeSite(): Promise<void> {
     });
     if (semanticResponse.ok) {
       semanticData.value = await semanticResponse.json();
+      const semanticScores = semanticData.value.map(item =>
+        item.semanticScore !== undefined ? item.semanticScore : (item.score || 0)
+      );
+      avgScores.value.semantic = semanticScores.reduce((sum, score) => sum + score, 0) / semanticScores.length || 0;
     }
 
-    const urls = Array.isArray(websiteData.value.all_urls)
-      ? websiteData.value.all_urls
-      : (typeof websiteData.value.all_urls === 'string'
-        ? JSON.parse(websiteData.value.all_urls)
-        : []);
+    const contentPromises = urls.map(async (url: string) => {
+      try {
+        const response = await fetch('/api/analyze/content-view', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        if (response.ok) {
+          return await response.json();
+        }
+        return null;
+      } catch (error) {
+        console.error(`Error analyzing content for ${url}:`, error);
+        return null;
+      }
+    });
+
+    const contentResults = await Promise.all(contentPromises);
+    contentData.value = contentResults.filter(result => result !== null);
+
+    const contentScores = contentData.value.map(item => {
+      return calculateContentScore(item);
+    });
+    avgScores.value.content = contentScores.reduce((sum, score) => sum + score, 0) / contentScores.length || 0;
+
+    const securityPromises = urls.map(async (url: string) => {
+      try {
+        const response = await fetch('/api/analyze/security-view', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        if (response.ok) {
+          return await response.json();
+        }
+        return null;
+      } catch (error) {
+        console.error(`Error analyzing security for ${url}:`, error);
+        return null;
+      }
+    });
+
+    const securityResults = await Promise.all(securityPromises);
+    securityData.value = securityResults.filter(result => result !== null);
+
+    const securityScores = securityData.value.map(item => {
+      return calculateSecurityScore(item);
+    });
+    avgScores.value.security = securityScores.reduce((sum, score) => sum + score, 0) / securityScores.length || 0;
 
     const engagementPromises = urls.map(async (url: string) => {
       try {
@@ -406,7 +459,7 @@ async function analyzeSite(): Promise<void> {
         }
         return null;
       } catch (error) {
-        console.error(`Erreur lors de l'analyse de l'engagement pour ${url}:`, error);
+        console.error(`Error analyzing engagement for ${url}:`, error);
         return null;
       }
     });
@@ -414,7 +467,7 @@ async function analyzeSite(): Promise<void> {
     const engagementResults = await Promise.all(engagementPromises);
     const filteredResults = engagementResults.filter(result => result !== null);
 
-    const processedResults = filteredResults.map(result => {
+    engagementData.value = filteredResults.map(result => {
       if (Array.isArray(result) && result.length > 0) {
         const firstItemWithScore = result.find(item =>
           item.score !== undefined ||
@@ -424,15 +477,23 @@ async function analyzeSite(): Promise<void> {
         if (firstItemWithScore) {
           return {
             url: firstItemWithScore.url,
-            score: firstItemWithScore.score || firstItemWithScore.engagement?.engagementScore || 0
+            score: firstItemWithScore.score || (firstItemWithScore.engagement?.engagementScore || 0)
           };
         }
       }
-
       return result;
     });
 
-    engagementData.value = processedResults;
+    const engagementScores = engagementData.value.map(item => {
+      if (typeof item.score === 'number') {
+        return item.score;
+      } else if (item.engagement && typeof item.engagement.engagementScore === 'number') {
+        return item.engagement.engagementScore;
+      } else {
+        return calculateEngagementScore(item);
+      }
+    });
+    avgScores.value.engagement = engagementScores.reduce((sum, score) => sum + score, 0) / engagementScores.length || 0;
 
   } catch (error) {
     console.error('Error during site analysis:', error);

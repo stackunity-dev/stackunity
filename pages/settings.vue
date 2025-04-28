@@ -164,7 +164,8 @@
 
               <div class="d-flex justify-end">
                 <v-btn color="primary" variant="elevated" prepend-icon="mdi-content-save" @click="saveWebsiteData"
-                  aria-label="Enregistrer les paramètres du site web">
+                  aria-label="Enregistrer les paramètres du site web"
+                  :disabled="!isValidUrl(website.url) || !analyzisUrls.length">
                   Save
                 </v-btn>
               </div>
@@ -630,7 +631,6 @@ const loadStoredWebsiteData = () => {
         }
       });
     }
-    fetchAnalyzisUrls(website.value.url);
   }
 };
 

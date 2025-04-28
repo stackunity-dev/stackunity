@@ -51,7 +51,8 @@
     "vue": "latest",
     "vue-chartjs": "^5.3.2",
     "vue-router": "latest",
-    "vuetify": "^3.7.13"
+    "vuetify": "^3.7.13",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^22.13.5",

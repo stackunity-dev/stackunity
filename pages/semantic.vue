@@ -1,24 +1,32 @@
 <template>
-  <div class="semantic-analyzer">
+  <div>
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1>Semantic Analysis</h1>
+          <h1 class="text-h4 font-weight-bold mb-2">Semantic Analysis</h1>
           <p class="text-body-1">Analyze the semantic structure of your website</p>
         </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="12">
-          <v-form @submit.prevent="analyzeUrl" role="search" aria-label="Website semantic analysis form">
-            <v-text-field v-model="url" label="Website URL" density="comfortable" prepend-inner-icon="mdi-web"
-              placeholder="https://exemple.com"
-              :rules="[v => !!v || 'URL required', v => v.startsWith('http') || v.startsWith('https') || 'The URL must start with http or https']"
-              required :loading="loading" aria-required="true" />
-            <v-btn type="submit" color="primary" :loading="loading" :disabled="!url" aria-label="Analyze website">
-              Analyze
-            </v-btn>
-          </v-form>
+          <v-card class="mb-6">
+            <v-card-text>
+              <v-form @submit.prevent="analyzeUrl">
+                <v-text-field v-model="url" label="URL du site à analyser" placeholder="https://example.com"
+                  hint="Enter the complete URL including https://" persistent-hint prepend-inner-icon="mdi-web"
+                  variant="outlined" required autocomplete="url" aria-label="URL to analyze"
+                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || 'Please enter a valid URL starting with http:// or https://']"></v-text-field>
+
+                <div class="d-flex mt-4">
+                  <v-btn color="secondary" type="submit" size="large" :loading="loading" :disabled="!url"
+                    prepend-icon="mdi-magnify" aria-label="Analyze content">
+                    Analyze content
+                  </v-btn>
+                </div>
+              </v-form>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
 
@@ -211,7 +219,7 @@
                                     </template>
                                     <v-list-item-title>Missing ARIA attributes</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingAriaCount
-                                      }}</v-list-item-subtitle>
+                                    }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -223,7 +231,7 @@
                                     </template>
                                     <v-list-item-title>Missing labels</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingLabels
-                                      }}</v-list-item-subtitle>
+                                    }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -236,7 +244,7 @@
                                     </template>
                                     <v-list-item-title>Form elements with labels</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.formElementsWithLabelsPercent
-                                      }}%</v-list-item-subtitle>
+                                    }}%</v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -253,7 +261,7 @@
                                     </template>
                                     <v-list-item-title>Invalid ARIA attributes</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.invalidAriaCount
-                                      }}</v-list-item-subtitle>
+                                    }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -267,7 +275,7 @@
                                     <v-list-item-title>Interactive elements with ARIA</v-list-item-title>
                                     <v-list-item-subtitle>{{
                                       result.accessibility.interactiveElementsWithAriaPercent.toFixed(2)
-                                      }}%</v-list-item-subtitle>
+                                    }}%</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -276,7 +284,7 @@
                                     </template>
                                     <v-list-item-title>Total interactive elements</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.interactiveElementsCount
-                                      }}</v-list-item-subtitle>
+                                    }}</v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -309,13 +317,9 @@
                                         <p class="text-body-2" v-else-if="issue.context.includes('pointe vers')">
                                           The link points to: <code>{{ getContextLink(issue.context) }}</code>
                                         </p>
-                                        <template v-else-if="issue.context.includes('cdn-cgi')">
-                                          <v-tooltip location="top" text="Cloudflare protection">
-                                            <template #activator="{ props }">
-                                              <p class="text-body-2" v-bind="props">{{ issue.context }}</p>
-                                            </template>
-                                          </v-tooltip>
-                                        </template>
+                                        <p class="text-body-2" v-else>
+                                          {{ issue.context }}
+                                        </p>
                                       </div>
                                     </v-expansion-panel-text>
                                   </v-expansion-panel>
@@ -360,7 +364,7 @@
                                         </template>
                                         <v-list-item-title>Essential tags</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.essential
-                                          }}%</v-list-item-subtitle>
+                                        }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -372,7 +376,7 @@
                                         </template>
                                         <v-list-item-title>Social tags</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.social
-                                          }}%</v-list-item-subtitle>
+                                        }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -384,7 +388,7 @@
                                         </template>
                                         <v-list-item-title>Technical tags</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.technical
-                                          }}%</v-list-item-subtitle>
+                                        }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -396,7 +400,7 @@
                                         </template>
                                         <v-list-item-title>Content</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.content
-                                          }}%</v-list-item-subtitle>
+                                        }}%</v-list-item-subtitle>
                                       </v-list-item>
                                     </v-list>
                                   </v-card-text>
@@ -445,7 +449,7 @@
                                               </template>
                                               <v-list-item-title>{{ tag.name }}</v-list-item-title>
                                               <v-list-item-subtitle>{{ tag.content || 'Non défini'
-                                                }}</v-list-item-subtitle>
+                                              }}</v-list-item-subtitle>
                                             </v-list-item>
                                           </v-list>
                                         </v-col>
@@ -461,7 +465,7 @@
                                               </template>
                                               <v-list-item-title>{{ tag.name }}</v-list-item-title>
                                               <v-list-item-subtitle>{{ tag.content || 'Non défini'
-                                                }}</v-list-item-subtitle>
+                                              }}</v-list-item-subtitle>
                                             </v-list-item>
                                           </v-list>
                                         </v-col>
@@ -531,9 +535,10 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, ref, watch } from 'vue';
+import { nextTick, ref, watch, computed } from 'vue';
 // @ts-ignore 
 import { definePageMeta, useHead } from '#imports';
+import { useUserStore } from '../stores/userStore';
 import hljs from 'highlight.js/lib/core';
 import xml from 'highlight.js/lib/languages/xml';
 import 'highlight.js/styles/atom-one-dark.css';
@@ -559,10 +564,12 @@ useHead({
   ]
 });
 
-const url = ref('');
+const activeTab = ref('html');
+const userStore = useUserStore();
+const websiteData = computed(() => userStore.websiteData);
+const url = computed(() => websiteData.value?.main_url || '');
 const loading = ref(false);
 const results = ref<any[]>([]);
-const activeTab = ref('html');
 
 const applyHighlighting = async () => {
   await nextTick();
@@ -727,10 +734,6 @@ function calculateAverageByType(type: 'html' | 'aria' | 'meta'): number {
 </script>
 
 <style scoped>
-.semantic-analyzer {
-  padding: 24px 0;
-}
-
 .heading-structure {
   max-height: 400px;
   overflow-y: auto;

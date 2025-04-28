@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead, useRouter } from '#imports';
@@ -93,14 +93,6 @@ const launchpadItems = computed(() => [
     disabled: false
   },
   {
-    title: 'Semantic',
-    description: 'Check the semantic and ARIA attributes of your website',
-    icon: 'mdi-semantic-web',
-    color: 'tertiary',
-    route: '/semantic',
-    disabled: !userStore.user?.isPremium
-  },
-  {
     title: 'Database designer',
     description: 'Generate and visualize complex SQL schemas in just a few clicks',
     icon: 'mdi-database',
@@ -133,11 +125,19 @@ const launchpadItems = computed(() => [
     disabled: false
   },
   {
-    title: 'Website Audit',
-    description: 'Analyze and optimize the performance of your website',
-    icon: 'mdi-magnify',
+    title: 'Semantic',
+    description: 'Check the semantic and ARIA attributes of your website',
+    icon: 'mdi-semantic-web',
+    color: 'tertiary',
+    route: '/semantic',
+    disabled: !userStore.user?.isPremium
+  },
+  {
+    title: 'Content',
+    description: 'Check the content of your website',
+    icon: 'mdi-file-document-outline',
     color: 'indigo',
-    route: '/website-analyzer',
+    route: '/content',
     disabled: !userStore.user?.isPremium
   },
   {
@@ -148,6 +148,14 @@ const launchpadItems = computed(() => [
     route: '/user-engagement',
     disabled: !userStore.user?.isPremium
   },
+  {
+    title: 'Security',
+    description: 'Check the security of your website',
+    icon: 'mdi-security',
+    color: 'secondary',
+    route: '/security',
+    disabled: !userStore.user?.isPremium
+  }
 ]);
 
 onMounted(async () => {

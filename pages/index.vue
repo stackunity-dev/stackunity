@@ -133,8 +133,8 @@
 
         <FadeInSection>
           <section class="pt-16 d-flex justify-center" aria-labelledby="how-it-works-heading">
-            <img src="/public/images/preview-stackunity.avif" alt="Aperçu de la plateforme StackUnity"
-              class="hero-image rounded-lg" loading="eager" width="80%" height="auto">
+            <img src="/public/images/preview-stackunity.avif" alt="Preview of StackUnity" class="hero-image rounded-lg"
+              loading="eager" width="80%" height="auto">
           </section>
         </FadeInSection>
 
@@ -378,7 +378,7 @@
             <v-row class="footer-columns-container">
               <v-col v-for="(column, index) in footerColumns" :key="index" cols="6" md="4" class="footer-column px-4">
                 <h4 id="footer-column-heading-{{index}}" class="text-subtitle-1 font-weight-bold mb-4">{{ column.title
-                  }}
+                }}
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"

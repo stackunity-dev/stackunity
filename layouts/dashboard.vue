@@ -178,18 +178,24 @@ const updatePageTitle = () => {
 
   if (path === '/dashboard') {
     currentPageTitle.value = 'Dashboard';
+  } else if (path.includes('/website')) {
+    currentPageTitle.value = 'Website';
   } else if (path.includes('/animations')) {
     currentPageTitle.value = 'CSS playground';
   } else if (path.includes('/database-designer')) {
     currentPageTitle.value = 'Database Designer';
+  } else if (path.includes('/semantic')) {
+    currentPageTitle.value = 'Semantic';
+  } else if (path.includes('/security')) {
+    currentPageTitle.value = 'Security';
+  } else if (path.includes('/content')) {
+    currentPageTitle.value = 'Content';
   } else if (path.includes('/studio')) {
     currentPageTitle.value = 'Studio';
   } else if (path.includes('/responsive')) {
     currentPageTitle.value = 'Responsive';
   } else if (path.includes('/accessibility')) {
     currentPageTitle.value = 'Accessibility';
-  } else if (path.includes('/website-analyzer')) {
-    currentPageTitle.value = 'Website analyzer';
   } else if (path.includes('/robots')) {
     currentPageTitle.value = 'Robots & Schema';
   } else if (path.includes('/settings')) {
@@ -209,6 +215,8 @@ const getCurrentPageIcon = () => {
 
   if (path === '/dashboard') {
     return 'mdi-view-dashboard-outline';
+  } else if (path.includes('/website')) {
+    return 'mdi-web';
   } else if (path.includes('/animations')) {
     return 'mdi-animation';
   } else if (path.includes('/database-designer')) {
@@ -217,16 +225,18 @@ const getCurrentPageIcon = () => {
     return 'mdi-api';
   } else if (path.includes('/semantic')) {
     return 'mdi-semantic-web';
+  } else if (path.includes('/security')) {
+    return 'mdi-security';
   } else if (path.includes('/studio')) {
     return 'mdi-palette';
   } else if (path.includes('/responsive')) {
     return 'mdi-responsive';
   } else if (path.includes('/accessibility')) {
     return 'mdi-access-point';
+  } else if (path.includes('/content')) {
+    return 'mdi-file-document-outline';
   } else if (path.includes('/user-engagement')) {
     return 'mdi-account-group';
-  } else if (path.includes('/website-analyzer')) {
-    return 'mdi-magnify';
   } else if (path.includes('/robots')) {
     return 'mdi-robot';
   } else if (path.includes('/settings')) {
@@ -241,8 +251,6 @@ const getCurrentPageIcon = () => {
 const getHeaderColor = () => {
   if (currentPageTitle.value === 'Studio') {
     return studioMode.value === 'studio-seo' ? 'secondary' : 'primary';
-  } else if (currentPageTitle.value === 'Website analyzer') {
-    return 'secondary';
   } else if (currentPageTitle.value === 'API Testing Hub') {
     return 'info';
   } else {
@@ -334,7 +342,7 @@ const items = computed(() => [
     children: [
       { title: 'CSS playground', link: '/animations', icon: 'mdi-animation' },
       { title: 'Studio', link: '/studio', icon: 'mdi-palette' },
-      createPremiumMenuItem('Semantic', '/semantic', 'mdi-semantic-web', 'semantic', 'premium')
+      createPremiumMenuItem('Robots & Schema', '/robots', 'mdi-robot', 'robots', 'standard')
     ]
   },
   {
@@ -353,18 +361,19 @@ const items = computed(() => [
     children: [
       { title: 'Responsive', link: '/responsive', icon: 'mdi-responsive' },
       { title: 'Accessibility', link: '/accessibility', icon: 'mdi-access-point' },
-      createPremiumMenuItem('User Engagement', '/user-engagement', 'mdi-account-group', 'userEngagement', 'premium')
     ]
   },
   {
-    title: 'SEO',
-    prependIcon: 'mdi-rocket-launch-outline',
+    title: 'Analyzer',
+    prependIcon: 'mdi-magnify',
     link: true,
     children: [
-      createPremiumMenuItem('Website analyzer', '/website-analyzer', 'mdi-magnify', 'websiteAnalyzer', 'premium'),
-      createPremiumMenuItem('Robots & Schema', '/robots', 'mdi-robot', 'robots', 'standard')
+      createPremiumMenuItem('Semantic', '/semantic', 'mdi-semantic-web', 'semantic', 'premium'),
+      createPremiumMenuItem('Content', '/content', 'mdi-file-document-outline', 'content', 'premium'),
+      createPremiumMenuItem('User Engagement', '/user-engagement', 'mdi-account-group', 'userEngagement', 'premium'),
+      createPremiumMenuItem('Security', '/security', 'mdi-security', 'security', 'premium')
     ]
-  },
+  }
 ]);
 </script>
 

@@ -1,24 +1,32 @@
 <template>
-  <div class="user-engagement-analyzer">
+  <div>
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1>User Engagement</h1>
+          <h1 class="text-h4 font-weight-bold mb-2">User Engagement Analysis</h1>
           <p class="text-body-1">analyze the potential user engagement on your website</p>
         </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="12">
-          <v-form @submit.prevent="analyzeUrl">
-            <v-text-field v-model="url" label="Website URL" density="comfortable" prepend-inner-icon="mdi-web"
-              placeholder="https://exemple.com"
-              :rules="[v => !!v || 'URL required', v => v.startsWith('http') || v.startsWith('https') || 'The URL must start with http or https']"
-              required :loading="loading" />
-            <v-btn type="submit" color="primary" :loading="loading" :disabled="!url">
-              Analyze
-            </v-btn>
-          </v-form>
+          <v-card class="mb-6">
+            <v-card-text>
+              <v-form @submit.prevent="analyzeUrl">
+                <v-text-field v-model="url" label="URL du site à analyser" placeholder="https://example.com"
+                  hint="Enter the complete URL including https://" persistent-hint prepend-inner-icon="mdi-web"
+                  variant="outlined" required autocomplete="url" aria-label="URL to analyze"
+                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || 'Please enter a valid URL starting with http:// or https://']"></v-text-field>
+
+                <div class="d-flex mt-4">
+                  <v-btn color="secondary" type="submit" size="large" :loading="loading" :disabled="!url"
+                    prepend-icon="mdi-magnify" aria-label="Analyze content">
+                    Analyze content
+                  </v-btn>
+                </div>
+              </v-form>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
 
@@ -371,22 +379,10 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import { ref, computed } from 'vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
-import { PieChart } from 'echarts/charts';
-import { LegendComponent, TooltipComponent } from 'echarts/components';
-import * as echarts from 'echarts/core';
-import { LabelLayout } from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
-
-echarts.use([
-  TooltipComponent,
-  LegendComponent,
-  PieChart,
-  CanvasRenderer,
-  LabelLayout
-]);
+import { useUserStore } from '../stores/userStore';
 
 definePageMeta({
   layout: 'dashboard',
@@ -400,7 +396,9 @@ useHead({
   ],
 });
 
-const url = ref('');
+const userStore = useUserStore();
+const websiteData = computed(() => userStore.websiteData);
+const url = computed(() => websiteData.value?.main_url || '');
 const loading = ref(false);
 const results = ref<any[]>([]);
 const activeTab = ref('engagement');
@@ -516,11 +514,6 @@ function formatSocialDetails(details: any[]) {
 </script>
 
 <style scoped>
-.user-engagement-analyzer {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
 .chart-container {
   height: 300px;
   width: 100%;
@@ -533,7 +526,6 @@ function formatSocialDetails(details: any[]) {
   min-height: 250px;
 }
 
-/* Amélioration de la lisibilité des tableaux */
 :deep(.v-data-table) {
   border-radius: 8px;
   overflow: hidden;
