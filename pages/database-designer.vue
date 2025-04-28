@@ -550,7 +550,7 @@
       </v-container>
     </v-main>
 
-    <Snackbar v-model="showSnackbar" :text="snackbarText" :color="snackbarColor" :timeout="3000" />
+    <snackBar v-model="showSnackbar" :text="snackbarText" :color="snackbarColor" :timeout="3000" />
   </v-app>
 </template>
 
@@ -559,7 +559,7 @@ import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/atom-one-dark.css';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import Snackbar from '../components/snackbar.vue';
+import snackBar from '../components/snackBar.vue';
 import { useUserStore } from '../stores/userStore';
 import { getSQLTemplate, getSQLTemplateNames } from '../utils/sqlTemplates';
 // @ts-ignore
