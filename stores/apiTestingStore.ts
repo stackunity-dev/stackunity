@@ -1,26 +1,5 @@
 import { defineStore } from 'pinia';
-
-interface ApiRequest {
-  id: string;
-  name: string;
-  method: string;
-  url: string;
-  headers: { key: string; value: string }[];
-  body: string;
-  params: { key: string; value: string }[];
-  createdAt: Date;
-}
-
-interface ApiResponse {
-  id: string;
-  requestId: string;
-  status: number;
-  headers: Record<string, string>;
-  data: any;
-  duration: number;
-  createdAt: Date;
-}
-
+import { ApiRequest, ApiResponse } from './types';
 export const useApiTestingStore = defineStore('apiTesting', {
   state: () => ({
     savedRequests: [] as ApiRequest[],

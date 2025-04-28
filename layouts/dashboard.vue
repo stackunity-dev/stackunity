@@ -174,6 +174,8 @@ const updatePageTitle = () => {
     currentPageTitle.value = 'Dashboard';
   } else if (path.includes('/website')) {
     currentPageTitle.value = 'Website';
+  } else if (path.includes('/performance')) {
+    currentPageTitle.value = 'Performance';
   } else if (path.includes('/animations')) {
     currentPageTitle.value = 'CSS playground';
   } else if (path.includes('/database-designer')) {
@@ -211,6 +213,8 @@ const getCurrentPageIcon = () => {
     return 'mdi-view-dashboard-outline';
   } else if (path.includes('/website')) {
     return 'mdi-web';
+  } else if (path.includes('/performance')) {
+    return 'mdi-speedometer';
   } else if (path.includes('/animations')) {
     return 'mdi-animation';
   } else if (path.includes('/database-designer')) {
@@ -362,6 +366,7 @@ const items = computed(() => [
     prependIcon: 'mdi-magnify',
     link: true,
     children: [
+      createPremiumMenuItem('Performance', '/performance', 'mdi-speedometer', 'performance', 'premium'),
       createPremiumMenuItem('Semantic', '/semantic', 'mdi-semantic-web', 'semantic', 'premium'),
       createPremiumMenuItem('Content', '/content', 'mdi-file-document-outline', 'content', 'premium'),
       createPremiumMenuItem('User Engagement', '/user-engagement', 'mdi-account-group', 'userEngagement', 'premium'),

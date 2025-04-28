@@ -433,6 +433,17 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
+    title: 'Performance',
+    description: 'Analyze the performance of your website',
+    icon: 'mdi-speedometer',
+    color: 'primary',
+    route: '/performance',
+    disabled: false,
+    category: 'analysis',
+    isNew: true,
+    visible: true
+  },
+  {
     title: 'Semantic',
     description: 'Check the semantic and ARIA attributes of your website',
     icon: 'mdi-semantic-web',

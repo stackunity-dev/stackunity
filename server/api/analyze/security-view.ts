@@ -10,10 +10,6 @@ export default defineEventHandler(async (event) => {
     throw new Error('URL is required');
   }
 
-  function normalizeUrl(url: string): string {
-    return url.replace(/\/+$/, '') || '/';
-  }
-
   function analyzeSensitiveDataExposure($: CheerioSelector, url: string) {
     const issues: Array<any> = [];
 
@@ -344,6 +340,10 @@ export default defineEventHandler(async (event) => {
     return issues;
   }
 
+  function normalizeUrl(url: string): string {
+    return url.replace(/\/+$/, '') || '/';
+  }
+
   async function crawlUrl(url: string) {
     const visitedUrls = new Set<string>();
     const urlsToVisit = [normalizeUrl(url)];
@@ -428,7 +428,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const urlList = await crawlUrl(body.url);
-  const securityAnalysis = await Promise.all(urlList.map(async (url) => {
+  const uniqueUrls = [...new Set(urlList)];
+
+  const securityAnalysis = await Promise.all(uniqueUrls.map(async (url) => {
     try {
       const response = await axios.get(url, {
         headers: {

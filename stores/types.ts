@@ -149,4 +149,33 @@ interface WebsiteData {
   generated_sitemap: string;
   user_id: number;
 }
-export type { TableColumn, Table, DeleteResponse, SQLTable, SQLSchema, StudioComponent, EmailHistoryItem, User, CrawlReport, SEOAuditResult, LoginResponse, RandomData, WebsiteData };
+
+interface ApiRequest {
+  id: string;
+  name: string;
+  method: string;
+  url: string;
+  headers: { key: string; value: string }[];
+  body: string;
+  params: { key: string; value: string }[];
+  createdAt: Date;
+}
+
+interface ApiResponse {
+  id: string;
+  requestId: string;
+  status: number;
+  headers: Record<string, string>;
+  data: any;
+  duration: number;
+  createdAt: Date;
+}
+
+interface CookiePreferences {
+  essential: boolean;
+  functional: boolean;
+  analytics: boolean;
+  marketing: boolean;
+}
+
+export type { TableColumn, Table, DeleteResponse, SQLTable, SQLSchema, StudioComponent, EmailHistoryItem, User, CrawlReport, SEOAuditResult, LoginResponse, RandomData, WebsiteData, ApiRequest, ApiResponse, CookiePreferences };

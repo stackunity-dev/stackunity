@@ -10,6 +10,16 @@
             <v-icon end>mdi-plus</v-icon>
           </v-btn>
         </v-alert>
+
+        <v-fade-transition>
+          <v-progress-linear v-if="loading" v-model="loadingProgress" color="secondary" height="9" striped rounded
+            class="mb-4" :active="loading">
+            <template v-slot:default="{ value }">
+              <span class="text-caption text-grey-darken-1">{{ Math.ceil(value) }}%</span>
+            </template>
+          </v-progress-linear>
+        </v-fade-transition>
+
         <v-card class="mb-4 rounded-lg elevation-2">
           <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg">
             <v-icon color="white" class="mr-2">mdi-web</v-icon>
@@ -149,6 +159,42 @@
                                     <div class="text-subtitle-2 text-center mt-1 text-grey">
                                       Average of {{ semanticData.length }} URLs
                                     </div>
+
+                                    <div v-if="metric.label === 'Performance' && metric.metrics"
+                                      class="d-flex justify-space-between align-center mt-2 performance-metrics">
+                                      <v-tooltip location="top">
+                                        <template v-slot:activator="{ props }">
+                                          <div v-bind="props" class="metric-item">
+                                            <span class="metric-label">FCP</span>
+                                            <span class="metric-value">{{
+                                              Math.round(metric.metrics.firstContentfulPaint) }}ms</span>
+                                          </div>
+                                        </template>
+                                        <span>First Contentful Paint</span>
+                                      </v-tooltip>
+
+                                      <v-tooltip location="top">
+                                        <template v-slot:activator="{ props }">
+                                          <div v-bind="props" class="metric-item">
+                                            <span class="metric-label">LCP</span>
+                                            <span class="metric-value">{{
+                                              Math.round(metric.metrics.largestContentfulPaint) }}ms</span>
+                                          </div>
+                                        </template>
+                                        <span>Largest Contentful Paint</span>
+                                      </v-tooltip>
+
+                                      <v-tooltip location="top">
+                                        <template v-slot:activator="{ props }">
+                                          <div v-bind="props" class="metric-item">
+                                            <span class="metric-label">CLS</span>
+                                            <span class="metric-value">{{
+                                              metric.metrics.cumulativeLayoutShift.toFixed(2) }}</span>
+                                          </div>
+                                        </template>
+                                        <span>Cumulative Layout Shift</span>
+                                      </v-tooltip>
+                                    </div>
                                   </div>
                                 </v-card-text>
                               </v-card>
@@ -199,7 +245,7 @@ import { useRouter } from 'vue-router';
 import snackBar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 import { calculateContentScore } from '../utils/seo/content-view';
-import { calculateEngagementScore, calculateSecurityScore } from '../utils/seo/metrics';
+import { calculateEngagementScore } from '../utils/seo/metrics';
 
 interface SemanticDataItem {
   url: string;
@@ -250,8 +296,19 @@ interface UrlItem {
   url: string;
 }
 
+interface Metric {
+  label: string;
+  value: number;
+  metrics?: {
+    firstContentfulPaint: number;
+    largestContentfulPaint: number;
+    cumulativeLayoutShift: number;
+  };
+}
+
 const userStore = useUserStore();
 const loading = ref(true);
+const loadingProgress = ref(0);
 const semanticData = ref<SemanticDataItem[]>([]);
 const engagementData = ref<EngagementDataItem[]>([]);
 const contentData = ref<any[]>([]);
@@ -271,6 +328,12 @@ const snackbar = ref({
 const sitemapRef = ref('');
 const router = useRouter();
 const websiteData = computed(() => userStore.websiteData);
+const performanceScore = ref(0);
+const performanceData = ref({
+  firstContentfulPaint: 0,
+  largestContentfulPaint: 0,
+  cumulativeLayoutShift: 0
+});
 
 const socialMetaPreview = computed(() => {
   if (!semanticData.value || semanticData.value.length === 0) return null;
@@ -336,15 +399,25 @@ const urlsForDisplay = computed<UrlItem[]>(() => {
   return urls.map((url: string) => ({ url }));
 });
 
-const allMetrics = computed(() => {
+const allMetrics = computed<Metric[]>(() => {
   if (semanticData.value.length === 0) return [];
 
-  return [
+  const metrics: Metric[] = [
     { label: 'Semantic Structure', value: Math.round(avgScores.value.semantic) },
     { label: 'Security Score', value: Math.round(avgScores.value.security) },
     { label: 'Content Quality', value: Math.round(avgScores.value.content) },
     { label: 'User Engagement', value: Math.round(avgScores.value.engagement) }
   ];
+
+  if (performanceScore.value > 0) {
+    metrics.push({
+      label: 'Performance',
+      value: performanceScore.value,
+      metrics: performanceData.value
+    });
+  }
+
+  return metrics;
 });
 
 function getScoreColor(score: number): string {
@@ -374,12 +447,42 @@ async function analyzeSite(): Promise<void> {
 
   try {
     loading.value = true;
+    loadingProgress.value = 0;
 
     const urls = Array.isArray(websiteData.value.all_urls)
       ? websiteData.value.all_urls
       : (typeof websiteData.value.all_urls === 'string'
         ? JSON.parse(websiteData.value.all_urls)
         : []);
+
+    loadingProgress.value = 10;
+    const performanceResponse = await fetch('/api/analyze/performance-view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: websiteData.value.main_url })
+    });
+
+    if (performanceResponse.ok) {
+      const perfData = await performanceResponse.json();
+      performanceScore.value = perfData.averageScore;
+
+      if (perfData.performanceResults && perfData.performanceResults.length > 0) {
+        const totalMetrics = perfData.performanceResults.reduce((acc: any, result: any) => {
+          acc.fcp += result.firstContentfulPaint;
+          acc.lcp += result.largestContentfulPaint;
+          acc.cls += result.cumulativeLayoutShift;
+          return acc;
+        }, { fcp: 0, lcp: 0, cls: 0 });
+
+        const count = perfData.performanceResults.length;
+        performanceData.value = {
+          firstContentfulPaint: totalMetrics.fcp / count,
+          largestContentfulPaint: totalMetrics.lcp / count,
+          cumulativeLayoutShift: totalMetrics.cls / count
+        };
+      }
+    }
+    loadingProgress.value = 25;
 
     const semanticResponse = await fetch('/api/analyze/semantic-view', {
       method: 'POST',
@@ -393,6 +496,7 @@ async function analyzeSite(): Promise<void> {
       );
       avgScores.value.semantic = semanticScores.reduce((sum, score) => sum + score, 0) / semanticScores.length || 0;
     }
+    loadingProgress.value = 40;
 
     const contentPromises = urls.map(async (url: string) => {
       try {
@@ -419,6 +523,7 @@ async function analyzeSite(): Promise<void> {
       return calculateContentScore(item);
     });
     avgScores.value.content = contentScores.reduce((sum, score) => sum + score, 0) / contentScores.length || 0;
+    loadingProgress.value = 60;
 
     const securityPromises = urls.map(async (url: string) => {
       try {
@@ -429,7 +534,8 @@ async function analyzeSite(): Promise<void> {
         });
 
         if (response.ok) {
-          return await response.json();
+          const data = await response.json();
+          return data;
         }
         return null;
       } catch (error) {
@@ -439,12 +545,30 @@ async function analyzeSite(): Promise<void> {
     });
 
     const securityResults = await Promise.all(securityPromises);
-    securityData.value = securityResults.filter(result => result !== null);
 
-    const securityScores = securityData.value.map(item => {
-      return calculateSecurityScore(item);
+    securityData.value = securityResults
+      .filter(result => result !== null)
+      .flat()
+      .filter(item => item && typeof item.score === 'number');
+
+    const uniqueResults = new Map();
+    securityData.value.forEach(result => {
+      if (!uniqueResults.has(result.url)) {
+        uniqueResults.set(result.url, result);
+      }
     });
-    avgScores.value.security = securityScores.reduce((sum, score) => sum + score, 0) / securityScores.length || 0;
+    securityData.value = Array.from(uniqueResults.values());
+
+    const securityScores = securityData.value.map(item => item.score);
+
+    if (securityScores.length > 0) {
+      avgScores.value.security = Math.round(
+        securityScores.reduce((sum, score) => sum + score, 0) / securityScores.length
+      );
+    } else {
+      avgScores.value.security = 0;
+    }
+    loadingProgress.value = 80;
 
     const engagementPromises = urls.map(async (url: string) => {
       try {
@@ -494,6 +618,7 @@ async function analyzeSite(): Promise<void> {
       }
     });
     avgScores.value.engagement = engagementScores.reduce((sum, score) => sum + score, 0) / engagementScores.length || 0;
+    loadingProgress.value = 100;
 
   } catch (error) {
     console.error('Error during site analysis:', error);
@@ -512,6 +637,18 @@ onMounted(async () => {
     analyzeSite();
   } else {
     loading.value = false;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('performanceDataAvailable', (event: any) => {
+      const { websiteUrl, performanceScore: score, performanceMetrics } = event.detail;
+      if (websiteData.value?.main_url === websiteUrl) {
+        performanceScore.value = Math.round(score);
+        if (performanceMetrics) {
+          performanceData.value = performanceMetrics;
+        }
+      }
+    });
   }
 });
 
@@ -583,5 +720,30 @@ function goToSettings() {
   -webkit-box-orient: vertical;
   overflow: hidden;
   color: #616161;
+}
+
+.performance-metrics {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: rgba(66, 66, 66, 0.1);
+  margin-top: 8px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--v-primary-base);
+}
+
+.metric-value {
+  font-size: 11px;
 }
 </style>

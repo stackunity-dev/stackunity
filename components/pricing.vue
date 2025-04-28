@@ -196,6 +196,7 @@ const comparisonFeatures = ref([
   { name: 'Complete Studio features', free: false, standard: true, premium: true },
   { name: 'Database Designer', free: false, standard: true, premium: true },
   { name: 'Robots.txt and Schema.org Generator', free: false, standard: true, premium: true },
+  { name: 'Performance Analysis', free: false, standard: false, premium: true },
   { name: 'Content Analysis', free: false, standard: false, premium: true },
   { name: 'User Engagement Tools', free: false, standard: false, premium: true },
   { name: 'Semantic and ARIA analysis', free: false, standard: false, premium: true },

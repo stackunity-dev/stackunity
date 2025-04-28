@@ -1,18 +1,5 @@
 import { defineStore } from 'pinia';
-
-interface CookiePreferences {
-  essential: boolean;
-  functional: boolean;
-  analytics: boolean;
-  marketing: boolean;
-}
-
-interface CookieSettings {
-  preferences: CookiePreferences;
-  consentShown: boolean;
-  consentVersion: number;
-  lastUpdated: string;
-}
+import { CookiePreferences } from './types';
 
 export const useCookieStore = defineStore('cookie', {
   state: () => ({

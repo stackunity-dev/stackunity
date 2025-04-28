@@ -272,13 +272,14 @@
                               class="flex-grow-1">
                             </v-progress-linear>
                             <span class="text-subtitle-1 font-weight-bold ml-3">{{ calculateContentScore(result)
-                              }}%</span>
+                            }}%</span>
                           </div>
 
                           <v-alert v-if="calculateContentScore(result) >= 90" color="success" variant="tonal"
                             class="mb-3">
                             <div class="text-subtitle-1 font-weight-bold mb-2">Excellent content quality</div>
-                            <p>Your content is well-structured and optimized for SEO. Keep up the good work!</p>
+                            <p class="wrap-text">Your content is well-structured and optimized for SEO. Keep up the good
+                              work!</p>
                           </v-alert>
 
                           <v-expansion-panels variant="accordion">
@@ -294,7 +295,7 @@
                                   <v-list-item
                                     v-if="result?.contentStats?.wordCount && result.contentStats.wordCount < 800">
                                     <v-list-item-title class="font-weight-bold">Add more content</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Your content has {{ result.contentStats.wordCount }} words. Consider expanding to
                                       at least 800-1000 words for better SEO performance.
                                     </v-list-item-subtitle>
@@ -303,7 +304,7 @@
                                   <v-list-item
                                     v-if="!result?.headingStructure?.h1 || !result.headingStructure.h1.length">
                                     <v-list-item-title class="font-weight-bold">Add an H1 heading</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Every page should have exactly one H1 heading that clearly describes the page
                                       content.
                                     </v-list-item-subtitle>
@@ -312,7 +313,7 @@
                                   <v-list-item v-else-if="result.headingStructure.h1.length > 1">
                                     <v-list-item-title class="font-weight-bold">Use only one H1
                                       heading</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Your page has {{ result.headingStructure.h1.length }} H1 headings. For better SEO,
                                       use exactly one
                                       H1 and structure other headings with H2-H6.
@@ -322,7 +323,7 @@
                                   <v-list-item
                                     v-if="!result?.headingStructure?.h2 || !result.headingStructure.h2.length">
                                     <v-list-item-title class="font-weight-bold">Add H2 subheadings</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Use H2 subheadings to break your content into logical sections for better
                                       readability and SEO.
                                     </v-list-item-subtitle>
@@ -331,7 +332,7 @@
                                   <v-list-item v-if="result?.images?.withoutAlt && result.images.withoutAlt > 0">
                                     <v-list-item-title class="font-weight-bold">Add alt text to
                                       images</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       {{ result.images.withoutAlt }} image(s) missing alt text. Add descriptive alt text
                                       to all images
                                       for better accessibility and SEO.
@@ -341,7 +342,7 @@
                                   <v-list-item
                                     v-if="result?.contentStats?.readabilityScore && result.contentStats.readabilityScore < 70">
                                     <v-list-item-title class="font-weight-bold">Improve readability</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Your content has a readability score of {{
                                         result.contentStats.readabilityScore.toFixed(1) }}. Try
                                       using shorter sentences and simpler language.
@@ -351,7 +352,7 @@
                                   <v-list-item
                                     v-if="!Array.isArray(result?.links?.internal) || !result.links.internal.length">
                                     <v-list-item-title class="font-weight-bold">Add internal links</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Add links to other relevant pages on your site to improve navigation and SEO.
                                     </v-list-item-subtitle>
                                   </v-list-item>
@@ -359,7 +360,7 @@
                                   <v-list-item
                                     v-if="!Array.isArray(result?.links?.external) || !result.links.external.length">
                                     <v-list-item-title class="font-weight-bold">Add external links</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Link to authoritative external sources to increase credibility and SEO value.
                                     </v-list-item-subtitle>
                                   </v-list-item>
@@ -367,7 +368,7 @@
                                   <v-list-item
                                     v-if="getContentIssues(result).length === 0 && calculateContentScore(result) < 90">
                                     <v-list-item-title class="font-weight-bold">General improvements</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       - Use more varied and engaging language<br>
                                       - Add multimedia elements (images, videos, infographics)<br>
                                       - Include specific examples and data to support your points<br>
@@ -389,7 +390,7 @@
                                 <v-list>
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">Use target keywords</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Include your main keyword in the title, H1 heading, first paragraph, and
                                       throughout the content
                                       naturally.
@@ -399,7 +400,7 @@
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">Optimize meta
                                       description</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Create a compelling meta description (150-160 characters) that includes your
                                       target keyword.
                                     </v-list-item-subtitle>
@@ -407,7 +408,7 @@
 
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">Improve page speed</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Optimize images, reduce scripts, and leverage browser caching to improve page load
                                       times.
                                     </v-list-item-subtitle>
@@ -415,7 +416,7 @@
 
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">Mobile optimization</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Ensure your page is fully responsive and provides a good user experience on mobile
                                       devices.
                                     </v-list-item-subtitle>
@@ -423,7 +424,7 @@
 
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">Use schema markup</v-list-item-title>
-                                    <v-list-item-subtitle>
+                                    <v-list-item-subtitle class="wrap-text">
                                       Implement appropriate schema.org markup to help search engines understand your
                                       content better.
                                     </v-list-item-subtitle>
@@ -809,11 +810,9 @@ onMounted(() => {
 }
 
 .wrap-text {
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  word-wrap: break-word !important;
-  hyphens: auto !important;
-  max-width: 100% !important;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: initial;
+  display: block;
 }
 </style>
