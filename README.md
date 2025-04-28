@@ -1,68 +1,43 @@
 # StackUnity
 
-StackUnity est une plateforme tout-en-un pour les développeurs qui souhaitent créer, gérer et optimiser leurs projets web. Elle combine des outils de développement, de surveillance, d'audit SEO, et bien plus encore.
+StackUnity is an all-in-one platform for developers who want to create, manage and optimize their web projects. It combines development tools, monitoring, SEO auditing, and much more.
 
-## Fonctionnalités principales
+## Main Features
 
-- **Database Designer**: Créez et gérez visuellement vos schémas de base de données avec prise en charge des conversions SQL vers NoSQL et des exportations ORM (Prisma, TypeORM, Sequelize)
-- **API Testing Hub**: Testez vos API avec prise en charge de différentes méthodes HTTP (GET, POST, PUT, DELETE, PATCH) et visualisez les réponses
-- **Website Audit**: Analysez et optimisez votre site web pour une meilleure visibilité dans les moteurs de recherche, accessibilité et plus encore
-- **Robots & Schema Generator**: Générez des fichiers robots.txt et des structures de données schema.org pour améliorer le référencement
-- **Outils d'accessibilité**: Vérifiez le contraste des couleurs et simulez différentes déficiences visuelles pour garantir l'accessibilité de votre site
-- **Studio de développement**: Environnement de développement visuel pour créer et personnaliser des composants
-- **Responsive Design Tester**: Testez votre site web sur différentes tailles d'écran et appareils
-- **Analyse sémantique**: Outils d'analyse du contenu et de la structure sémantique
-- **Premium Components**: Accédez à des composants et templates Vuetify de haute qualité
+- **Database Designer**: Create and manage your database schemas visually with support for SQL to NoSQL conversions and ORM exports (Prisma, TypeORM, Sequelize)
+- **API Testing Hub**: Test your APIs with support for different HTTP methods (GET, POST, PUT, DELETE, PATCH) and visualize responses
+- **Website Audit**: Analyze and optimize your website for better search engine visibility, accessibility and more
+- **Robots & Schema Generator**: Generate robots.txt files and schema.org data structures to improve SEO
+- **Accessibility Tools**: Check color contrast and simulate different visual impairments to ensure your site's accessibility
+- **Development Studio**: Visual development environment for creating and customizing components
+- **Responsive Design Tester**: Test your website on different screen sizes and devices
+- **Semantic Analysis**: Content and semantic structure analysis tools
+- **Premium Components**: Access high-quality Vuetify components and templates
 
-## Stack technologique
+## Technology Stack
 
-- **Frontend**: Nuxt.js 3 avec Vue 3, TypeScript et Vuetify 3
-- **Sécurité**: Authentification sécurisée basée sur JWT
-- **Intégration de paiement**: Stripe avec calcul dynamique des taxes basé sur le pays de l'utilisateur
-- **Outils d'analyse**: Analytiques intégrées et suivi des performances avec Plausible
-- **Visualisation de données**: Chart.js et ECharts pour des visualisations riches
-- **Traitement de documents**: PDF generation avec PDFKit
+- **Frontend**: Nuxt.js 3 with Vue 3, TypeScript and Vuetify 3
+- **Security**: Secure JWT-based authentication
+- **Payment Integration**: Stripe with dynamic tax calculation based on user's country
+- **Analytics Tools**: Integrated analytics and performance tracking with Plausible
+- **Data Visualization**: Chart.js and ECharts for rich visualizations
+- **Document Processing**: PDF generation with PDFKit
 
-## Installation et développement
+## Installation and development
 
 ```bash
-# Installation des dépendances
+# Installation of dependencies
 npm install
 
-# Démarrer le serveur de développement
+# Start the developement server
 npm run dev
 
-# Construire pour la production
+# Build for production
 npm run build
 
-# Démarrer en mode production
+# Start in production
 npm run start
 ```
-
-## Structure du projet
-
-- `/components`: Composants réutilisables de l'application
-- `/layouts`: Mise en page principale pour les différentes sections
-- `/pages`: Pages de l'application (Dashboard, Database Designer, API Testing, etc.)
-- `/stores`: Stores Pinia pour la gestion de l'état global
-- `/server`: API et services côté serveur
-- `/public`: Ressources publiques
-
-## Accessibilité et SEO
-
-L'application est conçue avec une forte attention portée à l'accessibilité (WCAG 2.1) et aux bonnes pratiques SEO:
-- Structure sémantique HTML5
-- Implémentation ARIA complète
-- Optimisations des Core Web Vitals
-- Génération de méta-données structurées
-
-## Mode Premium
-
-Certaines fonctionnalités avancées sont réservées aux utilisateurs premium:
-- Analyse de site web complète
-- Fonctionnalités avancées de test d'API
-- Simulateur complet de déficiences visuelles
-- Accès à tous les composants premium
 
 ## Licence
 
