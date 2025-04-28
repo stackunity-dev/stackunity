@@ -1,13 +1,13 @@
 import { defineEventHandler, readBody } from 'h3';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY || 're_55555555555555555555555555555555');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default defineEventHandler(async (event) => {
   const { name, email, subject, message } = await readBody(event);
 
   if (!name || !email || !subject || !message) {
-    return { success: false, error: 'Tous les champs sont requis' };
+    return { success: false, error: 'All fields are required' };
   }
 
   try {
@@ -22,14 +22,21 @@ export default defineEventHandler(async (event) => {
       `
     });
 
+    const sendConfirmation = await resend.emails.send({
+      from: 'StackUnity Support <support@stackunity.tech>',
+      to: email,
+      subject: 'Contact message received',
+      html: `Thank you for contacting StackUnity. We will get back to you as soon as possible.`
+    });
+
     if (error) {
-      console.error('Erreur lors de l\'envoi du message de contact:', error);
-      return { success: false, error: 'Erreur lors de l\'envoi du message de contact' };
+      console.error('Error sending contact message:', error);
+      return { success: false, error: 'Error sending contact message' };
     }
 
-    return { success: true, message: 'Message envoyé avec succès' };
+    return { success: true, message: 'Message sent successfully' };
   } catch (error) {
-    console.error('Erreur lors de l\'envoi du message de contact:', error);
-    return { success: false, error: 'Erreur lors de l\'envoi du message de contact' };
+    console.error('Error sending contact message:', error);
+    return { success: false, error: 'Error sending contact message' };
   }
 });

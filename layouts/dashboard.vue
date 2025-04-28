@@ -3,7 +3,7 @@
     <v-navigation-drawer v-model="drawer" :mobile-breakpoint="960" :permanent="!display.smAndDown.value"
       :temporary="display.smAndDown.value" location="left" class="dashboard-drawer">
       <div class="drawer-header pa-4">
-        <div class="d-flex align-center mb-4">
+        <div class="d-flex align-center mb-2">
           <div class="logo-container mr-3">
             <img src="/images/logo.png" alt="StackUnity" class="logo-devunity" />
           </div>
@@ -12,12 +12,7 @@
             <div class="text-caption text-medium-emphasis">v1.0.2</div>
           </div>
         </div>
-
-        <v-text-field v-model="search" density="compact" variant="outlined" placeholder="Search..."
-          prepend-inner-icon="mdi-magnify" hide-details rounded class="mb-2" bg-color="surface"></v-text-field>
       </div>
-
-      <v-divider></v-divider>
 
       <v-list density="compact" v-model:opened="open" nav class="px-2">
         <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard-outline" title="Dashboard" rounded="lg"
@@ -145,7 +140,6 @@ const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 const open = ref([]);
-const search = ref('');
 const display = useDisplay();
 const drawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');

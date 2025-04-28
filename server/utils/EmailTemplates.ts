@@ -3,11 +3,11 @@ export class EmailTemplates {
     return `
       <div style="font-family: 'Figtree', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <header style="text-align: center; margin-bottom: 30px;">
-          <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="max-width: 200px;">
+          <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="max-width: 200px;">
         </header>
         
         <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <h1 style="color: #6200ea; margin-bottom: 20px;">Welcome to StackUnity, ${username} !</h1>
+          <h1 style="color: #6200ea; margin-bottom: 20px; text-align: center;">Welcome to StackUnity, ${username} !</h1>
           
           <p style="margin-bottom: 15px; line-height: 1.5;">We are thrilled to count you among our users. StackUnity is your one-stop-shop for improving your web development and SEO performance.</p>
           
@@ -21,7 +21,7 @@ export class EmailTemplates {
           </ul>
           
           <p style="margin-bottom: 20px;">
-            <a href="https://stackunity.tech/dashboard" style="background-color: #6200ea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Accéder à mon tableau de bord</a>
+            <a href="https://stackunity.tech/dashboard" style="background-color: #6200ea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Access your dashboard</a>
           </p>
         </main>
         
