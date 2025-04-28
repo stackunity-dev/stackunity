@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-navigation-drawer v-model="drawer" :mobile-breakpoint="960" :permanent="!display.smAndDown.value"
-      :temporary="display.smAndDown.value" location="left" class="dashboard-drawer" id="main-navigation">
+      :temporary="display.smAndDown.value" location="left" class="dashboard-drawer">
       <div class="drawer-header pa-4">
         <div class="d-flex align-center mb-2">
           <div class="logo-container mr-3">
@@ -74,8 +74,8 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar class="border-b page-header px-4" :color="getHeaderColor()" flat scroll-behavior="elevate" :elevation="0"
-      id="dashboard-title">
+    <v-app-bar class="border-b page-header px-4" :color="getHeaderColor()" flat scroll-behavior="elevate"
+      :elevation="0">
       <v-app-bar-nav-icon v-if="display.smAndDown.value" @click="drawer = !drawer"
         color="on-surface"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
@@ -126,8 +126,6 @@
         <NuxtPage :studio-mode="studioMode" />
       </div>
     </v-main>
-
-    <OnboardingTutorial :show-onboarding="showOnboarding" @close="showOnboarding = false" />
   </v-app>
 </template>
 
@@ -135,7 +133,6 @@
 import { computed, markRaw, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
-import OnboardingTutorial from '../components/OnboardingTutorial.vue';
 import premiumFeatures from '../components/PremiumFeature.vue';
 import { useUserStore } from '../stores/userStore';
 
@@ -148,7 +145,6 @@ const drawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
 const studioMode = ref('studio');
 const isSmall = computed(() => display.smAndDown.value);
-const showOnboarding = ref(false);
 
 provide('studioMode', {
   mode: studioMode,
@@ -284,20 +280,6 @@ onMounted(() => {
   userStore.loadSQLSchemas();
   userStore.loadWebsiteData();
   updatePageTitle();
-
-  // Vérifier si l'utilisateur vient de s'inscrire
-  const fromSignup = localStorage.getItem('fromSignup') === 'true';
-
-  if (fromSignup) {
-    // Afficher le tutoriel et réinitialiser le flag
-    showOnboarding.value = true;
-    localStorage.removeItem('fromSignup');
-  }
-
-  // Vérifier si on veut forcer l'affichage du tutoriel via un paramètre d'URL
-  if (route.query.showTutorial === 'true') {
-    showOnboarding.value = true;
-  }
 });
 
 function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string, planType: 'standard' | 'premium' = 'premium'): any {
