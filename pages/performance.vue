@@ -96,7 +96,7 @@
                         <div>
                           <div class="text-subtitle-1 font-weight-bold">CLS</div>
                           <div class="text-h6">{{ calculateAverageMetric('cumulativeLayoutShift', false, 1).toFixed(2)
-                          }}</div>
+                            }}</div>
                         </div>
                       </v-progress-circular>
                       <p class="mt-2">Cumulative Layout Shift</p>
@@ -286,7 +286,11 @@
                             <v-icon icon="mdi-chart-pie" class="mr-2" aria-hidden="true" />
                             Resource Distribution
                           </v-card-title>
-                          <v-card-text>
+                          <v-card-text v-if="!resourceChart">
+                            <p>Chart is loading...</p>
+                            <v-skeleton-loader type="card" aria-hidden="true" />
+                          </v-card-text>
+                          <v-card-text v-else>
                             <canvas ref="resourceChart" height="200" aria-label="Resource distribution chart"></canvas>
                           </v-card-text>
                         </v-card>
