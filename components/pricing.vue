@@ -140,9 +140,9 @@ const standardPlan = ref({
   icon: 'mdi-star',
   avatarColor: 'info',
   price: {
-    '€': '79.99',
-    '$': '99.99',
-    '£': '69.99',
+    '€': '149.99',
+    '$': (149.99 * 1.1).toFixed(2),
+    '£': (149.99 * 0.85).toFixed(2),
     duration: 'month'
   },
   hasDiscount: true,
@@ -162,9 +162,9 @@ const premiumPlan = ref({
   icon: 'mdi-crown',
   avatarColor: 'white',
   price: {
-    '€': '179.99',
-    '$': '199.99',
-    '£': '159.99',
+    '€': '249.99',
+    '$': (249.99 * 1.1).toFixed(2),
+    '£': (249.99 * 0.85).toFixed(2),
     duration: 'lifetime'
   },
   hasDiscount: false,
