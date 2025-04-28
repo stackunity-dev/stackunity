@@ -2,8 +2,9 @@
   <div class="onboarding-tutorial" v-if="show">
     <v-overlay v-model="show" scroll-strategy="none" class="onboarding-overlay">
       <div class="tutorial-container">
-        <v-card v-if="currentStep < steps.length" class="tutorial-card" :style="getPositionStyle()" elevation="10"
-          width="280" :color="getCardColor()" rounded="lg">
+        <v-card v-if="currentStep < steps.length" class="tutorial-card"
+          :class="{ 'tutorial-card-welcome': currentStep === 0 }" :style="getPositionStyle()" elevation="10" width="280"
+          :color="getCardColor()" rounded="lg">
           <v-card-title class="pb-2 pt-4 px-4">
             <div class="d-flex align-center">
               <v-icon :icon="steps[currentStep].icon" class="mr-2" />
@@ -112,11 +113,15 @@ const steps: TutorialStep[] = [
 
 // Fonction pour calculer la position du tooltip en fonction de l'élément ciblé
 function getPositionStyle() {
+  // Pour la première étape, on ne calcule rien, la classe CSS s'en occupe
+  if (currentStep.value === 0) {
+    return {};
+  }
+
   const step = steps[currentStep.value];
   const target = document.getElementById(step.target);
 
-  // Toujours positionner la première carte au centre pour qu'elle soit entièrement visible
-  if (currentStep.value === 0 || step.position === 'center' || !target) {
+  if (!target || step.position === 'center') {
     return {
       top: '50%',
       left: '50%',
@@ -127,90 +132,67 @@ function getPositionStyle() {
   const rect = target.getBoundingClientRect();
   const windowHeight = window.innerHeight;
   const windowWidth = window.innerWidth;
-  const cardHeight = 280; // Hauteur approximative de la carte
-  const cardWidth = 280; // Largeur de la carte
 
-  // Assurer que la carte reste dans les limites de l'écran
-  const ensureInViewport = (position: any) => {
-    // Ajuster la position verticale si nécessaire
-    if (position.top < 20) position.top = 20;
-    if (position.top > windowHeight - cardHeight - 20)
-      position.top = windowHeight - cardHeight - 20;
-
-    // Ajuster la position horizontale si nécessaire
-    if (position.left < 20) position.left = 20;
-    if (position.left > windowWidth - cardWidth - 20)
-      position.left = windowWidth - cardWidth - 20;
-
-    return position;
-  };
-
-  let position;
+  // Positions sécurisées avec des marges
+  const safeTop = Math.max(20, Math.min(windowHeight - 300, rect.top));
+  const safeBottom = Math.min(windowHeight - 300, Math.max(20, rect.bottom));
+  const safeLeft = Math.max(20, Math.min(windowWidth - 300, rect.left));
+  const safeRight = Math.min(windowWidth - 300, Math.max(20, rect.right));
 
   switch (step.position) {
     case 'top':
-      position = {
-        top: `${Math.max(rect.top - 220, 20)}px`,
-        left: `${rect.left + rect.width / 2}px`,
+      return {
+        top: `${safeTop - 220}px`,
+        left: '50%',
         transform: 'translateX(-50%)'
       };
-      break;
     case 'right':
-      position = {
-        top: `${rect.top + rect.height / 2}px`,
-        left: `${Math.min(rect.right + 20, windowWidth - cardWidth - 20)}px`,
+      return {
+        top: `${(safeTop + safeBottom) / 2}px`,
+        left: `${safeRight + 20}px`,
         transform: 'translateY(-50%)'
       };
-      break;
     case 'bottom':
-      position = {
-        top: `${Math.min(rect.bottom + 20, windowHeight - cardHeight - 20)}px`,
-        left: `${rect.left + rect.width / 2}px`,
+      return {
+        top: `${safeBottom + 20}px`,
+        left: '50%',
         transform: 'translateX(-50%)'
       };
-      break;
     case 'left':
-      position = {
-        top: `${rect.top + rect.height / 2}px`,
-        left: `${Math.max(rect.left - cardWidth - 20, 20)}px`,
+      return {
+        top: `${(safeTop + safeBottom) / 2}px`,
+        left: `${safeLeft - 300}px`,
         transform: 'translateY(-50%)'
       };
-      break;
     case 'top-right':
-      position = {
-        top: `${Math.max(rect.top - 220, 20)}px`,
-        left: `${Math.min(rect.right, windowWidth - cardWidth - 20)}px`,
+      return {
+        top: `${safeTop - 220}px`,
+        left: `${safeRight}px`,
         transform: 'translateX(-100%)'
       };
-      break;
     case 'bottom-right':
-      position = {
-        top: `${Math.min(rect.bottom + 20, windowHeight - cardHeight - 20)}px`,
-        left: `${Math.min(rect.right, windowWidth - cardWidth - 20)}px`,
+      return {
+        top: `${safeBottom + 20}px`,
+        left: `${safeRight}px`,
         transform: 'translateX(-100%)'
       };
-      break;
     case 'bottom-left':
-      position = {
-        top: `${Math.min(rect.bottom + 20, windowHeight - cardHeight - 20)}px`,
-        left: `${Math.max(rect.left, 20)}px`,
+      return {
+        top: `${safeBottom + 20}px`,
+        left: `${safeLeft}px`
       };
-      break;
     case 'top-left':
-      position = {
-        top: `${Math.max(rect.top - 220, 20)}px`,
-        left: `${Math.max(rect.left, 20)}px`,
+      return {
+        top: `${safeTop - 220}px`,
+        left: `${safeLeft}px`
       };
-      break;
     default:
-      position = {
+      return {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)'
       };
   }
-
-  return position;
 }
 
 function getCardColor() {
@@ -277,6 +259,7 @@ onMounted(() => {
 .onboarding-overlay {
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
+  z-index: 9000;
 }
 
 .tutorial-container {
@@ -286,17 +269,29 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 9500;
 }
 
 .tutorial-card {
-  position: absolute;
+  position: fixed;
   pointer-events: auto;
-  z-index: 1001;
+  z-index: 9999;
   overflow: visible;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   animation: float 3s ease-in-out infinite;
+  max-width: 90vw;
+  max-height: 80vh;
+}
+
+/* Garantir que la première carte soit correctement positionnée */
+.tutorial-card-welcome {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
 }
 
 .step-indicator {
@@ -308,50 +303,18 @@ onMounted(() => {
 
 @keyframes float {
   0% {
-    transform: translateY(0px) translateX(-50%);
+    transform: translateY(0px);
   }
   50% {
-    transform: translateY(-10px) translateX(-50%);
+    transform: translateY(-10px);
   }
   100% {
-    transform: translateY(0px) translateX(-50%);
+    transform: translateY(0px);
   }
-}
-
-.tutorial-card[style*="transform: translateX"] {
-  animation: float-x 3s ease-in-out infinite;
-}
-
-.tutorial-card[style*="transform: translateY"] {
-  animation: float-y 3s ease-in-out infinite;
 }
 
 .tutorial-card[style*="transform: translate(-50%, -50%)"] {
   animation: float-center 3s ease-in-out infinite;
-}
-
-@keyframes float-x {
-  0% {
-    transform: translateY(0px) translateX(-50%);
-  }
-  50% {
-    transform: translateY(-10px) translateX(-50%);
-  }
-  100% {
-    transform: translateY(0px) translateX(-50%);
-  }
-}
-
-@keyframes float-y {
-  0% {
-    transform: translateX(0px) translateY(-50%);
-  }
-  50% {
-    transform: translateX(-10px) translateY(-50%);
-  }
-  100% {
-    transform: translateX(0px) translateY(-50%);
-  }
 }
 
 @keyframes float-center {
