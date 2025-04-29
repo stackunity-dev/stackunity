@@ -15,7 +15,7 @@ export default defineEventHandler((event) => {
 
   const url = event.node.req.url || '';
 
-  let cspValue = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://plausible.io https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src * 'self' data: blob:; connect-src 'self' https://plausible.io; worker-src 'self'; frame-ancestors 'none'";
+  let cspValue = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://plausible.io https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src * 'self' data: blob:; connect-src 'self' https://plausible.io https://api.stripe.com; worker-src 'self'; frame-src https://js.stripe.com; frame-ancestors 'none'";
 
   if (url.includes('plausible-proxy.js')) {
     cspValue = "script-src 'self' 'unsafe-inline' 'unsafe-eval'; worker-src 'self'; connect-src *";
