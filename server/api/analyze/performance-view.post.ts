@@ -3,14 +3,15 @@ import { load } from 'cheerio';
 import { defineEventHandler, readBody } from 'h3';
 import { analyzeSitePerformance, calculateAveragePerformanceScore, getOptimizationTips, PerformanceMetrics } from './performance';
 
-async function processUrlsInBatches(urls: string[], batchSize: number = 5): Promise<PerformanceMetrics[]> {
+async function processUrlsInBatches(urls: string[], batchSize: number = 5, delayBetweenRequests: number = 2000): Promise<PerformanceMetrics[]> {
   const results: PerformanceMetrics[] = [];
+  const maxUrls = 20;
 
-  for (let i = 0; i < urls.length; i += batchSize) {
+  for (let i = 0; i < Math.min(urls.length, maxUrls); i += batchSize) {
     const batch = urls.slice(i, i + batchSize);
     const batchPromises = batch.map(url =>
       analyzeSitePerformance(url).catch(error => {
-        console.error(`Error analyzing ${url}:`, error);
+        console.error(`Erreur lors de l'analyse de ${url}:`, error);
         return null;
       })
     );
@@ -18,9 +19,8 @@ async function processUrlsInBatches(urls: string[], batchSize: number = 5): Prom
     const batchResults = await Promise.all(batchPromises);
     results.push(...batchResults.filter((result): result is PerformanceMetrics => result !== null));
 
-    // Pause entre les lots pour éviter la surcharge
-    if (i + batchSize < urls.length) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    if (i + batchSize < Math.min(urls.length, maxUrls)) {
+      await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
     }
   }
 
@@ -28,45 +28,43 @@ async function processUrlsInBatches(urls: string[], batchSize: number = 5): Prom
 }
 
 export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  if (!body.url) {
+    throw new Error('URL requise');
+  }
+
   try {
-    const body = await readBody(event);
+    const urls = await crawlWebsite(body.url, 20); // Limite à 20 URLs
+    const results = await processUrlsInBatches(
+      urls,
+      body.batchSize || 5,
+      body.delayBetweenRequests || 2000
+    );
 
-    if (!body.url) {
-      return {
-        statusCode: 400,
-        body: { error: 'URL is required' }
-      };
-    }
-
-    const mainUrl = body.url;
-    const maxUrls = body.maxUrls || 5;
-
-    const urlsToCrawl = await crawlWebsite(mainUrl, maxUrls);
-    const performanceResults = await processUrlsInBatches(urlsToCrawl);
-
-    if (performanceResults.length === 0) {
+    if (results.length === 0) {
       throw new Error('Failed to analyze any URLs');
     }
 
-    const averageScore = calculateAveragePerformanceScore(performanceResults);
-    const mainPageResult = performanceResults.find(r => r.url === mainUrl) || performanceResults[0];
+    const averageScore = calculateAveragePerformanceScore(results);
+    const mainPageResult = results.find(r => r.url === body.url) || results[0];
     const optimizationTips = getOptimizationTips(mainPageResult);
 
     return {
-      url: mainUrl,
-      urlsAnalyzed: urlsToCrawl,
-      performanceResults,
-      averageScore,
-      optimizationTips
+      statusCode: 200,
+      body: {
+        urlsAnalyzed: urls.slice(0, 20), // Limite à 20 URLs
+        results,
+        averageScore,
+        optimizationTips
+      }
     };
   } catch (error) {
-    console.error('Error analyzing website performance:', error);
-
+    console.error('Erreur lors de l\'analyse des performances:', error);
     return {
       statusCode: 500,
       body: {
-        error: 'Failed to analyze website performance',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Échec de l\'analyse des performances',
+        message: error instanceof Error ? error.message : 'Erreur inconnue'
       }
     };
   }

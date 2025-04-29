@@ -416,13 +416,14 @@ const analyzeUrl = async () => {
       },
       body: JSON.stringify({
         url: url.value,
-        maxUrls: 50
+        maxUrls: 20,
+        delayBetweenRequests: 2000
       })
     });
 
     if (!response.ok) {
       if (response.status === 524) {
-        throw new Error('Le serveur a mis trop de temps à répondre. Le site est peut-être trop grand ou trop lent. Essayez avec moins d\'URLs.');
+        throw new Error('Le serveur a mis trop de temps à répondre. Essayez avec un site plus petit ou moins de pages.');
       }
       throw new Error(`Erreur serveur: ${response.status}`);
     }
