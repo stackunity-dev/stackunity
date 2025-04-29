@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody } from 'h3';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 export default defineEventHandler(async (event) => {
   const { name, email, subject, message } = await readBody(event);
