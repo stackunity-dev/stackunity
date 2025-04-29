@@ -3,10 +3,33 @@ import { load } from 'cheerio';
 import { defineEventHandler, readBody } from 'h3';
 import { analyzeUserEngagement } from './engagement-analyzer';
 
+async function processUrlsInBatches(urls: string[], batchSize: number = 5): Promise<any[]> {
+  const results: any[] = [];
+
+  for (let i = 0; i < urls.length; i += batchSize) {
+    const batch = urls.slice(i, i + batchSize);
+    const batchPromises = batch.map(url =>
+      analyzeUserEngagement(url).catch(error => {
+        console.error(`Erreur lors de l'analyse de l'engagement de ${url}:`, error);
+        return null;
+      })
+    );
+
+    const batchResults = await Promise.all(batchPromises);
+    results.push(...batchResults.filter(result => result !== null));
+
+    if (i + batchSize < urls.length) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+
+  return results;
+}
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   if (!body.url) {
-    throw new Error('URL is required');
+    throw new Error('URL requise');
   }
 
   function normalizeUrl(url: string): string {
@@ -44,7 +67,17 @@ export default defineEventHandler(async (event) => {
       }
 
       try {
-        const response = await axios.get(currentUrl);
+        const response = await axios.get(currentUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+          },
+          timeout: 30000,
+          maxContentLength: 50 * 1024 * 1024,
+          maxRedirects: 5
+        });
+
         visitedUrls.add(currentUrl);
 
         const $ = load(response.data);
@@ -72,72 +105,37 @@ export default defineEventHandler(async (event) => {
               urlsToVisit.push(fullUrl);
             }
           } catch (e) {
-            console.error(`Invalid URL: ${link}`);
+            console.error(`URL invalide: ${link}`);
           }
         }
       } catch (e) {
-        console.error(`Error crawling ${currentUrl}: ${e.message}`);
+        console.error(`Erreur lors du crawl de ${currentUrl}: ${e.message}`);
       }
     }
 
     return Array.from(visitedUrls);
   }
 
-  const urlList = await crawlUrl(body.url);
-  const engagementAnalysis = await Promise.all(urlList.map(async (url) => {
-    try {
-      const response = await axios.get(url);
-      const engagement = await analyzeUserEngagement(response.data);
+  try {
+    const urls = await crawlUrl(body.url);
+    const results = await processUrlsInBatches(urls);
 
-      // Calculer le score global sur 100
-      const engagementScore = Math.min(100, Math.round(
-        Math.min(engagement.ctaCount * 5, 50) +
-        Math.min(engagement.interactiveElements * 2, 20) +
-        Math.min(engagement.visualElements * 2, 20) +
-        Math.min(engagement.navigationScore * 0.1, 10)
-      ));
-
-      return {
-        url,
-        score: engagementScore,
-        ctaCount: engagement.ctaCount,
-        interactiveElements: engagement.interactiveElements,
-        visualElements: engagement.visualElements,
-        socialElements: engagement.socialElements,
-        navigationScore: engagement.navigationScore,
-        readabilityScore: engagement.readabilityScore,
-        engagementTechniques: engagement.engagementTechniques,
-        ctaDetails: engagement.ctaDetails,
-        interactiveElementsDetails: engagement.interactiveElementsDetails,
-        socialElementsDetails: engagement.socialElementsDetails,
-        issues: engagement.issues
-      };
-    } catch (error) {
-      console.error(`Error analyzing ${url}: ${error.message}`);
-      return {
-        url,
-        error: error.message,
-        score: 0,
-        ctaCount: 0,
-        interactiveElements: 0,
-        visualElements: 0,
-        socialElements: 0,
-        navigationScore: 0,
-        readabilityScore: 0,
-        engagementTechniques: {
-          hasSocialLinks: false,
-          hasCtaButtons: false,
-          hasFormsOrInputs: false,
-          hasVideos: false,
-          hasImages: false,
-          hasInteractiveElements: false,
-          hasFeedbackMechanisms: false
-        },
-        issues: []
-      };
-    }
-  }));
-
-  return engagementAnalysis;
+    return {
+      statusCode: 200,
+      body: {
+        urlsAnalyzed: urls,
+        results
+      }
+    };
+  } catch (error) {
+    console.error('Erreur lors de l\'analyse de l\'engagement:', error);
+    return {
+      statusCode: 500,
+      body: {
+        error: 'Échec de l\'analyse de l\'engagement',
+        message: error instanceof Error ? error.message : 'Erreur inconnue'
+      }
+    };
+  }
 });
 

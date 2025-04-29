@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { load } from 'cheerio';
-import { createError, defineEventHandler, readBody } from 'h3';
+import { defineEventHandler, readBody } from 'h3';
 import { analyzeImages, analyzeLinks } from './analyze-functions';
 import { CheerioSelector } from './analyzer-types';
 import { analyzeSemanticStructure } from './semantic-analyzer';
@@ -184,18 +184,69 @@ function identifyContentIssues(
   return issues;
 }
 
+async function processUrlsInBatches(urls: string[], batchSize: number = 5): Promise<any[]> {
+  const results: any[] = [];
+
+  for (let i = 0; i < urls.length; i += batchSize) {
+    const batch = urls.slice(i, i + batchSize);
+    const batchPromises = batch.map(async url => {
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+          },
+          timeout: 30000,
+          maxContentLength: 50 * 1024 * 1024,
+          maxRedirects: 5
+        });
+
+        const $ = load(response.data);
+        const headingStructure = extractHeadingStructure($);
+        const contentStats = analyzeContentStats($);
+        const images = analyzeImages($);
+        const links = analyzeLinks($, url);
+        const contentIssues = identifyContentIssues(contentStats, headingStructure, images, links);
+
+        return {
+          url,
+          title: $('title').text().trim(),
+          description: $('meta[name="description"]').attr('content'),
+          headingStructure,
+          contentStats,
+          images,
+          links,
+          semanticStructure: analyzeSemanticStructure($),
+          contentIssues
+        };
+      } catch (error) {
+        console.error(`Erreur lors de l'analyse de ${url}:`, error);
+        return null;
+      }
+    });
+
+    const batchResults = await Promise.all(batchPromises);
+    results.push(...batchResults.filter(result => result !== null));
+
+    if (i + batchSize < urls.length) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+
+  return results;
+}
+
+function normalizeUrl(url: string): string {
+  return url.replace(/\/+$/, '') || '/';
+}
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   if (!body.url) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'URL is required'
-    });
+    throw new Error('URL requise');
   }
 
-  function normalizeUrl(url: string): string {
-    return url.replace(/\/+$/, '') || '/';
-  }
 
   async function crawlUrl(url: string) {
     const visitedUrls = new Set<string>();
@@ -219,10 +270,7 @@ export default defineEventHandler(async (event) => {
       '.ico'
     ];
 
-    const maxUrls = 10;
-    let urlCount = 0;
-
-    while (urlsToVisit.length > 0 && urlCount < maxUrls) {
+    while (urlsToVisit.length > 0) {
       const currentUrl = urlsToVisit.pop();
       if (!currentUrl || visitedUrls.has(currentUrl)) continue;
 
@@ -237,12 +285,12 @@ export default defineEventHandler(async (event) => {
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
           },
-          timeout: 10000,
+          timeout: 30000,
+          maxContentLength: 50 * 1024 * 1024,
           maxRedirects: 5
         });
 
         visitedUrls.add(currentUrl);
-        urlCount++;
 
         const $ = load(response.data);
         const links = $('a[href]')
@@ -269,11 +317,11 @@ export default defineEventHandler(async (event) => {
               urlsToVisit.push(fullUrl);
             }
           } catch (e) {
-            console.error(`Invalid URL: ${link}`);
+            console.error(`URL invalide: ${link}`);
           }
         }
       } catch (e) {
-        console.error(`Error crawling ${currentUrl}: ${e.message}`);
+        console.error(`Erreur lors du crawl de ${currentUrl}: ${e.message}`);
       }
     }
 
@@ -281,48 +329,25 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const response = await axios.get(body.url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-      },
-      timeout: 10000,
-      maxRedirects: 5
-    });
+    const urls = await crawlUrl(body.url);
+    const results = await processUrlsInBatches(urls);
 
-    const $ = load(response.data);
-
-    const headingStructure = extractHeadingStructure($);
-    const contentStats = analyzeContentStats($);
-    const images = analyzeImages($);
-    const links = analyzeLinks($, body.url);
-    const semanticStructure = analyzeSemanticStructure($);
-    const contentIssues = identifyContentIssues(contentStats, headingStructure, images, links);
-
-    const result: ContentAnalysisResult = {
-      url: body.url,
-      title: $('title').text(),
-      description: $('meta[name="description"]').attr('content'),
-      headingStructure,
-      contentStats,
-      images,
-      links,
-      semanticStructure,
-      contentIssues
+    return {
+      statusCode: 200,
+      body: {
+        urlsAnalyzed: urls,
+        results
+      }
     };
-
-    if (body.crawl) {
-      const urlList = await crawlUrl(body.url);
-      result.urlList = urlList;
-    }
-
-    return result;
   } catch (error) {
-    throw createError({
+    console.error('Erreur lors de l\'analyse du contenu:', error);
+    return {
       statusCode: 500,
-      statusMessage: `Error analyzing content: ${error.message}`
-    });
+      body: {
+        error: 'Échec de l\'analyse du contenu',
+        message: error instanceof Error ? error.message : 'Erreur inconnue'
+      }
+    };
   }
 });
 

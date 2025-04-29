@@ -7,7 +7,7 @@ import { analyzeSecurityVulnerabilities } from './security-analyzer';
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   if (!body.url) {
-    throw new Error('URL is required');
+    throw new Error('URL requise');
   }
 
   function analyzeSensitiveDataExposure($: CheerioSelector, url: string) {
@@ -366,10 +366,7 @@ export default defineEventHandler(async (event) => {
       '.ico'
     ];
 
-    const maxUrls = 10;
-    let urlCount = 0;
-
-    while (urlsToVisit.length > 0 && urlCount < maxUrls) {
+    while (urlsToVisit.length > 0) {
       const currentUrl = urlsToVisit.pop();
       if (!currentUrl || visitedUrls.has(currentUrl)) continue;
 
@@ -384,12 +381,12 @@ export default defineEventHandler(async (event) => {
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
           },
-          timeout: 10000,
+          timeout: 30000,
+          maxContentLength: 50 * 1024 * 1024,
           maxRedirects: 5
         });
 
         visitedUrls.add(currentUrl);
-        urlCount++;
 
         const $ = load(response.data);
         const links = $('a[href]')
@@ -416,114 +413,59 @@ export default defineEventHandler(async (event) => {
               urlsToVisit.push(fullUrl);
             }
           } catch (e) {
-            console.error(`Invalid URL: ${link}`);
+            console.error(`URL invalide: ${link}`);
           }
         }
       } catch (e) {
-        console.error(`Error crawling ${currentUrl}: ${e.message}`);
+        console.error(`Erreur lors du crawl de ${currentUrl}: ${e.message}`);
       }
     }
 
     return Array.from(visitedUrls);
   }
 
-  const urlList = await crawlUrl(body.url);
-  const uniqueUrls = [...new Set(urlList)];
+  async function processUrlsInBatches(urls: string[], batchSize: number = 5): Promise<any[]> {
+    const results: any[] = [];
 
-  const securityAnalysis = await Promise.all(uniqueUrls.map(async (url) => {
-    try {
-      const response = await axios.get(url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-        },
-        timeout: 15000,
-        maxRedirects: 5
-      });
+    for (let i = 0; i < urls.length; i += batchSize) {
+      const batch = urls.slice(i, i + batchSize);
+      const batchPromises = batch.map(url =>
+        analyzeSecurityVulnerabilities(url, url).catch(error => {
+          console.error(`Erreur lors de l'analyse de sécurité de ${url}:`, error);
+          return null;
+        })
+      );
 
-      const html = response.data;
-      const $ = load(html);
-      const headers: Record<string, string> = {};
-      Object.entries(response.headers).forEach(([key, value]) => {
-        if (value !== undefined) {
-          headers[key] = Array.isArray(value) ? value.join(', ') : String(value);
-        }
-      });
+      const batchResults = await Promise.all(batchPromises);
+      results.push(...batchResults.filter(result => result !== null));
 
-      const securityResults = await analyzeSecurityVulnerabilities(html, url, headers);
-
-      const sensitiveDataIssues = analyzeSensitiveDataExposure($, url);
-      const csrfIssues = analyzeCSRFVulnerabilities($, url);
-      const headerIssues = analyzeInsecureHeaders(headers);
-      const potentialVulnerabilities = analyzePotentialVulnerabilities($, url);
-
-      const additionalIssues = [
-        ...sensitiveDataIssues,
-        ...csrfIssues,
-        ...headerIssues,
-        ...potentialVulnerabilities
-      ];
-
-      let adjustedScore = securityResults.score;
-      if (additionalIssues.length > 0) {
-        const penaltyPerIssue = {
-          'high': 10,
-          'medium': 5,
-          'low': 2
-        };
-
-        let totalPenalty = 0;
-        additionalIssues.forEach(issue => {
-          totalPenalty += penaltyPerIssue[issue.severity as keyof typeof penaltyPerIssue] || 2;
-        });
-
-        const penalty = Math.min(totalPenalty, 50);
-        adjustedScore = Math.max(0, adjustedScore - penalty);
+      if (i + batchSize < urls.length) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
-
-      return {
-        ...securityResults,
-        url: url,
-        score: adjustedScore,
-        securityIssues: [
-          ...securityResults.securityIssues,
-          ...additionalIssues
-        ],
-        additionalVulnerabilities: {
-          sensitiveDataExposure: sensitiveDataIssues.length,
-          csrfVulnerabilities: csrfIssues.length,
-          headerVulnerabilities: headerIssues.length,
-          otherVulnerabilities: potentialVulnerabilities.length
-        }
-      };
-    } catch (error) {
-      console.error(`Error analyzing security for ${url}: ${error.message}`);
-      return {
-        url,
-        score: 0,
-        xssVulnerabilities: [],
-        csrfVulnerabilities: [],
-        injectionVulnerabilities: [],
-        infoLeakVulnerabilities: [],
-        headerAnalysis: { missing: [], present: {}, score: 0 },
-        cookieAnalysis: { secure: false, httpOnly: false, sameSite: false, score: 0 },
-        https: url.startsWith('https://'),
-        securityIssues: [{
-          type: 'error',
-          description: `Failed to analyze: ${error.message}`,
-          severity: 'medium'
-        }],
-        additionalVulnerabilities: {
-          sensitiveDataExposure: 0,
-          csrfVulnerabilities: 0,
-          headerVulnerabilities: 0,
-          otherVulnerabilities: 0
-        },
-        error: `Failed to analyze: ${error.message}`
-      };
     }
-  }));
 
-  return securityAnalysis;
+    return results;
+  }
+
+  try {
+    const urls = await crawlUrl(body.url);
+    const results = await processUrlsInBatches(urls);
+
+    return {
+      statusCode: 200,
+      body: {
+        urlsAnalyzed: urls,
+        results
+      }
+    };
+  } catch (error) {
+    console.error('Erreur lors de l\'analyse de sécurité:', error);
+    return {
+      statusCode: 500,
+      body: {
+        error: 'Échec de l\'analyse de sécurité',
+        message: error instanceof Error ? error.message : 'Erreur inconnue'
+      }
+    };
+  }
 }); 
