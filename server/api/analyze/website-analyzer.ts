@@ -96,7 +96,7 @@ export default defineEventHandler(async (event: H3Event): Promise<SiteAnalysisRe
           urlsToAnalyze.add(pageUrl);
           seen.add(normalizedUrl);
 
-          if (urlsToAnalyze.size >= 20) break;
+          if (urlsToAnalyze.size >= 10) break;
         }
       } catch (e) {
         console.error(`Invalid URL in crawl results: ${pageUrl}`);
@@ -249,10 +249,11 @@ async function analyzeWebsite(url: string): Promise<WebsiteAnalysisResult> {
       'Accept-Encoding': 'gzip, deflate, br',
       'Connection': 'keep-alive'
     },
-    timeout: 15000,
+    timeout: 20000,
     maxContentLength: 10 * 1024 * 1024,
     maxRedirects: 5,
-    responseType: 'arraybuffer'
+    responseType: 'arraybuffer',
+    validateStatus: (status) => status === 200 || status === 201 || status === 202
   });
 
   const loadTime = performance.now() - startTime;

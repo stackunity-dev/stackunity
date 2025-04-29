@@ -10,7 +10,7 @@ export interface PerformanceData {
   optimizationTips: OptimizationTip[];
 }
 
-export const analyzeWebsitePerformance = async (mainUrl: string, maxUrls: number = 5): Promise<PerformanceData> => {
+export const analyzeWebsitePerformance = async (mainUrl: string, maxUrls: number = 3): Promise<PerformanceData> => {
   try {
     const urlsToCrawl = await discoverWebsiteUrls(mainUrl, maxUrls);
 
@@ -61,7 +61,9 @@ export const discoverWebsiteUrls = async (startUrl: string, maxUrls: number): Pr
         const response = await axios.get(currentUrl, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-          }
+          },
+          timeout: 15000,
+          validateStatus: (status) => status === 200
         });
 
         const $ = cheerio.load(response.data);
@@ -164,24 +166,3 @@ const isValidUrl = (url: string): boolean => {
     return false;
   }
 };
-
-export const sendPerformanceScoreToWebsitePage = (websiteUrl: string, performanceScore: number): void => {
-  try {
-    // Ici nous simulons l'envoi des données à la page Website
-    // Dans une implémentation réelle, on utiliserait probablement un store Pinia/Vuex
-    console.log(`Performance data for ${websiteUrl} ready to be displayed: ${performanceScore}%`);
-
-    // Emettre un événement personnalisé pour être capturé par la page website
-    if (typeof window !== 'undefined') {
-      const event = new CustomEvent('performanceDataAvailable', {
-        detail: {
-          websiteUrl,
-          performanceScore
-        }
-      });
-      window.dispatchEvent(event);
-    }
-  } catch (error) {
-    console.error('Error sending performance score to website page:', error);
-  }
-}; 

@@ -107,7 +107,28 @@
                   </v-card>
                 </v-col>
 
-                <v-row v-if="loading || !semanticData.length">
+                <template v-if="!hasAnalyzed && !loading">
+                  <v-row>
+                    <v-col cols="12">
+                      <v-card class="mb-4 rounded-lg elevation-2">
+                        <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg">
+                          <v-icon color="white" class="mr-2">mdi-chart-donut</v-icon>
+                          Website Analysis
+                        </v-card-title>
+                        <v-card-text class="pa-4 text-center">
+                          <p class="text-body-1 mb-4">Run a complete analysis of your website to get insights on
+                            performance, security, and more.</p>
+                          <v-btn color="secondary" size="large" @click="analyzeWebsite" :loading="loading">
+                            <v-icon start>mdi-rocket-launch</v-icon>
+                            Start Analysis
+                          </v-btn>
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+                  </v-row>
+                </template>
+
+                <v-row v-else-if="loading">
                   <v-col cols="12">
                     <v-card class="mb-4 rounded-lg elevation-2">
                       <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg">
@@ -219,7 +240,12 @@
                       </v-btn>
                     </v-card-title>
                     <v-card-text>
-                      <pre ref="sitemapRef" class="sitemap-content pa-4">{{ websiteData.generated_sitemap }}</pre>
+                      <pre ref="sitemapRef" class="sitemap-content pa-4 bg-surface">{{ sitemapLines.join('\n') }}</pre>
+                      <div v-if="remainingLines > 0" class="text-center mt-2">
+                        <v-btn color="primary" variant="text" size="small" @click="showFullSitemap = !showFullSitemap">
+                          {{ showFullSitemap ? 'Show less' : `Show ${remainingLines} more lines` }}
+                        </v-btn>
+                      </div>
                     </v-card-text>
                   </v-card>
                 </v-col>
@@ -240,12 +266,10 @@
 import { useHead } from '#imports';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import snackBar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
-import { calculateContentScore } from '../utils/seo/content-view';
-import { calculateEngagementScore } from '../utils/seo/metrics';
 
 interface SemanticDataItem {
   url: string;
@@ -307,11 +331,10 @@ interface Metric {
 }
 
 const userStore = useUserStore();
-const loading = ref(true);
+const loading = ref(false);
 const loadingProgress = ref(0);
 const semanticData = ref<SemanticDataItem[]>([]);
 const engagementData = ref<EngagementDataItem[]>([]);
-const contentData = ref<any[]>([]);
 const securityData = ref<any[]>([]);
 const avgScores = ref({
   semantic: 0,
@@ -319,6 +342,11 @@ const avgScores = ref({
   security: 0,
   engagement: 0
 });
+
+// Cache pour éviter les recalculs inutiles
+const metricsCache = ref<Metric[]>([]);
+const socialMetaCache = ref<any>(null);
+
 const snackbar = ref({
   show: false,
   text: '',
@@ -334,8 +362,24 @@ const performanceData = ref({
   largestContentfulPaint: 0,
   cumulativeLayoutShift: 0
 });
+const securityResults = ref([]);
+
+const showFullSitemap = ref(false);
+const sitemapLines = computed(() => {
+  if (!websiteData.value?.generated_sitemap) return [];
+  const lines = websiteData.value.generated_sitemap.split('\n');
+  return showFullSitemap.value ? lines : lines.slice(0, 100);
+});
+
+const remainingLines = computed(() => {
+  if (!websiteData.value?.generated_sitemap) return 0;
+  const totalLines = websiteData.value.generated_sitemap.split('\n').length;
+  return Math.max(0, totalLines - 100);
+});
 
 const socialMetaPreview = computed(() => {
+  if (socialMetaCache.value) return socialMetaCache.value;
+
   if (!semanticData.value || semanticData.value.length === 0) return null;
 
   const mainPageData = semanticData.value.find(page =>
@@ -381,12 +425,15 @@ const socialMetaPreview = computed(() => {
     }
   }
 
-  return {
+  const result = {
     url: mainPageData.url,
     ogTitle: ogTitle || 'Title not available',
     ogDescription: ogDescription || 'Description not available',
     ogImage: ogImage || ''
   };
+
+  socialMetaCache.value = result;
+  return result;
 });
 
 const urlsForDisplay = computed<UrlItem[]>(() => {
@@ -400,6 +447,8 @@ const urlsForDisplay = computed<UrlItem[]>(() => {
 });
 
 const allMetrics = computed<Metric[]>(() => {
+  if (metricsCache.value.length > 0) return metricsCache.value;
+
   if (semanticData.value.length === 0) return [];
 
   const metrics: Metric[] = [
@@ -417,6 +466,7 @@ const allMetrics = computed<Metric[]>(() => {
     });
   }
 
+  metricsCache.value = metrics;
   return metrics;
 });
 
@@ -442,20 +492,21 @@ function copySitemap(): void {
   }
 }
 
-async function analyzeSite(): Promise<void> {
-  if (!websiteData.value) return;
+// Flag to track if analysis has been run
+const hasAnalyzed = ref(false);
+
+async function analyzeWebsite() {
+  if (loading.value) return;
+
+  loading.value = true;
+  loadingProgress.value = 10;
 
   try {
-    loading.value = true;
-    loadingProgress.value = 0;
+    // Réinitialiser les caches
+    metricsCache.value = [];
+    socialMetaCache.value = null;
 
-    const urls = Array.isArray(websiteData.value.all_urls)
-      ? websiteData.value.all_urls
-      : (typeof websiteData.value.all_urls === 'string'
-        ? JSON.parse(websiteData.value.all_urls)
-        : []);
-
-    loadingProgress.value = 10;
+    // Analyse de performance (prioritaire)
     const performanceResponse = await fetch('/api/analyze/performance-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -484,11 +535,13 @@ async function analyzeSite(): Promise<void> {
     }
     loadingProgress.value = 25;
 
+    // Analyse sémantique (cruciale)
     const semanticResponse = await fetch('/api/analyze/semantic-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url: websiteData.value.main_url })
     });
+
     if (semanticResponse.ok) {
       semanticData.value = await semanticResponse.json();
       const semanticScores = semanticData.value.map(item =>
@@ -498,131 +551,156 @@ async function analyzeSite(): Promise<void> {
     }
     loadingProgress.value = 40;
 
-    const contentPromises = urls.map(async (url: string) => {
-      try {
-        const response = await fetch('/api/analyze/content-view', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url })
-        });
+    // Analyse de contenu
+    const contentResponse = await fetch('/api/analyze/content-view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: websiteData.value.main_url, crawl: true })
+    });
 
-        if (response.ok) {
-          return await response.json();
+    if (contentResponse.ok) {
+      const data = await contentResponse.json();
+
+      if (data.urlList && Array.isArray(data.urlList) && data.urlList.length > 0) {
+        const contentScores = [data];
+
+        for (const pageUrl of data.urlList) {
+          if (pageUrl !== data.url) {
+            try {
+              const pageResponse = await fetch('/api/analyze/content-view', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: pageUrl })
+              });
+
+              if (pageResponse.ok) {
+                const pageData = await pageResponse.json();
+                contentScores.push(pageData);
+              }
+            } catch (e) {
+              console.error(`Error analyzing ${pageUrl}:`, e);
+            }
+          }
         }
-        return null;
-      } catch (error) {
-        console.error(`Error analyzing content for ${url}:`, error);
-        return null;
-      }
-    });
 
-    const contentResults = await Promise.all(contentPromises);
-    contentData.value = contentResults.filter(result => result !== null);
+        avgScores.value.content = Math.round(
+          contentScores.reduce((sum: number, item: any) => {
+            if (!item) return sum;
 
-    const contentScores = contentData.value.map(item => {
-      return calculateContentScore(item);
-    });
-    avgScores.value.content = contentScores.reduce((sum, score) => sum + score, 0) / contentScores.length || 0;
-    loadingProgress.value = 60;
+            let score = 0;
+            const wordCount = item?.contentStats?.wordCount || 0;
+            if (wordCount >= 800) {
+              score += 20;
+            } else if (wordCount >= 500) {
+              score += 15;
+            } else if (wordCount >= 300) {
+              score += 10;
+            } else if (wordCount > 0) {
+              score += 5;
+            }
 
-    const securityPromises = urls.map(async (url: string) => {
-      try {
-        const response = await fetch('/api/analyze/security-view', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url })
-        });
+            if (item?.headingStructure?.h1 && item.headingStructure.h1.length > 0) {
+              score += 10;
+              if (item.headingStructure.h2 && item.headingStructure.h2.length > 0) {
+                score += 5;
+                if (item.headingStructure.h3 && item.headingStructure.h3.length > 0) {
+                  score += 5;
+                }
+              }
+            }
 
-        if (response.ok) {
-          const data = await response.json();
-          return data;
-        }
-        return null;
-      } catch (error) {
-        console.error(`Error analyzing security for ${url}:`, error);
-        return null;
-      }
-    });
+            const imagesTotal = item?.images?.total || 0;
+            const imagesWithAlt = item?.images?.withAlt || 0;
 
-    const securityResults = await Promise.all(securityPromises);
+            if (imagesTotal > 0) {
+              const altRatio = imagesWithAlt / imagesTotal;
+              score += Math.floor(altRatio * 20);
+            }
 
-    securityData.value = securityResults
-      .filter(result => result !== null)
-      .flat()
-      .filter(item => item && typeof item.score === 'number');
+            const internalLinks = Array.isArray(item?.links?.internal) ? item.links.internal.length : 0;
+            const externalLinks = Array.isArray(item?.links?.external) ? item.links.external.length : 0;
 
-    const uniqueResults = new Map();
-    securityData.value.forEach(result => {
-      if (!uniqueResults.has(result.url)) {
-        uniqueResults.set(result.url, result);
-      }
-    });
-    securityData.value = Array.from(uniqueResults.values());
+            if (internalLinks > 0) {
+              score += Math.min(10, internalLinks * 2);
+            }
 
-    const securityScores = securityData.value.map(item => item.score);
+            if (externalLinks > 0) {
+              score += Math.min(10, externalLinks * 2);
+            }
 
-    if (securityScores.length > 0) {
-      avgScores.value.security = Math.round(
-        securityScores.reduce((sum, score) => sum + score, 0) / securityScores.length
-      );
-    } else {
-      avgScores.value.security = 0;
-    }
-    loadingProgress.value = 80;
+            const readabilityScore = item?.contentStats?.readabilityScore || 0;
+            score += Math.floor(readabilityScore * 0.2);
 
-    const engagementPromises = urls.map(async (url: string) => {
-      try {
-        const response = await fetch('/api/analyze/engagement-view', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url })
-        });
-
-        if (response.ok) {
-          return await response.json();
-        }
-        return null;
-      } catch (error) {
-        console.error(`Error analyzing engagement for ${url}:`, error);
-        return null;
-      }
-    });
-
-    const engagementResults = await Promise.all(engagementPromises);
-    const filteredResults = engagementResults.filter(result => result !== null);
-
-    engagementData.value = filteredResults.map(result => {
-      if (Array.isArray(result) && result.length > 0) {
-        const firstItemWithScore = result.find(item =>
-          item.score !== undefined ||
-          (item.engagement && item.engagement.engagementScore !== undefined)
+            return sum + Math.min(100, Math.max(0, Math.floor(score)));
+          }, 0) / contentScores.length
         );
+      } else {
+        avgScores.value.content = 0;
+      }
+    }
+    loadingProgress.value = 55;
 
-        if (firstItemWithScore) {
-          return {
-            url: firstItemWithScore.url,
-            score: firstItemWithScore.score || (firstItemWithScore.engagement?.engagementScore || 0)
-          };
+    // Continue avec le reste des analyses
+    const urls = Array.isArray(websiteData.value.all_urls)
+      ? websiteData.value.all_urls
+      : (typeof websiteData.value.all_urls === 'string'
+        ? JSON.parse(websiteData.value.all_urls)
+        : []);
+
+    // Analyse de sécurité (sur l'URL principale uniquement)
+    const securityResponse = await fetch('/api/analyze/security-view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: websiteData.value.main_url })
+    });
+
+    if (securityResponse.ok) {
+      const securityResult = await securityResponse.json();
+      if (securityResult && Array.isArray(securityResult)) {
+        securityData.value = securityResult.filter(item => item && typeof item.score === 'number');
+
+        const securityScores = securityData.value.map(item => item.score);
+        if (securityScores.length > 0) {
+          avgScores.value.security = Math.round(
+            securityScores.reduce((sum, score) => sum + score, 0) / securityScores.length
+          );
         }
       }
-      return result;
+    }
+    loadingProgress.value = 70;
+
+    // Analyse d'engagement
+    const engagementResponse = await fetch('/api/analyze/engagement-view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: websiteData.value.main_url })
     });
 
-    const engagementScores = engagementData.value.map(item => {
-      if (typeof item.score === 'number') {
-        return item.score;
-      } else if (item.engagement && typeof item.engagement.engagementScore === 'number') {
-        return item.engagement.engagementScore;
-      } else {
-        return calculateEngagementScore(item);
+    if (engagementResponse.ok) {
+      const engagementResults = await engagementResponse.json();
+      if (engagementResults && Array.isArray(engagementResults)) {
+        engagementData.value = engagementResults;
+
+        // Calculate engagement score from all URLs
+        const engagementScores = engagementResults.map(result => {
+          if (result && typeof result.score === 'number') {
+            return result.score;
+          }
+          return 0;
+        }).filter(score => score > 0);
+
+        if (engagementScores.length > 0) {
+          avgScores.value.engagement = Math.round(engagementScores.reduce((sum, score) => sum + score, 0) / engagementScores.length);
+        }
       }
-    });
-    avgScores.value.engagement = engagementScores.reduce((sum, score) => sum + score, 0) / engagementScores.length || 0;
-    loadingProgress.value = 100;
+    }
 
+    // Mark as analyzed
+    hasAnalyzed.value = true;
+    loadingProgress.value = 100;
   } catch (error) {
-    console.error('Error during site analysis:', error);
-    showSnackbar('Error during site analysis', 'error');
+    console.error('Analysis error:', error);
+    showSnackbar('Error during analysis', 'error');
   } finally {
     loading.value = false;
   }
@@ -633,21 +711,24 @@ onMounted(async () => {
     await userStore.loadWebsiteData();
   }
 
-  if (websiteData.value) {
-    analyzeSite();
-  } else {
-    loading.value = false;
-  }
-
+  // Optimisation de l'écouteur d'événements
   if (typeof window !== 'undefined') {
-    window.addEventListener('performanceDataAvailable', (event: any) => {
+    const handlePerformanceData = (event: any) => {
       const { websiteUrl, performanceScore: score, performanceMetrics } = event.detail;
       if (websiteData.value?.main_url === websiteUrl) {
         performanceScore.value = Math.round(score);
         if (performanceMetrics) {
           performanceData.value = performanceMetrics;
         }
+        metricsCache.value = []; // Invalider le cache
       }
+    };
+
+    window.addEventListener('performanceDataAvailable', handlePerformanceData);
+
+    // Nettoyage
+    onUnmounted(() => {
+      window.removeEventListener('performanceDataAvailable', handlePerformanceData);
     });
   }
 });
@@ -696,6 +777,10 @@ function goToSettings() {
 .sitemap-content {
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
   font-size: 0.9em;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 4px;
+  padding: 12px;
 }
 
 .social-preview-card {

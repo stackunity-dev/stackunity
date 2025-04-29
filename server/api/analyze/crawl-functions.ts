@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { CheerioAPI } from 'cheerio';
 import * as cheerio from 'cheerio';
 import type { WebsiteAnalysisResult } from './analyzer-types';
 
@@ -91,7 +92,7 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
     }
   }
 
-  const extractLinks = ($: cheerio.CheerioAPI, pageUrl: string): string[] => {
+  const extractLinks = ($: CheerioAPI, pageUrl: string): string[] => {
     const links: string[] = [];
 
     $('a[href]').each((_, element) => {
@@ -133,10 +134,10 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
   const rootUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}/`;
   queue.push(rootUrl);
 
-  const MAX_CRAWL_TIME = 60000;
+  const MAX_CRAWL_TIME = 120000;
   const startTime = Date.now();
 
-  const MAX_CONCURRENT_REQUESTS = 3;
+  const MAX_CONCURRENT_REQUESTS = 2;
   let activeRequests = 0;
 
   const inProgress = new Set<string>();
@@ -168,6 +169,7 @@ export async function crawlWebsite(baseUrl: string, maxPages: number = 50): Prom
           'Accept-Language': 'fr,en-US;q=0.8,en;q=0.5',
           'Accept-Encoding': 'gzip, deflate, br',
         },
+        validateStatus: (status) => status === 200 || status === 201 || status === 202,
       });
 
       const contentType = response.headers['content-type'] || '';

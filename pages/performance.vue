@@ -416,8 +416,8 @@ const analyzeUrl = async () => {
       },
       body: JSON.stringify({
         url: url.value,
-        maxUrls: 20,
-        delayBetweenRequests: 2000
+        maxUrls: 10,
+        delayBetweenRequests: 3000
       })
     });
 

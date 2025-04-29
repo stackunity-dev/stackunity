@@ -3,11 +3,12 @@ import { load } from 'cheerio';
 import { defineEventHandler, readBody } from 'h3';
 import { CheerioSelector } from './analyzer-types';
 import { analyzeSecurityVulnerabilities } from './security-analyzer';
+import { crawlWebsite } from './utils/crawler';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   if (!body.url) {
-    throw new Error('URL requise');
+    throw new Error('URL is required');
   }
 
   function analyzeSensitiveDataExposure($: CheerioSelector, url: string) {
@@ -340,132 +341,128 @@ export default defineEventHandler(async (event) => {
     return issues;
   }
 
-  function normalizeUrl(url: string): string {
-    return url.replace(/\/+$/, '') || '/';
-  }
+  try {
+    const urlList = await crawlWebsite(body.url, 10);
+    const uniqueUrls = [...new Set(urlList)];
 
-  async function crawlUrl(url: string) {
-    const visitedUrls = new Set<string>();
-    const urlsToVisit = [normalizeUrl(url)];
-    const baseUrl = new URL(url).origin;
-    const excludePatterns = [
-      'cdn-cgi',
-      'assets',
-      'images',
-      'media',
-      '#',
-      'mailto:',
-      'tel:',
-      '.pdf',
-      '.jpg',
-      '.png',
-      '.gif',
-      '.svg',
-      '.css',
-      '.js',
-      '.ico'
-    ];
-
-    while (urlsToVisit.length > 0) {
-      const currentUrl = urlsToVisit.pop();
-      if (!currentUrl || visitedUrls.has(currentUrl)) continue;
-
-      if (excludePatterns.some(pattern => currentUrl.includes(pattern))) {
-        continue;
-      }
-
+    const securityAnalysis = await Promise.all(uniqueUrls.map(async (url) => {
       try {
-        const response = await axios.get(currentUrl, {
+        const response = await axios.get(url, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
           },
-          timeout: 30000,
-          maxContentLength: 50 * 1024 * 1024,
+          timeout: 15000,
           maxRedirects: 5
         });
 
-        visitedUrls.add(currentUrl);
-
-        const $ = load(response.data);
-        const links = $('a[href]')
-          .map((_, el) => $(el).attr('href'))
-          .get();
-
-        for (const link of links) {
-          try {
-            let fullUrl = link;
-            if (link.startsWith('/')) {
-              fullUrl = `${baseUrl}${link}`;
-            } else if (!link.startsWith('http')) {
-              fullUrl = `${baseUrl}/${link}`;
-            }
-
-            fullUrl = normalizeUrl(fullUrl);
-
-            const linkUrl = new URL(fullUrl);
-            if (
-              linkUrl.origin === baseUrl &&
-              !visitedUrls.has(fullUrl) &&
-              !excludePatterns.some(pattern => fullUrl.includes(pattern))
-            ) {
-              urlsToVisit.push(fullUrl);
-            }
-          } catch (e) {
-            console.error(`URL invalide: ${link}`);
+        const html = response.data;
+        const $ = load(html);
+        const headers: Record<string, string> = {};
+        Object.entries(response.headers).forEach(([key, value]) => {
+          if (value !== undefined) {
+            headers[key] = Array.isArray(value) ? value.join(', ') : String(value);
           }
+        });
+
+        const securityResults = await analyzeSecurityVulnerabilities(html, url, headers);
+
+        const sensitiveDataIssues = analyzeSensitiveDataExposure($, url);
+        const csrfIssues = analyzeCSRFVulnerabilities($, url);
+        const headerIssues = analyzeInsecureHeaders(headers);
+        const potentialVulnerabilities = analyzePotentialVulnerabilities($, url);
+
+        const additionalIssues = [
+          ...sensitiveDataIssues,
+          ...csrfIssues,
+          ...headerIssues,
+          ...potentialVulnerabilities
+        ];
+
+        let adjustedScore = securityResults.score;
+        if (additionalIssues.length > 0) {
+          const penaltyPerIssue = {
+            'high': 10,
+            'medium': 5,
+            'low': 2
+          };
+
+          let totalPenalty = 0;
+          additionalIssues.forEach(issue => {
+            totalPenalty += penaltyPerIssue[issue.severity as keyof typeof penaltyPerIssue] || 2;
+          });
+
+          const penalty = Math.min(totalPenalty, 50);
+          adjustedScore = Math.max(0, adjustedScore - penalty);
         }
-      } catch (e) {
-        console.error(`Erreur lors du crawl de ${currentUrl}: ${e.message}`);
+
+        return {
+          ...securityResults,
+          url: url,
+          score: adjustedScore,
+          securityIssues: [
+            ...securityResults.securityIssues,
+            ...additionalIssues
+          ],
+          additionalVulnerabilities: {
+            sensitiveDataExposure: sensitiveDataIssues.length,
+            csrfVulnerabilities: csrfIssues.length,
+            headerVulnerabilities: headerIssues.length,
+            otherVulnerabilities: potentialVulnerabilities.length
+          }
+        };
+      } catch (error) {
+        console.error(`Error analyzing security for ${url}:`, error);
+        return {
+          url,
+          score: 0,
+          xssVulnerabilities: [],
+          csrfVulnerabilities: [],
+          injectionVulnerabilities: [],
+          infoLeakVulnerabilities: [],
+          headerAnalysis: { missing: [], present: {}, score: 0 },
+          cookieAnalysis: { secure: false, httpOnly: false, sameSite: false, score: 0 },
+          https: url.startsWith('https://'),
+          securityIssues: [{
+            type: 'error',
+            description: `Failed to analyze: ${error.message || 'Unknown error'}`,
+            severity: 'medium'
+          }],
+          additionalVulnerabilities: {
+            sensitiveDataExposure: 0,
+            csrfVulnerabilities: 0,
+            headerVulnerabilities: 0,
+            otherVulnerabilities: 0
+          }
+        };
       }
-    }
+    }));
 
-    return Array.from(visitedUrls);
-  }
-
-  async function processUrlsInBatches(urls: string[], batchSize: number = 5): Promise<any[]> {
-    const results: any[] = [];
-
-    for (let i = 0; i < urls.length; i += batchSize) {
-      const batch = urls.slice(i, i + batchSize);
-      const batchPromises = batch.map(url =>
-        analyzeSecurityVulnerabilities(url, url).catch(error => {
-          console.error(`Erreur lors de l'analyse de sécurité de ${url}:`, error);
-          return null;
-        })
-      );
-
-      const batchResults = await Promise.all(batchPromises);
-      results.push(...batchResults.filter(result => result !== null));
-
-      if (i + batchSize < urls.length) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-    }
-
-    return results;
-  }
-
-  try {
-    const urls = await crawlUrl(body.url);
-    const results = await processUrlsInBatches(urls);
-
-    return {
-      statusCode: 200,
-      body: {
-        urlsAnalyzed: urls,
-        results
-      }
-    };
+    return securityAnalysis;
   } catch (error) {
-    console.error('Erreur lors de l\'analyse de sécurité:', error);
-    return {
-      statusCode: 500,
-      body: {
-        error: 'Échec de l\'analyse de sécurité',
-        message: error instanceof Error ? error.message : 'Erreur inconnue'
+    console.error('Error in security analysis:', error);
+    return [{
+      url: body.url,
+      score: 0,
+      xssVulnerabilities: [],
+      csrfVulnerabilities: [],
+      injectionVulnerabilities: [],
+      infoLeakVulnerabilities: [],
+      headerAnalysis: { missing: [], present: {}, score: 0 },
+      cookieAnalysis: { secure: false, httpOnly: false, sameSite: false, score: 0 },
+      https: body.url.startsWith('https://'),
+      securityIssues: [{
+        type: 'error',
+        description: `Failed to analyze: ${error.message || 'Unknown error'}`,
+        severity: 'medium'
+      }],
+      additionalVulnerabilities: {
+        sensitiveDataExposure: 0,
+        csrfVulnerabilities: 0,
+        headerVulnerabilities: 0,
+        otherVulnerabilities: 0
       }
-    };
+    }];
   }
 }); 
