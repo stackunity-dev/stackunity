@@ -1,7 +1,31 @@
 import axios from 'axios';
+import { load } from 'cheerio';
 import { defineEventHandler, readBody } from 'h3';
 import { analyzeSitePerformance, calculateAveragePerformanceScore, getOptimizationTips, PerformanceMetrics } from './performance';
-import { load } from 'cheerio';
+
+async function processUrlsInBatches(urls: string[], batchSize: number = 5): Promise<PerformanceMetrics[]> {
+  const results: PerformanceMetrics[] = [];
+
+  for (let i = 0; i < urls.length; i += batchSize) {
+    const batch = urls.slice(i, i + batchSize);
+    const batchPromises = batch.map(url =>
+      analyzeSitePerformance(url).catch(error => {
+        console.error(`Error analyzing ${url}:`, error);
+        return null;
+      })
+    );
+
+    const batchResults = await Promise.all(batchPromises);
+    results.push(...batchResults.filter((result): result is PerformanceMetrics => result !== null));
+
+    // Pause entre les lots pour éviter la surcharge
+    if (i + batchSize < urls.length) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+
+  return results;
+}
 
 export default defineEventHandler(async (event) => {
   try {
@@ -18,23 +42,13 @@ export default defineEventHandler(async (event) => {
     const maxUrls = body.maxUrls || 5;
 
     const urlsToCrawl = await crawlWebsite(mainUrl, maxUrls);
-
-    const performanceResults: PerformanceMetrics[] = [];
-    for (const url of urlsToCrawl) {
-      try {
-        const result = await analyzeSitePerformance(url);
-        performanceResults.push(result);
-      } catch (error) {
-        console.error(`Error analyzing ${url}:`, error);
-      }
-    }
+    const performanceResults = await processUrlsInBatches(urlsToCrawl);
 
     if (performanceResults.length === 0) {
       throw new Error('Failed to analyze any URLs');
     }
 
     const averageScore = calculateAveragePerformanceScore(performanceResults);
-
     const mainPageResult = performanceResults.find(r => r.url === mainUrl) || performanceResults[0];
     const optimizationTips = getOptimizationTips(mainPageResult);
 
@@ -93,7 +107,16 @@ async function crawlWebsite(url: string, maxUrls: number) {
     }
 
     try {
-      const response = await axios.get(currentUrl);
+      const response = await axios.get(currentUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+        },
+        timeout: 30000,
+        maxContentLength: 50 * 1024 * 1024,
+        maxRedirects: 5
+      });
       visitedUrls.add(currentUrl);
 
       const $ = load(response.data);
