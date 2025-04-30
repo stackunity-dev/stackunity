@@ -30,10 +30,10 @@ export async function crawlWebsite(url: string, maxUrls: number) {
     '.ico'
   ];
 
-  const actualMaxUrls = Math.min(maxUrls, 25);
+  const actualMaxUrls = Math.min(maxUrls, 35);
 
   let attempts = 0;
-  const maxAttempts = 30;
+  const maxAttempts = 40;
 
   while (urlsToVisit.length > 0 && visitedUrls.size < actualMaxUrls && attempts < maxAttempts) {
     attempts++;
@@ -62,7 +62,7 @@ export async function crawlWebsite(url: string, maxUrls: number) {
           'Sec-Fetch-User': '?1',
           'Cache-Control': 'max-age=0'
         },
-        timeout: 15000,
+        timeout: 20000,
         maxContentLength: 10 * 1024 * 1024,
         maxRedirects: 5,
         validateStatus: (status) => status >= 200 && status < 400
