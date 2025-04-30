@@ -29,7 +29,7 @@ async function processUrlsInBatches(urls: string[], batchSize: number = 5, delay
 export default defineEventHandler(async (event: H3Event) => {
   try {
     const body = await readBody(event);
-    const { url, maxUrls = 15, delayBetweenRequests = 3000 } = body;
+    const { url, maxUrls = 30, delayBetweenRequests = 3000 } = body;
     if (!url) {
       throw new Error('URL required');
     }

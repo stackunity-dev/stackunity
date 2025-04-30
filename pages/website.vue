@@ -797,11 +797,11 @@ async function analyzeWebsite() {
             const externalLinks = Array.isArray(item?.links?.external) ? item.links.external.length : 0;
 
             if (internalLinks > 0) {
-              score += Math.min(10, internalLinks * 2);
+              score += Math.min(20, internalLinks * 2);
             }
 
             if (externalLinks > 0) {
-              score += Math.min(10, externalLinks * 2);
+              score += Math.min(20, externalLinks * 2);
             }
 
             const readabilityScore = item?.contentStats?.readabilityScore || 0;

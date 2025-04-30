@@ -30,7 +30,7 @@ export async function crawlWebsite(url: string, maxUrls: number) {
     '.ico'
   ];
 
-  const actualMaxUrls = Math.min(maxUrls, 35);
+  const actualMaxUrls = Math.min(maxUrls, 100);
 
   let attempts = 0;
   const maxAttempts = 40;

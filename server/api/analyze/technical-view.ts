@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const urlList = await crawlWebsite(body.url, 15);
+    const urlList = await crawlWebsite(body.url, 30);
     const technicalAnalysis: TechnicalAnalysisResult[] = [];
 
     for (const url of urlList) {

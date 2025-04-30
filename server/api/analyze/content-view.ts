@@ -227,7 +227,7 @@ export default defineEventHandler(async (event) => {
     };
 
     if (body.crawl) {
-      const urlList = await crawlWebsite(body.url, 15);
+      const urlList = await crawlWebsite(body.url, 30);
       result.urlList = urlList;
     }
 
