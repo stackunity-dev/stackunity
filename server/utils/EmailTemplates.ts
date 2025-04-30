@@ -1,39 +1,75 @@
 export class EmailTemplates {
   static welcomeEmailTemplate(username: string, email: string): string {
     return `
-      <div style="font-family: 'Figtree', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
-        <header style="text-align: center; margin-bottom: 30px;">
-          <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="max-width: 200px;">
-        </header>
-        
-        <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <h1 style="color: #6200ea; margin-bottom: 20px; text-align: center;">Welcome to StackUnity, ${username} !</h1>
-          
-          <p style="margin-bottom: 15px; line-height: 1.5;">We are thrilled to count you among our users. StackUnity is your one-stop-shop for improving your web development and SEO performance.</p>
-          
-          <p style="margin-bottom: 15px; line-height: 1.5;">Your 7-day trial has begun! Enjoy all our features:</p>
-          
-          <ul style="margin-bottom: 20px; line-height: 1.5;">
-            <li>Complete website and SEO analysis</li>
-            <li>Database design</li>
-            <li>API testing and development studio</li>
-            <li>Accessibility tools</li>
-          </ul>
-          
-          <p style="margin-bottom: 20px;">
-            <a href="https://stackunity.tech/dashboard" style="background-color: #6200ea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Access your dashboard</a>
-          </p>
-        </main>
-        
-        <footer style="text-align: center; font-size: 12px; color: #666;">
-          <p>© ${new Date().getFullYear()} StackUnity. Tous droits réservés.</p>
-          <p>
-            <a href="https://stackunity.tech/privacy" style="color: #6200ea; text-decoration: none; margin-right: 10px;">Privacy policy</a>
-            <a href="https://stackunity.tech/terms" style="color: #6200ea; text-decoration: none;">Terms of use</a>
-          </p>
-          <p>If you do not want to receive our emails, <a href="https://stackunity.tech/unsubscribe?email=${email}" style="color: #6200ea; text-decoration: none;">click here to unsubscribe</a>.</p>
-        </footer>
-      </div>
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Welcome to StackUnity</title>
+        </head>
+        <body style="font-family: 'Figtree', Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+          <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+            <div style="background: linear-gradient(135deg, #6200ea 0%, #3700b3 100%); padding: 30px; text-align: center;">
+              <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="max-width: 180px; height: auto;">
+            </div>
+
+            <div style="padding: 40px 30px;">
+              <h1 style="color: #333; margin: 0 0 20px; font-size: 28px; text-align: center; font-weight: 600;">
+                Bienvenue sur StackUnity, ${username} !
+              </h1>
+              
+              <div style="background-color: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 30px;">
+                <p style="color: #666; margin: 0 0 15px; line-height: 1.6; font-size: 16px;">
+                  Nous sommes ravis de vous compter parmi nos utilisateurs. StackUnity est votre solution tout-en-un pour améliorer vos performances en développement web et en SEO.
+                </p>
+                
+                <p style="color: #666; margin: 0 0 20px; line-height: 1.6; font-size: 16px;">
+                  Votre période d'essai de 7 jours a commencé ! Profitez de toutes nos fonctionnalités :
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                  <div style="background-color: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Analyse complète</div>
+                    <div style="color: #666; font-size: 14px;">Site web et SEO</div>
+                  </div>
+                  <div style="background-color: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Design de base de données</div>
+                    <div style="color: #666; font-size: 14px;">Conception intuitive</div>
+                  </div>
+                  <div style="background-color: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Studio API</div>
+                    <div style="color: #666; font-size: 14px;">Test et développement</div>
+                  </div>
+                  <div style="background-color: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Accessibilité</div>
+                    <div style="color: #666; font-size: 14px;">Outils d'optimisation</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="text-align: center;">
+                <a href="https://stackunity.tech/dashboard" style="display: inline-block; background: linear-gradient(135deg, #6200ea 0%, #3700b3 100%); color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(98, 0, 234, 0.2);">
+                  Accéder à votre tableau de bord
+                </a>
+              </div>
+            </div>
+
+            <div style="background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
+              <p style="color: #666; margin: 0 0 10px; font-size: 14px;">
+                © ${new Date().getFullYear()} StackUnity. Tous droits réservés.
+              </p>
+              <p style="margin: 0;">
+                <a href="https://stackunity.tech/privacy" style="color: #6200ea; text-decoration: none; margin-right: 15px; font-size: 14px;">Politique de confidentialité</a>
+                <a href="https://stackunity.tech/terms" style="color: #6200ea; text-decoration: none; font-size: 14px;">Conditions d'utilisation</a>
+              </p>
+              <p style="color: #666; margin: 10px 0 0; font-size: 14px;">
+                Si vous ne souhaitez plus recevoir nos emails, <a href="https://stackunity.tech/unsubscribe?email=${email}" style="color: #6200ea; text-decoration: none;">cliquez ici pour vous désabonner</a>.
+              </p>
+            </div>
+          </div>
+        </body>
+      </html>
     `;
   }
 
@@ -161,32 +197,26 @@ export class FeedbackEmailTemplates {
         </head>
         <body style="font-family: 'Figtree', Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
           <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <!-- Header -->
             <div style="background-color: #6200ea; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
-              <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="max-width: 180px; height: auto;">
+              <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="max-width: 180px; height: auto;">
             </div>
 
-            <!-- Content -->
             <div style="padding: 30px;">
               <h1 style="color: #333; margin: 0 0 20px; font-size: 24px;">New Feedback Received</h1>
               
-              <!-- Feedback Type Badge -->
               <div style="display: inline-block; background-color: ${getTypeColor(type)}; color: white; padding: 6px 12px; border-radius: 4px; margin-bottom: 20px;">
                 ${getTypeIcon(type)} ${type.charAt(0).toUpperCase() + type.slice(1)}
               </div>
 
-              <!-- Feedback Details -->
               <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
                 <h2 style="color: #333; margin: 0 0 10px; font-size: 18px;">${title}</h2>
                 <p style="color: #666; margin: 0 0 15px; line-height: 1.5;">${description}</p>
                 
-                <!-- Rating -->
-                <div style="margin: 15px 0;">
+                  <div style="margin: 15px 0;">
                   <span style="color: #666; font-weight: 500;">Rating:</span>
                   <span style="color: #ff9800; margin-left: 8px;">${getRatingStars(rating)}</span>
                 </div>
 
-                <!-- User Info -->
                 <div style="border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
                   <p style="color: #666; margin: 0;">
                     <strong>Submitted by:</strong> ${email || 'Anonymous'}
@@ -197,7 +227,6 @@ export class FeedbackEmailTemplates {
                 </div>
               </div>
 
-              <!-- Action Button -->
               <div style="text-align: center; margin-top: 20px;">
                 <a href="https://stackunity.tech/admin/feedback" style="display: inline-block; background-color: #6200ea; color: white; text-decoration: none; padding: 12px 24px; border-radius: 4px; font-weight: 500;">
                   View in Dashboard
@@ -205,7 +234,6 @@ export class FeedbackEmailTemplates {
               </div>
             </div>
 
-            <!-- Footer -->
             <div style="background-color: #f5f5f5; padding: 20px; border-radius: 0 0 8px 8px; text-align: center;">
               <p style="color: #666; margin: 0; font-size: 14px;">
                 This is an automated message from StackUnity. Please do not reply to this email.
@@ -241,7 +269,7 @@ export class ErrorEmailTemplates {
         <body style="font-family: 'Figtree', Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
           <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <div style="background-color: #ef5350; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
-              <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="max-width: 180px; height: auto;">
+              <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="max-width: 180px; height: auto;">
             </div>
 
             <div style="padding: 30px;">
