@@ -5,6 +5,12 @@ export interface TokenData {
   isPremium?: boolean;
   isStandard?: boolean;
   isAdmin?: boolean;
+  isBuying?: boolean;
+  trial_start_date?: string;
+  trial_end_date?: string;
+  daysLeft?: number;
+  subscription_status?: string;
+  payment_status?: string;
 }
 
 export class TokenUtils {

@@ -522,6 +522,10 @@ const items = computed(() => [
     ]
   }
 ]);
+
+onMounted(() => {
+  console.log(userStore.user);
+});
 </script>
 
 <style scoped>

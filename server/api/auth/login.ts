@@ -118,7 +118,7 @@ export default defineEventHandler(async (event) => {
         isPremium: isPremiumValue,
         isStandard: isStandardValue,
         isAdmin: isAdminValue,
-        isRememberMe: body.rememberMe || false
+        isRememberMe: body.rememberMe || false,
       });
 
       const userData: {
@@ -132,6 +132,8 @@ export default defineEventHandler(async (event) => {
         payment_status: string;
         isRememberMe: boolean;
         daysLeft?: number;
+        trial_start_date?: Date;
+        trial_end_date?: Date;
       } = {
         id: user.id,
         username: user.username,
@@ -141,7 +143,9 @@ export default defineEventHandler(async (event) => {
         isAdmin: isAdminValue,
         subscription_status: subscriptionStatus,
         payment_status: user.payment_status,
-        isRememberMe: body.rememberMe || false
+        isRememberMe: body.rememberMe || false,
+        trial_start_date: user.trial_start_date,
+        trial_end_date: user.trial_end_date
       };
 
       if (subscriptionStatus === 'trial') {

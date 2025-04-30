@@ -2,7 +2,7 @@ import { $fetch } from 'ofetch';
 import { defineStore } from 'pinia';
 import type { PersistenceOptions } from 'pinia-plugin-persistedstate';
 import { TokenUtils } from '../utils/token';
-import { CrawlReport, DeleteResponse, EmailHistoryItem, LoginResponse, RandomData, SEOAuditResult, SQLSchema, StudioComponent, Table, User, WebsiteData } from './types';
+import { CrawlReport, DeleteResponse, EmailHistoryItem, LoginResponse, SEOAuditResult, SQLSchema, StudioComponent, Table, User, WebsiteData } from './types';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -11,7 +11,6 @@ export const useUserStore = defineStore('user', {
     sqlSchemas: [] as SQLSchema[],
     studioComponents: [] as StudioComponent[],
     emailHistory: [] as EmailHistoryItem[],
-    randomData: null as RandomData | null,
     websiteData: null as WebsiteData | null,
     isAuthenticated: false,
     loading: false,
@@ -25,8 +24,6 @@ export const useUserStore = defineStore('user', {
     isBuying: false,
     subscription_status: 'none' as 'active' | 'trial' | 'expired' | 'none',
     payment_status: 'none' as 'paid' | 'pending' | 'none',
-    trial_end_date: null as Date | null,
-    daysLeft: 0
   }),
   getters: {
     isUserAuthenticated: (state) => state.isAuthenticated && !!state.token,
@@ -93,7 +90,7 @@ export const useUserStore = defineStore('user', {
           this.subscription_status = subscription_status;
           this.payment_status = payment_status;
           this.trial_end_date = trial_end_date;
-          this.daysLeft = daysLeft;
+          this.daysLeft = this.calculateDaysLeft(trial_end_date);
           this.token = token;
 
           await this.loadData();
@@ -104,6 +101,13 @@ export const useUserStore = defineStore('user', {
         console.error('[STORE] Erreur lors de l\'initialisation:', error);
         return false;
       }
+    },
+
+    calculateDaysLeft(trialEndDate: Date | null): number {
+      if (!trialEndDate) return 0;
+      const now = new Date();
+      const diffTime = trialEndDate.getTime() - now.getTime();
+      return diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 0;
     },
 
     async logout() {
@@ -137,15 +141,12 @@ export const useUserStore = defineStore('user', {
       this.token = token;
       this.isAuthenticated = true;
 
-
       TokenUtils.storeToken(token);
 
       try {
         const decodedData = TokenUtils.decodeToken(token);
 
         if (decodedData) {
-
-
           let isPremiumValue = false;
           if (decodedData.isPremium !== undefined) {
             isPremiumValue = decodedData.isPremium === true ||
@@ -171,6 +172,9 @@ export const useUserStore = defineStore('user', {
           this.isStandard = isStandardValue;
           this.isAdmin = isAdminValue;
 
+          const trial_end_date = decodedData.trial_end_date ? new Date(decodedData.trial_end_date) : null;
+          const daysLeft = decodedData.daysLeft || (trial_end_date ? this.calculateDaysLeft(trial_end_date) : 0);
+
           if (!this.user) {
             this.user = {
               id: decodedData.userId,
@@ -179,15 +183,27 @@ export const useUserStore = defineStore('user', {
               email: decodedData.email || '',
               isPremium: isPremiumValue,
               isStandard: isStandardValue,
-              isAdmin: isAdminValue
+              isAdmin: isAdminValue,
+              isBuying: decodedData.isBuying || false,
+              trial_end_date: trial_end_date,
+              daysLeft: daysLeft,
+              subscription_status: decodedData.subscription_status || 'none',
+              payment_status: decodedData.payment_status || 'none'
             };
-            this.user.userId = this.user.id;
           } else {
             this.user.isPremium = isPremiumValue;
             this.user.isStandard = isStandardValue;
             this.user.isAdmin = isAdminValue;
-            this.user.userId = this.user.id;
+            this.user.isBuying = decodedData.isBuying || false;
+            this.user.trial_end_date = trial_end_date;
+            this.user.daysLeft = daysLeft;
+            this.user.subscription_status = decodedData.subscription_status || 'none';
+            this.user.payment_status = decodedData.payment_status || 'none';
           }
+
+          this.trial_end_date = trial_end_date;
+          this.daysLeft = daysLeft;
+
         }
       } catch (error) {
         console.error('Erreur lors du décodage du token:', error);
@@ -196,7 +212,6 @@ export const useUserStore = defineStore('user', {
 
     persistData() {
       try {
-
         let isAdminValue = false;
         if (this.user?.isAdmin !== undefined) {
           isAdminValue = this.user.isAdmin === true ||
@@ -224,7 +239,11 @@ export const useUserStore = defineStore('user', {
             isAdmin: isAdminValue,
             isPremium: isPremiumValue,
             isStandard: isStandardValue,
-            isBuying: this.user?.isBuying || false
+            isBuying: this.user?.isBuying || false,
+            trial_end_date: this.user?.trial_end_date,
+            daysLeft: this.user?.daysLeft || 0,
+            subscription_status: this.user?.subscription_status || 'none',
+            payment_status: this.user?.payment_status || 'none'
           },
           isAuthenticated: this.isAuthenticated
         };
@@ -286,6 +305,7 @@ export const useUserStore = defineStore('user', {
             trial_end_date,
             daysLeft
           };
+
           this.isAuthenticated = true;
           this.isPremium = isPremiumValue;
           this.isStandard = isStandardValue;
@@ -349,7 +369,6 @@ export const useUserStore = defineStore('user', {
 
           this.user.userId = this.user.id;
 
-
           this.isAuthenticated = true;
           this.isPremium = isPremiumValue;
           this.isAdmin = isAdminValue;
@@ -359,8 +378,8 @@ export const useUserStore = defineStore('user', {
           this.payment_status = payment_status;
           this.trial_end_date = trial_end_date;
           this.daysLeft = daysLeft;
+
           this.persistData();
-          await this.loadData();
 
           this.loading = false;
           return { success: true };
@@ -391,19 +410,19 @@ export const useUserStore = defineStore('user', {
         });
 
         const data = await response.json();
+        console.log('SignUp - Response data:', data);
 
         if (data.success) {
           this.setToken(data.accessToken);
 
-          if (data.user.trial_end_date && !data.user.daysLeft) {
-            const now = new Date();
-            const trialEndDate = new Date(data.user.trial_end_date);
-            if (trialEndDate > now) {
-              const diffTime = trialEndDate.getTime() - now.getTime();
-              data.user.daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            } else {
-              data.user.daysLeft = 0;
-            }
+          const trial_end_date = data.user.trial_end_date ? new Date(data.user.trial_end_date) : null;
+          let daysLeft = data.user.daysLeft;
+
+          // Si daysLeft n'est pas fourni mais que trial_end_date existe, calculons-le
+          if (!daysLeft && trial_end_date) {
+            daysLeft = this.calculateDaysLeft(trial_end_date);
+          } else if (!daysLeft) {
+            daysLeft = 7; // Valeur par défaut pour les nouveaux comptes
           }
 
           this.user = {
@@ -412,7 +431,8 @@ export const useUserStore = defineStore('user', {
             isStandard: data.user.isStandard === true || data.user.isStandard === 1,
             isAdmin: data.user.isAdmin === true || data.user.isAdmin === 1,
             subscription_status: data.user.subscription_status || 'trial',
-            daysLeft: data.user.daysLeft || 7
+            trial_end_date: trial_end_date,
+            daysLeft: daysLeft
           };
 
           this.isAuthenticated = true;
@@ -420,8 +440,8 @@ export const useUserStore = defineStore('user', {
           this.isAdmin = this.user.isAdmin;
           this.isStandard = this.user.isStandard;
           this.subscription_status = this.user.subscription_status;
-          this.daysLeft = this.user.daysLeft;
-          this.trial_end_date = data.user.trial_end_date ? new Date(data.user.trial_end_date) : null;
+          this.trial_end_date = trial_end_date;
+          this.daysLeft = daysLeft;
 
           this.persistData();
 
@@ -620,11 +640,16 @@ export const useUserStore = defineStore('user', {
             const isPremiumValue = validationData.user.isPremium === 1 || validationData.user.isPremium === true;
             const isAdminValue = validationData.user.isAdmin === 1 || validationData.user.isAdmin === true;
             const isStandardValue = validationData.user.isStandard === 1 || validationData.user.isStandard === true;
+            const daysLeft = validationData.user.daysLeft || this.user?.daysLeft || 0;
+            const trial_end_date = validationData.user.trial_end_date ? new Date(validationData.user.trial_end_date) : this.trial_end_date;
+
             this.user = {
               ...validationData.user,
               isPremium: isPremiumValue,
               isStandard: isStandardValue,
-              isAdmin: isAdminValue
+              isAdmin: isAdminValue,
+              daysLeft,
+              trial_end_date
             };
 
             this.isAuthenticated = true;
@@ -633,6 +658,8 @@ export const useUserStore = defineStore('user', {
             this.isAdmin = isAdminValue;
             this.error = null;
             this.token = token;
+            this.daysLeft = daysLeft;
+            this.trial_end_date = trial_end_date;
 
             this.persistData();
             return { success: true, user: this.user };
@@ -672,11 +699,16 @@ export const useUserStore = defineStore('user', {
             ? sessionData.user.isAdmin === 1
             : !!sessionData.user.isAdmin;
 
+          const daysLeft = sessionData.user.daysLeft || this.user?.daysLeft || 0;
+          const trial_end_date = sessionData.user.trial_end_date ? new Date(sessionData.user.trial_end_date) : this.trial_end_date;
+
           this.user = {
             ...sessionData.user,
             isPremium: isPremiumValue,
             isStandard: isStandardValue,
-            isAdmin: isAdminValue
+            isAdmin: isAdminValue,
+            daysLeft,
+            trial_end_date
           };
 
           this.isAuthenticated = true;
@@ -685,6 +717,8 @@ export const useUserStore = defineStore('user', {
           this.isAdmin = isAdminValue;
           this.error = null;
           this.token = token;
+          this.daysLeft = daysLeft;
+          this.trial_end_date = trial_end_date;
 
           this.persistData();
           return { success: true, user: this.user };
@@ -701,8 +735,6 @@ export const useUserStore = defineStore('user', {
         this.loading = false;
       }
     },
-
-
 
     async saveSQLSchema(databaseName: string, tables: Table[]) {
       try {
