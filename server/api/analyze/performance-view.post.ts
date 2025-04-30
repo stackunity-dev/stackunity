@@ -29,16 +29,16 @@ async function processUrlsInBatches(urls: string[], batchSize: number = 5, delay
 export default defineEventHandler(async (event: H3Event) => {
   try {
     const body = await readBody(event);
-    const { url, maxUrls = 30, delayBetweenRequests = 3000 } = body;
+    const { url } = body;
     if (!url) {
       throw new Error('URL required');
     }
 
-    const urls = await crawlWebsite(url, maxUrls);
+    const urls = await crawlWebsite(url, 30);
     const results = await processUrlsInBatches(
       urls,
-      body.batchSize || 5,
-      body.delayBetweenRequests || 2000
+      5,
+      2000
     );
 
     if (!Array.isArray(results) || results.length === 0) {

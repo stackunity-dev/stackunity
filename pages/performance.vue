@@ -96,7 +96,7 @@
                         <div>
                           <div class="text-subtitle-1 font-weight-bold">CLS</div>
                           <div class="text-h6">{{ calculateAverageMetric('cumulativeLayoutShift', false, 1).toFixed(2)
-                          }}</div>
+                            }}</div>
                         </div>
                       </v-progress-circular>
                       <p class="mt-2">Cumulative Layout Shift</p>
@@ -416,7 +416,6 @@ const analyzeUrl = async () => {
       },
       body: JSON.stringify({
         url: url.value,
-        maxUrls: 30,
         delayBetweenRequests: 3000
       })
     });
