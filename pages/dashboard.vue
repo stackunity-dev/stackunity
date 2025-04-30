@@ -441,7 +441,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'Semantic',
+    title: 'Structure & Accessibility',
     description: 'Check the semantic and ARIA attributes of your website',
     icon: 'mdi-semantic-web',
     color: 'tertiary',

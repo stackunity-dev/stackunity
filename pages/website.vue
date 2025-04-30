@@ -599,7 +599,7 @@ const allMetrics = computed<Metric[]>(() => {
   if (semanticData.value.length === 0) return [];
 
   const metrics: Metric[] = [
-    { label: 'HTML Structure', value: Math.round(avgScores.value.semantic) },
+    { label: 'Structure & Accessibility', value: Math.round(avgScores.value.semantic) },
     { label: 'Security Score', value: Math.round(avgScores.value.security) },
     { label: 'Content Quality', value: Math.round(avgScores.value.content) },
     { label: 'User Engagement', value: Math.round(avgScores.value.engagement) }

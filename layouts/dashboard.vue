@@ -499,7 +499,7 @@ const items = computed(() => [
     link: true,
     children: [
       createPremiumMenuItem('Performance', '/performance', 'mdi-speedometer', 'performance', 'premium'),
-      createPremiumMenuItem('HTML Structure', '/semantic', 'mdi-semantic-web', 'semantic', 'premium'),
+      createPremiumMenuItem('Structure & Accessibility', '/semantic', 'mdi-semantic-web', 'semantic', 'premium'),
       createPremiumMenuItem('Content', '/content', 'mdi-file-document-outline', 'content', 'premium'),
       createPremiumMenuItem('User Engagement', '/user-engagement', 'mdi-account-group', 'userEngagement', 'premium'),
       createPremiumMenuItem('Security', '/security', 'mdi-security', 'security', 'premium')
