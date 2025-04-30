@@ -617,6 +617,125 @@ export const useUserStore = defineStore('user', {
       }
     },
 
+    async loadData() {
+      try {
+        this.loading = true;
+
+        const token = this.token || TokenUtils.retrieveToken();
+        if (!token) {
+          console.error('Pas de token disponible');
+          return { success: false, error: 'Token manquant' };
+        }
+
+        const validationResponse = await fetch('/api/auth/validate', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (validationResponse.ok) {
+          const validationData = await validationResponse.json();
+          if (validationData.valid && validationData.user) {
+
+            const isPremiumValue = validationData.user.isPremium === 1 || validationData.user.isPremium === true;
+            const isAdminValue = validationData.user.isAdmin === 1 || validationData.user.isAdmin === true;
+            const isStandardValue = validationData.user.isStandard === 1 || validationData.user.isStandard === true;
+            const daysLeft = validationData.user.daysLeft || this.user?.daysLeft || 0;
+            const trial_end_date = validationData.user.trial_end_date ? new Date(validationData.user.trial_end_date) : this.trial_end_date;
+
+            this.user = {
+              ...validationData.user,
+              isPremium: isPremiumValue,
+              isStandard: isStandardValue,
+              isAdmin: isAdminValue,
+              daysLeft,
+              trial_end_date
+            };
+
+            this.isAuthenticated = true;
+            this.isPremium = isPremiumValue;
+            this.isStandard = isStandardValue;
+            this.isAdmin = isAdminValue;
+            this.error = null;
+            this.token = token;
+            this.daysLeft = daysLeft;
+            this.trial_end_date = trial_end_date;
+
+            this.persistData();
+            return { success: true, user: this.user };
+          }
+        }
+
+        const sessionResponse = await fetch('/api/auth/session', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!sessionResponse.ok) {
+          console.log(`Échec de /api/auth/session (${sessionResponse.status})`);
+          return { success: false, error: `Erreur HTTP ${sessionResponse.status}` };
+        }
+
+        const sessionData = await sessionResponse.json();
+        if (!sessionData.success) {
+          console.log('Session invalide:', sessionData.message);
+          return { success: false, error: sessionData.message };
+        }
+
+        if (sessionData.user) {
+          const isPremiumValue = typeof sessionData.user.isPremium === 'number'
+            ? sessionData.user.isPremium === 1
+            : !!sessionData.user.isPremium;
+
+          let isStandardValue = false;
+          if (sessionData.user?.isStandard !== undefined) {
+            isStandardValue = sessionData.user.isStandard === true ||
+              (typeof sessionData.user.isStandard === 'number' && sessionData.user.isStandard === 1) ||
+              (typeof sessionData.user.isStandard === 'string' && (sessionData.user.isStandard === '1' || sessionData.user.isStandard === 'true'));
+          }
+
+          const isAdminValue = typeof sessionData.user.isAdmin === 'number'
+            ? sessionData.user.isAdmin === 1
+            : !!sessionData.user.isAdmin;
+
+          const daysLeft = sessionData.user.daysLeft || this.user?.daysLeft || 0;
+          const trial_end_date = sessionData.user.trial_end_date ? new Date(sessionData.user.trial_end_date) : this.trial_end_date;
+
+          this.user = {
+            ...sessionData.user,
+            isPremium: isPremiumValue,
+            isStandard: isStandardValue,
+            isAdmin: isAdminValue,
+            daysLeft,
+            trial_end_date
+          };
+
+          this.isAuthenticated = true;
+          this.isPremium = isPremiumValue;
+          this.isStandard = isStandardValue;
+          this.isAdmin = isAdminValue;
+          this.error = null;
+          this.token = token;
+          this.daysLeft = daysLeft;
+          this.trial_end_date = trial_end_date;
+
+          this.persistData();
+          return { success: true, user: this.user };
+        }
+
+        return { success: false, error: 'Données utilisateur incomplètes' };
+      } catch (error) {
+        console.error('Erreur:', error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Erreur inconnue'
+        };
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async saveSQLSchema(databaseName: string, tables: Table[]) {
       try {
         const schemaData = {
