@@ -1326,8 +1326,24 @@ export const useUserStore = defineStore('user', {
         console.error('Erreur lors de la récupération des données du site web:', error);
         return null;
       }
-    }
+    },
 
+    async submitFeedback(feedback: any) {
+      try {
+        const response = await $fetch('/api/feedback/submit', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          },
+          body: feedback
+        });
+
+        return response;
+      } catch (error) {
+        console.error('Erreur lors de la soumission du feedback:', error);
+        return null;
+      }
+    }
   },
   persist: {
     enabled: true

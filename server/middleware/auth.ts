@@ -45,7 +45,6 @@ const premiumRoutes = [
 export default defineEventHandler(async (event: H3Event) => {
   const url = event.node.req.url || '';
 
-  // Si c'est une requête de page (pas une API), on la laisse passer
   if (!url.startsWith('/api/')) {
     return;
   }

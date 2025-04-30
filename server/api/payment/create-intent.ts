@@ -3,7 +3,8 @@ import Stripe from 'stripe';
 import { pool } from '../db';
 
 const promoCodes = {
-  'WELCOME20': { type: 'percentage', value: 30, description: '20% OFF now' },
+  'WELCOME20': { type: 'percentage', value: 20, description: '20% OFF now' },
+  'SECRET50': { type: 'percentage', value: 50, description: '50% OFF now' },
 };
 
 export default defineEventHandler(async (event) => {

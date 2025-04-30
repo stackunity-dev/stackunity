@@ -58,6 +58,10 @@
           </v-list-group>
         </client-only>
 
+        <v-list-item v-if="userStore.user?.isPremium || userStore.user?.isStandard"
+          prepend-icon="mdi-comment-quote-outline" title="Feedback" rounded="lg" class="mb-1" color="primary"
+          @click="showFeedBackDialog = true" />
+
         <v-list-item v-if="!userStore.user.isPremium || !userStore.user.isStandard" to="/checkout"
           prepend-icon="mdi-credit-card-outline" title="Premium" rounded="lg" class="mb-1" color="primary" nuxt
           @click="closeDrawer" />
@@ -119,6 +123,68 @@
         </div>
       </div>
 
+      <v-dialog v-model="showFeedBackDialog" max-width="600" transition="dialog-bottom-transition">
+        <v-card class="feedback-dialog">
+          <v-card-title class="d-flex justify-space-between align-center pa-4">
+            <div class="d-flex align-center">
+              <v-icon icon="mdi-message-text-outline" color="primary" class="mr-2"></v-icon>
+              <span class="text-h6">Share Your Feedback</span>
+            </div>
+            <v-btn icon="mdi-close" variant="text" @click="showFeedBackDialog = false"></v-btn>
+          </v-card-title>
+
+          <v-divider></v-divider>
+
+          <v-card-text class="pa-4">
+            <v-form @submit.prevent="submitFeedback">
+              <div class="feedback-type-selector mb-6">
+                <div class="text-subtitle-2 mb-2">What type of feedback would you like to share?</div>
+                <v-btn-toggle v-model="feedback.type" mandatory class="d-flex flex-wrap justify-space-between"
+                  color="primary">
+                  <v-btn v-for="type in feedbackTypes" :key="type.value" :value="type.value" :color="type.color"
+                    variant="outlined" class="ma-1 flex-grow-1" height="48" min-width="120" max-width="140">
+                    <v-icon :icon="type.icon" class="mr-2"></v-icon>
+                    {{ type.title }}
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+
+              <v-text-field v-model="feedback.title" label="Title" prepend-icon="mdi-format-title" required
+                variant="outlined" class="mb-4" :color="getFeedbackTypeColor(feedback.type)"
+                :rules="[(v) => !!v || 'Title is required']"></v-text-field>
+
+              <v-textarea v-model="feedback.description" label="Detailed Description" prepend-icon="mdi-text" required
+                rows="4" variant="outlined" class="mb-4" :color="getFeedbackTypeColor(feedback.type)"
+                hint="Please provide as much detail as possible" persistent-hint
+                :rules="[(v) => !!v || 'Description is required']"></v-textarea>
+
+              <div class="rating-section mb-4">
+                <div class="text-subtitle-2 mb-2">{{ feedback.type === 'suggestion' || feedback.type === 'improvement' ?
+                  'How would you rate this feature?' : 'How much this bug is impacting your workflow?' }}</div>
+                <v-rating v-model="feedback.rating" color="amber" density="comfortable" size="large" hover
+                  half-increments :rules="[(v: any) => !!v || 'Rating is required']"></v-rating>
+              </div>
+
+              <v-text-field v-model="feedback.email" label="Email (optional)" prepend-icon="mdi-email-outline"
+                type="email" variant="outlined" class="mb-4" :color="getFeedbackTypeColor(feedback.type)"
+                hint="We'll use this to follow up if needed" persistent-hint></v-text-field>
+
+              <v-card-actions class="d-flex justify-end pa-0">
+                <v-btn color="grey" variant="text" @click="showFeedBackDialog = false" class="mr-2">
+                  Cancel
+                </v-btn>
+                <v-btn :color="getFeedbackTypeColor(feedback.type)" type="submit"
+                  :disabled="!feedback.title || !feedback.description" :loading="false" class="px-4">
+                  <v-icon icon="mdi-send" class="mr-2"></v-icon>
+                  Submit Feedback
+                </v-btn>
+              </v-card-actions>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
+      <Snackbar v-model="snackbar.show" :text="snackbar.text" :color="snackbar.color" :timeout="snackbar.timeout" />
     </v-app-bar>
 
     <v-main class="pa-0">
@@ -132,9 +198,10 @@
 <script lang="ts" setup>
 import { computed, markRaw, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useDisplay } from 'vuetify';
+import { useDisplay, useTheme } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
 import { useUserStore } from '../stores/userStore';
+import Snackbar from '../components/snackbar.vue';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -145,6 +212,39 @@ const drawer = ref(!display.smAndDown.value);
 const currentPageTitle = ref('Dashboard');
 const studioMode = ref('studio');
 const isSmall = computed(() => display.smAndDown.value);
+const vuetifyTheme = useTheme();
+const showFeedBackDialog = ref(false);
+const snackbar = ref({
+  show: false,
+  text: '',
+  color: 'success',
+  timeout: 3000
+})
+const feedback = ref({
+  type: 'suggestion',
+  rating: 5,
+  title: '',
+  description: '',
+  email: userStore.user?.email || ''
+});
+
+const feedbackTypes = [
+  { title: 'Suggestion', value: 'suggestion', icon: 'mdi-lightbulb-outline', color: 'secondary' },
+  { title: 'Bug Report', value: 'bug', icon: 'mdi-bug-outline', color: 'error' },
+  { title: 'Feature', value: 'improvement', icon: 'mdi-trending-up', color: 'success' },
+  { title: 'Other', value: 'other', icon: 'mdi-dots-horizontal', color: 'grey' }
+];
+
+const getFeedbackTypeColor = (type: string) => {
+  return feedbackTypes.find(t => t.value === type)?.color || 'secondary';
+};
+
+onMounted(() => {
+  const theme = localStorage.getItem('app_theme');
+  if (theme) {
+    vuetifyTheme.global.name.value = theme;
+  }
+});
 
 provide('studioMode', {
   mode: studioMode,
@@ -273,6 +373,35 @@ const logout = async () => {
     router.push('/login');
   } catch (error) {
     console.error('Error during logout:', error);
+  }
+};
+
+const submitFeedback = async () => {
+  try {
+    if (!feedback.value.title || !feedback.value.description) {
+      snackbar.value.show = true;
+      snackbar.value.text = 'Please fill in all fields';
+      snackbar.value.color = 'error';
+      return;
+    }
+
+    await userStore.submitFeedback(feedback.value);
+    showFeedBackDialog.value = false;
+    feedback.value = {
+      type: 'suggestion',
+      rating: 5,
+      title: '',
+      description: '',
+      email: userStore.user?.email || ''
+    };
+    snackbar.value.show = true;
+    snackbar.value.text = 'Feedback submitted successfully';
+    snackbar.value.color = 'success';
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi du feedback:', error);
+    snackbar.value.show = true;
+    snackbar.value.text = 'Error submitting feedback';
+    snackbar.value.color = 'error';
   }
 };
 
@@ -463,5 +592,34 @@ const items = computed(() => [
     width: 100%;
     padding-top: 64px;
   }
+}
+
+.feedback-dialog {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.feedback-type-selector {
+  background: rgba(var(--v-theme-surface-variant), 0.1);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.rating-section {
+  background: rgba(var(--v-theme-surface-variant), 0.1);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.v-btn-toggle {
+  border-radius: 8px;
+  gap: 8px;
+}
+
+.v-btn-toggle .v-btn {
+  border-radius: 6px !important;
+  flex: 1 1 calc(50% - 8px);
+  min-width: 120px;
+  max-width: 140px;
 }
 </style>

@@ -95,7 +95,7 @@
                         <v-card-text class="pa-3">
                           <p class="text-caption text-grey mb-1">{{ socialMetaPreview.url }}</p>
                           <h3 class="text-subtitle-1 font-weight-bold mb-2 text-truncate">{{ socialMetaPreview.ogTitle
-                          }}</h3>
+                            }}</h3>
                           <p class="text-body-2 social-description">{{ socialMetaPreview.ogDescription }}</p>
                         </v-card-text>
                       </v-card>
@@ -225,6 +225,108 @@
                       </v-card>
                     </v-col>
                   </v-row>
+
+                  <v-row v-if="technicalData.length > 0">
+                    <v-col cols="12">
+                      <v-card class="mb-4 rounded-lg elevation-2">
+                        <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg">
+                          <v-icon color="white" class="mr-2">mdi-cog</v-icon>
+                          Technical Analysis
+                        </v-card-title>
+                        <v-card-text class="pa-4">
+                          <v-row>
+                            <v-col cols="12" md="6">
+                              <v-card variant="outlined" class="mb-4">
+                                <v-card-title class="d-flex align-center">
+                                  <v-icon size="24" color="primary" class="mr-2">mdi-robot</v-icon>
+                                  Robots.txt
+                                </v-card-title>
+                                <v-card-text>
+                                  <v-list>
+                                    <v-list-item>
+                                      <template v-slot:prepend>
+                                        <v-icon :color="mainTechnicalData?.robotsTxt?.found ? 'success' : 'error'">
+                                          {{ mainTechnicalData?.robotsTxt?.found ? 'mdi-check-circle' :
+                                            'mdi-alert-circle' }}
+                                        </v-icon>
+                                      </template>
+                                      <v-list-item-title>
+                                        {{ mainTechnicalData?.robotsTxt?.found ? 'Found' : 'Not found' }}
+                                      </v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item v-if="mainTechnicalData?.robotsTxt?.issues?.length">
+                                      <v-list-item-title class="text-subtitle-1 font-weight-bold mb-2">
+                                        Issues
+                                      </v-list-item-title>
+                                      <v-list-item-subtitle>
+                                        <v-chip v-for="(issue, index) in mainTechnicalData.robotsTxt.issues"
+                                          :key="index" :color="getIssueSeverityColor(issue.severity)" size="small"
+                                          class="ma-1">
+                                          {{ issue.message }}
+                                        </v-chip>
+                                      </v-list-item-subtitle>
+                                    </v-list-item>
+                                    <v-list-item v-if="mainTechnicalData?.robotsTxt?.content">
+                                      <v-btn variant="text" size="small" class="mt-2"
+                                        @click="showContent(mainTechnicalData.robotsTxt.content, 'robots.txt')">
+                                        <v-icon start>mdi-eye</v-icon>
+                                        View content
+                                      </v-btn>
+                                    </v-list-item>
+                                  </v-list>
+                                </v-card-text>
+                              </v-card>
+                            </v-col>
+
+                            <v-col cols="12" md="6">
+                              <v-card variant="outlined" class="mb-4">
+                                <v-card-title class="d-flex align-center">
+                                  <v-icon size="24" color="primary" class="mr-2">mdi-sitemap</v-icon>
+                                  Sitemap
+                                </v-card-title>
+                                <v-card-text>
+                                  <v-list>
+                                    <v-list-item>
+                                      <template v-slot:prepend>
+                                        <v-icon :color="mainTechnicalData?.sitemap?.found ? 'success' : 'error'">
+                                          {{ mainTechnicalData?.sitemap?.found ? 'mdi-check-circle' : 'mdi-alert-circle'
+                                          }}
+                                        </v-icon>
+                                      </template>
+                                      <v-list-item-title>
+                                        {{ mainTechnicalData?.sitemap?.found ? 'Found' : 'Not found' }}
+                                      </v-list-item-title>
+                                      <v-list-item-subtitle v-if="mainTechnicalData?.sitemap?.urls">
+                                        {{ mainTechnicalData.sitemap.urls }} URLs indexed
+                                      </v-list-item-subtitle>
+                                    </v-list-item>
+                                    <v-list-item v-if="mainTechnicalData?.sitemap?.issues?.length">
+                                      <v-list-item-title class="text-subtitle-1 font-weight-bold mb-2">
+                                        Issues
+                                      </v-list-item-title>
+                                      <v-list-item-subtitle>
+                                        <v-chip v-for="(issue, index) in mainTechnicalData.sitemap.issues" :key="index"
+                                          :color="getIssueSeverityColor(issue.severity)" size="small" class="ma-1">
+                                          {{ issue.message }}
+                                        </v-chip>
+                                      </v-list-item-subtitle>
+                                    </v-list-item>
+                                    <v-list-item v-if="mainTechnicalData?.sitemap?.content">
+                                      <v-btn variant="text" size="small" class="mt-2"
+                                        @click="showContent(mainTechnicalData.sitemap.content, 'sitemap.xml')">
+                                        <v-icon start>mdi-eye</v-icon>
+                                        View content
+                                      </v-btn>
+                                    </v-list-item>
+                                  </v-list>
+                                </v-card-text>
+                              </v-card>
+                            </v-col>
+                          </v-row>
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+                  </v-row>
                 </template>
 
                 <v-col cols="12" v-if="websiteData?.generated_sitemap">
@@ -258,6 +360,28 @@
 
     <snackBar v-model="snackbar.show" :color="snackbar.color" :text="snackbar.text" :timeout="3000">
     </snackBar>
+
+    <v-dialog v-model="showContentDialog" max-width="800px">
+      <v-card>
+        <v-card-title class="d-flex justify-space-between align-center">
+          <span>{{ dialogTitle }}</span>
+          <v-btn icon @click="showContentDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          <div class="content-dialog">
+            <pre class="language-xml pa-4"><code>{{ showFullContent ? dialogContent : dialogContent.split('\n').slice(0,
+              100).join('\n') }}</code></pre>
+          </div>
+          <div v-if="dialogContent.split('\n').length > 100" class="text-center mt-2">
+            <v-btn color="primary" variant="text" size="small" @click="showFullContent = !showFullContent">
+              {{ showFullContent ? 'Show less' : `Show ${dialogContent.split('\n').length - 100} more lines` }}
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -330,6 +454,30 @@ interface Metric {
   };
 }
 
+interface TechnicalDataItem {
+  url: string;
+  robotsTxt: {
+    found: boolean;
+    content?: string;
+    issues?: Array<{
+      type: string;
+      message: string;
+      severity: 'high' | 'medium' | 'low';
+    }>;
+  };
+  sitemap: {
+    found: boolean;
+    url?: string;
+    content?: string;
+    urls?: number;
+    issues?: Array<{
+      type: string;
+      message: string;
+      severity: 'high' | 'medium' | 'low';
+    }>;
+  };
+}
+
 const userStore = useUserStore();
 const loading = ref(false);
 const loadingProgress = ref(0);
@@ -343,7 +491,6 @@ const avgScores = ref({
   engagement: 0
 });
 
-// Cache pour éviter les recalculs inutiles
 const metricsCache = ref<Metric[]>([]);
 const socialMetaCache = ref<any>(null);
 
@@ -476,6 +623,15 @@ function getScoreColor(score: number): string {
   return 'error';
 }
 
+function getIssueSeverityColor(severity: 'high' | 'medium' | 'low'): string {
+  switch (severity) {
+    case 'high': return 'error';
+    case 'medium': return 'warning';
+    case 'low': return 'info';
+    default: return 'grey';
+  }
+}
+
 function showSnackbar(text: string, color = 'success'): void {
   snackbar.value = {
     show: true,
@@ -492,8 +648,26 @@ function copySitemap(): void {
   }
 }
 
-// Flag to track if analysis has been run
 const hasAnalyzed = ref(false);
+
+const technicalData = ref<TechnicalDataItem[]>([]);
+const showContentDialog = ref(false);
+const dialogContent = ref('');
+const dialogTitle = ref('');
+const showFullContent = ref(false);
+
+function showContent(content: string, title: string) {
+  dialogContent.value = content;
+  dialogTitle.value = title;
+  showContentDialog.value = true;
+  showFullContent.value = false;
+  nextTick(() => {
+    const codeElement = document.querySelector('.content-dialog pre');
+    if (codeElement) {
+      hljs.highlightElement(codeElement as HTMLElement);
+    }
+  });
+}
 
 async function analyzeWebsite() {
   if (loading.value) return;
@@ -502,11 +676,9 @@ async function analyzeWebsite() {
   loadingProgress.value = 10;
 
   try {
-    // Réinitialiser les caches
     metricsCache.value = [];
     socialMetaCache.value = null;
 
-    // Analyse de performance (prioritaire)
     const performanceResponse = await fetch('/api/analyze/performance-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -535,7 +707,6 @@ async function analyzeWebsite() {
     }
     loadingProgress.value = 25;
 
-    // Analyse sémantique (cruciale)
     const semanticResponse = await fetch('/api/analyze/semantic-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -551,7 +722,6 @@ async function analyzeWebsite() {
     }
     loadingProgress.value = 40;
 
-    // Analyse de contenu
     const contentResponse = await fetch('/api/analyze/content-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -640,14 +810,12 @@ async function analyzeWebsite() {
     }
     loadingProgress.value = 55;
 
-    // Continue avec le reste des analyses
     const urls = Array.isArray(websiteData.value.all_urls)
       ? websiteData.value.all_urls
       : (typeof websiteData.value.all_urls === 'string'
         ? JSON.parse(websiteData.value.all_urls)
         : []);
 
-    // Analyse de sécurité (sur l'URL principale uniquement)
     const securityResponse = await fetch('/api/analyze/security-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -669,7 +837,6 @@ async function analyzeWebsite() {
     }
     loadingProgress.value = 70;
 
-    // Analyse d'engagement
     const engagementResponse = await fetch('/api/analyze/engagement-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -695,6 +862,17 @@ async function analyzeWebsite() {
       }
     }
 
+    const technicalResponse = await fetch('/api/analyze/technical-view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: websiteData.value.main_url })
+    });
+
+    if (technicalResponse.ok) {
+      technicalData.value = await technicalResponse.json();
+    }
+    loadingProgress.value = 85;
+
     // Mark as analyzed
     hasAnalyzed.value = true;
     loadingProgress.value = 100;
@@ -711,7 +889,7 @@ onMounted(async () => {
     await userStore.loadWebsiteData();
   }
 
-  // Optimisation de l'écouteur d'événements
+
   if (typeof window !== 'undefined') {
     const handlePerformanceData = (event: any) => {
       const { websiteUrl, performanceScore: score, performanceMetrics } = event.detail;
@@ -720,13 +898,12 @@ onMounted(async () => {
         if (performanceMetrics) {
           performanceData.value = performanceMetrics;
         }
-        metricsCache.value = []; // Invalider le cache
+        metricsCache.value = [];
       }
     };
 
     window.addEventListener('performanceDataAvailable', handlePerformanceData);
 
-    // Nettoyage
     onUnmounted(() => {
       window.removeEventListener('performanceDataAvailable', handlePerformanceData);
     });
@@ -771,6 +948,10 @@ watch(sitemapRef, () => {
 function goToSettings() {
   router.push('/settings');
 }
+
+const mainTechnicalData = computed(() => {
+  return technicalData.value.length > 0 ? technicalData.value[0] : null;
+});
 </script>
 
 <style scoped>
@@ -830,5 +1011,24 @@ function goToSettings() {
 
 .metric-value {
   font-size: 11px;
+}
+
+.content-dialog {
+  max-height: 500px;
+  overflow-y: auto;
+  background-color: #1e1e1e;
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.content-dialog pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.content-dialog code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-size: 0.9em;
 }
 </style>

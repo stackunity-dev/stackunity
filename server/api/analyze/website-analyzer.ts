@@ -875,4 +875,4 @@ ${sitemapEntries}
 function getCharset(contentType: string): string | null {
   const match = contentType.match(/charset=([^;]+)/i);
   return match ? match[1].trim() : null;
-}
+}  

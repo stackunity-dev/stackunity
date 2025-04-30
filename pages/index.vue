@@ -156,11 +156,10 @@
           <section class="py-16 bad-experiences-section" aria-labelledby="bad-experiences-heading">
             <v-container>
               <div class="text-center mb-12">
-                <h2 id="bad-experiences-heading" class="text-h3 text-gradient font-weight-bold mb-4">
-                  Don't let bad experiences drive your users away
+                <h2 class="text-h3 text-gradient font-weight-bold mb-4">Fix what drives users away — with Stackunity
                 </h2>
-                <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
-                  Discover how our tools can help you create a better user experience
+                <p class="text-subtitle-1 text-medium-emphasis mx-auto">
+                  Identify and solve the 3 biggest reasons users leave your site — fast, with our smart tools.
                 </p>
               </div>
 
@@ -175,7 +174,7 @@
                         {{ badExperience.title }}
                       </v-card-title>
                       <v-card-subtitle class="pt-2 text-medium-emphasis d-flex flex-wrap">
-                        Did you know that {{ badExperience.ctv }}
+                        {{ badExperience.ctv }}
                       </v-card-subtitle>
                       <v-card-text class="text-body-1">
                         {{ badExperience.text }}
@@ -474,7 +473,7 @@ useHead({
   ],
 })
 
-const heroFeatures = ['Website management', 'SQL visualizer', 'Accessibility', 'API testing'];
+const heroFeatures = ['Website management', 'Auditing website', 'Accessibility', 'API testing'];
 const stats = [
   { value: '10x', label: 'Accelerated development' },
   { value: '100%', label: 'Code quality' },
@@ -574,33 +573,31 @@ const footerColumns = [
     ]
   }
 ];
-
 const badExperiences = [
   {
-    title: 'Not inclusive',
-    ctv: '8% of the world\'s population have a visual impairment ?',
+    title: 'Lack of Accessibility',
+    ctv: 'Over 8% of the global population lives with visual impairments.',
     icon: 'mdi-contrast',
     color: 'primary',
-    text: 'Your users flee because they can\'t access your site due to visual impairments ?\n' +
-      'Inclusivity is a problem that can be solved with our contrast checker and visual impairment simulator.'
+    text: 'Many users leave your site because they can’t see or interact with it properly. Stackunity helps you fix this with our Contrast Checker and Visual Impairment Simulator — design for everyone.'
   },
   {
-    title: 'Not optimized',
-    ctv: 'your site is not optimized for search engines ?',
+    title: 'Poor SEO Performance',
+    ctv: 'Your site won’t be found if it’s invisible to search engines.',
     icon: 'mdi-magnify',
     color: 'secondary',
-    text: 'We can help you optimize the SEO of your site with our semantic and SEO analysis tool.' +
-      'We provide a unique solution that mix the best of the semantic/metadata and user engagement analysis.'
+    text: 'If your SEO isn\'t effective, your site is invisible. Stackunity combines semantic analysis, metadata auditing, and engagement insights to boost your visibility and reach.'
   },
   {
-    title: 'Not attractive',
-    ctv: 'your site is not attractive ?',
+    title: 'Unappealing Design',
+    ctv: 'First impressions matter — and users judge fast.',
     icon: 'mdi-palette',
     color: 'tertiary',
-    text: 'We can help you make your site more attractive with our design studio and this seo tool.' +
-      'We can also help you with our responsive checker and content analysis tool.'
+    text: 'An unattractive site pushes users away instantly. Stackunity empowers you with a design studio, responsive checker, and content audit tools to create stunning, user-friendly interfaces.'
   }
 ];
+
+
 const drawer = ref(false);
 const activeSection = ref('');
 const showAppBar = ref(true);

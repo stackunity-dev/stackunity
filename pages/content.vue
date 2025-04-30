@@ -446,34 +446,50 @@
                           Images ({{ result.images.data.length }})
                         </v-card-title>
                         <v-card-text>
-                          <v-table density="compact">
-                            <thead>
-                              <tr>
-                                <th scope="col" width="80">Preview</th>
-                                <th scope="col">Source</th>
-                                <th scope="col" width="120">Alt</th>
-                                <th scope="col" width="100">Dimensions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr v-for="(img, idx) in result.images.data" :key="idx">
-                                <td class="text-center">
-                                  <v-img :src="img.src || ''" max-width="60" max-height="60" class="mx-auto"
-                                    :alt="img.alt || 'Image without alternative text'"></v-img>
-                                </td>
-                                <td><a :href="img.src || '#'" target="_blank" rel="noopener">{{ truncateUrl(img.src ||
-                                  '', 40)
-                                    }}</a></td>
-                                <td>
-                                  <v-chip size="x-small" :color="img.alt ? 'success' : 'error'">
-                                    {{ img.alt ? 'Present' : 'Missing' }}
+                          <v-virtual-scroll :items="result.images.data" height="400" item-height="80">
+                            <template v-slot="{ item }">
+                              <v-list-item @click="openImageDialog(item)">
+                                <template v-slot:prepend>
+                                  <v-img :src="item.src || ''" width="60" height="60" class="rounded-lg mr-4" cover>
+                                    <template v-slot:placeholder>
+                                      <v-row class="fill-height ma-0" align="center" justify="center">
+                                        <v-icon size="small">mdi-image</v-icon>
+                                      </v-row>
+                                    </template>
+                                  </v-img>
+                                </template>
+                                <v-list-item-title class="text-truncate">
+                                  <a :href="item.src" target="_blank" rel="noopener" class="text-decoration-none"
+                                    @click.stop>
+                                    {{ truncateUrl(item.src || '', 40) }}
+                                  </a>
+                                </v-list-item-title>
+                                <v-list-item-subtitle>
+                                  <v-chip :color="item.alt ? 'success' : 'error'" size="small" class="mt-1">
+                                    {{ item.alt ? 'Alt text present' : 'Missing alt text' }}
                                   </v-chip>
-                                  <small v-if="img.alt" class="d-block mt-1">{{ truncateText(img.alt, 20) }}</small>
-                                </td>
-                                <td>{{ img.width || 'N/A' }} × {{ img.height || 'N/A' }}</td>
-                              </tr>
-                            </tbody>
-                          </v-table>
+                                  <small v-if="item.alt" class="d-block mt-1 text-truncate">{{ truncateText(item.alt,
+                                    30) }}</small>
+                                </v-list-item-subtitle>
+                                <template v-slot:append>
+                                  <div class="d-flex flex-column align-end">
+                                    <span class="text-caption text-grey">
+                                      {{ item.width }}×{{ item.height }}px
+                                    </span>
+                                    <v-chip v-if="item.width && item.height" size="x-small" color="success"
+                                      class="mt-1">
+                                      <v-icon size="x-small" start>mdi-check-circle</v-icon>
+                                      Optimized
+                                    </v-chip>
+                                    <v-chip v-else size="x-small" color="warning" class="mt-1">
+                                      <v-icon size="x-small" start>mdi-alert</v-icon>
+                                      No dimensions
+                                    </v-chip>
+                                  </div>
+                                </template>
+                              </v-list-item>
+                            </template>
+                          </v-virtual-scroll>
                         </v-card-text>
                       </v-card>
                     </v-col>
@@ -484,6 +500,32 @@
           </div>
         </v-col>
       </v-row>
+
+      <v-dialog v-model="imageDialog" max-width="800px">
+        <v-card>
+          <v-card-title class="d-flex justify-space-between align-center">
+            <span>Image preview</span>
+            <v-btn icon @click="imageDialog = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-card-title>
+          <v-card-text>
+            <div class="d-flex justify-center">
+              <v-img :src="selectedImage?.src" max-height="600" contain>
+                <template v-slot:placeholder>
+                  <v-row class="fill-height ma-0" align="center" justify="center">
+                    <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                  </v-row>
+                </template>
+              </v-img>
+            </div>
+            <div v-if="selectedImage?.alt" class="mt-4">
+              <div class="text-subtitle-1 font-weight-bold">Alt text:</div>
+              <div class="text-body-1">{{ selectedImage.alt }}</div>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </v-container>
   </div>
 </template>
@@ -535,6 +577,8 @@ const error = ref('');
 const results = ref<SEOResult[]>([]);
 const openPanel = ref(0);
 const crawlEnabled = ref(true);
+const imageDialog = ref(false);
+const selectedImage = ref<{ src: string; alt?: string } | null>(null);
 
 const isValidUrl = computed(() => {
   try {
@@ -776,6 +820,23 @@ const exportScoreData = () => {
   document.body.removeChild(link);
 };
 
+interface ImageItem {
+  src?: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  hasDimensions?: boolean;
+  title?: string;
+}
+
+const openImageDialog = (image: ImageItem) => {
+  if (!image.src) return;
+  selectedImage.value = {
+    src: image.src,
+    alt: image.alt
+  };
+  imageDialog.value = true;
+};
 
 onMounted(() => {
 });
@@ -814,5 +875,19 @@ onMounted(() => {
   overflow: visible;
   text-overflow: initial;
   display: block;
+}
+
+.v-list-item {
+  cursor: pointer;
+  padding-right: 16px;
+}
+
+.v-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.v-list-item :deep(.v-list-item__append) {
+  padding-left: 16px;
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
 }
 </style>

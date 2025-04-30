@@ -92,7 +92,6 @@ export default defineEventHandler(async (event) => {
           trialEndDate = newEndDate;
         }
 
-        // Si la date de fin est dépassée
         if (trialEndDate < now) {
           await pool.execute(
             `UPDATE users 
@@ -159,17 +158,17 @@ export default defineEventHandler(async (event) => {
         accessToken
       };
     } catch (tokenError) {
-      console.error('[LOGIN] Erreur lors de la génération du token:', tokenError);
-      throw new Error('Erreur lors de la génération du token');
+      console.error('[LOGIN] Error generating token:', tokenError);
+      throw new Error('Error generating token');
     }
   } catch (error) {
-    console.error('[LOGIN] Erreur détaillée:', error);
+    console.error('[LOGIN] Detailed error:', error);
     if (error instanceof Error) {
       console.error('[LOGIN] Stack trace:', error.stack);
     }
     return {
       success: false,
-      message: 'Erreur lors de la connexion',
+      message: 'Error during login',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     };
   }

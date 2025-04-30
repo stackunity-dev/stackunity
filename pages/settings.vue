@@ -182,11 +182,12 @@
                   <div class="text-subtitle-1 font-weight-bold mb-3">Theme</div>
                   <v-row>
                     <v-col cols="12" sm="4">
-                      <v-card :color="isActiveTheme('light') ? 'primary' : 'surface'" variant="outlined"
-                        class="d-flex flex-column align-center pa-4" hover @click="changeTheme('light')">
+                      <v-card :color="isActiveTheme('greenAmbiance') ? 'primary' : 'surface'" variant="outlined"
+                        class="d-flex flex-column align-center pa-4" hover @click="changeTheme('greenAmbiance')">
                         <v-icon size="large"
-                          :color="isActiveTheme('light') ? 'white' : 'primary'">mdi-weather-sunny</v-icon>
-                        <span class="mt-2" :class="{ 'text-white': isActiveTheme('light') }">Light</span>
+                          :color="isActiveTheme('greenAmbiance') ? 'white' : 'primary'">mdi-weather-sunny</v-icon>
+                        <span class="mt-2" :class="{ 'text-white': isActiveTheme('greenAmbiance') }">Green
+                          Ambiance</span>
                       </v-card>
                     </v-col>
                     <v-col cols="12" sm="4">
@@ -348,10 +349,17 @@
               <div class="text-subtitle-1 font-weight-bold mb-3 text-success">Premium Status</div>
               <p class="mb-4">
                 Current status:
-                <v-chip color="success" v-if="userStore.user?.isPremium">
+                <v-chip color="success mr-1" v-if="userStore.user?.isPremium">
                   Premium
                 </v-chip>
-                <v-chip color="error" v-else>
+                <v-chip color="info" v-if="userStore.user.isStandard && !userStore.user?.isPremium">
+                  Standard
+                </v-chip>
+                <v-chip color="warning"
+                  v-else-if="userStore.user?.isTrial && !userStore.user?.isPremium && !userStore.user.isStandard">
+                  Trial
+                </v-chip>
+                <v-chip color="error" v-else-if="!userStore.user?.isPremium && !userStore.user.isStandard">
                   Free
                 </v-chip>
               </p>
@@ -456,21 +464,36 @@ const website = ref({
 
 const isClient = typeof window !== 'undefined';
 
-const theme = ref<string>(isClient ? localStorage.getItem('app_theme') || 'dark' : 'dark');
+const theme = ref<string>(isClient ? localStorage.getItem('app_theme') || 'greenAmbiance' : 'greenAmbiance');
 
 const changeTheme = (newTheme: string) => {
-  if (['light', 'dark', 'system'].includes(newTheme)) {
+  if (['greenAmbiance', 'dark', 'system'].includes(newTheme)) {
     theme.value = newTheme;
 
     if (isClient) {
       if (newTheme === 'system') {
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        vuetifyTheme.global.name.value = prefersDark ? 'dark' : 'light';
+        vuetifyTheme.global.name.value = prefersDark ? 'dark' : 'greenAmbiance';
       } else {
         vuetifyTheme.global.name.value = newTheme;
       }
 
       localStorage.setItem('app_theme', newTheme);
+    }
+  }
+};
+
+const loadTheme = () => {
+  if (isClient) {
+    const savedTheme = localStorage.getItem('app_theme');
+    if (savedTheme) {
+      if (savedTheme === 'system') {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        vuetifyTheme.global.name.value = prefersDark ? 'dark' : 'greenAmbiance';
+      } else {
+        vuetifyTheme.global.name.value = savedTheme;
+      }
+      theme.value = savedTheme;
     }
   }
 };
@@ -489,6 +512,15 @@ const cookies = ref({
 
 
 const saveAppearance = () => {
+  if (isClient) {
+    localStorage.setItem('app_theme', theme.value);
+    if (theme.value === 'system') {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      vuetifyTheme.global.name.value = prefersDark ? 'dark' : 'greenAmbiance';
+    } else {
+      vuetifyTheme.global.name.value = theme.value;
+    }
+  }
   setTimeout(() => {
     showSnackbar('Appearance settings updated', 'success');
   }, 500);
@@ -577,36 +609,28 @@ const showSnackbar = (text: string, color: string) => {
 
 
 onMounted(() => {
-  if (isClient) {
-    const savedTheme = localStorage.getItem('app_theme');
-    if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
-      theme.value = savedTheme;
-      changeTheme(savedTheme);
-    } else {
-      changeTheme('dark');
-    }
+  loadTheme();
 
-    if (window.matchMedia) {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        if (theme.value === 'system') {
-          vuetifyTheme.global.name.value = e.matches ? 'dark' : 'light';
-        }
-      });
-    }
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (theme.value === 'system') {
+        vuetifyTheme.global.name.value = e.matches ? 'dark' : 'greenAmbiance';
+      }
+    });
+  }
 
-    const savedFunctional = localStorage.getItem('cookies_functional');
-    const savedAnalytics = localStorage.getItem('cookies_analytics');
-    const savedMarketing = localStorage.getItem('cookies_marketing');
+  const savedFunctional = localStorage.getItem('cookies_functional');
+  const savedAnalytics = localStorage.getItem('cookies_analytics');
+  const savedMarketing = localStorage.getItem('cookies_marketing');
 
-    if (savedFunctional !== null) {
-      cookies.value.functional = savedFunctional === 'true';
-    }
-    if (savedAnalytics !== null) {
-      cookies.value.analytics = savedAnalytics === 'true';
-    }
-    if (savedMarketing !== null) {
-      cookies.value.marketing = savedMarketing === 'true';
-    }
+  if (savedFunctional !== null) {
+    cookies.value.functional = savedFunctional === 'true';
+  }
+  if (savedAnalytics !== null) {
+    cookies.value.analytics = savedAnalytics === 'true';
+  }
+  if (savedMarketing !== null) {
+    cookies.value.marketing = savedMarketing === 'true';
   }
   loadStoredWebsiteData();
 });

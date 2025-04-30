@@ -1,7 +1,7 @@
 import '@mdi/font/css/materialdesignicons.css'
 
-import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
+import 'vuetify/styles'
 // @ts-ignore
 import { defineNuxtPlugin } from '#imports'
 
@@ -56,6 +56,30 @@ export default defineNuxtPlugin((app) => {
           dark: true,
           variables: {
             'overlay-background': '#161c28',
+          },
+        },
+        greenAmbiance: {
+          colors: {
+            background: '#1d201d',
+            surface: '#111411',
+            'surface-dim': '#111411',
+            'surface-bright': '#373a37',
+            'on-surface': '#e1e3de',
+            outline: '#8a938b',
+            'outline-variant': '#404942',
+            primary: '#95d5ab',
+            'on-primary': '#00391f',
+            secondary: '#b5d089',
+            'on-secondary': '#223600',
+            tertiary: '#84d5cd',
+            'on-tertiary': '#003734',
+            error: '#ffb4ab',
+            'on-error': '#690005',
+            'surface-light': '#373a37',
+          },
+          dark: true,
+          variables: {
+            'overlay-background': '#151d18',
           },
         },
         landingPage: {

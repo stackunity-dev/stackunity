@@ -27,12 +27,11 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     ['@nuxtjs/plausible', {
-      domain: "stackunity.tech",
+      domain: 'stackunity.tech',
       apiHost: "https://plausible.io",
-      ignoredHostnames: ['localhost'],
-      hashMode: true,
-      enableAutoOutboundTracking: true,
-      enableAutoFileDownloadsTracking: true,
+      ignoredHostsNames: ['localhost', '127.0.0.1'],
+      autoPageviews: true,
+      autoOutboundTracking: true
     }],
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {

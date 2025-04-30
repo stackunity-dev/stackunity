@@ -161,7 +161,7 @@ onMounted(async () => {
       const data = await response.json();
       csrfToken.value = data.token;
     } catch (error) {
-      console.error('Erreur lors de la récupération du token CSRF:', error);
+      console.error('Error during CSRF token retrieval:', error);
     }
 
     if (token) {
@@ -172,11 +172,10 @@ onMounted(async () => {
     }
 
     if (userStore.isAuthenticated) {
-      console.log('[LOGIN] Utilisateur déjà authentifié, redirection');
       await handleRedirection();
     }
   } catch (err) {
-    console.error('[LOGIN] Erreur lors de la vérification de l\'authentification:', err);
+    console.error('[LOGIN] Error during authentication verification:', err);
   }
 });
 
@@ -187,14 +186,14 @@ const handleSignin = async () => {
   try {
     if (!form.value.email || !form.value.email.includes('@')) {
       snackbarColor.value = 'error';
-      snackbarText.value = 'Email invalide';
+      snackbarText.value = 'Invalid email';
       showSnackbar.value = true;
       return;
     }
 
     if (!form.value.password || form.value.password.length < 6) {
       snackbarColor.value = 'error';
-      snackbarText.value = 'Le mot de passe doit contenir au moins 6 caractères';
+      snackbarText.value = 'Password must contain at least 6 characters';
       showSnackbar.value = true;
       return;
     }
@@ -218,13 +217,13 @@ const handleSignin = async () => {
       router.push('/dashboard');
     } else {
       snackbarColor.value = 'error';
-      snackbarText.value = 'Erreur de connexion';
+      snackbarText.value = 'Error during login';
       showSnackbar.value = true;
     }
   } catch (err: any) {
-    console.error('[Login] Erreur de connexion:', err);
+    console.error('[Login] Error during login:', err);
     snackbarColor.value = 'error';
-    snackbarText.value = err.message || 'Erreur inattendue';
+    snackbarText.value = err.message || 'Unexpected error';
     showSnackbar.value = true;
   } finally {
     loading.value = false;
@@ -243,7 +242,6 @@ async function handleRedirection() {
     if (redirectPath) {
       window.location.href = redirectPath;
     } else {
-      console.log('[LOGIN] Redirection vers le tableau de bord');
       router.push('/dashboard');
     }
   }

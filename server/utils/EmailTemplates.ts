@@ -116,4 +116,26 @@ export class EmailTemplates {
       </div>
     `;
   }
+}
+
+export class FeedbackEmailTemplates {
+  static feedbackEmailTemplate(title: string, description: string, type: string, rating: string, email: string): string {
+    return `
+      <div style="font-family: 'Figtree', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+        <header style="text-align: center; margin-bottom: 30px;">
+          <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="max-width: 200px;">
+        </header>
+        
+        <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h1 style="color: #6200ea; margin-bottom: 20px;">Feedback</h1>
+
+          <p style="margin-bottom: 15px; line-height: 1.5;">Title: ${title}</p>
+          <p style="margin-bottom: 15px; line-height: 1.5;">Description: ${description}</p> 
+          <p style="margin-bottom: 15px; line-height: 1.5;">Type: ${type}</p>
+          <p style="margin-bottom: 15px; line-height: 1.5;">Rating: ${rating}</p>
+          <p style="margin-bottom: 15px; line-height: 1.5;">Email: ${email ? email : 'N/A'}</p>
+        </main>
+      </div>
+    `;
+  }
 } 
