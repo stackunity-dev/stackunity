@@ -58,7 +58,7 @@
               <v-row>
                 <v-col cols="12" md="6">
                   <v-progress-circular :model-value="avgEngagementScore" :color="getScoreColor(avgEngagementScore)"
-                    size="100" width="12" class="mr-4 ml-1 mt-2">
+                    size="100" width="12" class="mx-auto d-block">
                     <span class="text-h6 font-weight-bold">{{ avgEngagementScore }}%</span>
                   </v-progress-circular>
                 </v-col>
