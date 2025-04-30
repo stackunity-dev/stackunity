@@ -103,6 +103,9 @@ export default defineEventHandler(async (event) => {
 
     setCookie(event, REFRESH_TOKEN_COOKIE_NAME, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
+    const diffTime = trialEndDate.getTime() - now.getTime();
+    const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
     return {
       success: true,
       accessToken,
@@ -114,7 +117,10 @@ export default defineEventHandler(async (event) => {
         isStandard: false,
         isPremium: true,
         subscription_status: 'trial',
-        trial_end_date: trialEndDate.toISOString()
+        payment_status: 'none',
+        trial_start_date: now.toISOString(),
+        trial_end_date: trialEndDate.toISOString(),
+        daysLeft
       }
     };
   }

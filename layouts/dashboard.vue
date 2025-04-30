@@ -76,6 +76,9 @@
             <v-chip v-if="userStore.user?.daysLeft <= 2" color="warning" size="small" class="ml-2">
               Soon ending
             </v-chip>
+            <v-chip v-else-if="userStore.user?.daysLeft > 2" color="success" size="small" class="ml-2">
+              {{ userStore.user?.daysLeft }} days
+            </v-chip>
           </template>
         </v-list-item>
 

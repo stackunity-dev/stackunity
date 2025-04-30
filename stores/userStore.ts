@@ -2,7 +2,7 @@ import { $fetch } from 'ofetch';
 import { defineStore } from 'pinia';
 import type { PersistenceOptions } from 'pinia-plugin-persistedstate';
 import { TokenUtils } from '../utils/token';
-import { SQLSchema, StudioComponent, EmailHistoryItem, RandomData, WebsiteData, CrawlReport, SEOAuditResult, LoginResponse, User, Table, DeleteResponse } from './types';
+import { CrawlReport, DeleteResponse, EmailHistoryItem, LoginResponse, RandomData, SEOAuditResult, SQLSchema, StudioComponent, Table, User, WebsiteData } from './types';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -394,11 +394,34 @@ export const useUserStore = defineStore('user', {
 
         if (data.success) {
           this.setToken(data.accessToken);
-          this.user = data.user;
+
+          if (data.user.trial_end_date && !data.user.daysLeft) {
+            const now = new Date();
+            const trialEndDate = new Date(data.user.trial_end_date);
+            if (trialEndDate > now) {
+              const diffTime = trialEndDate.getTime() - now.getTime();
+              data.user.daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            } else {
+              data.user.daysLeft = 0;
+            }
+          }
+
+          this.user = {
+            ...data.user,
+            isPremium: data.user.isPremium === true || data.user.isPremium === 1,
+            isStandard: data.user.isStandard === true || data.user.isStandard === 1,
+            isAdmin: data.user.isAdmin === true || data.user.isAdmin === 1,
+            subscription_status: data.user.subscription_status || 'trial',
+            daysLeft: data.user.daysLeft || 7
+          };
+
           this.isAuthenticated = true;
-          this.isPremium = data.user.isPremium;
-          this.isAdmin = data.user.isAdmin;
-          this.isStandard = data.user.isStandard;
+          this.isPremium = this.user.isPremium;
+          this.isAdmin = this.user.isAdmin;
+          this.isStandard = this.user.isStandard;
+          this.subscription_status = this.user.subscription_status;
+          this.daysLeft = this.user.daysLeft;
+          this.trial_end_date = data.user.trial_end_date ? new Date(data.user.trial_end_date) : null;
 
           this.persistData();
 
