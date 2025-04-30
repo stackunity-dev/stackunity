@@ -200,8 +200,8 @@ import { computed, markRaw, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay, useTheme } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
-import { useUserStore } from '../stores/userStore';
 import Snackbar from '../components/snackbar.vue';
+import { useUserStore } from '../stores/userStore';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -380,12 +380,17 @@ const submitFeedback = async () => {
   try {
     if (!feedback.value.title || !feedback.value.description) {
       snackbar.value.show = true;
-      snackbar.value.text = 'Please fill in all fields';
+      snackbar.value.text = 'Please fill in all required fields';
       snackbar.value.color = 'error';
       return;
     }
 
-    await userStore.submitFeedback(feedback.value);
+    const response = await userStore.submitFeedback(feedback.value);
+
+    if (response?.error) {
+      throw new Error(response.error);
+    }
+
     showFeedBackDialog.value = false;
     feedback.value = {
       type: 'suggestion',
@@ -394,14 +399,17 @@ const submitFeedback = async () => {
       description: '',
       email: userStore.user?.email || ''
     };
+
     snackbar.value.show = true;
-    snackbar.value.text = 'Feedback submitted successfully';
+    snackbar.value.text = 'Feedback submitted successfully! Thank you for your input.';
     snackbar.value.color = 'success';
-  } catch (error) {
-    console.error('Erreur lors de l\'envoi du feedback:', error);
+    snackbar.value.timeout = 4000;
+  } catch (error: any) {
+    console.error('Error submitting feedback:', error);
     snackbar.value.show = true;
-    snackbar.value.text = 'Error submitting feedback';
+    snackbar.value.text = error.message || 'An error occurred while submitting your feedback. Please try again later.';
     snackbar.value.color = 'error';
+    snackbar.value.timeout = 5000;
   }
 };
 
