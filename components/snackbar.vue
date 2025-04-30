@@ -156,10 +156,6 @@ async function sendErrorFeedback() {
     if (result.success) {
       closeDialog();
       emit('update:modelValue', false);
-
-      setTimeout(() => {
-        alert('Thank you for your report! We will look into this issue.');
-      }, 100);
     } else {
       alert('An error occurred while sending your report. Please try again.');
     }

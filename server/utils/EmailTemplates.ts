@@ -10,8 +10,8 @@ export class EmailTemplates {
         </head>
         <body style="font-family: 'Figtree', Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
           <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
-            <div style="background: linear-gradient(135deg, #6200ea 0%, #3700b3 100%); padding: 30px; text-align: center;">
-              <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="max-width: 180px; height: auto;">
+            <div style="background: linear-gradient(135deg, #6200ea 0%, #3700b3 100%); padding: 20px; text-align: center;">
+              <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
             </div>
 
             <div style="padding: 40px 30px;">
@@ -76,8 +76,8 @@ export class EmailTemplates {
   static trialEndingEmailTemplate(username: string, daysLeft: number, email: string): string {
     return `
       <div style="font-family: 'Figtree', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
-        <header style="text-align: center; margin-bottom: 30px;">
-          <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="max-width: 200px;">
+        <header style="text-align: center; margin-bottom: 20px;">
+          <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
         </header>
         
         <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -119,8 +119,8 @@ export class EmailTemplates {
   static paymentConfirmationEmailTemplate(username: string, planName: string, amount: string, email: string): string {
     return `
       <div style="font-family: 'Figtree', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
-        <header style="text-align: center; margin-bottom: 30px;">
-          <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="max-width: 200px;">
+        <header style="text-align: center; margin-bottom: 20px;">
+          <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
         </header>
         
         <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -198,7 +198,7 @@ export class FeedbackEmailTemplates {
         <body style="font-family: 'Figtree', Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
           <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <div style="background-color: #6200ea; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
-              <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="max-width: 180px; height: auto;">
+              <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
             </div>
 
             <div style="padding: 30px;">
@@ -269,7 +269,7 @@ export class ErrorEmailTemplates {
         <body style="font-family: 'Figtree', Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
           <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <div style="background-color: #ef5350; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
-              <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="max-width: 180px; height: auto;">
+              <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
             </div>
 
             <div style="padding: 30px;">
