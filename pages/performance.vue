@@ -400,7 +400,7 @@ const snackbar = ref({
 
 const analyzeUrl = async () => {
   if (!url.value.startsWith('http://') && !url.value.startsWith('https://')) {
-    error.value = 'Veuillez entrer une URL valide commençant par http:// ou https://';
+    error.value = 'Please enter a valid URL starting with http:// or https://';
     return;
   }
 
@@ -416,16 +416,16 @@ const analyzeUrl = async () => {
       },
       body: JSON.stringify({
         url: url.value,
-        maxUrls: 10,
+        maxUrls: 30,
         delayBetweenRequests: 3000
       })
     });
 
     if (!response.ok) {
       if (response.status === 524) {
-        throw new Error('Le serveur a mis trop de temps à répondre. Essayez avec un site plus petit ou moins de pages.');
+        throw new Error('The server took too long to respond. Try with a smaller site or fewer pages.');
       }
-      throw new Error(`Erreur serveur: ${response.status}`);
+      throw new Error(`Server error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -442,11 +442,11 @@ const analyzeUrl = async () => {
     snackbar.value = {
       show: true,
       color: 'success',
-      text: `Analyse terminée ! ${data.performanceResults?.length || 0} pages analysées.`
+      text: `Analysis completed! ${data.performanceResults?.length || 0} pages analyzed.`
     };
   } catch (err) {
-    console.error('Erreur lors de l\'analyse du site:', err);
-    error.value = err instanceof Error ? err.message : 'Une erreur inconnue est survenue lors de l\'analyse';
+    console.error('Error during site analysis:', err);
+    error.value = err instanceof Error ? err.message : 'An unknown error occurred during analysis';
     snackbar.value = {
       show: true,
       color: 'error',
@@ -674,13 +674,13 @@ const createResourceChart = () => {
             }
           });
         } catch (err) {
-          console.error('Erreur lors de la création du graphique:', err);
+          console.error('Error creating the chart:', err);
         }
       } else {
-        console.log('Pas de données à afficher dans le graphique');
+        console.log('No data to display in the chart');
       }
     } catch (err) {
-      console.error('Échec de création du graphique:', err);
+      console.error('Failed to create the chart:', err);
     }
   }, 1500);
 };

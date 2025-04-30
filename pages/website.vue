@@ -715,9 +715,15 @@ async function analyzeWebsite() {
 
     if (semanticResponse.ok) {
       semanticData.value = await semanticResponse.json();
-      const semanticScores = semanticData.value.map(item =>
-        item.semanticScore !== undefined ? item.semanticScore : (item.score || 0)
-      );
+
+      const semanticScores = semanticData.value.map(item => {
+        const semanticScore = item.semanticScore !== undefined ? item.semanticScore : (item.score || 0);
+        const ariaScore = item.accessibility?.ariaScore || 0;
+        const metaScore = item.metaTags?.score || 0;
+
+        return (semanticScore + ariaScore + metaScore) / 3;
+      });
+
       avgScores.value.semantic = semanticScores.reduce((sum, score) => sum + score, 0) / semanticScores.length || 0;
     }
     loadingProgress.value = 40;
