@@ -66,22 +66,6 @@
           prepend-icon="mdi-credit-card-outline" title="Premium" rounded="lg" class="mb-1" color="primary" nuxt
           @click="closeDrawer" />
 
-        <v-list-item v-if="userStore.user?.subscription_status === 'trial'" prepend-icon="mdi-clock-outline"
-          :title="`Trial : ${userStore.user?.daysLeft || 0} day${userStore.user?.daysLeft !== 1 ? 's' : ''} left`"
-          rounded="lg" class="mb-1" :class="{
-            'text-warning': userStore.user?.daysLeft <= 2,
-            'text-info': userStore.user?.daysLeft > 2
-          }">
-          <template v-slot:append>
-            <v-chip v-if="userStore.user?.daysLeft <= 2" color="warning" size="small" class="ml-2">
-              Soon ending
-            </v-chip>
-            <v-chip v-else-if="userStore.user?.daysLeft > 2" color="success" size="small" class="ml-2">
-              {{ userStore.user?.daysLeft }} days
-            </v-chip>
-          </template>
-        </v-list-item>
-
         <v-list-item to="/settings" prepend-icon="mdi-cog-outline" title="Settings" rounded="lg" class="mb-1"
           color="primary" nuxt @click="closeDrawer" />
 
@@ -523,9 +507,6 @@ const items = computed(() => [
   }
 ]);
 
-onMounted(() => {
-  console.log(userStore.user);
-});
 </script>
 
 <style scoped>
