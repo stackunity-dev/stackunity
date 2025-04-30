@@ -26,7 +26,7 @@
         <PremiumFeature v-if="!userStore.user?.isPremium" type="list-item" title="Website" icon="mdi-web"
           feature-key="website" plan-type="premium" />
 
-        <v-list-subheader class="mt-2 text-uppercase font-weight-bold text-caption">Applications</v-list-subheader>
+        <v-list-subheader class="mt-2 text-uppercase font-weight-bold text-caption">WORKFLOW</v-list-subheader>
 
         <v-list-group v-for="(item, index) in items" :key="index" :value="item.title" class="mb-1"
           :prepend-icon="item.prependIcon">
