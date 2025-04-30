@@ -95,7 +95,7 @@
                         <v-card-text class="pa-3">
                           <p class="text-caption text-grey mb-1">{{ socialMetaPreview.url }}</p>
                           <h3 class="text-subtitle-1 font-weight-bold mb-2 text-truncate">{{ socialMetaPreview.ogTitle
-                            }}</h3>
+                          }}</h3>
                           <p class="text-body-2 social-description">{{ socialMetaPreview.ogDescription }}</p>
                         </v-card-text>
                       </v-card>
@@ -599,7 +599,7 @@ const allMetrics = computed<Metric[]>(() => {
   if (semanticData.value.length === 0) return [];
 
   const metrics: Metric[] = [
-    { label: 'Semantic Structure', value: Math.round(avgScores.value.semantic) },
+    { label: 'HTML Structure', value: Math.round(avgScores.value.semantic) },
     { label: 'Security Score', value: Math.round(avgScores.value.security) },
     { label: 'Content Quality', value: Math.round(avgScores.value.content) },
     { label: 'User Engagement', value: Math.round(avgScores.value.engagement) }
