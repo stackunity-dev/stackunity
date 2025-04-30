@@ -47,7 +47,54 @@
 
       <v-row v-else-if="results.length">
         <v-col cols="12">
+          <v-card class="mb-6">
+            <v-card-title class="d-flex align-center">
+              <v-icon icon="mdi-chart-line" class="mr-2" color="primary" />
+              Average engagement score
+            </v-card-title>
+            <v-card-text>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-progress-circular :model-value="avgEngagementScore" :color="getScoreColor(avgEngagementScore)"
+                    size="120" width="12" class="mx-auto d-block">
+                    <span class="text-h5">{{ avgEngagementScore }}%</span>
+                  </v-progress-circular>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-list density="compact">
+                    <v-list-item>
+                      <template v-slot:prepend>
+                        <v-icon icon="mdi-cursor-pointer" color="primary" />
+                      </template>
+                      <v-list-item-title>Average CTA count</v-list-item-title>
+                      <v-list-item-subtitle>{{ avgCtaCount }}</v-list-item-subtitle>
+                    </v-list-item>
+                    <v-list-item>
+                      <template v-slot:prepend>
+                        <v-icon icon="mdi-gesture-tap" color="primary" />
+                      </template>
+                      <v-list-item-title>Average interactive elements</v-list-item-title>
+                      <v-list-item-subtitle>{{ avgInteractiveElements }}</v-list-item-subtitle>
+                    </v-list-item>
+                    <v-list-item>
+                      <template v-slot:prepend>
+                        <v-icon icon="mdi-share-variant" color="primary" />
+                      </template>
+                      <v-list-item-title>Average social elements</v-list-item-title>
+                      <v-list-item-subtitle>{{ avgSocialElements }}</v-list-item-subtitle>
+                    </v-list-item>
+                  </v-list>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row v-else-if="results.length">
+        <v-col cols="12">
           <h2>Analysis results</h2>
+
           <v-expansion-panels>
             <v-expansion-panel v-for="(result, index) in results" :key="index">
               <v-expansion-panel-title>
@@ -379,7 +426,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 import { useUserStore } from '../stores/userStore';
@@ -511,6 +558,30 @@ function formatSocialDetails(details: any[]) {
     };
   });
 }
+
+const avgEngagementScore = computed(() => {
+  if (!results.value.length) return 0;
+  const scores = results.value.map(r => r.score || 0);
+  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+});
+
+const avgCtaCount = computed(() => {
+  if (!results.value.length) return 0;
+  const counts = results.value.map(r => r.ctaCount || 0);
+  return Math.round(counts.reduce((a, b) => a + b, 0) / counts.length);
+});
+
+const avgInteractiveElements = computed(() => {
+  if (!results.value.length) return 0;
+  const counts = results.value.map(r => r.interactiveElements || 0);
+  return Math.round(counts.reduce((a, b) => a + b, 0) / counts.length);
+});
+
+const avgSocialElements = computed(() => {
+  if (!results.value.length) return 0;
+  const counts = results.value.map(r => r.socialElements || 0);
+  return Math.round(counts.reduce((a, b) => a + b, 0) / counts.length);
+});
 </script>
 
 <style scoped>

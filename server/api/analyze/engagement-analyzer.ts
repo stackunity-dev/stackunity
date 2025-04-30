@@ -171,8 +171,18 @@ export async function analyzeUserEngagement(html: string): Promise<EngagementAna
     engagementTechniques
   });
 
+  // Calcul du score global d'engagement
+  const score = Math.round(
+    (navigationScore * 0.3) +
+    (readabilityScore * 0.2) +
+    (ctaCount > 0 ? 20 : 0) +
+    (interactiveElements > 0 ? 15 : 0) +
+    (visualElements > 0 ? 15 : 0) +
+    (socialElements > 0 ? 20 : 0)
+  );
+
   return {
-    score: 0,
+    score: Math.min(100, score),
     ctaCount,
     interactiveElements,
     visualElements,
