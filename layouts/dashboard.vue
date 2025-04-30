@@ -276,7 +276,7 @@ const updatePageTitle = () => {
   } else if (path.includes('/database-designer')) {
     currentPageTitle.value = 'Database Designer';
   } else if (path.includes('/semantic')) {
-    currentPageTitle.value = 'Semantic';
+    currentPageTitle.value = 'Structure & Accessibility';
   } else if (path.includes('/security')) {
     currentPageTitle.value = 'Security';
   } else if (path.includes('/content')) {
