@@ -47,7 +47,9 @@
 
       <v-row v-else-if="results.length">
         <v-col cols="12">
-          <v-card class="mb-6">
+          <h2>Analysis results</h2>
+
+          <v-card class="mb-6 bg-surface">
             <v-card-title class="d-flex align-center">
               <v-icon icon="mdi-chart-line" class="mr-2" color="primary" />
               Average engagement score
@@ -57,7 +59,7 @@
                 <v-col cols="12" md="6">
                   <v-progress-circular :model-value="avgEngagementScore" :color="getScoreColor(avgEngagementScore)"
                     size="120" width="12" class="mx-auto d-block">
-                    <span class="text-h5">{{ avgEngagementScore }}%</span>
+                    <span class="text-h6 font-weight-bold">{{ avgEngagementScore }}%</span>
                   </v-progress-circular>
                 </v-col>
                 <v-col cols="12" md="6">
@@ -88,12 +90,6 @@
               </v-row>
             </v-card-text>
           </v-card>
-        </v-col>
-      </v-row>
-
-      <v-row v-else-if="results.length">
-        <v-col cols="12">
-          <h2>Analysis results</h2>
 
           <v-expansion-panels>
             <v-expansion-panel v-for="(result, index) in results" :key="index">
