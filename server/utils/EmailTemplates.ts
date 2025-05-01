@@ -16,55 +16,55 @@ export class EmailTemplates {
 
             <div style="padding: 40px 30px;">
               <h1 style="color: #333; margin: 0 0 20px; font-size: 28px; text-align: center; font-weight: 600;">
-                Bienvenue sur StackUnity, ${username} !
+                Welcome to StackUnity, ${username} !
               </h1>
               
               <div style="background-color: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 30px;">
                 <p style="color: #666; margin: 0 0 15px; line-height: 1.6; font-size: 16px;">
-                  Nous sommes ravis de vous compter parmi nos utilisateurs. StackUnity est votre solution tout-en-un pour améliorer vos performances en développement web et en SEO.
+                  We are thrilled to count you among our users. StackUnity is your one-stop solution for improving your web development and SEO performance.
                 </p>
                 
                 <p style="color: #666; margin: 0 0 20px; line-height: 1.6; font-size: 16px;">
-                  Votre période d'essai de 7 jours a commencé ! Profitez de toutes nos fonctionnalités :
+                  Your 7-day trial has started! Enjoy all our features:
                 </p>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                   <div style="background-color: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Analyse complète</div>
-                    <div style="color: #666; font-size: 14px;">Site web et SEO</div>
+                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Complete analysis</div>
+                    <div style="color: #666; font-size: 14px;">Website and SEO</div>
                   </div>
                   <div style="background-color: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Design de base de données</div>
-                    <div style="color: #666; font-size: 14px;">Conception intuitive</div>
+                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Database design</div>
+                    <div style="color: #666; font-size: 14px;">Intuitive design</div>
                   </div>
                   <div style="background-color: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                     <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Studio API</div>
-                    <div style="color: #666; font-size: 14px;">Test et développement</div>
+                    <div style="color: #666; font-size: 14px;">Test and development</div>
                   </div>
                   <div style="background-color: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Accessibilité</div>
-                    <div style="color: #666; font-size: 14px;">Outils d'optimisation</div>
+                    <div style="color: #6200ea; font-weight: 600; margin-bottom: 8px;">Accessibility</div>
+                    <div style="color: #666; font-size: 14px;">Optimization tools</div>
                   </div>
                 </div>
               </div>
 
               <div style="text-align: center;">
                 <a href="https://stackunity.tech/dashboard" style="display: inline-block; background: linear-gradient(135deg, #6200ea 0%, #3700b3 100%); color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(98, 0, 234, 0.2);">
-                  Accéder à votre tableau de bord
+                  Access your dashboard
                 </a>
               </div>
             </div>
 
             <div style="background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
               <p style="color: #666; margin: 0 0 10px; font-size: 14px;">
-                © ${new Date().getFullYear()} StackUnity. Tous droits réservés.
+                © ${new Date().getFullYear()} StackUnity. All rights reserved.
               </p>
               <p style="margin: 0;">
-                <a href="https://stackunity.tech/privacy" style="color: #6200ea; text-decoration: none; margin-right: 15px; font-size: 14px;">Politique de confidentialité</a>
-                <a href="https://stackunity.tech/terms" style="color: #6200ea; text-decoration: none; font-size: 14px;">Conditions d'utilisation</a>
+                <a href="https://stackunity.tech/privacy" style="color: #6200ea; text-decoration: none; margin-right: 15px; font-size: 14px;">Privacy policy</a>
+                <a href="https://stackunity.tech/terms" style="color: #6200ea; text-decoration: none; font-size: 14px;">Terms of use</a>
               </p>
               <p style="color: #666; margin: 10px 0 0; font-size: 14px;">
-                Si vous ne souhaitez plus recevoir nos emails, <a href="https://stackunity.tech/unsubscribe?email=${email}" style="color: #6200ea; text-decoration: none;">cliquez ici pour vous désabonner</a>.
+                If you do not want to receive our emails, <a href="https://stackunity.tech/unsubscribe?email=${email}" style="color: #6200ea; text-decoration: none;">click here to unsubscribe</a>.
               </p>
             </div>
           </div>
@@ -81,36 +81,36 @@ export class EmailTemplates {
         </header>
         
         <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <h1 style="color: #6200ea; margin-bottom: 20px;">Votre période d'essai se termine bientôt, ${username} !</h1>
+          <h1 style="color: #6200ea; margin-bottom: 20px;">Your trial is ending soon, ${username} !</h1>
           
-          <p style="margin-bottom: 15px; line-height: 1.5;">Il vous reste <strong>${daysLeft} jour${daysLeft > 1 ? 's' : ''}</strong> avant la fin de votre période d'essai premium.</p>
+          <p style="margin-bottom: 15px; line-height: 1.5;">You have <strong>${daysLeft} day${daysLeft > 1 ? 's' : ''}</strong> left before your premium trial ends.</p>
           
-          <p style="margin-bottom: 15px; line-height: 1.5;">Pour continuer à profiter de toutes les fonctionnalités premium de StackUnity, nous vous invitons à choisir un abonnement :</p>
+              <p style="margin-bottom: 15px; line-height: 1.5;">To continue enjoying all premium features of StackUnity, we invite you to choose a subscription:</p>
           
           <div style="background-color: white; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-            <h2 style="color: #6200ea; font-size: 18px;">Abonnement Standard</h2>
-            <p style="margin-bottom: 10px;">Accès à toutes les fonctionnalités essentielles pour améliorer votre site web.</p>
-            <p style="font-weight: bold;">9,99€/mois</p>
+            <h2 style="color: #6200ea; font-size: 18px;">Standard subscription</h2>
+            <p style="margin-bottom: 10px;">Access to all essential features to improve your website.</p>
+            <p style="font-weight: bold;">9,99€/month</p>
           </div>
           
           <div style="background-color: white; border-radius: 8px; padding: 15px; margin-bottom: 20px; border: 2px solid #6200ea;">
-            <h2 style="color: #6200ea; font-size: 18px;">Abonnement Premium</h2>
-            <p style="margin-bottom: 10px;">Accès illimité à toutes les fonctionnalités et outils avancés.</p>
-            <p style="font-weight: bold;">19,99€/mois</p>
+            <h2 style="color: #6200ea; font-size: 18px;">Premium subscription</h2>
+            <p style="margin-bottom: 10px;">Unlimited access to all advanced features and tools.</p>
+            <p style="font-weight: bold;">19,99€/month</p>
           </div>
           
           <p style="margin-bottom: 20px;">
-            <a href="https://stackunity.tech/pricing" style="background-color: #6200ea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Choisir mon abonnement</a>
+            <a href="https://stackunity.tech/pricing" style="background-color: #6200ea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Choose my subscription</a>
           </p>
         </main>
         
         <footer style="text-align: center; font-size: 12px; color: #666;">
-          <p>© ${new Date().getFullYear()} StackUnity. Tous droits réservés.</p>
+          <p>© ${new Date().getFullYear()} StackUnity. All rights reserved.</p>
           <p>
-            <a href="https://stackunity.tech/privacy" style="color: #6200ea; text-decoration: none; margin-right: 10px;">Politique de confidentialité</a>
-            <a href="https://stackunity.tech/terms" style="color: #6200ea; text-decoration: none;">Conditions d'utilisation</a>
+            <a href="https://stackunity.tech/privacy" style="color: #6200ea; text-decoration: none; margin-right: 10px;">Privacy policy</a>
+            <a href="https://stackunity.tech/terms" style="color: #6200ea; text-decoration: none;">Terms of use</a>
           </p>
-          <p>Si vous ne souhaitez plus recevoir nos emails, <a href="https://stackunity.tech/unsubscribe?email=${email}" style="color: #6200ea; text-decoration: none;">cliquez ici pour vous désabonner</a>.</p>
+          <p>If you do not want to receive our emails, <a href="https://stackunity.tech/unsubscribe?email=${email}" style="color: #6200ea; text-decoration: none;">click here to unsubscribe</a>.</p>
         </footer>
       </div>
     `;
@@ -124,30 +124,30 @@ export class EmailTemplates {
         </header>
         
         <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <h1 style="color: #6200ea; margin-bottom: 20px;">Merci pour votre abonnement, ${username} !</h1>
+          <h1 style="color: #6200ea; margin-bottom: 20px;">Thank you for your subscription, ${username} !</h1>
           
-          <p style="margin-bottom: 15px; line-height: 1.5;">Nous vous confirmons que votre paiement de <strong>${amount}</strong> pour l'abonnement <strong>${planName}</strong> a bien été reçu.</p>
+          <p style="margin-bottom: 15px; line-height: 1.5;">We confirm that your payment of <strong>${amount}</strong> for the <strong>${planName}</strong> subscription has been received.</p>
           
           <div style="background-color: #e8f5e9; border-radius: 8px; padding: 15px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
-            <p style="margin: 0; color: #2e7d32;"><strong>Statut du paiement:</strong> Confirmé</p>
+            <p style="margin: 0; color: #2e7d32;"><strong>Payment status:</strong> Confirmed</p>
           </div>
           
-          <p style="margin-bottom: 15px; line-height: 1.5;">Vous pouvez désormais profiter de toutes les fonctionnalités de votre abonnement.</p>
+          <p style="margin-bottom: 15px; line-height: 1.5;">You can now enjoy all the features of your subscription.</p>
           
           <p style="margin-bottom: 20px;">
-            <a href="https://stackunity.tech/dashboard" style="background-color: #6200ea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Accéder à mon tableau de bord</a>
+            <a href="https://stackunity.tech/dashboard" style="background-color: #6200ea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Access your dashboard</a>
           </p>
           
-          <p style="margin-bottom: 15px; line-height: 1.5; font-size: 14px;">Pour consulter votre facture ou gérer votre abonnement, rendez-vous dans la section "Mon compte".</p>
+          <p style="margin-bottom: 15px; line-height: 1.5; font-size: 14px;">To view your invoice or manage your subscription, please visit the "My account" section.</p>
         </main>
         
         <footer style="text-align: center; font-size: 12px; color: #666;">
-          <p>© ${new Date().getFullYear()} StackUnity. Tous droits réservés.</p>
+          <p>© ${new Date().getFullYear()} StackUnity. All rights reserved.</p>
           <p>
-            <a href="https://stackunity.tech/privacy" style="color: #6200ea; text-decoration: none; margin-right: 10px;">Politique de confidentialité</a>
-            <a href="https://stackunity.tech/terms" style="color: #6200ea; text-decoration: none;">Conditions d'utilisation</a>
+            <a href="https://stackunity.tech/privacy" style="color: #6200ea; text-decoration: none; margin-right: 10px;">Privacy policy</a>
+            <a href="https://stackunity.tech/terms" style="color: #6200ea; text-decoration: none;">Terms of use</a>
           </p>
-          <p>Si vous ne souhaitez plus recevoir nos emails, <a href="https://stackunity.tech/unsubscribe?email=${email}" style="color: #6200ea; text-decoration: none;">cliquez ici pour vous désabonner</a>.</p>
+          <p>If you do not want to receive our emails, <a href="https://stackunity.tech/unsubscribe?email=${email}" style="color: #6200ea; text-decoration: none;">click here to unsubscribe</a>.</p>
         </footer>
       </div>
     `;
@@ -202,7 +202,7 @@ export class FeedbackEmailTemplates {
             </div>
 
             <div style="padding: 30px;">
-              <h1 style="color: #333; margin: 0 0 20px; font-size: 24px;">New Feedback Received</h1>
+                  <h1 style="color: #333; margin: 0 0 20px; font-size: 24px;">New Feedback Received</h1>
               
               <div style="display: inline-block; background-color: ${getTypeColor(type)}; color: white; padding: 6px 12px; border-radius: 4px; margin-bottom: 20px;">
                 ${getTypeIcon(type)} ${type.charAt(0).toUpperCase() + type.slice(1)}
