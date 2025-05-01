@@ -379,7 +379,7 @@
             <v-row class="footer-columns-container">
               <v-col v-for="(column, index) in footerColumns" :key="index" cols="6" md="4" class="footer-column px-4">
                 <h4 id="footer-column-heading-{{index}}" class="text-subtitle-1 font-weight-bold mb-4">{{ column.title
-                  }}
+                }}
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"
@@ -420,6 +420,7 @@ import Snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../utils/filter';
 import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
+import { trackAuthButtonClicks } from '../utils/usePlausible';
 
 const Pricing = defineAsyncComponent({
   loader: () => import('../components/pricing.vue'),
@@ -611,6 +612,7 @@ const snackbarTimeout = ref(2000);
 const loading = ref(false);
 const isClient = ref(false);
 const pageReady = ref(false);
+const authTracker = trackAuthButtonClicks();
 
 const userStore = useUserStore();
 
@@ -622,6 +624,32 @@ onMounted(() => {
   document.documentElement.classList.add('page-loaded');
 
   pageReady.value = true;
+
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      const loginButtons = document.querySelectorAll('a[to="/login"], v-btn[to="/login"]');
+      const signupButtons = document.querySelectorAll('a[to="/signup"], v-btn[to="/signup"]');
+
+      if (authTracker && typeof authTracker.trackAuthButtonClick === 'function' &&
+        typeof authTracker.incrementImpressions === 'function') {
+
+        loginButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            authTracker.trackAuthButtonClick('login', 'index-page', button.textContent?.trim() || 'Login');
+          });
+        });
+
+        signupButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            authTracker.trackAuthButtonClick('signup', 'index-page', button.textContent?.trim() || 'Sign Up');
+          });
+        });
+
+        authTracker.incrementImpressions('login');
+        authTracker.incrementImpressions('signup');
+      }
+    }, 1000);
+  }
 });
 
 provide('pageReady', pageReady);

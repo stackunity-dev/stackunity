@@ -15,12 +15,15 @@ import { TokenUtils } from './utils/token';
 // @ts-ignore
 import { usePlausible } from './utils/usePlausible';
 // @ts-ignore
+import { trackAuthButtonClicks } from './utils/usePlausible';
+// @ts-ignore
 import { useHead } from '#imports';
 
 const router = useRouter();
 const userStore = useUserStore();
 const cookieStore = useCookieStore();
 const plausible = usePlausible();
+const authTracker = trackAuthButtonClicks();
 const isClient = typeof window !== 'undefined';
 const sessionRestorationAttempted = ref(false);
 const restorationAttemptCount = ref(0);
@@ -228,6 +231,12 @@ onMounted(async () => {
     }
 
     cookieStore.initCookieConsent();
+
+    setTimeout(() => {
+      if (authTracker && typeof authTracker.initAuthButtonsTracking === 'function') {
+        authTracker.initAuthButtonsTracking();
+      }
+    }, 1000);
 
     router.beforeEach((to, from, next) => {
       try {
