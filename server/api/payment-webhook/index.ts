@@ -12,17 +12,17 @@ export default defineEventHandler(async (event) => {
     const rawBody = await readRawBody(event);
 
     if (!rawBody) {
-      throw new Error('Corps de la requête vide');
+      throw new Error('Empty request body');
     }
 
     const signature = getHeader(event, 'stripe-signature');
 
     if (!signature) {
-      throw new Error('Signature Stripe manquante dans les en-têtes');
+      throw new Error('Missing Stripe signature in headers');
     }
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      throw new Error('Variable d\'environnement STRIPE_WEBHOOK_SECRET non définie');
+      throw new Error('Environment variable STRIPE_WEBHOOK_SECRET is not defined');
     }
 
     const stripeEvent = stripe.webhooks.constructEvent(
@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
       try {
         await sendToMake();
       } catch (makeError) {
-        console.error('Erreur lors de l\'envoi à Make mais le paiement a été enregistré:', makeError);
+        console.error('Error sending to Make but payment was recorded:', makeError);
       }
 
       return {
@@ -73,12 +73,12 @@ export default defineEventHandler(async (event) => {
     };
 
   } catch (error) {
-    console.error('Erreur dans le webhook:', error);
+    console.error('Error in the webhook:', error);
     return {
       statusCode: 400,
       body: JSON.stringify({
         error: {
-          message: error instanceof Error ? error.message : 'Erreur inconnue',
+          message: error instanceof Error ? error.message : 'Unknown error',
         },
       }),
     };

@@ -43,10 +43,11 @@ const faqItems = [
   {
     question: 'Why this price?',
     answer: 'We offer lifetime access to all our tools for a unique price. It is a one-time payment that gives you access to all our tools for life and updates are included.'
+      + ' We offer a 30-day money-back guarantee if you are not satisfied with the product.'
   },
   {
     question: 'Are there limitations in the free plan?',
-    answer: 'The free plan allows you to create up to 5 personal snippets and use the basic features. For unlimited use and advanced features, we recommend upgrading to the lifetime access plan.'
+    answer: 'The free plan allows you to create up to the basic features. For unlimited use and advanced features, we recommend upgrading to the lifetime access plan.'
   },
   {
     question: 'How does the support work?',
@@ -55,6 +56,11 @@ const faqItems = [
   {
     question: 'Can I try StackUnity before buying?',
     answer: 'Absolutely! You can create a free account to explore the basic features of the platform before deciding to buy the full access.'
+  },
+  {
+    question: 'There is any discount for students or non-profit organizations?',
+    answer: 'Yes, we offer a 50% discount for students and non-profit organizations. Please contact us to get the discount code.'
+      + ' Also, any users can get a 20% discount by using the code "STACKUNITY20" at the checkout.'
   }
 ];
 

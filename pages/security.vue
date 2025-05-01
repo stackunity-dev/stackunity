@@ -49,7 +49,7 @@
         <v-col cols="12" class="mb-6">
           <h2 id="analysis-results">Analysis Results</h2>
 
-          <v-card class="mt-4 mb-6" variant="outlined">
+          <v-card class="mt-4 mb-6 bg-surface">
             <v-card-item>
               <v-card-title class="d-flex align-center mb-4">
                 <v-icon icon="mdi-shield-check" color="primary" class="mr-2" aria-hidden="true" />

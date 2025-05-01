@@ -15,125 +15,134 @@
     </header>
 
     <main role="main">
-      <v-card class="pa-6 mb-6 mt-12">
-        <div class="terms-content">
-          <h1 id="terms-heading" class="text-h3 font-weight-bold mb-6">Terms of Service</h1>
+      <v-container class="py-12 mt-12">
+        <v-row justify="center">
+          <v-col cols="12" md="10" lg="8">
+            <v-card class="pa-6 mb-6 mt-12">
+              <div class="terms-content">
+                <h1 id="terms-heading" class="text-h3 font-weight-bold mb-6">Terms of Service</h1>
 
-          <section aria-labelledby="section-acceptance">
-            <h2 id="section-acceptance" class="text-h5 font-weight-bold mb-4">1. Acceptance of Terms</h2>
-            <p class="mb-4">
-              Welcome to StackUnity. By accessing or using our platform, you agree to be bound by these
-              Terms of Service. If you do not agree to these terms, please do not use our services.
-            </p>
-          </section>
+                <section aria-labelledby="section-acceptance">
+                  <h2 id="section-acceptance" class="text-h5 font-weight-bold mb-4">1. Acceptance of Terms</h2>
+                  <p class="mb-4">
+                    Welcome to StackUnity. By accessing or using our platform, you agree to be bound by these
+                    Terms of Service. If you do not agree to these terms, please do not use our services.
+                  </p>
+                </section>
 
-          <section aria-labelledby="section-registration">
-            <h2 id="section-registration" class="text-h5 font-weight-bold mb-4">2. Registration and Account</h2>
-            <p class="mb-2">
-              To use certain features of our platform, you may need to register and create an account. You agree to:
-            </p>
-            <ul class="mb-4" role="list">
-              <li>Provide accurate and complete information</li>
-              <li>Maintain the security and confidentiality of your login credentials</li>
-              <li>Take responsibility for all activities that occur under your account</li>
-              <li>Notify us immediately of any unauthorized use of your account</li>
-            </ul>
-          </section>
+                <section aria-labelledby="section-registration">
+                  <h2 id="section-registration" class="text-h5 font-weight-bold mb-4">2. Registration and Account</h2>
+                  <p class="mb-2">
+                    To use certain features of our platform, you may need to register and create an account. You agree
+                    to:
+                  </p>
+                  <ul class="mb-4" role="list">
+                    <li>Provide accurate and complete information</li>
+                    <li>Maintain the security and confidentiality of your login credentials</li>
+                    <li>Take responsibility for all activities that occur under your account</li>
+                    <li>Notify us immediately of any unauthorized use of your account</li>
+                  </ul>
+                </section>
 
-          <section aria-labelledby="section-content">
-            <h2 id="section-content" class="text-h5 font-weight-bold mb-4">3. User Content</h2>
-            <p class="mb-4">
-              You retain ownership of any content you submit to StackUnity. By submitting content, you grant us a
-              non-exclusive, worldwide, royalty-free license to use, reproduce, modify, publish, and distribute
-              such content for the purpose of providing and promoting our services.
-            </p>
-          </section>
+                <section aria-labelledby="section-content">
+                  <h2 id="section-content" class="text-h5 font-weight-bold mb-4">3. User Content</h2>
+                  <p class="mb-4">
+                    You retain ownership of any content you submit to StackUnity. By submitting content, you grant us a
+                    non-exclusive, worldwide, royalty-free license to use, reproduce, modify, publish, and distribute
+                    such content for the purpose of providing and promoting our services.
+                  </p>
+                </section>
 
-          <section aria-labelledby="section-use">
-            <h2 id="section-use" class="text-h5 font-weight-bold mb-4">4. Acceptable Use</h2>
-            <p class="mb-2">
-              When using our platform, you agree not to:
-            </p>
-            <ul class="mb-4" role="list">
-              <li>Violate any applicable laws or regulations</li>
-              <li>Infringe upon the rights of others</li>
-              <li>Submit unauthorized commercial communications</li>
-              <li>Upload viruses or malicious code</li>
-              <li>Attempt to access data not intended for you</li>
-              <li>Impair the proper functioning of the website</li>
-            </ul>
-          </section>
+                <section aria-labelledby="section-use">
+                  <h2 id="section-use" class="text-h5 font-weight-bold mb-4">4. Acceptable Use</h2>
+                  <p class="mb-2">
+                    When using our platform, you agree not to:
+                  </p>
+                  <ul class="mb-4" role="list">
+                    <li>Violate any applicable laws or regulations</li>
+                    <li>Infringe upon the rights of others</li>
+                    <li>Submit unauthorized commercial communications</li>
+                    <li>Upload viruses or malicious code</li>
+                    <li>Attempt to access data not intended for you</li>
+                    <li>Impair the proper functioning of the website</li>
+                  </ul>
+                </section>
 
-          <section aria-labelledby="section-ip">
-            <h2 id="section-ip" class="text-h5 font-weight-bold mb-4">5. Intellectual Property</h2>
-            <p class="mb-4">
-              The StackUnity platform, including its design, layout, text, graphics, and other content, is the exclusive
-              property of StackUnity and is protected by national and international copyright laws. You may not
-              reproduce, modify, distribute, or create derivative works based on our platform without our express
-              permission.
-            </p>
-          </section>
+                <section aria-labelledby="section-ip">
+                  <h2 id="section-ip" class="text-h5 font-weight-bold mb-4">5. Intellectual Property</h2>
+                  <p class="mb-4">
+                    The StackUnity platform, including its design, layout, text, graphics, and other content, is the
+                    exclusive
+                    property of StackUnity and is protected by national and international copyright laws. You may not
+                    reproduce, modify, distribute, or create derivative works based on our platform without our express
+                    permission.
+                  </p>
+                </section>
 
-          <section aria-labelledby="section-liability">
-            <h2 id="section-liability" class="text-h5 font-weight-bold mb-4">6. Limitation of Liability</h2>
-            <p class="mb-4">
-              To the fullest extent permitted by law, StackUnity shall not be liable for any indirect, incidental,
-              special, consequential, or punitive damages, including without limitation, loss of profits, data,
-              or other intangible losses, resulting from your use or inability to use our services.
-            </p>
-          </section>
+                <section aria-labelledby="section-liability">
+                  <h2 id="section-liability" class="text-h5 font-weight-bold mb-4">6. Limitation of Liability</h2>
+                  <p class="mb-4">
+                    To the fullest extent permitted by law, StackUnity shall not be liable for any indirect, incidental,
+                    special, consequential, or punitive damages, including without limitation, loss of profits, data,
+                    or other intangible losses, resulting from your use or inability to use our services.
+                  </p>
+                </section>
 
-          <section aria-labelledby="section-indemnification">
-            <h2 id="section-indemnification" class="text-h5 font-weight-bold mb-4">7. Indemnification</h2>
-            <p class="mb-4">
-              You agree to defend, indemnify, and hold harmless StackUnity, its officers, directors, employees,
-              and agents from any claims, liabilities, damages, losses, or expenses, including legal fees,
-              arising out of your use of our platform or your violation of these Terms.
-            </p>
-          </section>
+                <section aria-labelledby="section-indemnification">
+                  <h2 id="section-indemnification" class="text-h5 font-weight-bold mb-4">7. Indemnification</h2>
+                  <p class="mb-4">
+                    You agree to defend, indemnify, and hold harmless StackUnity, its officers, directors, employees,
+                    and agents from any claims, liabilities, damages, losses, or expenses, including legal fees,
+                    arising out of your use of our platform or your violation of these Terms.
+                  </p>
+                </section>
 
-          <section aria-labelledby="section-termination">
-            <h2 id="section-termination" class="text-h5 font-weight-bold mb-4">8. Termination</h2>
-            <p class="mb-4">
-              We reserve the right to suspend or terminate your account at our sole discretion, without prior notice,
-              for conduct that we believe violates these Terms or is harmful to other users, us, or third parties,
-              or for any other reason.
-            </p>
-          </section>
+                <section aria-labelledby="section-termination">
+                  <h2 id="section-termination" class="text-h5 font-weight-bold mb-4">8. Termination</h2>
+                  <p class="mb-4">
+                    We reserve the right to suspend or terminate your account at our sole discretion, without prior
+                    notice,
+                    for conduct that we believe violates these Terms or is harmful to other users, us, or third parties,
+                    or for any other reason.
+                  </p>
+                </section>
 
-          <section aria-labelledby="section-changes">
-            <h2 id="section-changes" class="text-h5 font-weight-bold mb-4">9. Changes to Terms</h2>
-            <p class="mb-4">
-              We may modify these Terms at any time. We will notify you of any significant changes by posting
-              the new Terms on our website. Your continued use of our platform after such modifications
-              constitutes your acceptance of the revised Terms.
-            </p>
-          </section>
+                <section aria-labelledby="section-changes">
+                  <h2 id="section-changes" class="text-h5 font-weight-bold mb-4">9. Changes to Terms</h2>
+                  <p class="mb-4">
+                    We may modify these Terms at any time. We will notify you of any significant changes by posting
+                    the new Terms on our website. Your continued use of our platform after such modifications
+                    constitutes your acceptance of the revised Terms.
+                  </p>
+                </section>
 
-          <section aria-labelledby="section-contact">
-            <h2 id="section-contact" class="text-h5 font-weight-bold mb-4">10. Contact Us</h2>
-            <p class="mb-4">
-              If you have any questions about these Terms, please contact us at
-              <a href="mailto:legal@stackunity.com" class="text-decoration-underline"
-                aria-label="Contact us at legal@stackunity.com">legal@stackunity.com</a>.
-            </p>
-          </section>
+                <section aria-labelledby="section-contact">
+                  <h2 id="section-contact" class="text-h5 font-weight-bold mb-4">10. Contact Us</h2>
+                  <p class="mb-4">
+                    If you have any questions about these Terms, please contact us at
+                    <a href="mailto:legal@stackunity.com" class="text-decoration-underline"
+                      aria-label="Contact us at legal@stackunity.com">legal@stackunity.com</a>.
+                  </p>
+                </section>
 
-          <div class="structured-data-container" style="display:none;" aria-hidden="true">
-            <div itemscope itemtype="http://schema.org/TermsOfService">
-              <meta itemprop="name" content="StackUnity Terms of Service" />
-              <meta itemprop="description"
-                content="Read the Terms of Service for the StackUnity platform. By using our services, you agree to be bound by these terms." />
-              <meta itemprop="url" content="https://stackunity.com/terms" />
-              <div itemprop="author" itemscope itemtype="http://schema.org/Organization">
-                <meta itemprop="name" content="StackUnity" />
-                <meta itemprop="url" content="https://stackunity.com" />
+                <div class="structured-data-container" style="display:none;" aria-hidden="true">
+                  <div itemscope itemtype="http://schema.org/TermsOfService">
+                    <meta itemprop="name" content="StackUnity Terms of Service" />
+                    <meta itemprop="description"
+                      content="Read the Terms of Service for the StackUnity platform. By using our services, you agree to be bound by these terms." />
+                    <meta itemprop="url" content="https://stackunity.com/terms" />
+                    <div itemprop="author" itemscope itemtype="http://schema.org/Organization">
+                      <meta itemprop="name" content="StackUnity" />
+                      <meta itemprop="url" content="https://stackunity.com" />
+                    </div>
+                    <meta itemprop="dateModified" content="{{ new Date().toISOString().split('T')[0] }}" />
+                  </div>
+                </div>
               </div>
-              <meta itemprop="dateModified" content="{{ new Date().toISOString().split('T')[0] }}" />
-            </div>
-          </div>
-        </div>
-      </v-card>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
     </main>
 
     <footer class="py-6 bg-surface" role="contentinfo">

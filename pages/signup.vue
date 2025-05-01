@@ -35,6 +35,8 @@
             <p class="text-subtitle-1 text-medium-emphasis mb-6">Join StackUnity and start your experience</p>
 
             <v-form @submit.prevent="handleSignup">
+              <input type="hidden" name="_csrf" :value="csrfToken" aria-hidden="true" aria-label="CSRF token">
+
               <v-text-field v-model="form.username" label="Username" type="text" variant="outlined"
                 density="comfortable" prepend-inner-icon="mdi-account-outline" class="mb-3"
                 :rules="[v => !!v || 'Username required']" hide-details="auto" aria-required="true"
@@ -77,7 +79,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
@@ -116,11 +118,22 @@ useHead({
 
 const router = useRouter();
 const userStore = useUserStore();
+const csrfToken = ref('');
 
 const form = ref({
   username: '',
   email: '',
   password: '',
+});
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/api/auth/csrf');
+    const data = await response.json();
+    csrfToken.value = data.token;
+  } catch (error) {
+    console.error('Error during CSRF token retrieval:', error);
+  }
 });
 
 const features = ref([
@@ -155,7 +168,7 @@ const showPassword = ref(false);
 const handleSignup = async () => {
   loading.value = true
   try {
-    await userStore.signUp(form.value.username, form.value.email, form.value.password);
+    await userStore.signUp(form.value.username, form.value.email, form.value.password, csrfToken.value);
     router.push('/settings');
   } catch (err: any) {
     console.error(err.message)

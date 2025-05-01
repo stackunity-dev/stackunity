@@ -1,8 +1,6 @@
 import { defineEventHandler, H3Event, readBody } from 'h3';
-import { Resend } from 'resend';
 import { FeedbackEmailTemplates } from '../../utils/EmailTemplates';
-
-const resend = new Resend(process.env.RESEND_API_KEY as string);
+import { resend } from '../../utils/EmailService';
 
 export default defineEventHandler(async (event: H3Event) => {
   const body = await readBody(event);

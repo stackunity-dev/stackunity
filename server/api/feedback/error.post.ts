@@ -1,8 +1,7 @@
 import { defineEventHandler, readBody } from 'h3';
-import { Resend } from 'resend';
 import { ErrorEmailTemplates } from '../../utils/EmailTemplates';
+import { resend } from '../../utils/EmailService';
 
-const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 export default defineEventHandler(async (event) => {
   try {

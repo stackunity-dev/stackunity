@@ -45,8 +45,8 @@
                 variant="outlined" prepend-inner-icon="mdi-lock-outline" density="comfortable"
                 :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append-inner="togglePasswordVisibility" class="mb-2 mt-4"
-                :rules="[v => !!v || 'Password required']" hide-details="auto" aria-required="true"
-                aria-label="Password"></v-text-field>
+                :rules="[v => !!v || 'Password required', v => v.length >= 6 || 'Password must be at least 6 characters long']"
+                hide-details="auto" aria-required="true" aria-label="Password"></v-text-field>
 
               <div class="d-flex justify-space-between align-center mb-6">
                 <v-checkbox v-model="rememberMe" label="Remember me" color="primary" density="compact" hide-details

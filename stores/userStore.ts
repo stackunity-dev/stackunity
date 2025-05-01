@@ -395,7 +395,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async signUp(username: string, email: string, password: string) {
+    async signUp(username: string, email: string, password: string, csrfToken: string) {
       this.loading = true;
       this.error = null;
 
@@ -403,14 +403,14 @@ export const useUserStore = defineStore('user', {
         const response = await fetch('/api/auth/signup', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
           },
           body: JSON.stringify({ username, email, password }),
           credentials: 'include'
         });
 
         const data = await response.json();
-        console.log('SignUp - Response data:', data);
 
         if (data.success) {
           this.setToken(data.accessToken);
@@ -418,11 +418,10 @@ export const useUserStore = defineStore('user', {
           const trial_end_date = data.user.trial_end_date ? new Date(data.user.trial_end_date) : null;
           let daysLeft = data.user.daysLeft;
 
-          // Si daysLeft n'est pas fourni mais que trial_end_date existe, calculons-le
           if (!daysLeft && trial_end_date) {
             daysLeft = this.calculateDaysLeft(trial_end_date);
           } else if (!daysLeft) {
-            daysLeft = 7; // Valeur par défaut pour les nouveaux comptes
+            daysLeft = 7;
           }
 
           this.user = {
@@ -448,12 +447,12 @@ export const useUserStore = defineStore('user', {
           this.loading = false;
           return { success: true };
         } else {
-          this.error = data.error || 'Erreur lors de l\'inscription';
+          this.error = data.error || 'Error during signup';
           this.loading = false;
           return { success: false, error: this.error };
         }
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de l\'inscription';
+        this.error = error.message || 'Error during signup';
         this.loading = false;
         return { success: false, error: this.error };
       }
@@ -464,7 +463,7 @@ export const useUserStore = defineStore('user', {
         const token = this.token || TokenUtils.retrieveToken();
 
         if (!token) {
-          return { valid: false, message: 'Pas de token disponible' };
+          return { valid: false, message: 'No token available' };
         }
 
         const response = await fetch('/api/auth/validate', {

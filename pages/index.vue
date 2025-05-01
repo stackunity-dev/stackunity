@@ -115,7 +115,7 @@
                       <span class="text-body-2">{{ feature }}</span>
                     </div>
                   </div>
-                  <div class="d-flex flex-column flex-sm-row ga-4 justify-center" role="group"
+                  <div class="d-flex flex-column flex-sm-row ga-4 justify-center align-center " role="group"
                     aria-label="Call to action">
                     <v-btn color="secondary" size="x-large" aria-label="Get started" to="/signup" variant="elevated"
                       class="px-16 my-4" :elevation="getElevation('start-free-trial', 6, 20)"
@@ -276,10 +276,12 @@
               </p>
             </div>
 
-            <v-timeline align="center" line-color="secondary" line-width="2"
-              :direction="display.smAndDown.value ? 'vertical' : 'horizontal'">
+            <v-timeline :align="display.smAndDown.value ? 'center' : 'start'" line-color="secondary" line-width="2"
+              :direction="display.smAndDown.value ? 'vertical' : 'horizontal'"
+              :truncate-line="display.smAndDown.value ? 'both' : 'start'"
+              :density="display.smAndDown.value ? 'compact' : 'default'">
               <v-timeline-item v-for="(step, i) in steps" :key="i" :dot-color="step.color" size="large"
-                :icon="getStepIcon(i)" line-inset="12">
+                :icon="getStepIcon(i)" line-inset="12" :hide-opposite="display.smAndDown.value">
                 <template v-slot:opposite>
                   <div class="text-h2 font-weight-bold" :class="`text-${step.color}`">0{{ i + 1 }}</div>
                 </template>
@@ -377,7 +379,7 @@
             <v-row class="footer-columns-container">
               <v-col v-for="(column, index) in footerColumns" :key="index" cols="6" md="4" class="footer-column px-4">
                 <h4 id="footer-column-heading-{{index}}" class="text-subtitle-1 font-weight-bold mb-4">{{ column.title
-                }}
+                  }}
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"
@@ -579,21 +581,21 @@ const badExperiences = [
     ctv: 'Over 8% of the global population lives with visual impairments.',
     icon: 'mdi-contrast',
     color: 'primary',
-    text: 'Many users leave your site because they can’t see or interact with it properly. Stackunity helps you fix this with our Contrast Checker and Visual Impairment Simulator — design for everyone.'
+    text: 'Many users leave your site because they can\'t see or interact with it properly.Stackunity helps you fix this with our Contrast Checker and Visual Impairment Simulator — design for everyone.'
   },
   {
     title: 'Poor SEO Performance',
-    ctv: 'Your site won’t be found if it’s invisible to search engines.',
+    ctv: "Your site won't be found if it's invisible to search engines.",
     icon: 'mdi-magnify',
     color: 'secondary',
-    text: 'If your SEO isn\'t effective, your site is invisible. Stackunity combines semantic analysis, metadata auditing, and engagement insights to boost your visibility and reach.'
+    text: "If your SEO isn't effective, your site is invisible. Stackunity combines semantic analysis, metadata auditing, and engagement insights to boost your visibility and reach."
   },
   {
     title: 'Unappealing Design',
     ctv: 'First impressions matter — and users judge fast.',
     icon: 'mdi-palette',
     color: 'tertiary',
-    text: 'An unattractive site pushes users away instantly. Stackunity empowers you with a design studio, responsive checker, and content audit tools to create stunning, user-friendly interfaces.'
+    text: "An unattractive site pushes users away instantly. Stackunity empowers you with a design studio, responsive checker, and content audit tools to create stunning, user-friendly interfaces."
   }
 ];
 
@@ -1080,7 +1082,6 @@ footer h4::after {
   }
 }
 
-/* Styles pour le formulaire de newsletter amélioré */
 .newsletter-signup {
   position: relative;
   background: linear-gradient(rgba(var(--v-theme-surface), 0.8), rgba(var(--v-theme-surface), 0.9));
@@ -1197,6 +1198,8 @@ footer h4::after {
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  margin: 0 8px;
+  min-width: 280px;
 }
 
 .timeline-card:hover {
@@ -1206,6 +1209,8 @@ footer h4::after {
 
 :deep(.v-timeline-item__body) {
   max-width: 400px;
+  padding: 0 16px;
+  width: 100%;
 }
 
 :deep(.v-timeline-item__dot) {
@@ -1214,5 +1219,32 @@ footer h4::after {
 
 :deep(.v-timeline-item__inner-dot) {
   background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
+}
+
+@media (max-width: 600px) {
+  :deep(.v-timeline-item__body) {
+    max-width: 100%;
+    padding: 0 8px;
+    width: 100%;
+  }
+
+  :deep(.v-timeline-item__dot) {
+    margin: 0 8px;
+  }
+
+  .timeline-card {
+    margin: 0 4px;
+    min-width: 280px;
+    width: calc(100% - 16px);
+  }
+
+  :deep(.v-timeline-item__opposite) {
+    padding: 0 8px;
+    text-align: center;
+  }
+
+  :deep(.v-timeline-item__content) {
+    width: 100%;
+  }
 }
 </style>

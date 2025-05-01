@@ -356,14 +356,6 @@ const libraries = [
     url: 'https://github.com/vuejs/pinia'
   },
   {
-    name: 'systeminformation',
-    description: 'Library for obtaining detailed system information',
-    license: 'MIT',
-    color: 'info',
-    icon: 'mdi-monitor-dashboard',
-    url: 'https://github.com/sebhildebrandt/systeminformation'
-  },
-  {
     name: 'Axios',
     description: 'HTTP client based on promises for the browser and Node.js',
     license: 'MIT',
@@ -388,14 +380,6 @@ const libraries = [
     url: 'https://github.com/kelektiv/node.bcrypt.js'
   },
   {
-    name: 'marked',
-    description: 'Markdown parser',
-    license: 'MIT',
-    color: 'blue-grey',
-    icon: 'mdi-markdown',
-    url: 'https://github.com/markedjs/marked'
-  },
-  {
     name: 'highlight.js',
     description: 'Syntax highlighting for the web',
     license: 'BSD-3-Clause',
@@ -403,14 +387,6 @@ const libraries = [
     icon: 'mdi-code-braces',
     url: 'https://github.com/highlightjs/highlight.js'
   },
-  {
-    name: 'date-fns',
-    description: 'Modern JavaScript date manipulation library',
-    license: 'MIT',
-    color: 'teal',
-    icon: 'mdi-calendar',
-    url: 'https://github.com/date-fns/date-fns'
-  }
 ];
 </script>
 
