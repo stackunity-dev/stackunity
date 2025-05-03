@@ -9,7 +9,7 @@ export default {
     title: "Simplifiez votre flux de développement en quelques clics et développez plus rapidement",
     description: "Développez plus rapidement et simplifiez votre flux de travail avec nos outils professionnels intégrés. Construisez, gérez et optimisez vos projets pour un site plus accessible, convivial et optimisé pour le référencement.",
     features: ["Gestion de site web", "Audit de site", "Accessibilité", "Test d'API"],
-    cta: "Simplifiez votre flux de travail maintenant",
+    cta: "Simplifiez votre workflow maintenant",
     ctaMobile: "Essayez gratuitement"
   },
   stats: {
