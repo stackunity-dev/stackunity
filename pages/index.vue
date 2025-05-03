@@ -278,12 +278,10 @@
               </p>
             </div>
 
-            <v-timeline align="start" line-color="secondary" line-width="2"
-              :direction="$vuetify.display.smAndUp ? 'horizontal' : 'vertical'"
-              :truncate-line="$vuetify.display.smAndUp ? 'start' : 'both'"
-              :density="$vuetify.display.smAndDown ? 'compact' : 'default'">
+            <v-timeline align="start" line-color="secondary" line-width="2" :direction="timelineDirection"
+              :truncate-line="truncateLine" :density="density">
               <v-timeline-item v-for="(step, i) in steps" :key="i" :dot-color="step.color" size="large"
-                :icon="getStepIcon(i)" line-inset="12" :hide-opposite="$vuetify.display.smAndDown">
+                :icon="getStepIcon(i)" line-inset="12" :hide-opposite="oppositeHidden">
                 <template v-slot:opposite>
                   <div v-if="$vuetify.display.smAndUp" class="text-h2 font-weight-bold" :class="`text-${step.color}`">
                     0{{ i + 1 }}</div>
@@ -632,7 +630,21 @@ const authTracker = trackAuthButtonClicks();
 const userStore = useUserStore();
 const display = useDisplay();
 
-const timelineEl = ref(null);
+const timelineDirection = computed(() => {
+  return display.smAndUp.value ? 'horizontal' : 'vertical';
+});
+
+const truncateLine = computed(() => {
+  return display.smAndUp.value ? 'start' : 'both';
+});
+
+const density = computed(() => {
+  return display.smAndDown.value ? 'compact' : 'default';
+});
+
+const oppositeHidden = computed(() => {
+  return display.smAndDown.value;
+});
 
 onMounted(() => {
   isClient.value = true;
@@ -1284,13 +1296,6 @@ footer h4::after {
 
 :deep(.v-timeline-item__inner-dot) {
   background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
-}
-
-@media (min-width: 600px) {
-  :deep(.v-timeline--horizontal) {
-    display: flex !important;
-    flex-direction: row !important;
-  }
 }
 
 @media (max-width: 960px) {
