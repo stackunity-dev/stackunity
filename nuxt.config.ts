@@ -21,7 +21,8 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
 
   build: {
-    transpile: ['vuetify']
+    transpile: ['vuetify'],
+    analyze: false,
   },
 
   runtimeConfig: {
@@ -58,6 +59,8 @@ export default defineNuxtConfig({
   ],
 
   i18n: {
+    lazy: false,
+    langDir: '',
     defaultLocale: 'en',
     strategy: 'prefix_except_default',
     locales: [
@@ -70,13 +73,10 @@ export default defineNuxtConfig({
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_redirected',
-      redirectOn: 'root',
-      alwaysRedirect: false,
-      cookieCrossOrigin: false
+      redirectOn: 'root'
     },
     baseUrl: 'https://stackunity.com',
     vueI18n: './i18n.config.ts',
-    lazy: false,
     skipSettingLocaleOnNavigate: true
   },
 
@@ -91,11 +91,20 @@ export default defineNuxtConfig({
       external: ['monaco-editor', 'vue-chartjs', 'chart.js', '@pinia-plugin-persistedstate/nuxt']
     },
     build: {
-      chunkSizeWarningLimit: 1500,
+      chunkSizeWarningLimit: 1600,
       minify: 'esbuild',
       cssMinify: true,
       cssCodeSplit: false,
       sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vue': ['vue', 'vue-router'],
+            'vuetify': ['vuetify'],
+            'i18n': ['vue-i18n'],
+          }
+        }
+      }
     },
     server: {
       hmr: {
@@ -105,7 +114,9 @@ export default defineNuxtConfig({
         strict: false,
       },
     },
-
+    optimizeDeps: {
+      exclude: ['vue-i18n']
+    }
   },
 
   compatibilityDate: '2025-03-31',
