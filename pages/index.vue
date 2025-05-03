@@ -271,19 +271,18 @@
           <v-container>
             <div class="text-center mb-12">
               <h2 id="how-it-works-heading" class="text-h3 text-gradient font-weight-bold mb-3">{{ t().howItWorks.title
-                }}
+              }}
               </h2>
               <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
                 {{ t().howItWorks.description }}
               </p>
             </div>
 
-            <v-timeline :align="display.smAndDown.value ? 'center' : 'start'" line-color="secondary" line-width="2"
-              :direction="display.smAndDown.value ? 'vertical' : 'horizontal'"
-              :truncate-line="display.smAndDown.value ? 'both' : 'start'"
+            <v-timeline ref="timelineEl" :align="timelineAlign" line-color="secondary" line-width="2"
+              :direction="timelineOrientation" :truncate-line="display.mdAndDown.value ? 'both' : 'start'"
               :density="display.smAndDown.value ? 'compact' : 'default'">
               <v-timeline-item v-for="(step, i) in steps" :key="i" :dot-color="step.color" size="large"
-                :icon="getStepIcon(i)" line-inset="12" :hide-opposite="display.smAndDown.value">
+                :icon="getStepIcon(i)" line-inset="12" :hide-opposite="display.mdAndDown.value">
                 <template v-slot:opposite>
                   <div class="text-h2 font-weight-bold" :class="`text-${step.color}`">0{{ i + 1 }}</div>
                 </template>
@@ -381,7 +380,7 @@
             <v-row class="footer-columns-container">
               <v-col v-for="(column, index) in footerColumns" :key="index" cols="6" md="4" class="footer-column px-4">
                 <h4 id="footer-column-heading-{{index}}" class="text-subtitle-1 font-weight-bold mb-4">{{ column.title
-                  }}
+                }}
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"
@@ -415,7 +414,7 @@
 <script lang="ts" setup>
 // @ts-ignore 
 import { definePageMeta, useHead, useNuxtApp } from '#imports';
-import { computed, defineAsyncComponent, onMounted, provide, ref } from 'vue';
+import { computed, defineAsyncComponent, onMounted, provide, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import FadeInSection from '../components/FadeInSection.vue';
 import LanguageSelector from '../components/LanguageSelector.vue';
@@ -627,12 +626,30 @@ const authTracker = trackAuthButtonClicks();
 const userStore = useUserStore();
 const display = useDisplay();
 
+const timelineOrientation = ref<'vertical' | 'horizontal'>(display.mdAndDown.value ? 'vertical' : 'horizontal');
+const timelineAlign = ref<'start' | 'center'>(display.mdAndDown.value ? 'center' : 'start');
+
+watch(() => [display.mdAndDown.value, display.smAndDown.value], ([mdDown, smDown]) => {
+  timelineOrientation.value = mdDown ? 'vertical' : 'horizontal';
+  timelineAlign.value = mdDown ? 'center' : 'start';
+}, { immediate: true });
+
+const timelineEl = ref(null);
+
+const initTimeline = () => {
+  setTimeout(() => {
+    if (timelineEl.value) {
+      const event = new Event('resize');
+      window.dispatchEvent(event);
+    }
+  }, 100);
+};
+
 onMounted(() => {
   isClient.value = true;
-
   document.documentElement.classList.add('page-loaded');
-
   pageReady.value = true;
+  initTimeline();
 
   if (typeof window !== 'undefined') {
     setTimeout(() => {
@@ -1213,6 +1230,7 @@ footer h4::after {
 .how-it-works-section {
   position: relative;
   overflow: hidden;
+  padding: 2rem 0;
 }
 
 .how-it-works-section::before {
@@ -1282,6 +1300,45 @@ footer h4::after {
 
   :deep(.v-timeline-item__content) {
     width: 100%;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 960px) {
+  :deep(.v-timeline-item__body) {
+    max-width: 100%;
+    padding: 0 12px;
+    width: 100%;
+  }
+
+  .timeline-card {
+    margin: 0 6px;
+    min-width: 320px;
+  }
+
+  :deep(.v-timeline-item__opposite) {
+    padding: 0 12px;
+    text-align: center;
+  }
+
+  :deep(.v-timeline-item__content) {
+    width: 100%;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1264px) {
+  :deep(.v-timeline) {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  :deep(.v-timeline--vertical) {
+    padding: 1rem 0;
+  }
+}
+
+@media (min-width: 1264px) {
+  :deep(.v-timeline--horizontal) {
+    padding: 4rem 0 2rem;
   }
 }
 </style>
