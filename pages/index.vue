@@ -285,11 +285,16 @@
               <v-timeline-item v-for="(step, i) in steps" :key="i" :dot-color="step.color" size="large"
                 :icon="getStepIcon(i)" line-inset="12" :hide-opposite="$vuetify.display.smAndDown">
                 <template v-slot:opposite>
-                  <div class="text-h2 font-weight-bold" :class="`text-${step.color}`">0{{ i + 1 }}</div>
+                  <div v-if="$vuetify.display.mdAndUp" class="text-h2 font-weight-bold" :class="`text-${step.color}`">
+                    0{{ i + 1 }}</div>
                 </template>
                 <v-card :class="`border-${step.color} timeline-card`" elevation="0">
                   <v-card-item>
-                    <v-card-title class="text-h5 font-weight-bold">{{ step.title }}</v-card-title>
+                    <v-card-title class="text-h5 font-weight-bold">
+                      <span v-if="$vuetify.display.smAndDown" class="mr-2" :class="`text-${step.color}`">0{{ i + 1
+                      }}.</span>
+                      {{ step.title }}
+                    </v-card-title>
                     <v-card-text class="text-body-1">{{ step.description }}</v-card-text>
                     <v-card-actions>
                       <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="px-0">
@@ -1243,6 +1248,10 @@ footer h4::after {
 .timeline-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+:deep(.v-timeline--horizontal) {
+  flex-direction: row;
 }
 
 :deep(.v-timeline--horizontal .v-timeline-item__body) {
