@@ -1,13 +1,85 @@
-- Objectif : crée une nouvelle page performance.vue
-- Contenu : 
-Temps de chargement de la page (First Contentful Paint, Largest Contentful Paint).
+✅ Étapes précises pour rendre ça fonctionnel avec Cheerio + fonctions contrastes
+1. Parser le HTML avec Cheerio
+ts
+Copier
+Modifier
+const cheerio = require('cheerio');
+const html = '<div style="color:#fff;background:#000">Hello</div>';
+const $ = cheerio.load(html);
 
-Analyse des performances réseau et des ressources.
+$('div').each((i, el) => {
+  const style = $(el).attr('style');
+  // extraire color / background
+});
+2. Extraire les couleurs depuis le style inline
+Utilise une fonction pour parser la string style :
 
-Optimisation des images et des fichiers.
+ts
+Copier
+Modifier
+function extractColors(style: string): { color?: string, backgroundColor?: string } {
+  const colorMatch = style.match(/color\s*:\s*([^;]+)/i);
+  const bgMatch = style.match(/background(-color)?\s*:\s*([^;]+)/i);
+  return {
+    color: colorMatch?.[1]?.trim(),
+    backgroundColor: bgMatch?.[2]?.trim(),
+  };
+}
+3. Normaliser les couleurs
+Pour gérer rgb, hsl, etc., utilise une lib comme chroma-js :
 
-Conseils d'optimisation de la vitesse (compression, lazy loading, etc.).
-- Fichier a cree : performance-view.ts (assemblement des fonctions, crawl des url et envoie au frontend)
-- performance.ts (creations des fonctionss necessaires et des types)
-- Ajoutez tout ca a la page performance.vue (en se basant sur la structure de semantic.vue)
-- Puis une fois que c'est fait elaborer le score moyen des url pour la performance et l'envoyer a la page website qui l'affichera dans un nouveau progress circular.
+ts
+Copier
+Modifier
+const chroma = require('chroma-js');
+
+function normalizeColor(input: string): string | null {
+  try {
+    return chroma(input).hex(); // ex: "#FFFFFF"
+  } catch {
+    return null;
+  }
+}
+4. Calculer le contraste
+ts
+Copier
+Modifier
+function getContrastRatio(fg: string, bg: string): number {
+  return chroma.contrast(fg, bg); // retourne un float (ex: 4.8)
+}
+5. Simuler le daltonisme
+Utilise la lib color-blind
+
+ts
+Copier
+Modifier
+const colorBlind = require('color-blind');
+
+function simulateBlindness(hexColor: string, type: 'protanopia' | 'deuteranopia' | 'tritanopia') {
+  return colorBlind[type](hexColor); // retourne un nouveau hex
+}
+6. Assembler tout ça
+ts
+Copier
+Modifier
+$('div').each((i, el) => {
+  const style = $(el).attr('style');
+  if (!style) return;
+
+  const { color, backgroundColor } = extractColors(style);
+  const fg = normalizeColor(color);
+  const bg = normalizeColor(backgroundColor);
+
+  if (!fg || !bg) return;
+
+  const ratio = getContrastRatio(fg, bg);
+
+  const protanopiaFg = simulateBlindness(fg, 'protanopia');
+  const protanopiaBg = simulateBlindness(bg, 'protanopia');
+  const simulatedRatio = getContrastRatio(protanopiaFg, protanopiaBg);
+
+  console.log({
+    fg, bg, ratio,
+    protanopia: { fg: protanopiaFg, bg: protanopiaBg, ratio: simulatedRatio }
+  });
+});

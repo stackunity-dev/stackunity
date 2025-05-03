@@ -9,7 +9,7 @@
             </div>
           </NuxtLink>
           <v-spacer></v-spacer>
-          <v-btn color="primary" to="/" class="ml-4" aria-label="Back to Home">Back to Home</v-btn>
+          <v-btn color="primary" to="/" class="ml-4" aria-label="Back to Home">{{ t().nav.backToHome }}</v-btn>
         </v-container>
       </v-app-bar>
     </header>
@@ -19,36 +19,36 @@
         <v-row justify="center">
           <v-col cols="12" md="10" lg="8">
             <v-card class="pa-8 mb-8 rounded-xl">
-              <h1 id="contact-heading" class="text-h3 font-weight-bold mb-6">Contact Us</h1>
+              <h1 id="contact-heading" class="text-h3 font-weight-bold mb-6">{{ t().contact.title }}</h1>
 
               <p class="text-subtitle-1 mb-6">
-                We are always happy to hear your questions, comments or suggestions. Fill out the form below and we will
-                get back to you as soon as possible.
+                {{ t().contact.subtitle }}
               </p>
 
               <v-form @submit.prevent="submitFormContact" class="mb-8" aria-labelledby="contact-heading">
                 <v-row>
                   <v-col cols="12" md="6">
-                    <v-text-field v-model="form.name" label="Your name" variant="outlined"
+                    <v-text-field v-model="form.name" :label="t().contact.form.name" variant="outlined"
                       :rules="[v => !!v || 'Name is required']" hide-details="auto" class="mb-4" aria-required="true"
                       id="contact-name" aria-label="Your name"></v-text-field>
                   </v-col>
 
                   <v-col cols="12" md="6">
-                    <v-text-field v-model="form.email" label="Your email" variant="outlined" type="email" :rules="[
-                      v => !!v || 'Email is required',
-                      v => /.+@.+\..+/.test(v) || 'Invalid email'
-                    ]" hide-details="auto" class="mb-4" aria-required="true" id="contact-email"
+                    <v-text-field v-model="form.email" :label="t().contact.form.email" variant="outlined" type="email"
+                      :rules="[
+                        v => !!v || 'Email is required',
+                        v => /.+@.+\..+/.test(v) || 'Invalid email'
+                      ]" hide-details="auto" class="mb-4" aria-required="true" id="contact-email"
                       aria-label="Your email"></v-text-field>
                   </v-col>
 
                   <v-col cols="12">
-                    <v-select v-model="form.subject" label="Subject" variant="outlined" :items="subjects"
-                      hide-details="auto" class="mb-4" id="contact-subject"></v-select>
+                    <v-select v-model="form.subject" :label="t().contact.form.subject" variant="outlined"
+                      :items="subjects" hide-details="auto" class="mb-4" id="contact-subject"></v-select>
                   </v-col>
 
                   <v-col cols="12">
-                    <v-textarea v-model="form.message" label="Your message" variant="outlined"
+                    <v-textarea v-model="form.message" :label="t().contact.form.message" variant="outlined"
                       :rules="[v => !!v || 'Message is required']" hide-details="auto" rows="5" class="mb-4"
                       aria-required="true" id="contact-message" aria-label="Your message"></v-textarea>
                   </v-col>
@@ -56,7 +56,7 @@
 
                 <v-btn type="submit" color="primary" size="large" :loading="loading" class="mt-4"
                   aria-label="Send message">
-                  Send Message
+                  {{ t().contact.form.submit }}
                 </v-btn>
               </v-form>
             </v-card>
@@ -72,7 +72,7 @@
             <img src="/logo/stackunity-title.png" alt="StackUnity title" width="120">
           </div>
           <div class="text-body-2 text-medium-emphasis">
-            &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
+            &copy; {{ new Date().getFullYear() }} {{ t().footer.copyright }}
           </div>
         </div>
       </v-container>
@@ -83,11 +83,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import Snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+import { useTranslations } from '../languages';
+
+const t = useTranslations('about');
 
 const userStore = useUserStore();
 
@@ -96,24 +99,24 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Contact StackUnity | Get Support',
+  title: t().meta.title,
   meta: [
-    { name: 'description', content: 'Reach out to the StackUnity team for support, feature requests or general questions. We\'re here to help you succeed with our web development tools.' },
-    { name: 'keywords', content: 'StackUnity contact, web development support, technical assistance, feature requests, developer help, contact form, web tools support, developer platform support, get in touch, contact page' },
-    { name: 'author', content: 'StackUnity' },
+    { name: 'description', content: t().meta.description },
+    { name: 'keywords', content: t().meta.keywords },
+    { name: 'author', content: t().meta.author },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { property: 'og:title', content: 'Contact StackUnity | Get Support' },
-    { property: 'og:description', content: 'Reach out to the StackUnity team for support, feature requests or general questions. We\'re here to help you succeed with our web development tools.' },
+    { property: 'og:title', content: t().meta.title },
+    { property: 'og:description', content: t().meta.description },
     { property: 'og:image', content: '/images/preview.png' },
     { property: 'og:type', content: 'website' },
     { property: 'og:url', content: 'https://stackunity.com/contact' },
-    { property: 'og:site_name', content: 'StackUnity' },
+    { property: 'og:site_name', content: t().meta.author },
     { property: 'og:locale', content: 'en_US' },
     { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'Contact StackUnity Support' },
-    { name: 'twitter:description', content: 'Get in touch with our team for support, feature requests or partnership opportunities.' },
+    { name: 'twitter:title', content: t().meta.title },
+    { name: 'twitter:description', content: t().meta.description },
     { name: 'twitter:image', content: '/images/preview.png' },
     { name: 'twitter:creator', content: '@stackunity' },
     { name: 'twitter:site', content: '@stackunity' }
@@ -127,11 +130,11 @@ useHead({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "ContactPage",
-        "name": "Contact StackUnity",
-        "description": "Contact the StackUnity team for support, feature requests, partnership inquiries or general questions.",
+        "name": t().meta.title,
+        "description": t().meta.description,
         "publisher": {
           "@type": "Organization",
-          "name": "StackUnity",
+          "name": t().meta.author,
           "logo": {
             "@type": "ImageObject",
             "url": "https://stackunity.com/logo/stackunity-title.png"
@@ -156,18 +159,18 @@ useHead({
 const form = ref({
   name: '',
   email: '',
-  subject: 'General Question',
+  subject: t().contact.form.subjects.general,
   message: ''
 });
 
-const subjects = [
-  'General Question',
-  'Technical Support',
-  'Feature Request',
-  'Bug Report',
-  'Partnership',
-  'Other'
-];
+const subjects = computed(() => [
+  t().contact.form.subjects.general,
+  t().contact.form.subjects.technical,
+  t().contact.form.subjects.feature,
+  t().contact.form.subjects.bug,
+  t().contact.form.subjects.partnership,
+  t().contact.form.subjects.other
+]);
 
 const loading = ref(false);
 const snackbar = ref({
@@ -185,7 +188,7 @@ const submitFormContact = async () => {
     if (!form.value.name || !form.value.email || !form.value.subject || !form.value.message) {
       snackbar.value = {
         show: true,
-        text: 'Please fill out all fields.',
+        text: t().contact.form.fillAllFields,
         color: 'error',
         timeout: 2000
       };
@@ -196,13 +199,13 @@ const submitFormContact = async () => {
     form.value = {
       name: '',
       email: '',
-      subject: 'General Question',
+      subject: t().contact.form.subjects.general,
       message: ''
     };
 
     snackbar.value = {
       show: true,
-      text: 'Your message has been sent successfully! We will respond soon.',
+      text: t().contact.form.successTitle,
       color: 'success',
       timeout: 2000
     };
@@ -210,7 +213,7 @@ const submitFormContact = async () => {
     console.error('Error sending message:', error);
     snackbar.value = {
       show: true,
-      text: 'An error occurred while sending your message. Please try again.',
+      text: t().contact.form.errorTitle,
       color: 'error',
       timeout: 2000
     };

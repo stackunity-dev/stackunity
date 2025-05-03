@@ -12,7 +12,7 @@
           <v-expansion-panel-title>
             <div class="d-flex align-center">
               <v-icon class="mr-2" size="small">mdi-code-tags</v-icon>
-              Code CSS
+              {{ t().card.code }}
             </div>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
@@ -24,12 +24,12 @@
 
     <v-card-actions class="justify-space-between">
       <v-btn color="primary" @click="playAnimation" prepend-icon="mdi-play" size="small" aria-label="Play animation">
-        Play
+        {{ t().card.play }}
       </v-btn>
 
       <v-btn color="secondary" @click="copyCode" prepend-icon="mdi-content-copy" size="small"
         aria-label="Copy CSS code">
-        Copy
+        {{ t().card.copy }}
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -39,6 +39,9 @@
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { ref, watch } from 'vue';
+import { useTranslations } from '../../languages';
+
+const t = useTranslations('animation');
 
 const props = defineProps({
   name: {
@@ -92,7 +95,7 @@ function copyCode() {
     .then(() => {
       const event = new CustomEvent('animation:copied', {
         detail: {
-          message: 'Code copied !'
+          message: t().notifications.copied
         }
       });
       document.dispatchEvent(event);
@@ -100,7 +103,7 @@ function copyCode() {
     .catch(() => {
       const event = new CustomEvent('animation:error', {
         detail: {
-          message: 'Error while copying'
+          message: t().notifications.error
         }
       });
       document.dispatchEvent(event);

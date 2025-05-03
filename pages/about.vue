@@ -8,7 +8,9 @@
           </div>
         </NuxtLink>
         <v-spacer></v-spacer>
-        <v-btn color="primary" to="/" class="mr-4" aria-label="Back to Home">Back to Home</v-btn>
+        <v-btn color="primary" to="/" class="mr-4" aria-label="Back to Home">
+          {{ t().nav.backToHome }}
+        </v-btn>
       </v-app-bar>
     </header>
 
@@ -17,7 +19,9 @@
         <v-container>
           <v-row justify="center">
             <v-col cols="12" md="10" lg="8" class="text-center">
-              <h1 id="page-title" class="text-h2 font-weight-bold mb-4 text-white">About StackUnity</h1>
+              <h1 id="page-title" class="text-h2 font-weight-bold mb-4 text-white">
+                {{ t().about.title }}
+              </h1>
             </v-col>
           </v-row>
         </v-container>
@@ -28,27 +32,23 @@
           <v-col cols="12" md="10" lg="8">
             <v-card class="pa-8 mb-8 rounded-xl elevation-3">
               <section class="mb-12" aria-labelledby="mission-heading">
-                <h2 id="mission-heading" class="text-h4 font-weight-bold mb-6 primary--text">Our Mission</h2>
+                <h2 id="mission-heading" class="text-h4 font-weight-bold mb-6 primary--text">
+                  {{ t().about.mission.title }}
+                </h2>
                 <p class="text-body-1 mb-4">
-                  At StackUnity, our mission is to empower developers by providing them with the tools
-                  they need to create exceptional web applications, while reducing complexity
-                  and development time.
+                  {{ t().about.mission.content }}
                 </p>
                 <p class="text-body-1 mb-4">
-                  We believe that web development should be accessible to everyone, from beginners to experts,
-                  and that the right tools can make all the difference in the quality and efficiency of a
-                  developer's work.
+                  {{ t().about.mission.content }}
                 </p>
                 <div class="quote-block my-8 pa-8 rounded-lg">
                   <v-icon size="42" color="primary" class="mb-4" aria-hidden="true">mdi-format-quote-open</v-icon>
                   <blockquote>
                     <p class="text-h5 font-italic mb-4">
-                      "Our vision is to create an ecosystem where every developer can easily transform their ideas into
-                      functional, beautiful, and high-performing web applications, without having to master a multitude
-                      of different tools."
+                      "{{ t().about.quote.content }}"
                     </p>
                     <footer>
-                      <cite class="text-subtitle-1 font-weight-bold">— Nûr Djedidi, Founder</cite>
+                      <cite class="text-subtitle-1 font-weight-bold">— {{ t().about.quote.author }}</cite>
                     </footer>
                   </blockquote>
                 </div>
@@ -57,7 +57,9 @@
               <v-divider class="mb-12" aria-hidden="true"></v-divider>
 
               <section class="mb-12" aria-labelledby="values-heading">
-                <h2 id="values-heading" class="text-h4 font-weight-bold mb-6 primary--text">Our Values</h2>
+                <h2 id="values-heading" class="text-h4 font-weight-bold mb-6 primary--text">
+                  {{ t().about.values.title }}
+                </h2>
                 <v-row>
                   <v-col cols="12" sm="6" v-for="(value, index) in companyValues" :key="index">
                     <v-card flat class="value-card pa-6 h-100">
@@ -76,14 +78,15 @@
               <v-divider class="mb-12" aria-hidden="true"></v-divider>
 
               <section aria-labelledby="contact-heading">
-                <h2 id="contact-heading" class="text-h4 font-weight-bold mb-6 primary--text">Get in Touch</h2>
+                <h2 id="contact-heading" class="text-h4 font-weight-bold mb-6 primary--text">
+                  {{ t().about.getInTouch.title }}
+                </h2>
                 <p class="text-body-1 mb-6">
-                  Have questions about StackUnity or want to learn more about our company?
-                  Don't hesitate to reach out to us.
+                  {{ t().about.getInTouch.content }}
                 </p>
                 <v-btn color="primary" to="/contact" size="large" class="px-8 py-3 rounded-pill" elevation="2"
                   aria-label="Contact Us">
-                  Contact Us
+                  {{ t().about.getInTouch.button }}
                   <v-icon end aria-hidden="true">mdi-arrow-right</v-icon>
                 </v-btn>
               </section>
@@ -100,7 +103,7 @@
             <img src="/logo/stackunity-title.png" alt="StackUnity title" width="120">
           </div>
           <div class="text-body-2 text-medium-emphasis">
-            &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
+            &copy; {{ new Date().getFullYear() }} {{ t().footer.copyright }}
           </div>
         </div>
       </v-container>
@@ -109,23 +112,27 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+import { useTranslations } from '../languages';
+
+const t = useTranslations('about');
 
 definePageMeta({
   layout: 'default'
 });
 
 useHead({
-  title: 'About - StackUnity',
+  title: t().meta.title,
   meta: [
-    { name: 'description', content: 'Learn about StackUnity\'s mission to empower developers with integrated tools for building exceptional web applications.' },
-    { name: 'keywords', content: 'StackUnity, web development platform, developer tools, mission statement, company values, web application tools, tech company, development ecosystem, developer empowerment, accessible web development' },
-    { name: 'author', content: 'StackUnity' },
+    { name: 'description', content: t().meta.description },
+    { name: 'keywords', content: t().meta.keywords },
+    { name: 'author', content: t().meta.author },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { property: 'og:title', content: 'About StackUnity | Our Mission, Values & Vision' },
-    { property: 'og:description', content: 'Learn about StackUnity\'s mission to empower developers with integrated tools for building exceptional web applications.' },
+    { property: 'og:title', content: t().meta.title },
+    { property: 'og:description', content: t().meta.description },
     { property: 'og:image', content: '/images/preview.png' },
     { property: 'og:type', content: 'website' },
     { property: 'og:url', content: 'https://stackunity.com/about' },
@@ -133,8 +140,8 @@ useHead({
     { property: 'og:locale', content: 'en_US' },
     { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'About StackUnity | Our Mission & Values' },
-    { name: 'twitter:description', content: 'Learn about StackUnity\'s mission and values for empowering developers with integrated web development tools.' },
+    { name: 'twitter:title', content: t().meta.title },
+    { name: 'twitter:description', content: t().meta.description },
     { name: 'twitter:image', content: '/images/preview.png' },
     { name: 'twitter:creator', content: '@stackunity' },
     { name: 'twitter:site', content: '@stackunity' }
@@ -153,7 +160,7 @@ useHead({
           "name": "StackUnity",
           "url": "https://stackunity.com",
           "logo": "https://stackunity.com/logo/stackunity-title.png",
-          "description": "StackUnity provides integrated tools for web developers to create exceptional web applications with reduced complexity and development time.",
+          "description": t().meta.description,
           "foundingDate": "2022",
           "founder": {
             "@type": "Person",
@@ -177,32 +184,32 @@ useHead({
   ]
 });
 
-const companyValues = [
+const companyValues = computed(() => [
   {
-    title: 'Innovation',
-    description: 'We are constantly looking for new ways to improve our platform and offer more value to our users.',
+    title: t().about.values.items[0].title,
+    description: t().about.values.items[0].content,
     icon: 'mdi-lightbulb-on',
     color: 'info'
   },
   {
-    title: 'Simplicity',
-    description: 'We believe that the best tools are those that are easy to use, while being powerful and flexible.',
+    title: t().about.values.items[1].title,
+    description: t().about.values.items[1].content,
     icon: 'mdi-leaf',
     color: 'success'
   },
   {
-    title: 'Excellence',
-    description: 'We strive to provide tools of the highest quality, reliable and performant for our users.',
+    title: t().about.values.items[2].title,
+    description: t().about.values.items[2].content,
     icon: 'mdi-trophy',
     color: 'warning'
   },
   {
-    title: 'Community',
-    description: 'We value collaboration and mutual support within our developer community.',
+    title: t().about.values.items[3].title,
+    description: t().about.values.items[3].content,
     icon: 'mdi-account-group',
     color: 'primary'
   }
-];
+]);
 </script>
 
 <style scoped>

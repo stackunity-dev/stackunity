@@ -8,7 +8,7 @@
               <h1>
                 <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
                   class="logo mb-8" width="350" />
-                <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
+                <span class="sr-only">{{ t().hero.title }}</span>
               </h1>
             </header>
             <div class="features-list">
@@ -30,38 +30,39 @@
               <img src="/logo/stackunity-title.png" alt="StackUnity Logo" width="240" />
             </div>
 
-            <h2 class="text-h5 font-weight-bold mb-2">Sign In</h2>
-            <p class="text-subtitle-1 text-medium-emphasis mb-6">Pick up where you left off</p>
+            <h2 class="text-h5 font-weight-bold mb-2">{{ t().form.title }}</h2>
+            <p class="text-subtitle-1 text-medium-emphasis mb-6">{{ t().form.subtitle }}</p>
 
             <v-form @submit.prevent="handleSignin">
               <input type="hidden" name="_csrf" :value="csrfToken" aria-hidden="true" aria-label="CSRF token">
 
-              <v-text-field v-model="form.email" label="Email address" type="email" variant="outlined"
+              <v-text-field v-model="form.email" :label="t().form.email.label" type="email" variant="outlined"
                 prepend-inner-icon="mdi-email-outline" density="comfortable"
-                :rules="[v => !!v || 'Email required', v => /.+@.+\..+/.test(v) || 'Invalid email format']"
+                :rules="[v => !!v || t().form.email.required, v => /.+@.+\..+/.test(v) || t().form.email.invalid]"
                 hide-details="auto" autocomplete="email" aria-required="true" aria-label="Email address"></v-text-field>
 
-              <v-text-field v-model="form.password" :type="showPassword ? 'text' : 'password'" label="Password"
-                variant="outlined" prepend-inner-icon="mdi-lock-outline" density="comfortable"
-                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              <v-text-field v-model="form.password" :type="showPassword ? 'text' : 'password'"
+                :label="t().form.password.label" variant="outlined" prepend-inner-icon="mdi-lock-outline"
+                density="comfortable" :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append-inner="togglePasswordVisibility" class="mb-2 mt-4"
-                :rules="[v => !!v || 'Password required', v => v.length >= 6 || 'Password must be at least 6 characters long']"
+                :rules="[v => !!v || t().form.password.required, v => v.length >= 6 || t().form.password.minLength]"
                 hide-details="auto" aria-required="true" aria-label="Password"></v-text-field>
 
               <div class="d-flex justify-space-between align-center mb-6">
-                <v-checkbox v-model="rememberMe" label="Remember me" color="primary" density="compact" hide-details
-                  aria-required="true" aria-label="Remember me"></v-checkbox>
+                <v-checkbox v-model="rememberMe" :label="t().form.rememberMe" color="primary" density="compact"
+                  hide-details aria-required="true" aria-label="Remember me"></v-checkbox>
               </div>
 
               <v-btn block color="primary" type="submit" :loading="loading" min-height="44"
                 class="text-none font-weight-medium" aria-label="Sign in">
-                Sign in
+                {{ t().form.submit }}
               </v-btn>
 
               <div class="text-center mt-6">
-                <span class="text-medium-emphasis">Don't have an account?</span>
-                <NuxtLink class="text-decoration-none ml-1 font-weight-medium" to="/signup" aria-label="Create account">
-                  Create account
+                <span class="text-medium-emphasis">{{ t().createAccount.question }}</span>
+                <NuxtLink class="text-decoration-none ml-1 font-weight-medium" :to="localePath('/signup')"
+                  aria-label="Create account">
+                  {{ t().createAccount.action }}
                 </NuxtLink>
               </div>
             </v-form>
@@ -75,27 +76,32 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
-import { definePageMeta, useHead } from '#imports';
+import { definePageMeta, useHead, useNuxtApp } from '#imports';
 import { TokenUtils } from '../utils/token';
+import { useTranslations } from '../languages';
+
+const t = useTranslations('login');
+const nuxtApp = useNuxtApp()
+const localePath = nuxtApp.$localePath
 
 definePageMeta({
   layout: 'empty'
 });
 
 useHead({
-  title: 'Sign In - StackUnity',
+  title: computed(() => t().meta.title),
   meta: [
     { name: 'author', content: 'Nûr' },
-    { name: 'description', content: 'Sign in to your StackUnity account to access all features, and start your experience' },
+    { name: 'description', content: computed(() => t().meta.description) },
     { name: 'robots', content: 'index,follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { property: 'og:title', content: 'Sign In - StackUnity' },
-    { property: 'og:description', content: 'Sign in to your StackUnity account to access all features, and start your experience' },
+    { property: 'og:title', content: computed(() => t().meta.title) },
+    { property: 'og:description', content: computed(() => t().meta.description) },
     { property: 'og:image', content: '/images/preview.png' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
@@ -107,8 +113,8 @@ useHead({
     { property: 'og:locale', content: 'en_US' },
     { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'Sign In - StackUnity' },
-    { name: 'twitter:description', content: 'Sign in to your StackUnity account to access all features' },
+    { name: 'twitter:title', content: computed(() => t().meta.title) },
+    { name: 'twitter:description', content: computed(() => t().meta.description) },
     { name: 'twitter:image', content: '/logo/stackunity-title.png' },
     { name: 'twitter:creator', content: '@stackunity' },
     { name: 'twitter:site', content: '@stackunity' }
@@ -128,21 +134,21 @@ const form = ref({
 
 const csrfToken = ref('');
 
-const features = ref([
+const features = computed(() => [
   {
     icon: 'mdi-palette-outline',
-    title: 'Vuetify Components',
-    description: 'Custom Vuetify components ready to use'
+    title: t().features[0].title,
+    description: t().features[0].description
   },
   {
     icon: 'mdi-database-outline',
-    title: 'SQL Generator',
-    description: 'Generate SQL databases quickly and easily'
+    title: t().features[1].title,
+    description: t().features[1].description
   },
   {
     icon: 'mdi-chart-box-outline',
-    title: 'SEO and Accessibility Statistics',
-    description: 'Track your performance and improve your site'
+    title: t().features[2].title,
+    description: t().features[2].description
   }
 ])
 const loading = ref(false);
@@ -214,7 +220,7 @@ const handleSignin = async () => {
         return;
       }
 
-      router.push('/dashboard');
+      router.push(localePath('/dashboard'));
     } else {
       snackbarColor.value = 'error';
       snackbarText.value = 'Error during login';
@@ -242,7 +248,7 @@ async function handleRedirection() {
     if (redirectPath) {
       window.location.href = redirectPath;
     } else {
-      router.push('/dashboard');
+      router.push(localePath('/dashboard'));
     }
   }
 }

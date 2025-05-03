@@ -1,9 +1,9 @@
 <template>
   <v-container>
     <div class="text-center mb-12">
-      <h2 class="text-h3 text-gradient font-weight-bold mb-3">Frequently asked questions</h2>
+      <h2 class="text-h3 text-gradient font-weight-bold mb-3">{{ t().section.title }}</h2>
       <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
-        You have questions? We have answers.
+        {{ t().section.description }}
       </p>
     </div>
 
@@ -30,44 +30,46 @@
 <script lang="ts" setup>
 // @ts-ignore
 import { useHead } from '#imports';
+import { useTranslations } from '../languages';
+import { computed } from 'vue';
 
-const faqItems = [
+const t = useTranslations('faq');
+
+const faqItems = computed(() => [
   {
-    question: 'What is StackUnity?',
-    answer: 'StackUnity is a one-stop-shop for developers who want to create, manage and optimize their web projects. It combines development tools, monitoring, SEO audit and much more.'
+    question: t().items[0].question,
+    answer: t().items[0].answer
   },
   {
-    question: 'Is there a freemium model?',
-    answer: 'Yes, you can access the application for free with premium paid extensions.'
+    question: t().items[1].question,
+    answer: t().items[1].answer
   },
   {
-    question: 'Why this price?',
-    answer: 'We offer lifetime access to all our tools for a unique price. It is a one-time payment that gives you access to all our tools for life and updates are included.'
-      + ' We offer a 30-day money-back guarantee if you are not satisfied with the product.'
+    question: t().items[2].question,
+    answer: t().items[2].answer
   },
   {
-    question: 'Are there limitations in the free plan?',
-    answer: 'The free plan allows you to create up to the basic features. For unlimited use and advanced features, we recommend upgrading to the lifetime access plan.'
+    question: t().items[3].question,
+    answer: t().items[3].answer
   },
   {
-    question: 'How does the support work?',
-    answer: 'All users have access to community support. Premium users benefit from priority support via email.'
+    question: t().items[4].question,
+    answer: t().items[4].answer
   },
   {
-    question: 'Can I try StackUnity before buying?',
-    answer: 'Absolutely! You can create a free account to explore the basic features of the platform before deciding to buy the full access.'
+    question: t().items[5].question,
+    answer: t().items[5].answer
   },
   {
-    question: 'There is any discount for students or non-profit organizations?',
-    answer: 'Yes, we offer a 50% discount for students and non-profit organizations. Please contact us to get the discount code.'
-      + ' Also, any users can get a 20% discount by using the code "STACKUNITY20" at the checkout.'
+    question: t().items[6].question,
+    answer: t().items[6].answer
   }
-];
+]);
 
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": faqItems.map(item => ({
+  "mainEntity": t().items.map(item => ({
     "@type": "Question",
     "name": item.question,
     "acceptedAnswer": {

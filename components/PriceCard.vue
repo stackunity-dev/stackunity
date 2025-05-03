@@ -1,6 +1,6 @@
 <template>
   <v-card class="h-100 pricing-card" :class="cardClass" :elevation="isPopular ? 8 : 2">
-    <div v-if="isPopular" class="popular-badge">MOST POPULAR</div>
+    <div v-if="isPopular" class="popular-badge">{{ t().section.popular }}</div>
     <v-card-item>
       <div class="d-flex align-center mb-4" aria-label="Plan details">
         <v-avatar :color="plan.avatarColor" size="48" class="mr-4">
@@ -13,11 +13,10 @@
       </div>
       <div class="text-h3 font-weight-bold mb-4">
         {{ selectedCurrency }}{{ displayPrice }}
-        <span class="text-subtitle-1 text-medium-emphasis" aria-label="Lifetime"> /lifetime</span>
+        <span class="text-subtitle-1 text-medium-emphasis" aria-label="Lifetime"> /{{ t().plans.lifetime.name }}</span>
       </div>
-      <v-chip v-if="plan.freeTrialDays" color="info" variant="elevated" :elevation="5" class="mb-4"
-        aria-label="Free trial included">
-        {{ plan.freeTrialDays }} days free trial included
+      <v-chip v-if="plan.freeTrialDays">
+        {{ plan.freeTrialDays }} {{ t().plans.standard.trial.days.replace('{days}', plan.freeTrialDays) }}
       </v-chip>
       <v-divider class="mb-4"></v-divider>
       <v-list density="compact" class="bg-transparent">
@@ -40,6 +39,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useTranslations } from '../languages';
+
+const t = useTranslations('pricing');
 
 const props = defineProps({
   plan: {

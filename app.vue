@@ -18,6 +18,7 @@ import { usePlausible } from './utils/usePlausible';
 import { trackAuthButtonClicks } from './utils/usePlausible';
 // @ts-ignore
 import { useHead } from '#imports';
+import { initLanguage } from './languages';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -231,6 +232,8 @@ onMounted(async () => {
     }
 
     cookieStore.initCookieConsent();
+
+    initLanguage();
 
     setTimeout(() => {
       if (authTracker && typeof authTracker.initAuthButtonsTracking === 'function') {

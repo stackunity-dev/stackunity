@@ -1,5 +1,8 @@
+import { computed, reactive, ref } from 'vue';
+import { useTranslations } from '../../../languages';
 import { AriaProps, AriaRoleType, createAriaProps } from './types-aria';
-import { ref, computed } from 'vue';
+
+const t = useTranslations('studioCardTemplates')();
 
 interface CardElement {
   id: string;
@@ -48,54 +51,54 @@ const progressColor = computed((): CardColor => cardColors[progressColorIndex.va
 const progressSize = computed((): ProgressSize => progressSizes[progressSizeIndex.value])
 const iconColor = computed((): CardColor => cardColors[iconColorIndex.value].value)
 
-const cardProperties = ref({
-  title: 'Premium features',
-  subtitle: 'Unlock all UI components with a premium plan',
-  text: 'Lifetime access to all premium features and updates for only 300€ one time payment',
-  image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba',
-  icon: 'mdi-crown',
-  elevation: 2,
-  padding: 8,
-  rounded: 'md' as RoundedSize,
-  loading: false,
-  disabled: false,
-  hoverEffect: false,
-  showButtons: true,
-  buttonText: 'Checkout',
-  buttonWidth: 0,
-  buttonLink: '/checkout',
-  buttonPosition: 'start',
-  buttonIcon: 'mdi-cart-outline',
-  showProgress: false,
-  progressValue: 75,
-  indeterminate: false,
-  progressWidth: 6,
-  progressPosition: 'inline',
-  showProgressLabel: false,
-  progressLabelStyle: 'value',
-  progressLabelText: '',
-  showProgressBg: false,
-  showTimeline: false,
-  showSparkline: false,
-  sparklineData: [0, 2, 5, 9, 5, 10, 3, 5, 0, 0, 1, 8, 2, 9, 0],
-  sparklineColor: 'primary',
-  sparklineGradient: false,
-  sparklineLineWidth: 2,
-  sparklineShowLabels: false,
-  sparklineLabels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév', 'Mar'],
-  ariaLabel: 'Card with a title, subtitle, text, image, sparkline, timeline, buttons, and progress',
-  ariaLabelledBy: 'card-title, card-subtitle, card-text, card-image, card-sparkline, card-timeline, card-buttons, card-progress',
-  ariaRole: 'region',
-  ariaDescribedBy: 'card-description',
-  ariaControls: 'card-actions',
-})
+const cardProperties = computed(() => reactive({
+  title: t.cardProperties.title,
+  subtitle: t.cardProperties.subtitle,
+  text: t.cardProperties.text,
+  image: t.cardProperties.image,
+  icon: t.cardProperties.icon,
+  elevation: t.cardProperties.elevation,
+  padding: t.cardProperties.padding,
+  rounded: t.cardProperties.rounded,
+  loading: t.cardProperties.loading,
+  disabled: t.cardProperties.disabled,
+  hoverEffect: t.cardProperties.hoverEffect,
+  showButtons: t.cardProperties.showButtons,
+  buttonText: t.cardProperties.buttonText,
+  buttonWidth: t.cardProperties.buttonWidth,
+  buttonLink: t.cardProperties.buttonLink,
+  buttonPosition: t.cardProperties.buttonPosition,
+  buttonIcon: t.cardProperties.buttonIcon,
+  showProgress: t.cardProperties.showProgress,
+  progressValue: t.cardProperties.progressValue,
+  indeterminate: t.cardProperties.indeterminate,
+  progressWidth: t.cardProperties.progressWidth,
+  progressPosition: t.cardProperties.progressPosition,
+  showProgressLabel: t.cardProperties.showProgressLabel,
+  progressLabelStyle: t.cardProperties.progressLabelStyle,
+  progressLabelText: t.cardProperties.progressLabelText,
+  showProgressBg: t.cardProperties.showProgressBg,
+  showTimeline: t.cardProperties.showTimeline,
+  showSparkline: t.cardProperties.showSparkline,
+  sparklineData: t.cardProperties.sparklineData,
+  sparklineColor: t.cardProperties.sparklineColor,
+  sparklineGradient: t.cardProperties.sparklineGradient,
+  sparklineLineWidth: t.cardProperties.sparklineLineWidth,
+  sparklineShowLabels: t.cardProperties.sparklineShowLabels,
+  sparklineLabels: t.cardProperties.sparklineLabels,
+  ariaLabel: t.cardProperties.ariaLabel,
+  ariaLabelledBy: t.cardProperties.ariaLabelledBy,
+  ariaRole: t.cardProperties.ariaRole,
+  ariaDescribedBy: t.cardProperties.ariaDescribedBy,
+  ariaControls: t.cardProperties.ariaControls,
+}))
 
 const progressBgColorIndex = ref(0)
 const progressBgColor = computed((): CardColor => cardColors[progressBgColorIndex.value].value)
 const sparklineColorIndex = ref(1)
 const sparklineColor = computed((): CardColor => cardColors[sparklineColorIndex.value].value)
-const sparklineDataText = ref(cardProperties.value.sparklineData.join(','))
-const sparklineLabelsText = ref(cardProperties.value.sparklineLabels.join(','))
+const sparklineDataText = computed(() => cardProperties.value.sparklineData.join(','))
+const sparklineLabelsText = computed(() => cardProperties.value.sparklineLabels.join(','))
 
 const roundedIndexToValue = (index: number): RoundedSize => roundedLabels[index]
 const roundedValueToIndex = (value: RoundedSize): number => roundedLabels.indexOf(value)
@@ -180,4 +183,5 @@ const cardElements = ref<CardElement[]>([
   }
 ]);
 
-export { CardElement, cardVariants, cardColors, buttonVariants, progressSizes, roundedLabels, iconColorIndex, cardVariantIndex, cardColorIndex, buttonColorIndex, buttonVariantIndex, progressSizeIndex, progressColorIndex, cardVariant, cardColor, buttonVariant, buttonColor, progressColor, progressSize, iconColor, cardProperties, progressBgColorIndex, progressBgColor, sparklineColorIndex, sparklineColor, sparklineDataText, sparklineLabelsText, progressPositions, roundedIndexToValue, roundedValueToIndex, cardElements };
+export { buttonColor, buttonColorIndex, buttonVariant, buttonVariantIndex, buttonVariants, cardColor, cardColorIndex, cardColors, CardElement, cardElements, cardProperties, cardVariant, cardVariantIndex, cardVariants, iconColor, iconColorIndex, progressBgColor, progressBgColorIndex, progressColor, progressColorIndex, progressPositions, progressSize, progressSizeIndex, progressSizes, roundedIndexToValue, roundedLabels, roundedValueToIndex, sparklineColor, sparklineColorIndex, sparklineDataText, sparklineLabelsText };
+

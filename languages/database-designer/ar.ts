@@ -1,0 +1,143 @@
+export default {
+  meta: {
+    title: 'مصمم قاعدة البيانات',
+    description: 'تصميم مخطط قاعدة البيانات بصريًا باستخدام أداتنا البديهية'
+  },
+  tabs: {
+    config: 'التكوين',
+    templates: 'القوالب',
+    diagram: 'المخطط'
+  },
+  database: {
+    settings: 'إعدادات قاعدة البيانات',
+    name: 'اسم قاعدة البيانات',
+    namePlaceholder: 'قاعدة_البيانات_الخاصة_بي',
+    loadSchema: 'تحميل مخطط موجود',
+    noTables: 'لا توجد جداول محددة',
+    startAdding: 'ابدأ بإضافة جدول إلى قاعدة البيانات الخاصة بك'
+  },
+  table: {
+    add: 'إضافة جدول',
+    edit: 'تعديل الجدول',
+    delete: 'حذف الجدول',
+    name: 'اسم الجدول',
+    namePlaceholder: 'المستخدمين',
+    description: 'الوصف',
+    descriptionPlaceholder: 'يحتوي على معلومات المستخدم',
+    tables: 'جداول قاعدة البيانات',
+    unnamed: 'جدول بدون اسم',
+    indices: 'الفهارس'
+  },
+  column: {
+    add: 'إضافة عمود',
+    name: 'اسم العمود',
+    namePlaceholder: 'المعرف',
+    type: 'نوع البيانات',
+    length: 'الطول',
+    default: 'القيمة الافتراضية',
+    attributes: 'السمات',
+    nullable: 'قابل للإلغاء',
+    unique: 'فريد',
+    index: 'فهرس',
+    primaryKey: 'المفتاح الأساسي',
+    autoIncrement: 'زيادة تلقائية',
+    foreignKey: 'المفتاح الأجنبي',
+    reference: 'المراجع',
+    onDelete: 'عند الحذف',
+    onUpdate: 'عند التحديث'
+  },
+  actions: {
+    save: 'حفظ',
+    export: 'تصدير',
+    delete: 'حذف',
+    cancel: 'إلغاء',
+    confirm: 'تأكيد',
+    regenerate: 'إعادة إنشاء SQL',
+    generate: 'إنشاء SQL',
+    copy: 'نسخ إلى الحافظة',
+    download: 'تنزيل',
+    rearrange: 'إعادة ترتيب'
+  },
+  export: {
+    json: 'JSON',
+    sql: 'SQL',
+    schema: 'المخطط',
+    title: 'SQL المولد',
+    mongodb: 'MongoDB',
+    firestore: 'Firestore',
+    dynamodb: 'DynamoDB',
+    sequelize: 'Sequelize',
+    typeorm: 'TypeORM',
+    prisma: 'Prisma',
+    mongoose: 'Mongoose'
+  },
+  relations: {
+    oneToOne: 'واحد لواحد',
+    oneToMany: 'واحد لكثير',
+    manyToOne: 'كثير لواحد',
+    manyToMany: 'كثير لكثير',
+    add: 'إضافة علاقة',
+    source: 'جدول المصدر',
+    target: 'جدول الهدف',
+    type: 'نوع العلاقة',
+    name: 'اسم العلاقة',
+    through: 'جدول وسيط',
+    title: 'المفاتيح الأجنبية'
+  },
+  templates: {
+    title: 'قوالب قواعد البيانات',
+    load: 'تحميل القالب',
+    userAuth: 'مصادقة المستخدم',
+    blog: 'نظام المدونات',
+    ecommerce: 'التجارة الإلكترونية',
+    cms: 'نظام إدارة المحتوى',
+    forum: 'نظام المنتديات',
+    inventory: 'إدارة المخزون',
+    description: 'الوصف',
+    complexity: 'التعقيد',
+    tables: 'الجداول',
+    relations: 'العلاقات',
+    info: 'انقر على قالب لمعاينة هيكله. توفر القوالب مخططات قواعد بيانات معدة مسبقًا لحالات الاستخدام الشائعة.',
+    preview: 'معاينة القالب',
+    apply: 'تطبيق هذا القالب',
+    blogSystem: 'نظام المدونات',
+    ecommerceStore: 'متجر التجارة الإلكترونية',
+    projectManagement: 'إدارة المشاريع',
+    table_count: '{count} جداول',
+    column_count: '{count} أعمدة',
+    blogDescription: 'قالب لمدونة أساسية مع المستخدمين والمنشورات والفئات والتعليقات',
+    ecommerceDescription: 'قالب لمتجر على الإنترنت مع المنتجات والفئات والطلبات والعملاء',
+    projectManagementDescription: 'قالب لإدارة المشاريع والمهام وأعضاء الفريق'
+  },
+  notifications: {
+    saved: 'تم حفظ مخطط قاعدة البيانات بنجاح',
+    copied: 'تم نسخ SQL إلى الحافظة',
+    deleted: 'تم حذف مخطط قاعدة البيانات',
+    error: 'حدث خطأ',
+    loaded: 'تم تحميل المخطط بنجاح',
+    notFound: 'المخطط غير موجود',
+    rearranged: 'تمت إعادة ترتيب الجداول'
+  },
+  dataTypes: {
+    integer: 'عدد صحيح',
+    decimal: 'عشري',
+    float: 'عائم',
+    double: 'مزدوج',
+    varchar: 'سلسلة متغيرة',
+    text: 'نص',
+    boolean: 'منطقي',
+    date: 'تاريخ',
+    datetime: 'تاريخ ووقت',
+    timestamp: 'طابع زمني',
+    json: 'JSON',
+    uuid: 'UUID',
+    enum: 'تعداد'
+  },
+  constraints: {
+    cascade: 'CASCADE',
+    restrict: 'RESTRICT',
+    setNull: 'SET NULL',
+    noAction: 'NO ACTION',
+    setDefault: 'SET DEFAULT'
+  }
+} 

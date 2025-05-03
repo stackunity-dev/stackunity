@@ -6,21 +6,21 @@
         <v-card>
           <v-card-title class="text-h5">
             <v-icon color="warning" class="mr-2">mdi-clock-alert</v-icon>
-            Expired session
+            {{ t().session.expired }}
           </v-card-title>
           <v-card-text>
-            <p>Your session is about to expire for security reasons.</p>
-            <p class="mt-2">Do you want to continue your session?</p>
+            <p>{{ t().session.expired }}</p>
+            <p class="mt-2">{{ t().session.continue }}</p>
             <p class="text-center text-h5 mt-4">{{ sessionCountdown }}</p>
             <v-progress-linear :value="(sessionCountdown / 60) * 100" color="warning" height="10"></v-progress-linear>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="error" text @click="handleSessionExpired">
-              Logout
+              {{ t().session.logout }}
             </v-btn>
             <v-btn color="primary" @click="continueSession">
-              Continue session
+              {{ t().session.continueSession }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -29,33 +29,33 @@
       <div class="dashboard-container pa-6" :class="{ 'compact-mode': isCompactMode }">
         <div class="welcome-section text-center mb-8">
           <h1 class="text-h3 font-weight-bold text-gradient mb-2">
-            Welcome {{ userStore.user?.username || 'Developer' }}
+            {{ t().hero.title }} {{ userStore.user?.username || 'Developer' }}
           </h1>
           <p class="text-subtitle-1 text-medium-emphasis">
-            What do you want to create today ?
+            {{ t().hero.subtitle }}
           </p>
         </div>
 
         <div class="action-buttons text-center mb-8 d-flex flex-wrap justify-center">
-          <v-tooltip location="bottom" text="Customize the display">
+          <v-tooltip location="bottom" :text="t().hero.actions.customize">
             <template v-slot:activator="{ props }">
               <v-btn v-bind="props" color="primary" prepend-icon="mdi-cog" @click="showSettingsDialog = true"
                 class="mr-2">
-                Customize
+                {{ t().hero.actions.customize }}
               </v-btn>
             </template>
           </v-tooltip>
 
-          <v-tooltip location="bottom" text="Change the appearance of the cards">
+          <v-tooltip location="bottom" :text="t().hero.actions.themes">
             <template v-slot:activator="{ props }">
               <v-btn v-bind="props" color="secondary" prepend-icon="mdi-palette" @click="showThemeDialog = true"
                 class="mr-2">
-                Themes
+                {{ t().hero.actions.themes }}
               </v-btn>
             </template>
           </v-tooltip>
 
-          <v-tooltip location="bottom" text="Compact mode for mobile">
+          <v-tooltip location="bottom" :text="t().overview.compactMode">
             <template v-slot:activator="{ props }">
               <v-btn v-bind="props" color="grey" icon="mdi-view-compact" @click="toggleCompactMode"
                 class="ml-auto d-md-none">
@@ -66,20 +66,22 @@
 
         <div class="filters-section mb-6">
           <v-chip-group v-model="selectedCategory" mandatory>
-            <v-chip filter value="all" color="primary"
-              :class="{ 'v-chip--active': selectedCategory === 'all' }">All</v-chip>
+            <v-chip filter value="all" color="primary" :class="{ 'v-chip--active': selectedCategory === 'all' }">{{
+              t().filters.all }}</v-chip>
             <v-chip filter value="design" color="secondary"
-              :class="{ 'v-chip--active': selectedCategory === 'design' }">Design</v-chip>
+              :class="{ 'v-chip--active': selectedCategory === 'design' }">{{
+                t().filters.design }}</v-chip>
             <v-chip filter value="development" color="tertiary"
-              :class="{ 'v-chip--active': selectedCategory === 'development' }">Development</v-chip>
-            <v-chip filter value="testing" color="info"
-              :class="{ 'v-chip--active': selectedCategory === 'testing' }">Tests</v-chip>
+              :class="{ 'v-chip--active': selectedCategory === 'development' }">{{ t().filters.development }}</v-chip>
+            <v-chip filter value="testing" color="info" :class="{ 'v-chip--active': selectedCategory === 'testing' }">{{
+              t().filters.tests }}</v-chip>
             <v-chip filter value="analysis" color="indigo"
-              :class="{ 'v-chip--active': selectedCategory === 'analysis' }">Analysis</v-chip>
+              :class="{ 'v-chip--active': selectedCategory === 'analysis' }">{{
+                t().filters.analysis }}</v-chip>
           </v-chip-group>
 
 
-          <v-text-field v-model="searchQuery" prepend-inner-icon="mdi-magnify" label="Search for a tool"
+          <v-text-field v-model="searchQuery" prepend-inner-icon="mdi-magnify" :label="t().filters.searchPlaceholder"
             variant="outlined" density="compact" hide-details class="mt-3" clearable></v-text-field>
         </div>
 
@@ -96,12 +98,13 @@
                 ]" flat>
                 <div class="card-content">
                   <v-icon size="64" :color="element.color" class="icon-pulse">{{ element.icon }}</v-icon>
-                  <h2 class="text-h5 font-weight-medium mt-6">{{ element.title }}</h2>
-                  <p class="text-body-1 text-medium-emphasis mt-2">{{ element.description }}</p>
+                  <h2 class="text-h5 font-weight-medium mt-6">{{ getItemTranslation(element.title, 'title') }}</h2>
+                  <p class="text-body-1 text-medium-emphasis mt-2">{{ getItemTranslation(element.title, 'description')
+                  }}</p>
 
                   <v-chip v-if="element.isNew" color="purple" size="small" class="feature-chip new-chip">
                     <v-icon start size="small">mdi-new-box</v-icon>
-                    New
+                    {{ t().tools.new }}
                   </v-chip>
 
                   <v-chip v-if="element.disabled && !userStore.user?.isPremium" color="amber" variant="flat"
@@ -110,7 +113,7 @@
                       <template v-slot:activator="{ props }">
                         <div v-bind="props" class="d-flex align-center">
                           <v-icon start size="small">mdi-crown</v-icon>
-                          Premium
+                          {{ t().tools.premium }}
                         </div>
                       </template>
                     </v-tooltip>
@@ -118,7 +121,7 @@
 
                   <v-btn :color="element.color" variant="text" :to="element.disabled ? undefined : element.route"
                     :disabled="element.disabled" class="mt-4">
-                    Explore
+                    {{ t().tools.explore }}
                     <v-icon end>mdi-arrow-right</v-icon>
                   </v-btn>
                 </div>
@@ -132,33 +135,33 @@
         <v-card>
           <v-card-title class="text-h5 d-flex align-center">
             <v-icon color="primary" class="mr-2">mdi-cog</v-icon>
-            Customize the dashboard
+            {{ t().overview.customize }}
           </v-card-title>
           <v-card-text>
-            <p class="text-subtitle-1 mb-2">Visibility of tools</p>
-            <v-checkbox v-for="(item, index) in allTools" :key="index" v-model="item.visible" :label="item.title"
-              hide-details dense></v-checkbox>
+            <p class="text-subtitle-1 mb-2">{{ t().overview.visibility }}</p>
+            <v-checkbox v-for="(item, index) in allTools" :key="index" v-model="item.visible"
+              :label="getItemTranslation(item.title, 'title')" hide-details dense></v-checkbox>
 
             <v-divider class="my-4"></v-divider>
 
-            <p class="text-subtitle-1 mb-2">Display options</p>
-            <v-switch v-model="isCompactMode" color="primary" label="Compact mode (mobiles)"></v-switch>
+            <p class="text-subtitle-1 mb-2">{{ t().overview.displayOptions }}</p>
+            <v-switch v-model="isCompactMode" color="primary" :label="t().overview.compactMode"></v-switch>
             <v-select v-model="cardsPerRow" :items="[
-              { title: 'Auto (default)', value: 'auto' },
-              { title: '2 cards', value: 2 },
-              { title: '3 cards', value: 3 },
-              { title: '4 cards', value: 4 },
-              { title: '5 cards', value: 5 }
+              { title: t().overview.cardsPerRow.auto, value: 'auto' },
+              { title: t().overview.cardsPerRow.cards2, value: 2 },
+              { title: t().overview.cardsPerRow.cards3, value: 3 },
+              { title: t().overview.cardsPerRow.cards4, value: 4 },
+              { title: t().overview.cardsPerRow.cards5, value: 5 }
             ]" label="Cards per row" item-title="title" item-value="value" variant="outlined" density="compact"
               class="mt-4"></v-select>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="grey" text @click="showSettingsDialog = false">
-              Cancel
+              {{ t().hero.actions.cancel }}
             </v-btn>
             <v-btn color="primary" @click="saveSettings">
-              Save
+              {{ t().hero.actions.save }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -168,24 +171,24 @@
         <v-card>
           <v-card-title class="text-h5 d-flex align-center">
             <v-icon color="secondary" class="mr-2">mdi-palette</v-icon>
-            Choose a theme
+            {{ t().theme.title }}
           </v-card-title>
           <v-card-text>
             <v-radio-group v-model="currentTheme">
-              <v-radio value="default" label="Default"></v-radio>
-              <v-radio value="dark" label="Dark"></v-radio>
-              <v-radio value="vibrant" label="Vibrant"></v-radio>
-              <v-radio value="minimal" label="Minimal"></v-radio>
-              <v-radio value="elegant" label="Elegant"></v-radio>
+              <v-radio value="default" :label="t().theme.default"></v-radio>
+              <v-radio value="dark" :label="t().theme.dark"></v-radio>
+              <v-radio value="vibrant" :label="t().theme.vibrant"></v-radio>
+              <v-radio value="minimal" :label="t().theme.minimal"></v-radio>
+              <v-radio value="elegant" :label="t().theme.elegant"></v-radio>
             </v-radio-group>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="grey" text @click="showThemeDialog = false">
-              Cancel
+              {{ t().hero.actions.cancel }}
             </v-btn>
             <v-btn color="secondary" @click="applyTheme">
-              Apply
+              {{ t().hero.actions.apply }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -201,23 +204,26 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead, useRouter } from '#imports';
-import { TokenUtils } from '../utils/token';
 import snackBar from '../components/snackbar.vue';
+import { useTranslations } from '../languages';
+import { TokenUtils } from '../utils/token';
 
 definePageMeta({
   layout: 'dashboard'
 });
 
+const t = useTranslations('dashboard');
+
 useHead({
-  title: 'Dashboard - StackUnity',
+  title: t().meta.title,
   meta: [
-    { name: 'description', content: 'Launch your development with StackUnity' },
-    { name: 'keywords', content: 'StackUnity, dashboard, tools, snippets, SQL, Studio, SEO, fast access, web development' },
+    { name: 'description', content: t().meta.description },
+    { name: 'keywords', content: t().meta.keywords },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Dashboard - StackUnity' },
-    { name: 'og:description', content: 'Launch your development with StackUnity' },
+    { name: 'og:title', content: t().meta.title },
+    { name: 'og:description', content: t().meta.description },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [
@@ -285,7 +291,7 @@ const handleSessionExpired = async () => {
   }
   await userStore.logout();
   router.push('/login');
-  applySnackbar('Session expired', 'error');
+  applySnackbar(t().notifications.sessionExpired, 'error');
 };
 
 const continueSession = () => {
@@ -294,7 +300,7 @@ const continueSession = () => {
     clearInterval(countdownInterval.value);
   }
   resetSessionTimer();
-  applySnackbar('Session continued', 'success');
+  applySnackbar(t().notifications.sessionContinued, 'success');
 };
 
 const loadUserPreferences = () => {
@@ -324,10 +330,10 @@ const loadUserPreferences = () => {
     if (savedCardsPerRow) {
       cardsPerRow.value = savedCardsPerRow;
     }
-    applySnackbar('Preferences loaded', 'success');
+    applySnackbar(t().notifications.preferencesLoaded, 'success');
   } catch (error) {
     console.error('[Dashboard] Error loading preferences:', error);
-    applySnackbar('Error loading preferences', 'error');
+    applySnackbar(t().notifications.errorLoadingPreferences, 'error');
   }
 };
 
@@ -347,7 +353,7 @@ const saveSettings = () => {
   localStorage.setItem('dashboardCardsPerRow', cardsPerRow.value);
 
   showSettingsDialog.value = false;
-  applySnackbar('Settings saved', 'success');
+  applySnackbar(t().notifications.settingsSaved, 'success');
 };
 
 interface ToolItem {
@@ -364,7 +370,7 @@ interface ToolItem {
 
 const allTools = ref<ToolItem[]>([
   {
-    title: 'CSS animations',
+    title: 'cssAnimations',
     description: 'Create and manage CSS animations for all your projects',
     icon: 'mdi-animation',
     color: 'primary',
@@ -375,7 +381,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'Studio',
+    title: 'studio',
     description: 'Create components and visually user interfaces',
     icon: 'mdi-palette',
     color: 'secondary',
@@ -386,7 +392,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'Database designer',
+    title: 'databaseDesigner',
     description: 'Generate and visualize complex SQL schemas in just a few clicks',
     icon: 'mdi-database',
     color: 'info',
@@ -397,7 +403,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'API Testing',
+    title: 'apiTesting',
     description: 'Test and document your APIs easily',
     icon: 'mdi-api',
     color: 'success',
@@ -408,7 +414,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'Accessibility',
+    title: 'accessibility',
     description: 'Make your website accessible to all users',
     icon: 'mdi-access-point',
     color: 'warning',
@@ -419,7 +425,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'Responsive',
+    title: 'responsive',
     description: 'Test the display of your site on different devices',
     icon: 'mdi-responsive',
     color: 'error',
@@ -430,7 +436,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'Performance',
+    title: 'performance',
     description: 'Analyze the performance of your website',
     icon: 'mdi-speedometer',
     color: 'primary',
@@ -441,7 +447,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'Structure & Accessibility',
+    title: 'structureAccessibility',
     description: 'Check the semantic and ARIA attributes of your website',
     icon: 'mdi-semantic-web',
     color: 'tertiary',
@@ -452,7 +458,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'Content',
+    title: 'content',
     description: 'Check the content of your website',
     icon: 'mdi-file-document-outline',
     color: 'indigo',
@@ -463,7 +469,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'User Engagement',
+    title: 'userEngagement',
     description: 'Analyze and optimize the user engagement of your website',
     icon: 'mdi-account-group',
     color: 'primary',
@@ -474,7 +480,7 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'Security',
+    title: 'security',
     description: 'Check the security of your website',
     icon: 'mdi-security',
     color: 'secondary',
@@ -485,6 +491,20 @@ const allTools = ref<ToolItem[]>([
     visible: true
   }
 ]);
+
+const getItemTranslation = (itemKey: string, property: 'title' | 'description') => {
+  try {
+    if (t().tools?.items && t().tools.items[itemKey] && t().tools.items[itemKey][property]) {
+      return t().tools.items[itemKey][property];
+    }
+
+    const tool = allTools.value.find(item => item.title === itemKey);
+    return tool ? tool[property] : itemKey;
+  } catch (error) {
+    console.error(`[Translation] Error getting translation for ${itemKey}.${property}:`, error);
+    return itemKey;
+  }
+};
 
 const filteredItems = computed(() => {
   return allTools.value
@@ -504,7 +524,7 @@ const filteredItems = computed(() => {
 const toggleCompactMode = () => {
   isCompactMode.value = !isCompactMode.value;
   localStorage.setItem('dashboardCompactMode', isCompactMode.value.toString());
-  applySnackbar('Compact mode ' + (isCompactMode.value ? 'enabled' : 'disabled'), isCompactMode.value ? 'success' : 'error');
+  applySnackbar(isCompactMode.value ? t().notifications.compactModeEnabled : t().notifications.compactModeDisabled, isCompactMode.value ? 'success' : 'error');
 };
 
 watch(cardsPerRow, (newValue) => {

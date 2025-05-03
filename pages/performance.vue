@@ -3,8 +3,8 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-2">Website Performance Analysis</h1>
-          <p class="text-body-1">Analyze the loading speed and performance metrics of your website</p>
+          <h1 class="text-h4 font-weight-bold mb-2">{{ t().page.title }}</h1>
+          <p class="text-body-1">{{ t().page.subtitle }}</p>
         </v-col>
       </v-row>
 
@@ -13,15 +13,15 @@
           <v-card class="mb-6">
             <v-card-text>
               <v-form @submit.prevent="analyzeUrl">
-                <v-text-field v-model="url" label="URL du site à analyser" placeholder="https://example.com"
-                  hint="Enter the complete URL including https://" persistent-hint prepend-inner-icon="mdi-web"
-                  variant="outlined" required autocomplete="url" aria-label="URL to analyze"
-                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || 'Please enter a valid URL starting with http:// or https://']"></v-text-field>
+                <v-text-field v-model="url" :label="t().form.urlLabel" :placeholder="t().form.urlPlaceholder"
+                  :hint="t().form.urlHint" persistent-hint prepend-inner-icon="mdi-web" variant="outlined" required
+                  autocomplete="url" aria-label="URL to analyze"
+                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || t().form.urlRule]"></v-text-field>
 
                 <div class="d-flex mt-4">
                   <v-btn color="secondary" type="submit" size="large" :loading="loading" :disabled="!url"
                     prepend-icon="mdi-speedometer" aria-label="Analyze performance">
-                    Analyze performance
+                    {{ t().form.analyzeButton }}
                   </v-btn>
                 </div>
               </v-form>
@@ -47,15 +47,15 @@
 
       <v-row v-else-if="performanceData">
         <v-col cols="12" class="mb-6">
-          <h2 id="analysis-results">Performance Analysis Results</h2>
+          <h2 id="analysis-results">{{ t().results.title }}</h2>
 
           <v-card class="mt-4 mb-6 bg-surface">
             <v-card-item>
               <v-card-title class="d-flex align-center mb-4">
                 <v-icon icon="mdi-speedometer" color="primary" class="mr-2" aria-hidden="true" />
-                Average Performance Score
+                {{ t().results.averageScore }}
                 <v-chip :color="getScoreColor(performanceData.averageScore)" class="ml-4"
-                  :aria-label="`Average performance score: ${performanceData.averageScore}%`">
+                  :aria-label="`${t().results.scoreLabel.replace('{score}', String(performanceData.averageScore))}`">
                   {{ performanceData.averageScore }}%
                 </v-chip>
               </v-card-title>
@@ -67,11 +67,12 @@
                       <v-progress-circular :model-value="calculateAverageMetric('firstContentfulPaint')"
                         :color="getMetricColor('firstContentfulPaint')" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">FCP</div>
+                          <div class="text-subtitle-1 font-weight-bold">{{
+                            t().results.metrics.firstContentfulPaint.title }}</div>
                           <div class="text-h6">{{ calculateAverageMetric('firstContentfulPaint', true) }}ms</div>
                         </div>
                       </v-progress-circular>
-                      <p class="mt-2">First Contentful Paint</p>
+                      <p class="mt-2">{{ t().results.metrics.firstContentfulPaint.description }}</p>
                     </div>
                   </v-col>
 
@@ -80,11 +81,12 @@
                       <v-progress-circular :model-value="calculateAverageMetric('largestContentfulPaint')"
                         :color="getMetricColor('largestContentfulPaint')" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">LCP</div>
+                          <div class="text-subtitle-1 font-weight-bold">{{
+                            t().results.metrics.largestContentfulPaint.title }}</div>
                           <div class="text-h6">{{ calculateAverageMetric('largestContentfulPaint', true) }}ms</div>
                         </div>
                       </v-progress-circular>
-                      <p class="mt-2">Largest Contentful Paint</p>
+                      <p class="mt-2">{{ t().results.metrics.largestContentfulPaint.description }}</p>
                     </div>
                   </v-col>
 
@@ -94,12 +96,13 @@
                         :color="getCLSColor(calculateAverageMetric('cumulativeLayoutShift', false))" :size="100"
                         :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">CLS</div>
+                          <div class="text-subtitle-1 font-weight-bold">{{
+                            t().results.metrics.cumulativeLayoutShift.title }}</div>
                           <div class="text-h6">{{ calculateAverageMetric('cumulativeLayoutShift', false, 1).toFixed(2)
                             }}</div>
                         </div>
                       </v-progress-circular>
-                      <p class="mt-2">Cumulative Layout Shift</p>
+                      <p class="mt-2">{{ t().results.metrics.cumulativeLayoutShift.description }}</p>
                     </div>
                   </v-col>
                 </v-row>
@@ -114,8 +117,8 @@
                   <v-col cols="8" class="text-body-1">{{ result.url }}</v-col>
                   <v-col cols="4" class="text-right d-flex align-center justify-end flex-wrap">
                     <v-chip :color="getScoreColor(result.overallScore)" class="mr-2"
-                      :aria-label="`Score: ${result.overallScore}%`">
-                      Score: {{ result.overallScore }}%
+                      :aria-label="`${t().results.scoreLabel.replace('{score}', String(result.overallScore))}`">
+                      {{ t().results.scoreLabel.replace('{score}', String(result.overallScore)) }}
                     </v-chip>
                   </v-col>
                 </v-row>
@@ -123,9 +126,9 @@
 
               <v-expansion-panel-text>
                 <v-tabs v-model="activeTab" color="primary" aria-label="Performance categories">
-                  <v-tab value="metrics" aria-label="Core Metrics tab">Core Metrics</v-tab>
-                  <v-tab value="resources" aria-label="Resources tab">Resources</v-tab>
-                  <v-tab value="optimization" aria-label="Optimization tab">Optimization</v-tab>
+                  <v-tab value="metrics" aria-label="Core Metrics tab">{{ t().tabs.metrics }}</v-tab>
+                  <v-tab value="resources" aria-label="Resources tab">{{ t().tabs.resources }}</v-tab>
+                  <v-tab value="optimization" aria-label="Optimization tab">{{ t().tabs.optimization }}</v-tab>
                 </v-tabs>
 
                 <v-window v-model="activeTab">
@@ -135,7 +138,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-timer" class="mr-2" aria-hidden="true" />
-                            Loading Metrics
+                            {{ t().results.metrics.loadingMetrics }}
                           </v-card-title>
                           <v-card-text>
                             <v-list density="compact">
@@ -145,7 +148,8 @@
                                     {{ getTimeMetricIcon(result.firstContentfulPaint) }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>First Contentful Paint</v-list-item-title>
+                                <v-list-item-title>{{ t().results.metrics.firstContentfulPaint.title
+                                }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.firstContentfulPaint }}ms</v-list-item-subtitle>
                               </v-list-item>
 
@@ -155,7 +159,8 @@
                                     {{ getTimeMetricIcon(result.largestContentfulPaint) }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>Largest Contentful Paint</v-list-item-title>
+                                <v-list-item-title>{{ t().results.metrics.largestContentfulPaint.title
+                                  }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.largestContentfulPaint }}ms</v-list-item-subtitle>
                               </v-list-item>
 
@@ -165,7 +170,7 @@
                                     {{ getTimeMetricIcon(result.speedIndex) }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>Speed Index</v-list-item-title>
+                                <v-list-item-title>{{ t().results.metrics.speedIndex.title }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.speedIndex }}ms</v-list-item-subtitle>
                               </v-list-item>
 
@@ -176,7 +181,7 @@
                                     {{ getTimeMetricIcon(result.totalBlockingTime, 300, 100) }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>Total Blocking Time</v-list-item-title>
+                                <v-list-item-title>{{ t().results.metrics.totalBlockingTime.title }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.totalBlockingTime }}ms</v-list-item-subtitle>
                               </v-list-item>
 
@@ -186,7 +191,8 @@
                                     {{ getCLSIcon(result.cumulativeLayoutShift) }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>Cumulative Layout Shift</v-list-item-title>
+                                <v-list-item-title>{{ t().results.metrics.cumulativeLayoutShift.title
+                                  }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.cumulativeLayoutShift }}</v-list-item-subtitle>
                               </v-list-item>
 
@@ -197,7 +203,7 @@
                                     {{ getTimeMetricIcon(result.timeToInteractive, 7500, 3500) }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>Time to Interactive</v-list-item-title>
+                                <v-list-item-title>{{ t().results.metrics.timeToInteractive.title }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.timeToInteractive }}ms</v-list-item-subtitle>
                               </v-list-item>
                             </v-list>
@@ -209,30 +215,31 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-chart-bar" class="mr-2" aria-hidden="true" />
-                            Performance Score Breakdown
+                            {{ t().results.metrics.scoreBreakdown }}
                           </v-card-title>
                           <v-card-text>
                             <v-progress-linear v-model="result.overallScore" :color="getScoreColor(result.overallScore)"
-                              height="25" :aria-label="`Overall score: ${result.overallScore}%`">
+                              height="25"
+                              :aria-label="`${t().results.scoreLabel.replace('{score}', String(result.overallScore))}`">
                               <template v-slot:default="{ value }">
                                 <strong>{{ value }}%</strong>
                               </template>
                             </v-progress-linear>
 
-                            <p class="text-subtitle-1 mt-4 mb-2">Score interpretation:</p>
+                            <p class="text-subtitle-1 mt-4 mb-2">{{ t().results.scoreIntervals.excellentRange }}</p>
                             <div class="d-flex align-center">
                               <div class="progress-legend">
                                 <div class="d-flex align-center">
                                   <div class="score-indicator success"></div>
-                                  <span>90-100: Excellent</span>
+                                  <span>{{ t().results.scoreIntervals.excellent }}</span>
                                 </div>
                                 <div class="d-flex align-center">
                                   <div class="score-indicator warning"></div>
-                                  <span>50-89: Needs improvement</span>
+                                  <span>{{ t().results.scoreIntervals.needsImprovement }}</span>
                                 </div>
                                 <div class="d-flex align-center">
                                   <div class="score-indicator error"></div>
-                                  <span>0-49: Poor</span>
+                                  <span>{{ t().results.scoreIntervals.poor }}</span>
                                 </div>
                               </div>
                             </div>
@@ -248,23 +255,23 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-server-network" class="mr-2" aria-hidden="true" />
-                            Network Requests
+                            {{ t().results.resources.networkRequests }}
                           </v-card-title>
                           <v-card-text>
                             <div class="d-flex flex-column">
                               <div class="d-flex justify-space-between">
-                                <span>Total requests:</span>
+                                <span>{{ t().results.resources.requestCount }}</span>
                                 <strong>{{ result.networkRequests.total }}</strong>
                               </div>
                               <div class="d-flex justify-space-between">
-                                <span>Total size:</span>
+                                <span>{{ t().results.resources.totalSize }}</span>
                                 <strong>{{ formatBytes(result.networkRequests.size) }}</strong>
                               </div>
                             </div>
 
                             <v-divider class="my-4"></v-divider>
 
-                            <h3 class="text-subtitle-1 mb-3">Request breakdown by type:</h3>
+                            <h3 class="text-subtitle-1 mb-3">{{ t().results.resources.resourceTypes }}</h3>
                             <v-list density="compact">
                               <v-list-item v-for="(value, type) in result.networkRequests.byType" :key="type">
                                 <template v-slot:prepend>
@@ -284,7 +291,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-chart-pie" class="mr-2" aria-hidden="true" />
-                            Resource Distribution
+                            {{ t().results.resources.resourceSizes }}
                           </v-card-title>
                           <v-card-text>
                             <canvas ref="resourceChart" height="200" aria-label="Resource distribution chart"></canvas>
@@ -300,7 +307,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-check-circle" class="mr-2" aria-hidden="true" />
-                            Resource Optimization
+                            {{ t().results.optimization.title }}
                           </v-card-title>
                           <v-card-text>
                             <div class="d-flex flex-wrap gap-2" role="list" aria-label="Resource optimization status">
@@ -320,7 +327,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-lightbulb-on" class="mr-2" aria-hidden="true" />
-                            Optimization Tips
+                            {{ t().results.optimization.opportunities }}
                           </v-card-title>
                           <v-card-text>
                             <v-list>
@@ -360,27 +367,36 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
+import { computed, onMounted, ref, watch } from 'vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
-import Chart from 'chart.js/auto';
-import { computed, onMounted, ref, watch } from 'vue';
+import { Chart, registerables } from 'chart.js';
 import snackBar from '../components/snackbar.vue';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 import { PerformanceData, PerformanceMetrics, sendPerformanceScoreToWebsitePage } from '../utils/performance-utils';
+
+Chart.register(...registerables);
+
+// Add translations support
+const t = useTranslations('performance');
 
 definePageMeta({
   layout: 'dashboard'
 });
 
 useHead({
-  title: 'Website Performance Analysis - StackUnity',
+  title: t().meta.title,
   meta: [
-    {
-      name: 'description',
-      content: 'Analyze the loading speed and performance metrics of your website for optimal user experience'
-    }
-  ]
+    { name: 'description', content: t().meta.description },
+    { name: 'author', content: 'StackUnity' },
+    { name: 'robots', content: 'noindex, nofollow' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
+    { name: 'og:title', content: t().meta.title },
+    { name: 'og:description', content: t().meta.description },
+    { name: 'og:image', content: '/logo/stackunity-title.png' },
+  ],
 });
 
 const userStore = useUserStore();

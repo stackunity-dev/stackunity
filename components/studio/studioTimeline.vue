@@ -5,18 +5,18 @@
         <v-card flat class="fill-height">
           <div class="px-4 py-2 d-flex align-center" role="group" aria-label="Framework indicators">
             <v-chip color="primary" prepend-icon="mdi-vuejs" size="small" class="mr-2 px-4 py-2"
-              aria-label="Vue.js framework">Vue.js</v-chip>
+              aria-label="Vue.js framework">{{ t.framework.vuejs }}</v-chip>
             <v-chip color="secondary" prepend-icon="mdi-vuetify" size="small" class="mr-2 px-4 py-2"
-              aria-label="Vuetify framework">Vuetify</v-chip>
+              aria-label="Vuetify framework">{{ t.framework.vuetify }}</v-chip>
             <v-chip color="tertiary" prepend-icon="mdi-palette" size="small" class="mr-12 px-4 py-2"
-              aria-label="Studio mode">{{ studioMode === 'studio' ? 'Studio' : 'SEO' }}</v-chip>
+              aria-label="Studio mode">{{ studioMode === 'studio' ? t.studioMode.studio : t.studioMode.seo }}</v-chip>
             <v-menu offset-y>
               <template v-slot:activator="{ props }">
                 <v-btn v-if="studioMode === 'studio-seo'" class="ml-7" icon density="comfortable" variant="text"
                   v-bind="props" color="secondary" aria-label="Test vision impairments" size="small">
                   <v-icon>{{ visionTypeIcon }}</v-icon>
                   <v-tooltip activator="parent" location="top">
-                    Try different vision types
+                    {{ t.vision.tryDifferentVisionTypes }}
                   </v-tooltip>
                 </v-btn>
               </template>
@@ -41,11 +41,11 @@
           </div>
 
           <v-tabs v-model="tab" color="primary" align-tabs="center" class="px-4">
-            <v-tab value="content">Content</v-tab>
-            <v-tab value="style">Style</v-tab>
-            <v-tab value="cards">Cards</v-tab>
-            <v-tab value="actions">Actions</v-tab>
-            <v-tab value="templates">Templates</v-tab>
+            <v-tab value="content">{{ t.tabs.items }}</v-tab>
+            <v-tab value="style">{{ t.tabs.style }}</v-tab>
+            <v-tab value="cards">{{ t.style.cardStyle }}</v-tab>
+            <v-tab value="actions">{{ t.options.animateItems }}</v-tab>
+            <v-tab value="templates">{{ t.preview.title }}</v-tab>
           </v-tabs>
 
           <v-divider></v-divider>
@@ -56,25 +56,25 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-timeline</v-icon>
-                    <span class="text-h6">Timeline Items</span>
+                    <span class="text-h6">{{ t.title }}</span>
                   </div>
 
                   <v-card class="mb-4 pa-3">
                     <div v-for="(item, index) in timelineItems" :key="index" class="mb-4">
                       <div class="d-flex align-center justify-space-between mb-2">
-                        <span class="text-subtitle-2">Item {{ index + 1 }}</span>
+                        <span class="text-subtitle-2">{{ t.items.title }} {{ index + 1 }}</span>
                         <v-btn icon="mdi-delete" color="error" variant="text" density="compact"
                           @click="removeTimelineItem(index)"></v-btn>
                       </div>
 
-                      <v-text-field v-model="item.title" label="Title" variant="outlined" density="compact"
+                      <v-text-field v-model="item.title" :label="t.items.title" variant="outlined" density="compact"
                         prepend-inner-icon="mdi-format-title" class="mb-2"></v-text-field>
 
-                      <v-textarea v-model="item.text" label="Content" variant="outlined" density="compact" auto-grow
-                        rows="2" row-height="20" prepend-inner-icon="mdi-text" class="mb-2"></v-textarea>
+                      <v-textarea v-model="item.text" :label="t.items.content" variant="outlined" density="compact"
+                        auto-grow rows="2" row-height="20" prepend-inner-icon="mdi-text" class="mb-2"></v-textarea>
 
                       <div class="d-flex gap-2">
-                        <v-select v-model="item.icon" :items="timelineIcons" label="Icon" variant="outlined"
+                        <v-select v-model="item.icon" :items="timelineIcons" :label="t.items.icon" variant="outlined"
                           density="compact" prepend-inner-icon="mdi-pencil" class="mb-2" style="flex: 1">
                           <template v-slot:item="{ item, props }">
                             <v-list-item v-bind="props">
@@ -85,7 +85,7 @@
                           </template>
                         </v-select>
 
-                        <v-select v-model="item.color" :items="colors" label="Dot Color" variant="outlined"
+                        <v-select v-model="item.color" :items="colors" :label="t.items.color" variant="outlined"
                           density="compact" prepend-inner-icon="mdi-palette" class="mb-2" style="flex: 1">
                           <template v-slot:item="{ item, props }">
                             <v-list-item v-bind="props">
@@ -97,7 +97,7 @@
                         </v-select>
                       </div>
 
-                      <v-text-field v-model="item.time" label="Time/Date" variant="outlined" density="compact"
+                      <v-text-field v-model="item.time" :label="t.items.date" variant="outlined" density="compact"
                         prepend-inner-icon="mdi-clock-outline" class="mb-2"></v-text-field>
 
                       <v-switch v-model="item.hideOpposite" color="primary" label="Hide opposite content" hide-details
@@ -105,7 +105,7 @@
                     </div>
 
                     <v-btn color="primary" prepend-icon="mdi-plus" variant="tonal" block @click="addTimelineItem">
-                      Add timeline item
+                      {{ t.items.addItem }}
                     </v-btn>
                   </v-card>
                 </div>
@@ -115,11 +115,11 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-palette</v-icon>
-                    <span class="text-h6">Appearance</span>
+                    <span class="text-h6">{{ t.style.alignment }}</span>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2 d-block">Timeline Color</label>
+                    <label class="text-subtitle-2 mb-2 d-block">{{ t.style.lineColor }}</label>
                     <v-btn-toggle v-model="timelineProperties.lineColor" mandatory density="comfortable"
                       selected-class="border-primary">
                       <v-btn v-for="color in colors" :key="color" :value="color"
@@ -131,7 +131,7 @@
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-1 d-block">Line Width</label>
+                    <label class="text-subtitle-2 mb-1 d-block">{{ t.style.lineWidth }}</label>
                     <div class="d-flex align-center">
                       <v-icon size="small" color="primary">mdi-minus</v-icon>
                       <v-slider v-model="timelineProperties.lineWidth" min="1" max="5" step="1" thumb-label
@@ -141,7 +141,7 @@
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-1 d-block">Dot Size</label>
+                    <label class="text-subtitle-2 mb-1 d-block">{{ t.style.dotSize }}</label>
                     <div class="d-flex align-center">
                       <v-icon size="small" color="primary">mdi-circle-small</v-icon>
                       <v-slider v-model="timelineProperties.dotSize" min="10" max="48" step="2" thumb-label
@@ -154,31 +154,31 @@
 
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-monitor-dashboard</v-icon>
-                    <span class="text-h6">Layout & Position</span>
+                    <span class="text-h6">{{ t.style.alignment }}</span>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Alignment</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.style.alignment }}</label>
                     <v-btn-toggle v-model="timelineProperties.align" mandatory density="comfortable" class="mb-3">
-                      <v-btn value="start" prepend-icon="mdi-format-align-left">Left</v-btn>
-                      <v-btn value="center" prepend-icon="mdi-format-align-center">Center</v-btn>
-                      <v-btn value="end" prepend-icon="mdi-format-align-right">Right</v-btn>
+                      <v-btn value="start" prepend-icon="mdi-format-align-left">{{ t.style.left }}</v-btn>
+                      <v-btn value="center" prepend-icon="mdi-format-align-center">{{ t.style.center }}</v-btn>
+                      <v-btn value="end" prepend-icon="mdi-format-align-right">{{ t.style.right }}</v-btn>
                     </v-btn-toggle>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Direction</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.options.direction }}</label>
                     <v-btn-toggle v-model="timelineProperties.direction" mandatory density="comfortable" class="mb-3">
-                      <v-btn value="vertical" prepend-icon="mdi-arrow-up-down">Vertical</v-btn>
-                      <v-btn value="horizontal" prepend-icon="mdi-arrow-left-right">Horizontal</v-btn>
+                      <v-btn value="vertical" prepend-icon="mdi-arrow-up-down">{{ t.options.vertical }}</v-btn>
+                      <v-btn value="horizontal" prepend-icon="mdi-arrow-left-right">{{ t.options.horizontal }}</v-btn>
                     </v-btn-toggle>
                   </div>
 
-                  <v-switch v-model="timelineProperties.reverse" color="primary" label="Reverse order" hide-details
+                  <v-switch v-model="timelineProperties.reverse" color="primary" :label="t.options.reverseDirection"
+                    hide-details class="mb-2"></v-switch>
+                  <v-switch v-model="timelineProperties.dense" color="primary" :label="t.style.compact" hide-details
                     class="mb-2"></v-switch>
-                  <v-switch v-model="timelineProperties.dense" color="primary" label="Dense" hide-details
-                    class="mb-2"></v-switch>
-                  <v-switch v-model="timelineProperties.rounded" color="primary" label="Rounded dots" hide-details
+                  <v-switch v-model="timelineProperties.rounded" color="primary" :label="t.style.rounded" hide-details
                     class="mb-2"></v-switch>
                 </div>
               </v-window-item>
@@ -187,15 +187,15 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-card-outline</v-icon>
-                    <span class="text-h6">Card Style</span>
+                    <span class="text-h6">{{ t.style.cardStyle }}</span>
                   </div>
 
-                  <v-switch v-model="timelineProperties.showCards" color="primary" label="Show cards" hide-details
-                    class="mb-4"></v-switch>
+                  <v-switch v-model="timelineProperties.showCards" color="primary" :label="t.style.cardStyle"
+                    hide-details class="mb-4"></v-switch>
 
                   <div v-if="timelineProperties.showCards">
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1">Card Variant</label>
+                      <label class="text-subtitle-2 mb-1">{{ t.style.cardStyle }}</label>
                       <v-chip-group v-model="cardVariantIndex" mandatory selected-class="bg-primary text-white">
                         <v-chip v-for="(variant, index) in cardVariants" :key="variant" size="small" :value="index">
                           {{ variant }}
@@ -204,7 +204,7 @@
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1 d-block">Card Elevation</label>
+                      <label class="text-subtitle-2 mb-1 d-block">{{ t.style.elevated }}</label>
                       <div class="d-flex align-center">
                         <v-icon size="small" color="primary">mdi-card-outline</v-icon>
                         <v-slider v-model="timelineProperties.cardElevation" min="0" max="24" step="1" thumb-label
@@ -214,7 +214,7 @@
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1">Card Background Color</label>
+                      <label class="text-subtitle-2 mb-1">{{ t.style.backgroundColor }}</label>
                       <v-btn-toggle v-model="timelineProperties.cardColor" mandatory density="comfortable"
                         selected-class="border-primary">
                         <v-btn v-for="color in colors" :key="color" :value="color"
@@ -226,45 +226,45 @@
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1">Title Style</label>
+                      <label class="text-subtitle-2 mb-1">{{ t.items.title }}</label>
                       <v-chip-group v-model="timelineProperties.titleStyle" mandatory
                         selected-class="bg-primary text-white">
-                        <v-chip size="small" value="regular">Regular</v-chip>
-                        <v-chip size="small" value="bold">Bold</v-chip>
-                        <v-chip size="small" value="italic">Italic</v-chip>
-                        <v-chip size="small" value="uppercase">uppercase</v-chip>
+                        <v-chip size="small" value="regular">{{ t.style.default }}</v-chip>
+                        <v-chip size="small" value="bold">{{ t.options.bold }}</v-chip>
+                        <v-chip size="small" value="italic">{{ t.options.italic }}</v-chip>
+                        <v-chip size="small" value="uppercase">{{ t.options.uppercase }}</v-chip>
                       </v-chip-group>
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1">Card Padding</label>
+                      <label class="text-subtitle-2 mb-1">{{ t.style.padding }}</label>
                       <v-chip-group v-model="timelineProperties.cardPadding" mandatory
                         selected-class="bg-primary text-white">
-                        <v-chip size="small" value="pa-0">None</v-chip>
-                        <v-chip size="small" value="pa-2">xs</v-chip>
-                        <v-chip size="small" value="pa-4">sm</v-chip>
-                        <v-chip size="small" value="pa-6">md</v-chip>
-                        <v-chip size="small" value="pa-8">lg</v-chip>
-                        <v-chip size="small" value="pa-10">xl</v-chip>
+                        <v-chip size="small" value="pa-0">{{ t.options.none }}</v-chip>
+                        <v-chip size="small" value="pa-2">{{ t.options.xs }}</v-chip>
+                        <v-chip size="small" value="pa-4">{{ t.options.sm }}</v-chip>
+                        <v-chip size="small" value="pa-6">{{ t.options.md }}</v-chip>
+                        <v-chip size="small" value="pa-8">{{ t.options.lg }}</v-chip>
+                        <v-chip size="small" value="pa-10">{{ t.options.xl }}</v-chip>
                       </v-chip-group>
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-1">Card Border Radius</label>
+                      <label class="text-subtitle-2 mb-1">{{ t.style.borderRadius }}</label>
                       <v-chip-group v-model="timelineProperties.cardBorderRadius" mandatory
                         selected-class="bg-primary text-white">
-                        <v-chip size="small" value="rounded-0">None</v-chip>
-                        <v-chip size="small" value="rounded">Default</v-chip>
-                        <v-chip size="small" value="rounded-lg">Large</v-chip>
-                        <v-chip size="small" value="rounded-xl">X-Large</v-chip>
-                        <v-chip size="small" value="rounded-pill">Pill</v-chip>
+                        <v-chip size="small" value="rounded-0">{{ t.options.none }}</v-chip>
+                        <v-chip size="small" value="rounded">{{ t.style.default }}</v-chip>
+                        <v-chip size="small" value="rounded-lg">{{ t.style.large }}</v-chip>
+                        <v-chip size="small" value="rounded-xl">{{ t.options.xl }}</v-chip>
+                        <v-chip size="small" value="rounded-pill">{{ t.options.pill }}</v-chip>
                       </v-chip-group>
                     </div>
 
-                    <v-switch v-model="timelineProperties.cardHoverEffect" color="primary" label="Hover effect"
-                      hide-details class="mb-2"></v-switch>
-                    <v-switch v-model="timelineProperties.separateHeader" color="primary" label="Separate header"
-                      hide-details class="mb-2"></v-switch>
+                    <v-switch v-model="timelineProperties.cardHoverEffect" color="primary"
+                      :label="t.options.hoverEffect" hide-details class="mb-2"></v-switch>
+                    <v-switch v-model="timelineProperties.separateHeader" color="primary"
+                      :label="t.options.separateHeader" hide-details class="mb-2"></v-switch>
                   </div>
                 </div>
               </v-window-item>
@@ -273,18 +273,19 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-animation-outline</v-icon>
-                    <span class="text-h6">Animations</span>
+                    <span class="text-h6">{{ t.options.animations }}</span>
                   </div>
 
-                  <v-switch v-model="timelineProperties.animated" color="primary" label="Enable animations" hide-details
-                    class="mb-4"></v-switch>
+                  <v-switch v-model="timelineProperties.animated" color="primary" :label="t.options.enableAnimations"
+                    hide-details class="mb-4"></v-switch>
 
                   <div v-if="timelineProperties.animated">
-                    <v-select v-model="timelineProperties.transition" :items="transitions" label="Transition effect"
-                      variant="outlined" density="comfortable" class="mb-4"></v-select>
+                    <v-select v-model="timelineProperties.transition" :items="transitions"
+                      :label="t.options.transitionEffect" variant="outlined" density="comfortable"
+                      class="mb-4"></v-select>
 
                     <v-slider v-model="timelineProperties.transitionDuration" min="1000" max="10000" step="100"
-                      label="Transition duration (ms)" thumb-label class="mb-4"></v-slider>
+                      :label="t.options.transitionDuration" thumb-label class="mb-4"></v-slider>
                   </div>
                 </div>
               </v-window-item>
@@ -294,48 +295,47 @@
                   <div class="section-title d-flex align-center mb-3 justify-space-between">
                     <div class="d-flex align-center">
                       <v-icon color="primary" class="mr-2">mdi-file-document-outline</v-icon>
-                      <span class="text-h6">Timeline Templates</span>
+                      <span class="text-h6">{{ t.templates.timelineTemplates }}</span>
                     </div>
                     <v-tooltip location="bottom">
                       <template v-slot:activator="{ props }">
                         <v-btn icon="mdi-help-circle-outline" variant="text" size="small" v-bind="props"></v-btn>
                       </template>
-                      <span>Apply pre-defined templates or save your own</span>
+                      <span>{{ t.templates.applyTemplate }}</span>
                     </v-tooltip>
                   </div>
 
-                  <p class="text-body-2 mb-4">Choose a pre-defined template to quickly create common timeline layouts.
-                  </p>
+                  <p class="text-body-2 mb-4">{{ t.templates.chooseTemplate }}</p>
 
                   <v-card class="mb-4">
                     <v-list>
-                      <v-list-item @click="applyTemplate('project')" prepend-icon="mdi-flag" title="Project Timeline"
-                        subtitle="Project management milestones"></v-list-item>
+                      <v-list-item @click="applyTemplate('project')" prepend-icon="mdi-flag"
+                        :title="t.templates.projectTimeline" :subtitle="t.templates.projectSubtitle"></v-list-item>
                       <v-list-item @click="applyTemplate('routine')" prepend-icon="mdi-clock-time-eight"
-                        title="Daily Routine" subtitle="Daily schedule management"></v-list-item>
-                      <v-list-item @click="applyTemplate('history')" prepend-icon="mdi-history" title="Company History"
-                        subtitle="Historical milestones"></v-list-item>
+                        :title="t.templates.dailyRoutine" :subtitle="t.templates.routineSubtitle"></v-list-item>
+                      <v-list-item @click="applyTemplate('history')" prepend-icon="mdi-history"
+                        :title="t.templates.companyHistory" :subtitle="t.templates.historySubtitle"></v-list-item>
                       <v-list-item @click="applyTemplate('process')" prepend-icon="mdi-clipboard-flow"
-                        title="Workflow Process" subtitle="Step-by-step workflow"></v-list-item>
+                        :title="t.templates.workflowProcess" :subtitle="t.templates.processSubtitle"></v-list-item>
                     </v-list>
                   </v-card>
 
                   <v-alert type="info" variant="tonal" class="mb-4">
-                    Applying a template will replace your current timeline settings.
+                    {{ t.templates.applyingTemplate }}
                   </v-alert>
 
                   <v-divider class="my-4"></v-divider>
 
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-content-save</v-icon>
-                    <span class="text-h6">Save Current Timeline</span>
+                    <span class="text-h6">{{ t.templates.saveCurrentTimeline }}</span>
                   </div>
 
-                  <v-text-field v-model="customTemplateName" label="Template Name" variant="outlined"
+                  <v-text-field v-model="customTemplateName" :label="t.templates.templateName" variant="outlined"
                     density="comfortable" prepend-inner-icon="mdi-tag" class="mb-4"></v-text-field>
 
                   <v-btn color="primary" prepend-icon="mdi-content-save" block @click="saveCurrentTemplate">
-                    Save Current Timeline as Template
+                    {{ t.templates.saveCurrentTimeline }}
                   </v-btn>
                 </div>
               </v-window-item>
@@ -350,13 +350,13 @@
           <v-chip :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="flat" size="small"
             class="mr-2">
             <v-icon start size="small">mdi-eye</v-icon>
-            Live preview
+            {{ t.preview.livePreview }}
           </v-chip>
         </div>
 
         <div class="preview-canvas flex-grow-1 pa-4" :style="filterStyle">
           <v-btn v-if="timelineProperties.animated" color="primary" class="mb-4" @click="triggerAnimation">
-            View animation
+            {{ t.preview.viewAnimation }}
           </v-btn>
 
           <transition :name="timelineProperties.transition" v-if="timelineProperties.animated">
@@ -437,10 +437,10 @@
 
         <div class="d-flex justify-end mt-3">
           <v-btn color="secondary" class="mr-2" prepend-icon="mdi-eye" @click="previewCode">
-            Preview Code
+            {{ t.preview.generatedCode }}
           </v-btn>
           <v-btn color="primary" prepend-icon="mdi-content-copy" @click="copyTimelineCode">
-            Copy to Clipboard
+            {{ t.preview.copyToClipboard }}
           </v-btn>
         </div>
       </div>
@@ -450,8 +450,9 @@
       <v-card class="bg-grey-darken-4">
         <v-card-title class="d-flex justify-space-between align-center pa-4">
           <v-tabs v-model="codeTab" color="primary">
-            <v-tab value="template">Template</v-tab>
-            <v-tab value="theme">Theme</v-tab>
+            <v-tab value="template">{{ t.preview.template }}</v-tab>
+            <v-tab value="script">{{ t.preview.script }}</v-tab>
+            <v-tab value="theme">{{ t.preview.theme }}</v-tab>
           </v-tabs>
           <v-btn icon="mdi-close" variant="text" @click="showCodeDialog = false"></v-btn>
         </v-card-title>
@@ -474,7 +475,7 @@
         </v-card-text>
         <v-card-actions class="pa-4">
           <v-btn color="secondary" prepend-icon="mdi-content-copy" @click="copyCurrentTab">
-            Copy Current Tab
+            {{ t.preview.copyCurrentTab }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -489,12 +490,13 @@ import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/atom-one-dark.css';
 import { computed, inject, nextTick, onMounted, ref, watch } from 'vue';
 import Snackbar from '../../components/snackbar.vue';
+import { useTranslations } from '../../languages';
 import { useUserStore } from '../../stores/userStore';
 import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
 import theme from '../../utils/theme';
 import { getTimelineTemplate } from '../../utils/timelineTemplates';
 import { StudioModeInjection } from './studio-types';
-import { timelineItems, timelineProperties, timelineIcons, colors, cardVariants, cardVariant, transitions, cardVariantIndex } from './types/type-timeline';
+import { cardVariant, cardVariantIndex, cardVariants, colors, timelineIcons, timelineItems, timelineProperties, transitions } from './types/type-timeline';
 
 const emit = defineEmits(['update:content', 'save']);
 
@@ -519,6 +521,8 @@ const userStore = useUserStore();
 const snackbarText = ref('');
 
 const customTemplateName = ref('');
+
+const t = useTranslations('studioTimelineTemplates')();
 
 const addTimelineItem = () => {
   timelineItems.value.push({

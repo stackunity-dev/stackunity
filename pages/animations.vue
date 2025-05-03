@@ -4,15 +4,15 @@
     <v-tabs v-model="activeTab" bg-color="secondary" slider-color="tertiary" density="comfortable" align-tabs="center">
       <v-tab value="presets">
         <v-icon start>mdi-palette-swatch</v-icon>
-        Ready for work animations
+        {{ t().tabs.presets }}
       </v-tab>
       <v-tab value="custom">
         <v-icon start>mdi-creation</v-icon>
-        Custom Animation Builder
+        {{ t().tabs.custom }}
       </v-tab>
       <v-tab value="transition">
         <v-icon start>mdi-transition</v-icon>
-        Transition Playground
+        {{ t().tabs.transition }}
       </v-tab>
     </v-tabs>
 
@@ -30,43 +30,43 @@
         <v-card class="pa-4 mb-4">
           <v-card-title class="d-flex align-center">
             <v-icon color="primary" size="24" class="mr-2">mdi-creation</v-icon>
-            Create your custom animation
+            {{ t().custom.title }}
           </v-card-title>
           <v-card-text>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field v-model="customAnimation.name" label="Animation name" variant="outlined"
+                <v-text-field v-model="customAnimation.name" :label="t().custom.name" variant="outlined"
                   placeholder="fadeInUp" aria-label="Animation name" />
 
-                <v-select v-model="customAnimation.duration" :items="durationOptions" label="Duration"
+                <v-select v-model="customAnimation.duration" :items="durationOptions" :label="t().custom.duration"
                   variant="outlined" aria-label="Animation duration" />
 
-                <v-select v-model="customAnimation.timingFunction" :items="timingOptions" label="Timing function"
-                  variant="outlined" aria-label="Timing function" />
+                <v-select v-model="customAnimation.timingFunction" :items="timingOptions"
+                  :label="t().custom.timingFunction" variant="outlined" aria-label="Timing function" />
               </v-col>
 
               <v-col cols="12" md="6">
-                <h3 class="text-subtitle-1 mb-2">From → To values</h3>
+                <h3 class="text-subtitle-1 mb-2">{{ t().custom.fromToValues }}</h3>
 
                 <v-row>
                   <v-col cols="12" md="6">
-                    <v-select v-model="customAnimation.fromProps.opacity" :items="opacityOptions" label="From: Opacity"
-                      variant="outlined" aria-label="Initial opacity" />
+                    <v-select v-model="customAnimation.fromProps.opacity" :items="opacityOptions"
+                      :label="t().custom.fromOpacity" variant="outlined" aria-label="Initial opacity" />
                   </v-col>
                   <v-col cols="12" md="6">
-                    <v-select v-model="customAnimation.toProps.opacity" :items="opacityOptions" label="To: Opacity"
-                      variant="outlined" aria-label="Final opacity" />
+                    <v-select v-model="customAnimation.toProps.opacity" :items="opacityOptions"
+                      :label="t().custom.toOpacity" variant="outlined" aria-label="Final opacity" />
                   </v-col>
                 </v-row>
 
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-select v-model="customAnimation.fromProps.transform" :items="transformOptions"
-                      label="From: Transform" variant="outlined" aria-label="Initial transformation" />
+                      :label="t().custom.fromTransform" variant="outlined" aria-label="Initial transformation" />
                   </v-col>
                   <v-col cols="12" md="6">
                     <v-select v-model="customAnimation.toProps.transform" :items="transformOptions"
-                      label="To: Transform" variant="outlined" aria-label="Final transformation" />
+                      :label="t().custom.toTransform" variant="outlined" aria-label="Final transformation" />
                   </v-col>
                 </v-row>
               </v-col>
@@ -79,14 +79,14 @@
             <v-row>
               <v-col cols="12" md="6">
                 <v-card class="preview-card">
-                  <v-card-title>Preview</v-card-title>
+                  <v-card-title>{{ t().custom.preview }}</v-card-title>
                   <v-card-text class="d-flex justify-center align-center">
                     <div class="animated-box" :style="customAnimationStyle" ref="customPreviewBox"></div>
                   </v-card-text>
                   <v-card-actions>
                     <v-btn color="primary" @click="playCustomAnimation" prepend-icon="mdi-play"
                       aria-label="Play animation">
-                      Play
+                      {{ t().custom.play }}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -94,14 +94,14 @@
 
               <v-col cols="12" md="6">
                 <v-card class="code-card h-100">
-                  <v-card-title>Generated CSS code</v-card-title>
+                  <v-card-title>{{ t().custom.generatedCode }}</v-card-title>
                   <v-card-text>
                     <pre class="language-css"><code>{{ generatedCssCode }}</code></pre>
                   </v-card-text>
                   <v-card-actions>
                     <v-btn color="secondary" @click="copyCustomCode" prepend-icon="mdi-content-copy"
                       aria-label="Copy CSS code">
-                      Copy CSS code
+                      {{ t().custom.copy }}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -115,33 +115,33 @@
         <v-card class="pa-4 mb-4">
           <v-card-title class="d-flex align-center">
             <v-icon color="primary" size="24" class="mr-2">mdi-transition</v-icon>
-            Test CSS transitions
+            {{ t().transition.title }}
           </v-card-title>
 
           <v-card-text>
             <v-row>
               <v-col cols="12" md="6">
-                <v-select v-model="transition.property" :items="transitionPropertyOptions" label="Property to animate"
-                  variant="outlined" aria-label="Property to animate" />
+                <v-select v-model="transition.property" :items="transitionPropertyOptions"
+                  :label="t().transition.property" variant="outlined" aria-label="Property to animate" />
 
-                <v-select v-model="transition.duration" :items="durationOptions" label="Duration" variant="outlined"
-                  aria-label="Transition duration" />
+                <v-select v-model="transition.duration" :items="durationOptions" :label="t().transition.duration"
+                  variant="outlined" aria-label="Transition duration" />
 
-                <v-select v-model="transition.delay" :items="delayOptions" label="Delay" variant="outlined"
-                  aria-label="Delay before the transition starts" />
+                <v-select v-model="transition.delay" :items="delayOptions" :label="t().transition.delay"
+                  variant="outlined" aria-label="Delay before the transition starts" />
 
-                <v-select v-model="transition.timingFunction" :items="timingOptions" label="Timing function"
-                  variant="outlined" aria-label="Transition timing function" />
+                <v-select v-model="transition.timingFunction" :items="timingOptions"
+                  :label="t().transition.timingFunction" variant="outlined" aria-label="Transition timing function" />
               </v-col>
 
               <v-col cols="12" md="6">
                 <v-card class="transition-preview-card">
-                  <v-card-title>Preview</v-card-title>
+                  <v-card-title>{{ t().transition.preview }}</v-card-title>
                   <v-card-text class="d-flex justify-center align-center py-6">
                     <div class="transition-box" :style="transitionStyle" @mouseenter="hovering = true"
                       @mouseleave="hovering = false"></div>
                   </v-card-text>
-                  <v-card-subtitle class="text-center">Hover the element to see the transition</v-card-subtitle>
+                  <v-card-subtitle class="text-center">{{ t().transition.hoverHint }}</v-card-subtitle>
                 </v-card>
               </v-col>
             </v-row>
@@ -153,14 +153,14 @@
             <v-row>
               <v-col cols="12">
                 <v-card class="code-card">
-                  <v-card-title>Generated CSS code</v-card-title>
+                  <v-card-title>{{ t().transition.generatedCode }}</v-card-title>
                   <v-card-text>
                     <pre class="language-css" ref="transitionCodeElement">{{ transitionCssCode }}</pre>
                   </v-card-text>
                   <v-card-actions>
                     <v-btn color="secondary" @click="copyTransitionCode" prepend-icon="mdi-content-copy"
                       aria-label="Copy transition CSS code">
-                      Copy transition CSS code
+                      {{ t().transition.copy }}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -192,6 +192,9 @@ import {
 } from '../utils/animations';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+import { useTranslations } from '../languages';
+
+const t = useTranslations('animation');
 
 definePageMeta({
   layout: 'dashboard',
@@ -222,7 +225,7 @@ const transitionCodeElement = ref(null);
 
 const presetAnimations = [
   {
-    name: 'Fade In',
+    name: t().presets.fadeIn.name,
     icon: 'mdi-fire',
     color: 'warning',
     class: 'fadeIn',
@@ -236,7 +239,7 @@ const presetAnimations = [
 }`
   },
   {
-    name: 'Slide Right',
+    name: t().presets.slideRight.name,
     icon: 'mdi-arrow-right',
     color: 'info',
     class: 'slideRight',
@@ -250,7 +253,7 @@ const presetAnimations = [
 }`
   },
   {
-    name: 'Bounce',
+    name: t().presets.bounce.name,
     icon: 'mdi-basketball',
     color: 'warning',
     class: 'bounce',
@@ -265,7 +268,7 @@ const presetAnimations = [
 }`
   },
   {
-    name: 'Pulse',
+    name: t().presets.pulse.name,
     icon: 'mdi-pulse',
     color: 'success',
     class: 'pulse',
@@ -280,7 +283,7 @@ const presetAnimations = [
 }`
   },
   {
-    name: 'Shake',
+    name: t().presets.shake.name,
     icon: 'mdi-vibrate',
     color: 'primary',
     class: 'shake',
@@ -295,7 +298,7 @@ const presetAnimations = [
 }`
   },
   {
-    name: 'Rotate',
+    name: t().presets.rotate.name,
     icon: 'mdi-rotate-left',
     color: 'secondary',
     class: 'rotate',
@@ -413,10 +416,10 @@ function showSnackbar(message: string, color = 'success') {
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text)
     .then(() => {
-      showSnackbar('Code copié !');
+      showSnackbar(t().notifications.copied);
     })
     .catch(() => {
-      showSnackbar('Erreur lors de la copie', 'error');
+      showSnackbar(t().notifications.error, 'error');
     });
 }
 

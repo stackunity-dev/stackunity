@@ -4,16 +4,16 @@
       <v-col cols="12" lg="3">
         <v-card class="rounded-lg mb-4" elevation="2">
           <v-list nav>
-            <v-list-item prepend-icon="mdi-web" title="Website" value="website" @click="activeTab = 'website'"
-              rounded="lg" :active="activeTab === 'website'" color="primary" />
-            <v-list-item prepend-icon="mdi-palette-outline" title="Appearance" value="appearance"
+            <v-list-item prepend-icon="mdi-web" :title="t().navigation.website" value="website"
+              @click="activeTab = 'website'" rounded="lg" :active="activeTab === 'website'" color="primary" />
+            <v-list-item prepend-icon="mdi-palette-outline" :title="t().navigation.appearance" value="appearance"
               @click="activeTab = 'appearance'" rounded="lg" :active="activeTab === 'appearance'" color="primary" />
-            <v-list-item prepend-icon="mdi-shield-outline" title="Security" value="security"
+            <v-list-item prepend-icon="mdi-shield-outline" :title="t().navigation.security" value="security"
               @click="activeTab = 'security'" rounded="lg" :active="activeTab === 'security'" color="primary" />
             <v-divider class="my-2"></v-divider>
-            <v-list-item prepend-icon="mdi-cookie-settings-outline" title="Cookies" value="cookies"
+            <v-list-item prepend-icon="mdi-cookie-settings-outline" :title="t().navigation.cookies" value="cookies"
               @click="activeTab = 'cookies'" rounded="lg" :active="activeTab === 'cookies'" color="primary" />
-            <v-list-item prepend-icon="mdi-delete-outline" title="Data & Privacy" value="privacy"
+            <v-list-item prepend-icon="mdi-delete-outline" :title="t().navigation.dataPrivacy" value="privacy"
               @click="activeTab = 'privacy'" rounded="lg" :active="activeTab === 'privacy'" color="primary" />
           </v-list>
         </v-card>
@@ -25,34 +25,35 @@
             <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"
               id="website-settings-title">
               <v-icon color="white" class="mr-2" aria-hidden="true">mdi-web</v-icon>
-              <h2 class="text-h5 mb-0">Website</h2>
+              <h2 class="text-h5 mb-0">{{ t().website.title }}</h2>
             </v-card-title>
             <v-card-text class="pa-4">
               <v-alert type="info" variant="tonal" class="mb-4" role="status">
-                Manage your website settings.
+                {{ t().website.info }}
               </v-alert>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <v-text-field v-model="website.name" label="Website name" variant="outlined" density="comfortable"
-                    prepend-icon="mdi-domain" class="mb-3" id="website-name"
-                    :rules="[(v) => v.length > 0 || 'The website name is required']" aria-required="true"
+                  <v-text-field v-model="website.name" :label="t().website.name.label" variant="outlined"
+                    density="comfortable" prepend-icon="mdi-domain" class="mb-3" id="website-name"
+                    :rules="[(v) => v.length > 0 || t().website.name.required]" aria-required="true"
                     aria-describedby="website-name-desc" />
 
-                  <v-text-field v-model="website.url" label="Website URL" variant="outlined" density="comfortable"
-                    prepend-icon="mdi-web" class="mb-3" id="website-url"
-                    :rules="[(v) => v && v.includes('https://') || 'The URL must start with https://']"
-                    aria-required="true" aria-describedby="website-url-desc" />
+                  <v-text-field v-model="website.url" :label="t().website.url.label" variant="outlined"
+                    density="comfortable" prepend-icon="mdi-web" class="mb-3" id="website-url"
+                    :rules="[(v) => v && v.includes('https://') || t().website.url.invalid]" aria-required="true"
+                    aria-describedby="website-url-desc" />
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-card variant="outlined" class="mb-3 pa-3">
-                    <v-card-title class="text-subtitle-1 font-weight-bold">Website analysis</v-card-title>
+                    <v-card-title class="text-subtitle-1 font-weight-bold">{{ t().website.analysis.title
+                    }}</v-card-title>
                     <v-card-text class="pa-0">
-                      <p class="text-body-2 mb-3">Analyze your site to discover all indexable URLs.</p>
+                      <p class="text-body-2 mb-3">{{ t().website.analysis.description }}</p>
                       <v-btn color="secondary" variant="outlined" prepend-icon="mdi-magnify"
                         @click="fetchAnalyzisUrls(website.url)" :loading="loading" :disabled="!isValidUrl(website.url)"
                         block aria-label="Analyze the website">
-                        <span v-if="loading">Analyzing...</span>
-                        <span v-else>Analyze the website</span>
+                        <span v-if="loading">{{ t().website.analysis.analyzing }}</span>
+                        <span v-else>{{ t().website.analysis.button }}</span>
                       </v-btn>
                     </v-card-text>
                   </v-card>
@@ -64,15 +65,16 @@
                   <v-divider class="my-4" role="separator"></v-divider>
 
                   <div class="d-flex justify-space-between align-center mb-3">
-                    <h3 class="text-h6 font-weight-bold">URLs detected ({{ analyzisUrls.length }})</h3>
+                    <h3 class="text-h6 font-weight-bold">{{ t().website.analysis.urlsDetected }} ({{ analyzisUrls.length
+                    }})</h3>
                     <div>
                       <v-btn color="secondary" variant="outlined" density="comfortable" size="small"
                         prepend-icon="mdi-content-copy" @click="copyUrlsToClipboard" aria-label="Copy all URLs">
-                        Copy
+                        {{ t().website.analysis.copy }}
                       </v-btn>
                       <v-btn color="error" variant="text" density="comfortable" size="small" prepend-icon="mdi-close"
                         class="ml-2" @click="clearAnalyzisUrls" aria-label="Clear URL list">
-                        Clear
+                        {{ t().website.analysis.clear }}
                       </v-btn>
                     </div>
                   </div>
@@ -91,7 +93,7 @@
                         </v-list-item>
 
                         <v-list-item v-if="analyzisUrls.length === 0" class="text-center py-4">
-                          <v-list-item-title>No URLs detected</v-list-item-title>
+                          <v-list-item-title>{{ t().website.analysis.noUrls }}</v-list-item-title>
                         </v-list-item>
                       </v-list>
 
@@ -103,12 +105,12 @@
                   </v-card>
 
                   <div v-if="analysisSummary" class="mt-6">
-                    <h3 class="text-h6 font-weight-bold mb-3">Analysis Summary</h3>
+                    <h3 class="text-h6 font-weight-bold mb-3">{{ t().website.summary.title }}</h3>
                     <v-row>
                       <v-col cols="12" sm="6" md="4">
                         <v-card variant="outlined" class="rounded-lg">
                           <v-card-text class="text-center">
-                            <div class="text-overline mb-1">Total Pages</div>
+                            <div class="text-overline mb-1">{{ t().website.summary.totalPages }}</div>
                             <div class="text-h4 font-weight-bold">{{ analysisSummary.totalPages }}</div>
                           </v-card-text>
                         </v-card>
@@ -116,7 +118,7 @@
                       <v-col cols="12" sm="6" md="4">
                         <v-card variant="outlined" class="rounded-lg">
                           <v-card-text class="text-center">
-                            <div class="text-overline mb-1">Average Load Time</div>
+                            <div class="text-overline mb-1">{{ t().website.summary.averageLoadTime }}</div>
                             <div class="text-h4 font-weight-bold">{{ Math.round(analysisSummary.averageLoadTime) }}ms
                             </div>
                           </v-card-text>
@@ -126,7 +128,7 @@
                         <v-card variant="outlined" class="rounded-lg"
                           :color="analysisSummary.totalWarnings > 0 ? 'warning' : 'success'">
                           <v-card-text class="text-center">
-                            <div class="text-overline mb-1">Warnings</div>
+                            <div class="text-overline mb-1">{{ t().website.summary.warnings }}</div>
                             <div class="text-h4 font-weight-bold">{{ analysisSummary.totalWarnings }}</div>
                           </v-card-text>
                         </v-card>
@@ -136,16 +138,16 @@
 
                   <div v-if="hasSitemap" class="mt-6">
                     <div class="d-flex justify-space-between align-center mb-3">
-                      <h3 class="text-h6 font-weight-bold">Generated Sitemap</h3>
+                      <h3 class="text-h6 font-weight-bold">{{ t().website.sitemap.title }}</h3>
                       <div>
                         <v-btn color="secondary" variant="outlined" density="comfortable" size="small"
                           prepend-icon="mdi-content-copy" @click="copySitemapToClipboard" aria-label="Copy sitemap">
-                          Copy
+                          {{ t().website.sitemap.copy }}
                         </v-btn>
                         <v-btn color="primary" variant="tonal" density="comfortable" size="small"
                           prepend-icon="mdi-download" class="ml-2" @click="downloadSitemap"
                           aria-label="Download sitemap">
-                          Download
+                          {{ t().website.sitemap.download }}
                         </v-btn>
                       </div>
                     </div>
@@ -166,28 +168,28 @@
                 <v-btn color="primary" variant="elevated" prepend-icon="mdi-content-save" @click="saveWebsiteData"
                   aria-label="Enregistrer les paramètres du site web"
                   :disabled="!isValidUrl(website.url) || !analyzisUrls.length">
-                  Save
+                  {{ t().website.save }}
                 </v-btn>
               </div>
             </v-card-text>
           </div>
+
           <div v-if="activeTab === 'appearance'">
             <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
               <v-icon color="white" class="mr-2">mdi-palette-outline</v-icon>
-              Appearance
+              {{ t().appearance.title }}
             </v-card-title>
             <v-card-text class="pa-4">
               <v-row class="mb-4">
                 <v-col cols="12">
-                  <div class="text-subtitle-1 font-weight-bold mb-3">Theme</div>
                   <v-row>
                     <v-col cols="12" sm="4">
                       <v-card :color="isActiveTheme('greenAmbiance') ? 'primary' : 'surface'" variant="outlined"
                         class="d-flex flex-column align-center pa-4" hover @click="changeTheme('greenAmbiance')">
                         <v-icon size="large"
                           :color="isActiveTheme('greenAmbiance') ? 'white' : 'primary'">mdi-weather-sunny</v-icon>
-                        <span class="mt-2" :class="{ 'text-white': isActiveTheme('greenAmbiance') }">Green
-                          Ambiance</span>
+                        <span class="mt-2" :class="{ 'text-white': isActiveTheme('greenAmbiance') }">{{
+                          t().appearance.theme.greenAmbiance }}</span>
                       </v-card>
                     </v-col>
                     <v-col cols="12" sm="4">
@@ -195,7 +197,8 @@
                         class="d-flex flex-column align-center pa-4" hover @click="changeTheme('dark')">
                         <v-icon size="large"
                           :color="isActiveTheme('dark') ? 'white' : 'primary'">mdi-weather-night</v-icon>
-                        <span class="mt-2" :class="{ 'text-white': isActiveTheme('dark') }">Dark</span>
+                        <span class="mt-2" :class="{ 'text-white': isActiveTheme('dark') }">{{ t().appearance.theme.dark
+                        }}</span>
                       </v-card>
                     </v-col>
                     <v-col cols="12" sm="4">
@@ -203,7 +206,9 @@
                         class="d-flex flex-column align-center pa-4" hover @click="changeTheme('system')">
                         <v-icon size="large"
                           :color="isActiveTheme('system') ? 'white' : 'primary'">mdi-theme-light-dark</v-icon>
-                        <span class="mt-2" :class="{ 'text-white': isActiveTheme('system') }">System</span>
+                        <span class="mt-2" :class="{ 'text-white': isActiveTheme('system') }">{{
+                          t().appearance.theme.system
+                        }}</span>
                       </v-card>
                     </v-col>
                   </v-row>
@@ -215,7 +220,7 @@
               <div class="d-flex justify-end">
                 <v-btn color="primary" variant="elevated" @click="saveAppearance">
                   <v-icon start>mdi-content-save</v-icon>
-                  Save
+                  {{ t().appearance.save }}
                 </v-btn>
               </div>
             </v-card-text>
@@ -224,22 +229,20 @@
           <div v-if="activeTab === 'security'">
             <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
               <v-icon color="white" class="mr-2">mdi-shield-outline</v-icon>
-              Security
+              {{ t().security.title }}
             </v-card-title>
             <v-card-text class="pa-4">
               <v-alert type="info" variant="tonal" class="mb-4">
-                Manage your account security settings. We recommend using a strong password and changing it regularly.
+                {{ t().security.info }}
               </v-alert>
-
-              <div class="text-subtitle-1 font-weight-bold mb-3">Change Password</div>
 
               <v-form class="mb-6">
 
-                <v-text-field v-model="security.newPassword" label="New Password" variant="outlined" type="password"
-                  class="mb-3"></v-text-field>
+                <v-text-field v-model="security.newPassword" :label="t().security.changePassword.newPassword"
+                  variant="outlined" type="password" class="mb-3"></v-text-field>
 
-                <v-text-field v-model="security.confirmPassword" label="Confirm New Password" variant="outlined"
-                  type="password" class="mb-3"></v-text-field>
+                <v-text-field v-model="security.confirmPassword" :label="t().security.changePassword.confirmPassword"
+                  variant="outlined" type="password" class="mb-3"></v-text-field>
               </v-form>
 
               <v-divider class="my-4"></v-divider>
@@ -247,7 +250,7 @@
               <div class="d-flex justify-end">
                 <v-btn color="primary" variant="elevated" @click="saveSecurity">
                   <v-icon start>mdi-content-save</v-icon>
-                  Update Password
+                  {{ t().security.changePassword.update }}
                 </v-btn>
               </div>
             </v-card-text>
@@ -256,24 +259,23 @@
           <div v-if="activeTab === 'cookies'">
             <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
               <v-icon color="white" class="mr-2">mdi-cookie-settings-outline</v-icon>
-              Cookie Preferences
+              {{ t().cookies.title }}
             </v-card-title>
             <v-card-text class="pa-4">
               <v-alert type="info" variant="tonal" class="mb-4">
-                Manage your cookie preferences. Essential cookies are necessary for the site to function and cannot be
-                disabled.
+                {{ t().cookies.info }}
               </v-alert>
 
               <v-card color="surface" variant="outlined" class="mb-6 pa-4">
-                <h3 class="text-h6 font-weight-bold mb-3">Current Preferences Status</h3>
+                <h3 class="text-h6 font-weight-bold mb-3">{{ t().cookies.preferences.title }}</h3>
                 <v-list>
                   <v-list-item>
-                    <v-list-item-title>Essential cookies:</v-list-item-title>
-                    <v-list-item-subtitle>Enabled</v-list-item-subtitle>
+                    <v-list-item-title>{{ t().cookies.necessary.title }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ t().cookies.necessary.description }}</v-list-item-subtitle>
                   </v-list-item>
                   <v-list-item>
-                    <v-list-item-title>Functional cookies:</v-list-item-title>
-                    <v-list-item-subtitle>{{ cookies.functional ? 'Enabled' : 'Disabled' }}</v-list-item-subtitle>
+                    <v-list-item-title>{{ t().cookies.preferences.title }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ t().cookies.preferences.description }}</v-list-item-subtitle>
                   </v-list-item>
                 </v-list>
               </v-card>
@@ -281,11 +283,11 @@
               <v-list>
                 <v-list-item>
                   <v-list-item-title>
-                    <v-switch v-model="cookies.essential" label="Essential cookies" color="primary" disabled
+                    <v-switch v-model="cookies.essential" :label="t().cookies.necessary.title" color="primary" disabled
                       hide-details inset></v-switch>
                   </v-list-item-title>
                   <v-list-item-subtitle class="text-caption mt-1">
-                    Required for the site to function, they cannot be disabled.
+                    {{ t().cookies.necessary.description }}
                   </v-list-item-subtitle>
                 </v-list-item>
 
@@ -293,11 +295,11 @@
 
                 <v-list-item>
                   <v-list-item-title>
-                    <v-switch v-model="cookies.functional" label="Functional cookies" color="primary" hide-details
-                      inset></v-switch>
+                    <v-switch v-model="cookies.functional" :label="t().cookies.statistics.title" color="primary"
+                      hide-details inset></v-switch>
                   </v-list-item-title>
                   <v-list-item-subtitle class="text-caption mt-1">
-                    Allow us to remember your preferences and personalize your experience.
+                    {{ t().cookies.statistics.description }}
                   </v-list-item-subtitle>
                 </v-list-item>
 
@@ -305,11 +307,11 @@
 
                 <v-list-item>
                   <v-list-item-title>
-                    <v-switch v-model="cookies.analytics" label="Analytics cookies" color="primary" hide-details
-                      inset></v-switch>
+                    <v-switch v-model="cookies.analytics" :label="t().cookies.marketing.title" color="primary"
+                      hide-details inset></v-switch>
                   </v-list-item-title>
                   <v-list-item-subtitle class="text-caption mt-1">
-                    Help us understand how you use our site to improve it.
+                    {{ t().cookies.marketing.description }}
                   </v-list-item-subtitle>
                 </v-list-item>
               </v-list>
@@ -319,11 +321,11 @@
               <div class="d-flex justify-space-between">
                 <v-btn color="error" variant="outlined" @click="resetCookies">
                   <v-icon start>mdi-cookie-remove</v-icon>
-                  Delete all cookies
+                  {{ t().cookies.deleteAll }}
                 </v-btn>
                 <v-btn color="primary" variant="elevated" @click="saveCookies">
                   <v-icon start>mdi-content-save</v-icon>
-                  Save
+                  {{ t().cookies.save }}
                 </v-btn>
               </div>
             </v-card-text>
@@ -332,61 +334,63 @@
           <div v-if="activeTab === 'privacy'">
             <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
               <v-icon color="white" class="mr-2">mdi-delete-outline</v-icon>
-              Data & Privacy
+              {{ t().privacy.title }}
             </v-card-title>
             <v-card-text class="pa-4">
               <v-alert type="warning" variant="tonal" class="mb-4">
-                Warning: Actions on this page regarding your data are irreversible.
+                {{ t().privacy.info }}
               </v-alert>
 
-              <div class="text-subtitle-1 font-weight-bold mb-3">Data Export</div>
-              <p class="mb-4">You can download all your personal data stored on our platform.</p>
+              <div class="text-subtitle-1 font-weight-bold mb-3">{{ t().privacy.exportData.title }}</div>
+              <p class="mb-4">{{ t().privacy.exportData.description }}</p>
               <v-btn color="primary" variant="outlined" prepend-icon="mdi-download" @click="exportUserData" class="mb-6"
-                disabled>Export my data</v-btn>
+                disabled>{{ t().privacy.exportData.button }}</v-btn>
 
               <v-divider class="my-4"></v-divider>
 
-              <div class="text-subtitle-1 font-weight-bold mb-3 text-success">Premium Status</div>
+              <div class="text-subtitle-1 font-weight-bold mb-3 text-success">{{ t().privacy.premiumStatus.title }}
+              </div>
               <p class="mb-4">
-                Current status:
+                {{ t().privacy.premiumStatus.description }}
                 <v-chip color="success mr-1" v-if="userStore.user?.isPremium">
-                  Premium
+                  {{ t().privacy.premiumStatus.premium }}
                 </v-chip>
                 <v-chip color="info" v-if="userStore.user.isStandard && !userStore.user?.isPremium">
-                  Standard
+                  {{ t().privacy.premiumStatus.standard }}
                 </v-chip>
                 <v-chip color="warning"
                   v-else-if="userStore.user?.isTrial && !userStore.user?.isPremium && !userStore.user.isStandard">
-                  Trial
+                  {{ t().privacy.premiumStatus.trial }}
                 </v-chip>
                 <v-chip color="error" v-else-if="!userStore.user?.isPremium && !userStore.user.isStandard">
-                  Free
+                  {{ t().privacy.premiumStatus.free }}
                 </v-chip>
               </p>
 
               <v-divider class="my-4"></v-divider>
 
-              <div class="text-subtitle-1 font-weight-bold mb-3 text-error">Account Deletion</div>
-              <p class="mb-4">Deleting your account will permanently erase all your personal data, including your
-                projects, settings, and history.</p>
+              <div class="text-subtitle-1 font-weight-bold mb-3 text-error">{{ t().privacy.deleteAccount.title }}</div>
+              <p class="mb-4">
+                {{ t().privacy.deleteAccount.description }}
+              </p>
 
               <div v-if="showDeleteAccount">
-                <v-text-field v-model="deleteAccountConfirmation" label="Type 'DELETE' to confirm" variant="outlined"
-                  hint="This action is irreversible" persistent-hint class="mb-4"></v-text-field>
+                <v-text-field v-model="deleteAccountConfirmation" :label="t().privacy.deleteAccount.confirmation"
+                  variant="outlined" hint="This action is irreversible" persistent-hint class="mb-4"></v-text-field>
 
                 <div class="d-flex">
                   <v-btn color="error" variant="tonal" :disabled="deleteAccountConfirmation !== 'DELETE'"
                     @click="confirmDeleteAccount" class="mr-2">
-                    Confirm deletion
+                    {{ t().privacy.deleteAccount.confirm }}
                   </v-btn>
                   <v-btn color="grey" variant="text" @click="showDeleteAccount = false">
-                    Cancel
+                    {{ t().privacy.deleteAccount.cancel }}
                   </v-btn>
                 </div>
               </div>
               <v-btn v-else color="error" variant="outlined" prepend-icon="mdi-account-remove"
                 @click="showDeleteAccount = true">
-                Delete my account
+                {{ t().privacy.deleteAccount.button }}
               </v-btn>
             </v-card-text>
           </div>
@@ -398,12 +402,13 @@
   </v-container>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useTheme } from 'vuetify';
 import Snackbar from '../components/snackbar.vue';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
@@ -437,6 +442,7 @@ interface AnalysisSummary {
 
 const vuetifyTheme = useTheme();
 const userStore = useUserStore();
+const t = useTranslations('settings');
 
 const activeTab = ref('website');
 const snackbar = ref(false);
@@ -522,7 +528,7 @@ const saveAppearance = () => {
     }
   }
   setTimeout(() => {
-    showSnackbar('Appearance settings updated', 'success');
+    showSnackbar(t().notifications.appearanceUpdated, 'success');
   }, 500);
 };
 
@@ -530,25 +536,25 @@ const saveSecurity = async () => {
   try {
 
     if (!security.value.newPassword || !security.value.confirmPassword) {
-      snackbarText.value = 'New password and confirm password are required';
+      snackbarText.value = t().notifications.passwordError;
       snackbarColor.value = 'error';
       snackbar.value = true;
       return;
     }
 
     if (security.value.newPassword !== security.value.confirmPassword) {
-      snackbarText.value = 'Passwords do not match';
+      snackbarText.value = t().notifications.passwordError;
       snackbarColor.value = 'error';
       snackbar.value = true;
       return;
     }
 
     await userStore.resetPassword(security.value.newPassword);
-    snackbarText.value = 'Password updated successfully';
+    snackbarText.value = t().notifications.passwordChanged;
     snackbarColor.value = 'success';
     snackbar.value = true;
   } catch (error) {
-    snackbarText.value = 'An error occurred while updating the password';
+    snackbarText.value = t().notifications.passwordError;
     snackbarColor.value = 'error';
     snackbar.value = true;
   }
@@ -560,7 +566,7 @@ const saveCookies = () => {
     localStorage.setItem('cookies_analytics', cookies.value.analytics.toString());
     localStorage.setItem('cookies_marketing', cookies.value.marketing.toString());
   }
-  showSnackbar('Cookie preferences updated', 'success');
+  showSnackbar(t().cookies.save, 'success');
 };
 
 const resetCookies = () => {
@@ -574,12 +580,12 @@ const resetCookies = () => {
     localStorage.setItem('cookies_marketing', 'false');
   }
 
-  showSnackbar('Cookies deleted successfully', 'success');
+  showSnackbar(t().notifications.cookiesDeleted, 'success');
 };
 
 const exportUserData = () => {
   setTimeout(() => {
-    snackbarText.value = 'Your data has been prepared for download';
+    snackbarText.value = t().notifications.dataCopied;
     snackbarColor.value = 'success';
     snackbar.value = true;
   }, 1000);
@@ -588,14 +594,14 @@ const exportUserData = () => {
 const confirmDeleteAccount = async () => {
   try {
     await userStore.deleteAccount();
-    snackbarText.value = 'Your account has been deleted successfully';
+    snackbarText.value = t().notifications.accountDeleted;
     snackbarColor.value = 'success';
     snackbar.value = true;
     setTimeout(() => {
       window.location.href = '/login';
     }, 2000);
   } catch (error) {
-    snackbarText.value = 'An error occurred while deleting your account';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     snackbar.value = true;
   }
@@ -664,7 +670,7 @@ const isActiveTheme = (themeName: string): boolean => {
 
 const fetchAnalyzisUrls = async (url: string) => {
   if (!isValidUrl(url)) {
-    showSnackbar('Please enter a valid URL starting with https://', 'error');
+    showSnackbar(t().notifications.invalidUrl, 'error');
     return;
   }
 

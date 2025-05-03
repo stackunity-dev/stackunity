@@ -24,8 +24,24 @@ export default defineNuxtConfig({
     transpile: ['vuetify']
   },
 
+  runtimeConfig: {
+    public: {
+    }
+  },
+
+  plugins: [
+    '~/plugins/auth.ts',
+    '~/plugins/cookies.ts',
+    '~/plugins/vuetify.ts',
+    '~/plugins/pinia-persistedState.client.ts',
+    '~/plugins/i18n-router.ts',
+    '~/plugins/localized-links.ts',
+    '~/plugins/language-detection.client.ts'
+  ],
+
   modules: [
     '@pinia/nuxt',
+    '@nuxtjs/i18n',
     ['@nuxtjs/plausible', {
       domain: 'stackunity.tech',
       apiHost: "https://plausible.io",
@@ -40,6 +56,30 @@ export default defineNuxtConfig({
       })
     },
   ],
+
+  i18n: {
+    defaultLocale: 'en',
+    strategy: 'prefix_except_default',
+    locales: [
+      { code: 'en', iso: 'en', dir: 'ltr' },
+      { code: 'fr', iso: 'fr', dir: 'ltr' },
+      { code: 'es', iso: 'es', dir: 'ltr' },
+      { code: 'ar', iso: 'ar', dir: 'rtl' },
+      { code: 'zh', iso: 'zh', dir: 'ltr' }
+    ],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',
+      alwaysRedirect: false,
+      cookieCrossOrigin: false
+    },
+    baseUrl: 'https://stackunity.com',
+    vueI18n: './i18n.config.ts',
+    lazy: false,
+    skipSettingLocaleOnNavigate: true
+  },
+
   vite: {
     vue: {
       template: {
@@ -120,5 +160,22 @@ export default defineNuxtConfig({
     '/images/**': { headers: { 'cache-control': 'public, max-age=86400' } },
     '/plausible-proxy.js': { headers: { 'cache-control': 'public, max-age=86400' } },
     '/sw-register.js': { headers: { 'cache-control': 'public, max-age=86400' } },
+
+    '/fr/**': {
+      headers: { 'content-language': 'fr' },
+      swr: 86400
+    },
+    '/es/**': {
+      headers: { 'content-language': 'es' },
+      swr: 86400
+    },
+    '/ar/**': {
+      headers: { 'content-language': 'ar' },
+      swr: 86400
+    },
+    '/zh/**': {
+      headers: { 'content-language': 'zh' },
+      swr: 86400
+    },
   }
 });

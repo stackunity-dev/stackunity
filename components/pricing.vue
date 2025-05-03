@@ -2,10 +2,11 @@
   <section id="pricing" class="py-16 pricing-section" aria-labelledby="pricing-heading">
     <v-container>
       <div class="text-center mb-12">
-        <span class="section-subtitle text-uppercase font-weight-medium text-primary mb-2 d-block">Pricing</span>
-        <h2 id="pricing-heading" class="text-h3 text-gradient font-weight-bold mb-3">Choose your plan</h2>
+        <span class="section-subtitle text-uppercase font-weight-medium text-primary mb-2 d-block">{{
+          t().section.subtitle }}</span>
+        <h2 id="pricing-heading" class="text-h3 text-gradient font-weight-bold mb-3">{{ t().section.title }}</h2>
         <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
-          Start with a 7-day free trial. No credit card required.
+          {{ t().section.description }}
         </p>
 
         <v-chip-group v-model="selectedCurrency" class="d-flex justify-center text-center my-6"
@@ -21,17 +22,17 @@
       <v-row justify="center" align="stretch">
         <v-col cols="12" sm="6" lg="4">
           <price-card :plan="freePlan" :selected-currency="selectedCurrency" card-class="free-plan"
-            btn-text="TRY FOR FREE" btn-color="primary" btn-to="/signup" />
+            :btn-text="t().plans.free.cta" btn-color="primary" btn-to="/signup" />
         </v-col>
 
         <v-col cols="12" sm="6" lg="4">
           <price-card :plan="standardPlan" :selected-currency="selectedCurrency" card-class="standard-plan"
-            btn-text="Start Free Trial" btn-color="secondary" btn-to="/signup" />
+            :btn-text="t().plans.standard.cta" btn-color="secondary" btn-to="/signup" />
         </v-col>
 
         <v-col cols="12" sm="6" lg="4">
           <price-card :plan="premiumPlan" :selected-currency="selectedCurrency" :is-popular="true"
-            card-class="premium-plan" btn-text="Start Free Trial" btn-color="tertiary" btn-to="/signup"
+            card-class="premium-plan" :btn-text="t().plans.premium.cta" btn-color="tertiary" btn-to="/signup"
             btn-icon="mdi-arrow-right" />
         </v-col>
       </v-row>
@@ -54,7 +55,7 @@
         <v-col cols="12" class="text-center">
           <v-btn color="primary" variant="outlined" @click="showFeatureComparison = !showFeatureComparison"
             aria-label="Show full feature comparison">
-            {{ showFeatureComparison ? 'Hide' : 'Show' }} Full Feature Comparison
+            {{ showFeatureComparison ? t().comparison.hide : t().comparison.show }}
             <v-icon end>{{ showFeatureComparison ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
           </v-btn>
         </v-col>
@@ -67,10 +68,10 @@
               <v-table>
                 <thead>
                   <tr>
-                    <th class="text-left">Feature</th>
-                    <th class="text-center">Free</th>
-                    <th class="text-center">Standard</th>
-                    <th class="text-center">Premium</th>
+                    <th class="text-left">{{ t().comparison.table.feature }}</th>
+                    <th class="text-center">{{ t().comparison.table.free }}</th>
+                    <th class="text-center">{{ t().comparison.table.standard }}</th>
+                    <th class="text-center">{{ t().comparison.table.premium }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -100,8 +101,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useTranslations } from '../languages';
 import PriceCard from './PriceCard.vue';
+
+const t = useTranslations('pricing');
 
 const selectedCurrency = ref('€');
 const showFeatureComparison = ref(false);
@@ -112,9 +116,9 @@ const currencies = ref([
   { symbol: '£', code: 'GBP' }
 ]);
 
-const freePlan = ref({
-  name: 'Free',
-  description: 'Perfect to start',
+const freePlan = computed(() => ({
+  name: t().plans.free.name,
+  description: t().plans.free.description,
   icon: 'mdi-rocket-launch-outline',
   avatarColor: 'primary',
   price: {
@@ -126,17 +130,17 @@ const freePlan = ref({
   hasDiscount: false,
   freeTrialDays: 0,
   features: [
-    'CSS playground',
-    'Simple Studio features',
-    'Basic API testing',
-    'Contrast ratio checker',
-    'Visual impairment simulation',
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
   ]
-});
+}));
 
 const standardPlan = ref({
-  name: 'Standard',
-  description: 'For growing teams',
+  name: t().plans.standard.name,
+  description: t().plans.standard.description,
   icon: 'mdi-star',
   avatarColor: 'info',
   price: {
@@ -148,17 +152,17 @@ const standardPlan = ref({
   hasDiscount: true,
   freeTrialDays: 7,
   features: [
-    'All Free features',
-    'Complete Studio features',
-    'Database Designer features',
-    'All visual impairment simulation features',
-    'Robots.txt and Schema.org Generator',
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
   ]
 });
 
 const premiumPlan = ref({
-  name: 'Premium',
-  description: 'Unlock all features',
+  name: t().plans.premium.name,
+  description: t().plans.premium.description,
   icon: 'mdi-crown',
   avatarColor: 'white',
   price: {
@@ -170,39 +174,39 @@ const premiumPlan = ref({
   hasDiscount: false,
   freeTrialDays: 7,
   features: [
-    'All Standard features',
-    'Website analysis',
-    'Semantic and ARIA analysis',
-    'User Engagement tools',
-    'Priority support',
-    'Unlimited team members',
-    'Access to all future updates'
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
+    t().comparison.table.feature,
   ]
 });
 
 const guarantee = ref({
   icon: 'mdi-shield-check',
-  title: '30-Day Money Back Guarantee',
-  description: 'If you\'re not satisfied with StackUnity, get a full refund within 30 days. No questions asked.',
+  title: t().guarantee.title,
+  description: t().guarantee.description,
 });
 
 const comparisonFeatures = ref([
-  { name: 'CSS playground', free: true, standard: true, premium: true },
-  { name: 'Simple Studio Features', free: true, standard: true, premium: true },
-  { name: 'API Testing', free: true, standard: true, premium: true },
-  { name: 'Contrast Ratio Checker', free: true, standard: true, premium: true },
-  { name: 'Basic Visual Impairment Simulation', free: true, standard: true, premium: true },
-  { name: 'Complete Visual Impairment Simulation', free: false, standard: true, premium: true },
-  { name: 'Complete Studio features', free: false, standard: true, premium: true },
-  { name: 'Database Designer', free: false, standard: true, premium: true },
-  { name: 'Robots.txt and Schema.org Generator', free: false, standard: true, premium: true },
-  { name: 'Performance Analysis', free: false, standard: false, premium: true },
-  { name: 'Content Analysis', free: false, standard: false, premium: true },
-  { name: 'User Engagement Tools', free: false, standard: false, premium: true },
-  { name: 'Semantic and ARIA analysis', free: false, standard: false, premium: true },
-  { name: 'Security analysis', free: false, standard: false, premium: true },
-  { name: 'Access to all future updates', free: false, standard: false, premium: true },
-  { name: 'Unlimited Team Members', free: false, standard: false, premium: true }
+  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
+  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
+  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
+  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
+  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: true, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: true, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: true, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: true, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
+  { name: t().comparison.table.feature, free: false, standard: false, premium: true }
 ]);
 </script>
 

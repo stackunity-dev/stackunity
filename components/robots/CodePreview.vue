@@ -4,11 +4,11 @@
       <v-tabs v-model="activeTab" color="primary" align-tabs="center">
         <v-tab value="code" class="py-3 px-4">
           <v-icon start>mdi-code-tags</v-icon>
-          Code
+          {{ t().codePreview.code }}
         </v-tab>
         <v-tab value="preview" class="py-3 px-4">
           <v-icon start>mdi-eye</v-icon>
-          Aperçu
+          {{ t().codePreview.preview }}
         </v-tab>
       </v-tabs>
 
@@ -48,10 +48,10 @@
       <v-card-actions class="pa-4 pt-0 mt-4">
         <v-spacer></v-spacer>
         <v-btn prepend-icon="mdi-content-copy" variant="outlined" color="primary" class="mr-2" @click="copyToClipboard">
-          Copier
+          {{ t().codePreview.copy }}
         </v-btn>
         <v-btn prepend-icon="mdi-download" color="primary" @click="downloadCode">
-          Télécharger
+          {{ t().codePreview.download }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -60,6 +60,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useTranslations } from '../../languages';
+
+const t = useTranslations('robots');
 
 const props = defineProps<{
   code: string;
@@ -96,7 +99,7 @@ const schemaPreview = computed(() => {
       const schema = JSON.parse(props.code);
       return formatSchemaPreview(schema);
     } catch (e) {
-      return '<span class="text-error">Erreur de parsing JSON</span>';
+      return `<span class="text-error">${t().codePreview.errorParsingJson}</span>`;
     }
   }
   return '';

@@ -3,26 +3,26 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-2">Content analysis</h1>
+          <h1 class="text-h4 font-weight-bold mb-2">{{ t().page.title }}</h1>
           <p class="text-subtitle-1 mb-6">
-            Analyze the structure and quality of your web pages to improve your SEO.
+            {{ t().page.subtitle }}
           </p>
 
           <v-card class="mb-6">
             <v-card-text>
               <v-form @submit.prevent="analyzeContent">
-                <v-text-field v-model="url" label="URL of the site to analyze" placeholder="https://example.com"
-                  hint="Enter the complete URL including https://" persistent-hint prepend-inner-icon="mdi-web"
-                  variant="outlined" required autocomplete="url" aria-label="URL of the site to analyze"
-                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || 'Please enter a valid URL starting with http:// or https://']"></v-text-field>
+                <v-text-field v-model="url" :label="t().form.urlLabel" :placeholder="t().form.urlPlaceholder"
+                  :hint="t().form.urlHint" persistent-hint prepend-inner-icon="mdi-web" variant="outlined" required
+                  autocomplete="url" :aria-label="t().form.urlLabel"
+                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || t().form.urlRule]"></v-text-field>
 
-                <v-checkbox v-model="crawlEnabled" label="Analyze also linked pages" hint="Limit: 10 URLs maximum"
-                  persistent-hint aria-label="Enable linked pages exploration"></v-checkbox>
+                <v-checkbox v-model="crawlEnabled" :label="t().form.crawlEnabled" :hint="t().form.crawlHint"
+                  persistent-hint :aria-label="t().form.crawlEnabled"></v-checkbox>
 
                 <div class="d-flex mt-4">
                   <v-btn color="secondary" type="submit" size="large" :loading="loading" :disabled="!isValidUrl"
-                    prepend-icon="mdi-magnify" aria-label="Analyze content">
-                    Analyze content
+                    prepend-icon="mdi-magnify" :aria-label="t().form.analyzeButton">
+                    {{ t().form.analyzeButton }}
                   </v-btn>
                 </div>
               </v-form>
@@ -30,7 +30,7 @@
           </v-card>
 
           <v-progress-linear v-if="loading" color="primary" indeterminate
-            aria-label="Analyze in progress"></v-progress-linear>
+            :aria-label="t().loading.text"></v-progress-linear>
 
           <v-alert v-if="error" type="error" variant="tonal" closable class="mb-6" role="alert">
             {{ error }}
@@ -40,18 +40,18 @@
             <v-card-title class="text-subtitle-1 d-flex justify-space-between align-center">
               <div class="d-flex align-center">
                 <v-icon start aria-hidden="true" class="mr-2">mdi-chart-areaspline</v-icon>
-                <span>Average content score</span>
+                <span>{{ t().averageScore.title }}</span>
               </div>
               <v-btn size="small" variant="text" density="comfortable" color="primary" prepend-icon="mdi-download"
-                @click="exportScoreData" aria-label="Export score data">
-                Export
+                @click="exportScoreData" :aria-label="t().averageScore.exportButton">
+                {{ t().averageScore.exportButton }}
               </v-btn>
             </v-card-title>
             <v-card-text>
               <div class="d-flex align-center">
                 <v-progress-circular :model-value="getAverageContentScore()"
                   :color="getContentScoreColor(getAverageContentScore())" size="100" width="12"
-                  aria-label="Average content score" class="mr-4">
+                  :aria-label="t().averageScore.title" class="mr-4">
                   <span class="text-h6 font-weight-bold">{{ getAverageContentScore() }}%</span>
                 </v-progress-circular>
                 <div class="flex-grow-1">
@@ -59,7 +59,7 @@
                     {{ getContentScoreLabel(getAverageContentScore()) }}
                   </div>
                   <div class="text-body-2 mb-2">
-                    Average score calculated from {{ results.length }} analyzed pages
+                    {{ t().averageScore.calculated.replace('{count}', String(results.length)) }}
                     <v-tooltip location="top">
                       <template v-slot:activator="{ props }">
                         <v-chip v-bind="props" size="x-small" :color="getScoreTrendColor()" variant="outlined"
@@ -75,17 +75,19 @@
                   </div>
                   <v-progress-linear :model-value="getAverageContentScore()"
                     :color="getContentScoreColor(getAverageContentScore())" height="10" rounded
-                    aria-label="Average content score"></v-progress-linear>
+                    :aria-label="t().averageScore.title"></v-progress-linear>
                 </div>
               </div>
 
               <v-alert v-if="getLowestScoringPage() && results.length > 1" color="info" variant="tonal" class="mt-4"
                 icon="mdi-lightbulb-on">
-                <div class="text-subtitle-2 font-weight-bold mb-1">Improvement priority</div>
-                <p>The page with the lowest score ({{ calculateContentScore(getLowestScoringPage() || {}) }}%) is <a
-                    :href="getLowestScoringPage()?.url || ''" target="_blank" rel="noopener noreferrer">{{
-                      truncateUrl(getLowestScoringPage()?.url || '', 50) }} <v-icon size="x-small"
-                      class="ml-1">mdi-open-in-new</v-icon></a></p>
+                <div class="text-subtitle-2 font-weight-bold mb-1">{{ t().improvement.title }}</div>
+                <p>{{ t().improvement.lowestScore.replace('{score}', String(calculateContentScore(getLowestScoringPage()
+                  || {}))) }}
+                  <a :href="getLowestScoringPage()?.url || ''" target="_blank" rel="noopener noreferrer">{{
+                    truncateUrl(getLowestScoringPage()?.url || '', 50) }} <v-icon size="x-small"
+                      class="ml-1">mdi-open-in-new</v-icon></a>
+                </p>
                 <v-chip v-if="getLowestScoringPageMainIssue()" size="small" class="mt-2">
                   <template v-slot:prepend>
                     <v-icon size="x-small" class="mr-2">mdi-alert-circle</v-icon>
@@ -112,7 +114,7 @@
                       <v-card variant="outlined" class="mb-4">
                         <v-card-title class="text-subtitle-1">
                           <v-icon start aria-hidden="true">mdi-chart-donut</v-icon>
-                          Content score
+                          {{ t().contentScore.title }}
                         </v-card-title>
                         <v-card-text>
                           <div class="d-flex justify-center align-center">
@@ -138,7 +140,7 @@
                         <v-card-text>
                           <v-list density="compact">
                             <v-list-item>
-                              <v-list-item-title>Number of words</v-list-item-title>
+                              <v-list-item-title>{{ t().statistics.wordCount }}</v-list-item-title>
                               <v-list-item-subtitle class="d-flex align-center">
                                 <span>{{ result?.contentStats?.wordCount || 0 }}</span>
                                 <v-chip size="x-small" :color="getWordCountColor(result?.contentStats?.wordCount || 0)"
@@ -149,7 +151,7 @@
                             </v-list-item>
 
                             <v-list-item>
-                              <v-list-item-title>Readability score</v-list-item-title>
+                              <v-list-item-title>{{ t().statistics.readabilityScore }}</v-list-item-title>
                               <v-list-item-subtitle class="d-flex align-center">
                                 <span>{{ (result?.contentStats?.readabilityScore || 0).toFixed(1) }}</span>
                                 <v-chip size="x-small"
@@ -161,7 +163,7 @@
                             </v-list-item>
 
                             <v-list-item v-if="getHeadingCount(result) > 0">
-                              <v-list-item-title>Headings detected</v-list-item-title>
+                              <v-list-item-title>{{ t().statistics.headingsDetected }}</v-list-item-title>
                               <v-list-item-subtitle>
                                 H1: {{ result?.headingStructure?.h1?.length || 0 }},
                                 H2: {{ result?.headingStructure?.h2?.length || 0 }},
@@ -173,11 +175,13 @@
                             </v-list-item>
 
                             <v-list-item v-if="getLinkCount(result) > 0">
-                              <v-list-item-title>Links</v-list-item-title>
+                              <v-list-item-title>{{ t().statistics.links }}</v-list-item-title>
                               <v-list-item-subtitle>
-                                Internal: {{ Array.isArray(result?.links?.internal) ? result.links.internal.length : 0
+                                {{ t().statistics.internal }}: {{ Array.isArray(result?.links?.internal) ?
+                                  result.links.internal.length : 0
                                 }},
-                                External: {{ Array.isArray(result?.links?.external) ? result.links.external.length : 0
+                                {{ t().statistics.external }}: {{ Array.isArray(result?.links?.external) ?
+                                  result.links.external.length : 0
                                 }}
                               </v-list-item-subtitle>
                             </v-list-item>
@@ -190,12 +194,12 @@
                       <v-card variant="outlined" class="mb-4">
                         <v-card-title class="text-subtitle-1">
                           <v-icon start aria-hidden="true">mdi-format-header-pound</v-icon>
-                          Heading structure
+                          {{ t().headings.title }}
                         </v-card-title>
                         <v-card-text>
                           <div v-if="!hasHeadings(result)" class="text-center pa-4">
                             <v-icon color="warning" class="mb-2" size="large" aria-hidden="true">mdi-alert</v-icon>
-                            <p>No headings (H1-H6) detected on this page.</p>
+                            <p>{{ t().headings.noHeadings }}</p>
                           </div>
                           <div v-else>
                             <div class="heading-structure pa-2">
@@ -238,13 +242,13 @@
                       <v-card variant="outlined" class="mb-4">
                         <v-card-title class="text-subtitle-1">
                           <v-icon start aria-hidden="true">mdi-alert-circle</v-icon>
-                          Detected issues
+                          {{ t().issues.title }}
                         </v-card-title>
                         <v-card-text>
                           <div v-if="getContentIssues(result).length === 0" class="text-center pa-4">
                             <v-icon color="success" class="mb-2" size="large"
                               aria-hidden="true">mdi-check-circle</v-icon>
-                            <p>No major issues detected in the content.</p>
+                            <p>{{ t().issues.noIssues }}</p>
                           </div>
                           <v-list v-else density="compact">
                             <v-list-item v-for="(issue, idx) in getContentIssues(result)" :key="idx">
@@ -263,7 +267,7 @@
                       <v-card variant="outlined" class="mb-4">
                         <v-card-title class="text-subtitle-1">
                           <v-icon start aria-hidden="true">mdi-lightbulb-on</v-icon>
-                          Recommendations
+                          {{ t().recommendations.title }}
                         </v-card-title>
                         <v-card-text>
                           <div class="d-flex align-center mb-4">
@@ -277,9 +281,10 @@
 
                           <v-alert v-if="calculateContentScore(result) >= 90" color="success" variant="tonal"
                             class="mb-3">
-                            <div class="text-subtitle-1 font-weight-bold mb-2">Excellent content quality</div>
-                            <p class="wrap-text">Your content is well-structured and optimized for SEO. Keep up the good
-                              work!</p>
+                            <div class="text-subtitle-1 font-weight-bold mb-2">{{
+                              t().recommendations.excellentQuality.title }}
+                            </div>
+                            <p class="wrap-text">{{ t().recommendations.excellentQuality.description }}</p>
                           </v-alert>
 
                           <v-expansion-panels variant="accordion">
@@ -287,92 +292,96 @@
                               <v-expansion-panel-title>
                                 <div class="d-flex align-center">
                                   <v-icon color="primary" class="mr-2">mdi-arrow-up-bold-circle</v-icon>
-                                  <span>How to improve your content</span>
+                                  <span>{{ t().recommendations.improveContent.title }}</span>
                                 </div>
                               </v-expansion-panel-title>
                               <v-expansion-panel-text>
                                 <v-list class="recommendation-list">
                                   <v-list-item
                                     v-if="result?.contentStats?.wordCount && result.contentStats.wordCount < 800">
-                                    <v-list-item-title class="font-weight-bold">Add more content</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.improveContent.addMoreContent.title }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Your content has {{ result.contentStats.wordCount }} words. Consider expanding to
-                                      at least 800-1000 words for better SEO performance.
+                                      {{
+                                        t().recommendations.improveContent.addMoreContent.description.replace('{count}',
+                                          String(result.contentStats.wordCount)) }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item
                                     v-if="!result?.headingStructure?.h1 || !result.headingStructure.h1.length">
-                                    <v-list-item-title class="font-weight-bold">Add an H1 heading</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.improveContent.addH1.title
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Every page should have exactly one H1 heading that clearly describes the page
-                                      content.
+                                      {{ t().recommendations.improveContent.addH1.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item v-else-if="result.headingStructure.h1.length > 1">
-                                    <v-list-item-title class="font-weight-bold">Use only one H1
-                                      heading</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.improveContent.multipleH1.title }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Your page has {{ result.headingStructure.h1.length }} H1 headings. For better SEO,
-                                      use exactly one
-                                      H1 and structure other headings with H2-H6.
+                                      {{ t().recommendations.improveContent.multipleH1.description.replace('{count}',
+                                        String(result.headingStructure.h1.length)) }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item
                                     v-if="!result?.headingStructure?.h2 || !result.headingStructure.h2.length">
-                                    <v-list-item-title class="font-weight-bold">Add H2 subheadings</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.improveContent.addH2.title
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Use H2 subheadings to break your content into logical sections for better
-                                      readability and SEO.
+                                      {{ t().recommendations.improveContent.addH2.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item v-if="result?.images?.withoutAlt && result.images.withoutAlt > 0">
-                                    <v-list-item-title class="font-weight-bold">Add alt text to
-                                      images</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.improveContent.addAltText.title }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      {{ result.images.withoutAlt }} image(s) missing alt text. Add descriptive alt text
-                                      to all images
-                                      for better accessibility and SEO.
+                                      {{ t().recommendations.improveContent.addAltText.description.replace('{count}',
+                                        String(result.images.withoutAlt)) }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item
                                     v-if="result?.contentStats?.readabilityScore && result.contentStats.readabilityScore < 70">
-                                    <v-list-item-title class="font-weight-bold">Improve readability</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.improveContent.improveReadability.title }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Your content has a readability score of {{
-                                        result.contentStats.readabilityScore.toFixed(1) }}. Try
-                                      using shorter sentences and simpler language.
+                                      {{
+                                        t().recommendations.improveContent.improveReadability.description.replace('{score}',
+                                          result.contentStats.readabilityScore.toFixed(1)) }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item
                                     v-if="!Array.isArray(result?.links?.internal) || !result.links.internal.length">
-                                    <v-list-item-title class="font-weight-bold">Add internal links</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.improveContent.addInternalLinks.title }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Add links to other relevant pages on your site to improve navigation and SEO.
+                                      {{ t().recommendations.improveContent.addInternalLinks.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item
                                     v-if="!Array.isArray(result?.links?.external) || !result.links.external.length">
-                                    <v-list-item-title class="font-weight-bold">Add external links</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.improveContent.addExternalLinks.title }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Link to authoritative external sources to increase credibility and SEO value.
+                                      {{ t().recommendations.improveContent.addExternalLinks.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item
                                     v-if="getContentIssues(result).length === 0 && calculateContentScore(result) < 90">
-                                    <v-list-item-title class="font-weight-bold">General improvements</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.improveContent.generalImprovements.title
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      - Use more varied and engaging language<br>
-                                      - Add multimedia elements (images, videos, infographics)<br>
-                                      - Include specific examples and data to support your points<br>
-                                      - Structure content with clear introduction and conclusion
+                                      {{ t().recommendations.improveContent.generalImprovements.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
@@ -383,50 +392,52 @@
                               <v-expansion-panel-title>
                                 <div class="d-flex align-center">
                                   <v-icon color="info" class="mr-2">mdi-rocket-launch</v-icon>
-                                  <span>SEO optimization tips</span>
+                                  <span>{{ t().recommendations.seoTips.title }}</span>
                                 </div>
                               </v-expansion-panel-title>
                               <v-expansion-panel-text>
                                 <v-list>
                                   <v-list-item>
-                                    <v-list-item-title class="font-weight-bold">Use target keywords</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.seoTips.useKeywords.title
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Include your main keyword in the title, H1 heading, first paragraph, and
-                                      throughout the content
-                                      naturally.
+                                      {{ t().recommendations.seoTips.useKeywords.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
-                                    <v-list-item-title class="font-weight-bold">Optimize meta
-                                      description</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.seoTips.optimizeMeta.title
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Create a compelling meta description (150-160 characters) that includes your
-                                      target keyword.
+                                      {{ t().recommendations.seoTips.optimizeMeta.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
-                                    <v-list-item-title class="font-weight-bold">Improve page speed</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.seoTips.improveSpeed.title
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Optimize images, reduce scripts, and leverage browser caching to improve page load
-                                      times.
+                                      {{ t().recommendations.seoTips.improveSpeed.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
-                                    <v-list-item-title class="font-weight-bold">Mobile optimization</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.seoTips.mobileOptimization.title }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Ensure your page is fully responsive and provides a good user experience on mobile
-                                      devices.
+                                      {{ t().recommendations.seoTips.mobileOptimization.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
-                                    <v-list-item-title class="font-weight-bold">Use schema markup</v-list-item-title>
+                                    <v-list-item-title class="font-weight-bold">{{
+                                      t().recommendations.seoTips.useSchema.title
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
-                                      Implement appropriate schema.org markup to help search engines understand your
-                                      content better.
+                                      {{ t().recommendations.seoTips.useSchema.description }}
                                     </v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
@@ -443,7 +454,7 @@
                       <v-card variant="outlined" class="mb-4">
                         <v-card-title class="text-subtitle-1">
                           <v-icon start aria-hidden="true">mdi-image</v-icon>
-                          Images ({{ result.images.data.length }})
+                          {{ t().images.title }} ({{ result.images.data.length }})
                         </v-card-title>
                         <v-card-text>
                           <v-virtual-scroll :items="result.images.data" height="400" item-height="80">
@@ -466,7 +477,7 @@
                                 </v-list-item-title>
                                 <v-list-item-subtitle>
                                   <v-chip :color="item.alt ? 'success' : 'error'" size="small" class="mt-1">
-                                    {{ item.alt ? 'Alt text present' : 'Missing alt text' }}
+                                    {{ item.alt ? t().images.hasAlt : t().images.missingAlt }}
                                   </v-chip>
                                   <small v-if="item.alt" class="d-block mt-1 text-truncate">{{ truncateText(item.alt,
                                     30) }}</small>
@@ -479,11 +490,11 @@
                                     <v-chip v-if="item.width && item.height" size="x-small" color="success"
                                       class="mt-1">
                                       <v-icon size="x-small" start>mdi-check-circle</v-icon>
-                                      Optimized
+                                      {{ t().images.hasDimensions }}
                                     </v-chip>
                                     <v-chip v-else size="x-small" color="warning" class="mt-1">
                                       <v-icon size="x-small" start>mdi-alert</v-icon>
-                                      No dimensions
+                                      {{ t().images.noDimensions }}
                                     </v-chip>
                                   </div>
                                 </template>
@@ -504,7 +515,7 @@
       <v-dialog v-model="imageDialog" max-width="800px">
         <v-card>
           <v-card-title class="d-flex justify-space-between align-center">
-            <span>Image preview</span>
+            <span>{{ t().images.preview }}</span>
             <v-btn icon @click="imageDialog = false">
               <v-icon>mdi-close</v-icon>
             </v-btn>
@@ -520,7 +531,7 @@
               </v-img>
             </div>
             <div v-if="selectedImage?.alt" class="mt-4">
-              <div class="text-subtitle-1 font-weight-bold">Alt text:</div>
+              <div class="text-subtitle-1 font-weight-bold">{{ t().images.altText }}:</div>
               <div class="text-body-1">{{ selectedImage.alt }}</div>
             </div>
           </v-card-text>
@@ -534,6 +545,7 @@
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 import { computed, onMounted, ref } from 'vue';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 import {
   calculateContentScore,
@@ -552,20 +564,22 @@ import {
 } from '../utils/seo/content-view';
 import { SEOResult } from '../utils/seo/types';
 
+const t = useTranslations('content');
+
 definePageMeta({
   layout: 'dashboard',
 });
 
 useHead({
-  title: 'Content analysis - StackUnity',
+  title: t().meta.title,
   meta: [
-    { name: 'description', content: 'Analyze the structure and quality of your web pages to improve your SEO.' },
-    { property: 'og:title', content: 'Content analysis - StackUnity' },
-    { property: 'og:description', content: 'Analyze the structure and quality of your web pages to improve your SEO.' },
+    { name: 'description', content: t().meta.description },
+    { property: 'og:title', content: t().meta.title },
+    { property: 'og:description', content: t().meta.description },
     { property: 'og:type', content: 'website' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'Content analysis - StackUnity' },
-    { name: 'twitter:description', content: 'Analyze the structure and quality of your web pages to improve your SEO.' }
+    { name: 'twitter:title', content: t().meta.title },
+    { name: 'twitter:description', content: t().meta.description }
   ]
 });
 
@@ -612,30 +626,30 @@ const getLowestScoringPageMainIssue = (): string => {
   if (!page) return '';
 
   if (!page.headingStructure?.h1 || page.headingStructure.h1.length === 0) {
-    return 'No H1 heading detected';
+    return t().issues.missingH1;
   }
 
   if (page.contentStats?.wordCount && page.contentStats.wordCount < 300) {
-    return 'Content too short (' + page.contentStats.wordCount + ' words)';
+    return `${t().issues.shortContent} (${page.contentStats.wordCount} ${t().statistics.wordCount.toLowerCase()})`;
   }
 
   if (page.headingStructure?.h1 && page.headingStructure.h1.length > 1) {
-    return 'Too many H1 headings (' + page.headingStructure.h1.length + ')';
+    return `${t().issues.multipleH1} (${page.headingStructure.h1.length})`;
   }
 
   if (!page.headingStructure?.h2 || page.headingStructure.h2.length === 0) {
-    return 'No H2 subheading detected';
+    return t().issues.brokenHeadingStructure;
   }
 
   if (page.contentStats?.readabilityScore && page.contentStats.readabilityScore < 50) {
-    return 'Low readability (score: ' + page.contentStats.readabilityScore.toFixed(1) + ')';
+    return `${t().issues.poorReadability} (${page.contentStats.readabilityScore.toFixed(1)})`;
   }
 
   if (page.images?.withoutAlt && page.images.withoutAlt > 0) {
-    return page.images.withoutAlt + ' image(s) without alternative text';
+    return `${page.images.withoutAlt} ${t().issues.missingAltText}`;
   }
 
-  return 'Content structure to improve';
+  return t().issues.brokenHeadingStructure;
 };
 
 const getScoreTrendIcon = (): string => {
@@ -659,28 +673,28 @@ const getScoreTrendColor = (): string => {
 };
 
 const getScoreTrendLabel = (): string => {
-  if (results.value.length <= 1) return 'Stable';
+  if (results.value.length <= 1) return t().trends.stable;
 
   const mainPageScore = calculateContentScore(results.value[0]);
   const avgScore = getAverageContentScore();
 
-  if (Math.abs(mainPageScore - avgScore) < 5) return 'Stable';
-  return mainPageScore > avgScore ? 'Decrease' : 'Increase';
+  if (Math.abs(mainPageScore - avgScore) < 5) return t().trends.stable;
+  return mainPageScore > avgScore ? t().trends.declining : t().trends.improving;
 };
 
 const getScoreTrendTooltip = (): string => {
-  if (results.value.length <= 1) return 'Not enough data to determine a trend';
+  if (results.value.length <= 1) return t().trends.tooltipStable;
 
   const mainPageScore = calculateContentScore(results.value[0]);
   const avgScore = getAverageContentScore();
   const diff = Math.abs(mainPageScore - avgScore);
 
   if (diff < 5) {
-    return 'The linked pages have a similar quality to the main page';
+    return t().trends.tooltipStable;
   } else if (mainPageScore > avgScore) {
-    return `The main page has a score ${diff} points higher than the average of the linked pages`;
+    return t().trends.tooltipDeclining;
   } else {
-    return `The average of the linked pages has a score ${diff} points higher than the main page`;
+    return t().trends.tooltipImproving;
   }
 };
 
@@ -727,7 +741,7 @@ const getContentIssues = (result: SEOResult): ContentIssue[] => {
 
 const analyzeContent = async () => {
   if (!isValidUrl.value) {
-    error.value = 'Please enter a valid URL starting with http:// or https://';
+    error.value = t().form.urlRule;
     return;
   }
 
@@ -745,7 +759,7 @@ const analyzeContent = async () => {
     });
 
     if (!response.ok) {
-      throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+      throw new Error(`${t().error.title} ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -769,7 +783,7 @@ const analyzeContent = async () => {
               results.value.push(pageData);
             }
           } catch (e) {
-            console.error(`Erreur lors de l'analyse de ${pageUrl}:`, e);
+            console.error(`${t().error.title} ${pageUrl}:`, e);
           }
         }
       }
@@ -779,8 +793,8 @@ const analyzeContent = async () => {
 
     openPanel.value = 0;
   } catch (e) {
-    console.error('Erreur lors de l\'analyse:', e);
-    error.value = e instanceof Error ? e.message : 'An error occurred during the analysis';
+    console.error(t().error.title, e);
+    error.value = e instanceof Error ? e.message : t().error.message;
     results.value = [];
   } finally {
     loading.value = false;

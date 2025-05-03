@@ -6,15 +6,15 @@
         <v-tabs v-model="activeTab" color="primary" align-tabs="center">
           <v-tab value="config" class="text-subtitle-1">
             <v-icon start>mdi-cog</v-icon>
-            Configuration
+            {{ t().tabs.config }}
           </v-tab>
           <v-tab value="templates" class="text-subtitle-1">
             <v-icon start>mdi-file-document-multiple</v-icon>
-            Templates
+            {{ t().tabs.templates }}
           </v-tab>
           <v-tab value="diagram" class="text-subtitle-1">
             <v-icon start>mdi-chart-bubble</v-icon>
-            Diagram
+            {{ t().tabs.diagram }}
           </v-tab>
         </v-tabs>
 
@@ -27,59 +27,59 @@
                     <v-card-text>
                       <div class="text-h6 mb-2 d-flex align-center">
                         <v-icon color="primary" class="mr-2">mdi-database</v-icon>
-                        Database Settings
+                        {{ t().database.settings }}
                       </div>
                       <v-divider class="mb-4"></v-divider>
 
-                      <v-text-field v-model="databaseName" label="Database name" variant="outlined"
-                        prepend-inner-icon="mdi-database-edit" placeholder="my_database" class="mb-4"
+                      <v-text-field v-model="databaseName" :label="t().database.name" variant="outlined"
+                        prepend-inner-icon="mdi-database-edit" :placeholder="t().database.namePlaceholder" class="mb-4"
                         hide-details></v-text-field>
 
                       <v-select v-model="selectedSchemaId" :items="availableSchemas" item-title="title"
-                        item-value="value" label="Load existing schema" variant="outlined" class="mb-4"
+                        item-value="value" :label="t().database.loadSchema" variant="outlined" class="mb-4"
                         prepend-inner-icon="mdi-folder-open" @update:model-value="handleSchemaSelection" hide-details
                         :loading="isLoadingSchemas"></v-select>
 
                       <div class="d-flex flex-wrap">
                         <v-btn color="primary" @click="addTable" prepend-icon="mdi-table-plus" variant="tonal"
                           class="mr-2 mb-2">
-                          Add table
+                          {{ t().table.add }}
                         </v-btn>
                         <v-btn color="success" @click="saveSQLSchema" prepend-icon="mdi-content-save" variant="tonal"
                           class="mr-2 mb-2">
-                          Save
+                          {{ t().actions.save }}
                         </v-btn>
                         <v-menu>
                           <template v-slot:activator="{ props }">
                             <v-btn color="info" prepend-icon="mdi-export" variant="tonal" class="mr-2 mb-2"
                               v-bind="props">
-                              Export
+                              {{ t().actions.export }}
                             </v-btn>
                           </template>
                           <v-list>
                             <v-list-item @click="exportDatabase('json')">
                               <v-list-item-title class="d-flex align-center">
                                 <v-icon class="mr-2">mdi-code-json</v-icon>
-                                JSON
+                                {{ t().export.json }}
                               </v-list-item-title>
                             </v-list-item>
                             <v-list-item @click="exportDatabase('sql')">
                               <v-list-item-title class="d-flex align-center">
                                 <v-icon class="mr-2">mdi-database</v-icon>
-                                SQL
+                                {{ t().export.sql }}
                               </v-list-item-title>
                             </v-list-item>
                             <v-list-item @click="exportDatabase('schema')">
                               <v-list-item-title class="d-flex align-center">
                                 <v-icon class="mr-2">mdi-file-document</v-icon>
-                                Schéma
+                                {{ t().export.schema }}
                               </v-list-item-title>
                             </v-list-item>
                           </v-list>
                         </v-menu>
                         <v-btn color="error" @click="deleteSQLSchema" prepend-icon="mdi-delete" variant="tonal"
                           class="mb-2">
-                          Delete
+                          {{ t().actions.delete }}
                         </v-btn>
                       </div>
                     </v-card-text>
@@ -90,7 +90,7 @@
                       class="d-flex justify-space-between align-center bg-primary text-white py-3 px-4 rounded-t-lg">
                       <div class="d-flex align-center">
                         <v-icon color="white" class="mr-2">mdi-code-braces</v-icon>
-                        Generated SQL
+                        {{ t().export.title }}
                       </div>
                       <div class="d-flex">
                         <v-menu>
@@ -166,7 +166,7 @@
                     </v-card-text>
                     <v-card-actions class="pa-4 pt-0 mt-3">
                       <v-btn color="primary" block @click="generateSQL" prepend-icon="mdi-refresh" variant="tonal">
-                        Regenerate SQL
+                        {{ t().actions.regenerate }}
                       </v-btn>
                     </v-card-actions>
                   </v-card>
@@ -176,32 +176,32 @@
                   <v-card class="rounded-lg" elevation="2">
                     <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                       <v-icon color="white" class="mr-2">mdi-table-multiple</v-icon>
-                      Database tables
+                      {{ t().table.tables }}
                       <v-spacer></v-spacer>
                       <v-btn v-if="!generatedSQL" color="white" variant="text" @click="generateSQL"
                         prepend-icon="mdi-play">
-                        Generate SQL
+                        {{ t().actions.generate }}
                       </v-btn>
                     </v-card-title>
 
                     <v-card-text class="pa-4">
                       <div v-if="tables.length === 0" class="text-center pa-8">
                         <v-icon size="64" color="grey-lighten-1">mdi-table-plus</v-icon>
-                        <div class="text-h6 mt-4 text-grey">No tables defined</div>
-                        <div class="text-body-1 text-grey-darken-1 mb-4">Start by adding a table to your database</div>
+                        <div class="text-h6 mt-4 text-grey">{{ t().database.noTables }}</div>
+                        <div class="text-body-1 text-grey-darken-1 mb-4">{{ t().database.startAdding }}</div>
                         <v-btn color="primary" variant="tonal" @click="addTable" prepend-icon="mdi-table-plus">
-                          Add table
+                          {{ t().table.add }}
                         </v-btn>
                       </div>
 
                       <v-expansion-panels v-else variant="accordion" multiple>
                         <v-expansion-panel v-for="(table, index) in tables" :key="index"
                           class="mb-4 rounded-lg border border-grey-lighten-2 hover-border-primary transition-all"
-                          :title="table.name || 'Unnamed table'">
+                          :title="table.name || t().table.unnamed">
                           <template v-slot:title>
                             <div class="d-flex align-center">
                               <v-icon color="primary" class="mr-2">mdi-table</v-icon>
-                              <span class="text-subtitle-1">{{ table.name || 'Unnamed table' }}</span>
+                              <span class="text-subtitle-1">{{ table.name || t().table.unnamed }}</span>
                               <v-chip class="ml-2" size="small" color="grey-lighten-3">
                                 {{ table.columns.length }} column{{ table.columns.length !== 1 ? 's' : '' }}
                               </v-chip>
@@ -209,18 +209,18 @@
                           </template>
 
                           <v-expansion-panel-text>
-                            <v-text-field v-model="table.name" label="Table name" variant="outlined"
-                              prepend-inner-icon="mdi-table-edit" placeholder="users, products, orders..."
+                            <v-text-field v-model="table.name" :label="t().table.name" variant="outlined"
+                              prepend-inner-icon="mdi-table-edit" :placeholder="t().table.namePlaceholder"
                               class="mb-4"></v-text-field>
 
                             <div class="d-flex justify-space-between align-center mb-3">
                               <div class="text-subtitle-1 font-weight-bold d-flex align-center">
                                 <v-icon color="primary" class="mr-2">mdi-table-column</v-icon>
-                                Columns
+                                {{ t().column.name }}
                               </div>
                               <v-btn color="primary" size="small" variant="tonal" @click="addColumn(table)"
                                 prepend-icon="mdi-plus">
-                                Add column
+                                {{ t().column.add }}
                               </v-btn>
                             </div>
 
@@ -294,7 +294,7 @@
                             <div class="d-flex justify-end mt-3">
                               <v-btn color="error" variant="text" @click="removeTable(index)" prepend-icon="mdi-delete"
                                 size="small">
-                                Delete this table
+                                {{ t().table.delete }}
                               </v-btn>
                             </div>
                           </v-expansion-panel-text>
@@ -312,11 +312,16 @@
                   <v-card class="rounded-lg" elevation="2">
                     <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                       <v-icon color="white" class="mr-2">mdi-file-document-multiple</v-icon>
-                      Database Templates
+                      {{ t().templates.title }}
                     </v-card-title>
                     <v-card-text class="py-4">
-                      <p class="text-body-2 mb-4">Choose a pre-defined database schema template to quickly get started.
-                      </p>
+                      <p class="text-body-2 mb-4">{{ t().templates.description }}</p>
+                      <v-alert color="info" variant="tonal" class="mb-4">
+                        <div class="text-body-2">
+                          <v-icon color="info" class="mr-1">mdi-information</v-icon>
+                          {{ t().templates.info }}
+                        </div>
+                      </v-alert>
                       <v-list lines="two">
                         <v-list-item v-for="template in sqlTemplateOptions" :key="template.value"
                           @click="applyTemplate(template.value)" class="mb-2" rounded elevation="1">
@@ -325,8 +330,8 @@
                               <v-icon>mdi-database-outline</v-icon>
                             </v-avatar>
                           </template>
-                          <v-list-item-title>{{ template.title }}</v-list-item-title>
-                          <v-list-item-subtitle>{{ template.description }}</v-list-item-subtitle>
+                          <v-list-item-title>{{ getTemplateTitle(template.value) }}</v-list-item-title>
+                          <v-list-item-subtitle>{{ getTemplateDescription(template.value) }}</v-list-item-subtitle>
                         </v-list-item>
                       </v-list>
                     </v-card-text>
@@ -337,34 +342,33 @@
                   <v-card class="rounded-lg" elevation="2">
                     <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                       <v-icon color="white" class="mr-2">mdi-file-eye</v-icon>
-                      Template Preview
+                      {{ t().templates.title }}
                     </v-card-title>
                     <v-card-text class="pa-4">
                       <div v-if="!selectedTemplate" class="text-center pa-8">
                         <v-icon size="64" color="grey-lighten-1">mdi-database-search</v-icon>
-                        <div class="text-h6 mt-4 text-grey">No template selected</div>
-                        <div class="text-body-1 text-grey-darken-1 mb-4">Select a template from the list to preview its
-                          tables and
-                          structure</div>
+                        <div class="text-h6 mt-4 text-grey">{{ t().templates.title }}</div>
+                        <div class="text-body-1 text-grey-darken-1 mb-4">{{ t().templates.description }}</div>
                       </div>
 
                       <div v-else>
                         <div class="d-flex align-center mb-4">
-                          <v-chip color="primary" variant="tonal" class="mr-2">{{ selectedTemplate.name }}</v-chip>
+                          <v-chip color="primary" variant="tonal" class="mr-2">{{ t().templates.title }}</v-chip>
                           <v-spacer></v-spacer>
                           <v-btn color="primary" @click="applyTemplateToDatabase" prepend-icon="mdi-check"
                             variant="tonal">
-                            Use this template
+                            {{ t().templates.load }}
                           </v-btn>
                         </div>
 
                         <v-alert color="info" variant="tonal" class="mb-4">
-                          <div class="text-body-2">{{ selectedTemplate.description }}</div>
+                          <div class="text-body-2">{{ getTemplateDescription(selectedTemplate ?
+                            selectedTemplate.name.toLowerCase().replace(/\s+/g, '_') : '') }}</div>
                         </v-alert>
 
                         <div class="text-h6 mb-2 d-flex align-center">
                           <v-icon color="primary" class="mr-2">mdi-table-multiple</v-icon>
-                          Tables Structure
+                          {{ t().table.tables }}
                         </div>
 
                         <v-expansion-panels variant="accordion" class="mb-4">
@@ -375,7 +379,7 @@
                                 <v-icon color="primary" class="mr-2">mdi-table</v-icon>
                                 <strong>{{ table.name }}</strong>
                                 <v-chip size="small" color="grey" variant="tonal" class="ml-3">
-                                  {{ table.columns.length }} columns
+                                  {{ t().templates.column_count.replace('{count}', table.columns.length) }}
                                 </v-chip>
                               </div>
                             </v-expansion-panel-title>
@@ -383,11 +387,11 @@
                               <v-table density="compact" class="table-fixed">
                                 <thead>
                                   <tr>
-                                    <th>Column</th>
-                                    <th>Type</th>
-                                    <th>Nullable</th>
-                                    <th>Default</th>
-                                    <th>Other</th>
+                                    <th>{{ t().column.name }}</th>
+                                    <th>{{ t().column.type }}</th>
+                                    <th>{{ t().column.nullable }}</th>
+                                    <th>{{ t().column.default }}</th>
+                                    <th>{{ t().column.attributes }}</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -419,15 +423,15 @@
                                       <div class="d-flex flex-wrap">
                                         <v-chip v-if="column.unique" size="x-small" color="info" variant="tonal"
                                           class="mr-1 mb-1">
-                                          UNIQUE
+                                          {{ t().column.unique }}
                                         </v-chip>
                                         <v-chip v-if="column.autoIncrement" size="x-small" color="success"
                                           variant="tonal" class="mr-1 mb-1">
-                                          AUTO INC
+                                          {{ t().column.autoIncrement }}
                                         </v-chip>
                                         <v-chip v-if="column.primaryKey" size="x-small" color="warning" variant="tonal"
                                           class="mr-1 mb-1">
-                                          PRIMARY
+                                          {{ t().column.primaryKey }}
                                         </v-chip>
                                       </div>
                                     </td>
@@ -436,7 +440,7 @@
                               </v-table>
 
                               <div v-if="table.foreignKeys && table.foreignKeys.length > 0" class="mt-4">
-                                <div class="text-subtitle-2 mb-2">Foreign Keys:</div>
+                                <div class="text-subtitle-2 mb-2">{{ t().relations.title || "Foreign Keys" }}:</div>
                                 <v-chip v-for="(fk, i) in table.foreignKeys" :key="i" color="secondary" variant="tonal"
                                   class="mr-2 mb-2">
                                   {{ fk.columns.join(', ') }} → {{ fk.referenceTable }}.{{ fk.referenceColumns.join(',')
@@ -445,7 +449,7 @@
                               </div>
 
                               <div v-if="table.indices && table.indices.length > 0" class="mt-3">
-                                <div class="text-subtitle-2 mb-2">Indices:</div>
+                                <div class="text-subtitle-2 mb-2">{{ t().table.indices || "Indices" }}:</div>
                                 <v-chip v-for="(idx, i) in table.indices" :key="i"
                                   :color="idx.unique ? 'warning' : 'grey'" variant="tonal" class="mr-2">
                                   {{ idx.name }}: {{ idx.columns.join(', ') }}
@@ -458,9 +462,7 @@
                         <v-alert color="grey" variant="tonal" class="mb-2 mt-4">
                           <div class="text-body-2">
                             <v-icon color="info" class="mr-1">mdi-information</v-icon>
-                            Using this template will replace your current database schema. Make sure to save your work
-                            before
-                            applying a template.
+                            {{ t().templates.info }}
                           </div>
                         </v-alert>
                       </div>
@@ -476,15 +478,15 @@
                   <v-card class="rounded-lg" elevation="2">
                     <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                       <v-icon color="white" class="mr-2">mdi-chart-bubble</v-icon>
-                      Relations Diagram
+                      {{ t().tabs.diagram }}
                     </v-card-title>
                     <v-card-text class="pa-4">
                       <div v-if="tables.length === 0" class="text-center pa-8">
                         <v-icon size="64" color="grey-lighten-1">mdi-table-plus</v-icon>
-                        <div class="text-h6 mt-4 text-grey">No table defined</div>
-                        <div class="text-body-1 text-grey-darken-1 mb-4">Start by adding at least one table</div>
+                        <div class="text-h6 mt-4 text-grey">{{ t().database.noTables }}</div>
+                        <div class="text-body-1 text-grey-darken-1 mb-4">{{ t().database.startAdding }}</div>
                         <v-btn color="primary" variant="tonal" @click="addTable" prepend-icon="mdi-table-plus">
-                          Add a table
+                          {{ t().table.add }}
                         </v-btn>
                       </div>
                       <div v-else class="er-diagram-container">
@@ -492,7 +494,7 @@
                           <div v-for="(table, tableIndex) in tables" :key="table.id" class="er-table"
                             :style="getTablePosition(tableIndex)" @mousedown="startDrag($event, table)"
                             :id="`table-${table.id}`">
-                            <div class="er-table-header">{{ table.name || 'No name' }}</div>
+                            <div class="er-table-header">{{ table.name || t().table.unnamed }}</div>
                             <div class="er-table-content">
                               <div v-for="column in table.columns" :key="column.name" class="er-column" :class="{
                                 'primary-key': column.primaryKey,
@@ -510,7 +512,6 @@
                               </div>
                             </div>
                           </div>
-                          <!-- Relations entre tables -->
                           <svg class="er-relations">
                             <g v-for="(table, tableIndex) in tables" :key="`rel-${table.id}`">
                               <template v-for="column in table.columns" :key="`rel-${table.id}-${column.name}`">
@@ -534,11 +535,11 @@
                       <v-spacer></v-spacer>
                       <v-btn color="primary" variant="tonal" @click="autoArrangeTables">
                         <v-icon start>mdi-arrange-send-backward</v-icon>
-                        Rearrange
+                        {{ t().actions.rearrange || "Rearrange" }}
                       </v-btn>
                       <v-btn disabled color="success" variant="tonal" @click="exportDiagram">
                         <v-icon start>mdi-export</v-icon>
-                        Export
+                        {{ t().actions.export }}
                       </v-btn>
                     </v-card-actions>
                   </v-card>
@@ -566,17 +567,20 @@ import { getSQLTemplate, getSQLTemplateNames } from '../utils/sqlTemplates';
 import { definePageMeta, useHead } from '#imports';
 import javascript from 'highlight.js/lib/languages/javascript';
 import sql from 'highlight.js/lib/languages/sql';
-import { DatabaseType, SQLSchema, StoredTable, Table, Column } from '../utils/sql/types';
+import { useTranslations } from '../languages';
+import { Column, DatabaseType, SQLSchema, StoredTable, Table } from '../utils/sql/types';
+
+const t = useTranslations('databaseDesigner');
 
 useHead({
-  title: 'SQL Designer - StackUnity',
+  title: t().meta.title,
   meta: [
-    { name: 'description', content: 'Visual database design tool for SQL' },
+    { name: 'description', content: t().meta.description },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'noindex, nofollow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'SQL Designer - StackUnity' },
-    { name: 'og:description', content: 'Visual database design tool for SQL' },
+    { name: 'og:title', content: t().meta.title },
+    { name: 'og:description', content: t().meta.description },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
 });
@@ -810,12 +814,12 @@ const copySQL = async () => {
     await navigator.clipboard.writeText(generatedSQL.value);
 
     // Personnaliser le message selon le type de base de données
-    let message = 'SQL copié dans le presse-papiers';
+    let message = t().notifications.copied;
 
     if (currentDatabaseType.value === DatabaseType.NOSQL) {
-      message = 'Code NoSQL copié dans le presse-papiers';
+      message = t().notifications.copied;
     } else if (currentDatabaseType.value === DatabaseType.ORM) {
-      message = 'Code ORM copié dans le presse-papiers';
+      message = t().notifications.copied;
     }
 
     snackbarText.value = message;
@@ -823,7 +827,7 @@ const copySQL = async () => {
     showSnackbar.value = true;
   } catch (err) {
     console.error('Failed to copy code:', err);
-    snackbarText.value = 'Error copying code';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   }
@@ -831,14 +835,14 @@ const copySQL = async () => {
 
 const saveSQLSchema = async () => {
   if (!databaseName.value.trim()) {
-    snackbarText.value = 'Database name is required';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
     return;
   }
 
   if (!tables.value.length) {
-    snackbarText.value = 'Add at least one table';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
     return;
@@ -846,7 +850,7 @@ const saveSQLSchema = async () => {
 
   const invalidTables = tables.value.filter(t => !t.name.trim() || !t.columns.length);
   if (invalidTables.length) {
-    snackbarText.value = 'All tables must have a name and at least one column';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
     return;
@@ -856,7 +860,7 @@ const saveSQLSchema = async () => {
     t.columns.some(c => !c.name.trim() || (c.name && !validateColumnName(c.name)))
   );
   if (hasInvalidColumns) {
-    snackbarText.value = 'All columns must have a valid name without emoji';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
     return;
@@ -864,13 +868,13 @@ const saveSQLSchema = async () => {
 
   try {
     await userStore.saveSQLSchema(databaseName.value, tables.value as any);
-    snackbarText.value = 'SQL schema saved successfully';
+    snackbarText.value = t().notifications.saved;
     snackbarColor.value = 'success';
     showSnackbar.value = true;
     await userStore.loadSQLSchemas();
   } catch (err) {
     console.error('Error saving SQL schema:', err);
-    snackbarText.value = 'Error saving schema';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   }
@@ -878,7 +882,7 @@ const saveSQLSchema = async () => {
 
 const deleteSQLSchema = async () => {
   if (!selectedSchemaId.value) {
-    snackbarText.value = 'Select a schema to delete';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
     return;
@@ -887,7 +891,7 @@ const deleteSQLSchema = async () => {
   try {
     await userStore.deleteSQLSchema(selectedSchemaId.value);
     await userStore.loadSQLSchemas();
-    snackbarText.value = 'SQL schema deleted successfully';
+    snackbarText.value = t().notifications.deleted;
     snackbarColor.value = 'success';
     showSnackbar.value = true;
 
@@ -897,7 +901,7 @@ const deleteSQLSchema = async () => {
     generatedSQL.value = '';
   } catch (err) {
     console.error('Error deleting SQL schema:', err);
-    snackbarText.value = 'Error deleting schema';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   }
@@ -1011,17 +1015,17 @@ const loadSchemaById = async (id: number) => {
 
     if (schema) {
       loadSelectedSchema(schema);
-      snackbarText.value = 'Schema loaded successfully';
+      snackbarText.value = t().notifications.loaded || 'Schema loaded successfully';
       snackbarColor.value = 'success';
       showSnackbar.value = true;
     } else {
-      snackbarText.value = 'Schema not found';
+      snackbarText.value = t().notifications.notFound || 'Schema not found';
       snackbarColor.value = 'error';
       showSnackbar.value = true;
     }
   } catch (err) {
     console.error('Error loading schema:', err);
-    snackbarText.value = 'Error loading schema';
+    snackbarText.value = t().notifications.error;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   }
@@ -1195,7 +1199,7 @@ const autoArrangeTables = () => {
     tablePositions.value.set(table.id, { x, y });
   });
 
-  snackbarText.value = "Tables rearranged";
+  snackbarText.value = t().notifications.rearranged || "Tables rearranged";
   snackbarColor.value = "success";
   showSnackbar.value = true;
 };
@@ -1349,6 +1353,31 @@ const exportDatabase = (format: 'json' | 'sql' | 'schema') => {
   snackbarText.value = `Database exported to ${format.toUpperCase()}`;
   snackbarColor.value = 'success';
   showSnackbar.value = true;
+};
+
+const getTemplateTitle = (templateKey: string) => {
+  if (templateKey === 'blog') return t().templates.blogSystem;
+  if (templateKey === 'ecommerce') return t().templates.ecommerceStore;
+  if (templateKey === 'project_management') return t().templates.projectManagement;
+
+  // Fallback to the original title if no translation exists
+  const template = sqlTemplateOptions.value.find(t => t.value === templateKey);
+  return template ? template.title : templateKey;
+};
+
+const getTemplateDescription = (templateKey: string) => {
+  switch (templateKey) {
+    case 'blog':
+      return t().templates.blogDescription;
+    case 'ecommerce':
+      return t().templates.ecommerceDescription;
+    case 'project_management':
+      return t().templates.projectManagementDescription;
+    default:
+
+      const template = sqlTemplateOptions.value.find(t => t.value === templateKey);
+      return template ? template.description : '';
+  }
 };
 </script>
 

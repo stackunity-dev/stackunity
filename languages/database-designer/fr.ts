@@ -1,0 +1,143 @@
+export default {
+  meta: {
+    title: 'Concepteur de Base de Données',
+    description: 'Concevez visuellement votre schéma de base de données avec notre outil intuitif'
+  },
+  tabs: {
+    config: 'Configuration',
+    templates: 'Modèles',
+    diagram: 'Diagramme'
+  },
+  database: {
+    settings: 'Paramètres de la Base de Données',
+    name: 'Nom de la base de données',
+    namePlaceholder: 'ma_base_de_donnees',
+    loadSchema: 'Charger un schéma existant',
+    noTables: 'Aucune table définie',
+    startAdding: 'Commencez par ajouter une table à votre base de données'
+  },
+  table: {
+    add: 'Ajouter une table',
+    edit: 'Modifier la table',
+    delete: 'Supprimer la table',
+    name: 'Nom de la table',
+    namePlaceholder: 'utilisateurs',
+    description: 'Description',
+    descriptionPlaceholder: 'Contient les informations des utilisateurs',
+    tables: 'Tables de la base de données',
+    unnamed: 'Table sans nom',
+    indices: 'Indices'
+  },
+  column: {
+    add: 'Ajouter une colonne',
+    name: 'Nom de la colonne',
+    namePlaceholder: 'id',
+    type: 'Type de données',
+    length: 'Longueur',
+    default: 'Valeur par défaut',
+    attributes: 'Attributs',
+    nullable: 'Nullable',
+    unique: 'Unique',
+    index: 'Index',
+    primaryKey: 'Clé Primaire',
+    autoIncrement: 'Auto-Incrémentation',
+    foreignKey: 'Clé Étrangère',
+    reference: 'Références',
+    onDelete: 'Au Suppression',
+    onUpdate: 'À la Mise à jour'
+  },
+  actions: {
+    save: 'Enregistrer',
+    export: 'Exporter',
+    delete: 'Supprimer',
+    cancel: 'Annuler',
+    confirm: 'Confirmer',
+    regenerate: 'Régénérer le SQL',
+    generate: 'Générer le SQL',
+    copy: 'Copier dans le presse-papiers',
+    download: 'Télécharger',
+    rearrange: 'Réorganiser'
+  },
+  export: {
+    json: 'JSON',
+    sql: 'SQL',
+    schema: 'Schéma',
+    title: 'SQL Généré',
+    mongodb: 'MongoDB',
+    firestore: 'Firestore',
+    dynamodb: 'DynamoDB',
+    sequelize: 'Sequelize',
+    typeorm: 'TypeORM',
+    prisma: 'Prisma',
+    mongoose: 'Mongoose'
+  },
+  relations: {
+    oneToOne: 'Un-à-Un',
+    oneToMany: 'Un-à-Plusieurs',
+    manyToOne: 'Plusieurs-à-Un',
+    manyToMany: 'Plusieurs-à-Plusieurs',
+    add: 'Ajouter une relation',
+    source: 'Table source',
+    target: 'Table cible',
+    type: 'Type de relation',
+    name: 'Nom de la relation',
+    through: 'Table intermédiaire',
+    title: 'Clés Étrangères'
+  },
+  templates: {
+    title: 'Modèles de Base de Données',
+    load: 'Charger le modèle',
+    userAuth: 'Authentification Utilisateur',
+    blog: 'Système de Blog',
+    ecommerce: 'E-commerce',
+    cms: 'Système de Gestion de Contenu',
+    forum: 'Système de Forum',
+    inventory: 'Gestion des Stocks',
+    description: 'Description',
+    complexity: 'Complexité',
+    tables: 'Tables',
+    relations: 'Relations',
+    info: 'Cliquez sur un modèle pour prévisualiser sa structure. Les modèles fournissent des schémas de base de données prédéfinis pour des cas d\'usage courants.',
+    preview: 'Aperçu du Modèle',
+    apply: 'Appliquer ce modèle',
+    blogSystem: 'Système de Blog',
+    ecommerceStore: 'Boutique E-commerce',
+    projectManagement: 'Gestion de Projet',
+    table_count: '{count} tables',
+    column_count: '{count} colonnes',
+    blogDescription: 'Un modèle pour un blog basique avec utilisateurs, articles, catégories et commentaires',
+    ecommerceDescription: 'Un modèle pour une boutique en ligne avec produits, catégories, commandes et clients',
+    projectManagementDescription: 'Un modèle pour la gestion de projets, tâches et membres d\'équipe'
+  },
+  notifications: {
+    saved: 'Schéma de base de données enregistré avec succès',
+    copied: 'SQL copié dans le presse-papiers',
+    deleted: 'Schéma de base de données supprimé',
+    error: 'Une erreur est survenue',
+    loaded: 'Schéma chargé avec succès',
+    notFound: 'Schéma introuvable',
+    rearranged: 'Tables réorganisées'
+  },
+  dataTypes: {
+    integer: 'Entier',
+    decimal: 'Décimal',
+    float: 'Flottant',
+    double: 'Double',
+    varchar: 'Varchar',
+    text: 'Texte',
+    boolean: 'Booléen',
+    date: 'Date',
+    datetime: 'DateTime',
+    timestamp: 'Timestamp',
+    json: 'JSON',
+    uuid: 'UUID',
+    enum: 'Enum'
+  },
+  constraints: {
+    cascade: 'CASCADE',
+    restrict: 'RESTRICT',
+    setNull: 'SET NULL',
+    noAction: 'NO ACTION',
+    setDefault: 'SET DEFAULT'
+  }
+} 

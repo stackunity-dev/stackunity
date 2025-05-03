@@ -4,19 +4,19 @@
       <div class="control-panel" role="complementary" aria-label="Card customization panel">
         <v-card flat class="fill-height">
           <div class="px-4 py-2 d-flex align-center" role="group" aria-label="Framework indicators">
-            <v-chip color="primary" prepend-icon="mdi-vuejs" size="small" class="mr-2"
-              aria-label="Vue.js framework">Vue.js</v-chip>
+            <v-chip color="primary" prepend-icon="mdi-vuejs" size="small" class="mr-2" aria-label="Vue.js framework">{{
+              t.framework.vue }}</v-chip>
             <v-chip color="secondary" prepend-icon="mdi-vuetify" size="small" class="mr-2"
-              aria-label="Vuetify framework">Vuetify</v-chip>
+              aria-label="Vuetify framework">{{ t.framework.vuetify }}</v-chip>
             <v-chip color="tertiary" prepend-icon="mdi-palette" size="small" class="mr-12" aria-label="Studio mode">{{
-              studioMode === 'studio' ? 'Studio' : 'SEO' }}</v-chip>
+              studioMode === 'studio' ? t.framework.studio : t.framework.seo }}</v-chip>
             <v-menu offset-y>
               <template v-slot:activator="{ props }">
                 <v-btn v-if="studioMode === 'studio-seo'" class="ml-7" icon density="comfortable" variant="text"
                   v-bind="props" color="secondary" aria-label="Test vision impairments" size="small">
                   <v-icon>{{ visionTypeIcon }}</v-icon>
                   <v-tooltip activator="parent" location="top">
-                    Try different vision types
+                    {{ t.vision.tryDifferent }}
                   </v-tooltip>
                 </v-btn>
               </template>
@@ -30,8 +30,8 @@
                 </v-list-item>
                 <v-divider v-if="selectedVisionType !== 'normal'"></v-divider>
                 <v-list-item v-if="selectedVisionType !== 'normal'">
-                  <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" label="Intensity" hide-details
-                    class="px-2 py-0" density="compact" @update:model-value="applyVisionFilter">
+                  <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" :label="t.vision.intensity"
+                    hide-details class="px-2 py-0" density="compact" @update:model-value="applyVisionFilter">
                   </v-slider>
                 </v-list-item>
               </v-list>
@@ -45,26 +45,26 @@
               <v-chip-group v-model="previewMode" mandatory selected-class="bg-primary text-white">
                 <v-chip size="small" value="desktop">
                   <v-icon start size="small">mdi-monitor</v-icon>
-                  Desktop
+                  {{ t.preview.desktopView }}
                 </v-chip>
                 <v-chip size="small" value="tablet">
                   <v-icon start size="small">mdi-tablet</v-icon>
-                  Tablet
+                  {{ t.preview.tabletView }}
                 </v-chip>
                 <v-chip size="small" value="mobile">
                   <v-icon start size="small">mdi-cellphone</v-icon>
-                  Mobile
+                  {{ t.preview.mobileView }}
                 </v-chip>
               </v-chip-group>
             </div>
           </div>
 
           <v-tabs v-model="tab" color="primary" align-tabs="center" class="px-4">
-            <v-tab value="content">Content</v-tab>
-            <v-tab value="style">Style</v-tab>
-            <v-tab value="validation">Validation</v-tab>
-            <v-tab value="templates">Templates</v-tab>
-            <v-tab value="buttons">Buttons</v-tab>
+            <v-tab value="content">{{ t.tabs.content }}</v-tab>
+            <v-tab value="style">{{ t.tabs.style }}</v-tab>
+            <v-tab value="validation">{{ t.tabs.validation }}</v-tab>
+            <v-tab value="templates">{{ t.tabs.templates }}</v-tab>
+            <v-tab value="buttons">{{ t.tabs.buttons }}</v-tab>
           </v-tabs>
 
           <v-divider></v-divider>
@@ -76,43 +76,43 @@
                   <div class="section-title d-flex align-center mb-3 justify-space-between">
                     <div class="d-flex align-center">
                       <v-icon color="primary" class="mr-2">mdi-form-select</v-icon>
-                      <span class="text-h6">Form Fields</span>
+                      <span class="text-h6">{{ t.fields.title }}</span>
                     </div>
                     <v-tooltip location="bottom">
                       <template v-slot:activator="{ props }">
                         <v-btn icon="mdi-help-circle-outline" variant="text" size="small" v-bind="props"></v-btn>
                       </template>
-                      <span>Add, remove and configure form fields</span>
+                      <span>{{ t.fields.help }}</span>
                     </v-tooltip>
                   </div>
 
                   <v-card class="mb-4 pa-3">
-                    <v-text-field v-model="formProperties.title" label="Form Title" variant="outlined"
+                    <v-text-field v-model="formProperties.title" :label="t.fields.formTitle" variant="outlined"
                       density="comfortable" prepend-inner-icon="mdi-format-title" class="mb-4"></v-text-field>
 
-                    <v-text-field v-model="formProperties.subtitle" label="Form Subtitle (optional)" variant="outlined"
+                    <v-text-field v-model="formProperties.subtitle" :label="t.fields.formSubtitle" variant="outlined"
                       density="comfortable" prepend-inner-icon="mdi-format-text" class="mb-4"></v-text-field>
 
-                    <v-switch v-model="formProperties.showGoogleLogin" color="primary" label="Show Google Login Button"
-                      hide-details class="mb-2"></v-switch>
+                    <v-switch v-model="formProperties.showGoogleLogin" color="primary"
+                      :label="t.socialButtons.showGoogleLogin" hide-details class="mb-2"></v-switch>
 
                     <v-text-field v-if="formProperties.showGoogleLogin" v-model="formProperties.googleLoginText"
-                      label="Google Login Button Text" variant="outlined" density="comfortable"
+                      :label="t.socialButtons.googleLoginText" variant="outlined" density="comfortable"
                       prepend-inner-icon="mdi-google" class="mb-4"></v-text-field>
 
                     <v-switch v-model="formProperties.showLinkedInLogin" color="primary"
-                      label="Show LinkedIn Login Button" hide-details class="mb-2"></v-switch>
+                      :label="t.socialButtons.showLinkedInLogin" hide-details class="mb-2"></v-switch>
 
                     <v-text-field v-if="formProperties.showLinkedInLogin" v-model="formProperties.linkedInLoginText"
-                      label="LinkedIn Login Button Text" variant="outlined" density="comfortable"
+                      :label="t.socialButtons.linkedInLoginText" variant="outlined" density="comfortable"
                       prepend-inner-icon="mdi-linkedin" class="mb-4"></v-text-field>
 
-                    <v-switch v-model="formProperties.showDivider" color="primary" label="Show Divider" hide-details
-                      class="mb-2"></v-switch>
+                    <v-switch v-model="formProperties.showDivider" color="primary" :label="t.socialButtons.showDivider"
+                      hide-details class="mb-2"></v-switch>
 
                     <v-text-field v-if="formProperties.showDivider" v-model="formProperties.dividerText"
-                      label="Divider Text" variant="outlined" density="comfortable" prepend-inner-icon="mdi-minus"
-                      class="mb-4"></v-text-field>
+                      :label="t.socialButtons.dividerText" variant="outlined" density="comfortable"
+                      prepend-inner-icon="mdi-minus" class="mb-4"></v-text-field>
 
                     <div v-for="(field, index) in formFields" :key="index" class="mb-4">
                       <div class="d-flex align-center justify-space-between mb-2">
@@ -168,43 +168,43 @@
                   <div class="section-title d-flex align-center mb-3 justify-space-between">
                     <div class="d-flex align-center">
                       <v-icon color="primary" class="mr-2">mdi-palette</v-icon>
-                      <span class="text-h6">Appearance</span>
+                      <span class="text-h6">{{ t.styling.title }}</span>
                     </div>
                     <v-tooltip location="bottom">
                       <template v-slot:activator="{ props }">
                         <v-btn icon="mdi-help-circle-outline" variant="text" size="small" v-bind="props"></v-btn>
                       </template>
-                      <span>Customize the visual appearance of form fields</span>
+                      <span>{{ t.styling.help }}</span>
                     </v-tooltip>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Field Variant</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.styling.fieldVariant }}</label>
                     <v-chip-group v-model="formProperties.variant" mandatory selected-class="bg-primary text-white">
                       <v-chip v-for="variant in fieldVariants" :key="variant" size="small" :value="variant">
-                        {{ variant }}
+                        {{ t.styling[variant] }}
                       </v-chip>
                     </v-chip-group>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Density</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.styling.density }}</label>
                     <v-chip-group v-model="formProperties.density" mandatory selected-class="bg-primary text-white">
                       <v-chip v-for="density in densityOptions" :key="density" size="small" :value="density">
-                        {{ density }}
+                        {{ t.styling[density] }}
                       </v-chip>
                     </v-chip-group>
                   </div>
 
-                  <v-switch v-model="formProperties.disabled" color="primary" label="Disabled" hide-details
+                  <v-switch v-model="formProperties.disabled" color="primary" :label="t.styling.disabled" hide-details
                     class="mb-2"></v-switch>
-                  <v-switch v-model="formProperties.readonly" color="primary" label="Read Only" hide-details
+                  <v-switch v-model="formProperties.readonly" color="primary" :label="t.styling.readonly" hide-details
                     class="mb-2"></v-switch>
                   <v-switch v-model="formProperties.persistentPlaceholder" color="primary"
-                    label="Persistent Placeholder" hide-details class="mb-4"></v-switch>
+                    :label="t.styling.persistentPlaceholder" hide-details class="mb-4"></v-switch>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Focus color</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.styling.focusColor }}</label>
                     <v-btn-toggle v-model="formProperties.color" mandatory density="comfortable"
                       selected-class="border-primary">
                       <v-btn v-for="color in colors" :key="color.value" :value="color.value"
@@ -219,11 +219,11 @@
 
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-google</v-icon>
-                    <span class="text-h6">Google Button Style</span>
+                    <span class="text-h6">{{ t.socialButtons.googleButtonStyle }}</span>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Button Variant</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.socialButtons.buttonVariant }}</label>
                     <v-chip-group v-model="formProperties.googleButtonVariant" mandatory
                       selected-class="bg-primary text-white">
                       <v-chip v-for="variant in buttonVariants" :key="variant" size="small" :value="variant">
@@ -233,7 +233,7 @@
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Button Color</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.socialButtons.buttonColor }}</label>
                     <v-btn-toggle v-model="formProperties.googleButtonColor" mandatory density="comfortable"
                       selected-class="border-primary">
                       <v-btn v-for="color in colors" :key="color.value" :value="color.value"
@@ -245,7 +245,7 @@
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Button Size</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.socialButtons.buttonSize }}</label>
                     <v-chip-group v-model="formProperties.googleButtonSize" mandatory
                       selected-class="bg-primary text-white">
                       <v-chip v-for="size in ['small', 'default', 'large', 'x-large']" :key="size" size="small"
@@ -255,11 +255,11 @@
                     </v-chip-group>
                   </div>
 
-                  <v-switch v-model="formProperties.googleButtonRounded" color="primary" label="Rounded Button"
-                    hide-details class="mb-2"></v-switch>
+                  <v-switch v-model="formProperties.googleButtonRounded" color="primary"
+                    :label="t.socialButtons.roundedButton" hide-details class="mb-2"></v-switch>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Button Elevation</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.socialButtons.buttonElevation }}</label>
                     <v-slider v-model="formProperties.googleButtonElevation" min="0" max="24" step="1"
                       thumb-label="always" color="primary"></v-slider>
                   </div>
@@ -268,11 +268,11 @@
 
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-linkedin</v-icon>
-                    <span class="text-h6">LinkedIn Button Style</span>
+                    <span class="text-h6">{{ t.socialButtons.linkedInButtonStyle }}</span>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Button Variant</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.socialButtons.buttonVariant }}</label>
                     <v-chip-group v-model="formProperties.linkedInButtonVariant" mandatory
                       selected-class="bg-primary text-white">
                       <v-chip v-for="variant in buttonVariants" :key="variant" size="small" :value="variant">
@@ -282,7 +282,7 @@
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Button Color</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.socialButtons.buttonColor }}</label>
                     <v-btn-toggle v-model="formProperties.linkedInButtonColor" mandatory density="comfortable"
                       selected-class="border-primary">
                       <v-btn v-for="color in colors" :key="color.value" :value="color.value"
@@ -294,7 +294,7 @@
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Button Size</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.socialButtons.buttonSize }}</label>
                     <v-chip-group v-model="formProperties.linkedInButtonSize" mandatory
                       selected-class="bg-primary text-white">
                       <v-chip v-for="size in ['small', 'default', 'large', 'x-large']" :key="size" size="small"
@@ -304,11 +304,11 @@
                     </v-chip-group>
                   </div>
 
-                  <v-switch v-model="formProperties.linkedInButtonRounded" color="primary" label="Rounded Button"
-                    hide-details class="mb-2"></v-switch>
+                  <v-switch v-model="formProperties.linkedInButtonRounded" color="primary"
+                    :label="t.socialButtons.roundedButton" hide-details class="mb-2"></v-switch>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Button Elevation</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.socialButtons.buttonElevation }}</label>
                     <v-slider v-model="formProperties.linkedInButtonElevation" min="0" max="24" step="1"
                       thumb-label="always" color="primary"></v-slider>
                   </div>
@@ -319,22 +319,22 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-check-circle</v-icon>
-                    <span class="text-h6">Validation</span>
+                    <span class="text-h6">{{ t.validation.title }}</span>
                   </div>
 
-                  <v-switch v-model="formProperties.validateOnBlur" color="primary" label="Validate on Blur"
+                  <v-switch v-model="formProperties.validateOnBlur" color="primary" :label="t.validation.validateOnBlur"
                     hide-details class="mb-2"></v-switch>
-                  <v-switch v-model="formProperties.validateOnInput" color="primary" label="Validate on Input"
-                    hide-details class="mb-4"></v-switch>
+                  <v-switch v-model="formProperties.validateOnInput" color="primary"
+                    :label="t.validation.validateOnInput" hide-details class="mb-4"></v-switch>
 
-                  <v-text-field v-model="formProperties.successMessage" label="Success Message" variant="outlined"
-                    density="comfortable" prepend-inner-icon="mdi-check" class="mb-4"></v-text-field>
+                  <v-text-field v-model="formProperties.successMessage" :label="t.validation.successMessage"
+                    variant="outlined" density="comfortable" prepend-inner-icon="mdi-check" class="mb-4"></v-text-field>
 
-                  <v-text-field v-model="formProperties.errorMessage" label="Error Message" variant="outlined"
-                    density="comfortable" prepend-inner-icon="mdi-alert" class="mb-4"></v-text-field>
+                  <v-text-field v-model="formProperties.errorMessage" :label="t.validation.errorMessage"
+                    variant="outlined" density="comfortable" prepend-inner-icon="mdi-alert" class="mb-4"></v-text-field>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Message Position</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.validation.messagePosition }}</label>
                     <v-chip-group v-model="formProperties.messageLocation" mandatory
                       selected-class="bg-primary text-white">
                       <v-chip v-for="location in messageLocations" :key="location" size="small" :value="location">
@@ -349,20 +349,20 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-gesture-tap-button</v-icon>
-                    <span class="text-h6">Form Buttons</span>
+                    <span class="text-h6">{{ t.buttons.title }}</span>
                   </div>
 
                   <v-card class="mb-4 pa-3">
-                    <v-text-field v-model="formProperties.submitButtonText" label="Submit Button Text"
+                    <v-text-field v-model="formProperties.submitButtonText" :label="t.buttons.submitButtonText"
                       variant="outlined" density="comfortable" prepend-inner-icon="mdi-check-circle"
                       class="mb-4"></v-text-field>
 
-                    <v-text-field v-model="formProperties.cancelButtonText" label="Cancel Button Text"
+                    <v-text-field v-model="formProperties.cancelButtonText" :label="t.buttons.cancelButtonText"
                       variant="outlined" density="comfortable" prepend-inner-icon="mdi-cancel"
                       class="mb-4"></v-text-field>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-2">Submit Button Color</label>
+                      <label class="text-subtitle-2 mb-2">{{ t.buttons.submitButtonColor }}</label>
                       <v-btn-toggle v-model="formProperties.submitButtonColor" mandatory density="comfortable"
                         selected-class="border-primary">
                         <v-btn v-for="color in colors" :key="color.value" :value="color.value"
@@ -375,7 +375,7 @@
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-2">Reset Button Color</label>
+                      <label class="text-subtitle-2 mb-2">{{ t.buttons.resetButtonColor }}</label>
                       <v-btn-toggle v-model="formProperties.cancelButtonColor" mandatory density="comfortable"
                         selected-class="border-primary">
                         <v-btn v-for="color in colors" :key="color.value" :value="color.value"
@@ -388,7 +388,7 @@
                     </div>
 
                     <div class="mb-4">
-                      <label class="text-subtitle-2 mb-2">Button Variant</label>
+                      <label class="text-subtitle-2 mb-2">{{ t.buttons.buttonVariant }}</label>
                       <v-chip-group v-model="formProperties.buttonVariant" mandatory
                         selected-class="bg-primary text-white">
                         <v-chip v-for="variant in buttonVariants" :key="variant" size="small" :value="variant">
@@ -397,7 +397,7 @@
                       </v-chip-group>
                     </div>
 
-                    <v-switch v-model="formProperties.blockButtons" color="primary" label="Full Width Buttons"
+                    <v-switch v-model="formProperties.blockButtons" color="primary" :label="t.buttons.fullWidthButtons"
                       hide-details class="mb-2"></v-switch>
                   </v-card>
                 </div>
@@ -408,47 +408,47 @@
                   <div class="section-title d-flex align-center mb-3 justify-space-between">
                     <div class="d-flex align-center">
                       <v-icon color="primary" class="mr-2">mdi-file-document-outline</v-icon>
-                      <span class="text-h6">Form Templates</span>
+                      <span class="text-h6">{{ t.templates.title }}</span>
                     </div>
                     <v-tooltip location="bottom">
                       <template v-slot:activator="{ props }">
                         <v-btn icon="mdi-help-circle-outline" variant="text" size="small" v-bind="props"></v-btn>
                       </template>
-                      <span>Apply pre-defined templates or save your own</span>
+                      <span>{{ t.templates.help }}</span>
                     </v-tooltip>
                   </div>
 
-                  <p class="text-body-2 mb-4">Choose a pre-defined template to quickly create common forms.</p>
+                  <p class="text-body-2 mb-4">{{ t.templates.description }}</p>
 
                   <v-card class="mb-4">
                     <v-list>
                       <v-list-item @click="applyTemplate('contact')" prepend-icon="mdi-email-outline"
-                        title="Contact Form" subtitle="Name, email, subject and message fields"></v-list-item>
-                      <v-list-item @click="applyTemplate('login')" prepend-icon="mdi-login" title="Login Form"
-                        subtitle="Email/username and password with validation"></v-list-item>
+                        :title="t.templates.types.contact" :subtitle="t.templates.types.contactDesc"></v-list-item>
+                      <v-list-item @click="applyTemplate('login')" prepend-icon="mdi-login"
+                        :title="t.templates.types.login" :subtitle="t.templates.types.loginDesc"></v-list-item>
                       <v-list-item @click="applyTemplate('register')" prepend-icon="mdi-account-plus"
-                        title="Registration Form" subtitle="Complete user registration form"></v-list-item>
-                      <v-list-item @click="applyTemplate('survey')" prepend-icon="mdi-poll" title="Survey Form"
-                        subtitle="Various question types for feedback"></v-list-item>
+                        :title="t.templates.types.register" :subtitle="t.templates.types.registerDesc"></v-list-item>
+                      <v-list-item @click="applyTemplate('survey')" prepend-icon="mdi-poll"
+                        :title="t.templates.types.survey" :subtitle="t.templates.types.surveyDesc"></v-list-item>
                     </v-list>
                   </v-card>
 
                   <v-alert type="info" variant="tonal" class="mb-4">
-                    Applying a template will replace your current form fields.
+                    {{ t.templates.warning }}
                   </v-alert>
 
                   <v-divider class="my-4"></v-divider>
 
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-content-save</v-icon>
-                    <span class="text-h6">Save Current Form</span>
+                    <span class="text-h6">{{ t.templates.saveCurrentTitle }}</span>
                   </div>
 
-                  <v-text-field v-model="customTemplateName" label="Template Name" variant="outlined"
+                  <v-text-field v-model="customTemplateName" :label="t.templates.templateName" variant="outlined"
                     density="comfortable" prepend-inner-icon="mdi-tag" class="mb-4"></v-text-field>
 
                   <v-btn color="primary" prepend-icon="mdi-content-save" block @click="saveCurrentTemplate">
-                    Save Current Form as Template
+                    {{ t.templates.saveCurrentForm }}
                   </v-btn>
                 </div>
               </v-window-item>
@@ -463,20 +463,20 @@
           <v-chip :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="flat" size="small"
             class="mr-2">
             <v-icon start size="small">mdi-eye</v-icon>
-            Live Preview
+            {{ t.preview.livePreview }}
           </v-chip>
           <div>
             <v-chip v-if="previewMode === 'desktop'" color="grey" size="small">
               <v-icon start size="small">mdi-monitor</v-icon>
-              Desktop View
+              {{ t.preview.desktopView }}
             </v-chip>
             <v-chip v-else-if="previewMode === 'tablet'" color="grey" size="small">
               <v-icon start size="small">mdi-tablet</v-icon>
-              Tablet View ({{ previewWidth }}px)
+              {{ t.preview.tabletView }} ({{ previewWidth }}px)
             </v-chip>
             <v-chip v-else-if="previewMode === 'mobile'" color="grey" size="small">
               <v-icon start size="small">mdi-cellphone</v-icon>
-              Mobile View ({{ previewWidth }}px)
+              {{ t.preview.mobileView }} ({{ previewWidth }}px)
             </v-chip>
           </div>
         </div>
@@ -592,13 +592,13 @@
 
         <div class="d-flex justify-end mt-3">
           <v-btn color="error" class="mr-2" prepend-icon="mdi-refresh" variant="tonal" @click="resetAllFields">
-            Reset All Fields
+            {{ t.preview.resetAllFields }}
           </v-btn>
           <v-btn color="secondary" class="mr-2" prepend-icon="mdi-eye" @click="previewCode">
-            Preview Code
+            {{ t.actions.previewCode }}
           </v-btn>
           <v-btn color="primary" prepend-icon="mdi-content-copy" @click="copyFormCode">
-            Copy Code
+            {{ t.actions.copyFormCode }}
           </v-btn>
         </div>
       </div>
@@ -608,8 +608,8 @@
       <v-card class="bg-grey-darken-4">
         <v-card-title class="d-flex justify-space-between align-center pa-4">
           <v-tabs v-model="codeTab" color="primary">
-            <v-tab value="template">Template</v-tab>
-            <v-tab value="theme">Theme</v-tab>
+            <v-tab value="template">{{ t.preview.templateTab }}</v-tab>
+            <v-tab value="theme">{{ t.preview.themeTab }}</v-tab>
           </v-tabs>
           <v-btn icon="mdi-close" variant="text" @click="showCodeDialog = false"></v-btn>
         </v-card-title>
@@ -632,7 +632,7 @@
         </v-card-text>
         <v-card-actions class="pa-4">
           <v-btn color="secondary" prepend-icon="mdi-content-copy" @click="copyCurrentTab">
-            Copy Current Tab
+            {{ t.preview.copyCurrentTab }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -649,12 +649,15 @@ import { computed, inject, nextTick, onMounted, ref, watch } from 'vue';
 import type { VForm } from 'vuetify/components';
 import Snackbar from '../../components/snackbar.vue';
 import { useUserStore } from '../../stores/userStore';
+import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
 import { getFormTemplate } from '../../utils/formTemplates';
 import icons from '../../utils/icons';
 import theme from '../../utils/theme';
-import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
 import { StudioModeInjection } from './studio-types';
-import { form, formValid, fieldTypes, fieldVariants, densityOptions, messageLocations, buttonVariants, colors, formFields, formProperties } from './types/types-form';
+import { buttonVariants, colors, densityOptions, fieldTypes, fieldVariants, form, formFields, formProperties, formValid, messageLocations } from './types/types-form';
+import { useTranslations } from '../../languages';
+
+const t = useTranslations('studioFormTemplates')();
 
 const emit = defineEmits(['update:content', 'save']);
 

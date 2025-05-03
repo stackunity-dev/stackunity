@@ -3,8 +3,8 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-2">User Engagement Analysis</h1>
-          <p class="text-body-1">analyze the potential user engagement on your website</p>
+          <h1 class="text-h4 font-weight-bold mb-2">{{ t.meta.title }}</h1>
+          <p class="text-body-1">{{ t.meta.description }}</p>
         </v-col>
       </v-row>
 
@@ -13,15 +13,15 @@
           <v-card class="mb-6">
             <v-card-text>
               <v-form @submit.prevent="analyzeUrl">
-                <v-text-field v-model="url" label="URL du site à analyser" placeholder="https://example.com"
-                  hint="Enter the complete URL including https://" persistent-hint prepend-inner-icon="mdi-web"
-                  variant="outlined" required autocomplete="url" aria-label="URL to analyze"
-                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || 'Please enter a valid URL starting with http:// or https://']"></v-text-field>
+                <v-text-field v-model="url" :label="t.form.urlLabel" :placeholder="t.form.urlPlaceholder"
+                  :hint="t.form.urlHint" persistent-hint prepend-inner-icon="mdi-web" variant="outlined" required
+                  autocomplete="url" :aria-label="t.form.urlLabel"
+                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || t.form.urlRuleInvalid]"></v-text-field>
 
                 <div class="d-flex mt-4">
                   <v-btn color="secondary" type="submit" size="large" :loading="loading" :disabled="!url"
-                    prepend-icon="mdi-magnify" aria-label="Analyze content">
-                    Analyze content
+                    prepend-icon="mdi-magnify" :aria-label="t.form.analyzeAriaLabel">
+                    {{ t.form.analyzeButton }}
                   </v-btn>
                 </div>
               </v-form>
@@ -47,12 +47,12 @@
 
       <v-row v-else-if="results.length">
         <v-col cols="12">
-          <h2>Analysis results</h2>
+          <h2>{{ t.results.title }}</h2>
 
           <v-card class="mb-6 bg-surface">
             <v-card-title class="d-flex align-center">
               <v-icon icon="mdi-chart-line" class="mr-2" color="primary" />
-              Average engagement score
+              {{ t.results.averageScore }}
             </v-card-title>
             <v-card-text>
               <v-row>
@@ -68,21 +68,21 @@
                       <template v-slot:prepend>
                         <v-icon icon="mdi-cursor-pointer" color="primary" />
                       </template>
-                      <v-list-item-title>Average CTA count</v-list-item-title>
+                      <v-list-item-title>{{ t.results.avgCtaCount }}</v-list-item-title>
                       <v-list-item-subtitle>{{ avgCtaCount }}</v-list-item-subtitle>
                     </v-list-item>
                     <v-list-item>
                       <template v-slot:prepend>
                         <v-icon icon="mdi-gesture-tap" color="primary" />
                       </template>
-                      <v-list-item-title>Average interactive elements</v-list-item-title>
+                      <v-list-item-title>{{ t.results.avgInteractiveElements }}</v-list-item-title>
                       <v-list-item-subtitle>{{ avgInteractiveElements }}</v-list-item-subtitle>
                     </v-list-item>
                     <v-list-item>
                       <template v-slot:prepend>
                         <v-icon icon="mdi-share-variant" color="primary" />
                       </template>
-                      <v-list-item-title>Average social elements</v-list-item-title>
+                      <v-list-item-title>{{ t.results.avgSocialElements }}</v-list-item-title>
                       <v-list-item-subtitle>{{ avgSocialElements }}</v-list-item-subtitle>
                     </v-list-item>
                   </v-list>
@@ -106,10 +106,10 @@
 
               <v-expansion-panel-text>
                 <v-tabs v-model="activeTab" color="primary">
-                  <v-tab value="engagement">Engagement elements</v-tab>
-                  <v-tab value="issues">Detected issues</v-tab>
-                  <v-tab value="techniques">Engagement techniques</v-tab>
-                  <v-tab value="details">Detailed elements</v-tab>
+                  <v-tab value="engagement">{{ t.tabs.engagement }}</v-tab>
+                  <v-tab value="issues">{{ t.tabs.issues }}</v-tab>
+                  <v-tab value="techniques">{{ t.tabs.techniques }}</v-tab>
+                  <v-tab value="details">{{ t.tabs.details }}</v-tab>
                 </v-tabs>
 
                 <v-window v-model="activeTab">
@@ -117,14 +117,14 @@
                     <v-row>
                       <v-col cols="12" md="6">
                         <v-card>
-                          <v-card-title>Engagement statistics</v-card-title>
+                          <v-card-title>{{ t.engagement.statistics }}</v-card-title>
                           <v-card-text>
                             <v-list density="compact">
                               <v-list-item>
                                 <template v-slot:prepend>
                                   <v-icon icon="mdi-cursor-pointer" color="primary" />
                                 </template>
-                                <v-list-item-title>Action calls (CTA)</v-list-item-title>
+                                <v-list-item-title>{{ t.engagement.ctaElements }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.ctaCount }}</v-list-item-subtitle>
                               </v-list-item>
 
@@ -132,7 +132,7 @@
                                 <template v-slot:prepend>
                                   <v-icon icon="mdi-gesture-tap" color="primary" />
                                 </template>
-                                <v-list-item-title>Interactive elements</v-list-item-title>
+                                <v-list-item-title>{{ t.engagement.interactiveElements }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.interactiveElements }}</v-list-item-subtitle>
                               </v-list-item>
 
@@ -140,7 +140,7 @@
                                 <template v-slot:prepend>
                                   <v-icon icon="mdi-image-multiple" color="primary" />
                                 </template>
-                                <v-list-item-title>Visual elements</v-list-item-title>
+                                <v-list-item-title>{{ t.engagement.visualElements }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.visualElements }}</v-list-item-subtitle>
                               </v-list-item>
 
@@ -148,7 +148,7 @@
                                 <template v-slot:prepend>
                                   <v-icon icon="mdi-share-variant" color="primary" />
                                 </template>
-                                <v-list-item-title>Social elements</v-list-item-title>
+                                <v-list-item-title>{{ t.engagement.socialElements }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.socialElements }}</v-list-item-subtitle>
                               </v-list-item>
                             </v-list>
@@ -158,14 +158,14 @@
 
                       <v-col cols="12" md="6">
                         <v-card>
-                          <v-card-title>Detailed scores</v-card-title>
+                          <v-card-title>{{ t.engagement.detailedScores }}</v-card-title>
                           <v-card-text>
                             <v-list density="compact">
                               <v-list-item>
                                 <template v-slot:prepend>
                                   <v-icon icon="mdi-navigation" :color="getScoreColor(result.navigationScore)" />
                                 </template>
-                                <v-list-item-title>Navigation</v-list-item-title>
+                                <v-list-item-title>{{ t.engagement.navigation }}</v-list-item-title>
                                 <v-list-item-subtitle>
                                   <v-progress-linear :model-value="result.navigationScore"
                                     :color="getScoreColor(result.navigationScore)" height="10" rounded>
@@ -181,7 +181,7 @@
                                   <v-icon icon="mdi-book-open-variant"
                                     :color="getScoreColor(result.readabilityScore)" />
                                 </template>
-                                <v-list-item-title>Readability</v-list-item-title>
+                                <v-list-item-title>{{ t.engagement.readability }}</v-list-item-title>
                                 <v-list-item-subtitle>
                                   <v-progress-linear :model-value="result.readabilityScore"
                                     :color="getScoreColor(result.readabilityScore)" height="10" rounded>
@@ -196,7 +196,7 @@
                                 <template v-slot:prepend>
                                   <v-icon icon="mdi-chart-line" :color="getScoreColor(result.score)" />
                                 </template>
-                                <v-list-item-title>Global score</v-list-item-title>
+                                <v-list-item-title>{{ t.engagement.globalScore }}</v-list-item-title>
                                 <v-list-item-subtitle>
                                   <v-progress-linear :model-value="result.score" :color="getScoreColor(result.score)"
                                     height="10" rounded>
@@ -221,12 +221,12 @@
                             <v-icon icon="mdi-alert-circle"
                               :color="result.issues.length > 0 ? 'warning' : result.issues.length > 3 ? 'error' : 'success'"
                               class="mr-2" />
-                            Detected issues
+                            {{ t.issues.title }}
                           </v-card-title>
                           <v-card-text>
                             <div v-if="result.issues.length === 0" class="text-center pa-4">
                               <v-icon icon="mdi-check-circle" color="success" size="large" />
-                              <p class="text-subtitle-1 mt-2">No issues detected</p>
+                              <p class="text-subtitle-1 mt-2">{{ t.issues.noIssues }}</p>
                             </div>
                             <v-expansion-panels v-else>
                               <v-expansion-panel v-for="(issue, issueIndex) in result.issues" :key="issueIndex">
@@ -237,8 +237,9 @@
                                   {{ issue.issue }}
                                 </v-expansion-panel-title>
                                 <v-expansion-panel-text>
-                                  <p><strong>Description:</strong> {{ issue.description }}</p>
-                                  <p class="mt-2"><strong>Recommandation:</strong> {{ issue.recommendation }}</p>
+                                  <p><strong>{{ t.issues.description }}</strong> {{ issue.description }}</p>
+                                  <p class="mt-2"><strong>{{ t.issues.recommendation }}</strong> {{ issue.recommendation
+                                  }}</p>
                                 </v-expansion-panel-text>
                               </v-expansion-panel>
                             </v-expansion-panels>
@@ -254,7 +255,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-lightbulb-on" class="mr-2" />
-                            Techniques engagement
+                            {{ t.techniques.title }}
                           </v-card-title>
                           <v-card-text>
                             <v-row>
@@ -267,7 +268,7 @@
                                           'mdi-close-circle' }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>Social links</v-list-item-title>
+                                    <v-list-item-title>{{ t.techniques.socialLinks }}</v-list-item-title>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -277,7 +278,7 @@
                                           'mdi-close-circle' }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>CTA buttons</v-list-item-title>
+                                    <v-list-item-title>{{ t.techniques.ctaButtons }}</v-list-item-title>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -288,7 +289,7 @@
                                           'mdi-close-circle' }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>Forms or input fields</v-list-item-title>
+                                    <v-list-item-title>{{ t.techniques.formsInputs }}</v-list-item-title>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -298,7 +299,7 @@
                                           'mdi-close-circle' }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>Videos</v-list-item-title>
+                                    <v-list-item-title>{{ t.techniques.videos }}</v-list-item-title>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -312,7 +313,7 @@
                                           'mdi-close-circle' }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>Images</v-list-item-title>
+                                    <v-list-item-title>{{ t.techniques.images }}</v-list-item-title>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -323,7 +324,7 @@
                                           'mdi-close-circle' }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>Interactive elements</v-list-item-title>
+                                    <v-list-item-title>{{ t.techniques.interactiveElements }}</v-list-item-title>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -334,7 +335,7 @@
                                           'mdi-close-circle' }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>Feedback mechanisms</v-list-item-title>
+                                    <v-list-item-title>{{ t.techniques.feedbackMechanisms }}</v-list-item-title>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -351,17 +352,17 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-cursor-pointer" class="mr-2" />
-                            CTA Elements
+                            {{ t.detailedElements.ctaTitle }}
                           </v-card-title>
                           <v-card-text>
                             <v-data-table v-if="result.ctaDetails && result.ctaDetails.length > 0" :headers="[
-                              { title: 'Text', key: 'text', sortable: true, align: 'start' },
-                              { title: 'Type', key: 'type', sortable: true, align: 'center' },
-                              { title: 'Location', key: 'location', sortable: true, align: 'center' }
+                              { title: t.detailedElements.ctaText, key: 'text', sortable: true, align: 'start' },
+                              { title: t.detailedElements.ctaType, key: 'type', sortable: true, align: 'center' },
+                              { title: t.detailedElements.ctaLocation, key: 'location', sortable: true, align: 'center' }
                             ]" :items="formatCTADetails(result.ctaDetails)" density="compact" class="elevation-1"
                               :items-per-page="5" :item-value="'text'"></v-data-table>
                             <div v-else class="text-center pa-4">
-                              <p class="text-subtitle-1">No CTA elements found</p>
+                              <p class="text-subtitle-1">{{ t.detailedElements.noCta }}</p>
                             </div>
                           </v-card-text>
                         </v-card>
@@ -371,18 +372,18 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-share-variant" class="mr-2" />
-                            Social Media Elements
+                            {{ t.detailedElements.socialTitle }}
                           </v-card-title>
                           <v-card-text>
                             <v-data-table v-if="result.socialElementsDetails && result.socialElementsDetails.length > 0"
                               :headers="[
-                                { title: 'Platform', key: 'text', sortable: true, align: 'start' },
-                                { title: 'Type', key: 'type', sortable: true, align: 'center' },
-                                { title: 'Location', key: 'location', sortable: true, align: 'center' }
+                                { title: t.detailedElements.socialPlatform, key: 'text', sortable: true, align: 'start' },
+                                { title: t.detailedElements.socialType, key: 'type', sortable: true, align: 'center' },
+                                { title: t.detailedElements.socialLocation, key: 'location', sortable: true, align: 'center' }
                               ]" :items="formatSocialDetails(result.socialElementsDetails)" density="compact"
                               class="elevation-1" :items-per-page="5" :item-value="'text'"></v-data-table>
                             <div v-else class="text-center pa-4">
-                              <p class="text-subtitle-1">No social media elements found</p>
+                              <p class="text-subtitle-1">{{ t.detailedElements.noSocial }}</p>
                             </div>
                           </v-card-text>
                         </v-card>
@@ -392,19 +393,19 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-gesture-tap" class="mr-2" />
-                            Interactive Elements
+                            {{ t.detailedElements.interactiveTitle }}
                           </v-card-title>
                           <v-card-text>
                             <v-data-table
                               v-if="result.interactiveElementsDetails && result.interactiveElementsDetails.length > 0"
                               :headers="[
-                                { title: 'Description', key: 'text', sortable: true, align: 'start' },
-                                { title: 'Type', key: 'type', sortable: true, align: 'center' },
-                                { title: 'Location', key: 'location', sortable: true, align: 'center' }
+                                { title: t.detailedElements.interactiveDescription, key: 'text', sortable: true, align: 'start' },
+                                { title: t.detailedElements.interactiveType, key: 'type', sortable: true, align: 'center' },
+                                { title: t.detailedElements.interactiveLocation, key: 'location', sortable: true, align: 'center' }
                               ]" :items="result.interactiveElementsDetails" density="compact" class="elevation-1"
                               :items-per-page="5" :item-value="'text'"></v-data-table>
                             <div v-else class="text-center pa-4">
-                              <p class="text-subtitle-1">No interactive elements details found</p>
+                              <p class="text-subtitle-1">{{ t.detailedElements.noInteractive }}</p>
                             </div>
                           </v-card-text>
                         </v-card>
@@ -425,16 +426,19 @@
 import { computed, ref } from 'vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 
 definePageMeta({
   layout: 'dashboard',
 });
 
+const t = useTranslations('userEngagement')();
+
 useHead({
-  title: 'User Engagement',
+  title: t.meta.title,
   meta: [
-    { name: 'description', content: 'Analyse l\'engagement des utilisateurs sur votre site web' },
+    { name: 'description', content: t.meta.description },
     { name: 'keywords', content: 'engagement, utilisateurs, site web, analyse, interaction' },
   ],
 });

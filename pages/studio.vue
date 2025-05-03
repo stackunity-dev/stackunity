@@ -4,7 +4,7 @@
       <v-container fluid class="pa-2 pa-sm-4">
         <div class="d-flex flex-column flex-sm-row justify-space-between align-center mb-4">
           <v-select v-model="selectedComponent" :items="userStore.user.isPremium ? componentsList : ['Card (v-card)']"
-            label="Select Component" variant="outlined" density="comfortable" class="mb-2 mb-sm-0 mr-0 mr-sm-4"
+            :label="t.component.select" variant="outlined" density="comfortable" class="mb-2 mb-sm-0 mr-0 mr-sm-4"
             style="max-width: 300px" hide-details="auto">
           </v-select>
 
@@ -47,18 +47,20 @@
       <v-card>
         <v-card-title class="d-flex align-center">
           <v-icon start>mdi-content-save</v-icon>
-          Saved Templates
+          {{ t.component.saveTemplate }}
         </v-card-title>
         <v-card-text class="pa-2 pa-sm-4">
           <div class="d-flex justify-space-between align-center mb-4">
             <div>
               <v-chip color="primary" variant="tonal" size="small" class="mr-2">
                 <v-icon start size="small">mdi-file-document-outline</v-icon>
-                Available Templates
+                {{ t.component.availableTemplates }}
               </v-chip>
             </div>
             <v-btn icon="mdi-refresh" variant="text" size="small" @click="refreshTemplates" :loading="isLoading">
-              <v-tooltip activator="parent" location="top">Refresh templates</v-tooltip>
+              <v-tooltip activator="parent" location="top">
+                {{ t.component.refreshTemplates }}
+              </v-tooltip>
             </v-btn>
           </div>
 
@@ -96,17 +98,17 @@
             </v-expansion-panels>
           </div>
           <v-alert v-else type="info" class="mt-4" variant="tonal" border="start" density="comfortable">
-            You haven't saved any templates yet. Create a component and save it to appear here.
+            {{ t.component.noTemplates }}
           </v-alert>
         </v-card-text>
         <v-card-actions class="pa-2 pa-sm-4">
           <v-spacer></v-spacer>
           <v-btn color="error" variant="tonal" @click="openSaveTemplateDialog = false" class="mr-2">
-            Close
+            {{ t.component.close }}
           </v-btn>
           <v-btn color="info" variant="tonal" @click="openSaveTemplateDialog = false">
             <v-icon start>mdi-check</v-icon>
-            Done
+            {{ t.component.done }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -116,21 +118,21 @@
       <v-card>
         <v-card-title class="d-flex align-center">
           <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
-          Delete Template
+          {{ t.component.deleteTemplate }}
         </v-card-title>
         <v-card-text class="pt-3">
-          <p>Are you sure you want to delete this template? This action cannot be undone.</p>
+          <p>{{ t.component.deleteConfirmation }}</p>
           <v-alert density="compact" type="warning" variant="tonal" class="mt-3" icon="mdi-information-outline">
-            All components using this template will remain unchanged.
+            {{ t.component.deleteConfirmation }}
           </v-alert>
         </v-card-text>
         <v-card-actions class="pa-2 pa-sm-4">
           <v-spacer></v-spacer>
           <v-btn color="grey-darken-1" variant="text" @click="deleteConfirmation = false">
-            Cancel
+            {{ t.component.done }}
           </v-btn>
           <v-btn color="error" variant="elevated" prepend-icon="mdi-delete" @click="deleteTemplate()">
-            Delete
+            {{ t.component.delete }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -148,9 +150,12 @@ import StudioForm from '../components/studio/studioForm.vue';
 import StudioNav from '../components/studio/studioNav.vue';
 import StudioTimeline from '../components/studio/studioTimeline.vue';
 import StudioUtils from '../components/studio/studioUtils.vue';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, navigateTo, useHead } from '#imports';
+
+const t = useTranslations('studio')();
 
 definePageMeta({
   layout: 'dashboard',
@@ -175,6 +180,7 @@ const deleteConfirmation = ref(false)
 const templateToDelete = ref<any>(null)
 const componentsList = ref(['Card (v-card)', 'Nav (v-navigation-drawer)', 'Timeline (v-timeline)', 'Form (v-form)', 'Utils (v-date, v-alerts, charts)'])
 const selectedComponent = ref('Card (v-card)')
+const userStore = useUserStore()
 
 const isPremiumComponent = (component: string) => {
   return component !== 'Card (v-card)';
@@ -210,7 +216,6 @@ const getComponentIcon = (componentType: string) => {
   }
 }
 const openSaveTemplateDialog = ref(false)
-const userStore = useUserStore()
 const updateEditorContent = (content: string) => {
   editorContent.value = content
 }

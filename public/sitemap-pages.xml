@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://stackunity.tech/</loc>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
+      <image:caption>StackUnity - developement hub all-in-one platform</image:caption>
+      <image:title>StackUnity Platform</image:title>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stackunity.tech/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stackunity.tech/fr/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stackunity.tech/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stackunity.tech/ar/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://stackunity.tech/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stackunity.tech/"/>
+  </url>
+  <url>
+    <loc>https://stackunity.tech/about</loc>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
+      <image:caption>StackUnity title</image:caption>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stackunity.tech/about"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stackunity.tech/fr/about"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stackunity.tech/es/about"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stackunity.tech/ar/about"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://stackunity.tech/zh/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stackunity.tech/about"/>
+  </url>
+  <url>
+    <loc>https://stackunity.tech/contact</loc>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
+      <image:caption>StackUnity contact</image:caption>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stackunity.tech/contact"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stackunity.tech/fr/contact"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stackunity.tech/es/contact"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stackunity.tech/ar/contact"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://stackunity.tech/zh/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stackunity.tech/contact"/>
+  </url>
+  <url>
+    <loc>https://stackunity.tech/privacy</loc>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
+      <image:caption>StackUnity title</image:caption>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stackunity.tech/privacy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stackunity.tech/fr/privacy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stackunity.tech/es/privacy"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stackunity.tech/ar/privacy"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://stackunity.tech/zh/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stackunity.tech/privacy"/>
+  </url>
+  <url>
+    <loc>https://stackunity.tech/terms</loc>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
+      <image:caption>StackUnity terms</image:caption>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stackunity.tech/terms"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stackunity.tech/fr/terms"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stackunity.tech/es/terms"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stackunity.tech/ar/terms"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://stackunity.tech/zh/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stackunity.tech/terms"/>
+  </url>
+ <url>
+    <loc>https://stackunity.tech/notices</loc>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://stackunity.tech/logo/stackunity-title.png</image:loc>
+      <image:caption>StackUnity legal notices</image:caption>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stackunity.tech/notices"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stackunity.tech/fr/notices"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stackunity.tech/es/notices"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stackunity.tech/ar/notices"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://stackunity.tech/zh/notices"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stackunity.tech/notices"/>
+  </url>
+  <url>
+    <loc>https://stackunity.tech/login</loc>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://stackunity.tech/logo/stackunity.png</image:loc>
+      <image:caption>StackUnity - Develop faster and better with StackUnity</image:caption>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stackunity.tech/login"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stackunity.tech/fr/login"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stackunity.tech/es/login"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stackunity.tech/ar/login"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://stackunity.tech/zh/login"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stackunity.tech/login"/>
+  </url>
+  <url>
+    <loc>https://stackunity.tech/signup</loc>
+    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://stackunity.tech/logo/stackunity.png</image:loc>
+      <image:caption>StackUnity - Develop faster and better with StackUnity</image:caption>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stackunity.tech/signup"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stackunity.tech/fr/signup"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stackunity.tech/es/signup"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stackunity.tech/ar/signup"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://stackunity.tech/zh/signup"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stackunity.tech/signup"/>
+  </url>
+</urlset> 

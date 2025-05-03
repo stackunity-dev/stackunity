@@ -3,8 +3,8 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-2">Semantic Analysis</h1>
-          <p class="text-body-1">Analyze the semantic structure of your website</p>
+          <h1 class="text-h4 font-weight-bold mb-2">{{ t().page.title }}</h1>
+          <p class="text-body-1">{{ t().page.subtitle }}</p>
         </v-col>
       </v-row>
 
@@ -13,15 +13,15 @@
           <v-card class="mb-6">
             <v-card-text>
               <v-form @submit.prevent="analyzeUrl">
-                <v-text-field v-model="url" label="URL du site à analyser" placeholder="https://example.com"
-                  hint="Enter the complete URL including https://" persistent-hint prepend-inner-icon="mdi-web"
-                  variant="outlined" required autocomplete="url" aria-label="URL to analyze"
+                <v-text-field v-model="url" :label="t().form.urlLabel" :placeholder="t().form.urlPlaceholder"
+                  :hint="t().form.urlHint" persistent-hint prepend-inner-icon="mdi-web" variant="outlined" required
+                  autocomplete="url" aria-label="URL to analyze"
                   :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || 'Please enter a valid URL starting with http:// or https://']"></v-text-field>
 
                 <div class="d-flex mt-4">
                   <v-btn color="secondary" type="submit" size="large" :loading="loading" :disabled="!url"
                     prepend-icon="mdi-magnify" aria-label="Analyze content">
-                    Analyze content
+                    {{ t().form.analyzeButton }}
                   </v-btn>
                 </div>
               </v-form>
@@ -47,13 +47,13 @@
 
       <v-row v-else-if="results.length">
         <v-col cols="12" class="mb-6">
-          <h2 id="analysis-results">Analysis Results</h2>
+          <h2 id="analysis-results">{{ t().results.title }}</h2>
 
           <v-card class="mt-4 mb-6 bg-surface">
             <v-card-item>
               <v-card-title class="d-flex align-center mb-4">
                 <v-icon icon="mdi-chart-areaspline" color="primary" class="mr-2" aria-hidden="true" />
-                Average Score
+                {{ t().results.averageScore }}
                 <v-chip :color="getScoreColor(calculateGlobalAverage())" class="ml-4"
                   aria-label="Score moyen global: {{ calculateGlobalAverage() }}%">
                   {{ calculateGlobalAverage() }}%
@@ -67,7 +67,7 @@
                       <v-progress-circular :model-value="calculateAverageByType('html')"
                         :color="getScoreColor(calculateAverageByType('html'))" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">HTML</div>
+                          <div class="text-subtitle-1 font-weight-bold">{{ t().results.html.title }}</div>
                           <div class="text-h6">{{ calculateAverageByType('html') }}%</div>
                         </div>
                       </v-progress-circular>
@@ -79,7 +79,7 @@
                       <v-progress-circular :model-value="calculateAverageByType('aria')"
                         :color="getScoreColor(calculateAverageByType('aria'))" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">ARIA</div>
+                          <div class="text-subtitle-1 font-weight-bold">{{ t().results.aria.title }}</div>
                           <div class="text-h6">{{ calculateAverageByType('aria') }}%</div>
                         </div>
                       </v-progress-circular>
@@ -91,7 +91,7 @@
                       <v-progress-circular :model-value="calculateAverageByType('meta')"
                         :color="getScoreColor(calculateAverageByType('meta'))" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">META</div>
+                          <div class="text-subtitle-1 font-weight-bold">{{ t().results.meta.title }}</div>
                           <div class="text-h6">{{ calculateAverageByType('meta') }}%</div>
                         </div>
                       </v-progress-circular>
@@ -118,9 +118,9 @@
 
               <v-expansion-panel-text>
                 <v-tabs v-model="activeTab" color="primary" aria-label="Analysis categories">
-                  <v-tab value="html" aria-label="HTML Structure tab">HTML Structure</v-tab>
-                  <v-tab value="aria" aria-label="Accessibility ARIA tab">Accessibility ARIA</v-tab>
-                  <v-tab value="meta" aria-label="Meta-tags tab">Meta-tags</v-tab>
+                  <v-tab value="html" aria-label="HTML Structure tab">{{ t().results.html.title }}</v-tab>
+                  <v-tab value="aria" aria-label="Accessibility ARIA tab">{{ t().results.aria.title }}</v-tab>
+                  <v-tab value="meta" aria-label="Meta-tags tab">{{ t().results.meta.title }}</v-tab>
                 </v-tabs>
 
                 <v-window v-model="activeTab">
@@ -130,7 +130,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-language-html5" class="mr-2" aria-hidden="true" />
-                            HTML Structure
+                            {{ t().results.html.title }}
                             <v-chip :color="getScoreColor(result.score)" class="ml-4"
                               aria-label="HTML structure score: {{ result.score }}%">
                               Score: {{ result.score }}%
@@ -155,7 +155,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-book-open-variant" class="mr-2" aria-hidden="true" />
-                            Readability Analysis
+                            {{ t().results.readability.title }}
                           </v-card-title>
                           <v-card-text>
                             <dl>
@@ -176,7 +176,7 @@
                         <v-card v-if="result.headingStructure.length">
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-format-header-1" class="mr-2" aria-hidden="true" />
-                            Heading Structure
+                            {{ t().results.headingStructure.title }}
                           </v-card-title>
                           <v-card-text>
                             <div class="heading-structure" role="tree" aria-label="Page heading structure">
@@ -199,7 +199,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-wheelchair-accessibility" class="mr-2" aria-hidden="true" />
-                            Accessibility ARIA
+                            {{ t().results.aria.title }}
                             <v-chip :color="getScoreColor(result.accessibility.ariaScore)" class="ml-4"
                               aria-label="ARIA score: {{ result.accessibility.ariaScore }}%">
                               Score: {{ result.accessibility.ariaScore }}%
@@ -217,7 +217,7 @@
                                         }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>Missing ARIA attributes</v-list-item-title>
+                                    <v-list-item-title>{{ t().results.aria.missingAriaCount }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingAriaCount
                                       }}</v-list-item-subtitle>
                                   </v-list-item>
@@ -229,7 +229,7 @@
                                         {{ result.accessibility.missingLabels > 0 ? 'mdi-alert' : 'mdi-check-circle' }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>Missing labels</v-list-item-title>
+                                    <v-list-item-title>{{ t().results.aria.missingLabels }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingLabels
                                       }}</v-list-item-subtitle>
                                   </v-list-item>
@@ -242,7 +242,7 @@
                                         {{ result.accessibility.formElementsWithLabelsPercent < 100 ? 'mdi-alert'
                                           : 'mdi-check-circle' }} </v-icon>
                                     </template>
-                                    <v-list-item-title>Form elements with labels</v-list-item-title>
+                                    <v-list-item-title>{{ t().results.aria.formElementsWithLabels }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.formElementsWithLabelsPercent
                                       }}%</v-list-item-subtitle>
                                   </v-list-item>
@@ -259,7 +259,7 @@
                                           'mdi-check-circle' }}
                                       </v-icon>
                                     </template>
-                                    <v-list-item-title>Invalid ARIA attributes</v-list-item-title>
+                                    <v-list-item-title>{{ t().results.aria.invalidAriaCount }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.invalidAriaCount
                                       }}</v-list-item-subtitle>
                                   </v-list-item>
@@ -272,7 +272,8 @@
                                         {{ result.accessibility.interactiveElementsWithAriaPercent < 100 ? 'mdi-alert'
                                           : 'mdi-check-circle' }} </v-icon>
                                     </template>
-                                    <v-list-item-title>Interactive elements with ARIA</v-list-item-title>
+                                    <v-list-item-title>{{ t().results.aria.interactiveElementsWithAria
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle>{{
                                       result.accessibility.interactiveElementsWithAriaPercent.toFixed(2)
                                       }}%</v-list-item-subtitle>
@@ -282,7 +283,8 @@
                                     <template v-slot:prepend>
                                       <v-icon color="info" aria-hidden="true">mdi-counter</v-icon>
                                     </template>
-                                    <v-list-item-title>Total interactive elements</v-list-item-title>
+                                    <v-list-item-title>{{ t().results.aria.totalInteractiveElements
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.interactiveElementsCount
                                       }}</v-list-item-subtitle>
                                   </v-list-item>
@@ -291,8 +293,9 @@
 
                               <v-col cols="12">
                                 <v-divider class="my-4" aria-hidden="true"></v-divider>
-                                <div class="text-subtitle-1 font-weight-bold mb-2" id="aria-issues">Elements to complete
-                                  with ARIA</div>
+                                <div class="text-subtitle-1 font-weight-bold mb-2" id="aria-issues">{{
+                                  t().results.aria.elementsToCompleteWithAria }}
+                                </div>
                                 <v-expansion-panels aria-labelledby="aria-issues">
                                   <v-expansion-panel v-for="(issue, index) in result.accessibility.issues" :key="index">
                                     <v-expansion-panel-title>
@@ -338,7 +341,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-tag-multiple" class="mr-2" aria-hidden="true" />
-                            Meta-tags Analysis
+                            {{ t().results.meta.title }}
                             <v-chip :color="getScoreColor(result.metaTags.score)" class="ml-4"
                               aria-label="Meta-tags score: {{ result.metaTags.score }}%">
                               Score: {{ result.metaTags.score }}%
@@ -351,7 +354,7 @@
                                 <v-card variant="outlined">
                                   <v-card-title class="text-subtitle-1">
                                     <v-icon icon="mdi-check-circle" color="success" class="mr-2" aria-hidden="true" />
-                                    Detailed score
+                                    {{ t().results.meta.detailedScore }}
                                   </v-card-title>
                                   <v-card-text>
                                     <v-list density="compact">
@@ -362,7 +365,7 @@
                                               'mdi-alert' }}
                                           </v-icon>
                                         </template>
-                                        <v-list-item-title>Essential tags</v-list-item-title>
+                                        <v-list-item-title>{{ t().results.meta.essentialTags }}</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.essential
                                           }}%</v-list-item-subtitle>
                                       </v-list-item>
@@ -374,7 +377,7 @@
                                               'mdi-alert' }}
                                           </v-icon>
                                         </template>
-                                        <v-list-item-title>Social tags</v-list-item-title>
+                                        <v-list-item-title>{{ t().results.meta.socialTags }}</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.social
                                           }}%</v-list-item-subtitle>
                                       </v-list-item>
@@ -386,7 +389,7 @@
                                               'mdi-alert' }}
                                           </v-icon>
                                         </template>
-                                        <v-list-item-title>Technical tags</v-list-item-title>
+                                        <v-list-item-title>{{ t().results.meta.technicalTags }}</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.technical
                                           }}%</v-list-item-subtitle>
                                       </v-list-item>
@@ -398,7 +401,7 @@
                                               'mdi-alert' }}
                                           </v-icon>
                                         </template>
-                                        <v-list-item-title>Content</v-list-item-title>
+                                        <v-list-item-title>{{ t().results.meta.contentTags }}</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.content
                                           }}%</v-list-item-subtitle>
                                       </v-list-item>
@@ -411,7 +414,7 @@
                                 <v-card variant="outlined">
                                   <v-card-title class="text-subtitle-1">
                                     <v-icon icon="mdi-file-document" color="primary" class="mr-2" />
-                                    Essential tags
+                                    {{ t().results.meta.essentialTags }}
                                   </v-card-title>
                                   <v-card-text>
                                     <v-list density="compact">
@@ -434,7 +437,7 @@
                                   <v-expansion-panel>
                                     <v-expansion-panel-title>
                                       <v-icon icon="mdi-share-variant" color="primary" class="mr-2" />
-                                      Social sharing tags
+                                      {{ t().results.meta.socialSharingTags }}
                                     </v-expansion-panel-title>
                                     <v-expansion-panel-text>
                                       <v-row>
@@ -476,7 +479,7 @@
                                   <v-expansion-panel>
                                     <v-expansion-panel-title>
                                       <v-icon icon="mdi-code-tags" color="primary" class="mr-2" />
-                                      HTML code of Meta-tags
+                                      {{ t().results.meta.htmlCodeOfMetaTags }}
                                     </v-expansion-panel-title>
                                     <v-expansion-panel-text>
                                       <v-alert type="info" variant="tonal" class="mt-2">
@@ -488,7 +491,7 @@
                                   <v-expansion-panel v-if="result.metaTags.issues.length">
                                     <v-expansion-panel-title>
                                       <v-icon icon="mdi-alert-circle" color="warning" class="mr-2" />
-                                      Detected issues
+                                      {{ t().results.meta.detectedIssues }}
                                       <v-chip class="ml-2" size="small" color="warning">
                                         {{ result.metaTags.issues.length }}
                                       </v-chip>
@@ -542,6 +545,9 @@ import { useUserStore } from '../stores/userStore';
 import hljs from 'highlight.js/lib/core';
 import xml from 'highlight.js/lib/languages/xml';
 import 'highlight.js/styles/atom-one-dark.css';
+import { useTranslations } from '../languages';
+
+const t = useTranslations('semantic');
 
 hljs.registerLanguage('xml', xml);
 
@@ -550,13 +556,13 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Semantic Analyzer - StackUnity',
+  title: t().meta.title,
   meta: [
-    { name: 'description', content: 'Analyze the semantic structure of your website to improve its accessibility and SEO.' },
+    { name: 'description', content: t().meta.description },
     { name: 'robots', content: 'index, follow' },
     { name: 'author', content: 'StackUnity' },
-    { name: 'og:title', content: 'Semantic Analyzer' },
-    { name: 'og:description', content: 'Analyze the semantic structure of your website to improve its accessibility and SEO.' },
+    { name: 'og:title', content: t().meta.title },
+    { name: 'og:description', content: t().meta.description },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [

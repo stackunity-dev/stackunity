@@ -3,13 +3,13 @@
 
     <v-alert v-if="request.method === 'DELETE'" color="info" variant="tonal" class="mb-4">
       <v-icon>mdi-information</v-icon>
-      Warning: take precautions when using the DELETE method.
+      {{ t().alerts.deleteWarning }}
     </v-alert>
 
     <v-card class="mb-4">
       <v-card-title class="text-h6 d-flex flex-wrap">
-        <span class="flex-grow-1">New API Test</span>
-        <v-tooltip location="bottom" text="History settings">
+        <span class="flex-grow-1">{{ t().cardTitles.newTest }}</span>
+        <v-tooltip location="bottom" :text="t().tooltips.historySettings">
           <template v-slot:activator="{ props }">
             <v-btn icon variant="text" v-bind="props" @click="showHistoryDialog = true">
               <v-icon>mdi-history</v-icon>
@@ -21,35 +21,37 @@
         <v-form @submit.prevent="sendRequest">
           <v-row dense>
             <v-col cols="12" sm="3">
-              <v-select v-model="request.method" :items="['GET', 'POST', 'PUT', 'DELETE', 'PATCH']" label="Method"
-                required variant="outlined" density="comfortable"
+              <v-select v-model="request.method" :items="['GET', 'POST', 'PUT', 'DELETE', 'PATCH']"
+                :label="t().forms.method" required variant="outlined" density="comfortable"
                 :class="`text-${getMethodColor(request.method)} mobile-select`">
               </v-select>
             </v-col>
             <v-col cols="12" sm="9">
-              <v-text-field v-model="request.url" label="URL" placeholder="https://api.example.com/endpoint" required
-                class="mobile-input"></v-text-field>
+              <v-text-field v-model="request.url" :label="t().forms.url" :placeholder="t().forms.urlPlaceholder"
+                required class="mobile-input"></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
               <v-tabs v-model="activeTab" show-arrows density="comfortable" class="mobile-tabs">
-                <v-tab value="headers">Headers</v-tab>
-                <v-tab value="body">Body</v-tab>
-                <v-tab value="params">Params</v-tab>
+                <v-tab value="headers">{{ t().forms.tabs.headers }}</v-tab>
+                <v-tab value="body">{{ t().forms.tabs.body }}</v-tab>
+                <v-tab value="params">{{ t().forms.tabs.params }}</v-tab>
               </v-tabs>
 
               <v-window v-model="activeTab">
                 <v-window-item value="headers">
                   <v-row dense v-for="(header, index) in request.headers" :key="index" class="mobile-row">
                     <v-col cols="5">
-                      <v-text-field v-model="header.key" label="Key" placeholder="Authorization" density="comfortable"
-                        hide-details class="mb-2"></v-text-field>
+                      <v-text-field v-model="header.key" :label="t().forms.headers.key"
+                        :placeholder="t().forms.headers.keyPlaceholder" density="comfortable" hide-details
+                        class="mb-2"></v-text-field>
                     </v-col>
                     <v-col cols="5">
-                      <v-text-field v-model="header.value" label="Value" placeholder="Bearer token123"
-                        density="comfortable" hide-details class="mb-2"></v-text-field>
+                      <v-text-field v-model="header.value" :label="t().forms.headers.value"
+                        :placeholder="t().forms.headers.valuePlaceholder" density="comfortable" hide-details
+                        class="mb-2"></v-text-field>
                     </v-col>
                     <v-col cols="2" class="d-flex align-center">
                       <v-btn color="error" icon size="small" @click="removeHeader(index)">
@@ -59,14 +61,14 @@
                   </v-row>
                   <div class="d-flex align-center flex-wrap gap-2 mt-2">
                     <v-btn color="primary" variant="tonal" @click="addHeader" size="small">
-                      Add a header
+                      {{ t().forms.headers.add }}
                       <v-icon>mdi-plus</v-icon>
                     </v-btn>
 
                     <v-menu>
                       <template v-slot:activator="{ props }">
                         <v-btn color="secondary" variant="text" size="small" v-bind="props" class="ml-2">
-                          Common Headers
+                          {{ t().forms.headers.common }}
                           <v-icon end>mdi-menu-down</v-icon>
                         </v-btn>
                       </template>
@@ -93,9 +95,9 @@
                         </v-btn>
                       </template>
                       <div class="pa-2">
-                        <p class="text-body-2">Note: Some standard headers like <code>Host</code>,
+                        <p class="text-body-2">{{ t().forms.headers.commonNote }} <code>Host</code>,
                           <code>User-Agent</code>,
-                          <code>Accept</code>, etc. are automatically added by browsers and not shown here.
+                          <code>Accept</code>, {{ t().forms.headers.etc }}
                         </p>
                       </div>
                     </v-tooltip>
@@ -103,17 +105,19 @@
                 </v-window-item>
 
                 <v-window-item value="body">
-                  <v-textarea v-model="request.body" label="Body" placeholder='{"key": "value"}' rows="10" class=""
-                    @input="formatJson"></v-textarea>
+                  <v-textarea v-model="request.body" :label="t().forms.body.label"
+                    :placeholder="t().forms.body.placeholder" rows="10" @input="formatJson"></v-textarea>
                 </v-window-item>
 
                 <v-window-item value="params">
                   <v-row v-for="(param, index) in request.params" :key="index">
                     <v-col cols="5">
-                      <v-text-field v-model="param.key" label="Clé" placeholder="page"></v-text-field>
+                      <v-text-field v-model="param.key" :label="t().forms.params.key"
+                        :placeholder="t().forms.params.keyPlaceholder"></v-text-field>
                     </v-col>
                     <v-col cols="5">
-                      <v-text-field v-model="param.value" label="Valeur" placeholder="1"></v-text-field>
+                      <v-text-field v-model="param.value" :label="t().forms.params.value"
+                        :placeholder="t().forms.params.valuePlaceholder"></v-text-field>
                     </v-col>
                     <v-col cols="2">
                       <v-btn color="error" icon @click="removeParam(index)">
@@ -122,7 +126,7 @@
                     </v-col>
                   </v-row>
                   <v-btn color="primary" variant="tonal" @click="addParam" class="mt-2">
-                    Add a parameter
+                    {{ t().forms.params.add }}
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </v-window-item>
@@ -133,7 +137,7 @@
           <v-row>
             <v-col cols="12">
               <v-btn color="secondary" variant="tonal" type="submit" :loading="loading" block>
-                Send the Request
+                {{ t().forms.send }}
                 <v-icon>mdi-send</v-icon>
               </v-btn>
             </v-col>
@@ -144,29 +148,29 @@
 
     <v-card v-if="response">
       <v-card-title class="text-h6 d-flex flex-wrap align-center">
-        <span class="flex-grow-1">Response</span>
+        <span class="flex-grow-1">{{ t().cardTitles.response }}</span>
         <v-chip :color="response.status >= 200 && response.status < 300 ? 'success' : 'error'" class="ml-2"
           size="small">
-          Status: {{ response.status }}
+          {{ t().cardTitles.status }}: {{ response.status }}
         </v-chip>
       </v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12">
             <v-tabs v-model="responseTab" show-arrows density="comfortable" class="mobile-tabs">
-              <v-tab value="body">Body</v-tab>
-              <v-tab value="headers">Headers</v-tab>
-              <v-tab value="docs">Docs</v-tab>
+              <v-tab value="body">{{ t().forms.tabs.body }}</v-tab>
+              <v-tab value="headers">{{ t().forms.tabs.headers }}</v-tab>
+              <v-tab value="docs">{{ t().forms.tabs.docs }}</v-tab>
               <PremiumFeature v-if="!userStore.isPremium" type="tab" title="API Tests" icon="mdi-shield-bug"
                 color="warning" variant="elevated" size="small" />
-              <v-tab v-else-if="userStore.isPremium" value="apitest">Tests</v-tab>
+              <v-tab v-else-if="userStore.isPremium" value="apitest">{{ t().forms.tabs.tests }}</v-tab>
             </v-tabs>
 
             <v-window v-model="responseTab">
               <v-window-item value="body">
                 <v-tabs v-model="bodyView" density="comfortable" class="mobile-tabs">
-                  <v-tab value="raw">Raw</v-tab>
-                  <v-tab value="tree">Tree</v-tab>
+                  <v-tab value="raw">{{ t().forms.tabs.raw }}</v-tab>
+                  <v-tab value="tree">{{ t().forms.tabs.tree }}</v-tab>
                 </v-tabs>
                 <v-window v-model="bodyView">
                   <v-window-item value="raw">
@@ -184,8 +188,8 @@
 
               <v-window-item value="headers">
                 <v-tabs v-model="headersTab" density="comfortable" class="mt-2">
-                  <v-tab value="response">Response Headers</v-tab>
-                  <v-tab value="request">Request Headers</v-tab>
+                  <v-tab value="response">{{ t().forms.tabs.response }}</v-tab>
+                  <v-tab value="request">{{ t().forms.tabs.request }}</v-tab>
                 </v-tabs>
 
                 <v-window v-model="headersTab">
@@ -201,7 +205,7 @@
                     </div>
                     <v-alert v-if="sentHeaders && Object.keys(sentHeaders).length === 0" type="info" variant="tonal"
                       class="mt-2">
-                      No custom headers were sent with this request.
+                      {{ t().alerts.noCustomHeaders }}
                     </v-alert>
                   </v-window-item>
                 </v-window>
@@ -210,23 +214,23 @@
               <v-window-item value="docs">
                 <v-card class="mb-4" variant="flat">
                   <v-card-title class="d-flex flex-wrap align-center pa-2">
-                    <span class="text-body-1">Documentation OpenAPI</span>
+                    <span class="text-body-1">{{ t().cardTitles.documentation }}</span>
                     <v-spacer></v-spacer>
                     <v-btn color="primary" variant="tonal" @click="downloadDocs" size="small" class="mt-2 mt-sm-0">
                       <v-icon start>mdi-download</v-icon>
-                      Download
+                      {{ t().buttons.download }}
                     </v-btn>
                   </v-card-title>
                   <v-card-text>
                     <v-row dense>
                       <v-col cols="12" sm="6">
-                        <v-select v-model="docOptions.schemaDepth" :items="[1, 2, 3, 4, 5]" label="Profondeur du schéma"
-                          density="comfortable" hide-details class="mb-2">
+                        <v-select v-model="docOptions.schemaDepth" :items="[1, 2, 3, 4, 5]"
+                          :label="t().forms.schemaDepth" density="comfortable" hide-details class="mb-2">
                         </v-select>
                       </v-col>
                       <v-col cols="12" sm="6">
-                        <v-switch v-model="docOptions.showExamples" label="Afficher les exemples" density="comfortable"
-                          hide-details class="mb-2">
+                        <v-switch v-model="docOptions.showExamples" :label="t().forms.showExamples"
+                          density="comfortable" hide-details class="mb-2">
                         </v-switch>
                       </v-col>
                     </v-row>
@@ -240,18 +244,18 @@
               <v-window-item value="apitest">
                 <v-card class="mb-4" variant="flat">
                   <v-card-title class="d-flex flex-wrap align-center pa-2">
-                    <span class="text-body-1">Automated API Tests</span>
+                    <span class="text-body-1">{{ t().cardTitles.apiTests }}</span>
                     <v-spacer></v-spacer>
                     <v-btn color="primary" variant="tonal" @click="runApiTests" :loading="apiTestsLoading" size="small"
                       class="mt-2 mt-sm-0">
                       <v-icon start>mdi-shield-bug</v-icon>
-                      Run Tests
+                      {{ t().buttons.run }}
                     </v-btn>
                   </v-card-title>
                   <v-card-text class="pa-0">
                     <v-alert v-if="!apiTestResults.length && !apiTestsLoading" color="info" variant="tonal"
                       class="ma-2">
-                      Click on "Run Tests" to analyze potential vulnerabilities
+                      {{ t().alerts.runTests }}
                     </v-alert>
 
                     <v-expansion-panels v-if="apiTestResults.length > 0">
@@ -269,16 +273,15 @@
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
                           <div class="text-body-2">
-                            <p><strong>Description:</strong> {{ test.description }}</p>
-                            <p v-if="test.impact"><strong>Impact:</strong> {{ test.impact }}</p>
+                            <p><strong>{{ t().forms.impact }}</strong> {{ test.impact }}</p>
                             <v-divider class="my-2"></v-divider>
 
                             <div v-if="test.response">
-                              <p><strong>Result:</strong> {{ test.message }}</p>
+                              <p><strong>{{ t().forms.result }}:</strong> {{ test.message }}</p>
                               <v-card variant="outlined" class="mt-2">
                                 <v-card-text class="pa-2">
-                                  <p><strong>Status:</strong> {{ test.response.status }}</p>
-                                  <p><strong>Data:</strong></p>
+                                  <p><strong>{{ t().forms.status }}:</strong> {{ test.response.status }}</p>
+                                  <p><strong>{{ t().forms.data }}:</strong></p>
                                   <div class="response-wrapper">
                                     <pre class="response-body bg-grey-darken-4">{{ JSON.stringify(test.response.data, null,
                                       2) }}</pre>
@@ -301,9 +304,9 @@
 
     <v-dialog v-model="showHistoryDialog" max-width="500">
       <v-card>
-        <v-card-title class="text-h6">History Settings</v-card-title>
+        <v-card-title class="text-h6">{{ t().cardTitles.historySettings }}</v-card-title>
         <v-card-text>
-          <v-switch v-model="saveToHistory" color="primary" label="Save requests to history"></v-switch>
+          <v-switch v-model="saveToHistory" color="primary" :label="t().forms.saveToHistory"></v-switch>
 
           <v-alert v-if="historyError" type="error" variant="tonal" class="mt-4 mb-2">
             {{ historyError }}
@@ -311,19 +314,19 @@
 
           <div class="d-flex align-center mt-4">
             <v-btn color="error" variant="outlined" @click="clearHistory" :disabled="!saveToHistory">
-              Clear History
+              {{ t().buttons.clear }}
               <v-icon end>mdi-delete</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
             <div class="text-caption" v-if="saveToHistory">
-              Stored requests: {{ historyCount }}
+              {{ t().cardTitles.historyCount }}: {{ historyCount }}
             </div>
           </div>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="primary" variant="text" @click="showHistoryDialog = false">
-            Close
+            {{ t().buttons.close }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -342,17 +345,20 @@ import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 import JsonTreeViewer from '../components/JsonTreeViewer.vue';
+import { useTranslations } from '../languages';
 import * as requestUtils from '../utils/ts/api/requestUtils';
 import * as securityTests from '../utils/ts/api/securityTests';
+
+const t = useTranslations('apiTestingHub');
 
 definePageMeta({
   layout: 'dashboard'
 });
 
 useHead({
-  title: 'API Testing Hub',
+  title: computed(() => t().meta.title),
   meta: [
-    { name: 'description', content: 'API Testing Hub' }
+    { name: 'description', content: computed(() => t().meta.description) }
   ]
 });
 

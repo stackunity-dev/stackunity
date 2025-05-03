@@ -3,8 +3,8 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-4">Security Analysis</h1>
-          <p class="text-body-1">Analyze the security vulnerabilities of your website</p>
+          <h1 class="text-h4 font-weight-bold mb-4">{{ t.meta.title }}</h1>
+          <p class="text-body-1">{{ t.meta.description }}</p>
         </v-col>
       </v-row>
 
@@ -13,15 +13,15 @@
           <v-card class="mb-6">
             <v-card-text>
               <v-form @submit.prevent="analyzeUrl">
-                <v-text-field v-model="url" label="URL du site à analyser" placeholder="https://example.com"
-                  hint="Enter the complete URL including https://" persistent-hint prepend-inner-icon="mdi-web"
-                  variant="outlined" required autocomplete="url" aria-label="URL to analyze"
-                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || 'Please enter a valid URL starting with http:// or https://']"></v-text-field>
+                <v-text-field v-model="url" :label="t.form.urlLabel" :placeholder="t.form.urlPlaceholder"
+                  :hint="t.form.urlHint" persistent-hint prepend-inner-icon="mdi-web" variant="outlined" required
+                  autocomplete="url" :aria-label="t.form.urlLabel"
+                  :rules="[(v) => v.startsWith('http://') || v.startsWith('https://') || t.form.urlRuleInvalid]"></v-text-field>
 
                 <div class="d-flex mt-4">
                   <v-btn color="secondary" type="submit" size="large" :loading="loading" :disabled="!url"
-                    prepend-icon="mdi-magnify" aria-label="Analyze content">
-                    Analyze content
+                    prepend-icon="mdi-magnify" :aria-label="t.form.analyzeAriaLabel">
+                    {{ t.form.analyzeButton }}
                   </v-btn>
                 </div>
               </v-form>
@@ -32,7 +32,7 @@
 
       <v-row v-if="loading">
         <v-col cols="12">
-          <v-skeleton-loader type="article, actions" aria-label="Loading the analysis results" />
+          <v-skeleton-loader type="article, actions" :aria-label="t.loading.ariaLabel" />
           <v-row>
             <v-col cols="12" md="6">
               <v-skeleton-loader type="card" aria-hidden="true" />
@@ -47,15 +47,15 @@
 
       <v-row v-else-if="results.length">
         <v-col cols="12" class="mb-6">
-          <h2 id="analysis-results">Analysis Results</h2>
+          <h2 id="analysis-results">{{ t.results.title }}</h2>
 
           <v-card class="mt-4 mb-6 bg-surface">
             <v-card-item>
               <v-card-title class="d-flex align-center mb-4">
                 <v-icon icon="mdi-shield-check" color="primary" class="mr-2" aria-hidden="true" />
-                Global Score
+                {{ t.results.globalScore }}
                 <v-chip :color="getScoreColor(calculateGlobalAverage())" class="ml-4"
-                  aria-label="Average global score: {{ calculateGlobalAverage() }}%">
+                  :aria-label="t.scoreLabel.replace('{value}', calculateGlobalAverage().toString())">
                   {{ calculateGlobalAverage() }}%
                 </v-chip>
               </v-card-title>
@@ -67,7 +67,7 @@
                       <v-progress-circular :model-value="calculateAverageByType('headers')"
                         :color="getScoreColor(calculateAverageByType('headers'))" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">Headers</div>
+                          <div class="text-subtitle-1 font-weight-bold">{{ t.results.headers }}</div>
                           <div class="text-h6">{{ calculateAverageByType('headers') }}%</div>
                         </div>
                       </v-progress-circular>
@@ -79,7 +79,7 @@
                       <v-progress-circular :model-value="calculateAverageByType('cookies')"
                         :color="getScoreColor(calculateAverageByType('cookies'))" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">Cookies</div>
+                          <div class="text-subtitle-1 font-weight-bold">{{ t.results.cookies }}</div>
                           <div class="text-h6">{{ calculateAverageByType('cookies') }}%</div>
                         </div>
                       </v-progress-circular>
@@ -91,7 +91,7 @@
                       <v-progress-circular :model-value="calculateAverageByType('vulnerabilities')"
                         :color="getScoreColor(calculateAverageByType('vulnerabilities'))" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">Vulnerabilities</div>
+                          <div class="text-subtitle-1 font-weight-bold">{{ t.results.vulnerabilities }}</div>
                           <div class="text-h6">{{ calculateAverageByType('vulnerabilities') }}%</div>
                         </div>
                       </v-progress-circular>
@@ -108,8 +108,9 @@
                 <v-row no-gutters align="center">
                   <v-col cols="8" class="text-body-1">{{ result.url }}</v-col>
                   <v-col cols="4" class="text-right d-flex align-center justify-end flex-wrap">
-                    <v-chip :color="getScoreColor(result.score)" class="mr-2" aria-label="Score: {{ result.score }}%">
-                      Score: {{ result.score }}%
+                    <v-chip :color="getScoreColor(result.score)" class="mr-2"
+                      :aria-label="t.scoreLabel.replace('{value}', result.score.toString())">
+                      {{ t.scoreLabel.replace('{value}', result.score.toString()) }}
                     </v-chip>
                   </v-col>
                 </v-row>
@@ -117,9 +118,10 @@
 
               <v-expansion-panel-text>
                 <v-tabs v-model="activeTab" color="primary" aria-label="Analysis categories">
-                  <v-tab value="headers" aria-label="Headers tab">Headers</v-tab>
-                  <v-tab value="cookies" aria-label="Cookies tab">Cookies</v-tab>
-                  <v-tab value="vulnerabilities" aria-label="Vulnerabilities tab">Vulnerabilities</v-tab>
+                  <v-tab value="headers" :aria-label="t.headers.tab + ' tab'">{{ t.headers.tab }}</v-tab>
+                  <v-tab value="cookies" :aria-label="t.cookies.tab + ' tab'">{{ t.cookies.tab }}</v-tab>
+                  <v-tab value="vulnerabilities" :aria-label="t.vulnerabilities.tab + ' tab'">{{ t.vulnerabilities.tab
+                  }}</v-tab>
                 </v-tabs>
 
                 <v-window v-model="activeTab">
@@ -129,7 +131,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-shield" class="mr-2" aria-hidden="true" />
-                            Security Headers
+                            {{ t.headers.securityHeaders }}
                             <v-chip :color="getScoreColor(result.headerAnalysis.score)" class="ml-4"
                               aria-label="Score des en-têtes: {{ result.headerAnalysis.score }}%">
                               Score: {{ result.headerAnalysis.score }}%
@@ -153,7 +155,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-lock-alert" class="mr-2" aria-hidden="true" />
-                            Missing Headers
+                            {{ t.headers.missingHeaders }}
                           </v-card-title>
                           <v-card-text>
                             <v-list density="compact">
@@ -167,7 +169,7 @@
                                 <template v-slot:prepend>
                                   <v-icon color="success" aria-hidden="true">mdi-check-circle</v-icon>
                                 </template>
-                                <v-list-item-title>All security headers are present</v-list-item-title>
+                                <v-list-item-title>{{ t.headers.allPresent }}</v-list-item-title>
                               </v-list-item>
                             </v-list>
                           </v-card-text>
@@ -182,7 +184,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-cookie" class="mr-2" aria-hidden="true" />
-                            Cookies Security
+                            {{ t.cookies.securityTitle }}
                             <v-chip :color="getScoreColor(result.cookieAnalysis.score)" class="ml-4"
                               aria-label="Score des cookies: {{ result.cookieAnalysis.score }}%">
                               Score: {{ result.cookieAnalysis.score }}%
@@ -197,7 +199,7 @@
                                     {{ result.cookieAnalysis.secure ? 'mdi-check-circle' : 'mdi-alert-circle' }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>Secure attribute</v-list-item-title>
+                                <v-list-item-title>{{ t.cookies.secureAttribute }}</v-list-item-title>
                                 <v-list-item-subtitle>
                                   {{ result.cookieAnalysis.secure ? 'Present' : 'Missing' }}
                                 </v-list-item-subtitle>
@@ -210,7 +212,7 @@
                                     {{ result.cookieAnalysis.httpOnly ? 'mdi-check-circle' : 'mdi-alert-circle' }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>HttpOnly attribute</v-list-item-title>
+                                <v-list-item-title>{{ t.cookies.httpOnlyAttribute }}</v-list-item-title>
                                 <v-list-item-subtitle>
                                   {{ result.cookieAnalysis.httpOnly ? 'Present' : 'Missing' }}
                                 </v-list-item-subtitle>
@@ -223,7 +225,7 @@
                                     {{ result.cookieAnalysis.sameSite ? 'mdi-check-circle' : 'mdi-alert-circle' }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>SameSite attribute</v-list-item-title>
+                                <v-list-item-title>{{ t.cookies.sameSiteAttribute }}</v-list-item-title>
                                 <v-list-item-subtitle>
                                   {{ result.cookieAnalysis.sameSite ? 'Present' : 'Missing' }}
                                 </v-list-item-subtitle>
@@ -237,7 +239,7 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-lock" class="mr-2" aria-hidden="true" />
-                            HTTPS
+                            {{ t.cookies.https }}
                           </v-card-title>
                           <v-card-text>
                             <v-list density="compact">
@@ -247,7 +249,7 @@
                                     {{ result.https ? 'mdi-check-circle' : 'mdi-alert-circle' }}
                                   </v-icon>
                                 </template>
-                                <v-list-item-title>HTTPS Enabled</v-list-item-title>
+                                <v-list-item-title>{{ t.cookies.httpsEnabled }}</v-list-item-title>
                                 <v-list-item-subtitle>
                                   {{ result.https ? 'The website uses HTTPS' : 'The website does not use HTTPS' }}
                                 </v-list-item-subtitle>
@@ -265,7 +267,7 @@
                         <v-card v-if="result.additionalVulnerabilities" class="mb-4">
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-shield-alert" class="mr-2" aria-hidden="true" />
-                            Vulnerability Summary
+                            {{ t.vulnerabilities.summary }}
                           </v-card-title>
                           <v-card-text>
                             <v-row>
@@ -273,38 +275,38 @@
                                 <v-card variant="outlined"
                                   :color="result.additionalVulnerabilities.sensitiveDataExposure > 0 ? 'warning' : 'success'"
                                   class="pa-2 text-center">
-                                  <div class="text-subtitle-1">Sensitive Data</div>
+                                  <div class="text-subtitle-1">{{ t.vulnerabilities.sensitiveData }}</div>
                                   <div class="text-h5">{{ result.additionalVulnerabilities.sensitiveDataExposure }}
                                   </div>
-                                  <div class="text-caption">issues detected</div>
+                                  <div class="text-caption">{{ t.vulnerabilities.issuesDetected }}</div>
                                 </v-card>
                               </v-col>
                               <v-col cols="12" sm="6" md="3">
                                 <v-card variant="outlined"
                                   :color="result.additionalVulnerabilities.csrfVulnerabilities > 0 ? 'warning' : 'success'"
                                   class="pa-2 text-center">
-                                  <div class="text-subtitle-1">CSRF</div>
+                                  <div class="text-subtitle-1">{{ t.vulnerabilities.csrf }}</div>
                                   <div class="text-h5">{{ result.additionalVulnerabilities.csrfVulnerabilities }}</div>
-                                  <div class="text-caption">issues detected</div>
+                                  <div class="text-caption">{{ t.vulnerabilities.issuesDetected }}</div>
                                 </v-card>
                               </v-col>
                               <v-col cols="12" sm="6" md="3">
                                 <v-card variant="outlined"
                                   :color="result.additionalVulnerabilities.headerVulnerabilities > 0 ? 'warning' : 'success'"
                                   class="pa-2 text-center">
-                                  <div class="text-subtitle-1">Header Issues</div>
+                                  <div class="text-subtitle-1">{{ t.vulnerabilities.headerIssues }}</div>
                                   <div class="text-h5">{{ result.additionalVulnerabilities.headerVulnerabilities }}
                                   </div>
-                                  <div class="text-caption">issues detected</div>
+                                  <div class="text-caption">{{ t.vulnerabilities.issuesDetected }}</div>
                                 </v-card>
                               </v-col>
                               <v-col cols="12" sm="6" md="3">
                                 <v-card variant="outlined"
                                   :color="result.additionalVulnerabilities.otherVulnerabilities > 0 ? 'warning' : 'success'"
                                   class="pa-2 text-center">
-                                  <div class="text-subtitle-1">Other Issues</div>
+                                  <div class="text-subtitle-1">{{ t.vulnerabilities.otherIssues }}</div>
                                   <div class="text-h5">{{ result.additionalVulnerabilities.otherVulnerabilities }}</div>
-                                  <div class="text-caption">issues detected</div>
+                                  <div class="text-caption">{{ t.vulnerabilities.issuesDetected }}</div>
                                 </v-card>
                               </v-col>
                             </v-row>
@@ -316,13 +318,13 @@
                         <v-card>
                           <v-card-title class="d-flex align-center">
                             <v-icon icon="mdi-alert" class="mr-2" aria-hidden="true" />
-                            Detected Vulnerabilities
+                            {{ t.vulnerabilities.title }}
                           </v-card-title>
                           <v-card-text>
                             <div v-if="!result.securityIssues || result.securityIssues.length === 0"
                               class="pa-4 text-center">
                               <v-icon size="large" color="success" class="mb-2">mdi-check-circle</v-icon>
-                              <p class="text-body-1">No vulnerabilities detected</p>
+                              <p class="text-body-1">{{ t.vulnerabilities.noVulnerabilities }}</p>
                             </div>
                             <v-expansion-panels v-else>
                               <v-expansion-panel v-for="(issue, i) in result.securityIssues" :key="i">
@@ -335,21 +337,27 @@
                                   </div>
                                 </v-expansion-panel-title>
                                 <v-expansion-panel-text>
-                                  <p v-if="issue.element"><strong>Element :</strong> {{ issue.element }}</p>
-                                  <p v-if="issue.code"><strong>Problem code :</strong>
+                                  <p v-if="issue.element"><strong>{{ t.vulnerabilities.details.element }}:</strong> {{
+                                    issue.element }}
+                                  </p>
+                                  <p v-if="issue.code"><strong>{{ t.vulnerabilities.details.problemCode }}:</strong>
                                     <code>{{ issue.code }}</code>
                                   </p>
-                                  <p v-if="issue.issue"><strong>Issue :</strong> {{ issue.issue }}</p>
-                                  <p v-if="issue.content"><strong>Content :</strong> {{ issue.content }}</p>
-                                  <p v-if="issue.impact" class="mt-3"><strong>Impact :</strong> <span
-                                      class="red--text text--darken-1">{{
+                                  <p v-if="issue.issue"><strong>{{ t.vulnerabilities.details.issue }}:</strong> {{
+                                    issue.issue }}</p>
+                                  <p v-if="issue.content"><strong>{{ t.vulnerabilities.details.content }}:</strong> {{
+                                    issue.content }}
+                                  </p>
+                                  <p v-if="issue.impact" class="mt-3"><strong>{{ t.vulnerabilities.details.impact
+                                  }}:</strong> <span class="red--text text--darken-1">{{
                                         issue.impact }}</span></p>
                                   <p v-if="issue.evidence" class="mt-2 grey--text text--darken-2"><strong>Evidence
                                       :</strong> {{
                                         issue.evidence }}</p>
                                   <v-divider class="my-3" v-if="issue.recommendation"></v-divider>
-                                  <p v-if="issue.recommendation"><strong>Recommendation :</strong> {{
-                                    issue.recommendation }}</p>
+                                  <p v-if="issue.recommendation"><strong> {{ t.vulnerabilities.details.recommendation }}
+                                      :</strong> {{
+                                        issue.recommendation }}</p>
                                 </v-expansion-panel-text>
                               </v-expansion-panel>
                             </v-expansion-panels>
@@ -378,14 +386,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 // @ts-ignore
-import { definePageMeta } from '#imports';
-import { SecurityAnalysisResult } from '../utils/analyzer/types';
+import { definePageMeta, useHead } from '#imports';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
+import { SecurityAnalysisResult } from '../utils/analyzer/types';
 
 definePageMeta({
   layout: 'dashboard',
+});
+
+const t = useTranslations('security')();
+
+useHead({
+  title: t.meta.title,
+  meta: [
+    { name: 'description', content: t.meta.description },
+    { name: 'keywords', content: 'security, website, analysis, vulnerabilities, headers, cookies' },
+  ],
 });
 
 const userStore = useUserStore();

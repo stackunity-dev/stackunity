@@ -3,10 +3,10 @@
     <v-row>
       <v-col cols="12">
         <v-alert type="info" v-if="!websiteData" variant="tonal" class="mb-4">
-          No website data available for this account. Please add a website to your account below.<br>
+          {{ t().alerts.noWebsiteData }}<br>
           <v-btn color="secondary" variant="elevated" density="comfortable" size="small" @click="goToSettings"
-            aria-label="Add a website" class="mt-2">
-            <span class="ml-1">Add website</span>
+            :aria-label="t().alerts.addWebsite" class="mt-2">
+            <span class="ml-1">{{ t().alerts.addWebsite }}</span>
             <v-icon end>mdi-plus</v-icon>
           </v-btn>
         </v-alert>
@@ -15,7 +15,9 @@
           <v-progress-linear v-if="loading" v-model="loadingProgress" color="secondary" height="9" striped rounded
             class="mb-4" :active="loading">
             <template v-slot:default="{ value }">
-              <span class="text-caption text-grey-darken-1">{{ Math.ceil(value) }}%</span>
+              <span class="text-caption text-grey-darken-1">{{ t().loading.progress.replace('{value}',
+                Math.ceil(value).toString())
+                }}</span>
             </template>
           </v-progress-linear>
         </v-fade-transition>
@@ -23,7 +25,7 @@
         <v-card class="mb-4 rounded-lg elevation-2">
           <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg">
             <v-icon color="white" class="mr-2">mdi-web</v-icon>
-            Website data
+            {{ t().cards.websiteData.title }}
           </v-card-title>
           <v-card-text class="pa-4">
             <template v-if="!websiteData">
@@ -36,7 +38,7 @@
                   <v-card variant="outlined" class="mb-4">
                     <v-card-title class="d-flex align-center">
                       <v-icon size="24" color="primary" class="mr-2">mdi-home</v-icon>
-                      Main URL
+                      {{ t().cards.websiteData.mainUrl }}
                     </v-card-title>
                     <v-card-text>
                       <v-chip size="large" color="primary" class="pa-4 mb-4">
@@ -49,7 +51,9 @@
                         <v-expansion-panel>
                           <v-expansion-panel-title class="text-body-2">
                             <v-icon size="small" color="grey" class="mr-2">mdi-sitemap</v-icon>
-                            {{ urlsForDisplay.length }} URL{{ urlsForDisplay.length > 1 ? 's' : '' }} detected
+                            {{ t().cards.websiteData.urlsDetected
+                              .replace('{count}', urlsForDisplay.length.toString())
+                              .replace('{plural}', urlsForDisplay.length > 1 ? 's' : '') }}
                           </v-expansion-panel-title>
 
                           <v-expansion-panel-text>
@@ -80,7 +84,7 @@
                   <v-card variant="outlined" class="mb-4">
                     <v-card-title class="d-flex align-center">
                       <v-icon size="24" color="primary" class="mr-2">mdi-share-variant</v-icon>
-                      Social media preview
+                      {{ t().cards.websiteData.socialMedia }}
                     </v-card-title>
                     <v-card-text v-if="socialMetaPreview">
                       <v-card class="social-preview-card">
@@ -95,14 +99,14 @@
                         <v-card-text class="pa-3">
                           <p class="text-caption text-grey mb-1">{{ socialMetaPreview.url }}</p>
                           <h3 class="text-subtitle-1 font-weight-bold mb-2 text-truncate">{{ socialMetaPreview.ogTitle
-                          }}</h3>
+                            }}</h3>
                           <p class="text-body-2 social-description">{{ socialMetaPreview.ogDescription }}</p>
                         </v-card-text>
                       </v-card>
                     </v-card-text>
                     <v-card-text v-else class="text-center pa-5">
                       <v-icon size="40" color="grey-lighten-1" class="mb-3">mdi-share-off</v-icon>
-                      <p class="text-body-2 text-grey">Social media metadata not available</p>
+                      <p class="text-body-2 text-grey">{{ t().cards.websiteData.socialUnavailable }}</p>
                     </v-card-text>
                   </v-card>
                 </v-col>
@@ -113,14 +117,13 @@
                       <v-card class="mb-4 rounded-lg elevation-2">
                         <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg">
                           <v-icon color="white" class="mr-2">mdi-chart-donut</v-icon>
-                          Website Analysis
+                          {{ t().cards.analysis.title }}
                         </v-card-title>
                         <v-card-text class="pa-4 text-center">
-                          <p class="text-body-1 mb-4">Run a complete analysis of your website to get insights on
-                            performance, security, and more.</p>
+                          <p class="text-body-1 mb-4">{{ t().cards.analysis.description }}</p>
                           <v-btn color="secondary" size="large" @click="analyzeWebsite" :loading="loading">
                             <v-icon start>mdi-rocket-launch</v-icon>
-                            Start Analysis
+                            {{ t().cards.analysis.startAnalysis }}
                           </v-btn>
                         </v-card-text>
                       </v-card>
@@ -251,12 +254,13 @@
                                         </v-icon>
                                       </template>
                                       <v-list-item-title>
-                                        {{ mainTechnicalData?.robotsTxt?.found ? 'Found' : 'Not found' }}
+                                        {{ mainTechnicalData?.robotsTxt?.found ? t().buttons.found :
+                                        t().buttons.notFound }}
                                       </v-list-item-title>
                                     </v-list-item>
                                     <v-list-item v-if="mainTechnicalData?.robotsTxt?.issues?.length">
                                       <v-list-item-title class="text-subtitle-1 font-weight-bold mb-2">
-                                        Issues
+                                        {{ t().buttons.issues }}
                                       </v-list-item-title>
                                       <v-list-item-subtitle>
                                         <v-chip v-for="(issue, index) in mainTechnicalData.robotsTxt.issues"
@@ -270,7 +274,7 @@
                                       <v-btn variant="text" size="small" class="mt-2"
                                         @click="showContent(mainTechnicalData.robotsTxt.content, 'robots.txt')">
                                         <v-icon start>mdi-eye</v-icon>
-                                        View content
+                                        {{ t().buttons.viewContent }}
                                       </v-btn>
                                     </v-list-item>
                                   </v-list>
@@ -294,7 +298,8 @@
                                         </v-icon>
                                       </template>
                                       <v-list-item-title>
-                                        {{ mainTechnicalData?.sitemap?.found ? 'Found' : 'Not found' }}
+                                        {{ mainTechnicalData?.sitemap?.found ? t().buttons.found : t().buttons.notFound
+                                        }}
                                       </v-list-item-title>
                                       <v-list-item-subtitle v-if="mainTechnicalData?.sitemap?.urls">
                                         {{ mainTechnicalData.sitemap.urls }} URLs indexed
@@ -302,7 +307,7 @@
                                     </v-list-item>
                                     <v-list-item v-if="mainTechnicalData?.sitemap?.issues?.length">
                                       <v-list-item-title class="text-subtitle-1 font-weight-bold mb-2">
-                                        Issues
+                                        {{ t().buttons.issues }}
                                       </v-list-item-title>
                                       <v-list-item-subtitle>
                                         <v-chip v-for="(issue, index) in mainTechnicalData.sitemap.issues" :key="index"
@@ -315,7 +320,7 @@
                                       <v-btn variant="text" size="small" class="mt-2"
                                         @click="showContent(mainTechnicalData.sitemap.content, 'sitemap.xml')">
                                         <v-icon start>mdi-eye</v-icon>
-                                        View content
+                                        {{ t().buttons.viewContent }}
                                       </v-btn>
                                     </v-list-item>
                                   </v-list>
@@ -333,19 +338,21 @@
                   <v-card variant="outlined" class="mb-4">
                     <v-card-title class="d-flex align-center">
                       <v-icon size="24" color="primary" class="mr-2">mdi-sitemap</v-icon>
-                      Sitemap
+                      {{ t().cards.websiteData.generatedSitemap }}
                       <v-spacer></v-spacer>
                       <v-btn color="primary" variant="text" density="comfortable" size="small" @click="copySitemap"
                         aria-label="Copy the sitemap">
                         <v-icon size="small">mdi-content-copy</v-icon>
-                        <span class="ml-1">Copy</span>
+                        <span class="ml-1">{{ t().cards.websiteData.copySitemap }}</span>
                       </v-btn>
                     </v-card-title>
                     <v-card-text>
                       <pre ref="sitemapRef" class="sitemap-content pa-4 bg-surface">{{ sitemapLines.join('\n') }}</pre>
                       <div v-if="remainingLines > 0" class="text-center mt-2">
                         <v-btn color="primary" variant="text" size="small" @click="showFullSitemap = !showFullSitemap">
-                          {{ showFullSitemap ? 'Show less' : `Show ${remainingLines} more lines` }}
+                          {{ showFullSitemap ? t().cards.websiteData.showLess :
+                            t().cards.websiteData.showMore.replace('{count}',
+                              remainingLines.toString()) }}
                         </v-btn>
                       </div>
                     </v-card-text>
@@ -376,7 +383,8 @@
           </div>
           <div v-if="dialogContent.split('\n').length > 100" class="text-center mt-2">
             <v-btn color="primary" variant="text" size="small" @click="showFullContent = !showFullContent">
-              {{ showFullContent ? 'Show less' : `Show ${dialogContent.split('\n').length - 100} more lines` }}
+              {{ showFullContent ? t().cards.websiteData.showLess : t().cards.websiteData.showMore.replace('{count}',
+                String(dialogContent.split('\n').length - 100)) }}
             </v-btn>
           </div>
         </v-card-text>
@@ -393,7 +401,10 @@ import 'highlight.js/styles/github-dark.css';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import snackBar from '../components/snackbar.vue';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
+
+const t = useTranslations('website');
 
 interface SemanticDataItem {
   url: string;
@@ -509,7 +520,6 @@ const performanceData = ref({
   largestContentfulPaint: 0,
   cumulativeLayoutShift: 0
 });
-const securityResults = ref([]);
 
 const showFullSitemap = ref(false);
 const sitemapLines = computed(() => {
@@ -917,17 +927,9 @@ onMounted(async () => {
 });
 
 useHead({
-  title: 'Website data - StackUnity',
+  title: computed(() => t().meta.title),
   meta: [
-    { name: 'description', content: 'Visualize and analyze your website data' },
-    { name: 'keywords', content: 'website, analysis, SEO, semantic, accessibility, engagement' },
-    { name: 'robots', content: 'index, follow' },
-    { property: 'og:title', content: 'Website data - StackUnity' },
-    { property: 'og:description', content: 'Visualize and analyze your website data' },
-    { property: 'og:type', content: 'website' }
-  ],
-  link: [
-    { rel: 'canonical', href: 'https://stackunity.com/website' }
+    { name: 'description', content: computed(() => t().meta.description) }
   ]
 });
 

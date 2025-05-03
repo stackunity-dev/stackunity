@@ -5,7 +5,7 @@
         <v-card class="mb-8 rounded-lg" elevation="3">
           <v-card-title class="text-h6 pa-4 bg-secondary text-white">
             <v-icon size="large" class="mr-2">mdi-contrast-circle</v-icon>
-            Contrast Checker
+            {{ t().contrastChecker.title }}
           </v-card-title>
           <v-card-text class="pa-4">
 
@@ -15,21 +15,22 @@
                   <v-col cols="12" md="6">
                     <v-color-picker v-model="textColorPicker" mode="hexa" hide-canvas elevation="4"
                       @update:model-value="updateTextColor" class="mb-4"></v-color-picker>
-                    <v-text-field v-model="textColor" label="Text color" variant="outlined" density="comfortable"
-                      prepend-inner-icon="mdi-format-color-text" hint="Supports hex, rgb, hsl or color names"
-                      persistent-hint @update:model-value="textColorFromField"></v-text-field>
+                    <v-text-field v-model="textColor" :label="t().contrastChecker.textColor" variant="outlined"
+                      density="comfortable" prepend-inner-icon="mdi-format-color-text"
+                      :hint="t().contrastChecker.colorHint" persistent-hint
+                      @update:model-value="textColorFromField"></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6">
                     <v-color-picker v-model="backgroundColorPicker" mode="hexa" hide-canvas elevation="4"
                       @update:model-value="updateBackgroundColor" class="mb-4"></v-color-picker>
-                    <v-text-field v-model="backgroundColor" label="Background color" variant="outlined"
-                      density="comfortable" prepend-inner-icon="mdi-format-color-fill"
-                      hint="Supports hex, rgb, hsl or color names" persistent-hint
+                    <v-text-field v-model="backgroundColor" :label="t().contrastChecker.backgroundColor"
+                      variant="outlined" density="comfortable" prepend-inner-icon="mdi-format-color-fill"
+                      :hint="t().contrastChecker.colorHint" persistent-hint
                       @update:model-value="backgroundColorFromField"></v-text-field>
                   </v-col>
                   <v-col cols="12" class="d-flex justify-center">
                     <v-btn @click="getContrast" color="primary" prepend-icon="mdi-calculator" class="mb-4">
-                      Calculate contrast
+                      {{ t().contrastChecker.calculateButton }}
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -38,27 +39,27 @@
               <v-col cols="12" md="6">
                 <v-card :style="`background-color: ${backgroundColor}`" class="pa-4 rounded-lg h-100" elevation="1">
                   <v-card-title :style="`color: ${textColor}`" class="text-center">
-                    Contrast Preview
+                    {{ t().contrastChecker.preview.title }}
                   </v-card-title>
                   <v-card-text :style="`color: ${textColor}`" class="text-center">
                     <div class="mb-4">
-                      <p class="text-body-1 mb-2">Normal Text (16px)</p>
+                      <p class="text-body-1 mb-2">{{ t().contrastChecker.preview.normalText }}</p>
                       <p class="text-body-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
                     </div>
                     <div class="mb-4">
-                      <p class="text-body-1 mb-2">Large Text (18px+)</p>
+                      <p class="text-body-1 mb-2">{{ t().contrastChecker.preview.largeText }}</p>
                       <p class="text-h6">Lorem ipsum dolor sit amet</p>
                     </div>
                     <div class="mb-4">
-                      <p class="text-body-1 mb-2">Bold Text</p>
+                      <p class="text-body-1 mb-2">{{ t().contrastChecker.preview.boldText }}</p>
                       <p class="text-body-1 font-weight-bold">Lorem ipsum dolor sit amet</p>
                     </div>
                     <div class="mb-4">
-                      <p class="text-body-1 mb-2">Italic Text</p>
+                      <p class="text-body-1 mb-2">{{ t().contrastChecker.preview.italicText }}</p>
                       <p class="text-body-1 font-italic">Lorem ipsum dolor sit amet</p>
                     </div>
                     <div>
-                      <p class="text-body-1 mb-2">Link Example</p>
+                      <p class="text-body-1 mb-2">{{ t().contrastChecker.preview.linkExample }}</p>
                       <a :style="`color: ${textColor}`" href="/accessibility" class="text-decoration-underline">Lorem
                         ipsum
                         dolor</a>
@@ -74,11 +75,13 @@
               <v-col cols="12" md="6" class="mx-auto">
                 <v-card class="pa-4 rounded-lg" elevation="3">
                   <v-card-title class="text-center">
-                    <div class="text-h4 font-weight-bold mb-2">Contrast Ratio: {{ Math.round(contrast * 100) / 100 }}:1
+                    <div class="text-h4 font-weight-bold mb-2">{{ t().contrastChecker.results.contrastRatio }}: {{
+                      Math.round(contrast * 100) / 100 }}:1
                     </div>
                     <v-chip :color="contrast < 4.5 ? 'error' : contrast < 7 ? 'warning' : 'success'" class="mb-2">
-                      {{ contrast < 4.5 ? 'Insufficient Contrast' : contrast < 7 ? 'Acceptable Contrast'
-                        : 'Excellent Contrast' }} </v-chip>
+                      {{ contrast < 4.5 ? t().contrastChecker.results.insufficientContrast : contrast < 7 ?
+                        t().contrastChecker.results.acceptableContrast : t().contrastChecker.results.excellentContrast
+                      }} </v-chip>
                   </v-card-title>
                   <v-card-text>
                     <v-row>
@@ -87,7 +90,7 @@
                           <div class="d-flex align-center justify-center">
                             <v-icon :color="contrast < 4.5 ? 'error' : 'success'" class="mr-2">
                               {{ contrast < 4.5 ? 'mdi-close-circle' : 'mdi-check-circle' }} </v-icon>
-                                <span>Normal Text (min. 4.5:1)</span>
+                                <span>{{ t().contrastChecker.results.normalTextRequirement }}</span>
                           </div>
                         </v-card>
                       </v-col>
@@ -96,31 +99,30 @@
                           <div class="d-flex align-center justify-center">
                             <v-icon :color="contrast < 3 ? 'error' : 'success'" class="mr-2">
                               {{ contrast < 3 ? 'mdi-close-circle' : 'mdi-check-circle' }} </v-icon>
-                                <span>Large Text (min. 3:1)</span>
+                                <span>{{ t().contrastChecker.results.largeTextRequirement }}</span>
                           </div>
                         </v-card>
                       </v-col>
                     </v-row>
                     <div class="mt-4 text-center">
                       <p class="text-body-1">
-                        {{ contrast < 4.5
-                          ? 'The contrast is insufficient for good readability. Try more contrasting colors.'
-                          : 'Congratulations! Your colors meet contrast standards for an accessible site.' }} </p>
+                        {{ contrast < 4.5 ? t().contrastChecker.results.insufficientMessage :
+                          t().contrastChecker.results.successMessage }} </p>
                     </div>
                     <div class="mt-4">
                       <v-list density="compact">
                         <v-list-item prepend-icon="mdi-information">
-                          <v-list-item-title>WCAG 2.1 AA Standard</v-list-item-title>
+                          <v-list-item-title>{{ t().contrastChecker.results.wcagAA }}</v-list-item-title>
                           <v-list-item-subtitle>
-                            <span>Normal Text (min. 4.5:1): </span>
+                            <span>{{ t().contrastChecker.results.normalTextRequirement }}: </span>
                             <v-icon size="small" color="success" v-if="contrast >= 4.5">mdi-check</v-icon>
                             <v-icon size="small" color="error" v-else>mdi-close</v-icon>
                           </v-list-item-subtitle>
                         </v-list-item>
                         <v-list-item prepend-icon="mdi-information">
-                          <v-list-item-title>WCAG 2.1 AAA Standard</v-list-item-title>
+                          <v-list-item-title>{{ t().contrastChecker.results.wcagAAA }}</v-list-item-title>
                           <v-list-item-subtitle>
-                            <span>Normal Text (min. 7:1): </span>
+                            <span>{{ t().contrastChecker.results.normalTextRequirement }}: </span>
                             <v-icon size="small" color="success" v-if="contrast >= 7">mdi-check</v-icon>
                             <v-icon size="small" color="error" v-else>mdi-close</v-icon>
                           </v-list-item-subtitle>
@@ -137,14 +139,14 @@
         <v-card class="mt-8 mb-8 rounded-lg" elevation="3" ref="parentCard">
           <v-card-title class="text-h6 pa-4 bg-secondary text-white">
             <v-icon size="large" class="mr-2">mdi-eye</v-icon>
-            Visual Impairment Simulator
+            {{ t().visionSimulator.title }}
           </v-card-title>
           <v-card-text class="pa-4" :class="{ 'iframe-parent-fullscreen': isFullscreen }">
             <v-row>
               <v-col cols="12" md="4" :class="{ 'd-none': isFullscreen }">
-                <v-text-field v-model="urlToSimulate" label="URL of the site to simulate" variant="outlined"
-                  density="comfortable" prepend-inner-icon="mdi-web" hint="Enter the complete URL (https://...)"
-                  persistent-hint @keyup.enter="loadUrl">
+                <v-text-field v-model="urlToSimulate" :label="t().visionSimulator.urlLabel" variant="outlined"
+                  density="comfortable" prepend-inner-icon="mdi-web" :hint="t().visionSimulator.urlHint" persistent-hint
+                  @keyup.enter="loadUrl">
                   <template v-slot:append>
                     <v-btn variant="tonal" size="small" color="secondary" @click="loadUrl" class="mr-2"
                       :disabled="!urlToSimulate">
@@ -157,9 +159,9 @@
                   </template>
                 </v-text-field>
 
-                <v-select v-model="selectedVisionType" :items="availableVisionTypes" label="Type of visual impairment"
-                  variant="outlined" density="comfortable" class="mt-4" item-title="title" item-value="value"
-                  @update:model-value="applyVisionFilter">
+                <v-select v-model="selectedVisionType" :items="availableVisionTypes"
+                  :label="t().visionSimulator.visionTypeLabel" variant="outlined" density="comfortable" class="mt-4"
+                  item-title="title" item-value="value" @update:model-value="applyVisionFilter">
                   <template v-slot:prepend-inner>
                     <v-icon :icon="visionTypes.find(t => t.value === selectedVisionType)?.icon || 'mdi-eye'"></v-icon>
                   </template>
@@ -172,15 +174,17 @@
                   </template>
                   <div class="d-flex align-center justify-space-between">
                     <div>
-                      <div class="text-subtitle-1 mb-1">Limited access</div>
-                      <p class="mb-0">Upgrade to the premium version to access all types of visual impairments.</p>
+                      <div class="text-subtitle-1 mb-1">{{ t().visionSimulator.limitedAccess.title }}</div>
+                      <p class="mb-0">{{ t().visionSimulator.limitedAccess.description }}</p>
                     </div>
-                    <v-btn color="primary" variant="tonal" size="small" @click="goToPricingPage">Upgrade</v-btn>
+                    <v-btn color="primary" variant="tonal" size="small" @click="goToPricingPage">
+                      {{ t().visionSimulator.limitedAccess.upgradeButton }}
+                    </v-btn>
                   </div>
                 </v-alert>
 
                 <v-slider v-if="selectedVisionType !== 'normal'" v-model="filterIntensity" :min="0" :max="100" :step="1"
-                  label="Intensity of the filter" thumb-label class="mt-4"
+                  :label="t().visionSimulator.intensityLabel" thumb-label class="mt-4"
                   @update:model-value="applyVisionFilter"></v-slider>
               </v-col>
 
@@ -193,28 +197,29 @@
                     <div v-else-if="iframeLoading" class="d-flex align-center justify-center"
                       style="height: 100%; background: #f5f5f5;">
                       <v-progress-circular indeterminate color="primary"></v-progress-circular>
-                      <div class="text-h6 text-grey ml-2">Loading...</div>
+                      <div class="text-h6 text-grey ml-2">{{ t().visionSimulator.loading }}</div>
                     </div>
                     <div v-else class="d-flex align-center justify-center" style="height: 100%; background: #f5f5f5;">
                       <v-icon size="64" color="grey">mdi-web</v-icon>
-                      <div class="text-h6 text-grey ml-2">Enter an URL to start</div>
+                      <div class="text-h6 text-grey ml-2">{{ t().visionSimulator.enterUrl }}</div>
                     </div>
                   </div>
                 </div>
 
                 <div :class="{ 'fullscreen-controls': isFullscreen }">
                   <v-btn v-if="isFullscreen" icon variant="tonal" color="primary" @click="toggleFullscreen"
-                    title="Exit fullscreen">
+                    :title="t().visionSimulator.fullscreenControls.exitFullscreen">
                     <v-icon>{{ isFullscreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen' }}</v-icon>
                   </v-btn>
                   <v-btn v-if="isFullscreen" icon variant="tonal" class="ml-2" color="primary" @click="reloadIframe"
-                    title="Refresh page">
+                    :title="t().visionSimulator.fullscreenControls.refreshPage">
                     <v-icon>mdi-refresh</v-icon>
                   </v-btn>
 
                   <v-menu v-if="isFullscreen" offset-y>
                     <template v-slot:activator="{ props }">
-                      <v-btn icon variant="tonal" color="primary" v-bind="props" class="ml-2" title="Vision type">
+                      <v-btn icon variant="tonal" color="primary" v-bind="props" class="ml-2"
+                        :title="t().visionSimulator.fullscreenControls.visionType">
                         <v-icon>{{visionTypes.find(t => t.value === selectedVisionType)?.icon || 'mdi-eye'}}</v-icon>
                       </v-btn>
                     </template>
@@ -233,9 +238,11 @@
                         <template v-slot:prepend>
                           <v-icon color="warning">mdi-lock</v-icon>
                         </template>
-                        <v-list-item-title>Other types (Standard)</v-list-item-title>
+                        <v-list-item-title>{{ t().visionSimulator.fullscreenControls.otherTypes }}</v-list-item-title>
                         <template v-slot:append>
-                          <v-btn size="small" variant="tonal" color="primary" @click="goToPricingPage">Upgrade</v-btn>
+                          <v-btn size="small" variant="tonal" color="primary" @click="goToPricingPage">
+                            {{ t().visionSimulator.limitedAccess.upgradeButton }}
+                          </v-btn>
                         </template>
                       </v-list-item>
                     </v-list>
@@ -257,28 +264,34 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import { useUserStore } from '../stores/userStore';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+import {
+  calculateContrastRatio,
+  parseColor
+} from '../utils/accessibility/contrast';
+import { useTranslations } from '../languages';
 
 const userStore = useUserStore();
 const router = useRouter();
+const t = useTranslations('accessibility');
 
 definePageMeta({
   layout: 'dashboard'
 });
 
 useHead({
-  title: 'Accessibility - StackUnity',
+  title: t().meta.title,
   meta: [
-    { name: 'description', content: 'Accessibility tools for web developers' },
+    { name: 'description', content: t().meta.description },
     { name: 'keywords', content: 'accessibility, web accessibility, web accessibility tools, accessibility testing, web accessibility testing, accessibility guidelines, web accessibility guidelines, accessibility best practices, web accessibility best practices' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Accessibility - StackUnity' },
-    { name: 'og:description', content: 'Accessibility tools for web developers' },
+    { name: 'og:title', content: t().meta.title },
+    { name: 'og:description', content: t().meta.description },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [
@@ -302,44 +315,44 @@ const filterIntensity = ref(100);
 const typingTimer = ref<ReturnType<typeof setTimeout> | null>(null);
 const iframeLoading = ref(false);
 
-const visionTypes = [
+const visionTypes = computed(() => [
   {
-    title: 'Normal vision',
+    title: t().visionSimulator.visionTypes.normal,
     value: 'normal',
     icon: 'mdi-eye'
   },
   {
-    title: 'Protanopia (Red-Green)',
+    title: t().visionSimulator.visionTypes.protanopia,
     value: 'protanopia',
     icon: 'mdi-eye-minus'
   },
   {
-    title: 'Deuteranopia (Red-Green)',
+    title: t().visionSimulator.visionTypes.deuteranopia,
     value: 'deuteranopia',
     icon: 'mdi-eye-minus'
   },
   {
-    title: 'Tritanopia (Blue-Yellow)',
+    title: t().visionSimulator.visionTypes.tritanopia,
     value: 'tritanopia',
     icon: 'mdi-eye-minus'
   },
   {
-    title: 'Achromatopsia (Black and White)',
+    title: t().visionSimulator.visionTypes.achromatopsia,
     value: 'achromatopsia',
     icon: 'mdi-eye-off'
   },
   {
-    title: 'Blur',
+    title: t().visionSimulator.visionTypes.blur,
     value: 'blur',
     icon: 'mdi-blur'
   }
-];
+]);
 
 const availableVisionTypes = computed(() => {
   if (userStore.isStandard) {
-    return visionTypes;
+    return visionTypes.value;
   } else {
-    return visionTypes.filter(type => ['normal', 'protanopia'].includes(type.value));
+    return visionTypes.value.filter(type => ['normal', 'protanopia'].includes(type.value));
   }
 });
 
@@ -404,7 +417,7 @@ watch(() => userStore.isAuthenticated, () => {
 watch(() => selectedVisionType.value, (newType) => {
   if (!userStore.isStandard && !['normal', 'protanopia'].includes(newType)) {
     selectedVisionType.value = 'protanopia';
-    alert('This simulation is only available for standard users. Upgrade to the standard version to access all types of visual impairments.');
+    alert(t().visionSimulator.alerts.accessAlert);
   }
 });
 
@@ -506,8 +519,8 @@ const convertToHex = (colorStr: string): string => {
 };
 
 const getContrast = async () => {
-  const srgbText = extractRGB(textColor.value);
-  const srgbBackground = extractRGB(backgroundColor.value);
+  const srgbText = parseColor(textColor.value);
+  const srgbBackground = parseColor(backgroundColor.value);
 
   if (srgbText && srgbBackground) {
     const contrastRatio = calculateContrastRatio(srgbText, srgbBackground);
@@ -516,113 +529,7 @@ const getContrast = async () => {
 }
 
 function extractRGB(color: string) {
-  const trimmed = color.trim();
-
-  if (trimmed.startsWith('#')) {
-    let hex = trimmed.substring(1);
-
-
-    if (hex.length === 3) {
-      hex = hex.split('').map(h => h + h).join('');
-    }
-
-    if (hex.length === 6) {
-      const r = parseInt(hex.substring(0, 2), 16) / 255;
-      const g = parseInt(hex.substring(2, 4), 16) / 255;
-      const b = parseInt(hex.substring(4, 6), 16) / 255;
-      return { red: r, green: g, blue: b };
-    }
-  }
-
-  const rgbMatch = trimmed.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*[\d.]+)?\s*\)/i);
-  if (rgbMatch) {
-    return {
-      red: parseInt(rgbMatch[1], 10) / 255,
-      green: parseInt(rgbMatch[2], 10) / 255,
-      blue: parseInt(rgbMatch[3], 10) / 255
-    };
-  }
-
-  const hslMatch = trimmed.match(/hsla?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%(?:\s*,\s*[\d.]+)?\s*\)/i);
-  if (hslMatch) {
-    return hslToRgb(
-      parseInt(hslMatch[1], 10) / 360,
-      parseInt(hslMatch[2], 10) / 100,
-      parseInt(hslMatch[3], 10) / 100
-    );
-  }
-
-  if (typeof document !== 'undefined') {
-    const tempEl = document.createElement('div');
-    tempEl.style.color = trimmed;
-    document.body.appendChild(tempEl);
-    const computedColor = getComputedStyle(tempEl).color;
-    document.body.removeChild(tempEl);
-
-    const match = computedColor.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*[\d.]+)?\s*\)/i);
-    if (match) {
-      return {
-        red: parseInt(match[1], 10) / 255,
-        green: parseInt(match[2], 10) / 255,
-        blue: parseInt(match[3], 10) / 255
-      };
-    }
-  }
-
-  return null;
-}
-
-function hslToRgb(h: number, s: number, l: number) {
-  let r: number, g: number, b: number;
-
-  if (s === 0) {
-    r = g = b = l;
-  } else {
-    const hue2rgb = (p: number, q: number, t: number) => {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1 / 6) return p + (q - p) * 6 * t;
-      if (t < 1 / 2) return q;
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-      return p;
-    };
-
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-
-    r = hue2rgb(p, q, h + 1 / 3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1 / 3);
-  }
-
-  return {
-    red: Math.min(1, Math.max(0, r)),
-    green: Math.min(1, Math.max(0, g)),
-    blue: Math.min(1, Math.max(0, b))
-  };
-}
-
-function calculateLuminance(srgb: { red: number, green: number, blue: number }) {
-  const r = Math.min(1, Math.max(0, srgb.red));
-  const g = Math.min(1, Math.max(0, srgb.green));
-  const b = Math.min(1, Math.max(0, srgb.blue));
-
-  const transform = (channel: number) =>
-    channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
-
-  const R = transform(r);
-  const G = transform(g);
-  const B = transform(b);
-
-  return 0.2126 * R + 0.7152 * G + 0.0722 * B;
-}
-
-function calculateContrastRatio(srgbText: { red: number, green: number, blue: number }, srgbBackground: { red: number, green: number, blue: number }) {
-  const luminanceText = calculateLuminance(srgbText);
-  const luminanceBackground = calculateLuminance(srgbBackground);
-  const brighter = Math.max(luminanceText, luminanceBackground);
-  const darker = Math.min(luminanceText, luminanceBackground);
-  return (brighter + 0.05) / (darker + 0.05);
+  return parseColor(color);
 }
 
 function loadUrl() {
@@ -645,7 +552,7 @@ function loadUrl() {
       selectedVisionType.value = 'normal';
     }
   } catch (e) {
-    alert('Please enter a valid URL');
+    alert(t().visionSimulator.alerts.invalidUrl);
     urlToSimulate.value = '';
     finalUrl.value = '';
   }

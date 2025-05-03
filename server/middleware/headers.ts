@@ -3,7 +3,6 @@ import { appendResponseHeader, defineEventHandler } from 'h3'
 export default defineEventHandler((event) => {
   appendResponseHeader(event, 'Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
   appendResponseHeader(event, 'X-Content-Type-Options', 'nosniff')
-  appendResponseHeader(event, 'X-Frame-Options', 'SAMEORIGIN')
   appendResponseHeader(event, 'X-XSS-Protection', '1; mode=block')
   appendResponseHeader(event, 'Referrer-Policy', 'strict-origin-when-cross-origin')
 
@@ -15,13 +14,10 @@ export default defineEventHandler((event) => {
 
   const url = event.node.req.url || '';
 
-  let cspValue = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://plausible.io https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src * 'self' data: blob:; connect-src 'self' https://plausible.io https://api.stripe.com; worker-src 'self'; frame-src https://js.stripe.com; frame-ancestors 'none'";
-
   if (url.includes('plausible-proxy.js')) {
-    cspValue = "script-src 'self' 'unsafe-inline' 'unsafe-eval'; worker-src 'self'; connect-src *";
+    const cspValue = "script-src 'self' 'unsafe-inline' 'unsafe-eval'; worker-src 'self'; connect-src *";
+    appendResponseHeader(event, 'Content-Security-Policy', cspValue);
   }
-
-  appendResponseHeader(event, 'Content-Security-Policy', cspValue)
 
   if (
     url.includes('/_nuxt/') ||

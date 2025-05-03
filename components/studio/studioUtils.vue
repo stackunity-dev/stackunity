@@ -4,19 +4,19 @@
       <div class="control-panel" role="complementary" aria-label="Card customization panel">
         <v-card flat class="fill-height">
           <div class="px-4 py-2 d-flex align-center" role="group" aria-label="Framework indicators">
-            <v-chip color="primary" prepend-icon="mdi-vuejs" size="small" class="mr-2"
-              aria-label="Vue.js framework">Vue.js</v-chip>
+            <v-chip color="primary" prepend-icon="mdi-vuejs" size="small" class="mr-2" aria-label="Vue.js framework">{{
+              t.framework.vue }}</v-chip>
             <v-chip color="secondary" prepend-icon="mdi-vuetify" size="small" class="mr-2"
-              aria-label="Vuetify framework">Vuetify</v-chip>
+              aria-label="Vuetify framework">{{ t.framework.vuetify }}</v-chip>
             <v-chip color="tertiary" prepend-icon="mdi-palette" size="small" class="mr-12" aria-label="Studio mode">{{
-              studioMode === 'studio' ? 'Studio' : 'SEO' }}</v-chip>
+              studioMode === 'studio' ? t.framework.studio : t.framework.seo }}</v-chip>
             <v-menu offset-y>
               <template v-slot:activator="{ props }">
                 <v-btn v-if="studioMode === 'studio-seo'" class="ml-7" icon density="comfortable" variant="text"
                   v-bind="props" color="secondary" aria-label="Test vision impairments" size="small">
                   <v-icon>{{ visionTypeIcon }}</v-icon>
                   <v-tooltip activator="parent" location="top">
-                    Try different vision types
+                    {{ t.vision.tryDifferent }}
                   </v-tooltip>
                 </v-btn>
               </template>
@@ -30,8 +30,8 @@
                 </v-list-item>
                 <v-divider v-if="selectedVisionType !== 'normal'"></v-divider>
                 <v-list-item v-if="selectedVisionType !== 'normal'">
-                  <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" label="Intensity" hide-details
-                    class="px-2 py-0" density="compact" @update:model-value="applyVisionFilter">
+                  <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" :label="t.vision.intensity"
+                    hide-details class="px-2 py-0" density="compact" @update:model-value="applyVisionFilter">
                   </v-slider>
                 </v-list-item>
               </v-list>
@@ -41,11 +41,11 @@
           </div>
 
           <v-tabs v-model="tab" color="primary" align-tabs="center" class="px-4">
-            <v-tab value="type">Type</v-tab>
-            <v-tab value="style">Style</v-tab>
-            <v-tab value="content">Content</v-tab>
-            <v-tab value="actions">Actions</v-tab>
-            <v-tab value="templates">Templates</v-tab>
+            <v-tab value="type">{{ t.tabs.type }}</v-tab>
+            <v-tab value="style">{{ t.tabs.style }}</v-tab>
+            <v-tab value="content">{{ t.tabs.content }}</v-tab>
+            <v-tab value="actions">{{ t.tabs.actions }}</v-tab>
+            <v-tab value="templates">{{ t.tabs.templates }}</v-tab>
           </v-tabs>
 
           <v-divider></v-divider>
@@ -56,7 +56,7 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-shape</v-icon>
-                    <span class="text-h6">Component Type</span>
+                    <span class="text-h6">{{ t.tabs.type }}</span>
                   </div>
 
                   <v-card class="mb-4 pa-3">
@@ -72,11 +72,11 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-palette</v-icon>
-                    <span class="text-h6">Appearance</span>
+                    <span class="text-h6">{{ t.tabs.style }}</span>
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Variant</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.style.variant }}</label>
                     <v-chip-group v-model="properties.variant" mandatory selected-class="bg-primary text-white">
                       <v-chip v-for="variant in variants" :key="variant" size="small" :value="variant">
                         {{ variant }}
@@ -85,7 +85,7 @@
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Size</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.style.size }}</label>
                     <v-chip-group v-model="properties.size" mandatory selected-class="bg-primary text-white">
                       <v-chip v-for="size in sizes" :key="size" size="small" :value="size">
                         {{ size }}
@@ -94,7 +94,7 @@
                   </div>
 
                   <div class="mb-4">
-                    <label class="text-subtitle-2 mb-2">Color</label>
+                    <label class="text-subtitle-2 mb-2">{{ t.style.color }}</label>
                     <v-btn-toggle v-model="properties.color" mandatory density="comfortable"
                       selected-class="border-primary">
                       <v-btn v-for="color in colors" :key="color.value" :value="color.value"
@@ -105,11 +105,13 @@
                     </v-btn-toggle>
                   </div>
 
-                  <v-switch v-model="properties.rounded" color="primary" label="Rounded" hide-details class="mb-2">
+                  <v-switch v-model="properties.rounded" color="primary" :label="t.style.rounded" hide-details
+                    class="mb-2">
                   </v-switch>
-                  <v-switch v-model="properties.block" color="primary" label="Full Width" hide-details class="mb-2">
+                  <v-switch v-model="properties.block" color="primary" :label="t.style.block" hide-details class="mb-2">
                   </v-switch>
-                  <v-switch v-model="properties.disabled" color="primary" label="Disabled" hide-details class="mb-2">
+                  <v-switch v-model="properties.disabled" color="primary" :label="t.style.disabled" hide-details
+                    class="mb-2">
                   </v-switch>
                 </div>
               </v-window-item>
@@ -118,69 +120,69 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-text</v-icon>
-                    <span class="text-h6">Content</span>
+                    <span class="text-h6">{{ t.tabs.content }}</span>
                   </div>
 
-                  <v-text-field v-model="properties.text" label="Text" variant="outlined" density="comfortable"
-                    class="mb-4"></v-text-field>
+                  <v-text-field v-model="properties.text" :label="t.content.text" variant="outlined"
+                    density="comfortable" class="mb-4"></v-text-field>
 
-                  <v-text-field v-if="showIconField" v-model="properties.icon" label="Icon (e.g. mdi-heart)"
+                  <v-text-field v-if="showIconField" v-model="properties.icon" :label="t.content.icon"
                     variant="outlined" density="comfortable" class="mb-4"></v-text-field>
 
                   <template v-if="selectedType === 'button'">
-                    <v-text-field v-model="properties.href" label="Link URL" variant="outlined" density="comfortable"
-                      class="mb-4"></v-text-field>
+                    <v-text-field v-model="properties.href" :label="t.content.href" variant="outlined"
+                      density="comfortable" class="mb-4"></v-text-field>
                     <v-select v-model="properties.target" :items="['_self', '_blank', '_parent', '_top']"
                       label="Link Target" variant="outlined" density="comfortable" class="mb-4"></v-select>
-                    <v-slider v-model="properties.elevation" :min="0" :max="24" label="Elevation"
+                    <v-slider v-model="properties.elevation" :min="0" :max="24" :label="t.content.elevation"
                       class="mb-4"></v-slider>
-                    <v-select v-model="properties.gradient" :items="gradients" label="Gradient Direction"
+                    <v-select v-model="properties.gradient" :items="gradients" :label="t.content.gradient"
                       variant="outlined" density="comfortable" class="mb-4"></v-select>
-                    <v-switch v-model="properties.loading" color="primary" label="Loading" hide-details
+                    <v-switch v-model="properties.loading" color="primary" :label="t.content.loading" hide-details
                       class="mb-2"></v-switch>
                   </template>
 
                   <template v-if="selectedType === 'date'">
                     <v-switch v-model="properties.landscape" color="primary" label="Landscape" hide-details
                       class="mb-2"></v-switch>
-                    <v-switch v-model="properties.multiple" color="primary" label="Multiple Dates" hide-details
+                    <v-switch v-model="properties.multiple" color="primary" :label="t.content.multiple" hide-details
                       class="mb-2"></v-switch>
-                    <v-switch v-model="properties.fullWidth" color="primary" label="Full Width" hide-details
+                    <v-switch v-model="properties.fullWidth" color="primary" :label="t.content.fullWidth" hide-details
                       class="mb-2"></v-switch>
-                    <v-switch v-model="properties.showAdjacentMonths" color="primary" label="Show Adjacent Months"
-                      hide-details class="mb-2"></v-switch>
+                    <v-switch v-model="properties.showAdjacentMonths" color="primary"
+                      :label="t.content.showAdjacentMonths" hide-details class="mb-2"></v-switch>
 
-                    <v-text-field v-model="properties.title" label="Title" variant="outlined" density="comfortable"
-                      class="mb-4"></v-text-field>
+                    <v-text-field v-model="properties.title" :label="t.content.title" variant="outlined"
+                      density="comfortable" class="mb-4"></v-text-field>
                   </template>
 
-                  <v-select v-if="showPosition" v-model="properties.position" :items="positions" label="Position"
-                    variant="outlined" density="comfortable" class="mb-4"></v-select>
+                  <v-select v-if="showPosition" v-model="properties.position" :items="positions"
+                    :label="t.content.position" variant="outlined" density="comfortable" class="mb-4"></v-select>
 
-                  <v-textarea v-if="showDescription" v-model="properties.description" label="Description"
+                  <v-textarea v-if="showDescription" v-model="properties.description" :label="t.content.description"
                     variant="outlined" density="comfortable" auto-grow rows="3" class="mb-4"></v-textarea>
 
                   <template v-if="selectedType === 'table'">
-                    <div class="text-subtitle-1 mb-2">Table Headers</div>
+                    <div class="text-subtitle-1 mb-2">{{ t.content.tableHeaders }}</div>
                     <v-card class="mb-4 pa-3">
                       <div v-for="(header, index) in properties.tableHeaders" :key="index"
                         class="d-flex align-center mb-2">
-                        <v-text-field v-model="header.title" label="Header Title" variant="outlined" density="compact"
+                        <v-text-field v-model="header.title" :label="t.content.headerTitle" variant="outlined"
+                          density="compact" class="mr-2"></v-text-field>
+                        <v-text-field v-model="header.key" :label="t.content.key" variant="outlined" density="compact"
                           class="mr-2"></v-text-field>
-                        <v-text-field v-model="header.key" label="Key" variant="outlined" density="compact"
-                          class="mr-2"></v-text-field>
-                        <v-switch v-model="header.sortable" color="primary" label="Sortable" hide-details
+                        <v-switch v-model="header.sortable" color="primary" :label="t.content.sortable" hide-details
                           class="mr-2"></v-switch>
                         <v-btn icon="mdi-delete" color="error" variant="text" density="compact"
                           @click="properties.tableHeaders.splice(index, 1)"></v-btn>
                       </div>
                       <v-btn color="primary" prepend-icon="mdi-plus" variant="tonal" block @click="addTableHeader"
                         class="mt-2">
-                        Add Header
+                        {{ t.content.addHeader }}
                       </v-btn>
                     </v-card>
 
-                    <div class="text-subtitle-1 mb-2">Table Items</div>
+                    <div class="text-subtitle-1 mb-2">{{ t.content.tableItems }}</div>
                     <v-card class="mb-4 pa-3">
                       <div v-for="(item, index) in properties.tableItems" :key="index" class="d-flex align-center mb-2">
                         <div v-for="header in properties.tableHeaders" :key="header.key" class="mr-2">
@@ -192,24 +194,24 @@
                       </div>
                       <v-btn color="primary" prepend-icon="mdi-plus" variant="tonal" block @click="addTableItem"
                         class="mt-2">
-                        Add Item
+                        {{ t.content.addItem }}
                       </v-btn>
                     </v-card>
 
-                    <v-slider v-model="properties.itemsPerPage" :min="5" :max="25" :step="5" label="Items Per Page"
-                      class="mb-4" thumb-label></v-slider>
+                    <v-slider v-model="properties.itemsPerPage" :min="5" :max="25" :step="5"
+                      :label="t.content.itemsPerPage" class="mb-4" thumb-label></v-slider>
 
-                    <v-select v-model="properties.sortBy" :items="getSortableKeys()" label="Default Sort By"
+                    <v-select v-model="properties.sortBy" :items="getSortableKeys()" :label="t.content.defaultSortBy"
                       variant="outlined" density="comfortable" class="mb-4"></v-select>
 
-                    <v-select v-model="properties.sortOrder" :items="['asc', 'desc']" label="Sort Order"
+                    <v-select v-model="properties.sortOrder" :items="['asc', 'desc']" :label="t.content.sortOrder"
                       variant="outlined" density="comfortable" class="mb-4"></v-select>
 
-                    <v-switch v-model="properties.showSelect" color="primary" label="Show Selection" hide-details
+                    <v-switch v-model="properties.showSelect" color="primary" :label="t.content.showSelection"
+                      hide-details class="mb-2"></v-switch>
+                    <v-switch v-model="properties.showFooter" color="primary" :label="t.content.showFooter" hide-details
                       class="mb-2"></v-switch>
-                    <v-switch v-model="properties.showFooter" color="primary" label="Show Footer" hide-details
-                      class="mb-2"></v-switch>
-                    <v-switch v-model="properties.dense" color="primary" label="Dense" hide-details
+                    <v-switch v-model="properties.dense" color="primary" :label="t.content.dense" hide-details
                       class="mb-2"></v-switch>
                   </template>
 
@@ -218,7 +220,7 @@
                       :items="['bar', 'line', 'pie', 'doughnut', 'radar', 'polarArea']" label="Chart Type"
                       variant="outlined" density="comfortable" class="mb-4"></v-select>
 
-                    <div class="text-subtitle-1 mb-2">Chart Data</div>
+                    <div class="text-subtitle-1 mb-2">{{ t.content.chartData }}</div>
                     <v-card class="mb-4 pa-3">
                       <div v-for="(value, index) in properties.chartData" :key="index" class="d-flex align-center mb-2">
                         <v-text-field v-model="properties.chartLabels[index]" label="Label" variant="outlined"
@@ -230,45 +232,45 @@
                       </div>
                       <v-btn color="primary" prepend-icon="mdi-plus" variant="tonal" block @click="addChartDataPoint"
                         class="mt-2">
-                        Add Data Point
+                        {{ t.content.addDataPoint }}
                       </v-btn>
                     </v-card>
 
                     <v-switch v-model="properties.showLegend" color="primary" label="Show Legend" hide-details
                       class="mb-2"></v-switch>
-                    <v-switch v-model="properties.responsive" color="primary" label="Responsive" hide-details
+                    <v-switch v-model="properties.responsive" color="primary" :label="t.content.responsive" hide-details
                       class="mb-2"></v-switch>
-                    <v-switch v-model="properties.maintainAspectRatio" color="primary" label="Maintain Aspect Ratio"
-                      hide-details class="mb-2"></v-switch>
+                    <v-switch v-model="properties.maintainAspectRatio" color="primary"
+                      :label="t.content.maintainAspectRatio" hide-details class="mb-2"></v-switch>
                   </template>
 
                   <template v-if="selectedType === 'file'">
-                    <v-text-field v-model="properties.dropzoneText" label="Dropzone Text" variant="outlined"
+                    <v-text-field v-model="properties.dropzoneText" :label="t.content.dropzoneText" variant="outlined"
                       density="comfortable" class="mb-4"></v-text-field>
 
-                    <v-text-field v-model="properties.acceptTypes" label="Accepted File Types" variant="outlined"
+                    <v-text-field v-model="properties.acceptTypes" :label="t.content.acceptTypes" variant="outlined"
                       density="comfortable" placeholder="image/*, .pdf, .docx" class="mb-4"></v-text-field>
 
-                    <v-slider v-model="properties.maxFiles" :min="1" :max="20" label="Max Files" class="mb-4"
+                    <v-slider v-model="properties.maxFiles" :min="1" :max="20" :label="t.content.maxFiles" class="mb-4"
                       thumb-label></v-slider>
 
                     <v-slider v-model="properties.maxSize" :min="1" :max="50" label="Max Size (MB)" class="mb-4"
                       thumb-label></v-slider>
 
-                    <v-switch v-model="properties.multiple" color="primary" label="Allow Multiple Files" hide-details
+                    <v-switch v-model="properties.multiple" color="primary" :label="t.content.multiple" hide-details
                       class="mb-2"></v-switch>
-                    <v-switch v-model="properties.showPreview" color="primary" label="Show Preview" hide-details
-                      class="mb-2"></v-switch>
-                    <v-switch v-model="properties.autoUpload" color="primary" label="Auto Upload" hide-details
-                      class="mb-2"></v-switch>
-                    <v-switch v-model="properties.chips" color="primary" label="Show as Chips" hide-details
-                      class="mb-2"></v-switch>
-                    <v-switch v-model="properties.counter" color="primary" label="Show Counter" hide-details
-                      class="mb-2"></v-switch>
-                    <v-switch v-model="properties.validateOnSelect" color="primary" label="Validate on Select"
+                    <v-switch v-model="properties.showPreview" color="primary" :label="t.content.showPreview"
                       hide-details class="mb-2"></v-switch>
-                    <v-switch v-model="properties.returnObject" color="primary" label="Return Object" hide-details
+                    <v-switch v-model="properties.autoUpload" color="primary" :label="t.content.autoUpload" hide-details
                       class="mb-2"></v-switch>
+                    <v-switch v-model="properties.chips" color="primary" :label="t.content.chips" hide-details
+                      class="mb-2"></v-switch>
+                    <v-switch v-model="properties.counter" color="primary" :label="t.content.counter" hide-details
+                      class="mb-2"></v-switch>
+                    <v-switch v-model="properties.validateOnSelect" color="primary" :label="t.content.validateOnSelect"
+                      hide-details class="mb-2"></v-switch>
+                    <v-switch v-model="properties.returnObject" color="primary" :label="t.content.returnObject"
+                      hide-details class="mb-2"></v-switch>
                   </template>
                 </div>
               </v-window-item>
@@ -277,29 +279,29 @@
                 <div class="pa-4">
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-gesture-tap-button</v-icon>
-                    <span class="text-h6">Interactions</span>
+                    <span class="text-h6">{{ t.tabs.actions }}</span>
                   </div>
 
                   <v-card class="mb-4 pa-3">
-                    <div class="text-subtitle-1 mb-2">Event Handling</div>
+                    <div class="text-subtitle-1 mb-2">{{ t.content.eventHandling }}</div>
 
-                    <v-select v-model="properties.eventType" :items="eventTypes" label="Event Type" variant="outlined"
-                      density="comfortable" class="mb-3"></v-select>
+                    <v-select v-model="properties.eventType" :items="eventTypes" :label="t.content.eventType"
+                      variant="outlined" density="comfortable" class="mb-3"></v-select>
 
-                    <v-text-field v-model="properties.eventHandler" label="Event Handler" placeholder="methodName"
-                      variant="outlined" density="comfortable" class="mb-3"></v-text-field>
+                    <v-text-field v-model="properties.eventHandler" :label="t.content.eventHandler"
+                      placeholder="methodName" variant="outlined" density="comfortable" class="mb-3"></v-text-field>
 
-                    <v-switch v-model="properties.stopPropagation" color="primary" label="Stop Propagation" hide-details
-                      class="mb-2"></v-switch>
+                    <v-switch v-model="properties.stopPropagation" color="primary" :label="t.content.stopPropagation"
+                      hide-details class="mb-2"></v-switch>
 
-                    <v-switch v-model="properties.preventDefault" color="primary" label="Prevent Default" hide-details
-                      class="mb-4"></v-switch>
+                    <v-switch v-model="properties.preventDefault" color="primary" :label="t.content.preventDefault"
+                      hide-details class="mb-4"></v-switch>
                   </v-card>
 
                   <v-card class="mb-4 pa-3">
-                    <div class="text-subtitle-1 mb-2">Animation & Transitions</div>
+                    <div class="text-subtitle-1 mb-2">{{ t.content.animationTransitions }}</div>
 
-                    <v-select v-model="properties.transition" :items="transitions" label="Transition Effect"
+                    <v-select v-model="properties.transition" :items="transitions" :label="t.content.transitionEffect"
                       variant="outlined" density="comfortable" class="mb-3"></v-select>
 
                     <div class="d-flex align-center mb-3">
@@ -311,28 +313,29 @@
                   </v-card>
 
                   <v-card class="mb-4 pa-3">
-                    <div class="text-subtitle-1 mb-2">Advanced Options</div>
+                    <div class="text-subtitle-1 mb-2">{{ t.content.advancedOptions }}</div>
 
-                    <v-switch v-model="properties.ripple" color="primary" label="Ripple Effect" hide-details
+                    <v-switch v-model="properties.ripple" color="primary" :label="t.content.rippleEffect" hide-details
                       class="mb-2"></v-switch>
 
-                    <v-switch v-model="properties.eager" color="primary" label="Eager Loading" hide-details
+                    <v-switch v-model="properties.eager" color="primary" :label="t.content.eagerLoading" hide-details
                       class="mb-2"></v-switch>
 
-                    <v-switch v-model="properties.closeOnContentClick" color="primary" label="Close on Content Click"
-                      hide-details class="mb-2" v-if="['badge'].includes(selectedType)"></v-switch>
+                    <v-switch v-model="properties.closeOnContentClick" color="primary"
+                      :label="t.content.closeOnContentClick" hide-details class="mb-2"
+                      v-if="['badge'].includes(selectedType)"></v-switch>
 
-                    <v-switch v-model="properties.closeOnBack" color="primary" label="Close on Back Navigation"
+                    <v-switch v-model="properties.closeOnBack" color="primary" :label="t.content.closeOnBackNavigation"
                       hide-details class="mb-2" v-if="['alert'].includes(selectedType)"></v-switch>
                   </v-card>
 
                   <v-card v-if="selectedType === 'button'" class="mb-4 pa-3">
-                    <div class="text-subtitle-1 mb-2">Button Specific Actions</div>
+                    <div class="text-subtitle-1 mb-2">{{ t.content.buttonSpecificActions }}</div>
 
-                    <v-select v-model="properties.buttonType" :items="buttonTypes" label="Button Type"
+                    <v-select v-model="properties.buttonType" :items="buttonTypes" :label="t.content.buttonType"
                       variant="outlined" density="comfortable" class="mb-3"></v-select>
 
-                    <v-text-field v-model="properties.formAction" label="Form Action"
+                    <v-text-field v-model="properties.formAction" :label="t.content.formAction"
                       placeholder="https://example.com/submit" variant="outlined" density="comfortable"
                       v-if="properties.buttonType === 'submit'" class="mb-3"></v-text-field>
                   </v-card>
@@ -344,59 +347,59 @@
                   <div class="section-title d-flex align-center mb-3 justify-space-between">
                     <div class="d-flex align-center">
                       <v-icon color="primary" class="mr-2">mdi-file-document-outline</v-icon>
-                      <span class="text-h6">Component Templates</span>
+                      <span class="text-h6">{{ t.tabs.templates }}</span>
                     </div>
                     <v-tooltip location="bottom">
                       <template v-slot:activator="{ props }">
                         <v-btn icon="mdi-help-circle-outline" variant="text" size="small" v-bind="props"></v-btn>
                       </template>
-                      <span>Apply pre-defined templates or save your own</span>
+                      <span>{{ t.tabs.templatesTooltip }}</span>
                     </v-tooltip>
                   </div>
 
-                  <p class="text-body-2 mb-4">Choose a pre-defined template to quickly create common components.</p>
+                  <p class="text-body-2 mb-4">{{ t.tabs.templatesDescription }}</p>
 
                   <v-card class="mb-4">
                     <v-list>
                       <v-list-item @click="applyTemplate('info')" prepend-icon="mdi-information" title="Info Alert"
                         subtitle="Informational message"></v-list-item>
                       <v-list-item @click="applyTemplate('status')" prepend-icon="mdi-account-check"
-                        title="Status Badge" subtitle="User status indicator"></v-list-item>
+                        :title="t.content.statusBadge" :subtitle="t.content.userStatusIndicator"></v-list-item>
                       <v-list-item @click="applyTemplate('barChart')" prepend-icon="mdi-chart-bar" title="Bar Chart"
                         subtitle="Monthly data visualization"></v-list-item>
                       <v-list-item @click="applyTemplate('lineChart')" prepend-icon="mdi-chart-line" title="Line Chart"
                         subtitle="Weekly trend visualization"></v-list-item>
                       <v-list-item @click="applyTemplate('pieChart')" prepend-icon="mdi-chart-pie" title="Pie Chart"
-                        subtitle="Distribution visualization"></v-list-item>
+                        :subtitle="t.content.distributionVisualization"></v-list-item>
                       <v-list-item @click="applyTemplate('doughnutChart')" prepend-icon="mdi-chart-donut"
-                        title="Doughnut Chart" subtitle="Product distribution"></v-list-item>
+                        :title="t.content.doughnutChart" :subtitle="t.content.productDistribution"></v-list-item>
                       <v-list-item @click="applyTemplate('radarChart')" prepend-icon="mdi-chart-scatter-plot"
-                        title="Radar Chart" subtitle="Performance metrics"></v-list-item>
+                        :title="t.content.radarChart" :subtitle="t.content.performanceMetrics"></v-list-item>
                       <v-list-item @click="applyTemplate('polarAreaChart')" prepend-icon="mdi-chart-arc"
-                        title="Polar Area Chart" subtitle="Regional distribution"></v-list-item>
+                        :title="t.content.polarAreaChart" :subtitle="t.content.regionalDistribution"></v-list-item>
                       <v-list-item @click="applyTemplate('dataTable')" prepend-icon="mdi-table" title="Data Table"
-                        subtitle="Structured data display"></v-list-item>
+                        :subtitle="t.content.structuredDataDisplay"></v-list-item>
                       <v-list-item @click="applyTemplate('fileUpload')" prepend-icon="mdi-file-upload"
-                        title="File Upload" subtitle="Document upload component"></v-list-item>
+                        :title="t.content.fileUpload" :subtitle="t.content.documentUploadComponent"></v-list-item>
                     </v-list>
                   </v-card>
 
                   <v-alert type="info" variant="tonal" class="mb-4">
-                    Applying a template will replace your current component settings.
+                    {{ t.tabs.templatesAlert }}
                   </v-alert>
 
                   <v-divider class="my-4"></v-divider>
 
                   <div class="section-title d-flex align-center mb-3">
                     <v-icon color="primary" class="mr-2">mdi-content-save</v-icon>
-                    <span class="text-h6">Save Current Component</span>
+                    <span class="text-h6">{{ t.tabs.saveCurrentComponent }}</span>
                   </div>
 
-                  <v-text-field v-model="customTemplateName" label="Template Name" variant="outlined"
+                  <v-text-field v-model="customTemplateName" :label="t.tabs.templateName" variant="outlined"
                     density="comfortable" prepend-inner-icon="mdi-tag" class="mb-4"></v-text-field>
 
                   <v-btn color="primary" prepend-icon="mdi-content-save" block @click="saveCurrentTemplate">
-                    Save Current Component as Template
+                    {{ t.tabs.saveCurrentComponentButton }}
                   </v-btn>
                 </div>
               </v-window-item>
@@ -411,7 +414,7 @@
           <v-chip :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="flat" size="small"
             class="mr-2">
             <v-icon start size="small">mdi-eye</v-icon>
-            Live Preview
+            {{ t.tabs.livePreview }}
           </v-chip>
         </div>
 
@@ -489,10 +492,10 @@
 
         <div class="d-flex justify-end mt-3">
           <v-btn color="secondary" class="mr-2" prepend-icon="mdi-eye" @click="previewCode">
-            Preview Code
+            {{ t.tabs.previewCode }}
           </v-btn>
           <v-btn color="primary" prepend-icon="mdi-content-copy" @click="copyUtilsCode">
-            Copy Code
+            {{ t.tabs.copyCode }}
           </v-btn>
         </div>
       </div>
@@ -502,8 +505,9 @@
       <v-card class="bg-grey-darken-4">
         <v-card-title class="d-flex justify-space-between align-center pa-4">
           <v-tabs v-model="codeTab" color="primary">
-            <v-tab value="template">Template</v-tab>
-            <v-tab value="theme">Theme</v-tab>
+            <v-tab value="template">{{ t.tabs.template }}</v-tab>
+            <v-tab value="script">{{ t.tabs.script }}</v-tab>
+            <v-tab value="theme">{{ t.tabs.theme }}</v-tab>
           </v-tabs>
           <v-btn icon="mdi-close" variant="text" @click="showCodeDialog = false"></v-btn>
         </v-card-title>
@@ -526,7 +530,7 @@
         </v-card-text>
         <v-card-actions class="pa-4">
           <v-btn color="secondary" prepend-icon="mdi-content-copy" @click="copyCurrentTab">
-            Copy Current Tab
+            {{ t.tabs.copyCurrentTab }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -537,8 +541,6 @@
 </template>
 
 <script setup lang="ts">
-import hljs from 'highlight.js/lib/core';
-import 'highlight.js/styles/atom-one-dark.css';
 import {
   ArcElement,
   BarElement, CategoryScale,
@@ -549,15 +551,20 @@ import {
   RadialLinearScale,
   Title, Tooltip
 } from 'chart.js';
+import hljs from 'highlight.js/lib/core';
+import 'highlight.js/styles/atom-one-dark.css';
 import { computed, inject, nextTick, ref, watch } from 'vue';
 import { Bar, Doughnut, Line, Pie, PolarArea, Radar } from 'vue-chartjs';
 import Snackbar from '../../components/snackbar.vue';
+import { useTranslations } from '../../languages';
 import { useUserStore } from '../../stores/userStore';
-import { getUtilsTemplate } from '../../utils/utilsTemplates';
-import theme from '../../utils/theme';
-import { StudioModeInjection } from './studio-types';
 import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
-import { componentTypes, selectedType, variants, sizes, positions, gradients, eventTypes, transitions, buttonTypes, colors, properties, showIconField, showPosition, showDescription, chartData, chartOptions, AlertType } from './types/type-utils';
+import theme from '../../utils/theme';
+import { getUtilsTemplate } from '../../utils/utilsTemplates';
+import { StudioModeInjection } from './studio-types';
+import { AlertType, buttonTypes, chartData, chartOptions, colors, componentTypes, eventTypes, gradients, positions, properties, selectedType, showDescription, showIconField, showPosition, sizes, transitions, variants } from './types/type-utils';
+
+const t = useTranslations('studioUtilsTemplates')();
 
 const emit = defineEmits(['update:content', 'save']);
 const userStore = useUserStore();

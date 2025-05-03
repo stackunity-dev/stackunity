@@ -3,15 +3,16 @@
     <header>
       <v-app-bar app :elevation="2" :color="'surface'" class="px-0 nav-bar" v-model="showAppBar" role="banner">
         <v-container class="d-flex align-center py-0 my-0">
-          <NuxtLink to="/login" class="text-decoration-none" aria-label="StackUnity Home">
+          <NuxtLink :to="localePath('/login')" class="text-decoration-none mr-2" aria-label="StackUnity Home">
             <div class="d-flex align-center brand-container">
               <img src="/logo/stackunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="150"
                 class="logo-image">
               <div class="brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left">
-                <span class="text-caption font-weight-medium text-gradient">OPTIMIZE YOUR WORKFLOW</span>
+                <span class="text-caption font-weight-medium text-gradient">{{ t().hero.tagline }}</span>
               </div>
             </div>
           </NuxtLink>
+          <LanguageSelector />
           <v-spacer></v-spacer>
 
           <div v-if="isClient" class="d-flex align-center" aria-label="Main Navigation">
@@ -27,17 +28,18 @@
               </div>
 
               <div class="auth-buttons ml-4" role="navigation" aria-label="Authentication">
-                <v-btn color="primary" class="login-btn" aria-label="Login" to="/login" variant="tonal"
+                <v-btn color="primary" class="login-btn" aria-label="Login" :to="localePath('/login')" variant="tonal"
                   rounded="rounded-xl" prepend-icon="mdi-login">
-                  Login
+                  {{ t().navigation.login }}
                 </v-btn>
               </div>
             </nav>
 
             <div v-else class="d-flex align-center">
-              <v-btn color="primary" class="mr-2" to="/login" aria-label="Login" size="small" rounded="pill">
+              <v-btn color="primary" class="mr-2" :to="localePath('/login')" aria-label="Login" size="small"
+                rounded="pill">
                 <v-icon size="small" class="mr-1">mdi-login</v-icon>
-                Login
+                {{ t().navigation.login }}
               </v-btn>
               <v-btn icon @click="drawer = !drawer" class="menu-toggle-btn" aria-label="Toggle navigation menu"
                 :aria-expanded="drawer">
@@ -82,10 +84,10 @@
         </div>
 
         <div class="drawer-footer mt-auto pt-6">
-          <v-btn block color="secondary" to="/signup" aria-label="Get started" class="mb-4"
+          <v-btn block color="secondary" :to="localePath('/signup')" aria-label="Get started" class="mb-4"
             @mouseenter="setHoverOn('start-free-trial')" @mouseleave="setHoverOff('start-free-trial')"
             :elevation="getElevation('start-free-trial', 6, 20)">
-            Get started for free
+            {{ t().hero.ctaMobile }}
           </v-btn>
           <p class="text-caption text-center text-medium-emphasis">Join our community of developers and propulse your
             web projects to new horizons.</p>
@@ -103,11 +105,10 @@
                   class="text-center justify-center d-flex flex-column align-center text-md-start">
                   <h1 id="hero-heading" class="text-h2 text-gradient text-center font-weight-bold mb-4"
                     style="max-width: 800px">
-                    Simplify your development workflow in just a few clicks and develop faster
+                    {{ t().hero.title }}
                   </h1>
                   <p class="text-h5 text-center mb-4 text-medium-emphasis">
-                    Develop faster and simplify your workflow with our integrated professional tools. Build, manage and
-                    optimize your projects for a site that is more accessible, user-friendly and SEO-friendly.
+                    {{ t().hero.description }}
                   </p>
                   <div class="features-banner d-flex flex-wrap justify-center mb-6">
                     <div class="mini-feature mr-4 mb-2" v-for="feature in heroFeatures" :key="feature">
@@ -117,12 +118,12 @@
                   </div>
                   <div class="d-flex flex-column flex-sm-row ga-4 justify-center align-center " role="group"
                     aria-label="Call to action">
-                    <v-btn color="secondary" size="x-large" aria-label="Get started" to="/signup" variant="elevated"
-                      class="px-16 my-4" :elevation="getElevation('start-free-trial', 6, 20)"
+                    <v-btn color="secondary" size="x-large" aria-label="Get started" :to="localePath('/signup')"
+                      variant="elevated" class="px-16 my-4" :elevation="getElevation('start-free-trial', 6, 20)"
                       @mouseenter="setHoverOn('start-free-trial')" @mouseleave="setHoverOff('start-free-trial')"
                       width="80%">
                       <v-icon start aria-hidden="true">mdi-rocket-launch-outline</v-icon>
-                      {{ display.smAndDown.value ? 'Try for free' : 'Simplify your workflow now' }}
+                      {{ display.smAndDown.value ? t().hero.ctaMobile : t().hero.cta }}
                     </v-btn>
                   </div>
                 </v-col>
@@ -156,10 +157,9 @@
           <section class="py-16 bad-experiences-section" aria-labelledby="bad-experiences-heading">
             <v-container>
               <div class="text-center mb-12">
-                <h2 class="text-h3 text-gradient font-weight-bold mb-4">Fix what drives users away — with Stackunity
-                </h2>
+                <h2 class="text-h3 text-gradient font-weight-bold mb-4">{{ t().badExperiences.title }}</h2>
                 <p class="text-subtitle-1 text-medium-emphasis mx-auto">
-                  Identify and solve the 3 biggest reasons users leave your site — fast, with our smart tools.
+                  {{ t().badExperiences.description }}
                 </p>
               </div>
 
@@ -191,13 +191,12 @@
           <section id="features" class="py-16" aria-labelledby="features-heading">
             <v-container>
               <div class="text-center mb-12">
-                <span class="section-subtitle text-uppercase font-weight-medium text-primary mb-2 d-block">Main
-                  features</span>
-                <h2 id="features-heading" class="text-h3 text-gradient font-weight-bold mb-3">Powerful tools for your
-                  projects
+                <span class="section-subtitle text-uppercase font-weight-medium text-primary mb-2 d-block">{{
+                  t().features.subtitle }}</span>
+                <h2 id="features-heading" class="text-h3 text-gradient font-weight-bold mb-3">{{ t().features.title }}
                 </h2>
                 <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
-                  StackUnity gathers all the tools you need to develop modern web applications on a single platform.
+                  {{ t().features.description }}
                 </p>
               </div>
 
@@ -258,8 +257,9 @@
               <div class="d-flex justify-center mt-4">
                 <v-btn size="large" color="secondary" variant="elevated" class="px-8 rounded-pill"
                   :elevation="getElevation('get-started-now', 2, 20)" @mouseenter="setHoverOn('get-started-now')"
-                  @mouseleave="setHoverOff('get-started-now')" to="/signup" aria-label="Get started now" nuxt>
-                  Get started now
+                  @mouseleave="setHoverOff('get-started-now')" :to="localePath('/signup')" aria-label="Get started now"
+                  nuxt>
+                  {{ t().features.cta }}
                   <v-icon end aria-hidden="true">mdi-rocket-launch-outline</v-icon>
                 </v-btn>
               </div>
@@ -270,9 +270,11 @@
         <section class="py-16 how-it-works-section" aria-labelledby="how-it-works-heading">
           <v-container>
             <div class="text-center mb-12">
-              <h2 id="how-it-works-heading" class="text-h3 text-gradient font-weight-bold mb-3">How it works</h2>
+              <h2 id="how-it-works-heading" class="text-h3 text-gradient font-weight-bold mb-3">{{ t().howItWorks.title
+                }}
+              </h2>
               <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
-                Three simple steps to transform your development workflow
+                {{ t().howItWorks.description }}
               </p>
             </div>
 
@@ -291,7 +293,7 @@
                     <v-card-text class="text-body-1">{{ step.description }}</v-card-text>
                     <v-card-actions>
                       <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="px-0">
-                        Learn more
+                        {{ t().cta.learnMore }}
                         <v-icon end>mdi-arrow-right</v-icon>
                       </v-btn>
                     </v-card-actions>
@@ -314,16 +316,16 @@
           <v-container>
             <v-row justify="center">
               <v-col cols="12" md="8" class="text-center">
-                <h2 id="cta-heading" class="text-h3 text-gradient font-weight-bold white--text mb-4">Ready to start ?
+                <h2 id="cta-heading" class="text-h3 text-gradient font-weight-bold white--text mb-4">{{ t().cta.title }}
                 </h2>
                 <p class="text-subtitle-1 white--text text-opacity-high mb-8">
-                  Simplify your workflow with our tools and get more rest now.
+                  {{ t().cta.description }}
                 </p>
                 <v-btn x-large color="secondary" variant="elevated"
                   :elevation="getElevation('create-free-account', 2, 20)"
                   @mouseenter="setHoverOn('create-free-account')" @mouseleave="setHoverOff('create-free-account')"
-                  class="px-8" aria-label="Create an account" to="/signup">
-                  7-day free trial
+                  class="px-8" aria-label="Create an account" :to="localePath('/signup')">
+                  {{ t().cta.button }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -341,21 +343,21 @@
                 loading="eager">
             </div>
             <p class="text-body-2 text-medium-emphasis mb-4">
-              Simplify your workflow with our tools and get more rest now.
+              {{ t().footer.description }}
             </p>
             <div class="newsletter-signup mb-6">
               <form class="d-flex" aria-label="Newsletter Subscription">
-                <v-text-field v-model="email" density="compact" placeholder="Your email address"
+                <v-text-field v-model="email" density="compact" :placeholder="t().footer.newsletter.placeholder"
                   aria-label="Your email address" variant="outlined" hide-details class="mr-2"
                   prepend-inner-icon="mdi-email-outline"
                   :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'Email must be valid']"></v-text-field>
                 <v-btn color="info" variant="tonal" class="ml-n1" :loading="loading" @click="submitEmail" type="submit"
                   aria-label="Subscribe to newsletter">
-                  Subscribe
+                  {{ t().footer.newsletter.button }}
                 </v-btn>
               </form>
               <p class="text-caption text-medium-emphasis mt-1">
-                Receive our latest news and development tips
+                {{ t().footer.newsletter.description }}
               </p>
             </div>
             <nav aria-label="Social Media Links">
@@ -379,7 +381,7 @@
             <v-row class="footer-columns-container">
               <v-col v-for="(column, index) in footerColumns" :key="index" cols="6" md="4" class="footer-column px-4">
                 <h4 id="footer-column-heading-{{index}}" class="text-subtitle-1 font-weight-bold mb-4">{{ column.title
-                }}
+                  }}
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"
@@ -396,7 +398,7 @@
 
         <div class="d-flex flex-column flex-sm-row justify-space-between align-center">
           <div class="text-body-2 text-medium-emphasis mb-3 mb-sm-0">
-            &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
+            &copy; {{ new Date().getFullYear() }} StackUnity. {{ t().footer.copyright }}
           </div>
           <div class="d-flex align-center">
             <a href="mailto:contact@stackunity.com" class="text-body-2 text-decoration-none text-medium-emphasis"
@@ -412,15 +414,19 @@
 
 <script lang="ts" setup>
 // @ts-ignore 
-import { definePageMeta, useHead } from '#imports';
-import { defineAsyncComponent, onMounted, provide, ref } from 'vue';
+import { definePageMeta, useHead, useNuxtApp } from '#imports';
+import { computed, defineAsyncComponent, onMounted, provide, ref } from 'vue';
 import { useDisplay } from 'vuetify';
 import FadeInSection from '../components/FadeInSection.vue';
+import LanguageSelector from '../components/LanguageSelector.vue';
 import Snackbar from '../components/snackbar.vue';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../utils/filter';
 import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
 import { trackAuthButtonClicks } from '../utils/usePlausible';
+
+const t = useTranslations('index');
 
 const Pricing = defineAsyncComponent({
   loader: () => import('../components/pricing.vue'),
@@ -444,15 +450,15 @@ useHead({
   htmlAttrs: {
     lang: 'en'
   },
-  title: 'StackUnity - Simplify your development workflow',
+  title: computed(() => t().meta.title),
   meta: [
-    { name: 'description', content: 'StackUnity is the all-in-one platform for developers who want to simplify their development workflow and develop faster.' },
-    { name: 'keywords', content: 'web development, developer platform, development tools, SEO audit, SQL generator, accessibility' },
+    { name: 'description', content: computed(() => t().meta.description) },
+    { name: 'keywords', content: computed(() => t().meta.keywords) },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { property: 'og:title', content: 'StackUnity - Simplify your development workflow' },
-    { property: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to simplify their development workflow and develop faster.' },
+    { property: 'og:title', content: computed(() => t().meta.title) },
+    { property: 'og:description', content: computed(() => t().meta.description) },
     { property: 'og:image', content: '/images/preview.png' },
     { property: 'og:url', content: 'https://stackunity.tech' },
     { property: 'og:site_name', content: 'StackUnity' },
@@ -464,8 +470,8 @@ useHead({
     { property: 'og:locale', content: 'en_US' },
     { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'StackUnity - Simplify your development workflow' },
-    { name: 'twitter:description', content: 'StackUnity is the all-in-one platform for developers who want to simplify their development workflow and develop faster.' },
+    { name: 'twitter:title', content: computed(() => t().meta.title) },
+    { name: 'twitter:description', content: computed(() => t().meta.description) },
     { name: 'twitter:image', content: '/images/preview.png' },
     { name: 'twitter:creator', content: '@stackunity' },
     { name: 'twitter:site', content: '@stackunity' }
@@ -473,133 +479,137 @@ useHead({
   link: [
     { rel: 'canonical', href: 'https://stackunity.tech' },
     { rel: 'preload', href: '/logo/stackunity-title.png', as: 'image' }
+
   ],
 })
 
-const heroFeatures = ['Website management', 'Auditing website', 'Accessibility', 'API testing'];
-const stats = [
-  { value: '10x', label: 'Accelerated development' },
-  { value: '100%', label: 'Code quality' },
-  { value: '24/7', label: 'Available support' },
-  { value: '50+', label: 'Integrated tools' }
-];
+const nuxtApp = useNuxtApp()
+const localePath = nuxtApp.$localePath
 
-const features = [
+const heroFeatures = computed(() => t().hero.features);
+const stats = computed(() => [
+  { value: '10x', label: t().stats.accelerated },
+  { value: '100%', label: t().stats.quality },
+  { value: '24/7', label: t().stats.support },
+  { value: '50+', label: t().stats.tools }
+]);
+
+const features = computed(() => [
   {
-    title: 'CSS animations',
-    description: 'Create and manage CSS animations for all your projects.',
+    title: t().features.cssAnimations.title,
+    description: t().features.cssAnimations.description,
     icon: 'mdi-animation',
     color: 'primary'
   },
   {
-    title: 'Studio',
-    description: 'Create modern user interfaces with our integrated design studio.',
+    title: t().features.studio.title,
+    description: t().features.studio.description,
     icon: 'mdi-palette',
     color: 'secondary'
   },
   {
-    title: 'Semantic',
-    description: 'Optimize your website with our semantic and ARIA analysis tools.',
+    title: t().features.semantic.title,
+    description: t().features.semantic.description,
     icon: 'mdi-semantic-web',
     color: 'tertiary'
   },
   {
-    title: 'API testing',
-    description: 'Test your APIs to detect security vulnerabilities and performance issues.',
+    title: t().features.apiTesting.title,
+    description: t().features.apiTesting.description,
     icon: 'mdi-api',
     color: 'info'
   },
   {
-    title: 'Website analysis',
-    description: 'Analyze your website with our tools to improve its performance and accessibility.',
+    title: t().features.websiteAnalysis.title,
+    description: t().features.websiteAnalysis.description,
     icon: 'mdi-magnify',
     color: 'success'
   },
   {
-    title: 'Accessibility',
-    description: 'Check and improve the accessibility of your websites for all users.',
+    title: t().features.accessibility.title,
+    description: t().features.accessibility.description,
     icon: 'mdi-access-point',
     color: 'warning'
   }
-];
+]);
 
-const steps = [
+const steps = computed(() => [
   {
-    title: 'Create your account',
-    description: 'Sign up for free and configure your developer profile in a few minutes.',
-    link: '/signup',
+    title: t().howItWorks.steps[0].title,
+    description: t().howItWorks.steps[0].description,
+    link: localePath('/signup'),
     color: 'primary'
   },
   {
-    title: 'Choose your tools',
-    description: 'Select the tools you need for your project from our wide range of features.',
-    link: '/signup',
+    title: t().howItWorks.steps[1].title,
+    description: t().howItWorks.steps[1].description,
+    link: localePath('/signup'),
     color: 'secondary'
   },
   {
-    title: 'Develop faster',
-    description: 'Use our tools to accelerate your development and improve the quality of your projects.',
-    link: '/signup',
+    title: t().howItWorks.steps[2].title,
+    description: t().howItWorks.steps[2].description,
+    link: localePath('/signup'),
     color: 'tertiary'
   }
-];
+]);
 
-const menuItems = [
-  { title: 'Features', href: '#features', icon: 'mdi-apps-box' },
-  { title: 'Pricing', href: '#pricing', icon: 'mdi-tag-outline' },
-  { title: 'FAQ', href: '#faq', icon: 'mdi-frequently-asked-questions' }
-];
+const menuItems = computed(() => [
+  { title: t().navigation.features, href: '#features', icon: 'mdi-apps-box' },
+  { title: t().navigation.pricing, href: '#pricing', icon: 'mdi-tag-outline' },
+  { title: t().navigation.faq, href: '#faq', icon: 'mdi-frequently-asked-questions' }
+]);
 
-const footerColumns = [
+const footerColumns = computed(() => [
   {
-    title: 'Product',
+    title: t().navigation.products,
     links: [
-      { title: 'Features', to: '#features', ariaLabel: 'Features' },
-      { title: 'Pricing', to: '#pricing', ariaLabel: 'Pricing' },
-      { title: 'FAQ', to: '#faq', ariaLabel: 'FAQ' }
+      { title: t().navigation.features, to: '#features', ariaLabel: 'Features' },
+      { title: t().navigation.pricing, to: '#pricing', ariaLabel: 'Pricing' },
+      { title: t().navigation.faq, to: '#faq', ariaLabel: 'FAQ' }
     ]
   },
   {
-    title: 'Company',
+    title: t().navigation.company,
     links: [
-      { title: 'About', to: '/about', ariaLabel: 'About' },
-      { title: 'Contact', to: '/contact', ariaLabel: 'Contact' },
-      { title: 'Blog', to: '/blog', ariaLabel: 'Blog' }
+      { title: t().navigation.about, to: localePath('/about'), ariaLabel: 'About' },
+      { title: t().navigation.contact, to: localePath('/contact'), ariaLabel: 'Contact' },
+      { title: t().navigation.blog, to: localePath('/blog'), ariaLabel: 'Blog' }
     ]
   },
   {
-    title: 'Legal',
+    title: t().navigation.legal,
     links: [
-      { title: 'Privacy', to: '/privacy', ariaLabel: 'Privacy' },
-      { title: 'Terms', to: '/terms', ariaLabel: 'Terms' },
-      { title: 'Notices', to: '/notices', ariaLabel: 'Notices' }
+      { title: t().navigation.privacy, to: localePath('/privacy'), ariaLabel: 'Privacy' },
+      { title: t().navigation.terms, to: localePath('/terms'), ariaLabel: 'Terms' },
+      { title: t().navigation.notice, to: localePath('/notices'), ariaLabel: 'Notices' }
     ]
   }
-];
-const badExperiences = [
+]);
+
+const badExperiences = computed(() => [
   {
-    title: 'Lack of Accessibility',
-    ctv: 'Over 8% of the global population lives with visual impairments.',
+    title: t().badExperiences.accessibility.title,
+    ctv: t().badExperiences.accessibility.subtitle,
     icon: 'mdi-contrast',
     color: 'primary',
-    text: 'Many users leave your site because they can\'t see or interact with it properly.Stackunity helps you fix this with our Contrast Checker and Visual Impairment Simulator — design for everyone.'
+    text: t().badExperiences.accessibility.description
   },
   {
-    title: 'Poor SEO Performance',
-    ctv: "Your site won't be found if it's invisible to search engines.",
+    title: t().badExperiences.seo.title,
+    ctv: t().badExperiences.seo.subtitle,
     icon: 'mdi-magnify',
     color: 'secondary',
-    text: "If your SEO isn't effective, your site is invisible. Stackunity combines semantic analysis, metadata auditing, and engagement insights to boost your visibility and reach."
+    text: t().badExperiences.seo.description
   },
   {
-    title: 'Unappealing Design',
-    ctv: 'First impressions matter — and users judge fast.',
+    title: t().badExperiences.design.title,
+    ctv: t().badExperiences.design.subtitle,
     icon: 'mdi-palette',
     color: 'tertiary',
-    text: "An unattractive site pushes users away instantly. Stackunity empowers you with a design studio, responsive checker, and content audit tools to create stunning, user-friendly interfaces."
+    text: t().badExperiences.design.description
   }
-];
-
+]);
 
 const drawer = ref(false);
 const activeSection = ref('');
@@ -615,7 +625,6 @@ const pageReady = ref(false);
 const authTracker = trackAuthButtonClicks();
 
 const userStore = useUserStore();
-
 const display = useDisplay();
 
 onMounted(() => {

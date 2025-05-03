@@ -15,18 +15,27 @@
       </div>
 
       <v-list density="compact" v-model:opened="open" nav class="px-2">
-        <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard-outline" title="Dashboard" rounded="lg"
-          class="mb-1" color="primary" nuxt @click="closeDrawer" data-plausible-feature="dashboard_menu">
+
+        <v-list-item rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer"
+          data-plausible-feature="language_menu">
+          <language-selector class="ml-auto" />
         </v-list-item>
 
-        <v-list-item v-if="userStore.user?.isPremium" to="/website" prepend-icon="mdi-web" title="Website" rounded="lg"
-          class="mb-1" color="primary" nuxt @click="closeDrawer" data-plausible-feature="website_menu">
+        <v-list-item :to="localePath('/dashboard')" prepend-icon="mdi-view-dashboard-outline"
+          :title="t().menu.dashboard" rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer"
+          data-plausible-feature="dashboard_menu">
         </v-list-item>
 
-        <PremiumFeature v-if="!userStore.user?.isPremium" type="list-item" title="Website" icon="mdi-web"
+        <v-list-item v-if="userStore.user?.isPremium" :to="localePath('/website')" prepend-icon="mdi-web"
+          :title="t().menu.website" rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer"
+          data-plausible-feature="website_menu">
+        </v-list-item>
+
+        <PremiumFeature v-if="!userStore.user?.isPremium" type="list-item" :title="t().menu.website" icon="mdi-web"
           feature-key="website" plan-type="premium" />
 
-        <v-list-subheader class="mt-2 text-uppercase font-weight-bold text-caption">WORKFLOW</v-list-subheader>
+        <v-list-subheader class="mt-2 text-uppercase font-weight-bold text-caption">{{ t().menu.workflow
+        }}</v-list-subheader>
 
         <v-list-group v-for="(item, index) in items" :key="index" :value="item.title" class="mb-1"
           :prepend-icon="item.prependIcon">
@@ -37,39 +46,40 @@
           <template v-for="(child, idx) in item.children" :key="idx">
             <component v-if="child.component" :is="child.component.component" v-bind="child.component.props"
               class="ml-4 my-1 premium-menu-item" />
-            <v-list-item v-else :to="child.link" :title="child.title" :prepend-icon="child.icon || 'mdi-circle-small'"
-              class="ml-4" rounded="lg" color="primary" nuxt @click="closeDrawer" />
+            <v-list-item v-else :to="localePath(child.link)" :title="child.title"
+              :prepend-icon="child.icon || 'mdi-circle-small'" class="ml-4" rounded="lg" color="primary" nuxt
+              @click="closeDrawer" />
           </template>
         </v-list-group>
 
         <v-divider class="my-3"></v-divider>
 
-        <v-list-subheader class="text-uppercase font-weight-bold text-caption">System</v-list-subheader>
+        <v-list-subheader class="text-uppercase font-weight-bold text-caption">{{ t().menu.system }}</v-list-subheader>
 
         <client-only>
           <v-list-group v-if="userStore.user?.isAdmin" value="Administration" class="mb-1"
             prepend-icon="mdi-shield-account">
             <template #activator="{ props }">
-              <v-list-item v-bind="props" title="Administration" rounded="lg" color="primary" />
+              <v-list-item v-bind="props" :title="t().menu.administration" rounded="lg" color="primary" />
             </template>
 
-            <v-list-item to="/admin/newsletter-admin" prepend-icon="mdi-email-outline" title="Newsletter" rounded="lg"
-              class="ml-4" color="primary" nuxt @click="closeDrawer" />
+            <v-list-item :to="localePath('/admin/newsletter-admin')" prepend-icon="mdi-email-outline"
+              :title="t().menu.newsletter" rounded="lg" class="ml-4" color="primary" nuxt @click="closeDrawer" />
           </v-list-group>
         </client-only>
 
         <v-list-item v-if="userStore.user?.isPremium || userStore.user?.isStandard"
-          prepend-icon="mdi-comment-quote-outline" title="Feedback" rounded="lg" class="mb-1" color="primary"
+          prepend-icon="mdi-comment-quote-outline" :title="t().menu.feedback" rounded="lg" class="mb-1" color="primary"
           @click="showFeedBackDialog = true" />
 
-        <v-list-item v-if="!userStore.user.isPremium || !userStore.user.isStandard" to="/checkout"
-          prepend-icon="mdi-credit-card-outline" title="Premium" rounded="lg" class="mb-1" color="primary" nuxt
-          @click="closeDrawer" />
+        <v-list-item v-if="!userStore.user.isPremium || !userStore.user.isStandard" :to="localePath('/checkout')"
+          prepend-icon="mdi-credit-card-outline" :title="t().menu.premium" rounded="lg" class="mb-1" color="primary"
+          nuxt @click="closeDrawer" />
 
-        <v-list-item to="/settings" prepend-icon="mdi-cog-outline" title="Settings" rounded="lg" class="mb-1"
-          color="primary" nuxt @click="closeDrawer" />
+        <v-list-item :to="localePath('/settings')" prepend-icon="mdi-cog-outline" :title="t().menu.settings"
+          rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer" />
 
-        <v-list-item @click="logout" prepend-icon="mdi-logout" title="Logout" rounded="lg" color="error" />
+        <v-list-item @click="logout" prepend-icon="mdi-logout" :title="t().menu.logout" rounded="lg" color="error" />
       </v-list>
     </v-navigation-drawer>
 
@@ -83,7 +93,7 @@
           <v-chip v-if="currentPageTitle === 'API Testing Hub'" color="secondary" variant="elevated" size="small"
             class="ml-2">
             <v-icon start size="small">mdi-information</v-icon>
-            beta version
+            {{ t().studio.beta }}
           </v-chip>
           <v-menu v-if="currentPageTitle === 'Studio'" offset-y>
             <template v-slot:activator="{ props }">
@@ -99,7 +109,7 @@
                 <template v-slot:prepend>
                   <v-icon color="primary">mdi-palette</v-icon>
                 </template>
-                <v-list-item-title>Studio Mode</v-list-item-title>
+                <v-list-item-title>{{ t().studio.studioMode }}</v-list-item-title>
                 <template v-slot:append>
                   <v-icon v-if="studioMode === 'studio'" color="primary" size="small">mdi-check</v-icon>
                 </template>
@@ -108,7 +118,7 @@
                 <template v-slot:prepend>
                   <v-icon color="secondary">mdi-magnify</v-icon>
                 </template>
-                <v-list-item-title>SEO Mode</v-list-item-title>
+                <v-list-item-title>{{ t().studio.seoMode }}</v-list-item-title>
                 <template v-slot:append>
                   <v-icon v-if="studioMode === 'studio-seo'" color="secondary" size="small">mdi-check</v-icon>
                 </template>
@@ -123,7 +133,7 @@
           <v-card-title class="d-flex justify-space-between align-center pa-4">
             <div class="d-flex align-center">
               <v-icon icon="mdi-message-text-outline" color="primary" class="mr-2"></v-icon>
-              <span class="text-h6">Share Your Feedback</span>
+              <span class="text-h6">{{ t().feedback.title }}</span>
             </div>
             <v-btn icon="mdi-close" variant="text" @click="showFeedBackDialog = false"></v-btn>
           </v-card-title>
@@ -133,7 +143,7 @@
           <v-card-text class="pa-4">
             <v-form @submit.prevent="submitFeedback">
               <div class="feedback-type-selector mb-6">
-                <div class="text-subtitle-2 mb-2">What type of feedback would you like to share?</div>
+                <div class="text-subtitle-2 mb-2">{{ t().feedback.form.typeLabel }}</div>
                 <v-btn-toggle v-model="feedback.type" mandatory class="d-flex flex-wrap justify-space-between"
                   color="primary">
                   <v-btn v-for="type in feedbackTypes" :key="type.value" :value="type.value" :color="type.color"
@@ -144,34 +154,36 @@
                 </v-btn-toggle>
               </div>
 
-              <v-text-field v-model="feedback.title" label="Title" prepend-icon="mdi-format-title" required
-                variant="outlined" class="mb-4" :color="getFeedbackTypeColor(feedback.type)"
+              <v-text-field v-model="feedback.title" :label="t().feedback.form.titleLabel"
+                prepend-icon="mdi-format-title" required variant="outlined" class="mb-4"
+                :color="getFeedbackTypeColor(feedback.type)"
                 :rules="[(v) => !!v || 'Title is required']"></v-text-field>
 
-              <v-textarea v-model="feedback.description" label="Detailed Description" prepend-icon="mdi-text" required
-                rows="4" variant="outlined" class="mb-4" :color="getFeedbackTypeColor(feedback.type)"
-                hint="Please provide as much detail as possible" persistent-hint
+              <v-textarea v-model="feedback.description" :label="t().feedback.form.descriptionLabel"
+                prepend-icon="mdi-text" required rows="4" variant="outlined" class="mb-4"
+                :color="getFeedbackTypeColor(feedback.type)" :hint="t().feedback.form.descriptionHint" persistent-hint
                 :rules="[(v) => !!v || 'Description is required']"></v-textarea>
 
               <div class="rating-section mb-4">
                 <div class="text-subtitle-2 mb-2">{{ feedback.type === 'suggestion' || feedback.type === 'improvement' ?
-                  'How would you rate this feature?' : 'How much this bug is impacting your workflow?' }}</div>
+                  t().feedback.form.ratingLabel.feature : t().feedback.form.ratingLabel.bug }}</div>
                 <v-rating v-model="feedback.rating" color="amber" density="comfortable" size="large" hover
                   half-increments :rules="[(v: any) => !!v || 'Rating is required']"></v-rating>
               </div>
 
-              <v-text-field v-model="feedback.email" label="Email (optional)" prepend-icon="mdi-email-outline"
-                type="email" variant="outlined" class="mb-4" :color="getFeedbackTypeColor(feedback.type)"
-                hint="We'll use this to follow up if needed" persistent-hint></v-text-field>
+              <v-text-field v-model="feedback.email" :label="t().feedback.form.emailLabel"
+                prepend-icon="mdi-email-outline" type="email" variant="outlined" class="mb-4"
+                :color="getFeedbackTypeColor(feedback.type)" :hint="t().feedback.form.emailHint"
+                persistent-hint></v-text-field>
 
               <v-card-actions class="d-flex justify-end pa-0">
                 <v-btn color="grey" variant="text" @click="showFeedBackDialog = false" class="mr-2">
-                  Cancel
+                  {{ t().feedback.form.cancel }}
                 </v-btn>
                 <v-btn :color="getFeedbackTypeColor(feedback.type)" type="submit"
                   :disabled="!feedback.title || !feedback.description" :loading="false" class="px-4">
                   <v-icon icon="mdi-send" class="mr-2"></v-icon>
-                  Submit Feedback
+                  {{ t().feedback.form.submit }}
                 </v-btn>
               </v-card-actions>
             </v-form>
@@ -187,6 +199,8 @@
         <NuxtPage :studio-mode="studioMode" />
       </div>
     </v-main>
+
+    <LanguageChangeMonitor position="bottom-right" :duration="4000" />
   </v-app>
 </template>
 
@@ -196,7 +210,14 @@ import { useRoute, useRouter } from 'vue-router';
 import { useDisplay, useTheme } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
 import Snackbar from '../components/snackbar.vue';
+import { currentLanguage, SupportedLanguage, useTranslations } from '../languages';
+import languageMonitorService from '../services/languageMonitorService';
 import { useUserStore } from '../stores/userStore';
+
+// @ts-ignore
+import { useNuxtApp } from '#app';
+
+const t = useTranslations('layout');
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -209,6 +230,9 @@ const studioMode = ref('studio');
 const isSmall = computed(() => display.smAndDown.value);
 const vuetifyTheme = useTheme();
 const showFeedBackDialog = ref(false);
+const nuxtApp = useNuxtApp();
+const localePath = nuxtApp.$localePath
+
 const snackbar = ref({
   show: false,
   text: '',
@@ -223,16 +247,32 @@ const feedback = ref({
   email: userStore.user?.email || ''
 });
 
-const feedbackTypes = [
-  { title: 'Suggestion', value: 'suggestion', icon: 'mdi-lightbulb-outline', color: 'secondary' },
-  { title: 'Bug Report', value: 'bug', icon: 'mdi-bug-outline', color: 'error' },
-  { title: 'Feature', value: 'improvement', icon: 'mdi-trending-up', color: 'success' },
-  { title: 'Other', value: 'other', icon: 'mdi-dots-horizontal', color: 'grey' }
-];
+const feedbackTypes = computed(() => [
+  { title: t().feedback.types.suggestion, value: 'suggestion', icon: 'mdi-lightbulb-outline', color: 'secondary' },
+  { title: t().feedback.types.bug, value: 'bug', icon: 'mdi-bug-outline', color: 'error' },
+  { title: t().feedback.types.improvement, value: 'improvement', icon: 'mdi-trending-up', color: 'success' },
+  { title: t().feedback.types.other, value: 'other', icon: 'mdi-dots-horizontal', color: 'grey' }
+]);
 
 const getFeedbackTypeColor = (type: string) => {
-  return feedbackTypes.find(t => t.value === type)?.color || 'secondary';
+  const foundType = feedbackTypes.value.find(t => t.value === type);
+  return foundType?.color || 'secondary';
 };
+
+const previousLanguage = ref<SupportedLanguage | null>(null);
+
+watch(() => currentLanguage.value, (newLang, oldLang) => {
+  if (newLang !== oldLang) {
+    const event = languageMonitorService.recordLanguageChange(
+      oldLang as SupportedLanguage,
+      newLang,
+      route.path,
+      'dashboard-layout'
+    );
+
+    previousLanguage.value = oldLang as SupportedLanguage;
+  }
+}, { immediate: true });
 
 onMounted(() => {
   const theme = localStorage.getItem('app_theme');
@@ -266,35 +306,35 @@ const updatePageTitle = () => {
   const path = route.path;
 
   if (path === '/dashboard') {
-    currentPageTitle.value = 'Dashboard';
+    currentPageTitle.value = t().menu.dashboard;
   } else if (path.includes('/website')) {
-    currentPageTitle.value = 'Website';
+    currentPageTitle.value = t().menu.website;
   } else if (path.includes('/performance')) {
-    currentPageTitle.value = 'Performance';
+    currentPageTitle.value = t().menu.performance;
   } else if (path.includes('/animations')) {
-    currentPageTitle.value = 'CSS playground';
+    currentPageTitle.value = t().menu.cssPlayground;
   } else if (path.includes('/database-designer')) {
-    currentPageTitle.value = 'Database Designer';
+    currentPageTitle.value = t().menu.databaseDesigner;
   } else if (path.includes('/semantic')) {
-    currentPageTitle.value = 'Structure & Accessibility';
+    currentPageTitle.value = t().menu.structureAccessibility;
   } else if (path.includes('/security')) {
-    currentPageTitle.value = 'Security';
+    currentPageTitle.value = t().menu.security;
   } else if (path.includes('/content')) {
-    currentPageTitle.value = 'Content';
+    currentPageTitle.value = t().menu.content;
   } else if (path.includes('/studio')) {
-    currentPageTitle.value = 'Studio';
+    currentPageTitle.value = t().menu.studio;
   } else if (path.includes('/responsive')) {
-    currentPageTitle.value = 'Responsive';
+    currentPageTitle.value = t().menu.responsive;
   } else if (path.includes('/accessibility')) {
-    currentPageTitle.value = 'Accessibility';
+    currentPageTitle.value = t().menu.accessibility;
   } else if (path.includes('/robots')) {
-    currentPageTitle.value = 'Robots & Schema';
+    currentPageTitle.value = t().menu.robotsSchema;
   } else if (path.includes('/settings')) {
-    currentPageTitle.value = 'Settings';
+    currentPageTitle.value = t().menu.settings;
   } else if (path.includes('/newsletter-admin')) {
-    currentPageTitle.value = 'Newsletter';
+    currentPageTitle.value = t().menu.newsletter;
   } else if (path.includes('/api-testing-hub')) {
-    currentPageTitle.value = 'API Testing Hub';
+    currentPageTitle.value = t().menu.apiTestingHub;
   } else {
     const routeName = path.split('/').pop() || 'Dashboard';
     currentPageTitle.value = routeName.charAt(0).toUpperCase() + routeName.slice(1);
@@ -375,7 +415,7 @@ const submitFeedback = async () => {
   try {
     if (!feedback.value.title || !feedback.value.description) {
       snackbar.value.show = true;
-      snackbar.value.text = 'Please fill in all required fields';
+      snackbar.value.text = t().feedback.validationError;
       snackbar.value.color = 'error';
       return;
     }
@@ -470,9 +510,9 @@ const items = computed(() => [
     prependIcon: 'mdi-language-html5',
     link: true,
     children: [
-      { title: 'CSS playground', link: '/animations', icon: 'mdi-animation' },
-      { title: 'Studio', link: '/studio', icon: 'mdi-palette' },
-      createPremiumMenuItem('Robots & Schema', '/robots', 'mdi-robot', 'robots', 'standard')
+      { title: t().features.cssPlayground, link: '/animations', icon: 'mdi-animation' },
+      { title: t().features.studio, link: '/studio', icon: 'mdi-palette' },
+      createPremiumMenuItem(t().features.robotsSchema, '/robots', 'mdi-robot', 'robots', 'standard')
     ]
   },
   {
@@ -480,8 +520,8 @@ const items = computed(() => [
     prependIcon: 'mdi-database-outline',
     link: true,
     children: [
-      createPremiumMenuItem('Database Designer', '/database-designer', 'mdi-database', 'databaseDesigner', 'standard'),
-      { title: 'API Testing Hub', link: '/api-testing-hub', icon: 'mdi-api' }
+      createPremiumMenuItem(t().features.databaseDesigner, '/database-designer', 'mdi-database', 'databaseDesigner', 'standard'),
+      { title: t().features.apiTestingHub, link: '/api-testing-hub', icon: 'mdi-api' }
     ]
   },
   {
@@ -489,20 +529,20 @@ const items = computed(() => [
     prependIcon: 'mdi-palette',
     link: true,
     children: [
-      { title: 'Responsive', link: '/responsive', icon: 'mdi-responsive' },
-      { title: 'Accessibility', link: '/accessibility', icon: 'mdi-access-point' },
+      { title: t().features.responsive, link: '/responsive', icon: 'mdi-responsive' },
+      { title: t().features.accessibility, link: '/accessibility', icon: 'mdi-access-point' },
     ]
   },
   {
-    title: 'Analyzer',
+    title: t().categories.analyzer,
     prependIcon: 'mdi-magnify',
     link: true,
     children: [
-      createPremiumMenuItem('Performance', '/performance', 'mdi-speedometer', 'performance', 'premium'),
-      createPremiumMenuItem('Structure & Accessibility', '/semantic', 'mdi-semantic-web', 'semantic', 'premium'),
-      createPremiumMenuItem('Content', '/content', 'mdi-file-document-outline', 'content', 'premium'),
-      createPremiumMenuItem('User Engagement', '/user-engagement', 'mdi-account-group', 'userEngagement', 'premium'),
-      createPremiumMenuItem('Security', '/security', 'mdi-security', 'security', 'premium')
+      createPremiumMenuItem(t().features.performance, '/performance', 'mdi-speedometer', 'performance', 'premium'),
+      createPremiumMenuItem(t().features.structureAccessibility, '/semantic', 'mdi-semantic-web', 'semantic', 'premium'),
+      createPremiumMenuItem(t().features.content, '/content', 'mdi-file-document-outline', 'content', 'premium'),
+      createPremiumMenuItem(t().features.userEngagement, '/user-engagement', 'mdi-account-group', 'userEngagement', 'premium'),
+      createPremiumMenuItem(t().features.security, '/security', 'mdi-security', 'security', 'premium')
     ]
   }
 ]);

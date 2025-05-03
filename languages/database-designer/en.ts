@@ -1,0 +1,143 @@
+export default {
+  meta: {
+    title: 'Database Designer',
+    description: 'Design your database schema visually with our intuitive database designer tool'
+  },
+  tabs: {
+    config: 'Configuration',
+    templates: 'Templates',
+    diagram: 'Diagram'
+  },
+  database: {
+    settings: 'Database Settings',
+    name: 'Database name',
+    namePlaceholder: 'my_database',
+    loadSchema: 'Load existing schema',
+    noTables: 'No tables defined',
+    startAdding: 'Start by adding a table to your database'
+  },
+  table: {
+    add: 'Add table',
+    edit: 'Edit table',
+    delete: 'Delete table',
+    name: 'Table name',
+    namePlaceholder: 'users',
+    description: 'Description',
+    descriptionPlaceholder: 'Contains user information',
+    tables: 'Database tables',
+    unnamed: 'Unnamed table',
+    indices: 'Indices'
+  },
+  column: {
+    add: 'Add column',
+    name: 'Column name',
+    namePlaceholder: 'id',
+    type: 'Data type',
+    length: 'Length',
+    default: 'Default value',
+    attributes: 'Attributes',
+    nullable: 'Nullable',
+    unique: 'Unique',
+    index: 'Index',
+    primaryKey: 'Primary Key',
+    autoIncrement: 'Auto Increment',
+    foreignKey: 'Foreign Key',
+    reference: 'References',
+    onDelete: 'On Delete',
+    onUpdate: 'On Update'
+  },
+  actions: {
+    save: 'Save',
+    export: 'Export',
+    delete: 'Delete',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    regenerate: 'Regenerate SQL',
+    generate: 'Generate SQL',
+    copy: 'Copy to clipboard',
+    download: 'Download',
+    rearrange: 'Rearrange'
+  },
+  export: {
+    json: 'JSON',
+    sql: 'SQL',
+    schema: 'Schema',
+    title: 'Generated SQL',
+    mongodb: 'MongoDB',
+    firestore: 'Firestore',
+    dynamodb: 'DynamoDB',
+    sequelize: 'Sequelize',
+    typeorm: 'TypeORM',
+    prisma: 'Prisma',
+    mongoose: 'Mongoose'
+  },
+  relations: {
+    oneToOne: 'One-to-One',
+    oneToMany: 'One-to-Many',
+    manyToOne: 'Many-to-One',
+    manyToMany: 'Many-to-Many',
+    add: 'Add relation',
+    source: 'Source table',
+    target: 'Target table',
+    type: 'Relation type',
+    name: 'Relation name',
+    through: 'Through table',
+    title: 'Foreign Keys'
+  },
+  templates: {
+    title: 'Database Templates',
+    load: 'Load template',
+    userAuth: 'User Authentication',
+    blog: 'Blog System',
+    ecommerce: 'E-commerce',
+    cms: 'Content Management System',
+    forum: 'Forum System',
+    inventory: 'Inventory Management',
+    description: 'Description',
+    complexity: 'Complexity',
+    tables: 'Tables',
+    relations: 'Relations',
+    info: 'Click on a template to preview its structure. Templates provide predefined database schemas for common use cases.',
+    preview: 'Template Preview',
+    apply: 'Apply this template',
+    blogSystem: 'Blog System',
+    ecommerceStore: 'E-commerce Store',
+    projectManagement: 'Project Management',
+    table_count: '{count} tables',
+    column_count: '{count} columns',
+    blogDescription: 'A template for a basic blog with users, posts, categories, and comments',
+    ecommerceDescription: 'A template for an online store with products, categories, orders, and customers',
+    projectManagementDescription: 'A template for managing projects, tasks, and team members'
+  },
+  notifications: {
+    saved: 'Database schema saved successfully',
+    copied: 'SQL copied to clipboard',
+    deleted: 'Database schema deleted',
+    error: 'An error occurred',
+    loaded: 'Schema loaded successfully',
+    notFound: 'Schema not found',
+    rearranged: 'Tables rearranged'
+  },
+  dataTypes: {
+    integer: 'Integer',
+    decimal: 'Decimal',
+    float: 'Float',
+    double: 'Double',
+    varchar: 'Varchar',
+    text: 'Text',
+    boolean: 'Boolean',
+    date: 'Date',
+    datetime: 'DateTime',
+    timestamp: 'Timestamp',
+    json: 'JSON',
+    uuid: 'UUID',
+    enum: 'Enum'
+  },
+  constraints: {
+    cascade: 'CASCADE',
+    restrict: 'RESTRICT',
+    setNull: 'SET NULL',
+    noAction: 'NO ACTION',
+    setDefault: 'SET DEFAULT'
+  }
+} 

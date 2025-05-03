@@ -8,7 +8,7 @@
               <h1>
                 <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
                   class="logo mb-8" width="350" />
-                <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
+                <span class="sr-only">{{ t().hero.title }}</span>
               </h1>
             </header>
 
@@ -31,43 +31,44 @@
               <img src="/logo/stackunity-title.png" alt="StackUnity Logo" width="240" />
             </div>
 
-            <h2 class="text-h5 font-weight-bold mb-2">Create an account</h2>
-            <p class="text-subtitle-1 text-medium-emphasis mb-6">Join StackUnity and start your experience</p>
+            <h2 class="text-h5 font-weight-bold mb-2">{{ t().form.title }}</h2>
+            <p class="text-subtitle-1 text-medium-emphasis mb-6">{{ t().form.subtitle }}</p>
 
             <v-form @submit.prevent="handleSignup">
               <input type="hidden" name="_csrf" :value="csrfToken" aria-hidden="true" aria-label="CSRF token">
 
-              <v-text-field v-model="form.username" label="Username" type="text" variant="outlined"
+              <v-text-field v-model="form.username" :label="t().form.username.label" type="text" variant="outlined"
                 density="comfortable" prepend-inner-icon="mdi-account-outline" class="mb-3"
-                :rules="[v => !!v || 'Username required']" hide-details="auto" aria-required="true"
+                :rules="[v => !!v || t().form.username.required]" hide-details="auto" aria-required="true"
                 aria-label="Username"></v-text-field>
 
-              <v-text-field v-model="form.email" label="Email address" type="email" variant="outlined"
+              <v-text-field v-model="form.email" :label="t().form.email.label" type="email" variant="outlined"
                 density="comfortable" prepend-inner-icon="mdi-email-outline" class="mb-3" :rules="[
-                  v => !!v || 'Email required',
-                  v => /.+@.+\..+/.test(v) || 'Invalid email format'
+                  v => !!v || t().form.email.required,
+                  v => /.+@.+\..+/.test(v) || t().form.email.invalid
                 ]" hide-details="auto" aria-required="true" aria-label="Email address"></v-text-field>
 
-              <v-text-field v-model="form.password" :type="showPassword ? 'text' : 'password'" label="Password"
-                variant="outlined" prepend-inner-icon="mdi-lock-outline" density="comfortable"
-                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              <v-text-field v-model="form.password" :type="showPassword ? 'text' : 'password'"
+                :label="t().form.password.label" variant="outlined" prepend-inner-icon="mdi-lock-outline"
+                density="comfortable" :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append-inner="togglePasswordVisibility" class="mb-5" :rules="[
-                  v => !!v || 'Password required',
-                  v => v.length >= 8 || 'Password must contain at least 8 characters'
+                  v => !!v || t().form.password.required,
+                  v => v.length >= 8 || t().form.password.minLength
                 ]" hide-details="auto" aria-required="true" aria-label="Password"></v-text-field>
 
               <v-btn block color="primary" type="submit" :loading="loading" min-height="44"
                 class="text-none font-weight-medium" aria-label="Create account">
-                Create account
+                {{ t().form.submit }}
                 <template v-slot:loader>
                   <v-progress-circular indeterminate></v-progress-circular>
                 </template>
               </v-btn>
 
               <div class="text-center mt-6">
-                <span class="text-medium-emphasis">Already have an account?</span>
-                <NuxtLink class="text-decoration-none ml-1 font-weight-medium" to="/login" aria-label="Sign up">
-                  Sign in
+                <span class="text-medium-emphasis">{{ t().createAccount.question }}</span>
+                <NuxtLink class="text-decoration-none ml-1 font-weight-medium" :to="localePath('/login')"
+                  aria-label="Sign up">
+                  {{ t().createAccount.action }}
                 </NuxtLink>
               </div>
             </v-form>
@@ -79,25 +80,30 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
-import { definePageMeta, useHead } from '#imports';
+import { definePageMeta, useHead, useNuxtApp } from '#imports';
+import { useTranslations } from '../languages';
+
+const t = useTranslations('signup');
+const nuxtApp = useNuxtApp()
+const localePath = nuxtApp.$localePath
 
 definePageMeta({
   layout: 'empty'
 });
 
 useHead({
-  title: 'Create Account - StackUnity',
+  title: computed(() => t().meta.title),
   meta: [
     { name: 'author', content: 'Nûr' },
-    { name: 'description', content: 'Create your StackUnity account to access all features, and start your experience' },
+    { name: 'description', content: computed(() => t().meta.description) },
     { name: 'robots', content: 'index,follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { property: 'og:title', content: 'Create Account - StackUnity' },
-    { property: 'og:description', content: 'Create your StackUnity account to access all features, and start your experience' },
+    { property: 'og:title', content: computed(() => t().meta.title) },
+    { property: 'og:description', content: computed(() => t().meta.description) },
     { property: 'og:image', content: '/images/preview.png' },
     { property: 'og:type', content: 'website' },
     { property: 'og:url', content: 'https://stackunity.com/signup' },
@@ -105,8 +111,8 @@ useHead({
     { property: 'og:locale', content: 'en_US' },
     { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'Create Account - StackUnity' },
-    { name: 'twitter:description', content: 'Create your StackUnity account to access all features, and start your experience' },
+    { name: 'twitter:title', content: computed(() => t().meta.title) },
+    { name: 'twitter:description', content: computed(() => t().meta.description) },
     { name: 'twitter:image', content: '/images/preview.png' },
     { name: 'twitter:creator', content: '@stackunity' },
     { name: 'twitter:site', content: '@stackunity' }
@@ -136,29 +142,29 @@ onMounted(async () => {
   }
 });
 
-const features = ref([
+const features = computed(() => [
   {
     icon: 'mdi-email-newsletter',
-    title: 'Professional Templates',
-    description: 'A studio with customized Vuetify component templates',
+    title: t().features[0].title,
+    description: t().features[0].description,
     color: 'primary'
   },
   {
     icon: 'mdi-chart-box-outline',
-    title: 'Detailed Analytics',
-    description: 'Accessibility and SEO audit, test all aspects of your site',
+    title: t().features[1].title,
+    description: t().features[1].description,
     color: 'secondary'
   },
   {
     icon: 'mdi-account-group-outline',
-    title: 'Monitoring and SQL Generator',
-    description: 'Site monitoring and a ready-to-use SQL generator',
+    title: t().features[2].title,
+    description: t().features[2].description,
     color: 'tertiary'
   },
   {
     icon: 'mdi-shield-check-outline',
-    title: 'Clean Interface',
-    description: 'A simple and intuitive interface for easier use',
+    title: t().features[3].title,
+    description: t().features[3].description,
     color: 'primary'
   }
 ])
@@ -169,7 +175,7 @@ const handleSignup = async () => {
   loading.value = true
   try {
     await userStore.signUp(form.value.username, form.value.email, form.value.password, csrfToken.value);
-    router.push('/settings');
+    router.push(localePath('/settings'));
   } catch (err: any) {
     console.error(err.message)
   } finally {

@@ -4,19 +4,21 @@
 
       <v-card width="100%" max-width="800px" class="ma-4 pa-4" elevation="3"
         :class="{ 'hidden-controls': isMobileView && !showMobileControls }">
-        <v-text-field v-model="url" label="Enter a URL" density="comfortable" prepend-inner-icon="mdi-web"
-          variant="outlined" placeholder="https://example.com" clearable @keyup.enter="loadUrl"
-          :rules="[v => !!v || 'URL required', v => v.startsWith('http') || v.startsWith('https') || 'The URL must start with http or https']" />
-        <v-select v-model="url" :items="availableUrls" label="Select a URL" density="comfortable"
+        <v-text-field v-model="url" :label="t().url.label" density="comfortable" prepend-inner-icon="mdi-web"
+          variant="outlined" :placeholder="t().url.placeholder" clearable @keyup.enter="loadUrl"
+          :rules="[v => !!v || t().url.rules.required, v => v.startsWith('http') || v.startsWith('https') || t().url.rules.startWithHttp]" />
+        <v-select v-model="url" :items="availableUrls" :label="t().url.select" density="comfortable"
           prepend-inner-icon="mdi-bookmark-outline" variant="outlined" hide-details @update:model-value="loadUrl" />
         <div class="d-flex flex-wrap justify-space-between align-center mt-2">
           <div class="d-flex align-center">
-            <v-switch v-model="autoRefresh" color="primary" hide-details label="Auto-refresh" class="mr-4"></v-switch>
-            <v-select v-if="autoRefresh" v-model="refreshInterval" :items="refreshIntervals" label="Interval"
-              density="compact" variant="outlined" hide-details style="width: 120px"></v-select>
+            <v-switch v-model="autoRefresh" color="primary" hide-details :label="t().controls.autoRefresh"
+              class="mr-4"></v-switch>
+            <v-select v-if="autoRefresh" v-model="refreshInterval" :items="refreshIntervalOptions"
+              :label="t().controls.interval" density="compact" variant="outlined" hide-details
+              style="width: 120px"></v-select>
           </div>
           <v-btn color="primary" @click="loadUrl" :disabled="!isValidUrl" prepend-icon="mdi-eye">
-            View
+            {{ t().controls.view }}
           </v-btn>
         </div>
       </v-card>
@@ -38,8 +40,8 @@
                 <v-icon size="small" class="mr-2">{{ device.icon }}</v-icon>
                 <span class="text-caption">{{ getDeviceDimensions(device.id) }}</span>
                 <v-spacer></v-spacer>
-                <v-btn density="compact" icon="mdi-refresh" size="small" variant="text"
-                  @click="refreshCurrentIframe"></v-btn>
+                <v-btn density="compact" icon="mdi-refresh" size="small" variant="text" @click="refreshCurrentIframe"
+                  :aria-label="t().controls.refresh"></v-btn>
               </div>
               <div v-if="displayUrl" class="iframe-wrapper">
                 <iframe v-if="tab === device.id" :src="displayUrl" class="responsive-iframe"
@@ -49,15 +51,15 @@
                   :key="`${device.id}-${iframeKey}`" @load="handleIframeLoad(device.id)"></iframe>
                 <div v-if="xFrameError" class="iframe-error">
                   <v-icon color="error" size="large" class="mb-2">mdi-alert-circle</v-icon>
-                  <p>This site cannot be displayed in an iframe.</p>
+                  <p>{{ t().messages.iframeError }}</p>
                   <v-btn color="primary" size="small" :href="displayUrl" target="_blank" class="mt-2">
-                    Open in a new tab
+                    {{ t().messages.openInNewTab }}
                   </v-btn>
                 </div>
               </div>
               <div v-else class="iframe-placeholder d-flex flex-column align-center justify-center">
                 <v-icon size="large" color="grey-lighten-1">mdi-web-off</v-icon>
-                <p class="text-grey-darken-1 mt-2">Enter a URL to preview</p>
+                <p class="text-grey-darken-1 mt-2">{{ t().messages.enterUrl }}</p>
               </div>
             </div>
           </v-window-item>
@@ -75,22 +77,25 @@ import { useDisplay } from 'vuetify';
 import snackBar from '../components/snackbar.vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 
 definePageMeta({
   layout: 'dashboard',
 })
 
+const t = useTranslations('responsive');
+
 useHead({
-  title: 'Responsive Viewer',
+  title: t().meta.title,
   meta: [
-    { name: 'description', content: 'View your websites on different devices' },
+    { name: 'description', content: t().meta.description },
     { name: 'keywords', content: 'responsive, viewer, responsive design' },
     { name: 'author', content: 'DevUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Responsive Viewer' },
-    { name: 'og:description', content: 'View your websites on different devices' },
+    { name: 'og:title', content: t().meta.title },
+    { name: 'og:description', content: t().meta.description },
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.com/responsive' }
@@ -147,21 +152,21 @@ const refreshInterval = ref<number>(5);
 const isClient = typeof window !== 'undefined';
 let refreshTimer: number | null = null;
 
-const refreshIntervals: RefreshInterval[] = [
-  { title: '5 seconds', value: 5 },
-  { title: '10 seconds', value: 10 },
-  { title: '30 seconds', value: 30 },
-  { title: '1 minute', value: 60 }
-];
+const refreshIntervalOptions = computed(() => [
+  { title: t().intervals.fiveSeconds, value: 5 },
+  { title: t().intervals.tenSeconds, value: 10 },
+  { title: t().intervals.thirtySeconds, value: 30 },
+  { title: t().intervals.oneMinute, value: 60 }
+]);
 
-const devices: Device[] = [
-  { id: 'iphone', name: 'iPhone', icon: 'mdi-cellphone', width: 375, height: 667 },
-  { id: 'android', name: 'Android', icon: 'mdi-android', width: 360, height: 640 },
-  { id: 'ipad', name: 'iPad', icon: 'mdi-apple', width: 768, height: 1024 },
-  { id: 'tablet', name: 'Tablet', icon: 'mdi-tablet', width: 600, height: 960 },
-  { id: 'laptop', name: 'Laptop', icon: 'mdi-laptop', width: 1024, height: 768 },
-  { id: 'desktop', name: 'Desktop', icon: 'mdi-monitor', width: 1280, height: 800 },
-];
+const devices = computed(() => [
+  { id: 'iphone', name: t().devices.iphone, icon: 'mdi-cellphone', width: 375, height: 667 },
+  { id: 'android', name: t().devices.android, icon: 'mdi-android', width: 360, height: 640 },
+  { id: 'ipad', name: t().devices.ipad, icon: 'mdi-apple', width: 768, height: 1024 },
+  { id: 'tablet', name: t().devices.tablet, icon: 'mdi-tablet', width: 600, height: 960 },
+  { id: 'laptop', name: t().devices.laptop, icon: 'mdi-laptop', width: 1024, height: 768 },
+  { id: 'desktop', name: t().devices.desktop, icon: 'mdi-monitor', width: 1280, height: 800 },
+]);
 
 const isValidUrl = computed(() => {
   if (!url.value) return false;
@@ -174,7 +179,7 @@ const isValidUrl = computed(() => {
 });
 
 const getDeviceById = (id: string): Device => {
-  return devices.find(device => device.id === id) || devices[0];
+  return devices.value.find(device => device.id === id) || devices.value[0];
 };
 
 const getDeviceDimensions = (deviceId: string): string => {
@@ -205,7 +210,7 @@ const getIframeStyle = (deviceId: string): { width: string; height: string; maxW
 
 const loadUrl = (): void => {
   if (!isValidUrl.value) {
-    snackbarText.value = "Please enter a valid URL";
+    snackbarText.value = t().url.rules.required;
     snackbarColor.value = "error";
     snackbar.value = true;
     return;
@@ -219,7 +224,7 @@ const loadUrl = (): void => {
   displayUrl.value = url.value;
   iframeKey.value++;
 
-  snackbarText.value = "URL loaded";
+  snackbarText.value = t().messages.urlLoaded;
   snackbarColor.value = "success";
   snackbar.value = true;
 
@@ -231,7 +236,7 @@ const refreshIframe = (): void => {
     iframeKey.value++;
     xFrameError.value = false;
   } else {
-    snackbarText.value = "No URL to refresh";
+    snackbarText.value = t().messages.noUrlToRefresh;
     snackbarColor.value = "warning";
     snackbar.value = true;
   }
