@@ -5,6 +5,7 @@ import path from 'path';
 export default defineEventHandler(async (event) => {
   event.node.res.setHeader('Content-Type', 'application/xml; charset=UTF-8');
   event.node.res.setHeader('Cache-Control', 'max-age=3600, public');
+  event.node.res.setHeader('Content-Disposition', 'inline; filename="sitemap-languages.xml"');
 
   const filePath = path.resolve(process.cwd(), 'public', 'sitemap-languages.xml');
 

@@ -5,6 +5,7 @@ import path from 'path';
 export default defineEventHandler(async (event) => {
   event.node.res.setHeader('Content-Type', 'text/plain; charset=UTF-8');
   event.node.res.setHeader('Cache-Control', 'max-age=3600, public');
+  event.node.res.setHeader('Content-Disposition', 'inline; filename="robots.txt"');
 
   const filePath = path.resolve(process.cwd(), 'public', 'robots.txt');
 
