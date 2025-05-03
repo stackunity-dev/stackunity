@@ -284,14 +284,12 @@ Host: ${baseUrl}
     fs.writeFileSync(path.join(publicDir, 'robots.txt'), robotsTxt);
 
     return {
-      success: true,
-      message: 'Sitemaps générés avec succès',
-      files: [
-        `${baseUrl}/sitemap.xml`,
-        `${baseUrl}/sitemap-pages.xml`,
-        `${baseUrl}/sitemap-languages.xml`,
-        `${baseUrl}/robots.txt`
-      ]
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/xml; charset=UTF-8',
+        'Cache-Control': 'max-age=600, public'
+      },
+      body: sitemapIndex
     };
   } catch (error) {
     console.error('Erreur lors de la génération des sitemaps:', error);
