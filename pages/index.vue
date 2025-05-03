@@ -271,7 +271,7 @@
           <v-container>
             <div class="text-center mb-12">
               <h2 id="how-it-works-heading" class="text-h3 text-gradient font-weight-bold mb-3">{{ t().howItWorks.title
-                }}
+              }}
               </h2>
               <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
                 {{ t().howItWorks.description }}
@@ -279,20 +279,20 @@
             </div>
 
             <v-timeline align="start" line-color="secondary" line-width="2"
-              :direction="$vuetify.display.mdAndUp ? 'horizontal' : 'vertical'"
-              :truncate-line="$vuetify.display.mdAndUp ? 'start' : 'both'"
+              :direction="$vuetify.display.smAndUp ? 'horizontal' : 'vertical'"
+              :truncate-line="$vuetify.display.smAndUp ? 'start' : 'both'"
               :density="$vuetify.display.smAndDown ? 'compact' : 'default'">
               <v-timeline-item v-for="(step, i) in steps" :key="i" :dot-color="step.color" size="large"
                 :icon="getStepIcon(i)" line-inset="12" :hide-opposite="$vuetify.display.smAndDown">
                 <template v-slot:opposite>
-                  <div v-if="$vuetify.display.mdAndUp" class="text-h2 font-weight-bold" :class="`text-${step.color}`">
+                  <div v-if="$vuetify.display.smAndUp" class="text-h2 font-weight-bold" :class="`text-${step.color}`">
                     0{{ i + 1 }}</div>
                 </template>
                 <v-card :class="`border-${step.color} timeline-card`" elevation="0">
                   <v-card-item>
                     <v-card-title class="text-h5 font-weight-bold">
                       <span v-if="$vuetify.display.smAndDown" class="mr-2" :class="`text-${step.color}`">0{{ i + 1
-                      }}.</span>
+                        }}.</span>
                       {{ step.title }}
                     </v-card-title>
                     <v-card-text class="text-body-1">{{ step.description }}</v-card-text>
@@ -386,7 +386,7 @@
             <v-row class="footer-columns-container">
               <v-col v-for="(column, index) in footerColumns" :key="index" cols="6" md="4" class="footer-column px-4">
                 <h4 id="footer-column-heading-{{index}}" class="text-subtitle-1 font-weight-bold mb-4">{{ column.title
-                  }}
+                }}
                 </h4>
                 <nav class="footer-links" aria-labelledby="footer-column-heading-{{index}}">
                   <NuxtLink v-for="(link, linkIndex) in column.links" :key="linkIndex" :to="link.to"
@@ -1252,12 +1252,24 @@ footer h4::after {
 
 :deep(.v-timeline--horizontal) {
   flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
 }
 
 :deep(.v-timeline--horizontal .v-timeline-item__body) {
   max-width: 400px;
   width: 100%;
   margin: 0 auto;
+}
+
+:deep(.v-timeline--horizontal .v-timeline-item) {
+  flex-direction: row;
+  min-width: auto;
+}
+
+:deep(.v-timeline--horizontal .v-timeline-divider) {
+  width: 100%;
+  min-width: auto;
 }
 
 :deep(.v-timeline--vertical .v-timeline-item__body) {
@@ -1272,6 +1284,13 @@ footer h4::after {
 
 :deep(.v-timeline-item__inner-dot) {
   background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
+}
+
+@media (min-width: 600px) {
+  :deep(.v-timeline--horizontal) {
+    display: flex !important;
+    flex-direction: row !important;
+  }
 }
 
 @media (max-width: 960px) {
