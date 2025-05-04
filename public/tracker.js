@@ -142,39 +142,13 @@
       };
     },
     
-    setConsent: function(hasConsent) {
-      localStorage.setItem('stackunity_consent', hasConsent ? 'true' : 'false');
-    },
-    
     hasConsent: function() {
-      const directConsent = localStorage.getItem('stackunity_consent') === 'true';
-      if (directConsent) return true;
-      
-      try {
-        const cookieConsent = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('stackunity_cookie_consent='));
-          
-        if (cookieConsent) {
-          const cookieValue = decodeURIComponent(cookieConsent.split('=')[1]);
-          const preferences = JSON.parse(cookieValue);
-          return preferences.analytics === true;
-        }
-      } catch (e) {
-        console.error('Erreur lors de la vérification du consentement:', e);
-      }
-      
-      return false;
+      return true;
     }
   };
 
   const api = {
     sendData: function(endpoint, data) {
-      if (!utils.hasConsent()) {
-        console.log('Analytics: No consent given, storing locally');
-        return Promise.resolve({ success: true, stored: true });
-      }
-      
       return fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -260,7 +234,7 @@
       
       setInterval(api.flushBuffer, config.flushInterval);
       
-      console.log('StackUnity Analytics initialized');
+      console.log('StackUnity Analytics initialized with Website ID:', websiteId);
     },
     
     trackPageView: function() {
@@ -495,11 +469,11 @@
     }
   };
 
-  // @ts-ignore
+  // Exposer l'API publique
+  // @ts-ignore - Ignorer l'erreur TS pour l'ajout de propriété à window
   window.StackUnityAnalytics = window.StackUnityAnalytics || {
     init: tracker.init,
-    trackEvent: tracker.trackEvent,
-    setConsent: utils.setConsent
+    trackEvent: tracker.trackEvent
   };
 
   const currentScript = document.currentScript;

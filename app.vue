@@ -223,17 +223,8 @@ onBeforeMount(async () => {
 onMounted(async () => {
 
   if (isClient) {
-    if (cookieStore.preferences.analytics) {
-      localStorage.setItem('stackunity_consent', 'true');
-    } else {
-      localStorage.setItem('stackunity_consent', 'false');
-    }
-
-    window.addEventListener('analytics-preference-changed', (event: any) => {
-      if (event.detail && event.detail.enabled !== undefined) {
-        localStorage.setItem('stackunity_consent', event.detail.enabled ? 'true' : 'false');
-      }
-    });
+    // Définir le consentement comme toujours vrai
+    localStorage.setItem('stackunity_consent', 'true');
   }
 
   (function () {
