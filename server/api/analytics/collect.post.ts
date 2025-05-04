@@ -3,7 +3,9 @@ import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   try {
+    console.log('collect.post.ts');
     const data = await readBody(event);
+    console.log('data', data);
     const { websiteId, sessionId, visitorId, events } = data;
 
     if (!websiteId || !sessionId || !visitorId || !events || !Array.isArray(events)) {
@@ -18,6 +20,8 @@ export default defineEventHandler(async (event) => {
       [websiteId]
     );
 
+    console.log('websiteRows', websiteRows);
+
     if (!Array.isArray(websiteRows) || websiteRows.length === 0) {
       return {
         success: false,
@@ -26,6 +30,8 @@ export default defineEventHandler(async (event) => {
     }
 
     const dbWebsiteId = (websiteRows as any)[0]?.id;
+
+    console.log('dbWebsiteId', dbWebsiteId);
 
     const sessionData = events.find(event => event.type === 'session');
     if (sessionData) {
