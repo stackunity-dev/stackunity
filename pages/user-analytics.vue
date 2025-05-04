@@ -328,7 +328,7 @@
 import highlight from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import snackBar from '../components/snackBar.vue';
+import snackBar from '../components/snackbar.vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 import { useTranslations } from '../languages';
