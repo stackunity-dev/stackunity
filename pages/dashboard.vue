@@ -29,7 +29,7 @@
       <div class="dashboard-container pa-6" :class="{ 'compact-mode': isCompactMode }">
         <div class="welcome-section text-center mb-8">
           <h1 class="text-h3 font-weight-bold text-gradient mb-2">
-            {{ t().hero.title }} {{ userStore.user?.username || 'Developer' }}
+            {{ t().hero.title }} {{ 'Developer' }}
           </h1>
           <p class="text-subtitle-1 text-medium-emphasis">
             {{ t().hero.subtitle }}
@@ -89,7 +89,7 @@
           <div v-for="(element, index) in filteredItems" :key="element.title">
             <v-hover v-slot="{ isHovering, props }">
               <v-card v-bind="props" :to="element.disabled ? undefined : element.route" :disabled="element.disabled"
-                :class="[
+                height="345" :class="[
                   'launchpad-card',
                   `border-${element.color}`,
                   `theme-${currentTheme}`,

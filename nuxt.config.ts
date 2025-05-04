@@ -60,9 +60,8 @@ export default defineNuxtConfig({
 
   i18n: {
     lazy: false,
-    langDir: '',
     defaultLocale: 'en',
-    strategy: 'prefix_except_default',
+    strategy: 'prefix',
     locales: [
       { code: 'en', iso: 'en', dir: 'ltr' },
       { code: 'fr', iso: 'fr', dir: 'ltr' },
@@ -70,14 +69,9 @@ export default defineNuxtConfig({
       { code: 'ar', iso: 'ar', dir: 'rtl' },
       { code: 'zh', iso: 'zh', dir: 'ltr' }
     ],
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_redirected',
-      redirectOn: 'root'
-    },
+    detectBrowserLanguage: false,
     baseUrl: 'https://stackunity.com',
-    vueI18n: './i18n.config.ts',
-    skipSettingLocaleOnNavigate: true
+    skipSettingLocaleOnNavigate: false
   },
 
   vite: {

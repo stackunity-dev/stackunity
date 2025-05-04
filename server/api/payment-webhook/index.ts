@@ -4,7 +4,7 @@ import { sendToMake } from '../payment/make-sender';
 import { recordPayment } from '../payment/payment-recorder';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2024-09-30.acacia',
+  apiVersion: '2025-04-30.basil',
 });
 
 export default defineEventHandler(async (event) => {

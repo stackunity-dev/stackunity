@@ -8,9 +8,10 @@ export default {
     tagline: "优化您的开发工作流程",
     title: "只需几次点击即可简化开发工作流程，加快开发速度",
     description: "使用我们集成的专业工具加快开发速度并简化工作流程。构建、管理和优化您的项目，使网站更具可访问性、用户友好性和SEO友好性。",
-    features: ["网站管理", "网站审核", "无障碍性", "API测试"],
+    features: ["网站分析", "工作室组件", "数据库设计师", "API测试 & 分析"],
     cta: "立即简化您的工作流程",
-    ctaMobile: "免费试用"
+    ctaMobile: "免费试用",
+    ctaMobileDescription: "加入我们的开发者社区，将您的Web项目推向新的高度。"
   },
   stats: {
     accelerated: "加速开发",

@@ -5,9 +5,8 @@
         <v-col cols="12" md="6" class="d-none d-md-flex left-panel-checkout align-center justify-center">
           <div class="left-content text-center">
             <h1>
-              <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
-                class="logo mb-8" width="350" />
-              <span class="sr-only">StackUnity - Develop faster and better with StackUnity</span>
+              <img src="/logo/stackunity.png" alt="{{ t().meta.title }}" class="logo mb-8" width="350" />
+              <span class="sr-only">{{ t().meta.title }}</span>
             </h1>
 
             <div class="features-list">
@@ -34,14 +33,15 @@
                 <v-card-text class="pa-6">
                   <div class="d-flex justify-space-between align-center mb-4">
                     <div>
-                      <h2 class="text-h5 font-weight-bold mb-1">{{ selectedPlan === 'premium' ? 'Premium Lifetime' :
-                        'Standard Lifetime' }}</h2>
+                      <h2 class="text-h5 font-weight-bold mb-1">{{ selectedPlan === 'premium' ? t().plans.premium.title
+                        :
+                        t().plans.standard.title }}</h2>
                       <div class="text-subtitle-1 text-medium-emphasis">{{ selectedPlan === 'premium' ?
-                        'Unlimited access to all premium features' : 'Access to standard features' }}</div>
+                        t().plans.premium.description : t().plans.standard.description }}</div>
                     </div>
                     <v-chip color="primary" size="large" class="ml-2" v-if="selectedPlan === 'premium'">
                       <v-icon start>mdi-crown</v-icon>
-                      Best choice
+                      {{ t().plans.bestChoice }}
                     </v-chip>
                   </div>
 
@@ -51,17 +51,17 @@
                     <v-btn-toggle v-model="selectedPlan" mandatory color="primary" class="rounded-lg"
                       @update:model-value="updateTaxRates">
                       <v-btn value="standard" class="text-none">
-                        Standard
+                        {{ t().plans.option.standard }}
                         <v-tooltip activator="parent" location="top">
-                          <div class="text-caption">Lifetime access</div>
-                          <div class="text-caption">Access to standard features</div>
+                          <div class="text-caption">{{ t().plans.tooltip.lifetimeAccess }}</div>
+                          <div class="text-caption">{{ t().plans.tooltip.standardFeatures }}</div>
                         </v-tooltip>
                       </v-btn>
                       <v-btn value="premium" class="text-none">
-                        Premium
+                        {{ t().plans.option.premium }}
                         <v-tooltip activator="parent" location="top">
-                          <div class="text-caption">Lifetime access</div>
-                          <div class="text-caption">All premium features included</div>
+                          <div class="text-caption">{{ t().plans.tooltip.lifetimeAccess }}</div>
+                          <div class="text-caption">{{ t().plans.tooltip.premiumFeatures }}</div>
                         </v-tooltip>
                       </v-btn>
                     </v-btn-toggle>
@@ -69,7 +69,7 @@
 
                   <div class="price-details">
                     <div class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-body-1">HT price</span>
+                      <span class="text-body-1">{{ t().pricing.htPrice }}</span>
                       <span :class="{ 'text-decoration-line-through': taxDetails.discountAmount > 0 }"
                         class="text-h6 font-weight-bold">
                         {{ taxDetails.baseAmount }}€
@@ -80,38 +80,39 @@
                       <span class="text-h6 success--text">-{{ taxDetails.discountAmount }}€</span>
                     </div>
                     <div v-if="taxDetails.discountAmount > 0" class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-body-1">HT price after discount</span>
+                      <span class="text-body-1">{{ t().pricing.htPriceAfterDiscount }}</span>
                       <span class="text-h6 font-weight-bold">{{ taxDetails.discountedBaseAmount }}€</span>
                     </div>
                     <div v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0"
                       class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-body-1">TVA ({{ taxDetails.taxPercentage }}%)</span>
+                      <span class="text-body-1">{{ t().pricing.vat }} ({{ taxDetails.taxPercentage }}%)</span>
                       <span class="text-h6">{{ taxDetails.taxAmount }}€</span>
                     </div>
                     <v-divider class="my-3"></v-divider>
                     <div class="d-flex justify-space-between align-center">
                       <div>
-                        <span class="text-h5 font-weight-bold">Total TTC</span>
-                        <div class="text-caption text-medium-emphasis">One-time payment, lifetime access</div>
+                        <span class="text-h5 font-weight-bold">{{ t().pricing.totalTTC }}</span>
+                        <div class="text-caption text-medium-emphasis">{{ t().pricing.oneTimePayment }}</div>
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount }}€</span>
                         <div v-if="taxDetails.discountAmount > 0" class="text-caption success--text">
-                          You save {{ Math.round(taxDetails.discountAmount / taxDetails.baseAmount * 100) }}%
+                          {{ t().pricing.youSave }} {{ Math.round(taxDetails.discountAmount / taxDetails.baseAmount *
+                            100) }}%
                         </div>
-                        <div v-else class="text-caption success--text">Save 100% vs monthly</div>
+                        <div v-else class="text-caption success--text">{{ t().pricing.saveVsMonthly }}</div>
                       </div>
                     </div>
                   </div>
 
                   <div v-if="taxDetails.isVatExempt && taxDetails.vatNumber"
                     class="mt-3 text-caption text-medium-emphasis">
-                    VAT not applicable, Art. 283-2 of the CGI - Self-assessment of VAT
-                    <div>VAT number: {{ taxDetails.vatNumber }}</div>
+                    {{ t().vatInfo.selfAssessment }}
+                    <div>{{ t().vatInfo.vatNumber }}: {{ taxDetails.vatNumber }}</div>
                   </div>
                   <div v-else-if="billingCountry !== 'FR' && !isInEU(billingCountry)"
                     class="mt-3 text-caption text-medium-emphasis">
-                    Export outside EU - VAT not applicable
+                    {{ t().vatInfo.exportOutsideEU }}
                   </div>
                 </v-card-text>
               </v-card>
@@ -143,7 +144,7 @@
                   <v-row dense class="mb-4">
                     <v-col cols="12">
                       <v-autocomplete v-model="billingCountry" :items="countries" item-title="name" item-value="code"
-                        label="Billing Country" variant="outlined" @update:model-value="updateTaxRates"
+                        :label="t().payment.billingCountry" variant="outlined" @update:model-value="updateTaxRates"
                         auto-select-first clearable>
                         <template v-slot:item="{ props, item }">
                           <v-list-item v-bind="props">
@@ -158,24 +159,23 @@
 
                   <v-row dense class="mb-4">
                     <v-col cols="12">
-                      <v-checkbox v-model="isBusinessCustomer" label="I'm purchasing for a business"
+                      <v-checkbox v-model="isBusinessCustomer" :label="t().payment.businessCustomer"
                         @update:model-value="updateTaxRates" hide-details></v-checkbox>
                     </v-col>
                   </v-row>
 
                   <v-row dense v-if="isBusinessCustomer" class="mb-4">
                     <v-col cols="12">
-                      <v-text-field v-model="vatNumber" label="VAT Number (for EU businesses)" variant="outlined"
-                        placeholder="e.g. FR12345678901"
-                        hint="Enter your VAT number to apply reverse charge if eligible" persistent-hint
-                        @update:model-value="updateTaxRates"></v-text-field>
+                      <v-text-field v-model="vatNumber" :label="t().payment.vatNumber.label" variant="outlined"
+                        :placeholder="t().payment.vatNumber.placeholder" :hint="t().payment.vatNumber.hint"
+                        persistent-hint @update:model-value="updateTaxRates"></v-text-field>
                     </v-col>
                   </v-row>
 
                   <v-row dense class="mb-4">
                     <v-col cols="12">
-                      <v-text-field v-model="promoCode" label="Promo code" variant="outlined"
-                        placeholder="Enter your promo code" append-inner-icon="mdi-check"
+                      <v-text-field v-model="promoCode" :label="t().payment.promoCode.label" variant="outlined"
+                        :placeholder="t().payment.promoCode.placeholder" append-inner-icon="mdi-check"
                         @click:append-inner="applyPromoCode" @keydown.enter="applyPromoCode"></v-text-field>
                       <div v-if="promoCodeMessage" :class="promoCodeSuccess ? 'text-success' : 'text-error'"
                         class="text-caption mt-1">
@@ -186,8 +186,9 @@
 
                   <v-row dense class="mb-4">
                     <v-col cols="12">
-                      <v-text-field v-model="cardholderName" label="Cardholder Name" variant="outlined"
-                        placeholder="Name on card" required autofocus></v-text-field>
+                      <v-text-field v-model="cardholderName" :label="t().payment.cardholderName.label"
+                        variant="outlined" :placeholder="t().payment.cardholderName.placeholder" required
+                        autofocus></v-text-field>
                     </v-col>
                   </v-row>
 
@@ -199,7 +200,7 @@
               <v-btn block color="primary" type="submit" :loading="loading" min-height="52"
                 class="text-none font-weight-medium rounded-lg">
                 <v-icon start class="mr-2">mdi-credit-card-check-outline</v-icon>
-                Pay {{ taxDetails.totalAmount }}€
+                {{ t().payment.payButton }} {{ taxDetails.totalAmount }}€
                 <template v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0">TTC</template>
                 <template v-else>HT</template>
                 <template v-slot:loader>
@@ -209,7 +210,7 @@
 
               <div class="d-flex align-center justify-center mt-5">
                 <v-icon icon="mdi-shield-check-outline" size="small" class="mr-2"></v-icon>
-                <span class="text-caption text-medium-emphasis">Secure payment via Stripe</span>
+                <span class="text-caption text-medium-emphasis">{{ t().payment.securePayment }}</span>
               </div>
             </v-form>
           </v-card>
@@ -225,24 +226,28 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { computed, onMounted, ref } from 'vue';
 import snackBar from '../components/snackbar.vue';
+import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, navigateTo, useHead } from '#imports';
+
+const t = useTranslations('checkout');
 
 definePageMeta({
   layout: 'empty'
 });
 
 useHead({
-  title: 'Payment - StackUnity',
+  title: computed(() => t().meta.title),
   meta: [
     { name: 'author', content: 'Nûr' },
-    { name: 'description', content: 'Pay to access premium features of StackUnity' },
+    { name: 'description', content: computed(() => t().meta.description) },
+    { name: 'keywords', content: computed(() => t().meta.keywords) },
     { name: 'robots', content: 'nofollow, noindex' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: 'Payment - StackUnity' },
-    { name: 'og:description', content: 'Pay to access premium features of StackUnity' },
-    { name: 'og:image', content: '/logo/stackunity-title.png' },
+    { property: 'og:title', content: computed(() => t().meta.title) },
+    { property: 'og:description', content: computed(() => t().meta.description) },
+    { property: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.tech/checkout' }
@@ -326,66 +331,52 @@ const taxDetails = ref({
   discountedBaseAmount: 300
 });
 
-
-
 const benefits = computed(() => {
-  return selectedPlan.value === 'premium' ? [
-    'Unlimited access to all premium features',
-    'Priority support and updates',
-    'Advanced SEO analysis tools',
-    'Custom development tools',
-    'Team collaboration features',
-    'No recurring fees - pay once, use forever'
-  ] : [
-    'Access to standard features',
-    'Regular updates',
-    'Basic support',
-    'Team collaboration features',
-  ];
+  return selectedPlan.value === 'premium' ? t().benefits.premium : t().benefits.standard;
 });
 
 const features = computed(() => {
   return selectedPlan.value === 'premium' ? [
     {
       icon: 'mdi-rocket-launch',
-      title: 'Advanced Development Tools',
-      description: 'Access to premium development tools and features'
+      title: t().features.advancedTools.title,
+      description: t().features.advancedTools.description
     },
     {
       icon: 'mdi-shield-check',
-      title: 'Priority Support',
-      description: 'Get priority support for all your questions'
+      title: t().features.prioritySupport.title,
+      description: t().features.prioritySupport.description
     },
     {
       icon: 'mdi-update',
-      title: 'Regular Updates',
-      description: 'Stay ahead with the latest features and improvements'
+      title: t().features.regularUpdates.title,
+      description: t().features.regularUpdates.description
     },
     {
       icon: 'mdi-account-group',
-      title: 'Team Collaboration',
-      description: 'Work seamlessly with your team members'
+      title: t().features.teamCollaboration.title,
+      description: t().features.teamCollaboration.description
     }
   ] : [
     {
       icon: 'mdi-star',
-      title: 'Standard Development Tools',
-      description: 'Access to standard development tools and features'
+      title: t().features.standardTools.title,
+      description: t().features.standardTools.description
     },
     {
       icon: 'mdi-help-circle',
-      title: 'Basic Support',
-      description: 'Get basic support for your questions'
+      title: t().features.basicSupport.title,
+      description: t().features.basicSupport.description
     },
     {
       icon: 'mdi-update',
-      title: 'Regular Updates',
-      description: 'Stay updated with new features'
+      title: t().features.regularUpdates.title,
+      description: t().features.regularUpdates.description
     },
     {
       icon: 'mdi-account-group',
-      title: 'Team Collaboration',
-      description: 'Work with your team members'
+      title: t().features.teamCollaboration.title,
+      description: t().features.teamCollaboration.description
     }
   ];
 });
@@ -395,7 +386,6 @@ const updateTaxRates = async () => {
   loading.value = true;
 
   try {
-    console.log('Updating tax rates with plan:', selectedPlan.value);
     const response = await userStore.checkout(
       cardholderName.value,
       billingCountry.value,
@@ -421,19 +411,19 @@ const updateTaxRates = async () => {
       if (taxDetails.value.isVatExempt) {
         showSnackbar.value = true;
         snackbarColor.value = 'success';
-        snackbarText.value = 'VAT reverse charge applied (0% VAT)';
+        snackbarText.value = t().messages.vatReverseCharge;
       }
     } else {
       console.error('Failed to update tax rates:', response.error);
       showSnackbar.value = true;
       snackbarColor.value = 'error';
-      snackbarText.value = response.error || 'Failed to calculate taxes';
+      snackbarText.value = response.error || t().messages.taxCalculationError;
     }
   } catch (error) {
     console.error('Error updating tax rates:', error);
     showSnackbar.value = true;
     snackbarColor.value = 'error';
-    snackbarText.value = 'Failed to calculate taxes';
+    snackbarText.value = t().messages.taxCalculationError;
   } finally {
     loading.value = false;
   }
@@ -441,11 +431,9 @@ const updateTaxRates = async () => {
 
 onMounted(async () => {
   try {
-    console.log('Initial plan value:', selectedPlan.value);
     if (window.location.protocol !== 'https:' && process.env.NODE_ENV === 'production') {
       console.warn('Warning: Stripe requires HTTPS for live integrations. Please use a secure connection.');
     }
-
 
     try {
       const userLanguage = navigator.language || navigator.languages[0] || 'en-US';
@@ -454,7 +442,6 @@ onMounted(async () => {
       const foundCountry = countries.find(country => country.code === countryCode);
       if (foundCountry) {
         billingCountry.value = foundCountry.code;
-        console.log('Detected user country:', foundCountry.name);
       }
     } catch (localeError) {
       console.warn('Could not determine user location:', localeError);
@@ -462,13 +449,13 @@ onMounted(async () => {
 
     await updateTaxRates();
 
-    const stripePublicKey = process.env.STRIPE_PUBLISHABLE_KEY || 'pk_live_51R8HEwL1ZwIYz99yojPngr0GNrqqLUQtGy1cYUWXVvjgeP7zKXCRwpKkCktaIQFOEskA3XnNbVuX60l2UwLP0SHv00o1udOfFO';
+    const stripePublicKey = process.env.STRIPE_PUBLISHABLE_KEY;
 
     if (!stripePublicKey) {
       console.error('Stripe public key is missing');
       showSnackbar.value = true;
       snackbarColor.value = 'error';
-      snackbarText.value = 'Payment configuration error. Please contact support.';
+      snackbarText.value = t().messages.paymentConfigError;
       return;
     }
 
@@ -509,13 +496,13 @@ onMounted(async () => {
       console.error('Failed to initialize Stripe');
       showSnackbar.value = true;
       snackbarColor.value = 'error';
-      snackbarText.value = 'Payment system unavailable. Please try again later.';
+      snackbarText.value = t().messages.stripeUnavailable;
     }
   } catch (error) {
     console.error('Error initializing payment form:', error);
     showSnackbar.value = true;
     snackbarColor.value = 'error';
-    snackbarText.value = 'Error initializing payment form. Please refresh the page.';
+    snackbarText.value = t().messages.initError;
   }
 });
 
@@ -523,7 +510,7 @@ const processPayment = async () => {
   if (!stripe.value || !elements.value) {
     showSnackbar.value = true;
     snackbarColor.value = 'error';
-    snackbarText.value = 'Unable to connect to Stripe. Please try again.';
+    snackbarText.value = t().messages.stripeConnectionError;
     return;
   }
 
@@ -583,13 +570,13 @@ const processPayment = async () => {
           console.error('Erreur lors de la mise à jour du statut premium:', updateResult.error);
           showSnackbar.value = true;
           snackbarColor.value = 'warning';
-          snackbarText.value = 'Payment successful but premium status update failed. Please refresh the page.';
+          snackbarText.value = t().messages.premiumUpdateError;
         }
 
         if (updateResult.requireRelogin) {
           showSnackbar.value = true;
           snackbarColor.value = 'info';
-          snackbarText.value = 'Your premium status has been updated. Please log in again to access your premium features.';
+          snackbarText.value = t().messages.reloginRequired;
 
           setTimeout(() => {
             userStore.logout();
@@ -618,11 +605,11 @@ const processPayment = async () => {
         if (response.success) {
           showSnackbar.value = true;
           snackbarColor.value = 'success';
-          snackbarText.value = 'Payment successful! Premium access activated and invoice sent to your email.';
+          snackbarText.value = t().messages.paymentSuccess;
         } else {
           showSnackbar.value = true;
           snackbarColor.value = 'warning';
-          snackbarText.value = 'Payment successful, but invoice generation failed. Contact support if needed.';
+          snackbarText.value = t().messages.invoiceError;
           console.error('Invoice generation error:', response.error);
         }
 
@@ -633,7 +620,7 @@ const processPayment = async () => {
         console.error('Error in post-payment process:', error);
         showSnackbar.value = true;
         snackbarColor.value = 'warning';
-        snackbarText.value = 'Payment successful but some post-payment operations failed. Please refresh your page.';
+        snackbarText.value = t().messages.postPaymentError;
 
         setTimeout(() => {
           navigateTo('/login');
@@ -697,19 +684,19 @@ const applyPromoCode = async () => {
 
       if (response.taxDetails.discountAmount && response.taxDetails.discountAmount > 0) {
         promoCodeSuccess.value = true;
-        promoCodeMessage.value = `Promo code applied : ${response.taxDetails.discountDescription}`;
+        promoCodeMessage.value = t().payment.promoCode.success + ` : ${response.taxDetails.discountDescription}`;
       } else {
         promoCodeSuccess.value = false;
-        promoCodeMessage.value = 'Invalid promo code or already used';
+        promoCodeMessage.value = t().payment.promoCode.error;
       }
     } else {
       promoCodeSuccess.value = false;
-      promoCodeMessage.value = response.error || 'Error applying promo code';
+      promoCodeMessage.value = response.error || t().payment.promoCode.error;
     }
   } catch (error) {
     console.error('Error applying promo code:', error);
     promoCodeSuccess.value = false;
-    promoCodeMessage.value = 'Error applying promo code';
+    promoCodeMessage.value = t().payment.promoCode.error;
   } finally {
     loading.value = false;
   }

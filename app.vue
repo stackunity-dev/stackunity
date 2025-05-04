@@ -125,7 +125,6 @@ const restoreUserSession = async () => {
       const validationResult = await userStore.validateToken();
 
       if (validationResult && validationResult.valid) {
-        console.log('Token valide, chargement des données utilisateur');
         await userStore.loadData();
         userStore.isAuthenticated = true;
 

@@ -39,14 +39,14 @@
               <v-text-field v-model="form.email" :label="t().form.email.label" type="email" variant="outlined"
                 prepend-inner-icon="mdi-email-outline" density="comfortable"
                 :rules="[v => !!v || t().form.email.required, v => /.+@.+\..+/.test(v) || t().form.email.invalid]"
-                hide-details="auto" autocomplete="email" aria-required="true" aria-label="Email address"></v-text-field>
+                hide-details="auto" autocomplete="email" aria-required="true" aria-label="Email address" />
 
               <v-text-field v-model="form.password" :type="showPassword ? 'text' : 'password'"
                 :label="t().form.password.label" variant="outlined" prepend-inner-icon="mdi-lock-outline"
                 density="comfortable" :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append-inner="togglePasswordVisibility" class="mb-2 mt-4"
                 :rules="[v => !!v || t().form.password.required, v => v.length >= 6 || t().form.password.minLength]"
-                hide-details="auto" aria-required="true" aria-label="Password"></v-text-field>
+                hide-details="auto" aria-required="true" aria-label="Password" />
 
               <div class="d-flex justify-space-between align-center mb-6">
                 <v-checkbox v-model="rememberMe" :label="t().form.rememberMe" color="primary" density="compact"
@@ -76,14 +76,14 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Snackbar from '../components/snackbar.vue';
 import { useUserStore } from '../stores/userStore';
 // @ts-ignore
 import { definePageMeta, useHead, useNuxtApp } from '#imports';
-import { TokenUtils } from '../utils/token';
 import { useTranslations } from '../languages';
+import { TokenUtils } from '../utils/token';
 
 const t = useTranslations('login');
 const nuxtApp = useNuxtApp()
@@ -215,12 +215,24 @@ const handleSignin = async () => {
       const redirectPath = urlParams.get('redirect');
       const status = urlParams.get('status');
 
-      if (redirectPath && status) {
-        window.location.href = `${redirectPath}?status=${status}`;
-        return;
+      if (redirectPath) {
+        if (status) {
+          if (redirectPath.startsWith('/')) {
+            const path = localePath(redirectPath);
+            router.push(`${path}?status=${status}`);
+          } else {
+            window.location.href = `${redirectPath}?status=${status}`;
+          }
+        } else {
+          if (redirectPath.startsWith('/')) {
+            router.push(localePath(redirectPath));
+          } else {
+            window.location.href = redirectPath;
+          }
+        }
+      } else {
+        router.push(localePath('/dashboard'));
       }
-
-      router.push(localePath('/dashboard'));
     } else {
       snackbarColor.value = 'error';
       snackbarText.value = 'Error during login';
@@ -246,8 +258,15 @@ async function handleRedirection() {
     const redirectPath = urlParams.get('redirect');
 
     if (redirectPath) {
-      window.location.href = redirectPath;
+      if (redirectPath.startsWith('/')) {
+        console.log('[Login] Redirection interne vers:', redirectPath);
+        router.push(localePath(redirectPath));
+      } else {
+        console.log('[Login] Redirection externe vers:', redirectPath);
+        window.location.href = redirectPath;
+      }
     } else {
+      console.log('[Login] Redirection vers le tableau de bord');
       router.push(localePath('/dashboard'));
     }
   }

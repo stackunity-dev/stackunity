@@ -8,9 +8,10 @@ export default {
     tagline: "OPTIMIZE YOUR WORKFLOW",
     title: "Simplify your development workflow in just a few clicks and develop faster",
     description: "Develop faster and simplify your workflow with our integrated professional tools. Build, manage and optimize your projects for a site that is more accessible, user-friendly and SEO-friendly.",
-    features: ["Website management", "Auditing website", "Accessibility", "API testing"],
+    features: ["Website analysis", "Studio components", "Database designer", "API testing & analyser"],
     cta: "Simplify your workflow now",
-    ctaMobile: "Try for free"
+    ctaMobile: "Try for free",
+    ctaMobileDescription: "Join our community of developers and propulse your web projects to new horizons."
   },
   stats: {
     accelerated: "Accelerated development",

@@ -8,9 +8,10 @@ export default {
     tagline: "OPTIMIZE YOUR WORKFLOW",
     title: "Simplifiez votre flux de développement en quelques clics et développez plus rapidement",
     description: "Développez plus rapidement et simplifiez votre flux de travail avec nos outils professionnels intégrés. Construisez, gérez et optimisez vos projets pour un site plus accessible, convivial et optimisé pour le référencement.",
-    features: ["Gestion de site web", "Audit de site", "Accessibilité", "Test d'API"],
+    features: ["Analyse de site web", "Studio components", "Designer de base de données", "Test d'API & analyse"],
     cta: "Simplifiez votre workflow maintenant",
-    ctaMobile: "Essayez gratuitement"
+    ctaMobile: "Essayez gratuitement",
+    ctaMobileDescription: "Rejoignez notre communauté de développeurs et propulsez vos projets web vers de nouvelles horizons."
   },
   stats: {
     accelerated: "Développement accéléré",

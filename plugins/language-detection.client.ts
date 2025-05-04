@@ -1,52 +1,81 @@
 // @ts-ignore
 import { defineNuxtPlugin } from '#app';
 // @ts-ignore
-import { useNuxtApp, useRoute, useRouter } from '#imports';
-import { onMounted } from 'vue';
+import { useNuxtApp } from '#imports';
 import { setCurrentLanguage, SupportedLanguage } from '../languages';
 
+const supportedLanguages: readonly SupportedLanguage[] = ['en', 'fr', 'es', 'ar', 'zh'] as const;
+
 export default defineNuxtPlugin(({ vueApp }) => {
-  const nuxtApp = useNuxtApp()
-  const router = useRouter()
-  const route = useRoute()
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return;
+  }
 
-  const detectBrowserLanguage = (): SupportedLanguage => {
-    const browserLanguages = navigator.languages || [navigator.language]
+  const nuxtApp = useNuxtApp();
 
-    const supportedLanguages = ['en', 'fr', 'es', 'ar', 'zh']
+  const initLanguage = () => {
+    try {
+      const savedLanguage = localStorage.getItem('preferred_language') as SupportedLanguage | null;
 
-    for (const browserLang of browserLanguages) {
-      const langCode = browserLang.substring(0, 2).toLowerCase()
+      if (savedLanguage && supportedLanguages.includes(savedLanguage as SupportedLanguage)) {
+        if (nuxtApp.$i18n.locale.value !== savedLanguage) {
+          nuxtApp.$i18n.setLocale(savedLanguage);
+        }
 
-      if (supportedLanguages.includes(langCode)) {
-        return langCode as SupportedLanguage
+        setCurrentLanguage(savedLanguage as SupportedLanguage);
+        document.documentElement.lang = savedLanguage;
+        return;
       }
-    }
 
-    return 'en'
+      if (nuxtApp.$i18n.locale.value !== 'en') {
+        nuxtApp.$i18n.setLocale('en');
+      }
+
+      setCurrentLanguage('en');
+      document.documentElement.lang = 'en';
+      localStorage.setItem('preferred_language', 'en');
+    } catch (error) {
+      console.error('[Language Detection] Error accessing localStorage:', error);
+      setCurrentLanguage('en');
+      nuxtApp.$i18n.setLocale('en');
+      document.documentElement.lang = 'en';
+    }
+  };
+
+  initLanguage();
+
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      try {
+        const savedLanguage = localStorage.getItem('preferred_language') as SupportedLanguage | null;
+        if (savedLanguage && nuxtApp.$i18n.locale.value !== savedLanguage) {
+          nuxtApp.$i18n.setLocale(savedLanguage);
+          document.documentElement.lang = savedLanguage;
+          setCurrentLanguage(savedLanguage as SupportedLanguage);
+        }
+      } catch (error) {
+        console.error('[Language Detection] Error in delayed check:', error);
+      }
+    }, 300);
   }
 
-  const redirectToLocale = () => {
-    if (route.path !== '/' || localStorage.getItem('i18n_redirected')) {
-      return
+  window.addEventListener('language-changed', ((event: Event) => {
+    try {
+      const customEvent = event as CustomEvent<{ language: SupportedLanguage }>;
+      const newLanguage = customEvent.detail.language;
+
+      if (supportedLanguages.includes(newLanguage)) {
+        setCurrentLanguage(newLanguage);
+
+        if (nuxtApp.$i18n.locale.value !== newLanguage) {
+          nuxtApp.$i18n.setLocale(newLanguage);
+        }
+
+        document.documentElement.lang = newLanguage;
+        localStorage.setItem('preferred_language', newLanguage);
+      }
+    } catch (error) {
+      console.error('[Language Detection] Error handling language change:', error);
     }
-
-    const preferredLanguage = detectBrowserLanguage()
-
-    if (preferredLanguage !== 'en') {
-      localStorage.setItem('i18n_redirected', 'true')
-
-      const localePath = nuxtApp.$i18n.localePath('/', preferredLanguage)
-
-      // Rediriger
-      router.push(localePath)
-
-      setCurrentLanguage(preferredLanguage)
-      nuxtApp.$i18n.locale.value = preferredLanguage
-    }
-  }
-
-  onMounted(() => {
-    redirectToLocale()
-  })
+  }) as EventListener);
 }); 

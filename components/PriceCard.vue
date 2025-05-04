@@ -16,7 +16,7 @@
         <span class="text-subtitle-1 text-medium-emphasis" aria-label="Lifetime"> /{{ t().plans.lifetime.name }}</span>
       </div>
       <v-chip v-if="plan.freeTrialDays">
-        {{ plan.freeTrialDays }} {{ t().plans.standard.trial.days.replace('{days}', plan.freeTrialDays) }}
+        {{ t().plans.standard.trial.days.replace('{days}', plan.freeTrialDays) }}
       </v-chip>
       <v-divider class="mb-4"></v-divider>
       <v-list density="compact" class="bg-transparent">

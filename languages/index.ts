@@ -18,6 +18,12 @@ import signupEs from './signup/es';
 import signupFr from './signup/fr';
 import signupZh from './signup/zh';
 
+import checkoutAr from './checkout/ar';
+import checkoutEn from './checkout/en';
+import checkoutEs from './checkout/es';
+import checkoutFr from './checkout/fr';
+import checkoutZh from './checkout/zh';
+
 import dashboardAr from './dashboard/ar';
 import dashboardEn from './dashboard/en';
 import dashboardEs from './dashboard/es';
@@ -181,6 +187,7 @@ export interface TranslationsStore {
   index: typeof indexEn;
   login: typeof loginEn;
   signup: typeof signupEn;
+  checkout: typeof checkoutEn;
   dashboard: typeof dashboardEn;
   layout: typeof layoutEn;
   settings: typeof settingsEn;
@@ -214,6 +221,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     index: indexEn,
     login: loginEn,
     signup: signupEn,
+    checkout: checkoutEn,
     dashboard: dashboardEn,
     layout: layoutEn,
     settings: settingsEn,
@@ -245,6 +253,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     index: indexFr,
     login: loginFr,
     signup: signupFr,
+    checkout: checkoutFr,
     dashboard: dashboardFr,
     layout: layoutFr,
     settings: settingsFr,
@@ -276,6 +285,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     index: indexAr,
     login: loginAr,
     signup: signupAr,
+    checkout: checkoutAr,
     dashboard: dashboardAr,
     layout: layoutAr,
     settings: settingsAr,
@@ -307,6 +317,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     index: indexEs,
     login: loginEs,
     signup: signupEs,
+    checkout: checkoutEs,
     dashboard: dashboardEs,
     layout: layoutEs,
     settings: settingsEs,
@@ -338,6 +349,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     index: indexZh,
     login: loginZh,
     signup: signupZh,
+    checkout: checkoutZh,
     dashboard: dashboardZh,
     layout: layoutZh,
     settings: settingsZh,
@@ -370,12 +382,20 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
 export const currentLanguage = ref<SupportedLanguage>('en');
 
 export const changeLanguage = (lang: SupportedLanguage) => {
-  currentLanguage.value = lang;
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  if (currentLanguage.value !== lang) {
+    currentLanguage.value = lang;
 
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('language', lang);
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('preferred_language', lang);
+        document.documentElement.lang = lang;
+
+        const event = new CustomEvent('language-changed', { detail: { language: lang } });
+        window.dispatchEvent(event);
+      } catch (error) {
+        console.error('[languages] Error saving language preference:', error);
+      }
+    }
   }
 };
 
@@ -388,18 +408,16 @@ export const useTranslations = <T extends keyof TranslationsStore>(
 };
 
 export const initLanguage = () => {
-  if (typeof window !== 'undefined') {
-    const savedLanguage = localStorage.getItem('language') as SupportedLanguage | null;
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    try {
+      const savedLanguage = localStorage.getItem('preferred_language') as SupportedLanguage | null;
 
-    if (savedLanguage && Object.keys(translations).includes(savedLanguage)) {
-      changeLanguage(savedLanguage);
-      return;
-    }
-
-    const browserLang = navigator.language.split('-')[0] as SupportedLanguage;
-
-    if (Object.keys(translations).includes(browserLang)) {
-      changeLanguage(browserLang);
+      if (savedLanguage && Object.keys(translations).includes(savedLanguage)) {
+        changeLanguage(savedLanguage);
+        return;
+      }
+    } catch (error) {
+      console.error('[languages] Error loading saved language:', error);
     }
   }
 };

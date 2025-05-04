@@ -12,12 +12,12 @@
       <p id="language-menu-title" class="sr-only">{{ getAriaLabelForLanguageMenu() }}</p>
       <v-list density="compact">
         <v-list-item v-for="language in availableLanguages" :key="language.code" :value="language.code"
-          @click="switchLanguage(language.code as SupportedLanguage)" :active="language.code === currentLanguage"
+          @click="switchLanguage(language.code as SupportedLanguage)" :active="language.code === currentLang"
           rounded="md" role="menuitem" :aria-label="getLanguageAriaLabel(language)" :lang="language.code"
-          :aria-current="language.code === currentLanguage ? 'true' : 'false'">
+          :aria-current="language.code === currentLang ? 'true' : 'false'">
           <template v-slot:prepend>
             <span class="language-flag mr-2" aria-hidden="true">{{ language.flag }}</span>
-            <v-icon v-if="language.code === currentLanguage" color="primary" class="mr-2"
+            <v-icon v-if="language.code === currentLang" color="primary" class="mr-2"
               aria-hidden="true">mdi-check</v-icon>
           </template>
           <v-list-item-title class="text-capitalize">
@@ -32,9 +32,10 @@
 <script setup lang="ts">
 // @ts-ignore
 import { useNuxtApp, useRoute, useRouter } from '#imports'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import {
   availableLanguages,
+  changeLanguage,
   currentLanguage,
   SupportedLanguage
 } from '../languages'
@@ -42,13 +43,50 @@ import {
 const route = useRoute()
 const router = useRouter()
 const nuxtApp = useNuxtApp()
-const { $switchLanguage } = nuxtApp
 const menu = ref(false)
+
+const currentLang = computed(() => currentLanguage.value)
 
 const currentLanguageName = computed(() => {
   const lang = availableLanguages.find(l => l.code === currentLanguage.value)
   return lang ? lang.name : ''
 })
+
+watch(currentLanguage, (newLang) => {
+  menu.value = false;
+  const lang = availableLanguages.find(l => l.code === newLang);
+  if (lang) {
+    document.title = `${document.title.split(' - ')[0]} - ${lang.name}`;
+  }
+
+  updateDocumentMeta(newLang);
+});
+
+const updateDocumentMeta = (lang: SupportedLanguage) => {
+  document.documentElement.lang = lang;
+
+  const metaOgLocale = document.querySelector('meta[property="og:locale"]');
+  if (metaOgLocale) {
+    metaOgLocale.setAttribute('content', lang);
+  }
+}
+
+onMounted(() => {
+  console.log('[LanguageSelector] onMounted');
+  const savedLanguage = localStorage.getItem('preferred_language') as SupportedLanguage | null;
+  if (savedLanguage && currentLanguage.value !== savedLanguage) {
+    console.log(`[LanguageSelector] Restoring saved language: ${savedLanguage}`);
+    changeLanguage(savedLanguage);
+    document.documentElement.lang = savedLanguage;
+    nuxtApp.$i18n.locale.value = savedLanguage;
+
+    const lang = availableLanguages.find(l => l.code === savedLanguage);
+    if (lang) {
+      document.title = `${document.title.split(' - ')[0]} - ${lang.name}`;
+      updateDocumentMeta(savedLanguage);
+    }
+  }
+});
 
 const getAriaLabelForLanguageSelector = () => {
   switch (currentLanguage.value) {
@@ -96,28 +134,34 @@ const getLanguageAriaLabel = (language: { code: string, name: string }) => {
 }
 
 const switchLanguage = (lang: SupportedLanguage) => {
-  if (lang !== currentLanguage.value) {
-    $switchLanguage(lang)
-
-    const routeBaseName = nuxtApp.$i18n.getRouteBaseName()
-
-    if (routeBaseName) {
-      const localePath = nuxtApp.$i18n.localePath({
-        name: routeBaseName,
-        params: route.params,
-        query: route.query
-      }, lang)
-
-      if (localePath) {
-        router.push(localePath)
-      }
-    } else {
-      const homePath = lang === 'en' ? '/' : `/${lang}`
-      router.push(homePath)
-    }
+  if (lang === currentLanguage.value) {
+    menu.value = false;
+    return;
   }
 
-  menu.value = false
+  console.log(`[LanguageSelector] Switching language to: ${lang}`);
+
+  changeLanguage(lang);
+
+  nuxtApp.$i18n.locale.value = lang;
+
+  document.documentElement.lang = lang;
+
+  if (route.path.includes(`/${currentLanguage.value}/`)) {
+    const newPath = route.path.replace(`/${currentLanguage.value}/`, `/${lang}/`);
+    router.push(newPath);
+  } else if (currentLanguage.value !== 'en' && !route.path.includes('/')) {
+    router.push(`/${lang}${route.path}`);
+  } else if (currentLanguage.value === 'en' && lang !== 'en') {
+    router.push(`/${lang}${route.path}`);
+  } else if (lang === 'en' && route.path.startsWith('/en')) {
+    const newPath = route.path.replace('/en', '');
+    router.push(newPath || '/');
+  }
+
+  menu.value = false;
+
+  console.log(`[LanguageSelector] Language switched to: ${lang}, currentLanguage is now: ${currentLanguage.value}`);
 }
 </script>
 

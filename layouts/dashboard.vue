@@ -90,41 +90,6 @@
       <div class="d-flex align-center">
         <v-icon size="large" class="mr-3">{{ getCurrentPageIcon() }}</v-icon>
         <div class="text-h5 font-weight-bold">{{ currentPageTitle }}
-          <v-chip v-if="currentPageTitle === 'API Testing Hub'" color="secondary" variant="elevated" size="small"
-            class="ml-2">
-            <v-icon start size="small">mdi-information</v-icon>
-            {{ t().studio.beta }}
-          </v-chip>
-          <v-menu v-if="currentPageTitle === 'Studio'" offset-y>
-            <template v-slot:activator="{ props }">
-              <v-chip v-bind="props" :color="studioMode === 'studio-seo' ? 'secondary' : 'primary'" variant="elevated"
-                size="small" class="ml-2" :elevation="4">
-                <v-icon start size="small">{{ studioMode === 'studio-seo' ? 'mdi-magnify' : 'mdi-palette' }}</v-icon>
-                {{ studioMode === 'studio-seo' ? 'SEO' : 'Studio' }}
-                <v-icon end size="x-small" class="ml-1">mdi-chevron-down</v-icon>
-              </v-chip>
-            </template>
-            <v-list density="compact" width="180">
-              <v-list-item @click="setStudioMode('studio')" :active="studioMode === 'studio'">
-                <template v-slot:prepend>
-                  <v-icon color="primary">mdi-palette</v-icon>
-                </template>
-                <v-list-item-title>{{ t().studio.studioMode }}</v-list-item-title>
-                <template v-slot:append>
-                  <v-icon v-if="studioMode === 'studio'" color="primary" size="small">mdi-check</v-icon>
-                </template>
-              </v-list-item>
-              <v-list-item @click="setStudioMode('studio-seo')" :active="studioMode === 'studio-seo'">
-                <template v-slot:prepend>
-                  <v-icon color="secondary">mdi-magnify</v-icon>
-                </template>
-                <v-list-item-title>{{ t().studio.seoMode }}</v-list-item-title>
-                <template v-slot:append>
-                  <v-icon v-if="studioMode === 'studio-seo'" color="secondary" size="small">mdi-check</v-icon>
-                </template>
-              </v-list-item>
-            </v-list>
-          </v-menu>
         </div>
       </div>
 
@@ -205,7 +170,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, markRaw, onMounted, provide, ref, watch } from 'vue';
+import { computed, markRaw, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay, useTheme } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
@@ -225,7 +190,44 @@ const route = useRoute();
 const open = ref([]);
 const display = useDisplay();
 const drawer = ref(!display.smAndDown.value);
-const currentPageTitle = ref('Dashboard');
+const currentPageTitle = computed(() => {
+  const path = route.path;
+
+  if (path === '/dashboard') {
+    return t().menu.dashboard;
+  } else if (path.includes('/website')) {
+    return t().menu.website;
+  } else if (path.includes('/performance')) {
+    return t().menu.performance;
+  } else if (path.includes('/animations')) {
+    return t().menu.cssPlayground;
+  } else if (path.includes('/database-designer')) {
+    return t().menu.databaseDesigner;
+  } else if (path.includes('/semantic')) {
+    return t().menu.structureAccessibility;
+  } else if (path.includes('/security')) {
+    return t().menu.security;
+  } else if (path.includes('/content')) {
+    return t().menu.content;
+  } else if (path.includes('/studio')) {
+    return t().menu.studio;
+  } else if (path.includes('/responsive')) {
+    return t().menu.responsive;
+  } else if (path.includes('/accessibility')) {
+    return t().menu.accessibility;
+  } else if (path.includes('/robots')) {
+    return t().menu.robotsSchema;
+  } else if (path.includes('/settings')) {
+    return t().menu.settings;
+  } else if (path.includes('/newsletter-admin')) {
+    return t().menu.newsletter;
+  } else if (path.includes('/api-testing-hub')) {
+    return t().menu.apiTestingHub;
+  } else {
+    return t().menu.dashboard;
+  }
+});
+
 const studioMode = ref('studio');
 const isSmall = computed(() => display.smAndDown.value);
 const vuetifyTheme = useTheme();
@@ -271,6 +273,22 @@ watch(() => currentLanguage.value, (newLang, oldLang) => {
     );
 
     previousLanguage.value = oldLang as SupportedLanguage;
+
+    if (document && route) {
+      const pageTitle = currentPageTitle.value;
+      document.title = pageTitle ? `${pageTitle} - StackUnity` : 'StackUnity';
+    }
+  }
+}, { immediate: true });
+
+watch(() => route.path, () => {
+  if (display.smAndDown.value) {
+    drawer.value = false;
+  }
+
+  if (document) {
+    const pageTitle = currentPageTitle.value;
+    document.title = pageTitle ? `${pageTitle} - StackUnity` : 'StackUnity';
   }
 }, { immediate: true });
 
@@ -281,70 +299,16 @@ onMounted(() => {
   }
 });
 
-provide('studioMode', {
-  mode: studioMode,
-  isDesignMode: computed(() => studioMode.value === 'studio'),
-  isSEOMode: computed(() => studioMode.value === 'studio-seo'),
-  setMode: (mode: string) => studioMode.value = mode,
-  toggleMode: () => studioMode.value = studioMode.value === 'studio' ? 'studio-seo' : 'studio'
-});
-
-watch(() => route.path, () => {
-  if (display.smAndDown.value) {
-    drawer.value = false;
-  }
-  updatePageTitle();
-});
-
 watch(isSmall, (isSmall) => {
   if (!isSmall) {
     drawer.value = true;
   }
 });
 
-const updatePageTitle = () => {
-  const path = route.path;
-
-  if (path === '/dashboard') {
-    currentPageTitle.value = t().menu.dashboard;
-  } else if (path.includes('/website')) {
-    currentPageTitle.value = t().menu.website;
-  } else if (path.includes('/performance')) {
-    currentPageTitle.value = t().menu.performance;
-  } else if (path.includes('/animations')) {
-    currentPageTitle.value = t().menu.cssPlayground;
-  } else if (path.includes('/database-designer')) {
-    currentPageTitle.value = t().menu.databaseDesigner;
-  } else if (path.includes('/semantic')) {
-    currentPageTitle.value = t().menu.structureAccessibility;
-  } else if (path.includes('/security')) {
-    currentPageTitle.value = t().menu.security;
-  } else if (path.includes('/content')) {
-    currentPageTitle.value = t().menu.content;
-  } else if (path.includes('/studio')) {
-    currentPageTitle.value = t().menu.studio;
-  } else if (path.includes('/responsive')) {
-    currentPageTitle.value = t().menu.responsive;
-  } else if (path.includes('/accessibility')) {
-    currentPageTitle.value = t().menu.accessibility;
-  } else if (path.includes('/robots')) {
-    currentPageTitle.value = t().menu.robotsSchema;
-  } else if (path.includes('/settings')) {
-    currentPageTitle.value = t().menu.settings;
-  } else if (path.includes('/newsletter-admin')) {
-    currentPageTitle.value = t().menu.newsletter;
-  } else if (path.includes('/api-testing-hub')) {
-    currentPageTitle.value = t().menu.apiTestingHub;
-  } else {
-    const routeName = path.split('/').pop() || 'Dashboard';
-    currentPageTitle.value = routeName.charAt(0).toUpperCase() + routeName.slice(1);
-  }
-};
-
 const getCurrentPageIcon = () => {
   const path = route.path;
 
-  if (path === '/dashboard') {
+  if (path.includes('/dashboard')) {
     return 'mdi-view-dashboard-outline';
   } else if (path.includes('/website')) {
     return 'mdi-web';
@@ -382,17 +346,13 @@ const getCurrentPageIcon = () => {
 };
 
 const getHeaderColor = () => {
-  if (currentPageTitle.value === 'Studio') {
-    return studioMode.value === 'studio-seo' ? 'secondary' : 'primary';
-  } else if (currentPageTitle.value === 'API Testing Hub') {
+  if (currentPageTitle.value === t().menu.studio) {
+    return 'secondary';
+  } else if (currentPageTitle.value === t().menu.apiTestingHub) {
     return 'info';
   } else {
     return 'primary';
   }
-};
-
-const setStudioMode = (mode) => {
-  studioMode.value = mode;
 };
 
 const closeDrawer = () => {
@@ -451,7 +411,6 @@ const submitFeedback = async () => {
 onMounted(() => {
   userStore.loadSQLSchemas();
   userStore.loadWebsiteData();
-  updatePageTitle();
 });
 
 function createPremiumMenuItem(title: string, link: string, icon: string, featureKey: string, planType: 'standard' | 'premium' = 'premium'): any {
@@ -546,6 +505,11 @@ const items = computed(() => [
     ]
   }
 ]);
+
+// Ajouter un computed pour la localisation actuelle
+const currentLocale = computed(() => {
+  return currentLanguage.value;
+});
 
 </script>
 

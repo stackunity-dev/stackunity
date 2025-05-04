@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { availableLanguages, currentLanguage } from '../languages';
+import { currentLanguage } from '../languages';
 
 const props = defineProps({
   position: {
@@ -38,14 +38,6 @@ const color = ref('primary');
 const icon = ref('mdi-translate');
 const lastLanguageChange = ref(new Date());
 const timer = ref<NodeJS.Timeout | null>(null);
-
-const languageNameMap = computed(() => {
-  const map: Record<string, string> = {};
-  availableLanguages.forEach(lang => {
-    map[lang.code] = lang.name;
-  });
-  return map;
-});
 
 const getLanguageChangeMessage = (newLang: string) => {
   switch (newLang) {
