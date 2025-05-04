@@ -22,7 +22,8 @@ export default {
     userEngagement: "Compromiso del Usuario",
     security: "Seguridad",
     performance: "Rendimiento",
-    visual: "Visualizador"
+    visual: "Visualizador",
+    uxAnalyzer: "Analizador UX"
   },
   categories: {
     frontend: "Frontend",
@@ -43,7 +44,8 @@ export default {
     content: "Contenido",
     userEngagement: "Compromiso del Usuario",
     security: "Seguridad",
-    visual: "Visualizador"
+    visual: "Visualizador",
+    uxAnalyzer: "Analizador UX"
   },
   premiumLabel: {
     standard: "Estándar",

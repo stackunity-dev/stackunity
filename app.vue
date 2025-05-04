@@ -221,6 +221,19 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
+
+  (function () {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = `${window.location.origin}/tracker.js`;
+    s.setAttribute('data-website-id', 'site-test-stackunity');
+    var x = document.getElementsByTagName('script')[0];
+    if (x && x.parentNode) {
+      x.parentNode.insertBefore(s, x);
+    }
+  })();
+
   if (isClient) {
     if (!userStore.isAuthenticated && !sessionRestorationAttempted.value) {
       try {

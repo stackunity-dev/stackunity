@@ -22,7 +22,8 @@ export default {
     content: "内容",
     userEngagement: "用户参与",
     security: "安全",
-    visual: "可视化"
+    visual: "可视化",
+    uxAnalyzer: "UX 分析器"
   },
   categories: {
     frontend: "前端",
@@ -43,7 +44,8 @@ export default {
     content: "内容",
     userEngagement: "用户参与",
     security: "安全",
-    visual: "可视化"
+    visual: "可视化",
+    uxAnalyzer: "UX 分析器"
   },
   premiumLabel: {
     standard: "标准版",

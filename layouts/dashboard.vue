@@ -223,6 +223,8 @@ const currentPageTitle = computed(() => {
     return t().menu.newsletter;
   } else if (path.includes('/api-testing-hub')) {
     return t().menu.apiTestingHub;
+  } else if (path.includes('/user-analytics')) {
+    return t().menu.uxAnalyzer;
   } else {
     return t().menu.dashboard;
   }
@@ -340,6 +342,8 @@ const getCurrentPageIcon = () => {
     return 'mdi-cog-outline';
   } else if (path.includes('/newsletter-admin')) {
     return 'mdi-email-outline';
+  } else if (path.includes('/user-analytics')) {
+    return 'mdi-eye-outline';
   } else {
     return 'mdi-application';
   }
@@ -490,6 +494,7 @@ const items = computed(() => [
     children: [
       { title: t().features.responsive, link: '/responsive', icon: 'mdi-responsive' },
       { title: t().features.accessibility, link: '/accessibility', icon: 'mdi-access-point' },
+      { title: t().features.uxAnalyzer, link: '/user-analytics', icon: 'mdi-eye-outline' }
     ]
   },
   {

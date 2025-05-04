@@ -180,6 +180,12 @@ import cardTemplatesEs from './cardTemplates/es';
 import cardTemplatesFr from './cardTemplates/fr';
 import cardTemplatesZh from './cardTemplates/zh';
 
+import analyticsAr from './analytics/ar';
+import analyticsEn from './analytics/en';
+import analyticsEs from './analytics/es';
+import analyticsFr from './analytics/fr';
+import analyticsZh from './analytics/zh';
+
 
 export type SupportedLanguage = 'en' | 'fr' | 'ar' | 'es' | 'zh';
 
@@ -214,6 +220,7 @@ export interface TranslationsStore {
   studioUtilsTemplates: typeof studioUtilsTemplatesEn;
   cardTemplates: typeof cardTemplatesEn;
   privacy: typeof privacyEn;
+  analytics: typeof analyticsEn;
 }
 
 const translations: Record<SupportedLanguage, TranslationsStore> = {
@@ -248,6 +255,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     studio: studioEn,
     cardTemplates: cardTemplatesEn,
     privacy: privacyEn,
+    analytics: analyticsEn,
   },
   fr: {
     index: indexFr,
@@ -280,6 +288,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     studio: studioFr,
     cardTemplates: cardTemplatesFr,
     privacy: privacyFr,
+    analytics: analyticsFr,
   },
   ar: {
     index: indexAr,
@@ -312,6 +321,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     studio: studioAr,
     cardTemplates: cardTemplatesAr,
     privacy: privacyAr,
+    analytics: analyticsAr,
   },
   es: {
     index: indexEs,
@@ -344,6 +354,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     studio: studioEs,
     cardTemplates: cardTemplatesEs,
     privacy: privacyEs,
+    analytics: analyticsEs,
   },
   zh: {
     index: indexZh,
@@ -376,6 +387,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     studio: studioZh,
     cardTemplates: cardTemplatesZh,
     privacy: privacyZh,
+    analytics: analyticsZh,
   },
 };
 

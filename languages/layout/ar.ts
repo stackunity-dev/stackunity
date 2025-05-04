@@ -22,7 +22,8 @@ export default {
     content: "المحتوى",
     userEngagement: "مشاركة المستخدم",
     security: "الأمان",
-    visual: "المرئي"
+    visual: "المرئي",
+    uxAnalyzer: "محلل UX"
   },
   categories: {
     frontend: "الواجهة الأمامية",
@@ -43,7 +44,8 @@ export default {
     content: "المحتوى",
     userEngagement: "مشاركة المستخدم",
     security: "الأمان",
-    visual: "المرئي"
+    visual: "المرئي",
+    uxAnalyzer: "محلل UX"
   },
   premiumLabel: {
     standard: "قياسي",
