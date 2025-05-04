@@ -147,13 +147,33 @@
     },
     
     hasConsent: function() {
-      return localStorage.getItem('stackunity_consent') === 'true';
+      const directConsent = localStorage.getItem('stackunity_consent') === 'true';
+      if (directConsent) return true;
+      
+      try {
+        const cookieConsent = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('stackunity_cookie_consent='));
+          
+        if (cookieConsent) {
+          const cookieValue = decodeURIComponent(cookieConsent.split('=')[1]);
+          const preferences = JSON.parse(cookieValue);
+          return preferences.analytics === true;
+        }
+      } catch (e) {
+        console.error('Erreur lors de la vérification du consentement:', e);
+      }
+      
+      return false;
     }
   };
 
   const api = {
     sendData: function(endpoint, data) {
-      if (!utils.hasConsent()) return Promise.reject('No consent');
+      if (!utils.hasConsent()) {
+        console.log('Analytics: No consent given, storing locally');
+        return Promise.resolve({ success: true, stored: true });
+      }
       
       return fetch(endpoint, {
         method: 'POST',

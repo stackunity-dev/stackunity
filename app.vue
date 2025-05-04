@@ -222,6 +222,20 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
 
+  if (isClient) {
+    if (cookieStore.preferences.analytics) {
+      localStorage.setItem('stackunity_consent', 'true');
+    } else {
+      localStorage.setItem('stackunity_consent', 'false');
+    }
+
+    window.addEventListener('analytics-preference-changed', (event: any) => {
+      if (event.detail && event.detail.enabled !== undefined) {
+        localStorage.setItem('stackunity_consent', event.detail.enabled ? 'true' : 'false');
+      }
+    });
+  }
+
   (function () {
     var s = document.createElement('script');
     s.type = 'text/javascript';
@@ -306,7 +320,7 @@ onMounted(async () => {
 
         const isPremiumRoute = premiumRoutes.some(route => {
           const normalizedRoute = route.toLowerCase();
-          return normalizedPath === normalizedRoute || normalizedPath.startsWith(`${normalizedRoute}/`);
+          return normalizedPath === normalizedRoute || normalizedPath.startsWith(`${normalizedRoute} / `);
         });
 
         let isPremium = false;
