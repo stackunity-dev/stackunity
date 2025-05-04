@@ -1,6 +1,6 @@
 (function() {
   const config = {
-    apiEndpoint: 'https://analytics.stackunity.tech/api/analytics/collect',
+    apiEndpoint: '/api/analytics/collect',
     flushInterval: 30 * 1000, 
     sessionTimeout: 30 * 60 * 1000, 
     trackClicks: true,
