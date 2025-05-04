@@ -91,7 +91,7 @@ import HeroSection from '../components/landing/HeroSection.vue';
 import HowItWorks from '../components/landing/HowItWorks.vue';
 import '../components/landing/landing.css';
 import AppBar from '../components/landing/navigation/AppBar.vue';
-import MobileDrawer from '../components/landing/navigation/mobileDrawer.vue';
+import MobileDrawer from '../components/landing/navigation/MobileDrawer.vue';
 import Snackbar from '../components/snackbar.vue';
 import { currentLanguage, useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
