@@ -342,7 +342,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const urlList = await crawlWebsite(body.url, 30);
+    const urlList = await crawlWebsite(body.url, 20);
     const uniqueUrls = [...new Set(urlList)];
 
     const securityAnalysis = await Promise.all(uniqueUrls.map(async (url) => {

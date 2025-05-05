@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   if (!body.url) {
     throw new Error('URL is required');
   }
-  const urlList = await crawlWebsite(body.url, 30);
+  const urlList = await crawlWebsite(body.url, 20);
   const semanticAnalysis = await Promise.all(urlList.map(async (url) => {
     const response = await axios.get(url);
     const $ = load(response.data);

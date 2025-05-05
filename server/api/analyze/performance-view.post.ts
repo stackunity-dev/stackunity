@@ -34,7 +34,7 @@ export default defineEventHandler(async (event: H3Event) => {
       throw new Error('URL required');
     }
 
-    const urls = await crawlWebsite(url, 30);
+    const urls = await crawlWebsite(url, 20);
     const results = await processUrlsInBatches(
       urls,
       5,

@@ -67,8 +67,8 @@
                       <v-progress-circular :model-value="calculateAverageMetric('firstContentfulPaint')"
                         :color="getMetricColor('firstContentfulPaint')" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">{{
-                            t().results.metrics.firstContentfulPaint.title }}</div>
+                          <div class="text-subtitle-1 font-weight-bold">
+                            FCP </div>
                           <div class="text-h6">{{ calculateAverageMetric('firstContentfulPaint', true) }}ms</div>
                         </div>
                       </v-progress-circular>
@@ -81,8 +81,8 @@
                       <v-progress-circular :model-value="calculateAverageMetric('largestContentfulPaint')"
                         :color="getMetricColor('largestContentfulPaint')" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">{{
-                            t().results.metrics.largestContentfulPaint.title }}</div>
+                          <div class="text-subtitle-1 font-weight-bold">
+                            LCP </div>
                           <div class="text-h6">{{ calculateAverageMetric('largestContentfulPaint', true) }}ms</div>
                         </div>
                       </v-progress-circular>
@@ -96,8 +96,8 @@
                         :color="getCLSColor(calculateAverageMetric('cumulativeLayoutShift', false))" :size="100"
                         :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">{{
-                            t().results.metrics.cumulativeLayoutShift.title }}</div>
+                          <div class="text-subtitle-1 font-weight-bold">
+                            CLS </div>
                           <div class="text-h6">{{ calculateAverageMetric('cumulativeLayoutShift', false, 1).toFixed(2)
                             }}</div>
                         </div>

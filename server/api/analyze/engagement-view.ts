@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const urlList = await crawlWebsite(body.url, 30);
+    const urlList = await crawlWebsite(body.url, 20);
     const engagementAnalysis: EngagementAnalysisResult[] = [];
 
     for (const url of urlList) {
