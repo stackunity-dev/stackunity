@@ -25,7 +25,7 @@
                     {{ feature.title }}
                   </h3>
 
-                  <div v-if="feature.title === 'Accessibility'" class="vision-filter-wrapper ml-2">
+                  <div v-if="feature.title === t().features.accessibility.title" class="vision-filter-wrapper ml-2">
                     <v-menu offset-y>
                       <template v-slot:activator="{ props }">
                         <v-btn icon density="comfortable" variant="text" v-bind="props"
@@ -79,7 +79,7 @@
 import { computed } from 'vue';
 import { useTranslations } from '../../languages/';
 import { setHoverOn, setHoverOff, getElevation } from '../../utils/hover-state';
-import { applyVisionFilter, filterIntensity, filterStyle, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
+import { applyVisionFilter, filterIntensity, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
 // @ts-ignore
 import { useNuxtApp } from '#app';
 import './landing.css';

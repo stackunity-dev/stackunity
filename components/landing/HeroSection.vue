@@ -3,7 +3,7 @@
     <v-container>
       <v-row align="center" justify="center">
         <v-col cols="12" md="9" class="text-center justify-center d-flex flex-column align-center text-md-start">
-          <h1 id="hero-heading" class="text-h2 text-gradient text-center font-weight-bold mb-4"
+          <h1 id="hero-heading" class="text-h2 text-gradient text-center font-weight-bold mb-4 arabic-text-fix"
             style="max-width: 800px">
             {{ t().hero.title }}
           </h1>
@@ -32,10 +32,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
-import { useTranslations } from '../../languages/';
+import { computed } from 'vue';
 import { useDisplay } from 'vuetify';
-import { setHoverOn, setHoverOff, getElevation } from '../../utils/hover-state';
+import { useTranslations } from '../../languages/';
+import { getElevation, setHoverOff, setHoverOn } from '../../utils/hover-state';
 // @ts-ignore
 import { useNuxtApp } from '#app';
 import './landing.css';
@@ -53,3 +53,12 @@ const heroFeatures = computed(() => [
   t().hero.features[3]
 ])
 </script>
+
+<style scoped>
+:lang(ar) .arabic-text-fix {
+  line-height: 1.4;
+  letter-spacing: 0;
+  word-spacing: 0.1em;
+  padding-bottom: 0.3em;
+}
+</style>
