@@ -72,7 +72,6 @@ import { useDisplay } from 'vuetify';
 import { useTranslations } from '../../languages/';
 // @ts-ignore
 import { useNuxtApp } from '#app';
-import './landing.css';
 
 const t = useTranslations('index')
 const display = useDisplay()
