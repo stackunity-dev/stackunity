@@ -10,45 +10,20 @@
         </p>
       </div>
 
-      <!-- Timeline pour desktop et tablette -->
-      <v-timeline v-if="$vuetify.display.mdAndUp" align="start" class="mt-12">
-        <v-timeline-item v-for="(step, i) in steps" :key="i" :icon="getStepIcon(i)" :dot-color="step.color" size="large"
-          :line-color="i < steps.length - 1 ? step.color : undefined">
-          <template v-slot:opposite>
-            <div class="d-flex align-center justify-end h-100 pe-4">
-              <div class="text-h2 font-weight-bold" :class="`text-${step.color}`">0{{ i + 1 }}</div>
+      <div class="steps-container">
+        <div v-for="(step, i) in steps" :key="i" class="step-item">
+          <div class="step-number" :class="`text-${step.color}`">0{{ i + 1 }}</div>
+          <div class="step-content">
+            <div class="step-icon">
+              <v-icon :icon="getStepIcon(i)" :color="step.color" size="large"></v-icon>
             </div>
-          </template>
-
-          <div class="timeline-content pa-4 rounded-lg" :class="`border-left-${step.color}`">
-            <h3 class="text-h5 font-weight-bold mb-2">{{ step.title }}</h3>
-            <p class="text-body-1 mb-4">{{ step.description }}</p>
-            <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="pa-0">
+            <h3 class="step-title">{{ step.title }}</h3>
+            <p class="step-description">{{ step.description }}</p>
+            <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="mt-2">
               {{ t().cta.learnMore }}
               <v-icon end>mdi-arrow-right</v-icon>
             </v-btn>
           </div>
-        </v-timeline-item>
-      </v-timeline>
-
-      <!-- Version mobile simplifiée -->
-      <div v-else>
-        <div v-for="(step, i) in steps" :key="i" class="timeline-mobile-item mb-8 pa-4 rounded-lg"
-          :class="`border-left-${step.color}`">
-          <div class="d-flex align-center mb-4">
-            <v-avatar :color="step.color" size="40" class="mr-4">
-              <v-icon :icon="getStepIcon(i)" color="white"></v-icon>
-            </v-avatar>
-            <h3 class="text-h6 font-weight-bold">
-              <span class="mr-2" :class="`text-${step.color}`">0{{ i + 1 }}.</span>
-              {{ step.title }}
-            </h3>
-          </div>
-          <p class="text-body-1 mb-4">{{ step.description }}</p>
-          <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="pa-0">
-            {{ t().cta.learnMore }}
-            <v-icon end>mdi-arrow-right</v-icon>
-          </v-btn>
         </div>
       </div>
     </v-container>
@@ -102,40 +77,65 @@ const steps = computed(() => [
   -webkit-text-fill-color: transparent;
 }
 
-.timeline-content,
-.timeline-mobile-item {
-  background-color: rgb(var(--v-theme-surface));
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-left-width: 5px !important;
-  border-left-style: solid;
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
 }
 
-.timeline-content:hover,
-.timeline-mobile-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+.step-item {
+  position: relative;
+  display: flex;
+  padding: 24px;
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface-variant), 0.1);
 }
 
-.border-left-primary {
-  border-left-color: rgb(var(--v-theme-primary)) !important;
+.step-number {
+  position: absolute;
+  top: -20px;
+  right: 20px;
+  font-size: 72px;
+  font-weight: 800;
+  opacity: 0.6;
+  line-height: 1;
 }
 
-.border-left-secondary {
-  border-left-color: rgb(var(--v-theme-secondary)) !important;
+.step-content {
+  flex-grow: 1;
+  padding-right: 80px;
 }
 
-.border-left-tertiary {
-  border-left-color: rgb(var(--v-theme-tertiary)) !important;
+.step-icon {
+  margin-bottom: 16px;
 }
 
-.v-timeline-divider__dot {
-  box-shadow: 0 0 0 4px rgb(var(--v-theme-surface));
+.step-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
-@media (max-width: 959px) {
-  .timeline-mobile-item {
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.step-description {
+  margin-bottom: 16px;
+  opacity: 0.85;
+}
+
+@media (min-width: 960px) {
+  .steps-container {
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .step-item {
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .step-number {
+    top: -30px;
+    right: 30px;
+    font-size: 90px;
   }
 }
 </style>
