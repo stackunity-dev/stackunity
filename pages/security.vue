@@ -67,7 +67,8 @@
                       <v-progress-circular :model-value="calculateAverageByType('headers')"
                         :color="getScoreColor(calculateAverageByType('headers'))" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">{{ t.results.headers }}</div>
+                          <div class="text-subtitle-1 font-weight-bold">
+                            Headers </div>
                           <div class="text-h6">{{ calculateAverageByType('headers') }}%</div>
                         </div>
                       </v-progress-circular>
@@ -79,7 +80,8 @@
                       <v-progress-circular :model-value="calculateAverageByType('cookies')"
                         :color="getScoreColor(calculateAverageByType('cookies'))" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">{{ t.results.cookies }}</div>
+                          <div class="text-subtitle-1 font-weight-bold">
+                            Cookies </div>
                           <div class="text-h6">{{ calculateAverageByType('cookies') }}%</div>
                         </div>
                       </v-progress-circular>
@@ -91,7 +93,8 @@
                       <v-progress-circular :model-value="calculateAverageByType('vulnerabilities')"
                         :color="getScoreColor(calculateAverageByType('vulnerabilities'))" :size="100" :width="10">
                         <div>
-                          <div class="text-subtitle-1 font-weight-bold">{{ t.results.vulnerabilities }}</div>
+                          <div class="text-subtitle-1 font-weight-bold">
+                            Vulnerabilities </div>
                           <div class="text-h6">{{ calculateAverageByType('vulnerabilities') }}%</div>
                         </div>
                       </v-progress-circular>
@@ -349,7 +352,7 @@
                                     issue.content }}
                                   </p>
                                   <p v-if="issue.impact" class="mt-3"><strong>{{ t.vulnerabilities.details.impact
-                                  }}:</strong> <span class="red--text text--darken-1">{{
+                                      }}:</strong> <span class="red--text text--darken-1">{{
                                         issue.impact }}</span></p>
                                   <p v-if="issue.evidence" class="mt-2 grey--text text--darken-2"><strong>Evidence
                                       :</strong> {{
