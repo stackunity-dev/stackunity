@@ -10,57 +10,46 @@
         </p>
       </div>
 
+      <!-- Timeline pour desktop et tablette -->
       <v-timeline v-if="$vuetify.display.mdAndUp" align="start" class="mt-12">
-        <v-timeline-item v-for="(step, i) in steps" :key="i" :icon="getStepIcon(i)" :dot-color="step.color"
-          size="large">
+        <v-timeline-item v-for="(step, i) in steps" :key="i" :icon="getStepIcon(i)" :dot-color="step.color" size="large"
+          :line-color="i < steps.length - 1 ? step.color : undefined">
           <template v-slot:opposite>
             <div class="d-flex align-center justify-end h-100 pe-4">
               <div class="text-h2 font-weight-bold" :class="`text-${step.color}`">0{{ i + 1 }}</div>
             </div>
           </template>
-          <v-card :class="`border-${step.color} timeline-card mx-2 my-4`" variant="outlined">
-            <v-card-item>
-              <v-card-title class="text-h5 font-weight-bold">
-                {{ step.title }}
-              </v-card-title>
-              <v-card-text class="text-body-1 py-3">
-                {{ step.description }}
-              </v-card-text>
-              <v-card-actions>
-                <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="px-0">
-                  {{ t().cta.learnMore }}
-                  <v-icon end>mdi-arrow-right</v-icon>
-                </v-btn>
-              </v-card-actions>
-            </v-card-item>
-          </v-card>
+
+          <div class="timeline-content pa-4 rounded-lg" :class="`border-left-${step.color}`">
+            <h3 class="text-h5 font-weight-bold mb-2">{{ step.title }}</h3>
+            <p class="text-body-1 mb-4">{{ step.description }}</p>
+            <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="pa-0">
+              {{ t().cta.learnMore }}
+              <v-icon end>mdi-arrow-right</v-icon>
+            </v-btn>
+          </div>
         </v-timeline-item>
       </v-timeline>
 
+      <!-- Version mobile simplifiée -->
       <div v-else>
-        <v-card v-for="(step, i) in steps" :key="i" :class="`border-${step.color} timeline-card mb-6`"
-          variant="outlined">
-          <v-card-item>
-            <div class="d-flex align-center mb-2">
-              <v-avatar :color="step.color" size="40" class="mr-4">
-                <v-icon :icon="getStepIcon(i)" color="white"></v-icon>
-              </v-avatar>
-              <div class="text-h6 font-weight-bold">
-                <span class="mr-2" :class="`text-${step.color}`">0{{ i + 1 }}.</span>
-                {{ step.title }}
-              </div>
-            </div>
-            <v-card-text class="text-body-1 py-3">
-              {{ step.description }}
-            </v-card-text>
-            <v-card-actions>
-              <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="px-0">
-                {{ t().cta.learnMore }}
-                <v-icon end>mdi-arrow-right</v-icon>
-              </v-btn>
-            </v-card-actions>
-          </v-card-item>
-        </v-card>
+        <div v-for="(step, i) in steps" :key="i" class="timeline-mobile-item mb-8 pa-4 rounded-lg"
+          :class="`border-left-${step.color}`">
+          <div class="d-flex align-center mb-4">
+            <v-avatar :color="step.color" size="40" class="mr-4">
+              <v-icon :icon="getStepIcon(i)" color="white"></v-icon>
+            </v-avatar>
+            <h3 class="text-h6 font-weight-bold">
+              <span class="mr-2" :class="`text-${step.color}`">0{{ i + 1 }}.</span>
+              {{ step.title }}
+            </h3>
+          </div>
+          <p class="text-body-1 mb-4">{{ step.description }}</p>
+          <v-btn :color="step.color" variant="text" :to="step.link" aria-label="Learn more" class="pa-0">
+            {{ t().cta.learnMore }}
+            <v-icon end>mdi-arrow-right</v-icon>
+          </v-btn>
+        </div>
       </div>
     </v-container>
   </section>
@@ -106,28 +95,6 @@ const steps = computed(() => [
 </script>
 
 <style scoped>
-.timeline-card {
-  transition: transform 0.3s ease;
-  border-width: 2px !important;
-}
-
-.timeline-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-}
-
-.border-primary {
-  border-color: rgb(var(--v-theme-primary)) !important;
-}
-
-.border-secondary {
-  border-color: rgb(var(--v-theme-secondary)) !important;
-}
-
-.border-tertiary {
-  border-color: rgb(var(--v-theme-tertiary)) !important;
-}
-
 .text-gradient {
   background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
   -webkit-background-clip: text;
@@ -135,17 +102,40 @@ const steps = computed(() => [
   -webkit-text-fill-color: transparent;
 }
 
-.v-timeline .v-timeline-divider__dot {
-  background-color: transparent !important;
+.timeline-content,
+.timeline-mobile-item {
+  background-color: rgb(var(--v-theme-surface));
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left-width: 5px !important;
+  border-left-style: solid;
 }
 
-.v-timeline-item:not(:last-child) .v-timeline-divider__line {
-  background-color: rgba(var(--v-theme-secondary), 0.3);
+.timeline-content:hover,
+.timeline-mobile-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.border-left-primary {
+  border-left-color: rgb(var(--v-theme-primary)) !important;
+}
+
+.border-left-secondary {
+  border-left-color: rgb(var(--v-theme-secondary)) !important;
+}
+
+.border-left-tertiary {
+  border-left-color: rgb(var(--v-theme-tertiary)) !important;
+}
+
+.v-timeline-divider__dot {
+  box-shadow: 0 0 0 4px rgb(var(--v-theme-surface));
 }
 
 @media (max-width: 959px) {
-  .v-timeline {
-    padding-bottom: 32px;
+  .timeline-mobile-item {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 }
 </style>
