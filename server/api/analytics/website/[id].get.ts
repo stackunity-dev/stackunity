@@ -150,6 +150,35 @@ export default defineEventHandler(async (event) => {
     );
     const avgSessionDuration = Math.round(avgSessionRows[0]?.avgSessionDuration || 0);
 
+    // Ajouter requête pour calculer la durée moyenne de toutes les pages
+    const avgPageDurationQuery = `
+      SELECT 
+        AVG(CASE WHEN duration IS NOT NULL AND duration > 0 THEN duration ELSE NULL END) AS avgPageDuration,
+        COUNT(*) AS totalPageViews,
+        COUNT(CASE WHEN duration IS NOT NULL AND duration > 0 THEN 1 ELSE NULL END) AS pageViewsWithDuration
+      FROM analytics_pageviews 
+      WHERE website_id = ? ${startDate ? 'AND enter_time >= ?' : ''}
+    `;
+
+    const [avgPageDurationRows] = await pool.query<StatsRow[]>(
+      avgPageDurationQuery,
+      startDate ? [dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' ')] : [dbWebsiteId]
+    );
+
+    const avgPageDuration = Math.round(avgPageDurationRows[0]?.avgPageDuration || 0);
+    const pageViewsWithDuration = avgPageDurationRows[0]?.pageViewsWithDuration || 0;
+    const totalPageViewsFromDuration = avgPageDurationRows[0]?.totalPageViews || 0;
+    const durationDataQuality = totalPageViewsFromDuration > 0
+      ? Math.min(100, Math.round(pageViewsWithDuration * 100 / totalPageViewsFromDuration))
+      : 0;
+
+    console.log('Durée moyenne des pages:', {
+      avgPageDuration,
+      pageViewsWithDuration,
+      totalPageViews: totalPageViewsFromDuration,
+      durationDataQuality
+    });
+
     const bounceRateQuery = `
       SELECT 
       (SUM(CASE WHEN is_bounce = 1 THEN 1 ELSE 0 END) / GREATEST(COUNT(*), 1)) * 100 AS bounceRate,
@@ -493,6 +522,10 @@ export default defineEventHandler(async (event) => {
         totalSessions,
         frustratedSessions,
         timeOnSite: `${Math.floor(avgSessionDuration / 60)}m ${avgSessionDuration % 60}s`,
+        avgPageDuration: avgPageDuration,
+        avgPageTime: `${Math.floor(avgPageDuration / 60)}m ${avgPageDuration % 60}s`,
+        pageViewsWithDuration: pageViewsWithDuration,
+        durationDataQuality: durationDataQuality,
         topPages: topPagesRows.map(page => {
           // S'assurer que l'URL est valide ou fournir une alternative lisible
           let pageUrl = page.page || 'Unknown page';

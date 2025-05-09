@@ -285,6 +285,7 @@ export default {
     exclusionDeleteConfirm: 'Confirmer la suppression',
     exclusionDeleteCancel: 'Annuler',
     exclusionDeleteConfirmation: 'Je comprends que cette action est irréversible et je confirme la suppression',
+    avgPageTime: 'Temps moyen par page',
   },
   interactions: {
     title: 'Interactions Utilisateur',

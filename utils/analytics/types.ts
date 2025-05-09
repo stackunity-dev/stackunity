@@ -74,6 +74,10 @@ export interface WebsiteAnalytics {
   totalVisitors: number;
   totalPageViews: number;
   avgSessionDuration: number;
+  avgPageDuration: number;
+  durationDataQuality: number;
+  avgPageTime: string;
+  pageViewsWithDuration: number;
   bounceRate: number;
   bounceCount: number;
   frustratedSessions: number;

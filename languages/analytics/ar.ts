@@ -280,6 +280,7 @@ export default {
     exclusionSaveError: 'حدث خطأ أثناء حفظ الإلغاءات.',
     exclusionsSaved: 'تم حفظ الإلغاءات بنجاح.',
     exclusionDeleteError: 'حدث خطأ أثناء حذف الإلغاءات.',
+    avgPageTime: 'متوسط الوقت للصفحة',
   },
   interactions: {
     title: 'تفاعلات المستخدم',

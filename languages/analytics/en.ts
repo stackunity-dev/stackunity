@@ -286,6 +286,7 @@ export default {
     exclusionsSaveError: 'Error while saving exclusions.',
     exclusionsSaved: 'Exclusions saved successfully.',
     exclusionDeleteError: 'Error while deleting exclusions.',
+    avgPageTime: 'Avg. Page Time',
   },
   interactions: {
     title: 'User Interactions',

@@ -114,7 +114,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ tWithPurge.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ tWithPurge.welcome.few.description
-                    }}</p>
+                      }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ tWithPurge.welcome.few.action }}
@@ -263,7 +263,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                  }}</v-list-item-title>
+                    }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -641,7 +641,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                              }}</span>
+                                }}</span>
                             </div>
                           </td>
                           <td>
@@ -806,7 +806,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-            }}</p>
+              }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ tWithPurge.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -912,7 +912,7 @@
               <v-list-item v-if="ipExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                  }}</v-list-item-title>
+                }}</v-list-item-title>
               </v-list-item>
             </v-list>
 
@@ -1566,6 +1566,8 @@ function updateAnalyticsData(data: any) {
   const totalVisitors = data.totalVisitors ?? 0;
   const totalPageViews = data.totalPageViews ?? 0;
   const avgSessionDuration = data.avgSessionDuration ?? 0;
+  const avgPageDuration = data.avgPageDuration ?? 0;
+  const bounceRate = data.bounceRate ?? 0;
   const bounceCount = data.bounceCount ?? 0;
 
   metrics.value = [
@@ -1582,14 +1584,14 @@ function updateAnalyticsData(data: any) {
       color: 'success'
     },
     {
-      label: t.analytics.timeOnSite || 'Temps moyen',
-      value: formatDuration(avgSessionDuration),
-      icon: 'mdi-clock-outline',
+      label: t.analytics.avgPageTime || 'Temps moyen / page',
+      value: data.avgPageTime || formatDuration(avgPageDuration),
+      icon: 'mdi-file-clock-outline',
       color: 'info'
     },
     {
       label: t.analytics.bounceRate || 'Taux de rebond',
-      value: `${bounceCount}`,
+      value: `${bounceRate}%`,
       icon: 'mdi-arrow-u-left-top',
       color: 'warning'
     }
@@ -1662,6 +1664,10 @@ function updateAnalyticsData(data: any) {
     totalVisitors: totalVisitors,
     totalPageViews: totalPageViews,
     avgSessionDuration: avgSessionDuration,
+    avgPageDuration: avgPageDuration,
+    avgPageTime: data.avgPageTime || formatDuration(avgPageDuration),
+    pageViewsWithDuration: data.pageViewsWithDuration ?? 0,
+    durationDataQuality: data.durationDataQuality ?? 0,
     bounceRate: data.bounceRate ?? 0,
     bounceCount: bounceCount,
     frustratedSessions: data.frustratedSessions ?? 0,
