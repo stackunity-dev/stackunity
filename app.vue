@@ -277,8 +277,9 @@ const loadTracker = () => {
       const s = document.createElement('script');
       s.type = 'text/javascript';
       s.async = true;
-      s.src = `${window.location.origin}/tracker.js`;
-      s.setAttribute('data-website-id', 'stackunity-app');
+      s.src = 'https://stackunity.tech/tracker.js';
+      s.setAttribute('data-website-id', 'ab8568cc-7922-481f-94e2-0d62e1072c5a');
+
       const x = document.getElementsByTagName('script')[0];
       if (x && x.parentNode) {
         x.parentNode.insertBefore(s, x);
