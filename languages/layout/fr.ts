@@ -23,7 +23,7 @@ export default {
     security: "Sécurité",
     performance: "Performance",
     visual: "Visualizer",
-    uxAnalyzer: "Analyseur UX"
+    uxAnalyzer: "StackUnity Analytics"
   },
   categories: {
     frontend: "Frontend",
@@ -45,7 +45,7 @@ export default {
     userEngagement: "Engagement utilisateur",
     security: "Sécurité",
     visual: "Visualizer",
-    uxAnalyzer: "Analyseur UX"
+    uxAnalyzer: "Analytics"
   },
   premiumLabel: {
     standard: "Standard",

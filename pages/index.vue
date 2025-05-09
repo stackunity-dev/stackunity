@@ -10,9 +10,9 @@
         </FadeInSection>
 
         <FadeInSection>
-          <section class="pt-16 d-flex justify-center" aria-labelledby="how-it-works-heading">
+          <section class="pt-8 d-flex justify-center" aria-labelledby="how-it-works-heading">
             <img :src="getImageSrc" alt="Preview of StackUnity" class="hero-image rounded-lg" loading="eager"
-              width="80%" height="auto">
+              width="90%" height="auto">
           </section>
         </FadeInSection>
 
@@ -82,7 +82,6 @@
 // @ts-ignore 
 import { definePageMeta, useHead, useNuxtApp } from '#imports';
 import { computed, defineAsyncComponent, onMounted, provide, ref, watch } from 'vue';
-import { useDisplay } from 'vuetify';
 import FadeInSection from '../components/FadeInSection.vue';
 import BadExperiences from '../components/landing/BadExperiences.vue';
 import FeaturesSection from '../components/landing/FeaturesSection.vue';
@@ -94,10 +93,8 @@ import AppBar from '../components/landing/navigation/AppBar.vue';
 import MobileDrawer from '../components/landing/navigation/MobileDrawer.vue';
 import Snackbar from '../components/snackbar.vue';
 import { currentLanguage, useTranslations } from '../languages';
-import { useUserStore } from '../stores/userStore';
 import { filterStyle } from '../utils/filter';
 import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
-import { trackAuthButtonClicks } from '../utils/usePlausible';
 
 const t = useTranslations('index');
 
@@ -158,8 +155,6 @@ useHead({
 const nuxtApp = useNuxtApp()
 const localePath = nuxtApp.$localePath
 
-const heroFeatures = computed(() => t().hero.features);
-
 const stats = computed(() => [
   { value: '10x', label: t().stats.accelerated },
   { value: '100%', label: t().stats.quality },
@@ -167,113 +162,12 @@ const stats = computed(() => [
   { value: '50+', label: t().stats.tools }
 ]);
 
-const features = computed(() => [
-  {
-    title: t().features.cssAnimations.title,
-    description: t().features.cssAnimations.description,
-    icon: 'mdi-animation',
-    color: 'primary'
-  },
-  {
-    title: t().features.studio.title,
-    description: t().features.studio.description,
-    icon: 'mdi-palette',
-    color: 'secondary'
-  },
-  {
-    title: t().features.semantic.title,
-    description: t().features.semantic.description,
-    icon: 'mdi-semantic-web',
-    color: 'tertiary'
-  },
-  {
-    title: t().features.apiTesting.title,
-    description: t().features.apiTesting.description,
-    icon: 'mdi-api',
-    color: 'info'
-  },
-  {
-    title: t().features.websiteAnalysis.title,
-    description: t().features.websiteAnalysis.description,
-    icon: 'mdi-magnify',
-    color: 'success'
-  },
-  {
-    title: t().features.accessibility.title,
-    description: t().features.accessibility.description,
-    icon: 'mdi-access-point',
-    color: 'warning'
-  }
-]);
-
-const steps = computed(() => [
-  {
-    title: t().howItWorks.steps[0].title,
-    description: t().howItWorks.steps[0].description,
-    link: localePath('/signup'),
-    color: 'primary'
-  },
-  {
-    title: t().howItWorks.steps[1].title,
-    description: t().howItWorks.steps[1].description,
-    link: localePath('/signup'),
-    color: 'secondary'
-  },
-  {
-    title: t().howItWorks.steps[2].title,
-    description: t().howItWorks.steps[2].description,
-    link: localePath('/signup'),
-    color: 'tertiary'
-  }
-]);
-
-const menuItems = computed(() => [
-  { title: t().navigation.features, href: '#features', icon: 'mdi-apps-box' },
-  { title: t().navigation.pricing, href: '#pricing', icon: 'mdi-tag-outline' },
-  { title: t().navigation.faq, href: '#faq', icon: 'mdi-frequently-asked-questions' }
-]);
-
-
-
-const badExperiences = computed(() => [
-  {
-    title: t().badExperiences.accessibility.title,
-    ctv: t().badExperiences.accessibility.subtitle,
-    icon: 'mdi-contrast',
-    color: 'primary',
-    text: t().badExperiences.accessibility.description
-  },
-  {
-    title: t().badExperiences.seo.title,
-    ctv: t().badExperiences.seo.subtitle,
-    icon: 'mdi-magnify',
-    color: 'secondary',
-    text: t().badExperiences.seo.description
-  },
-  {
-    title: t().badExperiences.design.title,
-    ctv: t().badExperiences.design.subtitle,
-    icon: 'mdi-palette',
-    color: 'tertiary',
-    text: t().badExperiences.design.description
-  }
-]);
-
-const drawer = ref(false);
-const activeSection = ref('');
-const showAppBar = ref(true);
-const email = ref('');
 const showSnackbar = ref(false);
 const snackbarText = ref('');
 const snackbarColor = ref('');
 const snackbarTimeout = ref(2000);
-const loading = ref(false);
 const isClient = ref(false);
 const pageReady = ref(false);
-const authTracker = trackAuthButtonClicks();
-
-const userStore = useUserStore();
-const display = useDisplay();
 
 const getImageSrc = computed(() => {
   if (currentLanguage.value === 'fr') {
@@ -294,31 +188,6 @@ onMounted(() => {
   document.documentElement.classList.add('page-loaded');
   pageReady.value = true;
 
-  if (typeof window !== 'undefined') {
-    setTimeout(() => {
-      const loginButtons = document.querySelectorAll('a[to="/login"], v-btn[to="/login"]');
-      const signupButtons = document.querySelectorAll('a[to="/signup"], v-btn[to="/signup"]');
-
-      if (authTracker && typeof authTracker.trackAuthButtonClick === 'function' &&
-        typeof authTracker.incrementImpressions === 'function') {
-
-        loginButtons.forEach(button => {
-          button.addEventListener('click', () => {
-            authTracker.trackAuthButtonClick('login', 'index-page', button.textContent?.trim() || 'Login');
-          });
-        });
-
-        signupButtons.forEach(button => {
-          button.addEventListener('click', () => {
-            authTracker.trackAuthButtonClick('signup', 'index-page', button.textContent?.trim() || 'Sign Up');
-          });
-        });
-
-        authTracker.incrementImpressions('login');
-        authTracker.incrementImpressions('signup');
-      }
-    }, 1000);
-  }
 });
 
 watch(() => currentLanguage.value, (newLang) => {
@@ -333,12 +202,4 @@ watch(() => currentLanguage.value, (newLang) => {
 
 provide('pageReady', pageReady);
 
-const showMessage = (message: string, type = 'info', timeout = 3000) => {
-  snackbarText.value = message;
-  snackbarColor.value = type;
-  snackbarTimeout.value = timeout;
-  showSnackbar.value = true;
-};
 </script>
-
-<style scoped></style>

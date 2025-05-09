@@ -5,13 +5,11 @@ import { pool } from '../db';
 export default defineEventHandler(async (event) => {
   if (event.context.user) {
     const userId = event.context.user.userId;
-    console.log('[API] Chargement des schémas SQL pour l\'utilisateur (middleware):', userId);
     return await loadSQLSchemasForUser(userId);
   }
 
   const authHeader = getRequestHeaders(event).authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.log('[API] Tentative d\'accès sans token à /api/sql/loadSQLSchemas');
     return {
       success: false,
       statusCode: 401,
@@ -30,7 +28,6 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  console.log('[API] Chargement des schémas SQL pour l\'utilisateur (token):', decodedToken.userId);
   return await loadSQLSchemasForUser(decodedToken.userId);
 });
 

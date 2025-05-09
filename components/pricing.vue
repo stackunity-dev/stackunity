@@ -9,7 +9,7 @@
           {{ t().section.description }}
         </p>
 
-        <v-chip-group v-model="selectedCurrency" class="d-flex justify-center text-center my-6"
+        <v-chip-group v-model="selectedCurrency" class="d-flex flex-wrap text-center justify-center text-center my-6"
           aria-label="Select currency">
           <v-chip v-for="currency in currencies" :key="currency.symbol" :value="currency.symbol" filter
             aria-label="Currency">
@@ -130,11 +130,11 @@ const freePlan = computed(() => ({
   hasDiscount: false,
   freeTrialDays: 0,
   features: [
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
+    t().features.cssPlayground,
+    t().features.simpleStudio,
+    t().features.apiTesting,
+    t().features.contrastChecker,
+    t().features.visualImpairment,
   ]
 }));
 
@@ -152,11 +152,11 @@ const standardPlan = ref({
   hasDiscount: true,
   freeTrialDays: 7,
   features: [
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
+    t().features.completeVisualImpairment,
+    t().features.completeStudio,
+    t().features.databaseDesigner,
+    t().features.robots,
+    t().features.performanceAnalysis,
   ]
 });
 
@@ -174,13 +174,13 @@ const premiumPlan = ref({
   hasDiscount: false,
   freeTrialDays: 7,
   features: [
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
-    t().comparison.table.feature,
+    t().features.performanceAnalysis,
+    t().features.contentAnalysis,
+    t().features.userEngagement,
+    t().features.semanticAnalysis,
+    t().features.securityAnalysis,
+    t().features.analytics,
+    t().features.futureUpdates
   ]
 });
 
@@ -191,22 +191,24 @@ const guarantee = ref({
 });
 
 const comparisonFeatures = ref([
-  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
-  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
-  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
-  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
-  { name: t().comparison.table.feature, free: true, standard: true, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: true, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: true, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: true, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: true, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: false, premium: true },
-  { name: t().comparison.table.feature, free: false, standard: false, premium: true }
+  { name: t().features.cssPlayground, free: true, standard: true, premium: true },
+  { name: t().features.simpleStudio, free: true, standard: true, premium: true },
+  { name: t().features.apiTesting, free: true, standard: true, premium: true },
+  { name: t().features.contrastChecker, free: true, standard: true, premium: true },
+  { name: t().features.visualImpairment, free: true, standard: true, premium: true },
+  { name: t().features.completeVisualImpairment, free: true, standard: true, premium: true },
+  { name: t().features.completeStudio, free: false, standard: true, premium: true },
+  { name: t().features.databaseDesigner, free: false, standard: true, premium: true },
+  { name: t().features.robots, free: false, standard: true, premium: true },
+  { name: t().features.performanceAnalysis, free: false, standard: false, premium: true },
+  { name: t().features.contentAnalysis, free: false, standard: false, premium: true },
+  { name: t().features.userEngagement, free: false, standard: false, premium: true },
+  { name: t().features.semanticAnalysis, free: false, standard: false, premium: true },
+  { name: t().features.securityAnalysis, free: false, standard: false, premium: true },
+  { name: t().features.analytics, free: false, standard: false, premium: true },
+  { name: t().features.futureUpdates, free: false, standard: false, premium: true },
+  { name: t().features.unlimitedMembers, free: false, standard: false, premium: true },
+  { name: t().features.prioritySupport, free: false, standard: false, premium: true },
 ]);
 </script>
 

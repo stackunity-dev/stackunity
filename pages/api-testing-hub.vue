@@ -1,338 +1,341 @@
 <template>
-  <v-container fluid class="pa-2 pa-sm-4">
+  <main class="main-content">
+    <v-container fluid class="pa-2 pa-sm-4">
 
-    <v-alert v-if="request.method === 'DELETE'" color="info" variant="tonal" class="mb-4">
-      <v-icon>mdi-information</v-icon>
-      {{ t().alerts.deleteWarning }}
-    </v-alert>
+      <v-alert v-if="request.method === 'DELETE'" color="info" variant="tonal" class="mb-4">
+        <v-icon>mdi-information</v-icon>
+        {{ t().alerts.deleteWarning }}
+      </v-alert>
 
-    <v-card class="mb-4">
-      <v-card-title class="text-h6 d-flex flex-wrap">
-        <span class="flex-grow-1">{{ t().cardTitles.newTest }}</span>
-        <v-tooltip location="bottom" :text="t().tooltips.historySettings">
-          <template v-slot:activator="{ props }">
-            <v-btn icon variant="text" v-bind="props" @click="showHistoryDialog = true">
-              <v-icon>mdi-history</v-icon>
-            </v-btn>
-          </template>
-        </v-tooltip>
-      </v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="sendRequest">
-          <v-row dense>
-            <v-col cols="12" sm="3">
-              <v-select v-model="request.method" :items="['GET', 'POST', 'PUT', 'DELETE', 'PATCH']"
-                :label="t().forms.method" required variant="outlined" density="comfortable"
-                :class="`text-${getMethodColor(request.method)} mobile-select`">
-              </v-select>
-            </v-col>
-            <v-col cols="12" sm="9">
-              <v-text-field v-model="request.url" :label="t().forms.url" :placeholder="t().forms.urlPlaceholder"
-                required class="mobile-input"></v-text-field>
-            </v-col>
-          </v-row>
+      <v-card class="mb-4">
+        <v-card-title class="text-h6 d-flex flex-wrap">
+          <span class="flex-grow-1">{{ t().cardTitles.newTest }}</span>
+          <v-tooltip location="bottom" :text="t().tooltips.historySettings">
+            <template v-slot:activator="{ props }">
+              <v-btn icon variant="text" v-bind="props" @click="showHistoryDialog = true">
+                <v-icon>mdi-history</v-icon>
+              </v-btn>
+            </template>
+          </v-tooltip>
+        </v-card-title>
+        <v-card-text>
+          <v-form @submit.prevent="sendRequest">
+            <v-row dense>
+              <v-col cols="12" sm="3">
+                <v-select v-model="request.method" :items="['GET', 'POST', 'PUT', 'DELETE', 'PATCH']"
+                  :label="t().forms.method" required variant="outlined" density="comfortable"
+                  :class="`text-${getMethodColor(request.method)} mobile-select`">
+                </v-select>
+              </v-col>
+              <v-col cols="12" sm="9">
+                <v-text-field v-model="request.url" :label="t().forms.url" :placeholder="t().forms.urlPlaceholder"
+                  required class="mobile-input"></v-text-field>
+              </v-col>
+            </v-row>
 
-          <v-row>
-            <v-col cols="12">
-              <v-tabs v-model="activeTab" show-arrows density="comfortable" class="mobile-tabs">
-                <v-tab value="headers">{{ t().forms.tabs.headers }}</v-tab>
-                <v-tab value="body">{{ t().forms.tabs.body }}</v-tab>
-                <v-tab value="params">{{ t().forms.tabs.params }}</v-tab>
-              </v-tabs>
+            <v-row>
+              <v-col cols="12">
+                <v-tabs v-model="activeTab" show-arrows density="comfortable" class="mobile-tabs">
+                  <v-tab value="headers">{{ t().forms.tabs.headers }}</v-tab>
+                  <v-tab value="body">{{ t().forms.tabs.body }}</v-tab>
+                  <v-tab value="params">{{ t().forms.tabs.params }}</v-tab>
+                </v-tabs>
 
-              <v-window v-model="activeTab">
-                <v-window-item value="headers">
-                  <v-row dense v-for="(header, index) in request.headers" :key="index" class="mobile-row">
-                    <v-col cols="5">
-                      <v-text-field v-model="header.key" :label="t().forms.headers.key"
-                        :placeholder="t().forms.headers.keyPlaceholder" density="comfortable" hide-details
-                        class="mb-2"></v-text-field>
-                    </v-col>
-                    <v-col cols="5">
-                      <v-text-field v-model="header.value" :label="t().forms.headers.value"
-                        :placeholder="t().forms.headers.valuePlaceholder" density="comfortable" hide-details
-                        class="mb-2"></v-text-field>
-                    </v-col>
-                    <v-col cols="2" class="d-flex align-center">
-                      <v-btn color="error" icon size="small" @click="removeHeader(index)">
-                        <v-icon>mdi-delete</v-icon>
+                <v-window v-model="activeTab">
+                  <v-window-item value="headers">
+                    <v-row dense v-for="(header, index) in request.headers" :key="index" class="mobile-row">
+                      <v-col cols="5">
+                        <v-text-field v-model="header.key" :label="t().forms.headers.key"
+                          :placeholder="t().forms.headers.keyPlaceholder" density="comfortable" hide-details
+                          class="mb-2"></v-text-field>
+                      </v-col>
+                      <v-col cols="5">
+                        <v-text-field v-model="header.value" :label="t().forms.headers.value"
+                          :placeholder="t().forms.headers.valuePlaceholder" density="comfortable" hide-details
+                          class="mb-2"></v-text-field>
+                      </v-col>
+                      <v-col cols="2" class="d-flex align-center">
+                        <v-btn color="error" icon size="small" @click="removeHeader(index)">
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                    <div class="d-flex align-center flex-wrap gap-2 mt-2">
+                      <v-btn color="primary" variant="tonal" @click="addHeader" size="small">
+                        {{ t().forms.headers.add }}
+                        <v-icon>mdi-plus</v-icon>
                       </v-btn>
-                    </v-col>
-                  </v-row>
-                  <div class="d-flex align-center flex-wrap gap-2 mt-2">
-                    <v-btn color="primary" variant="tonal" @click="addHeader" size="small">
-                      {{ t().forms.headers.add }}
+
+                      <v-menu>
+                        <template v-slot:activator="{ props }">
+                          <v-btn color="secondary" variant="text" size="small" v-bind="props" class="ml-2">
+                            {{ t().forms.headers.common }}
+                            <v-icon end>mdi-menu-down</v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list density="compact">
+                          <v-list-item @click="addCommonHeader('Authorization', 'Bearer token123')">
+                            <v-list-item-title>Authorization</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item @click="addCommonHeader('Content-Type', 'application/json')">
+                            <v-list-item-title>Content-Type</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item @click="addCommonHeader('Accept', 'application/json')">
+                            <v-list-item-title>Accept</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item @click="addCommonHeader('X-API-Key', 'your-api-key')">
+                            <v-list-item-title>X-API-Key</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+
+                      <v-tooltip location="top" text="Common headers automatically added by browsers">
+                        <template v-slot:activator="{ props }">
+                          <v-btn color="info" variant="text" size="small" v-bind="props" class="ml-2">
+                            <v-icon>mdi-information-outline</v-icon>
+                          </v-btn>
+                        </template>
+                        <div class="pa-2">
+                          <p class="text-body-2">{{ t().forms.headers.commonNote }} <code>Host</code>,
+                            <code>User-Agent</code>,
+                            <code>Accept</code>, {{ t().forms.headers.etc }}
+                          </p>
+                        </div>
+                      </v-tooltip>
+                    </div>
+                  </v-window-item>
+
+                  <v-window-item value="body">
+                    <v-textarea v-model="request.body" :label="t().forms.body.label"
+                      :placeholder="t().forms.body.placeholder" rows="10" @input="formatJson"></v-textarea>
+                  </v-window-item>
+
+                  <v-window-item value="params">
+                    <v-row v-for="(param, index) in request.params" :key="index">
+                      <v-col cols="5">
+                        <v-text-field v-model="param.key" :label="t().forms.params.key"
+                          :placeholder="t().forms.params.keyPlaceholder"></v-text-field>
+                      </v-col>
+                      <v-col cols="5">
+                        <v-text-field v-model="param.value" :label="t().forms.params.value"
+                          :placeholder="t().forms.params.valuePlaceholder"></v-text-field>
+                      </v-col>
+                      <v-col cols="2">
+                        <v-btn color="error" icon @click="removeParam(index)">
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                    <v-btn color="primary" variant="tonal" @click="addParam" class="mt-2">
+                      {{ t().forms.params.add }}
                       <v-icon>mdi-plus</v-icon>
                     </v-btn>
+                  </v-window-item>
+                </v-window>
+              </v-col>
+            </v-row>
 
-                    <v-menu>
-                      <template v-slot:activator="{ props }">
-                        <v-btn color="secondary" variant="text" size="small" v-bind="props" class="ml-2">
-                          {{ t().forms.headers.common }}
-                          <v-icon end>mdi-menu-down</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list density="compact">
-                        <v-list-item @click="addCommonHeader('Authorization', 'Bearer token123')">
-                          <v-list-item-title>Authorization</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @click="addCommonHeader('Content-Type', 'application/json')">
-                          <v-list-item-title>Content-Type</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @click="addCommonHeader('Accept', 'application/json')">
-                          <v-list-item-title>Accept</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @click="addCommonHeader('X-API-Key', 'your-api-key')">
-                          <v-list-item-title>X-API-Key</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+            <v-row>
+              <v-col cols="12">
+                <v-btn color="secondary" variant="tonal" type="submit" :loading="loading" block>
+                  {{ t().forms.send }}
+                  <v-icon>mdi-send</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+      </v-card>
 
-                    <v-tooltip location="top" text="Common headers automatically added by browsers">
-                      <template v-slot:activator="{ props }">
-                        <v-btn color="info" variant="text" size="small" v-bind="props" class="ml-2">
-                          <v-icon>mdi-information-outline</v-icon>
-                        </v-btn>
-                      </template>
-                      <div class="pa-2">
-                        <p class="text-body-2">{{ t().forms.headers.commonNote }} <code>Host</code>,
-                          <code>User-Agent</code>,
-                          <code>Accept</code>, {{ t().forms.headers.etc }}
-                        </p>
-                      </div>
-                    </v-tooltip>
-                  </div>
-                </v-window-item>
+      <v-card v-if="response">
+        <v-card-title class="text-h6 d-flex flex-wrap align-center">
+          <span class="flex-grow-1">{{ t().cardTitles.response }}</span>
+          <v-chip :color="response.status >= 200 && response.status < 300 ? 'success' : 'error'" class="ml-2"
+            size="small">
+            {{ t().cardTitles.status }}: {{ response.status }}
+          </v-chip>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12">
+              <v-tabs v-model="responseTab" show-arrows density="comfortable" class="mobile-tabs">
+                <v-tab value="body">{{ t().forms.tabs.body }}</v-tab>
+                <v-tab value="headers">{{ t().forms.tabs.headers }}</v-tab>
+                <v-tab value="docs">{{ t().forms.tabs.docs }}</v-tab>
+                <PremiumFeature v-if="!userStore.isPremium" type="tab" title="API Tests" icon="mdi-shield-bug"
+                  color="warning" variant="elevated" size="small" />
+                <v-tab v-else-if="userStore.isPremium" value="apitest">{{ t().forms.tabs.tests }}</v-tab>
+              </v-tabs>
 
+              <v-window v-model="responseTab">
                 <v-window-item value="body">
-                  <v-textarea v-model="request.body" :label="t().forms.body.label"
-                    :placeholder="t().forms.body.placeholder" rows="10" @input="formatJson"></v-textarea>
+                  <v-tabs v-model="bodyView" density="comfortable" class="mobile-tabs">
+                    <v-tab value="raw">{{ t().forms.tabs.raw }}</v-tab>
+                    <v-tab value="tree">{{ t().forms.tabs.tree }}</v-tab>
+                  </v-tabs>
+                  <v-window v-model="bodyView">
+                    <v-window-item value="raw">
+                      <div class="response-wrapper">
+                        <pre class="response-body bg-grey-darken-4" v-html="formattedResponse"></pre>
+                      </div>
+                    </v-window-item>
+                    <v-window-item value="tree">
+                      <div class="response-wrapper">
+                        <JsonTreeViewer :data="response?.data" />
+                      </div>
+                    </v-window-item>
+                  </v-window>
                 </v-window-item>
 
-                <v-window-item value="params">
-                  <v-row v-for="(param, index) in request.params" :key="index">
-                    <v-col cols="5">
-                      <v-text-field v-model="param.key" :label="t().forms.params.key"
-                        :placeholder="t().forms.params.keyPlaceholder"></v-text-field>
-                    </v-col>
-                    <v-col cols="5">
-                      <v-text-field v-model="param.value" :label="t().forms.params.value"
-                        :placeholder="t().forms.params.valuePlaceholder"></v-text-field>
-                    </v-col>
-                    <v-col cols="2">
-                      <v-btn color="error" icon @click="removeParam(index)">
-                        <v-icon>mdi-delete</v-icon>
+                <v-window-item value="headers">
+                  <v-tabs v-model="headersTab" density="comfortable" class="mt-2">
+                    <v-tab value="response">{{ t().forms.tabs.response }}</v-tab>
+                    <v-tab value="request">{{ t().forms.tabs.request }}</v-tab>
+                  </v-tabs>
+
+                  <v-window v-model="headersTab">
+                    <v-window-item value="response">
+                      <div class="response-wrapper">
+                        <pre class="response-body bg-grey-darken-4" v-html="formattedResponseHeaders"></pre>
+                      </div>
+                    </v-window-item>
+
+                    <v-window-item value="request">
+                      <div class="response-wrapper">
+                        <pre class="response-body bg-grey-darken-4" v-html="formattedRequestHeaders"></pre>
+                      </div>
+                      <v-alert v-if="sentHeaders && Object.keys(sentHeaders).length === 0" type="info" variant="tonal"
+                        class="mt-2">
+                        {{ t().alerts.noCustomHeaders }}
+                      </v-alert>
+                    </v-window-item>
+                  </v-window>
+                </v-window-item>
+
+                <v-window-item value="docs">
+                  <v-card class="mb-4" variant="flat">
+                    <v-card-title class="d-flex flex-wrap align-center pa-2">
+                      <span class="text-body-1">{{ t().cardTitles.documentation }}</span>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" variant="tonal" @click="downloadDocs" size="small" class="mt-2 mt-sm-0">
+                        <v-icon start>mdi-download</v-icon>
+                        {{ t().buttons.download }}
                       </v-btn>
-                    </v-col>
-                  </v-row>
-                  <v-btn color="primary" variant="tonal" @click="addParam" class="mt-2">
-                    {{ t().forms.params.add }}
-                    <v-icon>mdi-plus</v-icon>
-                  </v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-row dense>
+                        <v-col cols="12" sm="6">
+                          <v-select v-model="docOptions.schemaDepth" :items="[1, 2, 3, 4, 5]"
+                            :label="t().forms.schemaDepth" density="comfortable" hide-details class="mb-2">
+                          </v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6">
+                          <v-switch v-model="docOptions.showExamples" :label="t().forms.showExamples"
+                            density="comfortable" hide-details class="mb-2">
+                          </v-switch>
+                        </v-col>
+                      </v-row>
+                      <div class="response-wrapper">
+                        <pre class="response-body bg-grey-darken-4" v-html="formattedDocs"></pre>
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                </v-window-item>
+
+                <v-window-item value="apitest">
+                  <v-card class="mb-4" variant="flat">
+                    <v-card-title class="d-flex flex-wrap align-center pa-2">
+                      <span class="text-body-1">{{ t().cardTitles.apiTests }}</span>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" variant="tonal" @click="runApiTests" :loading="apiTestsLoading"
+                        size="small" class="mt-2 mt-sm-0">
+                        <v-icon start>mdi-shield-bug</v-icon>
+                        {{ t().buttons.run }}
+                      </v-btn>
+                    </v-card-title>
+                    <v-card-text class="pa-0">
+                      <v-alert v-if="!apiTestResults.length && !apiTestsLoading" color="info" variant="tonal"
+                        class="ma-2">
+                        {{ t().alerts.runTests }}
+                      </v-alert>
+
+                      <v-expansion-panels v-if="apiTestResults.length > 0">
+                        <v-expansion-panel v-for="(test, index) in apiTestResults" :key="index">
+                          <v-expansion-panel-title class="text-body-2">
+                            <div class="d-flex align-center flex-wrap gap-2">
+                              <v-icon :color="getTestResultColor(test.status)" size="small">
+                                {{ getTestResultIcon(test.status) }}
+                              </v-icon>
+                              <span class="text-truncate">{{ test.name }}</span>
+                              <v-chip size="x-small" :color="getTestResultColor(test.status)" class="ml-auto">
+                                {{ test.status }}
+                              </v-chip>
+                            </div>
+                          </v-expansion-panel-title>
+                          <v-expansion-panel-text>
+                            <div class="text-body-2">
+                              <p><strong>{{ t().forms.impact }}</strong> {{ test.impact }}</p>
+                              <v-divider class="my-2"></v-divider>
+
+                              <div v-if="test.response">
+                                <p><strong>{{ t().forms.result }}:</strong> {{ test.message }}</p>
+                                <v-card variant="outlined" class="mt-2">
+                                  <v-card-text class="pa-2">
+                                    <p><strong>{{ t().forms.status }}:</strong> {{ test.response.status }}</p>
+                                    <p><strong>{{ t().forms.data }}:</strong></p>
+                                    <div class="response-wrapper">
+                                      <pre class="response-body bg-grey-darken-4">{{ JSON.stringify(test.response.data, null,
+                                        2) }}</pre>
+                                    </div>
+                                  </v-card-text>
+                                </v-card>
+                              </div>
+                            </div>
+                          </v-expansion-panel-text>
+                        </v-expansion-panel>
+                      </v-expansion-panels>
+                    </v-card-text>
+                  </v-card>
                 </v-window-item>
               </v-window>
             </v-col>
           </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <v-btn color="secondary" variant="tonal" type="submit" :loading="loading" block>
-                {{ t().forms.send }}
-                <v-icon>mdi-send</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card-text>
-    </v-card>
-
-    <v-card v-if="response">
-      <v-card-title class="text-h6 d-flex flex-wrap align-center">
-        <span class="flex-grow-1">{{ t().cardTitles.response }}</span>
-        <v-chip :color="response.status >= 200 && response.status < 300 ? 'success' : 'error'" class="ml-2"
-          size="small">
-          {{ t().cardTitles.status }}: {{ response.status }}
-        </v-chip>
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12">
-            <v-tabs v-model="responseTab" show-arrows density="comfortable" class="mobile-tabs">
-              <v-tab value="body">{{ t().forms.tabs.body }}</v-tab>
-              <v-tab value="headers">{{ t().forms.tabs.headers }}</v-tab>
-              <v-tab value="docs">{{ t().forms.tabs.docs }}</v-tab>
-              <PremiumFeature v-if="!userStore.isPremium" type="tab" title="API Tests" icon="mdi-shield-bug"
-                color="warning" variant="elevated" size="small" />
-              <v-tab v-else-if="userStore.isPremium" value="apitest">{{ t().forms.tabs.tests }}</v-tab>
-            </v-tabs>
-
-            <v-window v-model="responseTab">
-              <v-window-item value="body">
-                <v-tabs v-model="bodyView" density="comfortable" class="mobile-tabs">
-                  <v-tab value="raw">{{ t().forms.tabs.raw }}</v-tab>
-                  <v-tab value="tree">{{ t().forms.tabs.tree }}</v-tab>
-                </v-tabs>
-                <v-window v-model="bodyView">
-                  <v-window-item value="raw">
-                    <div class="response-wrapper">
-                      <pre class="response-body bg-grey-darken-4" v-html="formattedResponse"></pre>
-                    </div>
-                  </v-window-item>
-                  <v-window-item value="tree">
-                    <div class="response-wrapper">
-                      <JsonTreeViewer :data="response?.data" />
-                    </div>
-                  </v-window-item>
-                </v-window>
-              </v-window-item>
-
-              <v-window-item value="headers">
-                <v-tabs v-model="headersTab" density="comfortable" class="mt-2">
-                  <v-tab value="response">{{ t().forms.tabs.response }}</v-tab>
-                  <v-tab value="request">{{ t().forms.tabs.request }}</v-tab>
-                </v-tabs>
-
-                <v-window v-model="headersTab">
-                  <v-window-item value="response">
-                    <div class="response-wrapper">
-                      <pre class="response-body bg-grey-darken-4" v-html="formattedResponseHeaders"></pre>
-                    </div>
-                  </v-window-item>
-
-                  <v-window-item value="request">
-                    <div class="response-wrapper">
-                      <pre class="response-body bg-grey-darken-4" v-html="formattedRequestHeaders"></pre>
-                    </div>
-                    <v-alert v-if="sentHeaders && Object.keys(sentHeaders).length === 0" type="info" variant="tonal"
-                      class="mt-2">
-                      {{ t().alerts.noCustomHeaders }}
-                    </v-alert>
-                  </v-window-item>
-                </v-window>
-              </v-window-item>
-
-              <v-window-item value="docs">
-                <v-card class="mb-4" variant="flat">
-                  <v-card-title class="d-flex flex-wrap align-center pa-2">
-                    <span class="text-body-1">{{ t().cardTitles.documentation }}</span>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" variant="tonal" @click="downloadDocs" size="small" class="mt-2 mt-sm-0">
-                      <v-icon start>mdi-download</v-icon>
-                      {{ t().buttons.download }}
-                    </v-btn>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-row dense>
-                      <v-col cols="12" sm="6">
-                        <v-select v-model="docOptions.schemaDepth" :items="[1, 2, 3, 4, 5]"
-                          :label="t().forms.schemaDepth" density="comfortable" hide-details class="mb-2">
-                        </v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-switch v-model="docOptions.showExamples" :label="t().forms.showExamples"
-                          density="comfortable" hide-details class="mb-2">
-                        </v-switch>
-                      </v-col>
-                    </v-row>
-                    <div class="response-wrapper">
-                      <pre class="response-body bg-grey-darken-4" v-html="formattedDocs"></pre>
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-window-item>
-
-              <v-window-item value="apitest">
-                <v-card class="mb-4" variant="flat">
-                  <v-card-title class="d-flex flex-wrap align-center pa-2">
-                    <span class="text-body-1">{{ t().cardTitles.apiTests }}</span>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" variant="tonal" @click="runApiTests" :loading="apiTestsLoading" size="small"
-                      class="mt-2 mt-sm-0">
-                      <v-icon start>mdi-shield-bug</v-icon>
-                      {{ t().buttons.run }}
-                    </v-btn>
-                  </v-card-title>
-                  <v-card-text class="pa-0">
-                    <v-alert v-if="!apiTestResults.length && !apiTestsLoading" color="info" variant="tonal"
-                      class="ma-2">
-                      {{ t().alerts.runTests }}
-                    </v-alert>
-
-                    <v-expansion-panels v-if="apiTestResults.length > 0">
-                      <v-expansion-panel v-for="(test, index) in apiTestResults" :key="index">
-                        <v-expansion-panel-title class="text-body-2">
-                          <div class="d-flex align-center flex-wrap gap-2">
-                            <v-icon :color="getTestResultColor(test.status)" size="small">
-                              {{ getTestResultIcon(test.status) }}
-                            </v-icon>
-                            <span class="text-truncate">{{ test.name }}</span>
-                            <v-chip size="x-small" :color="getTestResultColor(test.status)" class="ml-auto">
-                              {{ test.status }}
-                            </v-chip>
-                          </div>
-                        </v-expansion-panel-title>
-                        <v-expansion-panel-text>
-                          <div class="text-body-2">
-                            <p><strong>{{ t().forms.impact }}</strong> {{ test.impact }}</p>
-                            <v-divider class="my-2"></v-divider>
-
-                            <div v-if="test.response">
-                              <p><strong>{{ t().forms.result }}:</strong> {{ test.message }}</p>
-                              <v-card variant="outlined" class="mt-2">
-                                <v-card-text class="pa-2">
-                                  <p><strong>{{ t().forms.status }}:</strong> {{ test.response.status }}</p>
-                                  <p><strong>{{ t().forms.data }}:</strong></p>
-                                  <div class="response-wrapper">
-                                    <pre class="response-body bg-grey-darken-4">{{ JSON.stringify(test.response.data, null,
-                                      2) }}</pre>
-                                  </div>
-                                </v-card-text>
-                              </v-card>
-                            </div>
-                          </div>
-                        </v-expansion-panel-text>
-                      </v-expansion-panel>
-                    </v-expansion-panels>
-                  </v-card-text>
-                </v-card>
-              </v-window-item>
-            </v-window>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-
-    <v-dialog v-model="showHistoryDialog" max-width="500">
-      <v-card>
-        <v-card-title class="text-h6">{{ t().cardTitles.historySettings }}</v-card-title>
-        <v-card-text>
-          <v-switch v-model="saveToHistory" color="primary" :label="t().forms.saveToHistory"></v-switch>
-
-          <v-alert v-if="historyError" type="error" variant="tonal" class="mt-4 mb-2">
-            {{ historyError }}
-          </v-alert>
-
-          <div class="d-flex align-center mt-4">
-            <v-btn color="error" variant="outlined" @click="clearHistory" :disabled="!saveToHistory">
-              {{ t().buttons.clear }}
-              <v-icon end>mdi-delete</v-icon>
-            </v-btn>
-            <v-spacer></v-spacer>
-            <div class="text-caption" v-if="saveToHistory">
-              {{ t().cardTitles.historyCount }}: {{ historyCount }}
-            </div>
-          </div>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" variant="text" @click="showHistoryDialog = false">
-            {{ t().buttons.close }}
-          </v-btn>
-        </v-card-actions>
       </v-card>
-    </v-dialog>
 
-  </v-container>
+
+      <v-dialog v-model="showHistoryDialog" max-width="500">
+        <v-card>
+          <v-card-title class="text-h6">{{ t().cardTitles.historySettings }}</v-card-title>
+          <v-card-text>
+            <v-switch v-model="saveToHistory" color="primary" :label="t().forms.saveToHistory"></v-switch>
+
+            <v-alert v-if="historyError" type="error" variant="tonal" class="mt-4 mb-2">
+              {{ historyError }}
+            </v-alert>
+
+            <div class="d-flex align-center mt-4">
+              <v-btn color="error" variant="outlined" @click="clearHistory" :disabled="!saveToHistory">
+                {{ t().buttons.clear }}
+                <v-icon end>mdi-delete</v-icon>
+              </v-btn>
+              <v-spacer></v-spacer>
+              <div class="text-caption" v-if="saveToHistory">
+                {{ t().cardTitles.historyCount }}: {{ historyCount }}
+              </div>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" variant="text" @click="showHistoryDialog = false">
+              {{ t().buttons.close }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+    </v-container>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -896,6 +899,20 @@ function updateHistoryCount() {
 </script>
 
 <style scoped>
+main {
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+
 .response-body {
   background-color: #f5f5f5;
   padding: 1rem;

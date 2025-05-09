@@ -7,8 +7,21 @@ import { currentLanguage, setCurrentLanguage, SupportedLanguage } from '../langu
 
 export default defineNuxtPlugin(({ vueApp }) => {
   const isClient = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  const supportedLanguages: SupportedLanguage[] = ['en', 'fr', 'es', 'ar', 'zh'];
 
   const nuxtApp = useNuxtApp()
+
+  const hasLanguagePrefix = (path: string): boolean => {
+    const pathParts = path.split('/').filter(Boolean);
+    return pathParts.length > 0 && supportedLanguages.includes(pathParts[0] as SupportedLanguage);
+  };
+
+  const getPathWithoutPrefix = (path: string): string => {
+    if (!hasLanguagePrefix(path)) return path;
+
+    const parts = path.split('/');
+    return '/' + parts.slice(2).join('/');
+  };
 
   const syncLanguageFromStorage = () => {
     if (!isClient) {
@@ -54,7 +67,15 @@ export default defineNuxtPlugin(({ vueApp }) => {
     }, 200);
   }
 
-  // S'assurer que les routes sont bien préfixées avec la langue
+  const generateLocalePath = (path: string, lang: SupportedLanguage): string => {
+    if (!path) return `/${lang}`;
+
+    const cleanPath = getPathWithoutPrefix(path);
+    const normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+
+    return `/${lang}${normalizedPath === '/' ? '' : normalizedPath}`;
+  }
+
   const updateRoutePrefix = (lang: SupportedLanguage) => {
     try {
       if (isClient && window.location.pathname) {
@@ -70,20 +91,46 @@ export default defineNuxtPlugin(({ vueApp }) => {
           return;
         }
 
-        const localePath = nuxtApp.$i18n.localePath(currentPath, lang);
+        const currentLangPrefix = hasLanguagePrefix(currentPath);
+
+        const pathWithoutPrefix = currentLangPrefix ? getPathWithoutPrefix(currentPath) : currentPath;
+
+        const localePath = generateLocalePath(pathWithoutPrefix, lang);
 
         if (currentPath !== localePath) {
           console.log(`[i18n Router] Redirection vers le chemin localisé: ${localePath}`);
 
-          const currentUrl = new URL(window.location.href);
-          const newUrl = new URL(localePath, window.location.origin);
+          if (nuxtApp.$router) {
+            const currentUrl = new URL(window.location.href);
+            const query = {};
+            currentUrl.searchParams.forEach((value, key) => {
+              query[key] = value;
+            });
 
-          const searchParams = currentUrl.searchParams;
-          searchParams.forEach((value, key) => {
-            newUrl.searchParams.append(key, value);
-          });
+            nuxtApp.$router.replace({
+              path: localePath,
+              query
+            }).catch(err => {
+              if (err.name !== 'NavigationDuplicated') {
+                console.error('[i18n Router] Erreur de navigation:', err);
+              }
+            });
+          } else {
+            console.warn('[i18n Router] Vue Router non disponible, utilisation du fallback');
+            const currentUrl = new URL(window.location.href);
+            const newUrl = new URL(localePath, window.location.origin);
 
-          window.location.href = newUrl.toString();
+            currentUrl.searchParams.forEach((value, key) => {
+              newUrl.searchParams.append(key, value);
+            });
+
+            if (history && history.replaceState) {
+              history.replaceState(null, '', newUrl.toString());
+              window.dispatchEvent(new Event('popstate'));
+            } else {
+              window.location.replace(newUrl.toString());
+            }
+          }
         }
       }
     } catch (error) {
@@ -107,7 +154,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
         }
       }
     } else {
-      // Même si la langue est déjà correcte, vérifier que le préfixe d'URL est bon
       if (isClient) {
         updateRoutePrefix(newLang);
       }
@@ -130,7 +176,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
         }
       }
     } else {
-      // Même si la langue est déjà correcte, vérifier que le préfixe d'URL est bon
       if (isClient) {
         updateRoutePrefix(newLang as SupportedLanguage);
       }

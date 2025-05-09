@@ -23,7 +23,7 @@ export default {
     userEngagement: "用户参与",
     security: "安全",
     visual: "可视化",
-    uxAnalyzer: "UX 分析器"
+    uxAnalyzer: "StackUnity Analytics"
   },
   categories: {
     frontend: "前端",
@@ -45,7 +45,7 @@ export default {
     userEngagement: "用户参与",
     security: "安全",
     visual: "可视化",
-    uxAnalyzer: "UX 分析器"
+    uxAnalyzer: "Analytics"
   },
   premiumLabel: {
     standard: "标准版",

@@ -77,6 +77,7 @@ export default {
     userEngagement: 'User Engagement tools',
     semanticAnalysis: 'Semantic and ARIA analysis',
     securityAnalysis: 'Security analysis',
+    analytics: 'Analytics',
     futureUpdates: 'Access to all future updates',
     unlimitedMembers: 'Unlimited team members',
     prioritySupport: 'Priority support'

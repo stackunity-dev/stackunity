@@ -1,181 +1,400 @@
 <template>
-  <v-app>
-    <v-main>
+  <v-app class="analytics-app">
+    <v-main class="main-content">
       <v-container fluid class="pa-4">
         <v-row>
           <v-col cols="12">
-            <h1 class="text-h4 font-weight-bold mb-4">
-              {{ t.title }}
-            </h1>
-            <p class="text-body-1 text-medium-emphasis mb-6">
-              {{ t.description }}
-            </p>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-card class="mb-4">
-              <v-card-title class="text-h5">
-                <v-icon class="mr-2">mdi-eye-outline</v-icon>
-                {{ t.title }}
-              </v-card-title>
-              <v-card-text>
-                <p>
+            <div class="d-flex flex-column mb-4">
+              <div class="analytics-header pl-6 mb-8">
+                <h1 class="text-h4 font-weight-bold mb-2">{{ t.title }}</h1>
+                <div class="analytics-description text-body-1 text-medium-emphasis mb-3">
                   {{ t.description }}
-                </p>
-
-                <v-btn color="secondary" class="mt-4" prepend-icon="mdi-plus" @click="showAddSiteDialog = true">
+                </div>
+                <v-chip color="secondary" variant="flat" size="small" class="mb-4">
+                  <v-icon start size="small">mdi-chart-timeline-variant</v-icon>
+                  {{ t.analytics.realtime }}
+                </v-chip>
+              </div>
+              <v-spacer></v-spacer>
+              <div class="d-flex justify-end">
+                <v-btn color="tertiary" prepend-icon="mdi-plus" @click="showAddSiteDialog = true"
+                  class="primary-action-btn elevation-2">
                   {{ t.addSite }}
                 </v-btn>
-              </v-card-text>
-            </v-card>
+              </div>
+            </div>
           </v-col>
         </v-row>
 
-        <v-row>
-          <v-alert v-if="websites.length === 0" type="info" variant="tonal" class="mt-4">
-            {{ t.noSites }}
-          </v-alert>
-        </v-row>
-
-        <v-row v-if="websites.length > 0">
-          <v-col cols="12" md="6" lg="4" v-for="site in websites" :key="site.id">
-            <v-card class="mb-4">
-              <v-card-title>
-                {{ site.name }}
-              </v-card-title>
-              <v-card-subtitle>
-                {{ site.url }}
-              </v-card-subtitle>
-              <v-card-text>
-                <p class="text-caption">{{ t.addedAt }} {{ formatDate(site.addedAt) }}</p>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn variant="tonal" color="secondary" @click="selectSite(site)">
-                  {{ t.viewAnalytics }}
+        <template v-if="!currentSite">
+          <template v-if="websites.length === 0">
+            <v-card class="mb-6 bg-transparent rounded-lg" elevation="24">
+              <v-card-text class="text-center py-8">
+                <v-icon class="mb-4" icon="mdi-chart-timeline-variant" size="64" color="primary"></v-icon>
+                <h2 class="text-h4 mb-2">{{ tWithPurge.welcome.empty.title }}</h2>
+                <p class="text-body-1 mb-6 mx-auto" style="max-width: 600px;">{{ tWithPurge.welcome.empty.description }}
+                </p>
+                <v-btn color="primary" prepend-icon="mdi-plus" size="large" @click="showAddSiteDialog = true">
+                  {{ tWithPurge.welcome.empty.action }}
                 </v-btn>
-              </v-card-actions>
+              </v-card-text>
             </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+          </template>
 
-      <v-dialog v-model="showCodeDialog" max-width="800px">
-        <v-card class="rounded-lg">
-          <v-card-title class="text-h5 text-white bg-secondary">
-            <v-icon class="mr-2">mdi-code-tags</v-icon>
-            {{ t.tracking.trackingCode }}
-          </v-card-title>
-          <v-card-text>
-            <p class="mb-4">
-              {{ t.tracking.trackingCodeDescription ||
-                'Ajoutez ce code juste avant la balise de fermeture </body>'
-                + ' de votre site web pour commencer à collecter des données.' }}
-            </p>
-            <pre id="code" class="bg-surface pa-2 rounded"></pre>
-            <v-btn class="mt-2" prepend-icon="mdi-content-copy" variant="outlined" size="small"
-              @click="copyTrackingCode(currentSite?.id || '')">
-              {{ t.tracking.copyCode || 'Copier le code' }}
-            </v-btn>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
+          <template v-else-if="websites.length <= 3">
+            <v-row>
+              <v-col cols="12" md="8">
+                <v-row>
+                  <v-col v-for="(site, index) in websites" :key="site.id" cols="12" sm="6" md="6">
+                    <v-card class="h-100 site-card modern-card" hover elevation="3" rounded="lg"
+                      @click="selectSite(site)">
+                      <div class="site-card-banner" :class="`bg-gradient-${getColorByIndex(index)}`">
+                        <div class="site-card-overlay"></div>
+                        <div class="site-icon-container">
+                          <v-icon color="white" size="32">mdi-web</v-icon>
+                        </div>
+                        <div class="site-card-header pa-4">
+                          <h3 class="text-h5 text-white font-weight-bold mb-1">{{ site.name }}</h3>
+                          <div class="d-flex align-center">
+                            <v-chip variant="flat" size="small" class="mb-2 site-url-chip"
+                              :title="site.fullDomain || getFullDomain(site.url)">
+                              {{ site.formattedUrl || formatUrl(site.url) }}
+                            </v-chip>
+                            <v-chip v-if="isLocalEnvironment(site.url)" color="purple" size="x-small"
+                              class="mb-2 ml-1 dev-chip" title="Environnement de développement">
+                              DEV
+                            </v-chip>
+                          </div>
+                        </div>
+                      </div>
+                      <v-card-text class="pt-4">
+                        <div class="d-flex align-center justify-space-between mb-3">
+                          <div class="d-flex align-center">
+                            <v-icon size="small" :color="getColorByIndex(index)" class="mr-2">mdi-calendar</v-icon>
+                            <div class="text-caption">{{ t.addedAt }} {{ formatDate(site.addedAt) }}</div>
+                          </div>
+                          <v-chip size="x-small" color="success" class="status-chip">
+                            {{ t.analytics.active }}
+                          </v-chip>
+                        </div>
 
-      <v-dialog v-model="showAddSiteDialog" max-width="600px">
-        <v-card class="rounded-lg">
-          <v-card-title class="text-h5 text-white bg-secondary">
-            <v-icon class="mr-2">mdi-web-plus</v-icon>
-            {{ t.addSite }}
-          </v-card-title>
-          <v-card-text>
-            <v-form @submit.prevent="addWebsite">
-              <v-text-field v-model="newSite.name" prepend-icon="mdi-domain" :label="t.name"
-                :placeholder="t.form.namePlaceholder" variant="outlined" class="mb-4"
-                :rules="[v => !!v || t.form.nameRequired]"></v-text-field>
+                        <div class="site-stats d-flex align-center justify-space-between mt-4">
+                          <div class="stat-item text-center">
+                            <div class="text-caption text-medium-emphasis">{{ t.analytics.visites }}</div>
+                            <div class="text-subtitle-1 font-weight-bold">{{ site.stats.visites }}</div>
+                          </div>
+                          <v-divider vertical class="mx-2"></v-divider>
+                          <div class="stat-item text-center">
+                            <div class="text-caption text-medium-emphasis">{{ t.analytics.pages }}</div>
+                            <div class="text-subtitle-1 font-weight-bold">{{ site.stats.pages }}</div>
+                          </div>
+                          <v-divider vertical class="mx-2"></v-divider>
+                          <div class="stat-item text-center">
+                            <div class="text-caption text-medium-emphasis">{{ t.analytics.temps }}</div>
+                            <div class="text-subtitle-1 font-weight-bold">{{ site.stats.temps }}</div>
+                          </div>
+                        </div>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-btn variant="tonal" :color="getColorByIndex(index)" block class="view-analytics-btn">
+                          <v-icon start>mdi-chart-line</v-icon>
+                          {{ t.viewAnalytics }}
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-col>
 
-              <v-text-field v-model="newSite.url" prepend-icon="mdi-web" :label="t.url"
-                :placeholder="t.form.urlPlaceholder" variant="outlined" class="mb-4" :rules="[
-                  v => !!v || t.urlRequired,
-                  v => /^https?:\/\//.test(v) || t.urlMustStartWithHttp
-                ]"></v-text-field>
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn variant="text" @click="showAddSiteDialog = false">
-              {{ t.cancel }}
-            </v-btn>
-            <v-btn color="secondary" variant="tonal" @click="addWebsite" :disabled="!isFormValid">
-              {{ t.add }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+              <v-col cols="12" md="4">
+                <v-card class="h-100 add-site-card modern-card" elevation="3" rounded="lg" hover>
+                  <v-card-text class="text-center py-8">
+                    <div class="add-site-icon-container mb-4 pulse-animation">
+                      <v-icon icon="mdi-web-plus" size="48" color="primary"></v-icon>
+                    </div>
+                    <h3 class="text-h5 font-weight-bold mb-3">{{ tWithPurge.welcome.few.title }}</h3>
+                    <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ tWithPurge.welcome.few.description
+                    }}</p>
+                    <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
+                      @click="showAddSiteDialog = true">
+                      {{ tWithPurge.welcome.few.action }}
+                    </v-btn>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </template>
 
-      <v-dialog v-model="showAnalyticsDialog" fullscreen>
-        <v-card>
-          <v-toolbar dark color="primary">
-            <v-btn icon @click="showAnalyticsDialog = false">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-toolbar-title>{{ t.analyticsFor }} {{ currentSite?.name }}</v-toolbar-title>
-          </v-toolbar>
-          <v-card-text class="pa-0">
-            <div v-if="currentSite" class="pa-4">
+
+          <template v-else>
+            <v-row>
+              <v-col v-for="(site, index) in websites" :key="site.id" cols="12" sm="6" md="4" lg="3">
+                <v-card class="h-100 site-card modern-card" hover elevation="3" rounded="lg" @click="selectSite(site)">
+                  <div class="site-card-banner" :class="`bg-gradient-${getColorByIndex(index)}`">
+                    <div class="site-card-overlay"></div>
+                    <div class="site-icon-container">
+                      <v-icon color="white" size="32">mdi-web</v-icon>
+                    </div>
+                    <div class="site-card-header pa-4">
+                      <h3 class="text-h5 text-white font-weight-bold mb-1">{{ site.name }}</h3>
+                      <div class="d-flex align-center">
+                        <v-chip variant="flat" size="small" class="mb-2 site-url-chip"
+                          :title="site.fullDomain || getFullDomain(site.url)">
+                          {{ site.formattedUrl || formatUrl(site.url) }}
+                        </v-chip>
+                        <v-chip v-if="isLocalEnvironment(site.url)" color="purple" size="x-small"
+                          class="mb-2 ml-1 dev-chip" title="Environnement de développement">
+                          DEV
+                        </v-chip>
+                      </div>
+                    </div>
+                  </div>
+                  <v-card-text class="pt-4">
+                    <div class="d-flex align-center justify-space-between mb-3">
+                      <div class="d-flex align-center">
+                        <v-icon size="small" :color="getColorByIndex(index)" class="mr-2">mdi-calendar</v-icon>
+                        <div class="text-caption">{{ t.addedAt }} {{ formatDate(site.addedAt) }}</div>
+                      </div>
+                      <v-chip size="x-small" color="success" class="status-chip">
+                        {{ t.analytics.active }}
+                      </v-chip>
+                    </div>
+
+                    <div class="site-stats d-flex align-center justify-space-between mt-4">
+                      <div class="stat-item text-center">
+                        <div class="text-caption text-medium-emphasis">{{ t.analytics.visites }}</div>
+                        <div class="text-subtitle-1 font-weight-bold">{{ site.stats.visites }}</div>
+                      </div>
+                      <v-divider vertical class="mx-2"></v-divider>
+                      <div class="stat-item text-center">
+                        <div class="text-caption text-medium-emphasis">{{ t.analytics.pages }}</div>
+                        <div class="text-subtitle-1 font-weight-bold">{{ site.stats.pages }}</div>
+                      </div>
+                      <v-divider vertical class="mx-2"></v-divider>
+                      <div class="stat-item text-center">
+                        <div class="text-caption text-medium-emphasis">{{ t.analytics.temps }}</div>
+                        <div class="text-subtitle-1 font-weight-bold">{{ site.stats.temps }}</div>
+                      </div>
+                    </div>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn variant="tonal" :color="getColorByIndex(index)" block class="view-analytics-btn">
+                      <v-icon start>mdi-chart-line</v-icon>
+                      {{ t.viewAnalytics }}
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+            </v-row>
+          </template>
+
+          <v-card v-if="websites.length <= 3" class="mt-6 bg-surface">
+            <v-card-title class="text-h5">
+              <v-icon start class="mr-2">mdi-lightbulb</v-icon>
+              {{ tWithPurge.welcome.features }}
+            </v-card-title>
+            <v-card-text>
               <v-row>
-                <v-col cols="12" md="6" lg="3" v-for="(metric, index) in metrics" :key="index">
-                  <v-card class="h-100">
-                    <v-card-text class="d-flex flex-column align-center text-center">
-                      <v-avatar :color="metric.color" size="50" class="mb-3">
-                        <v-icon>{{ metric.icon }}</v-icon>
-                      </v-avatar>
-                      <span class="text-h5 font-weight-bold">{{ metric.value }}</span>
-                      <span class="text-subtitle-2 text-medium-emphasis">{{ metric.label }}</span>
+                <v-col v-for="(card, i) in tWithPurge.welcome.cards" :key="i" cols="12" sm="6" md="3">
+                  <v-card class="h-100" variant="outlined">
+                    <v-card-text class="text-center">
+                      <v-icon :icon="card.icon" size="36" :color="card.color" class="mb-3"></v-icon>
+                      <h3 class="text-h6 mb-2">{{ card.title }}</h3>
+                      <p class="text-body-2">{{ card.description }}</p>
                     </v-card-text>
                   </v-card>
                 </v-col>
               </v-row>
+            </v-card-text>
+          </v-card>
+        </template>
 
-              <v-card class="mt-4">
-                <v-card-title class="text-h6">
-                  <v-icon class="mr-2">mdi-file-document-outline</v-icon>
-                  {{ t.mostVisitedPages }}
-                </v-card-title>
-                <v-card-text class="pa-0">
-                  <v-table>
-                    <thead>
-                      <tr>
-                        <th>{{ t.page }}</th>
-                        <th class="text-right">{{ t.views }}</th>
-                        <th class="text-right">{{ t.avgTime }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="page in pageViews" :key="page.page">
-                        <td>
-                          <div class="d-flex align-center">
-                            <v-icon size="small" class="mr-2">mdi-file-document-outline</v-icon>
-                            {{ page.page }}
-                          </div>
-                        </td>
-                        <td class="text-right">{{ page.views }}</td>
-                        <td class="text-right">{{ page.avgTime }}</td>
-                      </tr>
-                    </tbody>
-                  </v-table>
+        <template v-else>
+          <div class="d-flex align-center mb-6">
+            <v-btn icon variant="text" @click="currentSite = null; currentSiteAnalytics = null;">
+              <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
+            <h2 class="text-h5 ml-2 mb-0">{{ currentSite.name }}</h2>
+            <v-btn icon variant="text" size="small" class="ml-1" @click="showEditSiteNameDialog = true"
+              :title="t.edit_name">
+              <v-icon size="small">mdi-pencil</v-icon>
+            </v-btn>
+            <div class="d-flex align-center ml-2">
+              <v-chip size="small" color="primary" variant="outlined"
+                :title="currentSite.fullDomain || getFullDomain(currentSite.url)">
+                {{ currentSite.formattedUrl || formatUrl(currentSite.url) }}
+              </v-chip>
+              <v-chip v-if="isLocalEnvironment(currentSite.url)" color="purple" size="x-small" class="ml-1"
+                title="Environnement de développement">
+                DEV
+              </v-chip>
+            </div>
+            <v-spacer></v-spacer>
+
+            <div class="d-flex align-center mx-2">
+              <span class="text-caption mr-2">Période:</span>
+              <v-select v-model="selectedPeriod" :items="periodOptions" variant="outlined" density="compact"
+                hide-details class="period-select" style="max-width: 180px;"
+                @update:model-value="fetchSiteDataForPeriod"></v-select>
+            </div>
+
+            <v-btn color="primary" variant="text" prepend-icon="mdi-code-tags" @click="showCodeDialog = true">
+              {{ t.tracking.trackingCode || 'Code de suivi' }}
+            </v-btn>
+            <v-menu location="bottom end">
+              <template v-slot:activator="{ props }">
+                <v-btn icon variant="text" class="ml-2" title="Paramètres" v-bind="props">
+                  <v-icon>mdi-cog</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item prepend-icon="mdi-database-remove" @click="showDataPurgeDialog = true">
+                  <v-list-item-title>{{ tWithPurge.purge.purgeData || 'Purger les données' }}</v-list-item-title>
+                </v-list-item>
+                <v-list-item prepend-icon="mdi-delete" @click="showDeleteSiteDialog = true">
+                  <v-list-item-title>{{ t.analytics.deleteSite || 'Supprimer l\'analytique' }}</v-list-item-title>
+                </v-list-item>
+                <v-list-item prepend-icon="mdi-refresh" @click="refreshSiteData">
+                  <v-list-item-title>{{ t.analytics.refreshData || 'Actualiser les données' }}</v-list-item-title>
+                </v-list-item>
+                <v-list-item prepend-icon="mdi-account-remove" @click="showExclusionsDialog = true">
+                  <v-list-item-title>{{ t.analytics.exclusions || 'Gérer les exclusions' }}</v-list-item-title>
+                </v-list-item>
+                <v-divider></v-divider>
+                <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
+                  <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
+                  }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
+
+          <v-alert v-if="showDataLimitAlert" color="warning" variant="tonal" closable class="mb-4">
+            <div class="d-flex align-center">
+              <v-icon class="mr-2">mdi-database-alert</v-icon>
+              <div>
+                <strong>{{ tWithPurge.purge.dataLimitAlert }}</strong>
+                <div>{{ tWithPurge.purge.dataLimitDescription.replace('{count}', dataCount.toString()) }}</div>
+              </div>
+              <v-spacer></v-spacer>
+              <v-btn v-if="isAdmin" color="warning" variant="text" @click="showDataPurgeDialog = true">
+                {{ tWithPurge.purge.purgeNow }}
+              </v-btn>
+            </div>
+          </v-alert>
+
+          <v-row>
+            <v-col v-for="(metric, index) in metrics" :key="index" cols="6" md="3">
+              <v-card class="metric-card h-100 bg-surface">
+                <v-card-text>
+                  <div class="d-flex align-center">
+                    <v-avatar :color="metric.color + '-lighten-4'" size="42" class="mr-3">
+                      <v-icon :color="metric.color">{{ metric.icon }}</v-icon>
+                    </v-avatar>
+                    <div>
+                      <div class="text-h5 font-weight-bold">{{ metric.value }}</div>
+                      <div class="text-caption text-medium-emphasis">{{ metric.label }}</div>
+                    </div>
+                  </div>
                 </v-card-text>
               </v-card>
+            </v-col>
+          </v-row>
 
-              <v-card class="mt-4">
-                <v-card-title class="text-h6">
-                  <v-icon class="mr-2">mdi-traffic-light</v-icon>
-                  {{ t.analytics.trafficSources || 'Sources de trafic' }}
-                </v-card-title>
+          <v-card class="analytics-tabs-card mt-4">
+            <v-tabs v-model="activeTab" bg-color="transparent" color="primary" slider-color="primary" show-arrows>
+              <v-tab value="pages" class="tab-button">
+                <v-icon class="mr-2">mdi-file-document-outline</v-icon>
+                {{ t.page }}
+              </v-tab>
+              <v-tab value="sources" class="tab-button">
+                <v-icon class="mr-2">mdi-traffic-light</v-icon>
+                {{ t.source }}
+              </v-tab>
+              <v-tab value="devices" class="tab-button">
+                <v-icon class="mr-2">mdi-devices</v-icon>
+                {{ t.device }}
+              </v-tab>
+              <v-tab value="interactions" class="tab-button">
+                <v-icon class="mr-2">mdi-cursor-default-click-outline</v-icon>
+                {{ t.interactionsTab }}
+              </v-tab>
+              <v-tab value="errors" class="tab-button">
+                <v-icon class="mr-2">mdi-alert-circle-outline</v-icon>
+                {{ t.errorTab }}
+              </v-tab>
+            </v-tabs>
+
+            <v-divider></v-divider>
+
+            <v-window v-model="activeTab" class="tab-content">
+              <v-window-item value="pages">
+                <v-card-text>
+                  <div class="d-flex align-center mb-4">
+                    <h3 class="text-subtitle-1 font-weight-medium">{{ t.analytics.topPages || 'Pages populaires' }}</h3>
+                    <v-spacer></v-spacer>
+
+                    <v-text-field v-model="pageSearch" prepend-inner-icon="mdi-magnify"
+                      placeholder="Rechercher une page..." variant="outlined" density="compact" hide-details
+                      class="mx-2" style="max-width: 250px;" @update:model-value="filterPages"></v-text-field>
+                  </div>
+
+                  <v-data-table :headers="pageHeaders" :items="filteredPages" :items-per-page="10" :search="pageSearch"
+                    density="comfortable" class="page-data-table">
+                    <template v-slot:item.page="{ item }">
+                      <div class="d-flex align-center">
+                        <v-icon size="small" class="mr-2" :color="getItemColor(item)">mdi-file-document-outline</v-icon>
+                        <div class="text-truncate" style="max-width: 300px;" :title="item.page">
+                          {{ item.page }}
+                        </div>
+                      </div>
+                    </template>
+
+                    <template v-slot:item.views="{ item }">
+                      <div class="d-flex align-center">
+                        <span class="font-weight-medium mr-2">{{ item.views }}</span>
+                        <v-progress-linear :model-value="getPageViewPercentage(item.views)"
+                          :color="getItemColor(item, true)" height="6" rounded class="views-progress"
+                          style="width: 80px;"></v-progress-linear>
+                      </div>
+                    </template>
+
+                    <template v-slot:item.avgTime="{ item }">
+                      <div class="d-flex align-center">
+                        <span class="font-weight-medium mr-2">{{ item.avgTime }}</span>
+                        <v-progress-linear :model-value="getTimePercentage(item.avgTime)"
+                          :color="getItemColor(item, false)" height="6" rounded class="time-progress"
+                          style="width: 80px;"></v-progress-linear>
+                      </div>
+                    </template>
+
+                    <template v-slot:item.actions="{ item }">
+                      <v-btn size="x-small" icon variant="text" color="primary" @click="expandPage(item)">
+                        <v-icon size="small">mdi-information-outline</v-icon>
+                      </v-btn>
+                    </template>
+
+                    <template v-slot:bottom>
+                      <div class="text-center pt-2 pb-2">
+                        <v-btn v-if="pageViews.length > 10" color="primary" variant="text" @click="exportPageData">
+                          Exporter les données
+                          <v-icon end>mdi-download</v-icon>
+                        </v-btn>
+                      </div>
+                    </template>
+                  </v-data-table>
+
+                  <div class="mt-4">
+                    <v-chart class="chart" :option="pageViewsChartData" autoresize />
+                  </div>
+                </v-card-text>
+              </v-window-item>
+
+              <v-window-item value="sources">
                 <v-card-text>
                   <v-row>
                     <v-col cols="12" md="8">
-                      <v-table>
+                      <v-table density="comfortable">
                         <thead>
                           <tr>
                             <th>{{ t.analytics.source || 'Source' }}</th>
@@ -190,7 +409,7 @@
                                 <v-icon size="small" class="mr-2" :color="getSourceColor(source.source)">
                                   {{ getSourceIcon(source.source) }}
                                 </v-icon>
-                                {{ source.source }}
+                                {{ getSourceLabel(source.source) }}
                               </div>
                             </td>
                             <td class="text-right">{{ source.visitors }}</td>
@@ -200,25 +419,124 @@
                       </v-table>
                     </v-col>
                     <v-col cols="12" md="4">
-                      <div class="chart-container" style="position: relative; height: 200px;">
-                        <div class="text-center text-caption">
-                          {{ t.analytics.trafficDistribution || 'Répartition du trafic' }}
-                        </div>
+                      <v-chart class="traffic-chart" :option="trafficSourcesChartData" autoresize />
+                    </v-col>
+                  </v-row>
+
+                  <v-divider class="my-6"></v-divider>
+
+                  <v-row v-if="detailedReferrers.length > 0">
+                    <v-col cols="12">
+                      <div class="d-flex align-center mb-4">
+                        <h3 class="text-subtitle-1 font-weight-medium">
+                          <v-icon class="mr-2" color="primary">mdi-link-variant</v-icon>
+                          Sources de référence détaillées
+                        </h3>
+                        <v-spacer></v-spacer>
+                        <v-chip color="primary" variant="outlined" size="small">
+                          <v-icon start size="x-small">mdi-information-outline</v-icon>
+                          Sites qui renvoient vers le vôtre
+                        </v-chip>
                       </div>
+
+                      <v-card variant="outlined" class="mb-4">
+                        <v-data-table :headers="referrerHeaders" :items="detailedReferrers" :items-per-page="10"
+                          density="comfortable">
+                          <template v-slot:item.source="{ item }">
+                            <div class="d-flex align-center">
+                              <v-avatar :color="getReferrerColor(item.source)" size="28" class="mr-2">
+                                <v-icon size="small" color="white">{{ getReferrerIcon(item.source) }}</v-icon>
+                              </v-avatar>
+                              <div>
+                                <div class="font-weight-medium">{{ item.name }}</div>
+                                <div class="text-caption text-medium-emphasis">{{ item.source }}</div>
+                              </div>
+                            </div>
+                          </template>
+
+                          <template v-slot:item.url="{ item }">
+                            <div class="text-truncate" style="max-width: 250px;" :title="item.url">
+                              {{ item.url }}
+                            </div>
+                          </template>
+
+                          <template v-slot:item.visits="{ item }">
+                            <v-chip size="small" :color="getReferrerColor(item.source)" variant="tonal">
+                              {{ item.visits }}
+                            </v-chip>
+                          </template>
+
+                          <template v-slot:item.lastVisit="{ item }">
+                            <div class="text-caption">{{ formatDate(item.lastVisit) }}</div>
+                          </template>
+                        </v-data-table>
+                      </v-card>
+                    </v-col>
+                  </v-row>
+
+                  <v-row class="mt-6">
+                    <v-col cols="12">
+                      <h3 class="text-subtitle-1 font-weight-medium mb-4">{{ t.analytics.technicalInfo }}</h3>
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <v-card variant="outlined" class="tech-stats-card h-100">
+                        <v-card-title class="tech-card-title">
+                          <v-icon start color="info">mdi-web-box</v-icon>
+                          {{ t.analytics.browsers }}
+                        </v-card-title>
+                        <v-card-text>
+                          <div v-for="(browser, index) in browsers" :key="'browser-' + index" class="tech-stat-item">
+                            <div class="d-flex align-center justify-space-between mb-1">
+                              <div class="d-flex align-center">
+                                <v-icon size="small" class="mr-2" :color="getBrowserColor(browser.name)">
+                                  {{ getBrowserIcon(browser.name) }}
+                                </v-icon>
+                                <span class="text-body-2">{{ browser.name }}</span>
+                              </div>
+                              <span class="text-caption tech-count">{{ browser.count }}</span>
+                            </div>
+                            <v-progress-linear :model-value="browser.percentage" :color="getBrowserColor(browser.name)"
+                              height="8" rounded bg-color="grey-darken-3"></v-progress-linear>
+                            <div class="text-caption text-right mt-1">{{ browser.percentage }}%</div>
+                          </div>
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <v-card variant="outlined" class="tech-stats-card h-100">
+                        <v-card-title class="tech-card-title">
+                          <v-icon start color="success">mdi-laptop</v-icon>
+                          {{ t.analytics.osSystems }}
+                        </v-card-title>
+                        <v-card-text>
+                          <div v-for="(system, index) in osSystems" :key="'os-' + index" class="tech-stat-item">
+                            <div class="d-flex align-center justify-space-between mb-1">
+                              <div class="d-flex align-center">
+                                <v-icon size="small" class="mr-2" :color="getOsColor(system.name)">
+                                  {{ getOsIcon(system.name) }}
+                                </v-icon>
+                                <span class="text-body-2">{{ system.name }}</span>
+                              </div>
+                              <span class="text-caption tech-count">{{ system.count }}</span>
+                            </div>
+                            <v-progress-linear :model-value="system.percentage" :color="getOsColor(system.name)"
+                              height="8" rounded bg-color="grey-darken-3"></v-progress-linear>
+                            <div class="text-caption text-right mt-1">{{ system.percentage }}%</div>
+                          </div>
+                        </v-card-text>
+                      </v-card>
                     </v-col>
                   </v-row>
                 </v-card-text>
-              </v-card>
+              </v-window-item>
 
-              <v-card class="mt-4">
-                <v-card-title class="text-h6">
-                  <v-icon class="mr-2">mdi-devices</v-icon>
-                  {{ t.analytics.deviceStats || 'Statistiques par appareil' }}
-                </v-card-title>
+              <v-window-item value="devices">
                 <v-card-text>
                   <v-row>
                     <v-col cols="12" md="8">
-                      <v-table>
+                      <v-table density="comfortable">
                         <thead>
                           <tr>
                             <th>{{ t.analytics.deviceType || 'Type d\'appareil' }}</th>
@@ -243,79 +561,389 @@
                       </v-table>
                     </v-col>
                     <v-col cols="12" md="4">
-                      <div class="chart-container" style="position: relative; height: 200px;">
-                        <!-- Emplacement pour le graphique en camembert -->
-                        <div class="text-center text-caption">
-                          {{ t.analytics.deviceDistribution || 'Répartition des appareils' }}
-                        </div>
-                      </div>
+                      <v-chart class="device-chart" :option="deviceStatsChartData" autoresize />
                     </v-col>
                   </v-row>
                 </v-card-text>
-              </v-card>
+              </v-window-item>
 
-              <v-card class="mt-4">
-                <v-card-title class="text-h6">
-                  <v-icon class="mr-2">mdi-map-marker-path</v-icon>
-                  {{ t.analytics.userFlows || 'Parcours utilisateurs' }}
-                </v-card-title>
-                <v-card-text>
-                  <v-table>
-                    <thead>
-                      <tr>
-                        <th>{{ t.analytics.path || 'Parcours' }}</th>
-                        <th class="text-right">{{ t.analytics.count || 'Nombre de visiteurs' }}</th>
-                        <th class="text-right">{{ t.analytics.conversionRate || 'Taux de conversion' }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(flow, index) in userFlows" :key="index">
-                        <td>
-                          <div class="d-flex align-center flex-wrap">
-                            <template v-for="(step, stepIndex) in flow.path" :key="stepIndex">
-                              <span class="user-flow-step">{{ step }}</span>
-                              <v-icon v-if="stepIndex < flow.path.length - 1" size="small"
-                                class="mx-1">mdi-arrow-right</v-icon>
-                            </template>
-                          </div>
-                        </td>
-                        <td class="text-right">{{ flow.count }}</td>
-                        <td class="text-right">{{ flow.conversionRate }}%</td>
-                      </tr>
-                    </tbody>
-                  </v-table>
-                </v-card-text>
-              </v-card>
+              <v-window-item value="interactions">
+                <v-card-text class="pa-4">
+                  <v-tabs v-model="interactionsTab" bg-color="transparent" color="primary" class="mb-4">
+                    <v-tab value="interactions">
+                      <v-icon class="mr-2">mdi-cursor-default-click-outline</v-icon>
+                      {{ t.interactionsTab || 'Interactions utilisateur' }}
+                    </v-tab>
+                    <v-tab value="dead-zones">
+                      <v-icon class="mr-2">mdi-eye-off-outline</v-icon>
+                      {{ t.deadZoneViewer.title || 'Zones mortes' }}
+                    </v-tab>
+                    <v-tab value="engagement">
+                      <v-icon class="mr-2">mdi-chart-bell-curve</v-icon>
+                      {{ t.engagement?.title || 'Qualité d\'engagement' }}
+                    </v-tab>
+                  </v-tabs>
 
-              <!-- Événements d'erreur -->
-              <v-card class="mt-4">
-                <v-card-title class="text-h6">
-                  <v-icon class="mr-2">mdi-alert-circle-outline</v-icon>
-                  {{ t.analytics.errorEvents || 'Événements d\'erreur' }}
-                </v-card-title>
-                <v-card-text>
-                  <v-table>
-                    <thead>
-                      <tr>
-                        <th>{{ t.page || 'Page' }}</th>
-                        <th>{{ t.analytics.errorMessage || 'Message d\'erreur' }}</th>
-                        <th class="text-right">{{ t.analytics.count || 'Occurrences' }}</th>
-                        <th>{{ t.analytics.browserInfo || 'Navigateur' }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(error, index) in errorEvents" :key="index">
-                        <td>{{ error.page }}</td>
-                        <td>{{ error.errorMessage }}</td>
-                        <td class="text-right">{{ error.count }}</td>
-                        <td>{{ error.browserInfo }}</td>
-                      </tr>
-                    </tbody>
-                  </v-table>
+                  <v-window v-model="interactionsTab">
+                    <v-window-item value="interactions">
+                      <InteractionViewer :websiteId="currentSite.id" :interactions="{
+                        data: userInteractions,
+                        total: totalInteractionsCount || userInteractions.length,
+                        limit: 200,
+                        page: 1,
+                        hasMore: (totalInteractionsCount || 0) > userInteractions.length
+                      }" />
+                    </v-window-item>
+
+                    <v-window-item value="dead-zones">
+                      <DeadZoneViewer :websiteId="currentSite.id" />
+                    </v-window-item>
+
+                    <v-window-item value="engagement">
+
+                      <EngagementQualityViewer :websiteId="currentSite.id" />
+                    </v-window-item>
+                  </v-window>
                 </v-card-text>
-              </v-card>
-            </div>
+              </v-window-item>
+
+              <v-window-item value="errors">
+                <v-card-text class="pa-4">
+                  <div class="d-flex align-center mb-4">
+                    <h3 class="text-subtitle-1 font-weight-medium">{{ t.errorTab || 'Suivi des erreurs' }}</h3>
+                    <v-spacer></v-spacer>
+                    <v-chip v-if="errorEvents.length > 0" color="error" size="small" class="mr-2">
+                      {{ errorEvents.length }} {{ t.error.errorDetected }}
+                    </v-chip>
+                    <v-chip v-else color="success" size="small" class="mr-2">
+                      <v-icon start size="small">mdi-check-circle</v-icon>
+                      {{ t.error.noErrorDetected }}
+                    </v-chip>
+                  </div>
+
+                  <v-card class="errors-card">
+                    <v-table density="comfortable">
+                      <thead>
+                        <tr>
+                          <th>{{ t.page || 'Page' }}</th>
+                          <th>{{ t.analytics.errorMessage || 'Message d\'erreur' }}</th>
+                          <th class="text-right">{{ t.analytics.count || 'Occurrences' }}</th>
+                          <th>{{ t.analytics.browserInfo || 'Navigateur' }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(error, index) in errorEvents" :key="index" class="error-row">
+                          <td>
+                            <div class="d-flex align-center">
+                              <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
+                              <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
+                                error.page
+                              }}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="error-message text-truncate" style="max-width: 570px;"
+                              :title="error.errorMessage">
+                              {{ error.errorMessage }}
+                            </div>
+                          </td>
+                          <td class="text-right">
+                            <v-chip size="x-small" color="error" variant="outlined">{{ error.count }}</v-chip>
+                          </td>
+                          <td>
+                            <div class="d-flex align-center">
+                              <v-icon size="small" class="mr-2" :color="getBrowserColor(error.browserInfo)">
+                                {{ getBrowserIcon(error.browserInfo) }}
+                              </v-icon>
+                              <span class="text-caption">{{ error.browserInfo }}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </v-table>
+                  </v-card>
+
+                  <v-card v-if="errorEvents.length" class="no-errors-card pa-6 text-center mt-4">
+                    <v-icon :color="errorEvents.length > 0 ? 'error' : 'warning'" size="64" class="mb-4">{{
+                      errorEvents.length > 0 ?
+                        'mdi-alert-circle' :
+                        'mdi-check-circle'
+                    }}</v-icon>
+                    <h3 class="text-h6 mb-2">{{ errorEvents.length > 0 ? t.error.errorDetected :
+                      t.error.noErrorDetected }}</h3>
+                    <p class="text-body-2 text-medium-emphasis">
+                      {{ errorEvents.length > 0 ? t.error.errorDetectedDescription :
+                        t.error.noErrorDetectedDescription }}
+                    </p>
+                  </v-card>
+                </v-card-text>
+              </v-window-item>
+            </v-window>
+          </v-card>
+        </template>
+      </v-container>
+
+      <v-dialog v-model="showCodeDialog" max-width="800px">
+        <v-card class="rounded-lg">
+          <v-card-title class="text-h5 text-white bg-secondary">
+            <v-icon class="mr-2">mdi-code-tags</v-icon>
+            {{ t.tracking.trackingCode }}
+          </v-card-title>
+          <v-card-text>
+            <p class="mb-4">
+              {{ t.tracking.trackingCodeDescription || "Ajoutez ce code avant la balise de fermeture body de votre site"
+              }}
+            </p>
+            <pre id="code" class="bg-surface pa-2 rounded"></pre>
+            <v-btn class="mt-2" prepend-icon="mdi-content-copy" variant="outlined" size="small"
+              @click="copyTrackingCode(currentSite?.id || '')">
+              {{ t.tracking.copyCode || 'Copier le code' }}
+            </v-btn>
           </v-card-text>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="showAddSiteDialog" max-width="600px">
+        <v-card class="rounded-lg">
+          <v-card-title class="text-h5 text-white bg-secondary">
+            <v-icon class="mr-2">mdi-web-plus</v-icon>
+            {{ t.addSite }}
+          </v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="addWebsite">
+              <v-text-field v-model="newSite.name" prepend-icon="mdi-domain" :label="t.name"
+                :placeholder="t.form.namePlaceholder" variant="outlined" class="mb-4"
+                :rules="[v => !!v || t.form.nameRequired]"></v-text-field>
+
+              <v-text-field v-model="newSite.url" prepend-icon="mdi-web" :label="t.url"
+                :placeholder="t.form.urlPlaceholder || 'https://example.com'" variant="outlined" class="mb-4" :rules="[
+                  v => !!v || t.urlRequired,
+                  v => /^https?:\/\//.test(v) || t.urlMustStartWithHttp
+                ]"></v-text-field>
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="text" @click="showAddSiteDialog = false">
+              {{ t.cancel }}
+            </v-btn>
+            <v-btn color="secondary" variant="tonal" @click="addWebsite" :disabled="!isFormValid">
+              {{ t.add }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="showDataPurgeDialog" max-width="600">
+        <v-card>
+          <v-card-title class="text-h5">{{ tWithPurge.purge.title }}</v-card-title>
+          <v-card-text class="pt-4">
+            <p class="mb-2">{{ tWithPurge.purge.description }}</p>
+            <v-select v-model="purgeOption" :items="purgeOptions" :label="tWithPurge.purge.selectData"
+              variant="outlined" class="mb-3"></v-select>
+            <v-alert v-if="purgeOption === 'all'" type="warning" variant="tonal" class="mb-3">
+              <strong>{{ tWithPurge.purge.warning }}</strong> {{ tWithPurge.purge.warningAllData }}
+            </v-alert>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="text" @click="showDataPurgeDialog = false">
+              {{ tWithPurge.purge.cancel }}
+            </v-btn>
+            <v-btn color="error" variant="tonal" @click="generateSecurityQuestion()">
+              {{ tWithPurge.purge.confirmDelete }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="showConfirmationDialog" max-width="500px" persistent>
+        <v-card class="rounded-lg">
+          <v-card-title class="text-h5 text-white bg-error">
+            <v-icon class="mr-2">mdi-shield-lock</v-icon>
+            {{ tWithPurge.purge.security.title }}
+          </v-card-title>
+          <v-card-text class="pt-4">
+            <p class="mb-2">{{ tWithPurge.purge.security.description }}</p>
+            <p class="mb-4 font-weight-bold">{{ securityQuestion }}</p>
+
+            <v-text-field v-model="securityAnswer" :label="tWithPurge.purge.security.placeholder" variant="outlined"
+              type="number" class="mb-3" hide-details @keydown.enter="validateSecurityAnswer"></v-text-field>
+
+            <v-checkbox v-model="confirmSecurityCheck" class="mt-4" color="error">
+              <template v-slot:label>
+                <div>{{ tWithPurge.purge.security.confirm }}</div>
+              </template>
+            </v-checkbox>
+
+            <v-alert v-if="securityError" type="error" variant="tonal" class="mt-3">
+              {{ tWithPurge.purge.security.incorrect }}
+            </v-alert>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="text" @click="cancelSecurityDialog">
+              {{ tWithPurge.purge.cancel }}
+            </v-btn>
+            <v-btn color="error" variant="tonal" @click="validateSecurityAnswer"
+              :disabled="!securityAnswer || !confirmSecurityCheck">
+              {{ tWithPurge.purge.security.validate }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="showDeleteSiteDialog" max-width="500px">
+        <v-card class="rounded-lg">
+          <v-card-title class="text-h5 text-white bg-error">
+            <v-icon class="mr-2">mdi-delete-forever</v-icon>
+            {{ t.analytics.deleteTitle || 'Supprimer l\'analytique' }}
+          </v-card-title>
+          <v-card-text class="pt-4">
+            <p class="mb-2">{{ t.analytics.deleteDescription ||
+              'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
+              ' Cette opération est irréversible.'
+            }}</p>
+            <v-alert type="warning" variant="tonal" class="mb-3">
+              <strong>{{ tWithPurge.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
+                'Toutes les statistiques et les événements seront perdus.' }}
+            </v-alert>
+            <v-text-field v-model="deleteSiteConfirmation"
+              :label="t.analytics.deleteConfirmLabel || 'Tapez le nom du site pour confirmer'" variant="outlined"
+              class="mb-3"></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="text" @click="showDeleteSiteDialog = false">
+              {{ tWithPurge.purge.cancel }}
+            </v-btn>
+            <v-btn color="error" variant="tonal" @click="deleteSite"
+              :disabled="deleteSiteConfirmation !== currentSite?.name">
+              {{ t.analytics.deleteConfirm || 'Supprimer définitivement' }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="showExportDialog" max-width="500px">
+        <v-card class="rounded-lg">
+          <v-card-title class="text-h5 text-white bg-secondary">
+            <v-icon class="mr-2">mdi-export</v-icon>
+            {{ t.analytics.exportTitle || 'Exporter les données' }}
+          </v-card-title>
+          <v-card-text class="pt-4">
+            <p class="mb-4">{{ t.analytics.exportDescription || 'Sélectionnez le format et les données à exporter.' }}
+            </p>
+
+            <v-radio-group v-model="exportFormat" density="compact">
+              <v-radio value="csv" label="CSV" color="primary"></v-radio>
+              <v-radio value="json" label="JSON" color="primary"></v-radio>
+            </v-radio-group>
+
+            <v-divider class="my-3"></v-divider>
+
+            <v-checkbox v-model="exportOptions.pages" :label="t.export.pages" color="primary"></v-checkbox>
+            <v-checkbox v-model="exportOptions.interactions" :label="t.export.interactions"
+              color="primary"></v-checkbox>
+            <v-checkbox v-model="exportOptions.errors" :label="t.export.errors" color="primary"></v-checkbox>
+            <v-checkbox v-model="exportOptions.devices" :label="t.export.devices" color="primary"></v-checkbox>
+            <v-checkbox v-model="exportOptions.sources" :label="t.export.sources" color="primary"></v-checkbox>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="text" @click="showExportDialog = false">
+              {{ tWithPurge.purge.cancel }}
+            </v-btn>
+            <v-btn color="secondary" variant="tonal" @click="exportAnalyticsData"
+              :disabled="!Object.values(exportOptions).some(v => v)">
+              <v-icon start>mdi-download</v-icon>
+              {{ t.analytics.exportButton || 'Exporter' }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="showEditSiteNameDialog" max-width="500">
+        <v-card class="rounded-lg">
+          <v-card-title class="text-h5 text-white bg-secondary">{{ t.edit_name }}</v-card-title>
+          <v-card-text>
+            <v-text-field v-model="editSiteName" :label="t.name" variant="outlined"
+              :rules="[v => !!v || t.form.nameRequired]" autofocus></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="grey-darken-1" variant="text" @click="showEditSiteNameDialog = false">
+              {{ t.cancel }}
+            </v-btn>
+            <v-btn color="secondary" variant="tonal" @click="updateSiteName" :loading="updatingSiteName">
+              {{ t.save }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="showExclusionsDialog" max-width="600">
+        <v-card class="rounded-lg">
+          <v-card-title class="text-h5 text-white bg-secondary">
+            <v-icon class="mr-2">mdi-account-remove</v-icon>
+            {{ t.analytics.exclusions || 'Exclusions des analytics' }}
+          </v-card-title>
+          <v-card-text class="pt-4">
+            <p class="mb-4">{{ t.analytics.exclusionsDescription ||
+              'Exclure certaines adresses IP ou utilisateurs des statistiques(exemple : votre propre activité)' }}</p>
+
+            <v-list class="mb-4 pa-0 bg-surface rounded-lg">
+              <v-list-subheader>{{ t.analytics.currentExclusions || 'Exclusions actuelles' }}</v-list-subheader>
+              <v-list-item v-for="(exclusion, index) in ipExclusions" :key="index">
+                <template v-slot:prepend>
+                  <v-icon>{{ exclusion.type === 'ip' ? 'mdi-ip-network' : 'mdi-account' }}</v-icon>
+                </template>
+                <v-list-item-title>{{ exclusion.value }}</v-list-item-title>
+                <template v-slot:append>
+                  <v-btn icon size="small" variant="text" color="error" @click="removeExclusion(index)"
+                    aria-label="Supprimer l'exclusion">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </template>
+              </v-list-item>
+              <v-list-item v-if="ipExclusions.length === 0">
+                <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
+                  'Aucune exclusion configurée'
+                  }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+
+            <v-divider class="mb-4"></v-divider>
+
+            <v-form @submit.prevent="addExclusion">
+              <v-select v-model="newExclusion.type" :items="[
+                { title: t.analytics.ipAddress || 'Adresse IP', value: 'ip' },
+                { title: t.analytics.userId || 'ID Utilisateur', value: 'user' }
+              ]" :label="t.analytics.exclusionType || 'Type d\'exclusion'" variant="outlined" class="mb-3">
+              </v-select>
+
+              <v-text-field v-model="newExclusion.value"
+                :label="newExclusion.type === 'ip' ? (t.analytics.ipAddressPlaceholder || 'Adresse IP à exclure (ex: 192.168.1.1)') : (t.analytics.userIdPlaceholder || 'ID utilisateur à exclure')"
+                variant="outlined" class="mb-3" :rules="[v => !!v || t.form.valueRequired || 'Valeur requise']">
+              </v-text-field>
+
+              <div class="d-flex justify-end">
+                <v-btn color="secondary" variant="tonal" :disabled="!newExclusion.value" @click="addExclusion">
+                  <v-icon start>mdi-plus</v-icon>
+                  {{ t.analytics.addExclusion || 'Ajouter l\'exclusion' }}
+                </v-btn>
+              </div>
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="text" @click="showExclusionsDialog = false">
+              {{ t.cancel }}
+            </v-btn>
+            <v-btn color="primary" variant="tonal" @click="saveExclusions">
+              {{ t.save }}
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-dialog>
 
@@ -325,46 +953,155 @@
 </template>
 
 <script lang="ts" setup>
+declare module 'vue-echarts';
 import highlight from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue';
+import InteractionViewer from '../components/analytics/InteractionViewer.vue';
 import snackBar from '../components/snackbar.vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
+import { BarChart, LineChart, PieChart } from 'echarts/charts';
+import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { defineComponent, provide } from 'vue';
+import VChart, { THEME_KEY } from 'vue-echarts';
 import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
-import { DeviceStats, DeviceType, ErrorEvent, PageView, TrafficSource, UserFlow, Website, WebsiteAnalytics } from '../utils/analytics/types';
+import {
+  formatDate,
+  formatDuration,
+  formatUrl,
+  generateTrackingCode,
+  getBrowserColor,
+  getBrowserIcon,
+  getColorByIndex,
+  getDeviceIcon,
+  getDeviceLabel,
+  getFullDomain,
+  getOsColor,
+  getOsIcon,
+  getReferrerColor,
+  getReferrerIcon,
+  getSourceColor,
+  getSourceIcon,
+  getSourceLabel,
+  isLocalEnvironment
+} from '../utils/analytics/functions';
+import { BrowserOsStats, DetailedReferrer, DeviceStats, DeviceType, ErrorEvent, PageView, PurgeTranslations, TrafficSource, UserFlow, UserInteraction, WebsiteAnalytics, WebsiteWithStats } from '../utils/analytics/types';
+
+const DeadZoneViewer = defineAsyncComponent(() =>
+  import('../components/analytics/DeadZoneViewer.vue')
+);
+
+const EngagementQualityViewer = defineAsyncComponent(() =>
+  import('../components/analytics/EngagementQualityViewer.vue')
+);
+
+declare module '../languages' {
+  interface AnalyticsTranslations {
+    purge: PurgeTranslations;
+  }
+}
+
+use([
+  CanvasRenderer,
+  LineChart,
+  PieChart,
+  BarChart,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+  TitleComponent
+]);
 
 const t = useTranslations('analytics')();
+const tWithPurge = t as typeof t & { purge: PurgeTranslations };
 
 definePageMeta({
   layout: 'dashboard'
 });
 
 useHead({
-  title: 'Analyse du Comportement Utilisateur | StackUnity',
+  title: t.meta.title,
   meta: [
-    { name: 'description', content: 'Analysez le comportement des utilisateurs sur votre site web avec des métriques détaillées et des visualisations avancées.' }
+    { name: 'description', content: t.meta.description }
   ]
 });
 
 const userStore = useUserStore();
 const websiteData = computed(() => userStore.websiteData);
 const showAddSiteDialog = ref(false);
-const showAnalyticsDialog = ref(false);
 const showSnackbar = ref(false);
 const snackbarText = ref('');
 const snackbarColor = ref('');
-const currentSite = ref<Website | null>(null);
+const currentSite = ref<WebsiteWithStats | null>(null);
 const currentSiteAnalytics = ref<WebsiteAnalytics | null>(null);
 const showCodeDialog = ref(false);
+const metrics = ref<Array<{ label: string, value: any, icon: string, color: string }>>([]);
+const pageViews = ref<Array<PageView>>([]);
+const trafficSources = ref<Array<TrafficSource>>([]);
+const deviceStats = ref<Array<DeviceStats>>([]);
+const errorEvents = ref<Array<ErrorEvent>>([]);
+const userFlows = ref<Array<UserFlow>>([]);
+const userInteractions = ref<Array<UserInteraction>>([]);
+const browsers = ref<Array<BrowserOsStats>>([]);
+const osSystems = ref<Array<BrowserOsStats>>([]);
+const activeTab = ref('pages');
+const totalInteractionsCount = ref<number>(0);
 
 const newSite = ref({
   name: websiteData.value.website_name || '',
   url: websiteData.value.main_url || ''
 });
 
-const websites = ref<Website[]>([]);
+const websites = ref<WebsiteWithStats[]>([]);
+const interactionsTab = ref('interactions');
+
+const showDataPurgeDialog = ref(false);
+const purgeOption = ref('older90');
+const purgeOptions = [
+  { title: tWithPurge.purge.options.older90, value: 'older90' },
+  { title: tWithPurge.purge.options.older30, value: 'older30' },
+  { title: tWithPurge.purge.options.older7, value: 'older7' },
+  { title: tWithPurge.purge.options.all, value: 'all' }
+];
+const purgeLoading = ref(false);
+const dataCount = ref(0);
+const showDataLimitAlert = computed(() => isAdmin.value && dataCount.value > 10000);
+const isAdmin = computed(() => userStore.user?.isAdmin || userStore.user?.isPremium);
+
+const showConfirmationDialog = ref(false);
+const securityNum1 = ref(0);
+const securityNum2 = ref(0);
+const securityAnswer = ref('');
+const securityError = ref(false);
+const confirmSecurityCheck = ref(false);
+
+const selectedPeriod = ref('all');
+const periodOptions = [
+  { title: t.analytics.all, value: 'all' },
+  { title: t.analytics.last7days, value: '7d' },
+  { title: t.analytics.last30days, value: '30d' },
+  { title: t.analytics.last90days, value: '90d' }
+];
+
+const pageSearch = ref('');
+const filteredPages = ref<PageView[]>([]);
+
+const pageHeaders = [
+  { title: t.page || 'Page', key: 'page', sortable: true, width: '40%' },
+  { title: t.views || 'Vues', key: 'views', sortable: true, align: 'center' as const },
+  { title: t.avgTime || 'Temps moyen', key: 'avgTime', sortable: true, align: 'center' as const },
+  { title: '', key: 'actions', sortable: false, align: 'end' as const, width: '50px' }
+];
+
+const securityQuestion = computed(() => {
+  return tWithPurge.purge.security.question
+    .replace('{num1}', securityNum1.value.toString())
+    .replace('{num2}', securityNum2.value.toString());
+});
 
 const applyHighlight = (code: string) => {
   const codeElement = document.getElementById('code');
@@ -381,65 +1118,6 @@ watch(showCodeDialog, (newVal) => {
   }
 });
 
-const metrics = ref([
-  {
-    label: 'Visiteurs',
-    value: 1254,
-    icon: 'mdi-account-multiple',
-    color: 'success'
-  },
-  {
-    label: 'Temps moyen',
-    value: '2m 34s',
-    icon: 'mdi-clock-outline',
-    color: 'info'
-  },
-  {
-    label: 'Taux de rebond',
-    value: '42%',
-    icon: 'mdi-arrow-u-left-top',
-    color: 'warning'
-  },
-  {
-    label: 'Sessions frustrées',
-    value: 123,
-    icon: 'mdi-emoticon-sad-outline',
-    color: 'error'
-  }
-]);
-
-const pageViews = ref<PageView[]>([
-  { page: '/', views: 1254, avgTime: '1m 28s' },
-  { page: '/produits', views: 876, avgTime: '2m 15s' },
-  { page: '/blog', views: 543, avgTime: '3m 42s' },
-  { page: '/contact', views: 321, avgTime: '0m 58s' }
-]);
-
-const trafficSources = ref<TrafficSource[]>([
-  { source: 'Recherche organique', visitors: 687, percentage: 54.8 },
-  { source: 'Réseaux sociaux', visitors: 321, percentage: 25.6 },
-  { source: 'Liens directs', visitors: 156, percentage: 12.4 },
-  { source: 'Référents', visitors: 90, percentage: 7.2 }
-]);
-
-const deviceStats = ref<DeviceStats[]>([
-  { type: DeviceType.DESKTOP, count: 724, percentage: 57.7 },
-  { type: DeviceType.MOBILE, count: 456, percentage: 36.4 },
-  { type: DeviceType.TABLET, count: 74, percentage: 5.9 }
-]);
-
-const userFlows = ref<UserFlow[]>([
-  { path: ['/', '/produits', '/produits/123', '/panier', '/checkout'], count: 87, conversionRate: 27.5 },
-  { path: ['/', '/blog', '/contact'], count: 43, conversionRate: 0 },
-  { path: ['/', '/contact', '/plans'], count: 31, conversionRate: 16.2 }
-]);
-
-const errorEvents = ref<ErrorEvent[]>([
-  { page: '/checkout', errorMessage: "Erreur de validation du formulaire", count: 32, browserInfo: "Chrome 98, Windows" },
-  { page: '/produits', errorMessage: "Erreur de chargement des images", count: 18, browserInfo: "Safari 15, iOS" },
-  { page: '/contact', errorMessage: "Erreur d'envoi du formulaire", count: 12, browserInfo: "Firefox 95, macOS" }
-]);
-
 const isFormValid = computed(() => {
   return newSite.value.name &&
     newSite.value.url &&
@@ -448,21 +1126,62 @@ const isFormValid = computed(() => {
 
 onMounted(() => {
   fetchWebsites();
+
+  window.addEventListener('resize', () => {
+    const charts = document.querySelectorAll('.chart');
+    charts.forEach(chart => {
+      const echartInstance = (chart as any).__echarts__;
+      if (echartInstance) {
+        echartInstance.resize();
+      }
+    });
+  });
+
+  setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, 500);
 });
 
 async function fetchWebsites() {
   try {
     const response = await fetch('/api/analytics/websites');
     const result = await response.json();
-    console.log(result);
 
     if (result.success) {
-      websites.value = result.websites.map(site => ({
-        id: site.trackingId,
-        name: site.name,
-        url: site.url,
-        addedAt: site.createdAt
+      const sitesWithStats = await Promise.all(result.websites.map(async site => {
+        const siteData = {
+          id: site.trackingId,
+          name: site.name,
+          url: site.url,
+          formattedUrl: formatUrl(site.url),
+          fullDomain: getFullDomain(site.url),
+          addedAt: site.createdAt,
+          stats: {
+            visites: 0,
+            pages: 0,
+            temps: '0m'
+          }
+        };
+
+        try {
+          const statsResponse = await fetch(`/api/analytics/website/${site.trackingId}/basic-stats`);
+          const statsResult = await statsResponse.json();
+
+          if (statsResult.success && statsResult.data) {
+            siteData.stats = {
+              visites: statsResult.data.totalVisitors || 0,
+              pages: statsResult.data.totalPageViews || 0,
+              temps: formatDuration(statsResult.data.avgSessionDuration || 0)
+            };
+          }
+        } catch (error) {
+          console.error(`Erreur lors de la récupération des stats pour ${site.name}:`, error);
+        }
+
+        return siteData;
       }));
+
+      websites.value = sitesWithStats;
     } else {
       console.error('Error fetching websites:', result.message);
     }
@@ -489,11 +1208,18 @@ async function addWebsite() {
     const result = await response.json();
 
     if (result.success) {
-      const site: Website = {
+      const site: WebsiteWithStats = {
         id: result.websiteId,
         name: newSite.value.name,
         url: newSite.value.url,
-        addedAt: new Date().toISOString()
+        formattedUrl: formatUrl(newSite.value.url),
+        fullDomain: getFullDomain(newSite.value.url),
+        addedAt: new Date().toISOString(),
+        stats: {
+          visites: 0,
+          pages: 0,
+          temps: '0m'
+        }
       };
 
       websites.value.push(site);
@@ -506,97 +1232,34 @@ async function addWebsite() {
       };
 
       showAddSiteDialog.value = false;
-      showMessage('Site ajouté avec succès', 'success');
+      showMessage(t.analytics.success, 'success');
     } else {
-      showMessage(result.message || 'Erreur lors de l\'ajout du site', 'error');
+      showMessage(result.message || t.analytics.error, 'error');
     }
   } catch (error) {
     console.error('Error adding website:', error);
-    showMessage('Erreur lors de l\'ajout du site', 'error');
+    showMessage(t.analytics.error, 'error');
   }
 }
 
-async function selectSite(site: Website) {
+async function selectSite(site: WebsiteWithStats) {
   currentSite.value = site;
 
   try {
-    const response = await fetch(`/api/analytics/website/${site.id}`);
+    loadExclusions();
+    const response = await fetch(`/api/analytics/website/${site.id}?period=${selectedPeriod.value}&limit=500`);
     const result = await response.json();
 
     if (result.success) {
-      const data = result.data;
-
-      metrics.value = [
-        {
-          label: 'Visiteurs',
-          value: data.totalVisitors,
-          icon: 'mdi-account-multiple',
-          color: 'success'
-        },
-        {
-          label: 'Temps moyen',
-          value: data.timeOnSite,
-          icon: 'mdi-clock-outline',
-          color: 'info'
-        },
-        {
-          label: 'Taux de rebond',
-          value: `${data.bounceRate}%`,
-          icon: 'mdi-arrow-u-left-top',
-          color: 'warning'
-        },
-        {
-          label: 'Sessions frustrées',
-          value: data.frustratedSessions,
-          icon: 'mdi-emoticon-sad-outline',
-          color: 'error'
-        }
-      ];
-
-      pageViews.value = data.topPages;
-      trafficSources.value = data.trafficSources;
-      deviceStats.value = data.devices.map((d: any) => ({
-        type: d.type === 'desktop' ? DeviceType.DESKTOP :
-          d.type === 'tablet' ? DeviceType.TABLET : DeviceType.MOBILE,
-        count: d.count,
-        percentage: d.percentage
-      }));
-      errorEvents.value = data.errorEvents;
-
-      currentSiteAnalytics.value = {
-        websiteId: site.id,
-        totalVisitors: data.totalVisitors,
-        totalPageViews: data.totalPageViews,
-        avgSessionDuration: data.avgSessionDuration,
-        bounceRate: data.bounceRate,
-        frustratedSessions: data.frustratedSessions,
-        timeOnSite: data.timeOnSite,
-        topPages: data.topPages,
-        trafficSources: data.trafficSources,
-        devices: data.devices,
-        userFlows: [],
-        errorEvents: data.errorEvents
-      };
+      updateAnalyticsData(result.data);
     } else {
-      showMessage(result.message || 'Erreur lors de la récupération des données', 'error');
+      console.error('Erreur de récupération des données:', result.message);
+      showMessage(result.message || t.analytics.error, 'error');
     }
   } catch (error) {
     console.error('Error fetching website stats:', error);
-    showMessage('Erreur lors de la récupération des données', 'error');
+    showMessage(t.analytics.error, 'error');
   }
-
-  showAnalyticsDialog.value = true;
-}
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date);
 }
 
 function showMessage(text: string, color: string) {
@@ -605,93 +1268,1143 @@ function showMessage(text: string, color: string) {
   showSnackbar.value = true;
 }
 
-function generateTrackingCode(websiteId: string): string {
-  return `
-<script>
-  (function() {
-    var s = document.createElement('script');
-    s.type = 'text/javascript';
-    s.async = true;
-    s.src = '${window.location.origin}/tracker.js';
-    s.setAttribute('data-website-id', '${websiteId}');
-    var x = document.getElementsByTagName('script')[0];
-    x.parentNode.insertBefore(s, x);
-  })();
-<\/script>
-  `;
-}
-
-function getSourceColor(source: string): string {
-  switch (source) {
-    case 'Recherche organique':
-      return 'success';
-    case 'Réseaux sociaux':
-      return 'info';
-    case 'Liens directs':
-      return 'primary';
-    case 'Référents':
-      return 'warning';
-    default:
-      return 'grey';
-  }
-}
-
-function getSourceIcon(source: string): string {
-  switch (source) {
-    case 'Recherche organique':
-      return 'mdi-magnify';
-    case 'Réseaux sociaux':
-      return 'mdi-account-group';
-    case 'Liens directs':
-      return 'mdi-link-variant';
-    case 'Référents':
-      return 'mdi-web';
-    default:
-      return 'mdi-help-circle-outline';
-  }
-}
-
-function getDeviceIcon(type: DeviceType): string {
-  switch (type) {
-    case DeviceType.DESKTOP:
-      return 'mdi-desktop-mac';
-    case DeviceType.TABLET:
-      return 'mdi-tablet';
-    case DeviceType.MOBILE:
-      return 'mdi-cellphone';
-    default:
-      return 'mdi-help-circle-outline';
-  }
-}
-
-function getDeviceLabel(type: DeviceType): string {
-  switch (type) {
-    case DeviceType.DESKTOP:
-      return 'Ordinateur';
-    case DeviceType.TABLET:
-      return 'Tablette';
-    case DeviceType.MOBILE:
-      return 'Mobile';
-    default:
-      return 'Inconnu';
-  }
-}
-
 function copyTrackingCode(websiteId: string) {
   const code = generateTrackingCode(websiteId);
   navigator.clipboard.writeText(code)
     .then(() => {
-      showMessage('Code de suivi copié dans le presse-papier', 'success');
+      showMessage(t.analytics.copyCode, 'success');
     })
     .catch((err) => {
       console.error('Erreur lors de la copie du code:', err);
-      showMessage('Erreur lors de la copie du code', 'error');
+      showMessage(t.analytics.copyCodeError, 'error');
     });
+}
+
+const pageViewsChartData = computed(() => {
+  return {
+    darkMode: true,
+    backgroundColor: '#1E1E1E',
+    textStyle: {
+      color: '#ffffff'
+    },
+    title: {
+      text: t.analytics.pageViews,
+      left: 'center',
+      textStyle: {
+        color: '#ffffff'
+      }
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: pageViews.value.slice(0, 5).map(page => {
+        const url = page.page.length > 15 ? page.page.substring(0, 15) + '...' : page.page;
+        return url;
+      }),
+      axisLabel: {
+        color: '#cccccc',
+        rotate: 30
+      }
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        color: '#cccccc'
+      }
+    },
+    series: [
+      {
+        name: t.analytics.views,
+        type: 'bar',
+        data: pageViews.value.slice(0, 5).map(page => page.views),
+        itemStyle: {
+          color: '#6366F1'
+        }
+      }
+    ]
+  };
+});
+
+const trafficSourcesChartData = computed(() => {
+  return {
+    darkMode: true,
+    backgroundColor: '#1E1E1E',
+    textStyle: {
+      color: '#ffffff'
+    },
+    title: {
+      text: t.analytics.trafficSources,
+      left: 'center',
+      textStyle: {
+        color: '#ffffff'
+      }
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c} ({d}%)'
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left',
+      textStyle: {
+        color: '#cccccc'
+      },
+      data: trafficSources.value.map(source => getSourceLabel(source.source))
+    },
+    series: [
+      {
+        name: t.analytics.source,
+        type: 'pie',
+        radius: '70%',
+        center: ['50%', '60%'],
+        data: trafficSources.value.map(source => ({
+          name: getSourceLabel(source.source),
+          value: source.visitors,
+          itemStyle: {
+            color: getSourceColor(source.source) === 'grey' ? '#999999' :
+              getSourceColor(source.source) === 'success' ? '#4CAF50' :
+                getSourceColor(source.source) === 'info' ? '#2196F3' :
+                  getSourceColor(source.source) === 'primary' ? '#1976D2' :
+                    getSourceColor(source.source) === 'warning' ? '#FB8C00' : '#999999'
+          }
+        })),
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        },
+        label: {
+          color: '#ffffff'
+        }
+      }
+    ]
+  };
+});
+
+const deviceStatsChartData = computed(() => {
+  return {
+    darkMode: true,
+    backgroundColor: '#1E1E1E',
+    textStyle: {
+      color: '#ffffff'
+    },
+    title: {
+      text: t.analytics.deviceTypes,
+      left: 'center',
+      textStyle: {
+        color: '#ffffff'
+      }
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c} ({d}%)'
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left',
+      textStyle: {
+        color: '#cccccc'
+      },
+      data: deviceStats.value.map(device => getDeviceLabel(device.type))
+    },
+    series: [
+      {
+        name: t.analytics.deviceTypes,
+        type: 'pie',
+        radius: ['40%', '70%'],
+        center: ['50%', '60%'],
+        data: deviceStats.value.map(device => ({
+          name: getDeviceLabel(device.type),
+          value: device.count,
+          itemStyle: {
+            color: device.type === DeviceType.DESKTOP ? '#4CAF50' :
+              device.type === DeviceType.TABLET ? '#2196F3' :
+                device.type === DeviceType.MOBILE ? '#FB8C00' : '#999999'
+          }
+        })),
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        },
+        label: {
+          color: '#ffffff'
+        }
+      }
+    ]
+  };
+});
+
+defineComponent({
+  components: {
+    VChart
+  }
+});
+
+provide(THEME_KEY, 'dark');
+
+function checkDataLimits() {
+  if (!currentSiteAnalytics.value) return;
+
+  const pageViewCount = pageViews.value.reduce((sum, page) => sum + page.views, 0);
+  const interactionCount = userInteractions.value.length;
+  const sessionCount = currentSiteAnalytics.value.totalVisitors || 0;
+
+  const totalRecords = pageViewCount + interactionCount + sessionCount;
+  dataCount.value = totalRecords;
+}
+
+function generateSecurityQuestion() {
+  securityNum1.value = Math.floor(Math.random() * 20) + 1;
+  securityNum2.value = Math.floor(Math.random() * 20) + 1;
+  securityAnswer.value = '';
+  securityError.value = false;
+  confirmSecurityCheck.value = false;
+  showConfirmationDialog.value = true;
+  showDataPurgeDialog.value = false;
+}
+
+function cancelSecurityDialog() {
+  showConfirmationDialog.value = false;
+  securityAnswer.value = '';
+  securityError.value = false;
+  confirmSecurityCheck.value = false;
+}
+
+function validateSecurityAnswer() {
+  const correctAnswer = securityNum1.value + securityNum2.value;
+
+  if (parseInt(securityAnswer.value) === correctAnswer && confirmSecurityCheck.value) {
+    showConfirmationDialog.value = false;
+    purgeAnalyticsData();
+  } else {
+    securityError.value = true;
+  }
+}
+
+async function purgeAnalyticsData() {
+  if (!currentSite.value) return;
+
+  purgeLoading.value = true;
+  try {
+    const response = await fetch('/api/analytics/purge-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        websiteId: currentSite.value.id,
+        purgeOption: purgeOption.value
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      snackbarText.value = `${tWithPurge.purge.success} ${tWithPurge.purge.successCount.replace('{count}', result.deletedCount || '')}`;
+      snackbarColor.value = 'success';
+      showSnackbar.value = true;
+
+      if (currentSite.value) {
+        selectSite(currentSite.value);
+      }
+    } else {
+      snackbarText.value = result.message || tWithPurge.purge.error;
+      snackbarColor.value = 'error';
+      showSnackbar.value = true;
+    }
+  } catch (error) {
+    console.error('Erreur lors de la purge des données:', error);
+    snackbarText.value = `${tWithPurge.purge.error} ${tWithPurge.purge.tryAgain}`;
+    snackbarColor.value = 'error';
+    showSnackbar.value = true;
+  } finally {
+    purgeLoading.value = false;
+    showDataPurgeDialog.value = false;
+  }
+}
+
+async function fetchSiteDataForPeriod() {
+  if (!currentSite.value) return;
+
+  try {
+    const response = await fetch(`/api/analytics/website/${currentSite.value.id}?period=${selectedPeriod.value}&limit=500`);
+    const result = await response.json();
+
+    if (result.success) {
+      updateAnalyticsData(result.data);
+    } else {
+      console.error('Erreur de récupération des données par période:', result.message);
+      showMessage(result.message || t.analytics.error, 'error');
+    }
+  } catch (error) {
+    console.error('Error fetching website stats for period:', error);
+    showMessage(t.analytics.error, 'error');
+  }
+}
+
+function updateAnalyticsData(data: any) {
+  metrics.value = [
+    {
+      label: t.analytics.visitors || 'Visites',
+      value: data.totalVisitors || 0,
+      icon: 'mdi-account-outline',
+      color: 'primary'
+    },
+    {
+      label: t.analytics.totalPageViews || 'Pages vues',
+      value: data.totalPageViews || 0,
+      icon: 'mdi-file-document-outline',
+      color: 'success'
+    },
+    {
+      label: t.analytics.timeOnSite || 'Temps moyen',
+      value: formatDuration(data.avgSessionDuration || 0),
+      icon: 'mdi-clock-outline',
+      color: 'info'
+    },
+    {
+      label: t.analytics.bounceRate || 'Taux de rebond',
+      value: `${data.bounceCount || 0}`,
+      icon: 'mdi-arrow-u-left-top',
+      color: 'warning'
+    }
+  ];
+
+  pageViews.value = data.topPages || [];
+  trafficSources.value = data.trafficSources || [];
+  deviceStats.value = data.devices || [];
+  errorEvents.value = data.errorEvents || [];
+  userFlows.value = data.userFlows || [];
+  browsers.value = data.browsers || [];
+  osSystems.value = data.os || [];
+
+  if (data.interactions && data.interactions.data) {
+    userInteractions.value = data.interactions.data;
+    totalInteractionsCount.value = data.interactions.total || 0;
+  } else {
+    userInteractions.value = data.userInteractions || [];
+    totalInteractionsCount.value = userInteractions.value.length;
+  }
+
+  currentSiteAnalytics.value = {
+    websiteId: currentSite.value?.id || '',
+    totalVisitors: data.totalVisitors || 0,
+    totalPageViews: data.totalPageViews || 0,
+    avgSessionDuration: data.avgSessionDuration || 0,
+    bounceRate: data.bounceRate || 0,
+    bounceCount: data.bounceCount || 0,
+    frustratedSessions: data.frustratedSessions || 0,
+    timeOnSite: data.timeOnSite || '0m 0s',
+    topPages: pageViews.value,
+    trafficSources: trafficSources.value,
+    devices: deviceStats.value,
+    userFlows: userFlows.value,
+    errorEvents: errorEvents.value,
+    userInteractions: userInteractions.value
+  };
+
+  checkDataLimits();
+}
+
+function getPageViewPercentage(views: number): number {
+  const totalViews = pageViews.value.reduce((sum, page) => sum + page.views, 0);
+  return totalViews > 0 ? (views / totalViews) * 100 : 0;
+}
+
+function getTimePercentage(time: string): number {
+  const minutesMatch = time.match(/(\d+)m/);
+  const secondsMatch = time.match(/(\d+)s/);
+
+  const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
+  const seconds = secondsMatch ? parseInt(secondsMatch[1]) : 0;
+
+  const totalSeconds = (minutes * 60) + seconds;
+
+  const maxTimeSeconds = Math.max(...pageViews.value.map(page => {
+    const pageMinutesMatch = page.avgTime.match(/(\d+)m/);
+    const pageSecondsMatch = page.avgTime.match(/(\d+)s/);
+
+    const pageMinutes = pageMinutesMatch ? parseInt(pageMinutesMatch[1]) : 0;
+    const pageSeconds = pageSecondsMatch ? parseInt(pageSecondsMatch[1]) : 0;
+
+    return (pageMinutes * 60) + pageSeconds;
+  }));
+
+  return maxTimeSeconds > 0 ? (totalSeconds / maxTimeSeconds) * 100 : 0;
+}
+
+function expandPage(page: PageView) {
+  console.log('Détails de la page:', page);
+  showMessage(`Détails de la page : ${page.page}`, 'info');
+}
+
+function filterPages() {
+  filteredPages.value = pageViews.value.filter(page =>
+    page.page.toLowerCase().includes(pageSearch.value.toLowerCase())
+  );
+}
+
+const getItemColor = (item: PageView, isViews: boolean = false) => {
+  const totalViews = pageViews.value.reduce((sum, page) => sum + page.views, 0);
+  const percentage = (item.views / totalViews) * 100;
+  if (percentage < 20) return 'success';
+  if (percentage < 50) return 'info';
+  if (percentage < 80) return 'warning';
+  return 'error';
+};
+
+function exportPageData() {
+  const headers = ['Page', 'Vues', 'Temps moyen'];
+  const csvRows = [headers.join(',')];
+
+  pageViews.value.forEach(page => {
+    csvRows.push(`"${page.page}",${page.views},"${page.avgTime}"`);
+  });
+
+  const csvContent = csvRows.join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.setAttribute('href', url);
+  link.setAttribute('download', `pages-${currentSite.value?.name || 'site'}-${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  showMessage(t.analytics.exportSuccess, 'success');
+}
+
+
+watch(() => pageViews.value, (newPageViews) => {
+  filteredPages.value = [...newPageViews];
+}, { immediate: true });
+
+
+const showDeleteSiteDialog = ref(false);
+const deleteSiteConfirmation = ref('');
+const showExportDialog = ref(false);
+const exportFormat = ref('csv');
+const exportOptions = ref({
+  pages: true,
+  interactions: true,
+  errors: true,
+  devices: true,
+  sources: true
+});
+
+const referrerHeaders = [
+  { title: 'Source', key: 'source', sortable: true },
+  { title: 'URL', key: 'url', sortable: true },
+  { title: 'Visites', key: 'visits', sortable: true, align: 'center' as const },
+  { title: 'Dernière visite', key: 'lastVisit', sortable: true }
+];
+
+const detailedReferrers = ref<DetailedReferrer[]>([]);
+
+async function deleteSite() {
+  if (!currentSite.value || deleteSiteConfirmation.value !== currentSite.value.name) return;
+
+  try {
+    const response = await fetch(`/api/analytics/delete-website`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        websiteId: currentSite.value.id
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      snackbarText.value = t.analytics.deleteSuccess || 'Site supprimé avec succès';
+      snackbarColor.value = 'success';
+      showSnackbar.value = true;
+
+      websites.value = websites.value.filter(site => site.id !== currentSite.value?.id);
+
+      currentSite.value = null;
+      currentSiteAnalytics.value = null;
+    } else {
+      snackbarText.value = result.message || t.analytics.deleteError || 'Erreur lors de la suppression';
+      snackbarColor.value = 'error';
+      showSnackbar.value = true;
+    }
+  } catch (error) {
+    console.error('Erreur lors de la suppression du site:', error);
+    snackbarText.value = t.analytics.deleteError || 'Erreur lors de la suppression';
+    snackbarColor.value = 'error';
+    showSnackbar.value = true;
+  } finally {
+    showDeleteSiteDialog.value = false;
+    deleteSiteConfirmation.value = '';
+  }
+}
+
+function refreshSiteData() {
+  if (currentSite.value) {
+    selectSite(currentSite.value);
+    snackbarText.value = t.analytics.refreshSuccess || 'Données actualisées';
+    snackbarColor.value = 'success';
+    showSnackbar.value = true;
+  }
+}
+
+function exportAnalyticsData() {
+  if (!currentSite.value || !currentSiteAnalytics.value) return;
+
+  let exportData: any = {
+    siteInfo: {
+      name: currentSite.value.name,
+      url: currentSite.value.url,
+      exportDate: new Date().toISOString()
+    }
+  };
+
+  if (exportOptions.value.pages) {
+    exportData.pages = pageViews.value;
+  }
+
+  if (exportOptions.value.interactions) {
+    exportData.interactions = userInteractions.value;
+  }
+
+  if (exportOptions.value.errors) {
+    exportData.errors = errorEvents.value;
+  }
+
+  if (exportOptions.value.devices) {
+    exportData.devices = deviceStats.value;
+  }
+
+  if (exportOptions.value.sources) {
+    exportData.sources = trafficSources.value;
+  }
+
+  let content = '';
+  let filename = `analytics-${currentSite.value.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}`;
+
+  if (exportFormat.value === 'json') {
+    content = JSON.stringify(exportData, null, 2);
+    filename += '.json';
+    downloadFile(content, 'application/json', filename);
+  } else {
+    let csvContent = '';
+
+    if (exportOptions.value.pages) {
+      csvContent += 'PAGES VUES\n';
+      csvContent += 'Page,Vues,Temps moyen\n';
+      pageViews.value.forEach(page => {
+        csvContent += `"${page.page}",${page.views},"${page.avgTime}"\n`;
+      });
+      csvContent += '\n';
+    }
+
+    if (exportOptions.value.interactions && userInteractions.value.length) {
+      csvContent += 'INTERACTIONS\n';
+      csvContent += 'Type,Élément,Timestamp\n';
+      userInteractions.value.slice(0, 1000).forEach(interaction => {
+        csvContent += `"${interaction.type}","${interaction.elementSelector}","${interaction.timestamp}"\n`;
+      });
+      csvContent += '\n';
+    }
+
+    if (exportOptions.value.errors && errorEvents.value.length) {
+      csvContent += 'ERREURS\n';
+      csvContent += 'Page,Message,Occurrences,Navigateur\n';
+      errorEvents.value.forEach(error => {
+        csvContent += `"${error.page}","${error.errorMessage.replace(/"/g, '""')}",${error.count},"${error.browserInfo}"\n`;
+      });
+      csvContent += '\n';
+    }
+
+    if (exportOptions.value.devices) {
+      csvContent += 'APPAREILS\n';
+      csvContent += 'Type,Nombre,Pourcentage\n';
+      deviceStats.value.forEach(device => {
+        csvContent += `"${device.type}",${device.count},${device.percentage}\n`;
+      });
+      csvContent += '\n';
+    }
+
+    if (exportOptions.value.sources) {
+      csvContent += 'SOURCES DE TRAFIC\n';
+      csvContent += 'Source,Visiteurs,Pourcentage\n';
+      trafficSources.value.forEach(source => {
+        csvContent += `"${source.source}",${source.visitors},${source.percentage}\n`;
+      });
+    }
+
+    filename += '.csv';
+    downloadFile(csvContent, 'text/csv', filename);
+  }
+
+  showExportDialog.value = false;
+
+  snackbarText.value = t.analytics.exportSuccess || 'Données exportées avec succès';
+  snackbarColor.value = 'success';
+  showSnackbar.value = true;
+}
+
+function downloadFile(content: string, type: string, filename: string) {
+  const blob = new Blob([content], { type: `${type};charset=utf-8;` });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+const showEditSiteNameDialog = ref(false);
+const editSiteName = ref('');
+const updatingSiteName = ref(false);
+
+watch(() => currentSite.value, (newSite) => {
+  if (newSite) {
+    editSiteName.value = newSite.name;
+  }
+});
+
+function updateSiteName() {
+  if (!editSiteName.value.trim()) return;
+
+  updatingSiteName.value = true;
+
+  fetch('/api/analytics/website/update-name', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      websiteId: currentSite.value?.id,
+      name: editSiteName.value
+    })
+  })
+    .then(response => response.json())
+    .then(responseData => {
+      if (responseData.success) {
+        currentSite.value!.name = editSiteName.value;
+        showSnackbar.value = true;
+        snackbarText.value = 'Updated successfully';
+        snackbarColor.value = 'success';
+        showEditSiteNameDialog.value = false;
+        if (websites.value) {
+          const site = websites.value.find(s => s.id === currentSite.value?.id);
+          if (site) {
+            site.name = editSiteName.value;
+          }
+        }
+      } else {
+        showSnackbar.value = true;
+        snackbarText.value = responseData.message || 'Erreur lors de la mise à jour du nom du site';
+        snackbarColor.value = 'error';
+      }
+      updatingSiteName.value = false;
+    })
+    .catch(err => {
+      console.error('Erreur lors de la mise à jour du nom du site:', err);
+      showSnackbar.value = true;
+      snackbarText.value = 'Erreur de connexion lors de la mise à jour du nom du site';
+      snackbarColor.value = 'error';
+      updatingSiteName.value = false;
+    });
+}
+
+const showExclusionsDialog = ref(false);
+const ipExclusions = ref<Array<{ type: 'ip' | 'user', value: string }>>([]);
+const newExclusion = ref<{ type: 'ip' | 'user', value: string }>({
+  type: 'ip',
+  value: ''
+});
+
+function addExclusion() {
+  if (newExclusion.value.value) {
+    ipExclusions.value.push({ ...newExclusion.value });
+    newExclusion.value.value = '';
+  }
+}
+
+function removeExclusion(index: number) {
+  ipExclusions.value.splice(index, 1);
+}
+
+async function saveExclusions() {
+  if (!currentSite.value) return;
+
+  try {
+    const response = await fetch(`/api/analytics/website/${currentSite.value.id}/exclusions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        exclusions: ipExclusions.value
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showMessage(t.analytics.exclusionsSaved || 'Exclusions sauvegardées avec succès', 'success');
+      showExclusionsDialog.value = false;
+    } else {
+      showMessage(result.message || t.analytics.exclusionsSaveError || 'Erreur lors de la sauvegarde des exclusions', 'error');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde des exclusions:', error);
+    showMessage(t.analytics.exclusionsSaveError || 'Erreur lors de la sauvegarde des exclusions', 'error');
+  }
+}
+
+async function loadExclusions() {
+  if (!currentSite.value) return;
+
+  try {
+    const response = await fetch(`/api/analytics/website/${currentSite.value.id}/exclusions`);
+    const result = await response.json();
+    console.log(result);
+
+    if (result.success && result.data) {
+      ipExclusions.value = result.data;
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement des exclusions:', error);
+  }
 }
 </script>
 
 <style scoped>
-.page-header {
-  min-height: 80px;
+.main-content {
+  min-height: auto;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+}
+
+.metric-card {
+  border-left: 4px solid;
+  border-radius: 8px;
+}
+
+.metric-card:nth-child(1) {
+  border-left-color: rgb(var(--v-theme-primary));
+}
+
+.metric-card:nth-child(2) {
+  border-left-color: rgb(var(--v-theme-success));
+}
+
+.metric-card:nth-child(3) {
+  border-left-color: rgb(var(--v-theme-info));
+}
+
+.metric-card:nth-child(4) {
+  border-left-color: rgb(var(--v-theme-warning));
+}
+
+.modern-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+  backdrop-filter: blur(10px);
+}
+
+.modern-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.site-card-banner {
+  position: relative;
+  height: 140px;
+  overflow: hidden;
+}
+
+.site-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(1px);
+  transition: all 0.3s ease;
+}
+
+.modern-card:hover .site-card-overlay {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.site-card-header {
+  position: relative;
+  z-index: 2;
+}
+
+.site-icon-container {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 3;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.modern-card:hover .site-icon-container {
+  transform: scale(1.1) rotate(15deg);
+}
+
+.site-url-chip {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(5px);
+  border: none !important;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.95) !important;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-chip {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 12px;
+  padding: 0 8px;
+}
+
+.site-stats {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 6px;
+}
+
+.stat-item {
+  flex: 1;
+}
+
+.view-analytics-btn {
+  text-transform: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.view-analytics-btn:hover {
+  letter-spacing: 1px;
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(var(--v-theme-primary), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0);
+  }
+}
+
+.scale-on-hover {
+  transition: transform 0.3s ease;
+}
+
+.scale-on-hover:hover {
+  transform: scale(1.05);
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+}
+
+.bg-gradient-secondary {
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+.bg-gradient-info {
+  background: linear-gradient(135deg, #03a9f4, #0288d1);
+}
+
+.bg-gradient-indigo {
+  background: linear-gradient(135deg, #3f51b5, #303f9f);
+}
+
+.bg-gradient-deep-purple {
+  background: linear-gradient(135deg, #673ab7, #512da8);
+}
+
+.bg-gradient-cyan {
+  background: linear-gradient(135deg, #00bcd4, #0097a7);
+}
+
+.bg-gradient-teal {
+  background: linear-gradient(135deg, #009688, #00796b);
+}
+
+.bg-gradient-amber {
+  background: linear-gradient(135deg, #ffc107, #ffa000);
+}
+
+.add-site-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(var(--v-theme-primary), 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.add-site-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+  border-color: rgba(var(--v-theme-primary), 0.3);
+}
+
+.add-site-icon-container {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.1), rgba(var(--v-theme-primary), 0.2));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.2);
+}
+
+.period-select :deep(.v-field__outline) {
+  border-width: 1px;
+}
+
+.period-select :deep(.v-field__input) {
+  padding-top: 0;
+  padding-bottom: 0;
+  min-height: 36px;
+}
+
+.page-stat-card {
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.page-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.page-url {
+  opacity: 0.7;
+}
+
+.views-progress,
+.time-progress {
+  transition: all 0.3s ease;
+}
+
+.views-progress:hover,
+.time-progress:hover {
+  height: 8px !important;
+}
+
+.tech-stats-card {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.tech-stats-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.tech-card-title {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 12px 16px;
+}
+
+.tech-stat-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tech-stat-item:last-child {
+  border-bottom: none;
+}
+
+.tech-count {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.interactions-card {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.interactions-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.errors-card {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: rgba(244, 67, 54, 0.03);
+  border: 1px solid rgba(244, 67, 54, 0.1);
+}
+
+.error-row {
+  transition: background-color 0.2s ease;
+}
+
+.error-row:hover {
+  background-color: rgba(244, 67, 54, 0.05);
+}
+
+.error-message {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8rem;
+  color: rgba(244, 67, 54, 0.9);
+}
+
+.no-errors-card {
+  background-color: rgba(76, 175, 80, 0.03);
+  border: 1px solid rgba(76, 175, 80, 0.1);
+  border-radius: 8px;
+}
+
+.dev-chip {
+  background: linear-gradient(135deg, #673ab7, #9c27b0) !important;
+  color: white !important;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
+}
+
+.analytics-description {
+  max-width: 800px;
+  line-height: 1.6;
+}
+
+.primary-action-btn {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.primary-action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.analytics-header {
+  border-left: 4px solid rgb(var(--v-theme-primary));
+}
+
+.analytics-tabs-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  background: rgba(var(--v-theme-surface), 1);
+  border: 1px solid rgba(var(--v-theme-primary), 0.08);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.analytics-tabs-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.tab-button {
+  min-width: 120px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  padding: 0 24px;
+  height: 48px;
+}
+
+.tab-button:before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(var(--v-theme-primary), 0.7), rgba(var(--v-theme-primary), 0.3));
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+  border-radius: 3px 3px 0 0;
+}
+
+.tab-button:hover:before,
+.tab-button.v-tab--selected:before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.tab-button.v-tab--selected {
+  font-weight: 600;
+  background-color: rgba(var(--v-theme-primary), 0.05);
+}
+
+.tab-content {
+  padding: 0;
+  transition: all 0.3s ease;
 }
 </style>

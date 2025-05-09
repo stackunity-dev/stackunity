@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <main class="main-content">
 
       <v-dialog v-model="showSessionDialog" persistent max-width="400">
         <v-card>
@@ -195,7 +195,7 @@
       </v-dialog>
 
       <snackBar v-model="showSnackbar" :text="snackBarText" :color="snackBarColor" :timeout="3000" />
-    </v-main>
+    </main>
   </v-app>
 </template>
 
@@ -397,7 +397,7 @@ const allTools = ref<ToolItem[]>([
     icon: 'mdi-database',
     color: 'info',
     route: '/database-designer',
-    disabled: !userStore.user?.isPremium,
+    disabled: !userStore.user?.isStandard,
     category: 'development',
     isNew: false,
     visible: true
@@ -642,6 +642,20 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+main {
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+
 .dashboard-container {
   width: 100%;
   max-width: 1400px;

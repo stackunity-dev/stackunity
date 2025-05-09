@@ -1,12 +1,14 @@
 <template>
-  <div>
+  <main class="main-content">
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-2">{{ t().page.title }}</h1>
-          <p class="text-subtitle-1 mb-6">
-            {{ t().page.subtitle }}
-          </p>
+          <div class="pl-6 mb-8 border-info">
+            <h1 class="text-h4 font-weight-bold mb-2">{{ t().page.title }}</h1>
+            <div class="analytics-description text-body-1 text-medium-emphasis mb-3">
+              {{ t().page.subtitle }}
+            </div>
+          </div>
 
           <v-card class="mb-6">
             <v-card-text>
@@ -276,7 +278,7 @@
                               class="flex-grow-1">
                             </v-progress-linear>
                             <span class="text-subtitle-1 font-weight-bold ml-3">{{ calculateContentScore(result)
-                            }}%</span>
+                              }}%</span>
                           </div>
 
                           <v-alert v-if="calculateContentScore(result) >= 90" color="success" variant="tonal"
@@ -312,7 +314,7 @@
                                     v-if="!result?.headingStructure?.h1 || !result.headingStructure.h1.length">
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.improveContent.addH1.title
-                                    }}</v-list-item-title>
+                                      }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.improveContent.addH1.description }}
                                     </v-list-item-subtitle>
@@ -331,7 +333,7 @@
                                     v-if="!result?.headingStructure?.h2 || !result.headingStructure.h2.length">
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.improveContent.addH2.title
-                                    }}</v-list-item-title>
+                                      }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.improveContent.addH2.description }}
                                     </v-list-item-subtitle>
@@ -379,7 +381,7 @@
                                     v-if="getContentIssues(result).length === 0 && calculateContentScore(result) < 90">
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.improveContent.generalImprovements.title
-                                    }}</v-list-item-title>
+                                      }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.improveContent.generalImprovements.description }}
                                     </v-list-item-subtitle>
@@ -400,7 +402,7 @@
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.seoTips.useKeywords.title
-                                    }}</v-list-item-title>
+                                      }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.seoTips.useKeywords.description }}
                                     </v-list-item-subtitle>
@@ -409,7 +411,7 @@
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.seoTips.optimizeMeta.title
-                                    }}</v-list-item-title>
+                                      }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.seoTips.optimizeMeta.description }}
                                     </v-list-item-subtitle>
@@ -418,7 +420,7 @@
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.seoTips.improveSpeed.title
-                                    }}</v-list-item-title>
+                                      }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.seoTips.improveSpeed.description }}
                                     </v-list-item-subtitle>
@@ -435,7 +437,7 @@
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.seoTips.useSchema.title
-                                    }}</v-list-item-title>
+                                      }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.seoTips.useSchema.description }}
                                     </v-list-item-subtitle>
@@ -538,7 +540,7 @@
         </v-card>
       </v-dialog>
     </v-container>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -857,6 +859,26 @@ onMounted(() => {
 </script>
 
 <style scoped>
+main {
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+
+.border-info {
+  border-left: 4px solid rgb(var(--v-theme-info)) !important;
+}
+
 .heading-structure {
   border-left: 3px solid var(--v-primary-base);
   margin-left: 10px;

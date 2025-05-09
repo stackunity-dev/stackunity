@@ -351,4 +351,32 @@ export class ErrorEmailTemplates {
       </html>
     `;
   }
-} 
+}
+
+export class WelcomeNewsletterEmailTemplate {
+  static welcomeNewsletterEmailTemplate(email: string): string {
+    return `
+      <div style="font-family: 'Figtree', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+        <header style="text-align: center; margin-bottom: 20px;">
+          <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
+        </header>
+
+        <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h1 style="color: #6200ea; margin-bottom: 20px;">Welcome to StackUnity Newsletter, ${email} !</h1>
+
+          <p style="margin-bottom: 15px; line-height: 1.5;">Thank you for subscribing to our newsletter. We're excited to have you on board!</p>
+
+          <p style="margin-bottom: 15px; line-height: 1.5;">We will send you the latest news and updates about StackUnity.</p>
+
+          <p style="margin-bottom: 15px; line-height: 1.5;">You can unsubscribe at any time by clicking the link below.</p>
+
+          <p style="margin-bottom: 15px; line-height: 1.5;">Thank you for subscribing to our newsletter. We're excited to have you on board!</p>
+        </main>
+
+        <footer style="text-align: center; font-size: 12px; color: #666;">
+          <p>© ${new Date().getFullYear()} StackUnity. All rights reserved.</p>
+        </footer>
+      </div>
+    `;
+  }
+}

@@ -1,10 +1,14 @@
 <template>
-  <div>
+  <main class="main main-content">
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-2">{{ t().page.title }}</h1>
-          <p class="text-body-1">{{ t().page.subtitle }}</p>
+          <div class="pl-6 mb-8 border-secondary">
+            <h1 class="text-h4 font-weight-bold mb-2">{{ t().page.title }}</h1>
+            <div class="analytics-description text-body-1 text-medium-emphasis mb-3">
+              {{ t().page.subtitle }}
+            </div>
+          </div>
         </v-col>
       </v-row>
 
@@ -99,7 +103,7 @@
                           <div class="text-subtitle-1 font-weight-bold">
                             CLS </div>
                           <div class="text-h6">{{ calculateAverageMetric('cumulativeLayoutShift', false, 1).toFixed(2)
-                            }}</div>
+                          }}</div>
                         </div>
                       </v-progress-circular>
                       <p class="mt-2">{{ t().results.metrics.cumulativeLayoutShift.description }}</p>
@@ -149,7 +153,7 @@
                                   </v-icon>
                                 </template>
                                 <v-list-item-title>{{ t().results.metrics.firstContentfulPaint.title
-                                }}</v-list-item-title>
+                                  }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.firstContentfulPaint }}ms</v-list-item-subtitle>
                               </v-list-item>
 
@@ -160,7 +164,7 @@
                                   </v-icon>
                                 </template>
                                 <v-list-item-title>{{ t().results.metrics.largestContentfulPaint.title
-                                  }}</v-list-item-title>
+                                }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.largestContentfulPaint }}ms</v-list-item-subtitle>
                               </v-list-item>
 
@@ -192,7 +196,7 @@
                                   </v-icon>
                                 </template>
                                 <v-list-item-title>{{ t().results.metrics.cumulativeLayoutShift.title
-                                  }}</v-list-item-title>
+                                }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ result.cumulativeLayoutShift }}</v-list-item-subtitle>
                               </v-list-item>
 
@@ -364,7 +368,7 @@
 
     <snackBar v-model="snackbar.show" :color="snackbar.color" :text="snackbar.text" :timeout="3000">
     </snackBar>
-  </div>
+  </main>
 </template>
 
 <script lang="ts" setup>
@@ -373,13 +377,13 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { definePageMeta, useHead } from '#imports';
 import { Chart, registerables } from 'chart.js';
 import snackBar from '../components/snackbar.vue';
+import '../css/utils.css';
 import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 import { PerformanceData, PerformanceMetrics, sendPerformanceScoreToWebsitePage } from '../utils/performance-utils';
 
 Chart.register(...registerables);
 
-// Add translations support
 const t = useTranslations('performance');
 
 definePageMeta({
@@ -718,6 +722,28 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.main {
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+
+.v-container {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+}
+
 .score-indicator {
   width: 16px;
   height: 16px;
@@ -760,5 +786,9 @@ onMounted(() => {
   overflow: visible;
   text-overflow: initial;
   display: block;
+}
+
+.border-secondary {
+  border-left: 4px solid rgb(var(--v-theme-secondary));
 }
 </style>

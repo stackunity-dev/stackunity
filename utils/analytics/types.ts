@@ -40,11 +40,13 @@ export interface UserPageView {
 
 export interface UserInteraction {
   id: string;
-  pageViewId: string;
-  type: InteractionType;
+  pageviewId: string;
+  sessionId: string;
+  type: string;
   elementSelector: string;
+  elementText: string;
   timestamp: string;
-  value?: any;
+  value: any;
 }
 
 export enum InteractionType {
@@ -69,6 +71,7 @@ export interface WebsiteAnalytics {
   totalPageViews: number;
   avgSessionDuration: number;
   bounceRate: number;
+  bounceCount: number;
   frustratedSessions: number;
   timeOnSite: string;
   topPages: PageView[];
@@ -76,6 +79,7 @@ export interface WebsiteAnalytics {
   devices: DeviceStats[];
   userFlows: UserFlow[];
   errorEvents: ErrorEvent[];
+  userInteractions: UserInteraction[];
 }
 
 export interface TrafficSource {
@@ -101,4 +105,143 @@ export interface ErrorEvent {
   errorMessage: string;
   count: number;
   browserInfo: string;
+}
+
+export interface DeadZoneAnalysis {
+  pageUrl: string;
+  totalHeight: number;
+  scrollDepthDistribution: ScrollDepthPoint[];
+  deadZones: DeadZone[];
+  visibilityScore: number;
+  visibilitySegments: VisibilitySegment[];
+}
+
+export interface ScrollDepthPoint {
+  depth: number;
+  viewCount: number;
+}
+
+export interface DeadZone {
+  startY: number;
+  endY: number;
+  startPercent: number;
+  endPercent: number;
+  elementSelectors: string[];
+}
+
+export interface VisibilitySegment {
+  startPercent: number;
+  endPercent: number;
+  viewCount: number;
+  normalizedViewCount: number;
+  isDeadZone: boolean;
+}
+
+export interface EngagementMetrics {
+  pageUrl: string;
+  overallScore: number;
+  sessionCount: number;
+  avgSessionDuration: number;
+  metrics: {
+    scrollDepthScore: number;
+    interactionDensity: number;
+    timeQuality: number;
+    contentConsumption: number;
+  };
+  factors: {
+    averageScrollSpeed: number;
+    scrollJitter: number;
+    focusedTime: number;
+    interactionsPerMinute: number;
+    clicksPerSession: number;
+    scrollsPerSession: number;
+    readingPatternScore: number;
+  };
+}
+
+export interface WebsiteWithStats extends Website {
+  formattedUrl?: string;
+  fullDomain?: string;
+  stats: {
+    visites: number;
+    pages: number;
+    temps: string;
+  }
+}
+
+export interface BrowserOsStats {
+  name: string;
+  count: number;
+  percentage: number;
+  type: string;
+}
+
+export interface DetailedReferrer {
+  source: string;
+  name: string;
+  url: string;
+  visits: number;
+  lastVisit: string;
+}
+
+export interface PurgeTranslations {
+  title: string;
+  description: string;
+  purgeData: string;
+  purgeNow: string;
+  confirmDelete: string;
+  cancel: string;
+  selectData: string;
+  options: {
+    older90: string;
+    older30: string;
+    older7: string;
+    all: string;
+  };
+  warning: string;
+  warningAllData: string;
+  success: string;
+  successCount: string;
+  error: string;
+  tryAgain: string;
+  dataLimitAlert: string;
+  dataLimitDescription: string;
+  security: {
+    title: string;
+    description: string;
+    question: string;
+    placeholder: string;
+    validate: string;
+    incorrect: string;
+    confirm: string;
+  };
+  welcome: {
+    empty: {
+      title: string;
+      description: string;
+      action: string;
+    };
+    few: {
+      title: string;
+      description: string;
+      action: string;
+    };
+    features: string;
+    cards: Array<{
+      icon: string;
+      title: string;
+      description: string;
+    }>;
+  };
+  worldMap: {
+    title: string;
+    description: string;
+    noData: string;
+    countries: string;
+    visitors: string;
+    topCountries: string;
+    country: string;
+    visits: string;
+    percentage: string;
+  };
 }

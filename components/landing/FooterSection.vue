@@ -86,7 +86,7 @@ import snackBar from '../snackbar.vue';
 // @ts-ignore
 import { useNuxtApp } from '#app';
 import { useRoute } from 'vue-router';
-import './landing.css';
+
 
 const t = useTranslations('index')
 const route = useRoute();

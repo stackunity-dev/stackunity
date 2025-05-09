@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { EmailTemplates } from './EmailTemplates';
+import { EmailTemplates, WelcomeNewsletterEmailTemplate } from './EmailTemplates';
 
 export const resend = new Resend(process.env.RESEND_API_KEY as string);
 
@@ -64,6 +64,27 @@ export class EmailService {
       return { success: true };
     } catch (error: any) {
       console.error('Exception lors de l\'envoi de l\'email de confirmation de paiement:', error);
+      return { success: false, error: error.message || 'Erreur inconnue lors de l\'envoi de l\'email' };
+    }
+  }
+
+  static async sendWelcomeNewsletterEmail(email: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { data, error } = await resend.emails.send({
+        from: 'StackUnity <noreply@stackunity.tech>',
+        to: email,
+        subject: 'Welcome to StackUnity Newsletter',
+        html: WelcomeNewsletterEmailTemplate.welcomeNewsletterEmailTemplate(email),
+      });
+
+      if (error) {
+        console.error('Erreur lors de l\'envoi de l\'email de bienvenue à la newsletter:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error: any) {
+      console.error('Exception lors de l\'envoi de l\'email de bienvenue à la newsletter:', error);
       return { success: false, error: error.message || 'Erreur inconnue lors de l\'envoi de l\'email' };
     }
   }

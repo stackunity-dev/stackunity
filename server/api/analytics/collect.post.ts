@@ -1,185 +1,508 @@
-import { defineEventHandler, readBody } from 'h3';
+import { defineEventHandler, getQuery, readBody } from 'h3';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   try {
-    console.log('collect.post.ts');
+    const query = getQuery(event);
+    if (query.emergency === '1' && query.websiteId && query.sessionId) {
+      console.log('Requête d\'urgence reçue:', query);
+
+      try {
+        const [websiteRows] = await pool.query<RowDataPacket[]>(
+          'SELECT id FROM analytics_websites WHERE tracking_id = ?',
+          [query.websiteId]
+        );
+
+        if (Array.isArray(websiteRows) && websiteRows.length > 0) {
+          const dbWebsiteId = websiteRows[0].id;
+
+          if (query.cancelBounce === '1') {
+            console.log('Annulation de rebond pour la session:', query.sessionId);
+
+            const [sessionExists] = await pool.query<RowDataPacket[]>(
+              'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+              [query.sessionId]
+            );
+
+            if (sessionExists[0].count > 0) {
+              await pool.query(
+                `UPDATE analytics_sessions
+                 SET is_bounce = 0
+                 WHERE session_id = ? AND website_id = ?`,
+                [query.sessionId, dbWebsiteId]
+              );
+              console.log('Rebond annulé pour la session:', query.sessionId);
+            } else {
+              console.log('Session non trouvée pour annulation de rebond:', query.sessionId);
+            }
+          }
+          else if (query.bounce === '1') {
+            const [sessionExists] = await pool.query<RowDataPacket[]>(
+              'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+              [query.sessionId]
+            );
+
+            const visitorId = query.visitorId || 'unknown';
+            const pageUrl = query.url || '/';
+            const pageTitle = query.title || 'Page sans titre';
+
+            console.log(`Traitement de rebond pour session ${query.sessionId}, visitor ${visitorId}, url: ${pageUrl}`);
+
+            if (sessionExists[0].count > 0) {
+              await pool.query(
+                `UPDATE analytics_sessions
+                 SET is_bounce = 1, 
+                     is_complete = 1,
+                     end_time = NOW(),
+                     duration = TIMESTAMPDIFF(SECOND, start_time, NOW()),
+                     exit_page = ?
+                 WHERE session_id = ?`,
+                [pageUrl, query.sessionId]
+              );
+              console.log('Session existante marquée comme rebond et terminée via requête d\'urgence');
+            } else {
+              console.log('Création d\'une nouvelle session avec rebond:', {
+                sessionId: query.sessionId,
+                websiteId: dbWebsiteId,
+                visitorId: visitorId,
+                url: pageUrl
+              });
+
+              try {
+                await pool.query(
+                  `INSERT INTO analytics_sessions
+                     (session_id, website_id, visitor_id, start_time, end_time, is_bounce, is_complete, duration, is_short_session, landing_page, exit_page)
+                   VALUES (?, ?, ?, NOW(), NOW(), 1, 1, 0, 1, ?, ?)`,
+                  [query.sessionId, dbWebsiteId, visitorId, pageUrl, pageUrl]
+                );
+                console.log('Nouvelle session avec rebond créée avec succès');
+
+                const pageViewId = require('crypto').randomUUID();
+                await pool.query(
+                  `INSERT INTO analytics_pageviews 
+                    (pageview_id, session_id, website_id, page_url, page_title, enter_time, exit_time, is_short_visit) 
+                   VALUES (?, ?, ?, ?, ?, NOW(), NOW(), 1)`,
+                  [
+                    pageViewId,
+                    query.sessionId,
+                    dbWebsiteId,
+                    pageUrl,
+                    pageTitle
+                  ]
+                );
+                console.log('Page vue créée pour la session de rebond');
+              } catch (insertError) {
+                console.error('Erreur lors de la création de la session avec rebond:', insertError);
+              }
+            }
+          }
+        } else {
+          console.error('Site web non trouvé:', query.websiteId);
+        }
+      } catch (err) {
+        console.error('Erreur lors du traitement de la requête d\'urgence:', err);
+      }
+
+      event.node.res.setHeader('Content-Type', 'image/gif');
+    }
+
     const data = await readBody(event);
-    console.log('data', data);
     const { websiteId, sessionId, visitorId, events } = data;
 
     if (!websiteId || !sessionId || !visitorId || !events || !Array.isArray(events)) {
+      console.error('Format de données invalide:', { websiteId, sessionId, visitorId, eventsLength: events?.length });
       return {
         success: false,
-        message: 'Invalid data format'
+        message: 'Format de données invalide'
       };
     }
 
-    const [websiteRows] = await pool.query(
-      'SELECT id FROM analytics_websites WHERE tracking_id = ?',
+    if (events.length === 0) {
+      console.warn('Aucun événement à enregistrer');
+      return {
+        success: false,
+        message: 'Aucun événement à enregistrer'
+      };
+    }
+
+    const pageViewEvents = events.filter(event => event.type === 'pageView');
+    console.log('Événements pageView trouvés:', pageViewEvents.length);
+
+    const [websiteRows] = await pool.query<RowDataPacket[]>(
+      'SELECT id, tracking_id FROM analytics_websites WHERE tracking_id = ?',
       [websiteId]
     );
+    console.log('Résultat de la recherche du site web:', websiteRows);
 
-    console.log('websiteRows', websiteRows);
-
+    let dbWebsiteId;
     if (!Array.isArray(websiteRows) || websiteRows.length === 0) {
-      return {
-        success: false,
-        message: 'Website not found'
-      };
-    }
+      let domain = 'localhost';
+      try {
+        const firstEvent = events.find(e => e.pageUrl);
+        if (firstEvent && firstEvent.pageUrl) {
+          domain = new URL(firstEvent.pageUrl).hostname || 'localhost';
+        }
+      } catch (error) {
+        console.error('Erreur lors de l\'extraction du domaine:', error);
+      }
 
-    const dbWebsiteId = (websiteRows as any)[0]?.id;
+      const isSessionId = websiteId.startsWith('session-');
 
-    console.log('dbWebsiteId', dbWebsiteId);
+      if (isSessionId) {
+        const [domainSites] = await pool.query<RowDataPacket[]>(
+          'SELECT id, tracking_id FROM analytics_websites WHERE url = ?',
+          [domain]
+        );
 
-    const sessionData = events.find(event => event.type === 'session');
-    if (sessionData) {
-      await pool.query(
-        `INSERT INTO analytics_sessions 
-          (session_id, website_id, visitor_id, start_time, device_type, browser, os, referrer, landing_page) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE 
-          last_activity = NOW()`,
-        [
-          sessionId,
-          dbWebsiteId,
-          visitorId,
-          new Date(sessionData.startTime),
-          sessionData.deviceType,
-          sessionData.browser,
-          sessionData.os,
-          sessionData.referrer || null,
-          sessionData.landingPage
-        ]
-      );
-    }
+        if (Array.isArray(domainSites) && domainSites.length > 0) {
+          dbWebsiteId = domainSites[0].id;
+        } else {
+          try {
+            const [result] = await pool.query<ResultSetHeader>(
+              `INSERT INTO analytics_websites 
+                (tracking_id, name, url, created_at) 
+               VALUES (?, ?, ?, NOW())`,
+              [websiteId, `User Session - ${domain}`, domain]
+            );
+            dbWebsiteId = result.insertId;
+          } catch (error) {
+            console.error('Erreur lors de la création du site de session:', error);
+            return {
+              success: false,
+              message: 'Erreur lors de la création du site de session',
+              error: error.message
+            };
+          }
+        }
+      } else {
+        const [domainSites] = await pool.query<RowDataPacket[]>(
+          'SELECT id, tracking_id FROM analytics_websites WHERE url = ?',
+          [domain]
+        );
 
-    for (const event of events) {
-      switch (event.type) {
-        case 'pageView':
+        if (Array.isArray(domainSites) && domainSites.length > 0) {
+          dbWebsiteId = domainSites[0].id;
           await pool.query(
-            `INSERT INTO analytics_pageviews 
-              (pageview_id, session_id, website_id, page_url, page_title, enter_time, utm_source, utm_medium, utm_campaign, referrer) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-              event.id,
-              sessionId,
-              dbWebsiteId,
-              event.pageUrl,
-              event.title,
-              new Date(event.enterTime),
-              event.utm_source || null,
-              event.utm_medium || null,
-              event.utm_campaign || null,
-              event.referrer || null
-            ]
+            'UPDATE analytics_websites SET tracking_id = ? WHERE id = ?',
+            [websiteId, dbWebsiteId]
           );
-          break;
-
-        case 'pageViewExit':
-          await pool.query(
-            `UPDATE analytics_pageviews 
-             SET exit_time = ?, duration = ?, scroll_depth = ? 
-             WHERE pageview_id = ?`,
-            [
-              new Date(event.exitTime),
-              event.duration,
-              event.scrollDepth,
-              event.pageViewId
-            ]
-          );
-          break;
-
-        case 'interaction':
-          await pool.query(
-            `INSERT INTO analytics_interactions
-              (interaction_id, pageview_id, website_id, session_id, interaction_type, element_selector, timestamp, element_text, value_data)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-              event.id,
-              event.pageViewId,
-              dbWebsiteId,
-              sessionId,
-              event.interactionType,
-              event.elementSelector,
-              new Date(event.timestamp),
-              event.elementText || null,
-              JSON.stringify(event.value || {})
-            ]
-          );
-          break;
-
-        case 'error':
-          await pool.query(
-            `INSERT INTO analytics_errors
-              (error_id, pageview_id, website_id, session_id, message, stack_trace, timestamp, browser_info)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-              event.id,
-              event.pageViewId,
-              dbWebsiteId,
-              sessionId,
-              event.message,
-              event.stackTrace || null,
-              new Date(event.timestamp),
-              event.browserInfo
-            ]
-          );
-          break;
-
-        case 'customEvent':
-          await pool.query(
-            `INSERT INTO analytics_custom_events
-              (event_id, pageview_id, website_id, session_id, event_name, event_category, timestamp, properties)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-              event.id,
-              event.pageViewId,
-              dbWebsiteId,
-              sessionId,
-              event.name,
-              event.category,
-              new Date(event.timestamp),
-              JSON.stringify(event.properties || {})
-            ]
-          );
-          break;
-
-        case 'sessionEnd':
-          await pool.query(
-            `UPDATE analytics_sessions
-             SET end_time = ?, duration = ?, is_bounce = ?, is_complete = ?, exit_page = ?
-             WHERE session_id = ?`,
-            [
-              new Date(event.endTime),
-              event.duration,
-              event.isBounce ? 1 : 0,
-              event.isComplete ? 1 : 0,
-              event.exitPage,
-              sessionId
-            ]
-          );
-          break;
+        } else {
+          try {
+            const [result] = await pool.query<ResultSetHeader>(
+              `INSERT INTO analytics_websites 
+                (tracking_id, name, url, created_at) 
+               VALUES (?, ?, ?, NOW())`,
+              [websiteId, `Site auto-généré ${websiteId}`, domain]
+            );
+            dbWebsiteId = result.insertId;
+          } catch (error) {
+            console.error('Erreur lors de la création automatique du site:', error);
+            return {
+              success: false,
+              message: 'Erreur lors de la création du site',
+              error: error.message
+            };
+          }
+        }
+      }
+    } else {
+      dbWebsiteId = (websiteRows as RowDataPacket[])[0]?.id;
+      if (!dbWebsiteId) {
+        return {
+          success: false,
+          message: 'ID de site web invalide dans la base de données'
+        };
       }
     }
 
-    await pool.query(
-      `INSERT INTO analytics_visitors (visitor_id, last_activity)
-       VALUES (?, NOW())
-       ON DUPLICATE KEY UPDATE last_activity = NOW()`,
-      [visitorId]
-    );
+    const sessionData = events.find(event => event.type === 'session');
+    if (!sessionData) {
+      try {
+        await pool.query(
+          `INSERT INTO analytics_sessions 
+            (session_id, website_id, visitor_id, start_time, device_type, browser, os, referrer, referrer_source, referrer_name, landing_page) 
+           VALUES (?, ?, ?, NOW(), 'unknown', 'unknown', 'unknown', NULL, NULL, NULL, ?)
+           ON DUPLICATE KEY UPDATE 
+            last_activity = NOW()`,
+          [
+            sessionId,
+            dbWebsiteId,
+            visitorId,
+            pageViewEvents[0]?.pageUrl || '/'
+          ]
+        );
+      } catch (error) {
+        console.error('Erreur lors de la création de la session:', error);
+      }
+    } else {
+      try {
+        await pool.query(
+          `INSERT INTO analytics_sessions 
+            (session_id, website_id, visitor_id, start_time, device_type, browser, os, referrer, referrer_source, referrer_name, landing_page) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           ON DUPLICATE KEY UPDATE 
+            last_activity = NOW()`,
+          [
+            sessionId,
+            dbWebsiteId,
+            visitorId,
+            new Date(sessionData.startTime),
+            sessionData.deviceType || 'unknown',
+            sessionData.browser || 'unknown',
+            sessionData.os || 'unknown',
+            sessionData.referrer || null,
+            sessionData.referrerSource || null,
+            sessionData.referrerName || null,
+            sessionData.landingPage || null
+          ]
+        );
+      } catch (error) {
+        console.error('Erreur lors de l\'enregistrement de la session:', error);
+      }
+    }
+
+    for (const event of pageViewEvents) {
+      try {
+        console.log('Traitement de la page vue:', event.pageUrl);
+        await pool.query(
+          `INSERT INTO analytics_pageviews 
+            (pageview_id, session_id, website_id, page_url, page_title, enter_time, utm_source, utm_medium, utm_campaign, referrer, referrer_source, referrer_name) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           ON DUPLICATE KEY UPDATE
+            page_title = VALUES(page_title)`,
+          [
+            event.id,
+            sessionId,
+            dbWebsiteId,
+            event.pageUrl,
+            event.title || '',
+            new Date(event.enterTime),
+            event.utm_source || null,
+            event.utm_medium || null,
+            event.utm_campaign || null,
+            event.referrer || null,
+            event.referrerSource || null,
+            event.referrerName || null
+          ]
+        );
+        console.log('Page vue enregistrée:', event.id, event.pageUrl);
+      } catch (error) {
+        console.error(`Erreur lors du traitement de la page vue ${event.pageUrl}:`, error);
+      }
+    }
+
+    for (const event of events) {
+      if (event.type === 'pageView') {
+        // Déjà traité
+        continue;
+      }
+
+      try {
+        switch (event.type) {
+          case 'pageViewExit':
+            try {
+              if (!event.pageViewId) {
+                console.error('pageViewExit: pageViewId manquant', event);
+                break;
+              }
+
+              const exitTime = event.exitTime ? new Date(event.exitTime) : new Date();
+              const duration = event.duration !== undefined ? event.duration : 0;
+              const scrollDepth = event.scrollDepth !== undefined ? event.scrollDepth : 0;
+
+              const [pageViewRows] = await pool.query<RowDataPacket[]>(
+                'SELECT pageview_id FROM analytics_pageviews WHERE pageview_id = ?',
+                [event.pageViewId]
+              );
+
+              if (Array.isArray(pageViewRows) && pageViewRows.length > 0) {
+                await pool.query(
+                  `UPDATE analytics_pageviews 
+                   SET exit_time = ?, duration = ?, scroll_depth = ?, is_short_visit = ? 
+                   WHERE pageview_id = ?`,
+                  [
+                    exitTime,
+                    duration,
+                    scrollDepth,
+                    duration < 20 ? 1 : 0,
+                    event.pageViewId
+                  ]
+                );
+                console.log('Page vue mise à jour avec exit:', event.pageViewId, 'durée:', duration);
+              } else {
+                console.error('pageViewExit: Aucune page view trouvée avec l\'ID', event.pageViewId);
+              }
+            } catch (error) {
+              console.error('Erreur lors du traitement de pageViewExit:', error);
+            }
+            break;
+
+          case 'interaction':
+            let normalizedPageUrl = event.pageUrl || null;
+            if (normalizedPageUrl) {
+              normalizedPageUrl = normalizedPageUrl.split('#')[0];
+            }
+
+            try {
+              if (event.pageViewId) {
+                const [pageViewRows] = await pool.query<RowDataPacket[]>(
+                  'SELECT pageview_id FROM analytics_pageviews WHERE pageview_id = ?',
+                  [event.pageViewId]
+                );
+
+                if (Array.isArray(pageViewRows) && pageViewRows.length > 0) {
+                  await pool.query(
+                    `INSERT INTO analytics_interactions
+                      (interaction_id, pageview_id, website_id, session_id, interaction_type, element_selector, timestamp, element_text, value_data, page_url)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [
+                      event.id,
+                      event.pageViewId,
+                      dbWebsiteId,
+                      sessionId,
+                      event.interactionType,
+                      event.elementSelector || '',
+                      new Date(event.timestamp),
+                      event.elementText || null,
+                      JSON.stringify(event.value || {}),
+                      normalizedPageUrl
+                    ]
+                  );
+                } else {
+                  console.warn(`Interaction ignorée: pageViewId ${event.pageViewId} non trouvé dans la base de données`);
+                }
+              } else {
+                await pool.query(
+                  `INSERT INTO analytics_interactions
+                    (interaction_id, pageview_id, website_id, session_id, interaction_type, element_selector, timestamp, element_text, value_data, page_url)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                  [
+                    event.id,
+                    null,
+                    dbWebsiteId,
+                    sessionId,
+                    event.interactionType,
+                    event.elementSelector || '',
+                    new Date(event.timestamp),
+                    event.elementText || null,
+                    JSON.stringify(event.value || {}),
+                    normalizedPageUrl
+                  ]
+                );
+              }
+            } catch (error) {
+              console.error('Erreur lors du traitement de l\'interaction:', error);
+            }
+            break;
+
+          case 'error':
+            await pool.query(
+              `INSERT INTO analytics_errors
+                (error_id, pageview_id, website_id, session_id, message, stack_trace, timestamp, browser_info)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                event.id,
+                event.pageViewId,
+                dbWebsiteId,
+                sessionId,
+                event.message || 'Unknown error',
+                event.stackTrace || null,
+                new Date(event.timestamp),
+                event.browserInfo || '{}'
+              ]
+            );
+            break;
+
+          case 'customEvent':
+            await pool.query(
+              `INSERT INTO analytics_custom_events
+                (event_id, pageview_id, website_id, session_id, event_name, event_category, timestamp, properties)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                event.id,
+                event.pageViewId,
+                dbWebsiteId,
+                sessionId,
+                event.name,
+                event.category || 'general',
+                new Date(event.timestamp),
+                JSON.stringify(event.properties || {})
+              ]
+            );
+            break;
+
+          case 'sessionEnd':
+            try {
+              if (!sessionId) {
+                console.error('sessionEnd: sessionId manquant', event);
+                break;
+              }
+
+              const endTime = event.endTime ? new Date(event.endTime) : new Date();
+              const duration = event.duration !== undefined ? event.duration : 0;
+              const isBounce = event.isBounce === true;
+              const isComplete = event.isComplete === true;
+              const isShortSession = duration < 20;
+
+              await pool.query(
+                `UPDATE analytics_sessions
+                 SET end_time = ?, duration = ?, is_bounce = ?, is_complete = ?, exit_page = ?, is_short_session = ?
+                 WHERE session_id = ?`,
+                [
+                  endTime,
+                  duration,
+                  isBounce ? 1 : 0,
+                  isComplete ? 1 : 0,
+                  event.exitPage || null,
+                  isShortSession ? 1 : 0,
+                  sessionId
+                ]
+              );
+              console.log('Session terminée:', sessionId, 'durée:', duration, 'rebond:', isBounce ? 'OUI' : 'NON');
+
+              if (isShortSession) {
+                await pool.query(
+                  `UPDATE analytics_pageviews
+                   SET is_short_visit = 1
+                   WHERE session_id = ?`,
+                  [sessionId]
+                );
+              }
+            } catch (error) {
+              console.error('Erreur lors du traitement de sessionEnd:', error);
+            }
+            break;
+        }
+      } catch (error) {
+        console.error(`Erreur lors du traitement de l'événement ${event.type}:`, error);
+      }
+    }
+
+    try {
+      await pool.query(
+        `INSERT INTO analytics_visitors (visitor_id, last_activity)
+         VALUES (?, NOW())
+         ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+        [visitorId]
+      );
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du visiteur:', error);
+    }
 
     return {
       success: true,
-      message: 'Data saved successfully'
+      message: 'Données sauvegardées avec succès',
+      processed: {
+        pageViews: pageViewEvents.length,
+        totalEvents: events.length
+      }
     };
   } catch (error) {
-    console.error('Error saving analytics data:', error);
+    console.error('Erreur lors de la sauvegarde des données analytiques:', error);
     return {
       success: false,
-      message: 'Error saving data',
+      message: 'Erreur lors de la sauvegarde des données',
       error: error.message
     };
   }

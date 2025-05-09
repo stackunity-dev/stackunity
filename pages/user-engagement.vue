@@ -1,10 +1,14 @@
 <template>
-  <div>
+  <main class="main-content">
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-2">{{ t.meta.title }}</h1>
-          <p class="text-body-1">{{ t.meta.description }}</p>
+          <div class="pl-6 mb-8 border-success">
+            <h1 class="text-h4 font-weight-bold mb-2">{{ t.meta.title }}</h1>
+            <div class="analytics-description text-body-1 text-medium-emphasis mb-3">
+              {{ t.meta.description }}
+            </div>
+          </div>
         </v-col>
       </v-row>
 
@@ -239,7 +243,7 @@
                                 <v-expansion-panel-text>
                                   <p><strong>{{ t.issues.description }}</strong> {{ issue.description }}</p>
                                   <p class="mt-2"><strong>{{ t.issues.recommendation }}</strong> {{ issue.recommendation
-                                  }}</p>
+                                    }}</p>
                                 </v-expansion-panel-text>
                               </v-expansion-panel>
                             </v-expansion-panels>
@@ -419,7 +423,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -585,10 +589,29 @@ const avgSocialElements = computed(() => {
 </script>
 
 <style scoped>
+main {
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+
+.border-success {
+  border-left: 4px solid rgb(var(--v-theme-success)) !important;
+}
+
 .chart-container {
   height: 300px;
   width: 100%;
-  position: relative;
 }
 
 .chart-container>div {

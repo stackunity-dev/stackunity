@@ -79,6 +79,7 @@ export default {
     securityAnalysis: 'تحليل أمني',
     futureUpdates: 'الوصول إلى جميع التحديثات المستقبلية',
     unlimitedMembers: 'أعضاء فريق غير محدودين',
-    prioritySupport: 'دعم ذو أولوية'
+    prioritySupport: 'دعم ذو أولوية',
+    analytics: 'تحليلات'
   }
 } 

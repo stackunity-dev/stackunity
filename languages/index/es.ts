@@ -6,9 +6,9 @@ export default {
   },
   hero: {
     tagline: "OPTIMIZE YOUR WORKFLOW",
-    title: "Simplifica tu flujo de desarrollo con unos pocos clics y desarrolla más rápido",
-    description: "Desarrolla más rápido y simplifica tu flujo de trabajo con nuestras herramientas profesionales integradas. Construye, gestiona y optimiza tus proyectos para un sitio más accesible, fácil de usar y optimizado para SEO.",
-    features: ["Análisis de sitios web", "Componentes del estudio", "Diseñador de base de datos", "Pruebas de API & análisis"],
+    title: "Supercharge your dev workflow from idea to launch.",
+    description: "Use our all-in-one toolkit to build, manage, and optimize projects faster. Enjoy seamless workflows, better performance, and SEO-ready code — all in a few clicks.",
+    features: ["Analytics", "Website analysis", "Studio components", "Accessibility & API testing"],
     cta: "Simplifica tu flujo de trabajo ahora",
     ctaMobile: "Prueba gratis",
     ctaMobileDescription: "Únete a nuestra comunidad de desarrolladores y propulse tus proyectos web a nuevas horizontes."
@@ -51,9 +51,9 @@ export default {
       title: "Estudio",
       description: "Crea interfaces de usuario modernas con nuestro estudio de diseño integrado."
     },
-    semantic: {
-      title: "Semántica",
-      description: "Optimiza tu sitio web con nuestras herramientas de análisis semántico y ARIA."
+    analytics: {
+      title: "Análisis",
+      description: "Analiza tu sitio web con nuestras herramientas para mejorar su rendimiento y accesibilidad."
     },
     apiTesting: {
       title: "Pruebas de API",

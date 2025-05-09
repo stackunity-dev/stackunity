@@ -2,7 +2,7 @@
   <section class="hero-section py-16" aria-labelledby="hero-heading">
     <v-container>
       <v-row align="center" justify="center">
-        <v-col cols="12" md="9" class="text-center justify-center d-flex flex-column align-center text-md-start">
+        <v-col cols="12" md="9" class="justify-center d-flex flex-column align-center text-md-start">
           <h1 id="hero-heading" class="text-h2 text-gradient text-center font-weight-bold mb-4 arabic-text-fix"
             style="max-width: 800px">
             {{ t().hero.title }}

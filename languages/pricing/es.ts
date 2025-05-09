@@ -79,6 +79,7 @@ export default {
     securityAnalysis: 'Análisis de seguridad',
     futureUpdates: 'Acceso a todas las actualizaciones futuras',
     unlimitedMembers: 'Miembros de equipo ilimitados',
-    prioritySupport: 'Soporte prioritario'
+    prioritySupport: 'Soporte prioritario',
+    analytics: 'Analytics'
   }
 } 

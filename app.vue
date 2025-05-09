@@ -13,18 +13,12 @@ import { useCookieStore } from './stores/cookieStore';
 import { useUserStore } from './stores/userStore';
 import { TokenUtils } from './utils/token';
 // @ts-ignore
-import { usePlausible } from './utils/usePlausible';
-// @ts-ignore
-import { trackAuthButtonClicks } from './utils/usePlausible';
-// @ts-ignore
 import { useHead } from '#imports';
 import { initLanguage } from './languages';
 
 const router = useRouter();
 const userStore = useUserStore();
 const cookieStore = useCookieStore();
-const plausible = usePlausible();
-const authTracker = trackAuthButtonClicks();
 const isClient = typeof window !== 'undefined';
 const sessionRestorationAttempted = ref(false);
 const restorationAttemptCount = ref(0);
@@ -83,13 +77,6 @@ useHead({
       })
     }
   ]
-});
-
-plausible('page_view', {
-  props: {
-    page: 'app_initialization',
-    user_type: userStore.isAuthenticated ? 'authenticated' : 'guest'
-  }
 });
 
 onErrorCaptured((err) => {
@@ -221,9 +208,7 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
-
   if (isClient) {
-    // Définir le consentement comme toujours vrai
     localStorage.setItem('stackunity_consent', 'true');
   }
 
@@ -232,7 +217,7 @@ onMounted(async () => {
     s.type = 'text/javascript';
     s.async = true;
     s.src = `${window.location.origin}/tracker.js`;
-    s.setAttribute('data-website-id', 'site-test-stackunity');
+    s.setAttribute('data-website-id', 'stackunity-app');
     var x = document.getElementsByTagName('script')[0];
     if (x && x.parentNode) {
       x.parentNode.insertBefore(s, x);
@@ -251,12 +236,6 @@ onMounted(async () => {
     cookieStore.initCookieConsent();
 
     initLanguage();
-
-    setTimeout(() => {
-      if (authTracker && typeof authTracker.initAuthButtonsTracking === 'function') {
-        authTracker.initAuthButtonsTracking();
-      }
-    }, 1000);
 
     router.beforeEach((to, from, next) => {
       try {
@@ -288,24 +267,6 @@ onMounted(async () => {
           userStore.isAuthenticated = false;
         }
 
-        if (to.path !== from.path) {
-          try {
-            const userType = userStore.isAuthenticated
-              ? (userStore.user && Boolean(userStore.user.isPremium) ? 'premium' : 'free')
-              : 'guest';
-
-            plausible('pageview', {
-              props: {
-                path: to.path || '/',
-                referrer: from.path || '/',
-                user_type: userType
-              }
-            });
-          } catch (analyticsError) {
-            console.error('Erreur de suivi analytics:', analyticsError);
-          }
-        }
-
         const premiumRoutes = ['/sql-generator', '/seo-audit', '/robots'];
         const normalizedPath = to.path.toLowerCase();
 
@@ -333,44 +294,29 @@ onMounted(async () => {
       }
     });
 
-    if (isClient) {
-      window.addEventListener('error', (e) => {
-        try {
-          plausible('error', {
-            props: {
-              message: e.message || 'Unknown error',
-              source: e.filename || 'Unknown source',
-              line: e.lineno || 0,
-              path: window.location.pathname || '/'
-            }
-          });
-        } catch (error) {
-          console.error('Erreur de suivi d\'erreur:', error);
-        }
-      });
-
-      document.addEventListener('click', (e) => {
-        try {
-          const target = e.target as HTMLElement;
-          if (target && target.closest) {
-            const featureElement = target.closest('[data-plausible-feature]') as HTMLElement;
-            if (featureElement && featureElement.dataset) {
-              const feature = featureElement.dataset.plausibleFeature;
-              if (feature) {
-                plausible('feature_used', {
-                  props: {
-                    feature: feature,
-                    path: window.location.pathname || '/'
-                  }
-                });
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Erreur de suivi de clics:', error);
-        }
-      });
-    }
   }
 });
 </script>
+
+<style>
+[data-segment-id] {
+  background-color: transparent !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  display: none !important;
+}
+
+img[src*="emergency=1"] {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+</style>

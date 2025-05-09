@@ -23,7 +23,7 @@ export default {
     userEngagement: "مشاركة المستخدم",
     security: "الأمان",
     visual: "المرئي",
-    uxAnalyzer: "محلل UX"
+    uxAnalyzer: "StackUnity Analytics"
   },
   categories: {
     frontend: "الواجهة الأمامية",
@@ -45,7 +45,7 @@ export default {
     userEngagement: "مشاركة المستخدم",
     security: "الأمان",
     visual: "المرئي",
-    uxAnalyzer: "محلل UX"
+    uxAnalyzer: "Analytics"
   },
   premiumLabel: {
     standard: "قياسي",

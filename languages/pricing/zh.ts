@@ -79,6 +79,7 @@ export default {
     securityAnalysis: '安全分析',
     futureUpdates: '访问所有未来更新',
     unlimitedMembers: '无限团队成员',
-    prioritySupport: '优先支持'
+    prioritySupport: '优先支持',
+    analytics: '分析'
   }
 } 

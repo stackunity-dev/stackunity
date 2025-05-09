@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <main class="main-content">
       <v-container fluid class="pa-4">
         <v-alert type="info" variant="tonal" icon="mdi-information-outline" class="mb-6" closable elevation="2">
           <div class="d-flex align-center">
@@ -220,7 +220,7 @@
           </v-col>
         </v-row>
       </v-container>
-    </v-main>
+    </main>
   </v-app>
 </template>
 
@@ -872,4 +872,18 @@ const applySchemaTemplate = async () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+main {
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+</style>

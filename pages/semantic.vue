@@ -1,10 +1,14 @@
 <template>
-  <div>
+  <main class="main-content">
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-2">{{ t().page.title }}</h1>
-          <p class="text-body-1">{{ t().page.subtitle }}</p>
+          <div class="pl-6 mb-8 border-tertiary">
+            <h1 class="text-h4 font-weight-bold mb-2">{{ t().page.title }}</h1>
+            <div class="analytics-description text-body-1 text-medium-emphasis mb-3">
+              {{ t().page.subtitle }}
+            </div>
+          </div>
         </v-col>
       </v-row>
 
@@ -537,7 +541,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </div>
+  </main>
 </template>
 
 <script lang="ts" setup>
@@ -743,6 +747,32 @@ function calculateAverageByType(type: 'html' | 'aria' | 'meta'): number {
 </script>
 
 <style scoped>
+main {
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+
+.v-container {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+}
+
+.border-tertiary {
+  border-left: 4px solid rgb(var(--v-theme-tertiary)) !important;
+}
+
 .heading-structure {
   max-height: 400px;
   overflow-y: auto;

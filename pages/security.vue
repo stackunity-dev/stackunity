@@ -1,10 +1,14 @@
 <template>
-  <div>
+  <main class="main-content">
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1 class="text-h4 font-weight-bold mb-4">{{ t.meta.title }}</h1>
-          <p class="text-body-1">{{ t.meta.description }}</p>
+          <div class="pl-6 mb-8 border-warning">
+            <h1 class="text-h4 font-weight-bold mb-2">{{ t.meta.title }}</h1>
+            <div class="analytics-description text-body-1 text-medium-emphasis mb-3">
+              {{ t.meta.description }}
+            </div>
+          </div>
         </v-col>
       </v-row>
 
@@ -352,7 +356,7 @@
                                     issue.content }}
                                   </p>
                                   <p v-if="issue.impact" class="mt-3"><strong>{{ t.vulnerabilities.details.impact
-                                      }}:</strong> <span class="red--text text--darken-1">{{
+                                  }}:</strong> <span class="red--text text--darken-1">{{
                                         issue.impact }}</span></p>
                                   <p v-if="issue.evidence" class="mt-2 grey--text text--darken-2"><strong>Evidence
                                       :</strong> {{
@@ -385,7 +389,7 @@
       </v-row>
 
     </v-container>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -512,8 +516,6 @@ function calculateAverageByType(type: string): number {
       sum += result.cookieAnalysis.score || 0;
       count++;
     } else if (type === 'vulnerabilities') {
-      // Pour les vulnérabilités, un score élevé signifie moins de vulnérabilités
-      // Calcul basé sur le nombre de problèmes detectés (inversé)
       const vulnerabilityCount = (result.securityIssues?.length || 0);
       const issueScore = vulnerabilityCount === 0 ? 100 : Math.max(0, 100 - vulnerabilityCount * 10);
       sum += issueScore;
@@ -526,8 +528,24 @@ function calculateAverageByType(type: string): number {
 </script>
 
 <style scoped>
-.security-analyzer {
-  margin-bottom: 30px;
+main {
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+
+.border-warning {
+  border-left: 4px solid rgb(var(--v-theme-warning)) !important;
 }
 
 .heading-level {

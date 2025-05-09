@@ -34,6 +34,14 @@
         <PremiumFeature v-if="!userStore.user?.isPremium" type="list-item" :title="t().menu.website" icon="mdi-web"
           feature-key="website" plan-type="premium" />
 
+        <v-list-item v-if="userStore.user?.isPremium" :to="localePath('/user-analytics')"
+          prepend-icon="mdi-chart-box-outline" :title="t().menu.uxAnalyzer" rounded="lg" class="mb-1" color="primary"
+          nuxt @click="closeDrawer" data-plausible-feature="ux_analyzer_menu">
+        </v-list-item>
+
+        <PremiumFeature v-if="!userStore.user?.isPremium" type="list-item" :title="t().menu.uxAnalyzer"
+          icon="mdi-chart-box-outline" feature-key="ux_analyzer" plan-type="premium" />
+
         <v-list-subheader class="mt-2 text-uppercase font-weight-bold text-caption">{{ t().menu.workflow
         }}</v-list-subheader>
 
@@ -343,7 +351,7 @@ const getCurrentPageIcon = () => {
   } else if (path.includes('/newsletter-admin')) {
     return 'mdi-email-outline';
   } else if (path.includes('/user-analytics')) {
-    return 'mdi-eye-outline';
+    return 'mdi-chart-box';
   } else {
     return 'mdi-application';
   }
@@ -354,6 +362,8 @@ const getHeaderColor = () => {
     return 'secondary';
   } else if (currentPageTitle.value === t().menu.apiTestingHub) {
     return 'info';
+  } else if (currentPageTitle.value === t().menu.uxAnalyzer) {
+    return 'secondary';
   } else {
     return 'primary';
   }
@@ -494,7 +504,6 @@ const items = computed(() => [
     children: [
       { title: t().features.responsive, link: '/responsive', icon: 'mdi-responsive' },
       { title: t().features.accessibility, link: '/accessibility', icon: 'mdi-access-point' },
-      { title: t().features.uxAnalyzer, link: '/user-analytics', icon: 'mdi-eye-outline' }
     ]
   },
   {
@@ -511,7 +520,6 @@ const items = computed(() => [
   }
 ]);
 
-// Ajouter un computed pour la localisation actuelle
 const currentLocale = computed(() => {
   return currentLanguage.value;
 });
@@ -520,13 +528,14 @@ const currentLocale = computed(() => {
 
 <style scoped>
 .dashboard-drawer {
-  border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  background: rgba(var(--v-theme-surface), 0.95);
+  background: linear-gradient(180deg, rgba(var(--v-theme-surface), 0.95) 0%, rgba(var(--v-theme-surface), 0.98) 100%);
   backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(var(--v-theme-primary), 0.1);
 }
 
 .drawer-header {
-  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.05) 0%, rgba(var(--v-theme-secondary), 0.05) 100%);
+  border-bottom: 1px solid rgba(var(--v-theme-primary), 0.1);
 }
 
 .drawer-header .text-h6 {
@@ -572,6 +581,7 @@ const currentLocale = computed(() => {
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.2);
+  transition: transform 0.3s ease;
 }
 
 .logo-container::before {
@@ -591,6 +601,10 @@ const currentLocale = computed(() => {
   object-fit: contain;
   position: relative;
   z-index: 1;
+}
+
+.logo-container:hover {
+  transform: scale(1.05);
 }
 
 .content-wrapper {

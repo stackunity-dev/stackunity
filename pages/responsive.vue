@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main class="d-flex flex-column align-center justify-center">
+    <main class="main-content">
 
       <v-card width="100%" max-width="800px" class="ma-4 pa-4" elevation="3"
         :class="{ 'hidden-controls': isMobileView && !showMobileControls }">
@@ -65,7 +65,7 @@
           </v-window-item>
         </v-window>
       </v-card>
-    </v-main>
+    </main>
 
     <snackBar v-model="snackbar" :text="snackbarText" :color="snackbarColor" :timeout="3000" />
   </v-app>
@@ -285,6 +285,24 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+
 .responsive-iframe {
   resize: both;
   min-width: 300px;

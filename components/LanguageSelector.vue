@@ -133,35 +133,58 @@ const getLanguageAriaLabel = (language: { code: string, name: string }) => {
   }
 }
 
+const generateLocalizedPath = (path: string, targetLang: SupportedLanguage): string => {
+  if (!path) return `/${targetLang}`;
+
+  const hasLangPrefix = (p: string): boolean => {
+    const supportedLangs: SupportedLanguage[] = ['en', 'fr', 'es', 'ar', 'zh'];
+    const parts = p.split('/').filter(Boolean);
+    return parts.length > 0 && supportedLangs.includes(parts[0] as SupportedLanguage);
+  };
+
+  const getPathWithoutPrefix = (p: string): string => {
+    if (!hasLangPrefix(p)) return p;
+    const parts = p.split('/');
+    return '/' + parts.slice(2).join('/');
+  };
+
+  const cleanPath = getPathWithoutPrefix(path);
+  const normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+
+  return `/${targetLang}${normalizedPath === '/' ? '' : normalizedPath}`;
+};
+
 const switchLanguage = (lang: SupportedLanguage) => {
   if (lang === currentLanguage.value) {
     menu.value = false;
     return;
   }
 
-  console.log(`[LanguageSelector] Switching language to: ${lang}`);
+  try {
+    changeLanguage(lang);
 
-  changeLanguage(lang);
+    if (nuxtApp.$i18n) {
+      nuxtApp.$i18n.locale.value = lang;
+    }
 
-  nuxtApp.$i18n.locale.value = lang;
+    document.documentElement.lang = lang;
 
-  document.documentElement.lang = lang;
+    // Utiliser notre fonction robuste pour générer le chemin localisé
+    if (router) {
+      const currentPath = route.path;
+      const newPath = generateLocalizedPath(currentPath, lang);
 
-  if (route.path.includes(`/${currentLanguage.value}/`)) {
-    const newPath = route.path.replace(`/${currentLanguage.value}/`, `/${lang}/`);
-    router.push(newPath);
-  } else if (currentLanguage.value !== 'en' && !route.path.includes('/')) {
-    router.push(`/${lang}${route.path}`);
-  } else if (currentLanguage.value === 'en' && lang !== 'en') {
-    router.push(`/${lang}${route.path}`);
-  } else if (lang === 'en' && route.path.startsWith('/en')) {
-    const newPath = route.path.replace('/en', '');
-    router.push(newPath || '/');
+      router.push(newPath).catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('[LanguageSelector] Erreur de navigation:', err);
+        }
+      });
+    }
+  } catch (error) {
+    console.error('[LanguageSelector] Error switching language:', error);
   }
 
   menu.value = false;
-
-  console.log(`[LanguageSelector] Language switched to: ${lang}, currentLanguage is now: ${currentLanguage.value}`);
 }
 </script>
 

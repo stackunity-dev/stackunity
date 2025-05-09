@@ -1,0 +1,25 @@
+.border-primary {
+  border-left: 4px solid var(--v-primary-base);
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.border-secondary {
+  border-left: 4px solid var(--v-secondary-base);
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+
+.border-tertiary {
+  border-left: 4px solid var(--v-tertiary-base);
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.border-quaternary {
+  border-left: 4px solid var(--v-quaternary-base);
+}

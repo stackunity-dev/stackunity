@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <main class="main-content">
       <v-container>
         <v-card class="mb-8 rounded-lg" elevation="3">
           <v-card-title class="text-h6 pa-4 bg-secondary text-white">
@@ -258,7 +258,7 @@
           </v-card-text>
         </v-card>
       </v-container>
-    </v-main>
+    </main>
   </v-app>
 </template>
 
@@ -607,6 +607,20 @@ const goToPricingPage = () => {
 </script>
 
 <style scoped>
+main {
+  min-height: 100vh;
+  background-color: var(--v-theme-background);
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+.main-content {
+  background-color: var(--v-theme-background);
+  flex: 1;
+  width: 100%;
+}
+
 .v-color-picker {
   max-width: 100%;
   margin: 0 auto;
