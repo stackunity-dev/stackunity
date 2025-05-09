@@ -963,12 +963,6 @@
               const startTimeMs = state.startTime.getTime();
               const duration = Math.round((now.getTime() - startTimeMs) / 1000);
               
-              console.log('[StackUnity Tracker] Envoi mise à jour durée:', {
-                pageViewId: state.currentPageViewId,
-                duration: duration,
-                startTime: state.startTime,
-                currentTime: now
-              });
               
               const pageVisitData = {
                 type: 'pageVisitDuration',
@@ -983,7 +977,7 @@
               state.buffer.push(pageVisitData);
               api.flushBuffer();
             }
-          }, 30000); 
+          }, 15000); // Réduire à 15 secondes au lieu de 30 secondes pour avoir plus de mises à jour
           
           if (typeof utils.setupPageVisibilityObserver === 'function') {
             utils.setupPageVisibilityObserver();
@@ -1046,6 +1040,38 @@
         
         window.addEventListener('beforeunload', function() {
           state.isUnloading = true;
+          
+          // Enregistrer la durée finale de la page
+          const now = new Date();
+          const startTimeMs = state.startTime.getTime();
+          const duration = Math.round((now.getTime() - startTimeMs) / 1000);
+          
+          // Créer l'événement de durée de visite
+          const durationEvent = {
+            type: 'pageVisitDuration',
+            id: utils.generateUUID(),
+            pageViewId: state.currentPageViewId,
+            duration: duration,
+            timestamp: now.toISOString(),
+            pageUrl: window.location.href,
+            scrollDepth: state.scrollDepth
+          };
+          
+          // Créer l'événement de sortie de page
+          const exitEvent = {
+            type: 'pageViewExit',
+            id: utils.generateUUID(),
+            pageViewId: state.currentPageViewId,
+            exitTime: now.toISOString(),
+            duration: duration,
+            scrollDepth: state.scrollDepth
+          };
+          
+          // Ajouter les deux événements au buffer
+          state.buffer.push(durationEvent);
+          state.buffer.push(exitEvent);
+          
+          // Forcer l'envoi des données
           tracker.flushEvents(true);
         });
         
@@ -1569,8 +1595,21 @@
         const startTimeMs = state.startTime.getTime();
         const duration = Math.max(0, Math.round((endTime.getTime() - startTimeMs) / 1000));
         
-        console.log('[StackUnity Tracker] Durée de la page:', duration, 'secondes');
+        console.log('[StackUnity Tracker] Durée de la page lors du unload:', duration, 'secondes');
+      
+        // Envoyer une mise à jour finale de la durée
+        const pageVisitData = {
+          type: 'pageVisitDuration',
+          id: utils.generateUUID(),
+          pageViewId: state.currentPageViewId,
+          duration: duration,
+          timestamp: endTime.toISOString(),
+          pageUrl: window.location.href,
+          scrollDepth: state.scrollDepth
+        };
         
+        state.buffer.push(pageVisitData);
+      
         const pageViewExit = {
           type: 'pageViewExit',
           id: utils.generateUUID(),
@@ -1643,6 +1682,18 @@
           
           state.buffer.push(pageVisitData);
           
+          // Ajouter également un événement de sortie de page
+          const pageExitEvent = {
+            type: 'pageViewExit',
+            id: utils.generateUUID(),
+            pageViewId: state.currentPageViewId,
+            exitTime: endTime.toISOString(),
+            duration: duration,
+            scrollDepth: state.scrollDepth
+          };
+          
+          state.buffer.push(pageExitEvent);
+          
           if (!state.hasActivity) {
             utils.sendBounceEvent();
           }
@@ -1686,6 +1737,40 @@
         // Vérifier si l'URL a changé
         const currentUrl = window.location.href || document.URL || 'https://stackunity.tech/fallback';
         const currentPath = window.location.pathname || '/fallback';
+        
+        // Enregistrer la durée de la page précédente avant de changer de page
+        if (state.currentPageViewId) {
+          const now = new Date();
+          const startTimeMs = state.startTime.getTime();
+          const duration = Math.round((now.getTime() - startTimeMs) / 1000);
+          
+          // Envoyer la durée finale
+          const pageVisitData = {
+            type: 'pageVisitDuration',
+            id: utils.generateUUID(),
+            pageViewId: state.currentPageViewId,
+            duration: duration,
+            timestamp: now.toISOString(),
+            pageUrl: window.location.href,
+            scrollDepth: state.scrollDepth
+          };
+          
+          state.buffer.push(pageVisitData);
+          console.log('[StackUnity Tracker] Durée finale avant navigation:', duration, 'secondes');
+          
+          // Envoyer également un événement de sortie de page
+          const pageExitEvent = {
+            type: 'pageViewExit',
+            id: utils.generateUUID(),
+            pageViewId: state.currentPageViewId,
+            exitTime: now.toISOString(),
+            duration: duration,
+            scrollDepth: state.scrollDepth
+          };
+          
+          state.buffer.push(pageExitEvent);
+          api.flushBuffer();
+        }
         
         state.currentPageViewId = utils.generateUUID();
         state.startTime = new Date();
@@ -1948,6 +2033,40 @@
           }
         }
         
+        // S'assurer que toutes les données pageVisitDuration et pageViewExit ont un pageViewId valide
+        const hasDurationEvents = state.buffer.some(event => 
+          (event.type === 'pageVisitDuration' || event.type === 'pageViewExit') && event.pageViewId
+        );
+        
+        // Si fermeture de page et pas d'événement de durée, ajouter une durée finale
+        if (isBeforeUnload && !hasDurationEvents && state.currentPageViewId) {
+          const now = new Date();
+          const startTimeMs = state.startTime.getTime();
+          const duration = Math.round((now.getTime() - startTimeMs) / 1000);
+          
+          // Ajouter un événement de durée final
+          state.buffer.push({
+            type: 'pageVisitDuration',
+            id: utils.generateUUID(),
+            pageViewId: state.currentPageViewId,
+            duration: duration,
+            timestamp: now.toISOString(),
+            pageUrl: window.location.href,
+            scrollDepth: state.scrollDepth
+          });
+          
+          // Ajouter également un événement de sortie
+          state.buffer.push({
+            type: 'pageViewExit',
+            id: utils.generateUUID(),
+            pageViewId: state.currentPageViewId,
+            exitTime: now.toISOString(),
+            duration: duration,
+            scrollDepth: state.scrollDepth
+          });
+        }
+        
+        // Vérifier et corriger les données de chaque événement
         for (let i = 0; i < state.buffer.length; i++) {
           const event = state.buffer[i];
           

@@ -23,6 +23,8 @@ interface PageRow extends RowDataPacket {
   page: string;
   views: number;
   avgTime: string;
+  views_with_duration?: number;
+  raw_avg_time?: number;
 }
 
 interface SourceRow extends RowDataPacket {
@@ -181,6 +183,7 @@ export default defineEventHandler(async (event) => {
             's'
           )
         END AS avgTime,
+        COUNT(CASE WHEN duration IS NOT NULL AND duration > 0 THEN 1 ELSE NULL END) AS views_with_duration,
         COALESCE(AVG(CASE WHEN duration IS NOT NULL AND duration > 0 THEN duration ELSE NULL END), 0) AS raw_avg_time
       FROM analytics_pageviews 
       WHERE website_id = ? ${startDate ? 'AND enter_time >= ?' : ''}
@@ -190,12 +193,20 @@ export default defineEventHandler(async (event) => {
       LIMIT 10
     `;
 
+    console.log('Requête topPages:', topPagesQuery.replace(/\s+/g, ' '));
+
     const [topPagesRows] = await pool.query<PageRow[]>(
       topPagesQuery,
       startDate ? [dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' ')] : [dbWebsiteId]
     );
 
-    console.log('Résultats top pages (durées):', JSON.stringify(topPagesRows));
+    console.log('Résultats top pages (durées):', JSON.stringify(topPagesRows.map(row => ({
+      page: row.page,
+      views: row.views,
+      views_with_duration: row.views_with_duration,
+      avgTime: row.avgTime,
+      raw_avg_time: row.raw_avg_time
+    }))));
 
     // Ajuster la requête des sources de trafic
     let trafficSourcesQuery = `
@@ -493,12 +504,16 @@ export default defineEventHandler(async (event) => {
           // Calculer la durée moyenne en secondes
           const avgTimeSec = page.raw_avg_time || 0;
           const hasValidTime = avgTimeSec > 0;
+          const viewsWithDuration = page.views_with_duration || 0;
+          const durationDataQuality = viewsWithDuration > 0 ? Math.min(100, Math.round(viewsWithDuration * 100 / page.views)) : 0;
 
           return {
             page: pageUrl,
             cleanPath: cleanPageUrl,
             isHome: isHomePage,
             views: page.views || 0,
+            viewsWithDuration: viewsWithDuration,
+            durationDataQuality: durationDataQuality,
             avgTime: hasValidTime ? page.avgTime : '0m 0s',
             avgTimeSeconds: Math.round(avgTimeSec || 0),
             hasDuration: hasValidTime
