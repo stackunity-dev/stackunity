@@ -115,7 +115,7 @@
 import { useUserStore } from '../../stores/userStore';
 import { onMounted, ref } from 'vue';
 // @ts-ignore
-import { definePageMeta, useHead, navigateTo } from 'imports';
+import { definePageMeta, useHead, navigateTo } from '#imports';
 definePageMeta({
   layout: 'dashboard',
 });
