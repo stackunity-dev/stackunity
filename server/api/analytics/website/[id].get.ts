@@ -172,15 +172,18 @@ export default defineEventHandler(async (event) => {
       SELECT 
         COALESCE(page_url, 'Unknown page') AS page, 
         COUNT(*) AS views,
-        CONCAT(
-          FLOOR(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END) / 60), 
-          'm ', 
-          MOD(FLOOR(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END)), 60), 
-          's'
-        ) AS avgTime,
-        AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END) AS raw_avg_time
+        CASE 
+          WHEN AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END) IS NULL THEN '0m 0s'
+          ELSE CONCAT(
+            FLOOR(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END) / 60), 
+            'm ', 
+            MOD(FLOOR(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END)), 60), 
+            's'
+          )
+        END AS avgTime,
+        COALESCE(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END), 0) AS raw_avg_time
       FROM analytics_pageviews 
-      WHERE website_id = ? AND page_url IS NOT NULL ${startDate ? 'AND enter_time >= ?' : ''}
+      WHERE website_id = ? ${startDate ? 'AND enter_time >= ?' : ''}
       GROUP BY page_url 
       HAVING COUNT(*) > 0
       ORDER BY views DESC 
@@ -332,6 +335,13 @@ export default defineEventHandler(async (event) => {
     const limit = parseInt(query.limit as string) || 500;
     const offset = (page - 1) * limit;
 
+    // Définir les types à exclure
+    const excludedInteractionTypes = ['page_viewexit', 'pageViewExit', 'visibility_snapshot', 'segment_visibility', 'page_duration', 'pageVisitDuration', 'page_exit'];
+
+    // Utiliser la variable pour générer la partie SQL pour les exclusions
+    const excludedTypesSQL = excludedInteractionTypes.map(() => '?').join(',');
+
+    // Modifier la requête pour les interactions
     const interactionsQuery = `
       SELECT 
         i.interaction_id AS id,
@@ -346,22 +356,28 @@ export default defineEventHandler(async (event) => {
       FROM analytics_interactions i
       LEFT JOIN analytics_pageviews p ON i.pageview_id = p.pageview_id AND p.website_id = i.website_id
       WHERE i.website_id = ? ${dateFilter}
+        AND i.interaction_type NOT IN (${excludedTypesSQL})
       ORDER BY i.timestamp DESC
       LIMIT ? OFFSET ?
     `;
 
+    // Ajuster la requête de comptage également
     const getTotalInteractions = async (websiteId, dateFilter) => {
       const [countRows] = await pool.query(
-        `SELECT COUNT(*) as total FROM analytics_interactions WHERE website_id = ? ${dateFilter}`,
-        [websiteId, ...(startDate ? [startDate.toISOString().slice(0, 19).replace('T', ' ')] : [])]
+        `SELECT COUNT(*) as total FROM analytics_interactions 
+         WHERE website_id = ? ${dateFilter}
+         AND interaction_type NOT IN (${excludedTypesSQL})`,
+        [websiteId, ...excludedInteractionTypes, ...(startDate ? [startDate.toISOString().slice(0, 19).replace('T', ' ')] : [])]
       );
       return countRows[0].total;
     };
 
+    // Adapter les paramètres pour inclure la liste des types exclus
     const [interactionRows] = await pool.query<InteractionRow[]>(
       interactionsQuery,
       [
         dbWebsiteId,
+        ...excludedInteractionTypes,
         ...(startDate ? [startDate.toISOString().slice(0, 19).replace('T', ' ')] : []),
         limit,
         offset

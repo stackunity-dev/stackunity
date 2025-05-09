@@ -366,8 +366,8 @@ const selectedUrl = ref('Toutes les pages');
 const itemsPerPage = ref(50);
 const itemsPerPageOptions = [10, 25, 50, 100, 200, -1];
 
-const excludedInteractionTypes = ['visibility_snapshot', 'segment_visibility'];
-const interactionTypeOptions = ['Tous', 'click', 'scroll', 'form_submit', 'input_change'];
+const excludedInteractionTypes = ['page_viewexit', 'pageViewExit', 'visibility_snapshot', 'segment_visibility', 'page_duration', 'pageVisitDuration', 'page_exit'];
+const interactionTypeOptions = ['Tous', 'click', 'scroll_depth', 'scroll', 'form_submit', 'input_change'];
 
 const t = useTranslations('analytics')();
 
@@ -410,61 +410,66 @@ const uniqueUrls = computed(() => {
 });
 
 const filteredInteractionsByUrl = computed(() => {
-  if (selectedUrl.value === 'Toutes les pages') {
-    return props.interactions.data.filter(i => !excludedInteractionTypes.includes(i.type));
-  }
+  return props.interactions.data.filter(interaction => {
+    if (excludedInteractionTypes.includes(interaction.type)) {
+      return false;
+    }
 
-  return props.interactions.data.filter(i => {
-    return i.pageUrl === selectedUrl.value && !excludedInteractionTypes.includes(i.type);
+    if (selectedUrl.value !== 'Toutes les pages') {
+      return interaction.pageUrl === selectedUrl.value;
+    }
+
+    return true;
   });
 });
 
 const groupSimilarInteractions = ref(true);
 
 const filteredInteractions = computed(() => {
-  let filtered = [...filteredInteractionsByUrl.value];
+  let interactions = props.interactions.data.filter(interaction =>
+    !excludedInteractionTypes.includes(interaction.type)
+  );
 
-  if (filterType.value !== 'Tous') {
-    filtered = filtered.filter(i => i.type === filterType.value);
+  if (selectedUrl.value && selectedUrl.value !== 'Toutes les pages') {
+    interactions = interactions.filter(interaction => interaction.pageUrl === selectedUrl.value);
+  }
+
+  if (filterType.value && filterType.value !== 'Tous') {
+    interactions = interactions.filter(interaction =>
+      interaction.type === filterType.value
+    );
   }
 
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(i =>
-      i.elementSelector?.toLowerCase().includes(query) ||
-      i.elementText?.toLowerCase().includes(query) ||
-      i.type?.toLowerCase().includes(query)
-    );
+    interactions = interactions.filter(interaction => {
+      return (
+        (interaction.elementSelector && interaction.elementSelector.toLowerCase().includes(query)) ||
+        (interaction.elementText && interaction.elementText.toLowerCase().includes(query)) ||
+        (interaction.value && JSON.stringify(interaction.value).toLowerCase().includes(query))
+      );
+    });
   }
 
-  filtered = filtered.sort((a, b) => {
-    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-  });
-
-  if (groupSimilarInteractions.value) {
-    const groupedMap = new Map<string, ExtendedUserInteraction>();
-
-    filtered.forEach(interaction => {
-      if (interaction.type === 'click' && (interaction.elementText || interaction.elementSelector)) {
-        const key = `${interaction.type}_${interaction.elementText || ''}_${interaction.elementSelector || ''}`;
-
-        if (groupedMap.has(key)) {
-          const existingInteraction = groupedMap.get(key)!;
-          existingInteraction.count = (existingInteraction.count || 1) + 1;
-        } else {
-          const groupedInteraction = { ...interaction, count: 1 };
-          groupedMap.set(key, groupedInteraction);
-        }
+  if (groupSimilarInteractions) {
+    const groups = new Map();
+    interactions.forEach(interaction => {
+      const key = `${interaction.type}-${interaction.elementSelector}`;
+      if (!groups.has(key)) {
+        groups.set(key, { ...interaction, count: 1 });
       } else {
-        const key = `${interaction.id}_${Date.now()}_${Math.random()}`;
-        groupedMap.set(key, { ...interaction, count: 1 });
+        const group = groups.get(key);
+        group.count = (group.count || 1) + 1;
       }
     });
-
-    return Array.from(groupedMap.values());
+    interactions = Array.from(groups.values());
   }
 
-  return filtered;
+  return interactions.sort((a, b) => {
+    const dateA = new Date(a.timestamp);
+    const dateB = new Date(b.timestamp);
+    return dateB.getTime() - dateA.getTime();
+  });
 });
 
 const recentInteractions = computed(() => {
@@ -739,17 +744,20 @@ function getTypeValue(type: string): number {
 }
 
 function getInteractionColor(type: string): string {
-  switch (type) {
-    case 'click':
-      return 'primary';
-    case 'scroll':
-      return 'success';
-    case 'form_submit':
-      return 'warning';
-    case 'input_change':
-      return 'deep-orange';
-    default:
-      return 'grey';
+  const interactionType = type.toLowerCase();
+
+  if (interactionType.includes('click')) {
+    return 'primary';
+  } else if (interactionType.includes('scroll') || interactionType === 'scroll_depth') {
+    return 'success';
+  } else if (interactionType.includes('form') || interactionType === 'form_submit') {
+    return 'warning';
+  } else if (interactionType.includes('input') || interactionType === 'input_change') {
+    return 'deep-orange';
+  } else if (interactionType.includes('error')) {
+    return 'error';
+  } else {
+    return 'grey';
   }
 }
 
