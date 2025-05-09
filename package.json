@@ -7,7 +7,7 @@
     "npm": "10.2.4"
   },
   "scripts": {
-    "build": "NODE_OPTIONS='--max-old-space-size=12288 --max-semi-space-size=1024' nuxt build --no-generate",
+    "build": "NODE_OPTIONS='--max-old-space-size=2048' nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

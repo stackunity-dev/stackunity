@@ -63,7 +63,7 @@ export default defineNuxtConfig({
       { code: 'zh', iso: 'zh', dir: 'ltr' }
     ],
     detectBrowserLanguage: false,
-    baseUrl: 'https://stackunity.com',
+    baseUrl: 'https://stackunity.tech',
     skipSettingLocaleOnNavigate: false
   },
 
