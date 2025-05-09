@@ -95,41 +95,8 @@ useHead({
   style: [
     {
       children: `
-        html, body {
-          background-color: #121212;
-          color: #fff;
-        }
-        body {
-          margin: 0;
-          padding: 0;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-        .v-application {
-          background-color: #121212;
-          color: white;
-        }
-        [data-segment-id] {
-          display: none !important;
-        }
-        img[src*="emergency=1"] {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border: 0;
-          opacity: 0;
-        }
 
-        .v-application--is-hydrating {
-          opacity: 1;
-        }
-        .v-application--hydrated {
-          opacity: 1;
-        }
+
         
         .app-loading {
           display: flex;
@@ -380,16 +347,6 @@ body {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-.v-application {
-  background-color: #121212;
-  color: white;
-}
-
-.v-application--is-hydrating,
-.v-application--hydrated {
-  opacity: 1;
 }
 
 .app-container {

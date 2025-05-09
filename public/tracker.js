@@ -894,7 +894,7 @@
       setupEventListeners: function() {
         document.addEventListener('click', function(e) {
           if (config.trackClicks) {
-            tracker.handleClickEvent(e);
+            tracker.handleClick(e);
           }
         });
         
