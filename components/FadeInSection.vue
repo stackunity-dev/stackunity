@@ -1,7 +1,7 @@
 <template>
   <div ref="fadeRef" class="fade-in-section"
-    :class="{ 'is-visible': isVisible || initiallyVisible, 'no-transition': noTransition }" role="region"
-    :aria-label="ariaLabel" :aria-hidden="!isVisible && !initiallyVisible">
+    :class="{ 'is-visible': isVisible || initiallyVisible, 'no-transition': noTransition || initialRender }"
+    role="region" :aria-label="ariaLabel" :aria-hidden="!isVisible && !initiallyVisible">
     <slot></slot>
   </div>
 </template>
@@ -24,9 +24,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const fadeRef = ref<HTMLElement | null>(null);
-const isVisible = ref(false);
+const isVisible = ref(true);
 const prefersReducedMotion = ref(false);
 const noTransition = ref(true);
+const initialRender = ref(true);
 
 const pageReady = inject('pageReady', ref(true));
 
@@ -35,6 +36,8 @@ const observerOptions = {
 };
 
 const observerCallback = (entries: IntersectionObserverEntry[]) => {
+  if (initialRender.value) return;
+
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       isVisible.value = true;
@@ -52,33 +55,40 @@ const checkReducedMotion = () => {
 };
 
 onMounted(() => {
-  checkReducedMotion();
   isVisible.value = true;
 
-  setTimeout(() => {
-    noTransition.value = false;
-  }, 300);
+  if (typeof window !== 'undefined') {
+    checkReducedMotion();
 
-  if (prefersReducedMotion.value || props.reduceMotion) {
-    isVisible.value = true;
-    return;
-  }
+    setTimeout(() => {
+      noTransition.value = false;
 
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  mediaQuery.addEventListener('change', checkReducedMotion);
+      setTimeout(() => {
+        initialRender.value = false;
+      }, 1000);
+    }, 500);
 
-  if (!props.initiallyVisible) {
-    observer = new IntersectionObserver(observerCallback, observerOptions);
-
-    if (fadeRef.value) {
-      observer.observe(fadeRef.value);
+    if (prefersReducedMotion.value || props.reduceMotion) {
+      isVisible.value = true;
+      return;
     }
 
-    if (fadeRef.value && fadeRef.value.getBoundingClientRect().top < window.innerHeight) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    mediaQuery.addEventListener('change', checkReducedMotion);
+
+    if (!props.initiallyVisible) {
+      observer = new IntersectionObserver(observerCallback, observerOptions);
+
+      if (fadeRef.value) {
+        observer.observe(fadeRef.value);
+      }
+
+      if (fadeRef.value && fadeRef.value.getBoundingClientRect().top < window.innerHeight) {
+        isVisible.value = true;
+      }
+    } else {
       isVisible.value = true;
     }
-  } else {
-    isVisible.value = true;
   }
 });
 
@@ -93,25 +103,28 @@ onUnmounted(() => {
     observer.disconnect();
   }
 
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  mediaQuery.removeEventListener('change', checkReducedMotion);
+  if (typeof window !== 'undefined') {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    mediaQuery.removeEventListener('change', checkReducedMotion);
+  }
 });
 </script>
 
 <style scoped>
 .fade-in-section {
-  opacity: 0;
-  transform: translateY(20px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity 0.3s ease-out, transform 0.3s ease-out;
   will-change: opacity, transform;
 }
 
-.fade-in-section.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+.fade-in-section:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(20px);
 }
 
-.fade-in-section.no-transition {
+.fade-in-section.no-transition,
+.fade-in-section.initialRender {
   transition: none !important;
 }
 

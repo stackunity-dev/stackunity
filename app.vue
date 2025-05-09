@@ -1,13 +1,17 @@
 <template>
   <NuxtLayout>
-    <v-app>
-      <NuxtPage />
+    <v-app id="app" class="app-container">
+      <div v-if="isReady">
+        <NuxtPage />
+      </div>
+      <div v-else class="app-loading">
+      </div>
     </v-app>
   </NuxtLayout>
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onBeforeMount, onErrorCaptured, onMounted, onServerPrefetch, ref } from 'vue';
+import { nextTick, onBeforeMount, onErrorCaptured, onMounted, onServerPrefetch, provide, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCookieStore } from './stores/cookieStore';
 import { useUserStore } from './stores/userStore';
@@ -21,12 +25,13 @@ const userStore = useUserStore();
 const cookieStore = useCookieStore();
 const isClient = typeof window !== 'undefined';
 const isHydrating = ref(true);
+const isReady = ref(false);
 const sessionRestorationAttempted = ref(false);
 const restorationAttemptCount = ref(0);
 const appReady = ref(false);
 
-// Initialisation immédiate des valeurs par défaut
-// Ceci s'exécute en SSR et CSR
+provide('pageReady', isReady);
+
 if (!userStore.user) {
   userStore.user = {
     id: 0,
@@ -40,7 +45,6 @@ if (!userStore.user) {
 userStore.isPremium = userStore.isPremium || false;
 userStore.isAdmin = userStore.isAdmin || false;
 
-// Critical CSS et méta-tags - important pour SEO et performance
 useHead({
   title: 'StackUnity - The all-in-one platform for developers',
   htmlAttrs: {
@@ -88,6 +92,8 @@ useHead({
         html, body {
           background-color: #121212;
           color: #fff;
+          visibility: visible !important;
+          opacity: 1 !important;
         }
         body {
           margin: 0;
@@ -97,6 +103,8 @@ useHead({
         .v-application {
           background-color: #121212;
           color: white;
+          visibility: visible !important;
+          opacity: 1 !important;
         }
         [data-segment-id] {
           background-color: transparent !important;
@@ -124,6 +132,15 @@ useHead({
         .v-application--hydrated {
           opacity: 1;
         }
+        
+        .app-loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          width: 100vw;
+          background-color: #121212;
+        }
       `
     }
   ]
@@ -135,7 +152,10 @@ onErrorCaptured((err) => {
     (err.message.includes("'parentNode'") ||
       err.message.includes("'type' of 'vnode'") ||
       err.message.includes("null") ||
-      err.message.includes("undefined"))
+      err.message.includes("undefined") ||
+      err.message.includes("Cannot read properties of undefined") ||
+      err.message.includes("Cannot access") ||
+      err.message.includes("dispose"))
   ) {
     console.warn('Erreur Vue ignorée:', err.message);
     return false;
@@ -144,7 +164,6 @@ onErrorCaptured((err) => {
   return true;
 });
 
-// Restauration de session - fonctionne en CSR uniquement
 const restoreUserSession = async () => {
   if (!isClient || sessionRestorationAttempted.value) {
     return false;
@@ -258,23 +277,20 @@ const loadTracker = () => {
     } catch (e) {
       console.error('Erreur lors du chargement du tracker:', e);
     }
-  }, 1000); // Délai pour ne pas bloquer l'hydratation
+  }, 1000);
 };
 
-// Gestion SSR - exécuté avant le rendu côté serveur
 onServerPrefetch(async () => {
-  // Initialisation minimale côté serveur
-  // Ne pas effectuer d'opérations lourdes ici pour optimiser le TTFB
   console.log('ServerPrefetch - App.vue');
+  if (!isClient) {
+    isReady.value = true;
+  }
 });
 
-// Avant le montage - en CSR uniquement
 onBeforeMount(async () => {
   if (isClient) {
-    // Ajouter une classe pour identifier l'état d'hydratation
     document.documentElement.classList.add('v-application--is-hydrating');
 
-    // Restaurer la session de façon non-bloquante
     restoreUserSession().finally(() => {
       appReady.value = true;
     });
@@ -287,23 +303,23 @@ onBeforeMount(async () => {
   }
 });
 
-// Après le montage - en CSR uniquement
 onMounted(() => {
   if (!isClient) return;
 
-  // Indiquer que l'hydratation est terminée
   isHydrating.value = false;
-  nextTick(() => {
-    document.documentElement.classList.remove('v-application--is-hydrating');
-    document.documentElement.classList.add('v-application--hydrated');
-  });
 
-  // Initialiser les fonctionnalités client-side
+  setTimeout(() => {
+    isReady.value = true;
+    nextTick(() => {
+      document.documentElement.classList.remove('v-application--is-hydrating');
+      document.documentElement.classList.add('v-application--hydrated');
+    });
+  }, 50);
+
   cookieStore.initCookieConsent();
   initLanguage();
   loadTracker();
 
-  // Configuration du router
   router.beforeEach((to, from, next) => {
     try {
       if (!userStore.user) {
@@ -368,6 +384,9 @@ html,
 body {
   background-color: #121212;
   color: #fff;
+  /* Hack pour empêcher l'écran noir pendant l'inspection */
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 body {
@@ -379,6 +398,9 @@ body {
 .v-application {
   background-color: #121212;
   color: white;
+  /* Empêcher l'écran noir pendant le débogage */
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .v-application--is-hydrating {
@@ -387,6 +409,10 @@ body {
 
 .v-application--hydrated {
   opacity: 1;
+}
+
+.app-container {
+  min-height: 100vh;
 }
 
 [data-segment-id] {
