@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, onErrorCaptured, onMounted, ref } from 'vue';
+import { nextTick, onBeforeMount, onErrorCaptured, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCookieStore } from './stores/cookieStore';
 import { useUserStore } from './stores/userStore';
@@ -22,6 +22,7 @@ const cookieStore = useCookieStore();
 const isClient = typeof window !== 'undefined';
 const sessionRestorationAttempted = ref(false);
 const restorationAttemptCount = ref(0);
+const appReady = ref(false);
 
 if (!userStore.user) {
   userStore.user = {
@@ -76,6 +77,45 @@ useHead({
         }
       })
     }
+  ],
+  style: [
+    {
+      children: `
+        html, body {
+          background-color: #121212;
+          color: #fff;
+          transition: opacity 0.3s ease;
+        }
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .v-application {
+          background-color: #121212;
+          color: white;
+        }
+        [data-segment-id] {
+          background-color: transparent !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          display: none !important;
+        }
+        img[src*="emergency=1"] {
+          position: absolute !important;
+          width: 1px !important;
+          height: 1px !important;
+          padding: 0 !important;
+          margin: -1px !important;
+          overflow: hidden !important;
+          clip: rect(0, 0, 0, 0) !important;
+          white-space: nowrap !important;
+          border: 0 !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+      `
+    }
   ]
 });
 
@@ -95,18 +135,16 @@ onErrorCaptured((err) => {
 });
 
 const restoreUserSession = async () => {
+  if (!isClient || sessionRestorationAttempted.value) {
+    return false;
+  }
+
+  sessionRestorationAttempted.value = true;
+  restorationAttemptCount.value++;
+
   try {
-    if (!isClient || sessionRestorationAttempted.value) {
-      return false;
-    }
-
-    sessionRestorationAttempted.value = true;
-    restorationAttemptCount.value++;
-
     const token = TokenUtils.retrieveToken();
-    if (!token) {
-      return false;
-    }
+    if (!token) return false;
 
     try {
       const validationResult = await userStore.validateToken();
@@ -144,15 +182,10 @@ const restoreUserSession = async () => {
         credentials: 'include'
       });
 
-      if (!refreshResponse.ok) {
-        return false;
-      }
+      if (!refreshResponse.ok) return false;
 
       const refreshData = await refreshResponse.json();
-
-      if (!refreshData.success || !refreshData.accessToken) {
-        return false;
-      }
+      if (!refreshData.success || !refreshData.accessToken) return false;
 
       TokenUtils.storeToken(refreshData.accessToken);
       userStore.setToken(refreshData.accessToken);
@@ -197,108 +230,127 @@ const restoreUserSession = async () => {
   return false;
 }
 
-onBeforeMount(async () => {
-  if (isClient && !sessionRestorationAttempted.value) {
+const loadTracker = () => {
+  if (!isClient) return;
+
+  setTimeout(() => {
     try {
-      await restoreUserSession();
-    } catch (error) {
-      console.error('Erreur durant la restauration initiale:', error);
+      const s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.async = true;
+      s.src = `${window.location.origin}/tracker.js`;
+      s.setAttribute('data-website-id', 'stackunity-app');
+      const x = document.getElementsByTagName('script')[0];
+      if (x && x.parentNode) {
+        x.parentNode.insertBefore(s, x);
+      }
+    } catch (e) {
+      console.error('Erreur lors du chargement du tracker:', e);
     }
+  }, 1000);
+};
+
+onBeforeMount(async () => {
+  if (isClient) {
+    restoreUserSession().finally(() => {
+      appReady.value = true;
+    });
+
+    nextTick(() => {
+      if (isClient) {
+        localStorage.setItem('stackunity_consent', 'true');
+      }
+    });
   }
 });
 
-onMounted(async () => {
-  if (isClient) {
-    localStorage.setItem('stackunity_consent', 'true');
-  }
+onMounted(() => {
+  if (!isClient) return;
 
-  (function () {
-    var s = document.createElement('script');
-    s.type = 'text/javascript';
-    s.async = true;
-    s.src = `${window.location.origin}/tracker.js`;
-    s.setAttribute('data-website-id', 'stackunity-app');
-    var x = document.getElementsByTagName('script')[0];
-    if (x && x.parentNode) {
-      x.parentNode.insertBefore(s, x);
-    }
-  })();
+  cookieStore.initCookieConsent();
 
-  if (isClient) {
-    if (!userStore.isAuthenticated && !sessionRestorationAttempted.value) {
-      try {
-        await restoreUserSession();
-      } catch (error) {
-        console.error('Erreur durant la restauration au montage:', error);
+  initLanguage();
+
+  loadTracker();
+
+  router.beforeEach((to, from, next) => {
+    try {
+      if (!userStore.user) {
+        userStore.user = {
+          id: 0,
+          username: '',
+          email: '',
+          isPremium: false,
+          isAdmin: false
+        };
       }
-    }
 
-    cookieStore.initCookieConsent();
+      const token = TokenUtils.retrieveToken();
+      if (token && !userStore.token) {
+        userStore.token = token;
 
-    initLanguage();
-
-    router.beforeEach((to, from, next) => {
-      try {
-        if (!userStore.user) {
-          userStore.user = {
-            id: 0,
-            username: '',
-            email: '',
-            isPremium: false,
-            isAdmin: false
-          };
-        }
-
-        const token = TokenUtils.retrieveToken();
-        if (token && !userStore.token) {
-          userStore.token = token;
-
-          try {
-            userStore.loadData().catch(err => {
-              console.error('Erreur non critique lors du chargement des données:', err);
-            });
-          } catch (loadError) {
-            console.error('Exception lors du chargement des données:', loadError);
-          }
-        }
-
-        if (!token) {
-          userStore.token = null;
-          userStore.isAuthenticated = false;
-        }
-
-        const premiumRoutes = ['/sql-generator', '/seo-audit', '/robots'];
-        const normalizedPath = to.path.toLowerCase();
-
-        const isPremiumRoute = premiumRoutes.some(route => {
-          const normalizedRoute = route.toLowerCase();
-          return normalizedPath === normalizedRoute || normalizedPath.startsWith(`${normalizedRoute} / `);
-        });
-
-        let isPremium = false;
         try {
-          isPremium = (userStore.user && Boolean(userStore.user.isPremium)) || Boolean(userStore.isPremium) || false;
-        } catch (premiumError) {
-          console.error('Erreur de vérification premium:', premiumError);
-          isPremium = false;
+          userStore.loadData().catch(err => {
+            console.error('Erreur non critique lors du chargement des données:', err);
+          });
+        } catch (loadError) {
+          console.error('Exception lors du chargement des données:', loadError);
         }
-
-        if (isPremiumRoute && !isPremium) {
-          return next('/pricing');
-        }
-
-        next();
-      } catch (routerError) {
-        console.error('Erreur critique dans la navigation:', routerError);
-        next();
       }
-    });
 
-  }
+      if (!token) {
+        userStore.token = null;
+        userStore.isAuthenticated = false;
+      }
+
+      const premiumRoutes = ['/sql-generator', '/seo-audit', '/robots'];
+      const normalizedPath = to.path.toLowerCase();
+
+      const isPremiumRoute = premiumRoutes.some(route => {
+        const normalizedRoute = route.toLowerCase();
+        return normalizedPath === normalizedRoute || normalizedPath.startsWith(`${normalizedRoute}/`);
+      });
+
+      let isPremium = false;
+      try {
+        isPremium = (userStore.user && Boolean(userStore.user.isPremium)) || Boolean(userStore.isPremium) || false;
+      } catch (premiumError) {
+        console.error('Erreur de vérification premium:', premiumError);
+        isPremium = false;
+      }
+
+      if (isPremiumRoute && !isPremium) {
+        return next('/pricing');
+      }
+
+      next();
+    } catch (routerError) {
+      console.error('Erreur critique dans la navigation:', routerError);
+      next();
+    }
+  });
 });
 </script>
 
 <style>
+html,
+body {
+  background-color: #121212;
+  color: #fff;
+  transition: opacity 0.3s ease;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.v-application {
+  background-color: #121212;
+  color: white;
+}
+
 [data-segment-id] {
   background-color: transparent !important;
   visibility: hidden !important;
