@@ -98,8 +98,6 @@ useHead({
         html, body {
           background-color: #121212;
           color: #fff;
-          visibility: visible !important;
-          opacity: 1 !important;
         }
         body {
           margin: 0;
@@ -109,27 +107,21 @@ useHead({
         .v-application {
           background-color: #121212;
           color: white;
-          visibility: visible !important;
-          opacity: 1 !important;
         }
         [data-segment-id] {
-          background-color: transparent !important;
-          visibility: hidden !important;
-          opacity: 0 !important;
           display: none !important;
         }
         img[src*="emergency=1"] {
-          position: absolute !important;
-          width: 1px !important;
-          height: 1px !important;
-          padding: 0 !important;
-          margin: -1px !important;
-          overflow: hidden !important;
-          clip: rect(0, 0, 0, 0) !important;
-          white-space: nowrap !important;
-          border: 0 !important;
-          opacity: 0 !important;
-          pointer-events: none !important;
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+          opacity: 0;
         }
 
         .v-application--is-hydrating {
@@ -382,9 +374,6 @@ html,
 body {
   background-color: #121212;
   color: #fff;
-  /* Hack pour empêcher l'écran noir pendant l'inspection */
-  visibility: visible !important;
-  opacity: 1 !important;
 }
 
 body {
@@ -396,15 +385,9 @@ body {
 .v-application {
   background-color: #121212;
   color: white;
-  /* Empêcher l'écran noir pendant le débogage */
-  visibility: visible !important;
-  opacity: 1 !important;
 }
 
-.v-application--is-hydrating {
-  opacity: 1;
-}
-
+.v-application--is-hydrating,
 .v-application--hydrated {
   opacity: 1;
 }
@@ -414,23 +397,19 @@ body {
 }
 
 [data-segment-id] {
-  background-color: transparent !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  display: none !important;
+  display: none;
 }
 
 img[src*="emergency=1"] {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
 }
 </style>

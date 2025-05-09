@@ -668,6 +668,61 @@
           });
           return false;
         }
+      },
+      
+      isLocalEnvironment: function(url) {
+        if (!url) return false;
+        const cleanUrl = url.replace(/^https?:\/\//, '');
+        return cleanUrl.startsWith('localhost') ||
+          cleanUrl.startsWith('127.0.0.1') ||
+          /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(cleanUrl);
+      },
+      
+      analyzePageContent: function() {
+        try {
+          const pageData = {
+            title: document.title || '',
+            url: window.location.href,
+            path: window.location.pathname,
+            domain: window.location.hostname,
+            headings: {},
+            linkCount: 0,
+            imageCount: 0
+          };
+          
+          const h1Count = document.querySelectorAll('h1').length;
+          const h2Count = document.querySelectorAll('h2').length;
+          const h3Count = document.querySelectorAll('h3').length;
+          
+          pageData.headings = {
+            h1: h1Count,
+            h2: h2Count, 
+            h3: h3Count
+          };
+          
+          pageData.linkCount = document.querySelectorAll('a[href]').length;
+          pageData.imageCount = document.querySelectorAll('img[src]').length;
+          
+          const paragraphs = document.querySelectorAll('p').length;
+          const textNodes = document.querySelectorAll('p, li, td, div > text').length;
+          
+          pageData.contentEstimate = {
+            paragraphs: paragraphs,
+            textNodes: textNodes
+          };
+          
+          const metaDescription = document.querySelector('meta[name="description"]');
+          pageData.hasMetaDescription = !!metaDescription;
+          
+          console.log('[StackUnity Tracker] Analyse de page complétée:', pageData);
+          return pageData;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de l\'analyse du contenu:', e);
+          return { title: document.title || '', error: 'Analyse du contenu échouée' };
+        }
+      },
+      
+      formatDate: function(dateString) {
       }
     };
 
