@@ -14,7 +14,7 @@
     inputThrottleTime: 2000,
     inputDebounceTime: 2000,
     inputMinimumCharChange: 3,
-    bounceTimeout: 30 * 1000, // 30 secondes pour définir un rebond
+    bounceTimeout: 30 * 1000,
     exclusionsEndpoint: '/api/analytics/website/{id}/exclusions'
   };
 
@@ -204,7 +204,6 @@
         const context = this;
         const args = arguments;
         
-        // Premier appel - exécution immédiate
         if (firstCall) {
           func.apply(context, args);
           lastRan = Date.now();
@@ -212,7 +211,6 @@
           return;
         }
         
-        // Appels suivants
         clearTimeout(lastFunc);
         lastFunc = setTimeout(function() {
           if ((Date.now() - lastRan) >= limit) {
@@ -382,30 +380,25 @@
           isCurrentlyVisible: false
         });
       }
-      
-      console.log('Page divisée en', state.pageSegments.length, 'segments pour le suivi de visibilité');
+
       return state.pageSegments;
     },
     
     getFormPurpose: function(form) {
       if (!form) return 'unknown';
       
-      // Attributs qui peuvent indiquer le but
       const formId = (form.id || '').toLowerCase();
       const formAction = (form.action || '').toLowerCase();
       const formClass = (form.className || '').toLowerCase();
       const formMethod = (form.method || '').toLowerCase();
       
-      // Texte à l'intérieur du formulaire
       const formText = form.textContent ? form.textContent.toLowerCase() : '';
       
-      // Vérifier les bouttons de soumission
       const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
       const buttonTexts = Array.from(submitButtons).map(btn => 
         btn.textContent || btn.value || ''
       ).join(' ').toLowerCase();
       
-      // Détecter le but basé sur des mots-clés
       const loginKeywords = ['login', 'log in', 'sign in', 'signin', 'connexion', 'connecter', 'identifier'];
       const registerKeywords = ['register', 'sign up', 'signup', 'create account', 'inscription', 'créer un compte'];
       const searchKeywords = ['search', 'find', 'recherche', 'chercher', 'trouver'];
@@ -413,14 +406,11 @@
       const newsletterKeywords = ['newsletter', 'subscribe', 'abonnement', 'updates', 'bulletin'];
       const checkoutKeywords = ['checkout', 'payment', 'purchase', 'buy', 'order', 'commander', 'achat', 'paiement'];
       
-      // Fonction pour vérifier si un texte contient l'un des mots-clés
       const containsAny = (text, keywords) => 
         keywords.some(keyword => text.includes(keyword));
       
-      // Combiner tous les textes pour la recherche
       const allText = `${formId} ${formAction} ${formClass} ${formMethod} ${formText} ${buttonTexts}`;
       
-      // Déterminer le but
       if (containsAny(allText, loginKeywords)) return 'login';
       if (containsAny(allText, registerKeywords)) return 'registration';
       if (containsAny(allText, searchKeywords)) return 'search';
@@ -428,7 +418,6 @@
       if (containsAny(allText, newsletterKeywords)) return 'newsletter';
       if (containsAny(allText, checkoutKeywords)) return 'checkout';
       
-      // Vérifier les types de champs
       const hasEmailField = form.querySelector('input[type="email"]') !== null;
       const hasPasswordField = form.querySelector('input[type="password"]') !== null;
       const hasCreditCardField = form.querySelector('input[name*="card"], input[name*="credit"], input[id*="card"], input[id*="credit"]') !== null;
@@ -448,7 +437,6 @@
       const id = (input.id || '').toLowerCase();
       const placeholder = (input.placeholder || '').toLowerCase();
       
-      // Vérifier si le label existe
       let labelText = '';
       if (input.id) {
         const label = document.querySelector(`label[for="${input.id}"]`);
