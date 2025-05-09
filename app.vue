@@ -84,12 +84,10 @@ useHead({
   ],
   style: [
     {
-      // Critical CSS injecté directement dans la page
       children: `
         html, body {
           background-color: #121212;
           color: #fff;
-          transition: opacity 0.3s ease;
         }
         body {
           margin: 0;
@@ -120,20 +118,17 @@ useHead({
           pointer-events: none !important;
         }
 
-        /* Optimisations pour l'hydratation SSR */
         .v-application--is-hydrating {
-          opacity: 0;
+          opacity: 1;
         }
         .v-application--hydrated {
           opacity: 1;
-          transition: opacity 0.3s ease;
         }
       `
     }
   ]
 });
 
-// Gestionnaire d'erreurs global
 onErrorCaptured((err) => {
   if (
     err instanceof TypeError &&
@@ -246,7 +241,6 @@ const restoreUserSession = async () => {
   return false;
 }
 
-// Chargement du tracker d'analytics de façon asynchrone
 const loadTracker = () => {
   if (!isClient) return;
 
@@ -374,7 +368,6 @@ html,
 body {
   background-color: #121212;
   color: #fff;
-  transition: opacity 0.3s ease;
 }
 
 body {
@@ -389,12 +382,11 @@ body {
 }
 
 .v-application--is-hydrating {
-  opacity: 0;
+  opacity: 1;
 }
 
 .v-application--hydrated {
   opacity: 1;
-  transition: opacity 0.3s ease;
 }
 
 [data-segment-id] {

@@ -206,7 +206,6 @@ const snackbarText = ref('');
 const snackbarColor = ref('');
 const snackbarTimeout = ref(2000);
 const isClient = ref(false);
-const pageReady = ref(false);
 
 const getImageSrc = computed(() => {
   if (currentLanguage.value === 'fr') {
@@ -229,7 +228,6 @@ onServerPrefetch(async () => {
 onMounted(() => {
   isClient.value = true;
   isHydrating.value = false;
-  pageReady.value = true;
 });
 
 watch(() => currentLanguage.value, (newLang) => {
@@ -260,13 +258,7 @@ watch(() => currentLanguage.value, (newLang) => {
   max-width: 100%;
   height: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s ease-in-out;
-  transform: translateY(0);
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.hero-image:hover {
-  transform: translateY(-5px);
 }
 
 .stats-section {

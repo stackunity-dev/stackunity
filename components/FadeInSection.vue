@@ -1,5 +1,6 @@
 <template>
-  <div ref="fadeRef" class="fade-in-section" :class="{ 'is-visible': isVisible || initiallyVisible }" role="region"
+  <div ref="fadeRef" class="fade-in-section"
+    :class="{ 'is-visible': isVisible || initiallyVisible, 'no-transition': noTransition }" role="region"
     :aria-label="ariaLabel" :aria-hidden="!isVisible && !initiallyVisible">
     <slot></slot>
   </div>
@@ -25,6 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 const fadeRef = ref<HTMLElement | null>(null);
 const isVisible = ref(false);
 const prefersReducedMotion = ref(false);
+const noTransition = ref(true);
 
 const pageReady = inject('pageReady', ref(true));
 
@@ -51,6 +53,11 @@ const checkReducedMotion = () => {
 
 onMounted(() => {
   checkReducedMotion();
+  isVisible.value = true;
+
+  setTimeout(() => {
+    noTransition.value = false;
+  }, 300);
 
   if (prefersReducedMotion.value || props.reduceMotion) {
     isVisible.value = true;
@@ -102,6 +109,10 @@ onUnmounted(() => {
 .fade-in-section.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.fade-in-section.no-transition {
+  transition: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
