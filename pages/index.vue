@@ -90,7 +90,7 @@
 
 <script lang="ts" setup>
 // @ts-ignore 
-import { definePageMeta, onServerPrefetch, useHead, useNuxtApp, useRuntimeConfig } from '#imports';
+import { definePageMeta, onServerPrefetch, useHead, useNuxtApp } from '#imports';
 import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
 import FadeInSection from '../components/FadeInSection.vue';
 import BadExperiences from '../components/landing/BadExperiences.vue';
@@ -169,11 +169,7 @@ useHead({
   script: [
     {
       innerHTML: `
-        // Appliquer immédiatement les styles de base pour éviter le FOUC
-        document.documentElement.classList.add('index-page-loading');
-        setTimeout(function() {
-          document.documentElement.classList.add('index-transition');
-        }, 0);
+        document.documentElement.classList.add('index-page-ready');
       `,
       type: 'text/javascript'
     }
@@ -181,18 +177,8 @@ useHead({
   style: [
     {
       children: `
-        .index-page-loading {
+        .index-page-ready {
           background-color: #121212 !important;
-        }
-        .index-page-loading .main-content {
-          opacity: 0;
-        }
-        .index-transition .main-content {
-          transition: opacity 0.3s ease-in;
-          opacity: 1;
-        }
-        .page-loaded .main-content {
-          opacity: 1;
         }
         .faq-loading-placeholder {
           min-height: 300px;
@@ -243,12 +229,7 @@ onServerPrefetch(async () => {
 onMounted(() => {
   isClient.value = true;
   isHydrating.value = false;
-
-  setTimeout(() => {
-    document.documentElement.classList.add('page-loaded');
-    document.documentElement.classList.remove('index-page-loading');
-    pageReady.value = true;
-  }, 100);
+  pageReady.value = true;
 });
 
 watch(() => currentLanguage.value, (newLang) => {
