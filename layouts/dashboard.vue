@@ -64,18 +64,6 @@
 
         <v-list-subheader class="text-uppercase font-weight-bold text-caption">{{ t().menu.system }}</v-list-subheader>
 
-        <client-only>
-          <v-list-group v-if="userStore.user?.isAdmin" value="Administration" class="mb-1"
-            prepend-icon="mdi-shield-account">
-            <template #activator="{ props }">
-              <v-list-item v-bind="props" :title="t().menu.administration" rounded="lg" color="primary" />
-            </template>
-
-            <v-list-item :to="localePath('/admin/newsletter-admin')" prepend-icon="mdi-email-outline"
-              :title="t().menu.newsletter" rounded="lg" class="ml-4" color="primary" nuxt @click="closeDrawer" />
-          </v-list-group>
-        </client-only>
-
         <v-list-item v-if="userStore.user?.isPremium || userStore.user?.isStandard"
           prepend-icon="mdi-comment-quote-outline" :title="t().menu.feedback" rounded="lg" class="mb-1" color="primary"
           @click="showFeedBackDialog = true" />
@@ -227,8 +215,6 @@ const currentPageTitle = computed(() => {
     return t().menu.robotsSchema;
   } else if (path.includes('/settings')) {
     return t().menu.settings;
-  } else if (path.includes('/newsletter-admin')) {
-    return t().menu.newsletter;
   } else if (path.includes('/api-testing-hub')) {
     return t().menu.apiTestingHub;
   } else if (path.includes('/user-analytics')) {
@@ -348,8 +334,6 @@ const getCurrentPageIcon = () => {
     return 'mdi-robot';
   } else if (path.includes('/settings')) {
     return 'mdi-cog-outline';
-  } else if (path.includes('/newsletter-admin')) {
-    return 'mdi-email-outline';
   } else if (path.includes('/user-analytics')) {
     return 'mdi-chart-box';
   } else {

@@ -967,47 +967,6 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async sendEmail(emailData: any) {
-      try {
-        if (!emailData.subject || !emailData.html || !emailData.text) {
-          console.error('Données manquantes pour l\'envoi d\'email:', emailData);
-          return null;
-        }
-
-        const response = await fetch('/api/newsletter/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}`
-          },
-          body: JSON.stringify(emailData)
-        });
-
-        return response;
-      } catch (err: any) {
-        console.error('Erreur lors de l\'envoi d\'email:', err.message, err.stack);
-        return null;
-      }
-    },
-
-    async addNewsletter(newsletterName: string) {
-      try {
-        const response = await fetch('/api/newsletter/createNewsletter', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}`
-          },
-          body: JSON.stringify({ name: newsletterName })
-        });
-
-        return response;
-      } catch (err: any) {
-        console.error('Erreur lors de la création de la newsletter:', err.message, err.stack);
-        return null;
-      }
-    },
-
     async subscribeToNewsletter(email: string) {
       try {
         const response = await fetch('/api/newsletter/subscribe', {
@@ -1022,21 +981,6 @@ export const useUserStore = defineStore('user', {
         return response;
       } catch (err: any) {
         console.error('Erreur lors de l\'inscription à la newsletter:', err.message, err.stack);
-        return null;
-      }
-    },
-
-    async getEmailHistory() {
-      try {
-        const response = await fetch('/api/newsletter/history', {
-          headers: {
-            'Authorization': `Bearer ${this.token}`
-          },
-        });
-
-        return response;
-      } catch (err: any) {
-        console.error('Erreur lors de la récupération de l\'historique des emails:', err.message, err.stack);
         return null;
       }
     },
