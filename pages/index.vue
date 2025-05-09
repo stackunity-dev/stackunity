@@ -42,12 +42,22 @@
           <HowItWorks />
         </FadeInSection>
 
-        <FadeInSection>
-          <Pricing />
-        </FadeInSection>
+        <ClientOnly>
+          <FadeInSection>
+            <Pricing />
+          </FadeInSection>
+        </ClientOnly>
 
         <section id="faq" class="py-16">
-          <Faq />
+          <ClientOnly>
+            <Faq />
+            <template #fallback>
+              <div class="faq-loading-placeholder pa-8 text-center">
+                <h2 class="text-h4 mb-4">{{ t().faq.title }}</h2>
+                <p class="text-body-1">{{ t().faq.loading || 'Loading frequently asked questions...' }}</p>
+              </div>
+            </template>
+          </ClientOnly>
         </section>
 
         <section class="py-16 primary" aria-labelledby="cta-heading">
@@ -80,8 +90,8 @@
 
 <script lang="ts" setup>
 // @ts-ignore 
-import { definePageMeta, useHead, useNuxtApp } from '#imports';
-import { computed, defineAsyncComponent, onMounted, provide, ref, watch } from 'vue';
+import { definePageMeta, onServerPrefetch, useHead, useNuxtApp, useRuntimeConfig } from '#imports';
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
 import FadeInSection from '../components/FadeInSection.vue';
 import BadExperiences from '../components/landing/BadExperiences.vue';
 import FeaturesSection from '../components/landing/FeaturesSection.vue';
@@ -97,23 +107,28 @@ import { filterStyle } from '../utils/filter';
 import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
 
 const t = useTranslations('index');
+const isHydrating = ref(true);
+const ssrComplete = ref(false);
 
 const Pricing = defineAsyncComponent({
   loader: () => import('../components/pricing.vue'),
-  delay: 0,
+  delay: 200,
   suspensible: false,
   timeout: 10000
 });
 
 const Faq = defineAsyncComponent({
   loader: () => import('../components/faq.vue'),
-  delay: 0,
+  delay: 300,
   suspensible: false,
   timeout: 10000
 });
 
 definePageMeta({
-  layout: 'empty'
+  layout: 'empty',
+  keepalive: {
+    max: 10
+  }
 })
 
 useHead({
@@ -148,8 +163,46 @@ useHead({
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.tech' },
-    { rel: 'preload', href: '/logo/stackunity-title.png', as: 'image' }
+    { rel: 'preload', href: '/logo/stackunity-title.png', as: 'image' },
+    { rel: 'preload', href: computed(() => getImageSrc.value), as: 'image' }
   ],
+  script: [
+    {
+      innerHTML: `
+        // Appliquer immédiatement les styles de base pour éviter le FOUC
+        document.documentElement.classList.add('index-page-loading');
+        setTimeout(function() {
+          document.documentElement.classList.add('index-transition');
+        }, 0);
+      `,
+      type: 'text/javascript'
+    }
+  ],
+  style: [
+    {
+      children: `
+        .index-page-loading {
+          background-color: #121212 !important;
+        }
+        .index-page-loading .main-content {
+          opacity: 0;
+        }
+        .index-transition .main-content {
+          transition: opacity 0.3s ease-in;
+          opacity: 1;
+        }
+        .page-loaded .main-content {
+          opacity: 1;
+        }
+        .faq-loading-placeholder {
+          min-height: 300px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          background: rgba(0, 0, 0, 0.2);
+        }
+      `
+    }
+  ]
 })
 
 const nuxtApp = useNuxtApp()
@@ -183,23 +236,71 @@ const getImageSrc = computed(() => {
   }
 });
 
+onServerPrefetch(async () => {
+  ssrComplete.value = true;
+});
+
 onMounted(() => {
   isClient.value = true;
-  document.documentElement.classList.add('page-loaded');
-  pageReady.value = true;
+  isHydrating.value = false;
 
+  setTimeout(() => {
+    document.documentElement.classList.add('page-loaded');
+    document.documentElement.classList.remove('index-page-loading');
+    pageReady.value = true;
+  }, 100);
 });
 
 watch(() => currentLanguage.value, (newLang) => {
-  if (document) {
+  if (typeof document !== 'undefined') {
     document.documentElement.lang = newLang;
     const heroImage = document.querySelector('.hero-image') as HTMLImageElement;
     if (heroImage) {
       heroImage.src = getImageSrc.value;
     }
   }
-}, { immediate: true });
-
-provide('pageReady', pageReady);
-
+});
 </script>
+
+<style>
+.landing-screen {
+  background-color: #121212;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+.main-content {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-image {
+  max-width: 100%;
+  height: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease-in-out;
+  transform: translateY(0);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero-image:hover {
+  transform: translateY(-5px);
+}
+
+.stats-section {
+  background-color: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 599px) {
+  .stat-value {
+    font-size: 1.5rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .stat-label {
+    font-size: 0.7rem !important;
+  }
+}
+</style>

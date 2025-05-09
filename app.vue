@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onBeforeMount, onErrorCaptured, onMounted, ref } from 'vue';
+import { nextTick, onBeforeMount, onErrorCaptured, onMounted, onServerPrefetch, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCookieStore } from './stores/cookieStore';
 import { useUserStore } from './stores/userStore';
@@ -20,10 +20,13 @@ const router = useRouter();
 const userStore = useUserStore();
 const cookieStore = useCookieStore();
 const isClient = typeof window !== 'undefined';
+const isHydrating = ref(true);
 const sessionRestorationAttempted = ref(false);
 const restorationAttemptCount = ref(0);
 const appReady = ref(false);
 
+// Initialisation immédiate des valeurs par défaut
+// Ceci s'exécute en SSR et CSR
 if (!userStore.user) {
   userStore.user = {
     id: 0,
@@ -37,6 +40,7 @@ if (!userStore.user) {
 userStore.isPremium = userStore.isPremium || false;
 userStore.isAdmin = userStore.isAdmin || false;
 
+// Critical CSS et méta-tags - important pour SEO et performance
 useHead({
   title: 'StackUnity - The all-in-one platform for developers',
   htmlAttrs: {
@@ -80,6 +84,7 @@ useHead({
   ],
   style: [
     {
+      // Critical CSS injecté directement dans la page
       children: `
         html, body {
           background-color: #121212;
@@ -114,11 +119,21 @@ useHead({
           opacity: 0 !important;
           pointer-events: none !important;
         }
+
+        /* Optimisations pour l'hydratation SSR */
+        .v-application--is-hydrating {
+          opacity: 0;
+        }
+        .v-application--hydrated {
+          opacity: 1;
+          transition: opacity 0.3s ease;
+        }
       `
     }
   ]
 });
 
+// Gestionnaire d'erreurs global
 onErrorCaptured((err) => {
   if (
     err instanceof TypeError &&
@@ -134,6 +149,7 @@ onErrorCaptured((err) => {
   return true;
 });
 
+// Restauration de session - fonctionne en CSR uniquement
 const restoreUserSession = async () => {
   if (!isClient || sessionRestorationAttempted.value) {
     return false;
@@ -230,6 +246,7 @@ const restoreUserSession = async () => {
   return false;
 }
 
+// Chargement du tracker d'analytics de façon asynchrone
 const loadTracker = () => {
   if (!isClient) return;
 
@@ -247,11 +264,23 @@ const loadTracker = () => {
     } catch (e) {
       console.error('Erreur lors du chargement du tracker:', e);
     }
-  }, 1000);
+  }, 1000); // Délai pour ne pas bloquer l'hydratation
 };
 
+// Gestion SSR - exécuté avant le rendu côté serveur
+onServerPrefetch(async () => {
+  // Initialisation minimale côté serveur
+  // Ne pas effectuer d'opérations lourdes ici pour optimiser le TTFB
+  console.log('ServerPrefetch - App.vue');
+});
+
+// Avant le montage - en CSR uniquement
 onBeforeMount(async () => {
   if (isClient) {
+    // Ajouter une classe pour identifier l'état d'hydratation
+    document.documentElement.classList.add('v-application--is-hydrating');
+
+    // Restaurer la session de façon non-bloquante
     restoreUserSession().finally(() => {
       appReady.value = true;
     });
@@ -264,15 +293,23 @@ onBeforeMount(async () => {
   }
 });
 
+// Après le montage - en CSR uniquement
 onMounted(() => {
   if (!isClient) return;
 
+  // Indiquer que l'hydratation est terminée
+  isHydrating.value = false;
+  nextTick(() => {
+    document.documentElement.classList.remove('v-application--is-hydrating');
+    document.documentElement.classList.add('v-application--hydrated');
+  });
+
+  // Initialiser les fonctionnalités client-side
   cookieStore.initCookieConsent();
-
   initLanguage();
-
   loadTracker();
 
+  // Configuration du router
   router.beforeEach((to, from, next) => {
     try {
       if (!userStore.user) {
@@ -349,6 +386,15 @@ body {
 .v-application {
   background-color: #121212;
   color: white;
+}
+
+.v-application--is-hydrating {
+  opacity: 0;
+}
+
+.v-application--hydrated {
+  opacity: 1;
+  transition: opacity 0.3s ease;
 }
 
 [data-segment-id] {

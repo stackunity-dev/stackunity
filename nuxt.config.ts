@@ -2,7 +2,7 @@ import { defineNuxtConfig } from 'nuxt/config';
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
 
   nitro: {
     minify: true,
@@ -159,21 +159,35 @@ export default defineNuxtConfig({
     '/plausible-proxy.js': { headers: { 'cache-control': 'public, max-age=86400' } },
     '/sw-register.js': { headers: { 'cache-control': 'public, max-age=86400' } },
 
+    '/': { ssr: true },
+    '/index': { ssr: true },
+    '/en': { ssr: true },
+    '/fr': { ssr: true },
+    '/es': { ssr: true },
+    '/ar': { ssr: true },
+    '/zh': { ssr: true },
+
+    '/**': { ssr: false },
+
     '/fr/**': {
       headers: { 'content-language': 'fr' },
-      swr: 86400
+      swr: 86400,
+      ssr: false
     },
     '/es/**': {
       headers: { 'content-language': 'es' },
-      swr: 86400
+      swr: 86400,
+      ssr: false
     },
     '/ar/**': {
       headers: { 'content-language': 'ar' },
-      swr: 86400
+      swr: 86400,
+      ssr: false
     },
     '/zh/**': {
       headers: { 'content-language': 'zh' },
-      swr: 86400
+      swr: 86400,
+      ssr: false
     },
   }
 });
