@@ -173,15 +173,15 @@ export default defineEventHandler(async (event) => {
         COALESCE(page_url, 'Unknown page') AS page, 
         COUNT(*) AS views,
         CASE 
-          WHEN AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END) IS NULL THEN '0m 0s'
+          WHEN AVG(CASE WHEN duration IS NOT NULL AND duration > 0 THEN duration ELSE NULL END) IS NULL THEN '0m 0s'
           ELSE CONCAT(
-            FLOOR(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END) / 60), 
+            FLOOR(AVG(CASE WHEN duration IS NOT NULL AND duration > 0 THEN duration ELSE NULL END) / 60), 
             'm ', 
-            MOD(FLOOR(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END)), 60), 
+            MOD(FLOOR(AVG(CASE WHEN duration IS NOT NULL AND duration > 0 THEN duration ELSE NULL END)), 60), 
             's'
           )
         END AS avgTime,
-        COALESCE(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END), 0) AS raw_avg_time
+        COALESCE(AVG(CASE WHEN duration IS NOT NULL AND duration > 0 THEN duration ELSE NULL END), 0) AS raw_avg_time
       FROM analytics_pageviews 
       WHERE website_id = ? ${startDate ? 'AND enter_time >= ?' : ''}
       GROUP BY page_url 
@@ -194,6 +194,8 @@ export default defineEventHandler(async (event) => {
       topPagesQuery,
       startDate ? [dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' ')] : [dbWebsiteId]
     );
+
+    console.log('Résultats top pages (durées):', JSON.stringify(topPagesRows));
 
     // Ajuster la requête des sources de trafic
     let trafficSourcesQuery = `

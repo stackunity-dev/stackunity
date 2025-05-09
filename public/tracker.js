@@ -963,6 +963,13 @@
               const startTimeMs = state.startTime.getTime();
               const duration = Math.round((now.getTime() - startTimeMs) / 1000);
               
+              console.log('[StackUnity Tracker] Envoi mise à jour durée:', {
+                pageViewId: state.currentPageViewId,
+                duration: duration,
+                startTime: state.startTime,
+                currentTime: now
+              });
+              
               const pageVisitData = {
                 type: 'pageVisitDuration',
                 id: utils.generateUUID(),

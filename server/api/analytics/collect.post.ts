@@ -5,7 +5,6 @@ import { pool } from '../db';
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
-    console.log("query", query);
     if (query.emergency === '1' && query.websiteId && query.sessionId) {
 
       try {
@@ -313,8 +312,8 @@ export default defineEventHandler(async (event) => {
 
         await pool.query(
           `INSERT INTO analytics_pageviews 
-            (pageview_id, session_id, website_id, page_url, page_title, enter_time, utm_source, utm_medium, utm_campaign, referrer, referrer_source, referrer_name) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (pageview_id, session_id, website_id, page_url, page_title, enter_time, duration, utm_source, utm_medium, utm_campaign, referrer, referrer_source, referrer_name) 
+            VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
             page_title = VALUES(page_title)`,
           [
@@ -365,7 +364,10 @@ export default defineEventHandler(async (event) => {
               if (Array.isArray(pageViewRows) && pageViewRows.length > 0) {
                 await pool.query(
                   `UPDATE analytics_pageviews 
-                   SET exit_time = ?, duration = ?, scroll_depth = ?, is_short_visit = ? 
+                   SET exit_time = ?, 
+                       duration = GREATEST(COALESCE(duration, 0), ?), 
+                       scroll_depth = GREATEST(COALESCE(scroll_depth, 0), ?), 
+                       is_short_visit = ? 
                    WHERE pageview_id = ?`,
                   [
                     exitTime,
@@ -406,17 +408,28 @@ export default defineEventHandler(async (event) => {
                 }
               }
 
-              console.log('Traitement de la durée de visite:', event.pageViewId, 'durée:', duration);
+              console.log('Traitement de la durée de visite DÉTAILLÉ:', {
+                pageViewId: event.pageViewId,
+                duration: duration,
+                pageUrl: pageUrl,
+                timestamp: timestamp,
+                eventData: JSON.stringify(event)
+              });
 
               const [pageViewRows] = await pool.query<RowDataPacket[]>(
                 'SELECT pageview_id FROM analytics_pageviews WHERE pageview_id = ?',
                 [event.pageViewId]
               );
 
+              console.log('Page view trouvée?', Array.isArray(pageViewRows) && pageViewRows.length > 0 ? 'OUI' : 'NON');
+
               if (Array.isArray(pageViewRows) && pageViewRows.length > 0) {
-                await pool.query(
+                const updateResult = await pool.query(
                   `UPDATE analytics_pageviews 
-                    SET duration = GREATEST(duration, ?), scroll_depth = GREATEST(scroll_depth, ?), is_short_visit = ? 
+                    SET duration = GREATEST(COALESCE(duration, 0), ?), 
+                        scroll_depth = GREATEST(COALESCE(scroll_depth, 0), ?), 
+                        is_short_visit = ?,
+                        exit_time = NOW()
                     WHERE pageview_id = ?`,
                   [
                     duration,
@@ -425,7 +438,7 @@ export default defineEventHandler(async (event) => {
                     event.pageViewId
                   ]
                 );
-                console.log('Page vue mise à jour avec durée:', event.pageViewId, 'nouvelle durée:', duration);
+                console.log('Page vue mise à jour avec durée - Résultat:', JSON.stringify(updateResult));
               } else {
                 console.warn('pageVisitDuration: Aucune page vue trouvée avec l\'ID', event.pageViewId);
 
