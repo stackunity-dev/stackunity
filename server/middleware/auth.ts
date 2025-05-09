@@ -1,6 +1,4 @@
-import { defineEventHandler, getRequestHeaders, H3Event } from 'h3'
-import { ErrorLogger } from '../api/error/ErrorLogger'
-import { createForbiddenError, createUnauthorizedError } from '../api/error/GlobalErrorHandler'
+import { createError, defineEventHandler, getRequestHeaders, H3Event } from 'h3'
 import { ServerTokenManager } from '../utils/ServerTokenManager'
 
 
@@ -89,7 +87,10 @@ export default defineEventHandler(async (event: H3Event) => {
       return;
     }
     console.log('Authentification requise');
-    throw createUnauthorizedError('Authentification requise');
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Authentification requise'
+    });
   }
 
   try {
@@ -97,11 +98,17 @@ export default defineEventHandler(async (event: H3Event) => {
     event.context.user = decodedToken;
 
     if (adminRoutes.some(route => url.includes(route)) && !decodedToken.isAdmin) {
-      throw createForbiddenError('Accès refusé - Permissions administrateur requises');
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'Accès refusé - Permissions administrateur requises'
+      });
     }
 
     if (premiumRoutes.some(route => url.includes(route)) && !decodedToken.isPremium && !decodedToken.isStandard) {
-      throw createForbiddenError('Accès refusé - Compte premium requis');
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'Accès refusé - Compte premium requis'
+      });
     }
 
     setResponseHeaders(event, {
@@ -112,23 +119,27 @@ export default defineEventHandler(async (event: H3Event) => {
     });
 
   } catch (error: any) {
-    await ErrorLogger.logError(error, {
-      context: 'Middleware d\'authentification',
-      url,
-      timestamp: new Date().toISOString()
-    }, event);
 
     if (isPublicRoute(url)) {
       return;
     }
 
     if (error.name === 'TokenExpiredError') {
-      throw createUnauthorizedError('Token expiré');
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Token expiré'
+      });
     }
     if (error.name === 'JsonWebTokenError') {
-      throw createUnauthorizedError('Token invalide');
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Token invalide'
+      });
     }
-    throw createUnauthorizedError(error.message || 'Erreur d\'authentification');
+    throw createError({
+      statusCode: 401,
+      statusMessage: error.message || 'Erreur d\'authentification'
+    });
   }
 });
 
