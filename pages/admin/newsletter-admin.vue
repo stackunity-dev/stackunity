@@ -83,7 +83,6 @@
         </v-col>
       </v-row>
 
-      <EmailEditor />
     </v-main>
 
     <v-dialog v-model="addNewsletter" max-width="700">
