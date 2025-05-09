@@ -91,7 +91,9 @@
                           <v-divider vertical class="mx-2"></v-divider>
                           <div class="stat-item text-center">
                             <div class="text-caption text-medium-emphasis">{{ t.analytics.temps }}</div>
-                            <div class="text-subtitle-1 font-weight-bold">{{ site.stats.temps }}</div>
+                            <div class="text-subtitle-1 font-weight-bold">
+                              {{ site.stats.dureePageMoyenne || '0s' }}
+                            </div>
                           </div>
                         </div>
                       </v-card-text>
@@ -114,7 +116,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ tWithPurge.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ tWithPurge.welcome.few.description
-                      }}</p>
+                    }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ tWithPurge.welcome.few.action }}
@@ -173,7 +175,9 @@
                       <v-divider vertical class="mx-2"></v-divider>
                       <div class="stat-item text-center">
                         <div class="text-caption text-medium-emphasis">{{ t.analytics.temps }}</div>
-                        <div class="text-subtitle-1 font-weight-bold">{{ site.stats.temps }}</div>
+                        <div class="text-subtitle-1 font-weight-bold">
+                          {{ site.stats.dureePageMoyenne || '0s' }}
+                        </div>
                       </div>
                     </div>
                   </v-card-text>
@@ -263,7 +267,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                    }}</v-list-item-title>
+                  }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -641,7 +645,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                                }}</span>
+                              }}</span>
                             </div>
                           </td>
                           <td>
@@ -806,7 +810,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-              }}</p>
+            }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ tWithPurge.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -912,7 +916,7 @@
               <v-list-item v-if="ipExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                }}</v-list-item-title>
+                  }}</v-list-item-title>
               </v-list-item>
             </v-list>
 
@@ -2170,6 +2174,13 @@ function getTimeColor(item: PageView) {
   if (seconds < 60) return 'info';
   if (seconds < 180) return 'success';
   return 'primary';
+}
+
+// Fonction pour déterminer la classe CSS basée sur la qualité des données
+function getQualityClass(quality: number): string {
+  if (quality < 30) return 'text-error';
+  if (quality < 70) return 'text-warning';
+  return 'text-success';
 }
 
 // Si la fonction de formatage d'URL est également définie localement, renommons-la pour éviter le conflit
