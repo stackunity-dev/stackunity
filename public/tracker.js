@@ -956,6 +956,28 @@
             state.bounceDetected = !state.hasActivity;
           }, config.bounceTimeout);
           
+          // Ajouter un intervalle pour envoyer régulièrement des mises à jour de durée
+          setInterval(() => {
+            if (!state.isUnloading && !state.tabHidden && state.currentPageViewId) {
+              const now = new Date();
+              const startTimeMs = state.startTime.getTime();
+              const duration = Math.round((now.getTime() - startTimeMs) / 1000);
+              
+              const pageVisitData = {
+                type: 'pageVisitDuration',
+                id: utils.generateUUID(),
+                pageViewId: state.currentPageViewId,
+                duration: duration,
+                timestamp: now.toISOString(),
+                pageUrl: window.location.href,
+                scrollDepth: state.scrollDepth
+              };
+              
+              state.buffer.push(pageVisitData);
+              api.flushBuffer();
+            }
+          }, 30000); 
+          
           if (typeof utils.setupPageVisibilityObserver === 'function') {
             utils.setupPageVisibilityObserver();
           }
@@ -1328,7 +1350,7 @@
         
         if (input.type === 'password') return;
         
-        const fieldIdentifier = input.name || input.id || input.getAttribute('data-testid') || input.placeholder;
+        const fieldIdentifier = input.name || input.id || input.getAttribute('placeholder') || 'unidentified-field';
         if (!fieldIdentifier) return;
         
         const fieldKey = `${fieldIdentifier}-${window.location.pathname}`;
@@ -1410,7 +1432,7 @@
           type: 'interaction',
           id: utils.generateUUID(),
           pageViewId: state.currentPageViewId,
-          interactionType: 'input',
+          interactionType: 'input_change',
           elementSelector: input.id ? `#${input.id}` : `input[name="${input.name}"]`,
           elementText: labelText || fieldIdentifier,
           timestamp: new Date().toISOString(),
@@ -1418,7 +1440,9 @@
             fieldName: input.name || null,
             fieldType: input.type || 'text',
             hasValue: input.value && input.value.length > 0,
-            length: input.value ? input.value.length : 0
+            valueLength: input.value ? input.value.length : 0,
+            valuePreview: input.value && input.value.length > 0 ? input.value.substring(0, 20) + (input.value.length > 20 ? '...' : '') : '',
+            fieldPurpose: utils.getInputFieldPurpose(input)
           },
           pageUrl: currentUrl
         };
@@ -1426,6 +1450,18 @@
         state.buffer.push(eventData);
         state.hasActivity = true;
         state.lastActivity = new Date();
+      },
+      
+      handleInputEvent: function(e) {
+        const target = e.target;
+        if (!target || !['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
+          return;
+        }
+        
+        if (target.type === 'password') return; 
+        
+        const identifier = target.name || target.id || target.getAttribute('placeholder') || 'unidentified-field';
+        tracker.handleInput(e);
       },
       
       handleScroll: function() {
@@ -1914,42 +1950,6 @@
               event.pageUrl = window.location.href || document.URL || 'https://stackunity.tech/fallback';
             } catch (e) {
               event.pageUrl = 'https://stackunity.tech/fallback';
-            }
-          }
-          
-          if (event.type === 'pageView') {
-            // Vérification et correction de l'URL
-            if (!event.url || event.url === 'undefined' || event.url === 'null') {
-              event.url = event.pageUrl || 'https://stackunity.tech/fallback';
-            }
-            
-            // Vérification et correction de l'heure d'entrée
-            if (!event.enterTime || event.enterTime === 'undefined' || event.enterTime === 'null') {
-              event.enterTime = event.timestamp || new Date().toISOString();
-            }
-            
-            // Vérification et correction du type d'appareil - toujours fournir une valeur
-            if (!event.deviceType || event.deviceType === 'undefined' || event.deviceType === 'null' || event.deviceType === 'unknown') {
-              event.deviceType = utils.getDeviceType() || 'unknown';
-            }
-            
-            // Vérification et correction des informations de navigateur
-            if (!event.browser || event.browser === 'undefined' || event.browser === 'null') {
-              event.browser = utils.getBrowserInfo() || 'Unknown 0.0';
-            }
-            
-            // Vérification et correction des informations de système d'exploitation
-            if (!event.os || event.os === 'undefined' || event.os === 'null') {
-              event.os = utils.getOSInfo() || 'Unknown';
-            }
-            
-            // Vérification et correction des informations de référent
-            if (!event.referrerSource || event.referrerSource === 'undefined' || event.referrerSource === 'null') {
-              event.referrerSource = 'direct';
-            }
-            
-            if (!event.referrerName && event.referrerSource !== 'direct') {
-              event.referrerName = event.referrerSource.charAt(0).toUpperCase() + event.referrerSource.slice(1);
             }
           }
           

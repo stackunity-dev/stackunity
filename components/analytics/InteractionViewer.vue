@@ -479,6 +479,9 @@ const recentInteractions = computed(() => {
 });
 
 function getInteractionCount(type: string): number {
+  if (type === 'scroll') {
+    return filteredInteractionsByUrl.value.filter(i => i.type === 'scroll' || i.type === 'scroll_depth').length;
+  }
   return filteredInteractionsByUrl.value.filter(i => i.type === type).length;
 }
 

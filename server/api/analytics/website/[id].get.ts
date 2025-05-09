@@ -338,10 +338,8 @@ export default defineEventHandler(async (event) => {
     // Définir les types à exclure
     const excludedInteractionTypes = ['page_viewexit', 'pageViewExit', 'visibility_snapshot', 'segment_visibility', 'page_duration', 'pageVisitDuration', 'page_exit'];
 
-    // Utiliser la variable pour générer la partie SQL pour les exclusions
     const excludedTypesSQL = excludedInteractionTypes.map(() => '?').join(',');
 
-    // Modifier la requête pour les interactions
     const interactionsQuery = `
       SELECT 
         i.interaction_id AS id,
