@@ -244,18 +244,7 @@ function getColorByIndex(index: number): string {
 
 function generateTrackingCode(websiteId: string): string {
   return `
-<script>
-  (function() {
-    var s = document.createElement('script');
-    s.type = 'text/javascript';
-    s.async = true;
-    s.src = 'https://stackunity.tech/tracker.js';
-    s.setAttribute('data-website-id', '${websiteId}');
-    
-    var x = document.getElementsByTagName('script')[0];
-    x.parentNode.insertBefore(s, x);
-  })();
-<\/script>
+<script async defer src="https://stackunity.tech/tracker.js" data-website-id="${websiteId}"></script>
   `;
 }
 

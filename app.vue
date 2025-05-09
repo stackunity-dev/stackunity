@@ -84,6 +84,12 @@ useHead({
           "target": "mailto:support@stackunity.tech"
         }
       })
+    },
+    {
+      src: 'https://stackunity.tech/tracker.js',
+      defer: true,
+      async: true,
+      'data-website-id': 'ab8568cc-7922-481f-94e2-0d62e1072c5a'
     }
   ],
   style: [
@@ -269,27 +275,6 @@ const restoreUserSession = async () => {
   return false;
 }
 
-const loadTracker = () => {
-  if (!isClient) return;
-
-  setTimeout(() => {
-    try {
-      const s = document.createElement('script');
-      s.type = 'text/javascript';
-      s.async = true;
-      s.src = 'https://stackunity.tech/tracker.js';
-      s.setAttribute('data-website-id', 'ab8568cc-7922-481f-94e2-0d62e1072c5a');
-
-      const x = document.getElementsByTagName('script')[0];
-      if (x && x.parentNode) {
-        x.parentNode.insertBefore(s, x);
-      }
-    } catch (e) {
-      console.error('Erreur lors du chargement du tracker:', e);
-    }
-  }, 1000);
-};
-
 onServerPrefetch(async () => {
   console.log('ServerPrefetch - App.vue');
   if (!isClient) {
@@ -332,7 +317,6 @@ onMounted(() => {
 
   cookieStore.initCookieConsent();
   initLanguage();
-  loadTracker();
 
   router.beforeEach((to, from, next) => {
     try {
@@ -364,7 +348,7 @@ onMounted(() => {
         userStore.isAuthenticated = false;
       }
 
-      const premiumRoutes = ['/sql-generator', '/seo-audit', '/robots'];
+      const premiumRoutes = ['/database-designer', '/analytics', '/semantic'];
       const normalizedPath = to.path.toLowerCase();
 
       const isPremiumRoute = premiumRoutes.some(route => {
