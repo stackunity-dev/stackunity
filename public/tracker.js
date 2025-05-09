@@ -1081,6 +1081,10 @@
           title: document.title
         });
         
+        // Création du timestamp en ISO pour enterTime
+        const now = new Date();
+        const enterTimeIso = now.toISOString();
+        
         const pageview = {
           type: 'pageView',
           id: state.currentPageViewId,
@@ -1098,7 +1102,8 @@
           deviceType: deviceType,
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
-          timestamp: new Date().toISOString(),
+          timestamp: enterTimeIso,
+          enterTime: enterTimeIso, // Ajout de enterTime requis par le serveur
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
           language: navigator.language || 'fr',
           utmParams: utmParams
@@ -1572,6 +1577,10 @@
         state.startTime = new Date();
         state.scrollDepth = 0;
         
+        // Création du timestamp en ISO pour enterTime
+        const now = new Date();
+        const enterTimeIso = now.toISOString();
+        
         state.buffer.push({
           type: 'pageView',
           id: state.currentPageViewId,
@@ -1589,7 +1598,8 @@
           deviceType: utils.getDeviceType(),
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
-          timestamp: new Date().toISOString(),
+          timestamp: enterTimeIso,
+          enterTime: enterTimeIso, // Ajout de enterTime requis par le serveur
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
           language: navigator.language || 'fr',
           utmParams: utils.getUTMParams()
@@ -1812,7 +1822,7 @@
           }
         }
         
-        // Vérification des URLs dans les événements
+        // Vérification des URLs et enterTime dans les événements
         for (let i = 0; i < state.buffer.length; i++) {
           const event = state.buffer[i];
           
@@ -1822,11 +1832,17 @@
             event.pageUrl = 'https://stackunity.tech/fallback';
           }
           
-          // Pour les pageViews, assurons-nous que url est également défini
+          // Pour les pageViews, assurons-nous que url et enterTime sont également définis
           if (event.type === 'pageView') {
             if (!event.url || event.url === 'undefined' || event.url === 'null') {
               console.warn(`[StackUnity Tracker] PageView ${i} sans url, ajout d'une URL par défaut`);
               event.url = event.pageUrl || 'https://stackunity.tech/fallback';
+            }
+            
+            // Vérification et ajout de enterTime si manquant
+            if (!event.enterTime || event.enterTime === 'undefined' || event.enterTime === 'null') {
+              console.warn(`[StackUnity Tracker] PageView ${i} sans enterTime, ajout du timestamp actuel`);
+              event.enterTime = event.timestamp || new Date().toISOString();
             }
           }
         }
