@@ -1036,8 +1036,44 @@
         const utmParams = utils.getUTMParams();
         
         // S'assurer que l'URL est toujours présente
-        const currentUrl = window.location.href || document.URL || 'https://stackunity.tech/unknown';
-        const currentPath = window.location.pathname || '/unknown';
+        let currentUrl = '';
+        try {
+          currentUrl = window.location.href;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de window.location.href:', e);
+        }
+        
+        if (!currentUrl) {
+          try {
+            currentUrl = document.URL;
+          } catch (e) {
+            console.error('[StackUnity Tracker] Erreur lors de la récupération de document.URL:', e);
+          }
+        }
+        
+        if (!currentUrl) {
+          currentUrl = 'https://stackunity.tech/fallback';
+          console.warn('[StackUnity Tracker] Utilisation de l\'URL de fallback car aucune URL n\'a pu être récupérée');
+        }
+        
+        // S'assurer que le chemin est toujours présent
+        let currentPath = '';
+        try {
+          currentPath = window.location.pathname;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de window.location.pathname:', e);
+          // Extraire le chemin de l'URL si disponible
+          try {
+            const urlObj = new URL(currentUrl);
+            currentPath = urlObj.pathname;
+          } catch (e2) {
+            currentPath = '/fallback';
+          }
+        }
+        
+        if (!currentPath) {
+          currentPath = '/fallback';
+        }
         
         console.log('[StackUnity Tracker] Tracking page view:', {
           url: currentUrl,
@@ -1052,6 +1088,7 @@
           visitorId: state.visitorId,
           websiteId: state.websiteId,
           url: currentUrl,
+          pageUrl: currentUrl, // Ajout d'une propriété pageUrl pour assurer la compatibilité
           path: currentPath,
           title: document.title || 'Page sans titre',
           referrer: referrer,
@@ -1080,7 +1117,8 @@
               id: utils.generateUUID(),
               pageViewId: state.currentPageViewId,
               timestamp: new Date().toISOString(),
-              url: window.location.href,
+              url: currentUrl,
+              pageUrl: currentUrl, // Ajout d'une propriété pageUrl pour assurer la compatibilité
               data: pageContent
             };
             
@@ -1131,6 +1169,27 @@
           }
         }
         
+        // Récupérer l'URL de la page actuelle avec gestion d'erreur
+        let currentUrl = '';
+        try {
+          currentUrl = window.location.href;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL pour un clic:', e);
+        }
+        
+        if (!currentUrl) {
+          try {
+            currentUrl = document.URL;
+          } catch (e) {
+            console.error('[StackUnity Tracker] Erreur lors de la récupération de document.URL pour un clic:', e);
+          }
+        }
+        
+        // URL de fallback si toutes les méthodes échouent
+        if (!currentUrl) {
+          currentUrl = 'https://stackunity.tech/fallback';
+        }
+        
         const interaction = {
           type: 'interaction',
           id: utils.generateUUID(),
@@ -1144,7 +1203,7 @@
             x: e.clientX,
             y: e.clientY
           },
-          pageUrl: window.location.href
+          pageUrl: currentUrl
         };
         
         state.buffer.push(interaction);
@@ -1157,6 +1216,27 @@
         
         if (!form || form.tagName !== 'FORM') {
           return;
+        }
+        
+        // Récupérer l'URL de la page actuelle avec gestion d'erreur
+        let currentUrl = '';
+        try {
+          currentUrl = window.location.href;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL pour un formulaire:', e);
+        }
+        
+        if (!currentUrl) {
+          try {
+            currentUrl = document.URL;
+          } catch (e) {
+            console.error('[StackUnity Tracker] Erreur lors de la récupération de document.URL pour un formulaire:', e);
+          }
+        }
+        
+        // URL de fallback si toutes les méthodes échouent
+        if (!currentUrl) {
+          currentUrl = 'https://stackunity.tech/fallback';
         }
         
         const interaction = {
@@ -1173,7 +1253,7 @@
               .filter(el => el.name && !el.name.match(/password|token|key|secret/i))
               .map(el => ({ name: el.name, type: el.type }))
           },
-          pageUrl: window.location.href
+          pageUrl: currentUrl
         };
         
         state.buffer.push(interaction);
@@ -1249,156 +1329,105 @@
           }
         }
         
-        if (!labelText && input.parentElement) {
-          const nearbyLabel = input.parentElement.querySelector('.label, .form-label, [class*="label"]');
-          if (nearbyLabel) {
-            labelText = nearbyLabel.textContent.trim();
+        // Récupérer l'URL de la page actuelle avec gestion d'erreur
+        let currentUrl = '';
+        try {
+          currentUrl = window.location.href;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL pour un input:', e);
+        }
+        
+        if (!currentUrl) {
+          try {
+            currentUrl = document.URL;
+          } catch (e) {
+            console.error('[StackUnity Tracker] Erreur lors de la récupération de document.URL pour un input:', e);
           }
         }
         
-        let selector = '';
-        if (input.id) {
-          selector = `#${input.id}`;
-        } else if (input.name) {
-          selector = `[name="${input.name}"]`;
-        } else {
-          selector = input.tagName.toLowerCase();
-          if (input.className && typeof input.className === 'string') {
-            selector += `.${input.className.trim().replace(/\s+/g, '.')}`;
-          }
+        // URL de fallback si toutes les méthodes échouent
+        if (!currentUrl) {
+          currentUrl = 'https://stackunity.tech/fallback';
         }
         
-        let formInfo = {};
-        let formPurpose = 'unknown';
-        if (input.form) {
-          formPurpose = utils.getFormPurpose(input.form);
-          formInfo = {
-            formId: input.form.id || null,
-            formAction: input.form.action || null,
-            formName: input.form.name || null,
-            formPurpose: formPurpose
-          };
-        }
-        
-        const fieldPurpose = utils.getInputFieldPurpose(input);
-        
-        const inputDescription = labelText || input.placeholder || fieldIdentifier;
-        
-        let surroundingText = '';
-        if (input.parentElement) {
-          const parentText = input.parentElement.textContent.trim();
-          if (parentText.length > 0) {
-            surroundingText = parentText.substring(0, 100);
-          }
-        }
-        
-        let formatInfo = {};
-        if (input.pattern) {
-          formatInfo.pattern = input.pattern;
-        }
-        if (input.minLength) {
-          formatInfo.minLength = input.minLength;
-        }
-        if (input.maxLength && input.maxLength < 524288) {
-          formatInfo.maxLength = input.maxLength;
-        }
-        if (input.min) {
-          formatInfo.min = input.min;
-        }
-        if (input.max) {
-          formatInfo.max = input.max;
-        }
-        if (input.step && input.step !== 'any') {
-          formatInfo.step = input.step;
-        }
-        
-        const inputValue = input.value;
-        let safeValue = '';
-        
-        if (fieldPurpose === 'email' || fieldPurpose === 'phone' || fieldPurpose === 'payment') {
-          safeValue = '(valeur présente)';
-        } else if (inputValue.length > 0) {
-          safeValue = inputValue.length > 20 ? inputValue.substring(0, 20) + '...' : inputValue;
-        }
-        
-        const interaction = {
+        const eventData = {
           type: 'interaction',
           id: utils.generateUUID(),
           pageViewId: state.currentPageViewId,
-          interactionType: 'input_change',
-          elementSelector: selector,
-          elementText: inputDescription,
+          interactionType: 'input',
+          elementSelector: input.id ? `#${input.id}` : `input[name="${input.name}"]`,
+          elementText: labelText || fieldIdentifier,
           timestamp: new Date().toISOString(),
           value: {
-            fieldName: fieldIdentifier,
+            fieldName: input.name || null,
             fieldType: input.type || 'text',
-            fieldPurpose: fieldPurpose,
-            isValid: input.validity ? input.validity.valid : true,
-            hasValue: input.value.length > 0,
-            valueLength: input.value.length,
-            valuePreview: safeValue,
-            label: labelText,
-            placeholder: input.placeholder || '',
-            required: input.required || false,
-            format: Object.keys(formatInfo).length > 0 ? formatInfo : null,
-            formInfo: formInfo,
-            contextDescription: surroundingText.length > 0 ? surroundingText : null
+            hasValue: input.value && input.value.length > 0,
+            length: input.value ? input.value.length : 0
           },
-          pageUrl: window.location.href
+          pageUrl: currentUrl
         };
         
-        state.buffer.push(interaction);
+        state.buffer.push(eventData);
         state.hasActivity = true;
         state.lastActivity = new Date();
       },
       
       handleScroll: function() {
-        const newScrollDepth = utils.getMaxScrollDepth();
-        const currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-        const currentTimestamp = new Date().getTime();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const documentHeight = Math.max(
+          document.body.scrollHeight,
+          document.body.offsetHeight,
+          document.documentElement.clientHeight,
+          document.documentElement.scrollHeight,
+          document.documentElement.offsetHeight
+        );
         
-        let scrollSpeed = 0;
-        if (state.lastScrollTimestamp > 0) {
-          const timeDiff = currentTimestamp - state.lastScrollTimestamp;
-          if (timeDiff > 0) {
-            const distanceMoved = Math.abs(currentScrollPosition - state.lastScrollPosition);
-            scrollSpeed = distanceMoved / timeDiff * 1000;
+        const windowHeight = window.innerHeight;
+        const scrollPercent = Math.round((scrollTop / (documentHeight - windowHeight)) * 100);
+        
+        if (scrollPercent > state.scrollDepth) {
+          state.scrollDepth = scrollPercent;
+          
+          // Récupérer l'URL de la page actuelle avec gestion d'erreur
+          let currentUrl = '';
+          try {
+            currentUrl = window.location.href;
+          } catch (e) {
+            console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL pour un scroll:', e);
           }
-        }
-        
-        state.lastScrollPosition = currentScrollPosition;
-        state.lastScrollTimestamp = currentTimestamp;
-        
-        if (newScrollDepth > state.scrollDepth) {
-          state.scrollDepth = newScrollDepth;
           
-          const interaction = {
-            type: 'interaction',
-            id: utils.generateUUID(),
-            pageViewId: state.currentPageViewId,
-            interactionType: 'scroll',
-            elementSelector: 'window',
-            elementText: 'Page scroll depth',
-            timestamp: new Date().toISOString(),
-            value: { 
-              scrollDepth: state.scrollDepth,
-              viewportHeight: window.innerHeight,
-              documentHeight: Math.max(
-                document.body.scrollHeight,
-                document.body.offsetHeight,
-                document.documentElement.clientHeight,
-                document.documentElement.scrollHeight,
-                document.documentElement.offsetHeight
-              ),
-              scrollPosition: currentScrollPosition,
-              scrollSpeed: scrollSpeed
-            },
-            pageUrl: window.location.href
-          };
+          if (!currentUrl) {
+            try {
+              currentUrl = document.URL;
+            } catch (e) {
+              console.error('[StackUnity Tracker] Erreur lors de la récupération de document.URL pour un scroll:', e);
+            }
+          }
           
-          state.buffer.push(interaction);
-          state.hasActivity = true;
-          state.lastActivity = new Date();
+          // URL de fallback si toutes les méthodes échouent
+          if (!currentUrl) {
+            currentUrl = 'https://stackunity.tech/fallback';
+          }
+          
+          const depthReached = Math.floor(scrollPercent / 25) * 25;
+          if (depthReached >= 25) {
+            const scrollEvent = {
+              type: 'interaction',
+              id: utils.generateUUID(),
+              pageViewId: state.currentPageViewId,
+              interactionType: 'scroll_depth',
+              timestamp: new Date().toISOString(),
+              value: {
+                depth: depthReached,
+                pixelY: scrollTop
+              },
+              pageUrl: currentUrl
+            };
+            
+            state.buffer.push(scrollEvent);
+            state.hasActivity = true;
+            state.lastActivity = new Date();
+          }
         }
       },
       
@@ -1535,27 +1564,56 @@
       },
       
       handleHistoryChange: function() {
-        const endTime = new Date();
-        const duration = Math.round((endTime.getTime() - state.startTime.getTime()) / 1000);
+        // Vérifier si l'URL a changé
+        const currentUrl = window.location.href || document.URL || 'https://stackunity.tech/fallback';
+        const currentPath = window.location.pathname || '/fallback';
         
-        const pageViewExit = {
-          type: 'pageViewExit',
-          id: utils.generateUUID(),
-          pageViewId: state.currentPageViewId,
-          exitTime: endTime.toISOString(),
-          duration: duration,
-          scrollDepth: state.scrollDepth
-        };
+        state.currentPageViewId = utils.generateUUID();
+        state.startTime = new Date();
+        state.scrollDepth = 0;
         
-        state.buffer.push(pageViewExit);
+        state.buffer.push({
+          type: 'pageView',
+          id: state.currentPageViewId,
+          sessionId: state.sessionId,
+          visitorId: state.visitorId,
+          websiteId: state.websiteId,
+          url: currentUrl,
+          pageUrl: currentUrl, // Ajout d'une propriété pageUrl pour assurer la compatibilité
+          path: currentPath,
+          title: document.title || 'Page sans titre',
+          referrer: document.URL,
+          referrerSource: 'internal',
+          browserInfo: utils.getBrowserInfo(),
+          osInfo: utils.getOSInfo(),
+          deviceType: utils.getDeviceType(),
+          screenWidth: window.innerWidth || 1024,
+          screenHeight: window.innerHeight || 768,
+          timestamp: new Date().toISOString(),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+          language: navigator.language || 'fr',
+          utmParams: utils.getUTMParams()
+        });
         
-        Promise.resolve(api.flushBuffer())
-          .then(() => {
-            setTimeout(() => tracker.trackPageView(), 100);
-          })
-          .catch(() => {
-            setTimeout(() => tracker.trackPageView(), 100);
-          });
+        state.hasActivity = false;
+        
+        if (config.trackVisibility) {
+          setTimeout(() => {
+            const pageContent = utils.analyzePageContent();
+            
+            const pageAnalysis = {
+              type: 'pageAnalysis',
+              id: utils.generateUUID(),
+              pageViewId: state.currentPageViewId,
+              timestamp: new Date().toISOString(),
+              url: currentUrl,
+              pageUrl: currentUrl, // Ajout d'une propriété pageUrl pour assurer la compatibilité
+              data: pageContent
+            };
+            
+            state.buffer.push(pageAnalysis);
+          }, 500);
+        }
       },
       
       setupVisibilityTracking: function() {
@@ -1615,6 +1673,27 @@
       },
       
       trackSegmentVisibility: function(segment, duration) {
+        // Récupérer l'URL de la page actuelle avec gestion d'erreur
+        let currentUrl = '';
+        try {
+          currentUrl = window.location.href;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL pour un segment de visibilité:', e);
+        }
+        
+        if (!currentUrl) {
+          try {
+            currentUrl = document.URL;
+          } catch (e) {
+            console.error('[StackUnity Tracker] Erreur lors de la récupération de document.URL pour un segment de visibilité:', e);
+          }
+        }
+        
+        // URL de fallback si toutes les méthodes échouent
+        if (!currentUrl) {
+          currentUrl = 'https://stackunity.tech/fallback';
+        }
+        
         const visibilityEvent = {
           type: 'interaction',
           id: utils.generateUUID(),
@@ -1629,7 +1708,7 @@
             visibleTime: duration,
             elements: segment.elementsInSegment
           },
-          pageUrl: window.location.href
+          pageUrl: currentUrl
         };
         
         state.buffer.push(visibilityEvent);
@@ -1645,6 +1724,27 @@
           document.documentElement.scrollHeight,
           document.documentElement.offsetHeight
         );
+        
+        // Récupérer l'URL de la page actuelle avec gestion d'erreur
+        let currentUrl = '';
+        try {
+          currentUrl = window.location.href;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL pour un snapshot de visibilité:', e);
+        }
+        
+        if (!currentUrl) {
+          try {
+            currentUrl = document.URL;
+          } catch (e) {
+            console.error('[StackUnity Tracker] Erreur lors de la récupération de document.URL pour un snapshot de visibilité:', e);
+          }
+        }
+        
+        // URL de fallback si toutes les méthodes échouent
+        if (!currentUrl) {
+          currentUrl = 'https://stackunity.tech/fallback';
+        }
         
         const visibilitySnapshot = {
           type: 'interaction',
@@ -1672,7 +1772,7 @@
               hasBeenSeen: state.visibilityMap.has(segment.id)
             }))
           },
-          pageUrl: window.location.href
+          pageUrl: currentUrl
         };
         
         state.buffer.push(visibilitySnapshot);
@@ -1712,6 +1812,25 @@
           }
         }
         
+        // Vérification des URLs dans les événements
+        for (let i = 0; i < state.buffer.length; i++) {
+          const event = state.buffer[i];
+          
+          // Assurons-nous que chaque événement a un pageUrl valide
+          if (!event.pageUrl || event.pageUrl === 'undefined' || event.pageUrl === 'null') {
+            console.warn(`[StackUnity Tracker] Événement ${i} (${event.type}) sans pageUrl, ajout d'une URL par défaut`);
+            event.pageUrl = 'https://stackunity.tech/fallback';
+          }
+          
+          // Pour les pageViews, assurons-nous que url est également défini
+          if (event.type === 'pageView') {
+            if (!event.url || event.url === 'undefined' || event.url === 'null') {
+              console.warn(`[StackUnity Tracker] PageView ${i} sans url, ajout d'une URL par défaut`);
+              event.url = event.pageUrl || 'https://stackunity.tech/fallback';
+            }
+          }
+        }
+        
         const eventsToSend = [...state.buffer];
         state.buffer = [];
         
@@ -1729,6 +1848,17 @@
           visitorId: dataToSend.visitorId,
           eventsCount: dataToSend.events.length
         });
+        
+        // Log détaillé des événements de type pageView
+        const pageViewEvents = eventsToSend.filter(e => e.type === 'pageView');
+        if (pageViewEvents.length > 0) {
+          console.log('[StackUnity Tracker] Détails des pageViews à envoyer:', pageViewEvents.map(e => ({
+            id: e.id,
+            url: e.url,
+            pageUrl: e.pageUrl,
+            title: e.title
+          })));
+        }
         
         if (isBeforeUnload) {
           if (navigator.sendBeacon) {
