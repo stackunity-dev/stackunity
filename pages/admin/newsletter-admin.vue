@@ -113,15 +113,15 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '@/stores/userStore';
+import { useUserStore } from '../../stores/userStore';
 import { onMounted, ref } from 'vue';
-import EmailEditor from '~/components/email-editor.vue';
-
+// @ts-ignore
+import { definePageMeta, useHead, navigateTo } from 'imports';
 definePageMeta({
   layout: 'dashboard',
 });
 
-useHead({ 
+useHead({
   title: 'Newsletter Admin - DevUnity',
   meta: [
     { name: 'description', content: 'Admin dashboard for managing newsletters' },
