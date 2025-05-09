@@ -113,12 +113,6 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'en'
       },
-      script: [
-        {
-          src: '/sw-register.js',
-          defer: true
-        }
-      ],
       meta: [
         { name: 'crossorigin', content: 'use-credentials' },
         { name: 'author', content: 'Stackunity' },
@@ -143,8 +137,6 @@ export default defineNuxtConfig({
     '/favicon.ico': { headers: { 'cache-control': 'public, max-age=86400' } },
     '/logo/**': { headers: { 'cache-control': 'public, max-age=86400' } },
     '/images/**': { headers: { 'cache-control': 'public, max-age=86400' } },
-    '/sw-register.js': { headers: { 'cache-control': 'public, max-age=0', 'content-type': 'application/javascript' } },
-    '/sw.js': { headers: { 'cache-control': 'public, max-age=0', 'content-type': 'application/javascript' } },
 
     '/': { ssr: true },
     '/index': { ssr: true },

@@ -146,19 +146,24 @@ useHead({
   ]
 });
 
-onErrorCaptured((err) => {
-  if (
-    err instanceof TypeError &&
-    (err.message.includes("'parentNode'") ||
-      err.message.includes("'type' of 'vnode'") ||
-      err.message.includes("null") ||
-      err.message.includes("undefined") ||
-      err.message.includes("Cannot read properties of undefined") ||
-      err.message.includes("Cannot access") ||
-      err.message.includes("dispose"))
-  ) {
-    console.warn('Erreur Vue ignorée:', err.message);
-    return false;
+onErrorCaptured((err, instance, info) => {
+  try {
+    if (
+      err instanceof TypeError &&
+      (err.message.includes("'parentNode'") ||
+        err.message.includes("'type' of 'vnode'") ||
+        err.message.includes("null") ||
+        err.message.includes("undefined") ||
+        err.message.includes("Cannot read properties of undefined") ||
+        err.message.includes("Cannot access") ||
+        err.message.includes("dispose") ||
+        err.message.includes("'title'") ||
+        err.message.includes("before initialization"))
+    ) {
+      console.warn('Erreur Vue ignorée:', err.message);
+      return false;
+    }
+  } catch (e) {
   }
 
   return true;
@@ -183,21 +188,25 @@ const restoreUserSession = async () => {
         await userStore.loadData();
         userStore.isAuthenticated = true;
 
-        const trialResponse = await fetch('/api/auth/check-trial', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (trialResponse.ok) {
-          const trialData = await trialResponse.json();
-          if (trialData.success) {
-            userStore.isPremium = trialData.isPremium;
-            if (userStore.user) {
-              userStore.user.isPremium = trialData.isPremium;
+        try {
+          const trialResponse = await fetch('/api/auth/check-trial', {
+            headers: {
+              'Authorization': `Bearer ${token}`
             }
-            userStore.persistData();
+          });
+
+          if (trialResponse.ok) {
+            const trialData = await trialResponse.json();
+            if (trialData.success) {
+              userStore.isPremium = trialData.isPremium;
+              if (userStore.user) {
+                userStore.user.isPremium = trialData.isPremium;
+              }
+              userStore.persistData();
+            }
           }
+        } catch (trialError) {
+          console.error('Erreur lors de la vérification du statut premium:', trialError);
         }
 
         return true;
@@ -297,7 +306,11 @@ onBeforeMount(async () => {
 
     nextTick(() => {
       if (isClient) {
-        localStorage.setItem('stackunity_consent', 'true');
+        try {
+          localStorage.setItem('stackunity_consent', 'true');
+        } catch (e) {
+          console.warn('Impossible de définir localStorage:', e);
+        }
       }
     });
   }
