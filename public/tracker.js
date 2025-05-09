@@ -21,11 +21,6 @@
       exclusionsEndpoint: `${baseUrl}/api/analytics/website/{id}/exclusions`
     };
 
-    console.log('[StackUnity Tracker] Configuration avec URLs absolues:', {
-      apiEndpoint: config.apiEndpoint,
-      exclusionsEndpoint: config.exclusionsEndpoint
-    });
-
     const state = {
       websiteId: '',
       sessionId: '',
@@ -86,55 +81,115 @@
       },
       
       getDeviceType: function() {
-        const width = window.innerWidth;
-        if (width < 768) return 'mobile';
-        if (width < 1024) return 'tablet';
-        return 'desktop';
+        try {
+          // @ts-ignore - Ignorer l'erreur TS pour userAgentData qui n'est pas dans tous les navigateurs
+          if (navigator.userAgentData && navigator.userAgentData.mobile) {
+            return 'mobile';
+          }
+          
+          const ua = navigator.userAgent;
+          const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+          
+          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+          
+          if (isMobile) {
+            if (/iPad|Android(?!.*Mobile)/i.test(ua) || width >= 768) {
+              return 'tablet';
+            }
+            return 'mobile';
+          }
+          
+          if (width < 768) return 'mobile';
+          if (width < 1024) return 'tablet';
+          return 'desktop';
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la détection du type d\'appareil:', e);
+          return 'unknown';
+        }
       },
       
       getBrowserInfo: function() {
-        const ua = navigator.userAgent;
-        let browser = '';
-        let version = '';
-        
-        if (ua.indexOf('Chrome') > -1) {
-          browser = 'Chrome';
-          const match = ua.match(/Chrome\/(\d+\.\d+)/);
-          version = match ? match[1] : '0.0';
-        } else if (ua.indexOf('Safari') > -1) {
-          browser = 'Safari';
-          const match = ua.match(/Version\/(\d+\.\d+)/);
-          version = match ? match[1] : '0.0';
-        } else if (ua.indexOf('Firefox') > -1) {
-          browser = 'Firefox';
-          const match = ua.match(/Firefox\/(\d+\.\d+)/);
-          version = match ? match[1] : '0.0';
-        } else if (ua.indexOf('MSIE') > -1 || ua.indexOf('Trident/') > -1) {
-          browser = 'Internet Explorer';
-          const match = ua.match(/MSIE (\d+\.\d+)/);
-          version = match ? match[1] : '11.0';
-        } else if (ua.indexOf('Edge') > -1) {
-          browser = 'Edge';
-          const match = ua.match(/Edge\/(\d+\.\d+)/);
-          version = match ? match[1] : '0.0';
-        } else {
-          browser = 'Unknown';
-          version = '0.0';
+        try {
+          const ua = navigator.userAgent;
+          let browser = '';
+          let version = '';
+          
+          if (ua.indexOf('Chrome') > -1 && ua.indexOf('Edg/') === -1 && ua.indexOf('Edge/') === -1) {
+            browser = 'Chrome';
+            const match = ua.match(/Chrome\/(\d+(\.\d+)?)/);
+            version = match ? match[1] : '0.0';
+          } else if (ua.indexOf('Edg/') > -1 || ua.indexOf('Edge/') > -1) {
+            browser = 'Edge';
+            const match = ua.indexOf('Edg/') > -1 ? ua.match(/Edg\/(\d+(\.\d+)?)/) : ua.match(/Edge\/(\d+(\.\d+)?)/);
+            version = match ? match[1] : '0.0';
+          } else if (ua.indexOf('Firefox') > -1) {
+            browser = 'Firefox';
+            const match = ua.match(/Firefox\/(\d+(\.\d+)?)/);
+            version = match ? match[1] : '0.0';
+          } else if (ua.indexOf('Safari') > -1 && ua.indexOf('Chrome') === -1) {
+            browser = 'Safari';
+            const match = ua.match(/Version\/(\d+(\.\d+)?)/);
+            version = match ? match[1] : '0.0';
+          } else if (ua.indexOf('MSIE') > -1 || ua.indexOf('Trident/') > -1) {
+            browser = 'Internet Explorer';
+            const match = ua.match(/MSIE (\d+(\.\d+)?)/);
+            version = match ? match[1] : '11.0';
+          } else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR/') > -1) {
+            browser = 'Opera';
+            const match = ua.indexOf('OPR/') > -1 ? ua.match(/OPR\/(\d+(\.\d+)?)/) : ua.match(/Opera\/(\d+(\.\d+)?)/);
+            version = match ? match[1] : '0.0';
+          } else {
+            browser = 'Unknown';
+            version = '0.0';
+          }
+          
+          return browser + ' ' + version;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du navigateur:', e);
+          return 'Unknown 0.0';
         }
-        
-        return browser + ' ' + version;
       },
       
       getOSInfo: function() {
-        const ua = navigator.userAgent;
-        
-        if (ua.indexOf('Windows') > -1) return 'Windows';
-        if (ua.indexOf('Mac OS X') > -1) return 'macOS';
-        if (ua.indexOf('Linux') > -1) return 'Linux';
-        if (ua.indexOf('iOS') > -1) return 'iOS';
-        if (ua.indexOf('Android') > -1) return 'Android';
-        
-        return 'Unknown';
+        try {
+          const ua = navigator.userAgent;
+          
+          let os = 'Unknown';
+          let version = '';
+          
+          if (ua.indexOf('Android') > -1) {
+            os = 'Android';
+            const match = ua.match(/Android (\d+(\.\d+)?)/);
+            version = match ? match[1] : '';
+          } else if (ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1 || ua.indexOf('iPod') > -1) {
+            if (ua.indexOf('iPhone') > -1) os = 'iOS';
+            else if (ua.indexOf('iPad') > -1) os = 'iPadOS';
+            else os = 'iOS';
+            
+            const match = ua.match(/(CPU|iPhone) OS (\d+[_\.]\d+)/);
+            version = match ? match[2].replace('_', '.') : '';
+          } else if (ua.indexOf('Win') > -1) {
+            os = 'Windows';
+            if (ua.indexOf('Windows NT 10.0') > -1) version = '10';
+            else if (ua.indexOf('Windows NT 6.3') > -1) version = '8.1';
+            else if (ua.indexOf('Windows NT 6.2') > -1) version = '8';
+            else if (ua.indexOf('Windows NT 6.1') > -1) version = '7';
+            else if (ua.indexOf('Windows NT 6.0') > -1) version = 'Vista';
+            else if (ua.indexOf('Windows NT 5.1') > -1) version = 'XP';
+            else version = '';
+          } else if (ua.indexOf('Mac OS X') > -1) {
+            os = 'macOS';
+            const match = ua.match(/Mac OS X (\d+[._]\d+)/);
+            version = match ? match[1].replace('_', '.') : '';
+          } else if (ua.indexOf('Linux') > -1) {
+            os = 'Linux';
+          }
+          
+          return version ? os + ' ' + version : os;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du système d\'exploitation:', e);
+          return 'Unknown';
+        }
       },
       
       getReferrer: function() {
@@ -578,7 +633,6 @@
       
       getUserIP: async function() {
         try {
-          console.log('[StackUnity Tracker] Tentative de récupération de l\'IP');
           if (window.location.hostname !== 'localhost') {
             console.log('[StackUnity Tracker] Skip de la récupération d\'IP en production');
             return null;
@@ -596,7 +650,6 @@
 
       sendSyncXhr: function(endpoint, data) {
         try {
-          console.log('[StackUnity Tracker] Envoi synchrone via XHR');
           const xhr = new XMLHttpRequest();
           xhr.open('POST', endpoint, false); // false = synchrone
           xhr.setRequestHeader('Content-Type', 'application/json');
@@ -609,7 +662,6 @@
           };
           
           xhr.send(JSON.stringify(payload));
-          console.log('[StackUnity Tracker] XHR synchrone envoyé avec succès');
           return true;
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de l\'envoi XHR synchrone:', e);
@@ -634,10 +686,8 @@
       
       checkExclusions: async function(websiteId) {
         try {
-          console.log('[StackUnity Tracker] Début de la vérification des exclusions');
           
           const userId = utils.getAuthenticatedUserId();
-          console.log('[StackUnity Tracker] User ID pour exclusion:', userId || 'Non disponible');
           
           if (!userId) {
             console.log('[StackUnity Tracker] Pas d\'userId disponible, on continue sans exclusion');
@@ -645,11 +695,9 @@
           }
           
           const endpoint = config.exclusionsEndpoint.replace('{id}', websiteId);
-          console.log('[StackUnity Tracker] Endpoint d\'exclusion:', endpoint);
           
           try {
             const response = await fetch(endpoint);
-            console.log('[StackUnity Tracker] Statut de la réponse d\'exclusion:', response.status);
             
             if (!response.ok) {
               console.error('[StackUnity Tracker] Erreur HTTP lors de la vérification des exclusions:', response.status);
@@ -657,21 +705,17 @@
             }
             
             const result = await response.json();
-            console.log('[StackUnity Tracker] Données d\'exclusion reçues:', JSON.stringify(result).substring(0, 100) + '...');
             
             if (!result.success || !result.data || !Array.isArray(result.data)) {
-              console.log('[StackUnity Tracker] Données d\'exclusion invalides ou vides');
               return false;
             }
             
             for (const exclusion of result.data) {
               if (exclusion.type === 'user' && userId && exclusion.value === userId) {
-                console.log('[StackUnity Tracker] User ID exclu trouvé');
                 return true;
               }
             }
             
-            console.log('[StackUnity Tracker] Aucune exclusion trouvée');
             return false;
           } catch (fetchError) {
             console.error('[StackUnity Tracker] Erreur lors de la requête d\'exclusion:', fetchError);
@@ -737,7 +781,6 @@
           const metaDescription = document.querySelector('meta[name="description"]');
           pageData.hasMetaDescription = !!metaDescription;
           
-          console.log('[StackUnity Tracker] Analyse de page complétée:', pageData);
           return pageData;
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de l\'analyse du contenu:', e);
@@ -751,8 +794,6 @@
 
     const api = {
       sendData: function(endpoint, data) {
-        console.log('[StackUnity Tracker] Tentative d\'envoi de données vers:', endpoint);
-        console.log('[StackUnity Tracker] Données:', JSON.stringify(data).substring(0, 200) + '...');
         
         if (navigator.sendBeacon && state.isUnloading) {
           try {
@@ -774,7 +815,6 @@
           return api.sendDataNoCors(endpoint, data);
         }
         
-        console.log('[StackUnity Tracker] Utilisation de fetch standard');
         return fetch(endpoint, {
           method: 'POST',
           headers: {
@@ -783,7 +823,6 @@
           body: JSON.stringify(data),
           keepalive: state.isUnloading 
         }).then(response => {
-          console.log('[StackUnity Tracker] Réponse reçue:', response.status);
           return response;
         }).catch(error => {
           console.error('[StackUnity Tracker] Erreur fetch:', error);
@@ -833,7 +872,6 @@
     const tracker = {
       init: function() {
         try {
-          console.log('[StackUnity Tracker] Initialisation du tracker');
           
           const script = document.currentScript || document.querySelector('script[data-website-id]');
           
@@ -849,13 +887,11 @@
             return;
           }
           
-          console.log('[StackUnity Tracker] Website ID:', state.websiteId);
           
           state.visitorId = utils.getVisitorId();
           state.sessionId = sessionStorage.getItem('stackunity_session_id') || utils.generateUUID();
           sessionStorage.setItem('stackunity_session_id', state.sessionId);
           
-          console.log('[StackUnity Tracker] Vérification des exclusions');
           
           tracker.setupTracking();
           
@@ -863,7 +899,6 @@
             utils.checkExclusions(state.websiteId)
               .then(isExcluded => {
                 if (isExcluded) {
-                  console.log('[StackUnity Tracker] Utilisateur exclu du tracking');
                   state.isExcluded = true;
                 }
               })
@@ -880,7 +915,6 @@
       
       setupTracking: function() {
         try {
-          console.log('[StackUnity Tracker] Début de setupTracking');
           state.currentPageViewId = utils.generateUUID();
           
           tracker.trackPageView();
@@ -901,7 +935,6 @@
             utils.setupPageVisibilityObserver();
           }
           
-          console.log('[StackUnity Tracker] Fin de setupTracking avec succès');
         } catch (setupError) {
           console.error('[StackUnity Tracker] Erreur dans setupTracking:', setupError);
           // Tentative minimale d'initialisation
@@ -1032,10 +1065,9 @@
         const browserInfo = utils.getBrowserInfo();
         const osInfo = utils.getOSInfo();
         const referrer = utils.getReferrer();
-        const { source: referrerSource } = utils.getReferrerSource();
+        const { source: referrerSource, name: referrerName } = utils.getReferrerSource();
         const utmParams = utils.getUTMParams();
         
-        // S'assurer que l'URL est toujours présente
         let currentUrl = '';
         try {
           currentUrl = window.location.href;
@@ -1056,13 +1088,11 @@
           console.warn('[StackUnity Tracker] Utilisation de l\'URL de fallback car aucune URL n\'a pu être récupérée');
         }
         
-        // S'assurer que le chemin est toujours présent
         let currentPath = '';
         try {
           currentPath = window.location.pathname;
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la récupération de window.location.pathname:', e);
-          // Extraire le chemin de l'URL si disponible
           try {
             const urlObj = new URL(currentUrl);
             currentPath = urlObj.pathname;
@@ -1075,13 +1105,7 @@
           currentPath = '/fallback';
         }
         
-        console.log('[StackUnity Tracker] Tracking page view:', {
-          url: currentUrl,
-          path: currentPath,
-          title: document.title
-        });
         
-        // Création du timestamp en ISO pour enterTime
         const now = new Date();
         const enterTimeIso = now.toISOString();
         
@@ -1092,21 +1116,26 @@
           visitorId: state.visitorId,
           websiteId: state.websiteId,
           url: currentUrl,
-          pageUrl: currentUrl, // Ajout d'une propriété pageUrl pour assurer la compatibilité
+          pageUrl: currentUrl,
           path: currentPath,
           title: document.title || 'Page sans titre',
           referrer: referrer,
           referrerSource: referrerSource,
-          browserInfo: browserInfo,
-          osInfo: osInfo,
+          referrerName: referrerName, // Ajout du nom du référent
+          browser: browserInfo,
+          os: osInfo,
           deviceType: deviceType,
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
           timestamp: enterTimeIso,
-          enterTime: enterTimeIso, // Ajout de enterTime requis par le serveur
+          enterTime: enterTimeIso,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
           language: navigator.language || 'fr',
-          utmParams: utmParams
+          utm_source: utmParams.utm_source,
+          utm_medium: utmParams.utm_medium,
+          utm_campaign: utmParams.utm_campaign,
+          utm_content: utmParams.utm_content,
+          utm_term: utmParams.utm_term
         };
         
         state.buffer.push(pageview);
@@ -1123,7 +1152,7 @@
               pageViewId: state.currentPageViewId,
               timestamp: new Date().toISOString(),
               url: currentUrl,
-              pageUrl: currentUrl, // Ajout d'une propriété pageUrl pour assurer la compatibilité
+              pageUrl: currentUrl,
               data: pageContent
             };
             
@@ -1174,7 +1203,6 @@
           }
         }
         
-        // Récupérer l'URL de la page actuelle avec gestion d'erreur
         let currentUrl = '';
         try {
           currentUrl = window.location.href;
@@ -1223,7 +1251,6 @@
           return;
         }
         
-        // Récupérer l'URL de la page actuelle avec gestion d'erreur
         let currentUrl = '';
         try {
           currentUrl = window.location.href;
@@ -1239,7 +1266,6 @@
           }
         }
         
-        // URL de fallback si toutes les méthodes échouent
         if (!currentUrl) {
           currentUrl = 'https://stackunity.tech/fallback';
         }
@@ -1577,6 +1603,19 @@
         state.startTime = new Date();
         state.scrollDepth = 0;
         
+        // Récupération des informations sur l'appareil
+        const deviceType = utils.getDeviceType();
+        const browserInfo = utils.getBrowserInfo();
+        const osInfo = utils.getOSInfo();
+        
+        // Récupération des informations sur le référent
+        const referrer = document.URL; // L'URL précédente devient le référent
+        const referrerSource = 'internal';
+        const referrerName = 'Internal Navigation';
+        
+        // Récupération des paramètres UTM
+        const utmParams = utils.getUTMParams();
+        
         // Création du timestamp en ISO pour enterTime
         const now = new Date();
         const enterTimeIso = now.toISOString();
@@ -1591,18 +1630,23 @@
           pageUrl: currentUrl, // Ajout d'une propriété pageUrl pour assurer la compatibilité
           path: currentPath,
           title: document.title || 'Page sans titre',
-          referrer: document.URL,
-          referrerSource: 'internal',
-          browserInfo: utils.getBrowserInfo(),
-          osInfo: utils.getOSInfo(),
-          deviceType: utils.getDeviceType(),
+          referrer: referrer,
+          referrerSource: referrerSource,
+          referrerName: referrerName,
+          browser: browserInfo,
+          os: osInfo,
+          deviceType: deviceType,
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
           timestamp: enterTimeIso,
           enterTime: enterTimeIso, // Ajout de enterTime requis par le serveur
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
           language: navigator.language || 'fr',
-          utmParams: utils.getUTMParams()
+          utm_source: utmParams.utm_source,
+          utm_medium: utmParams.utm_medium,
+          utm_campaign: utmParams.utm_campaign,
+          utm_content: utmParams.utm_content,
+          utm_term: utmParams.utm_term
         });
         
         state.hasActivity = false;
@@ -1617,7 +1661,7 @@
               pageViewId: state.currentPageViewId,
               timestamp: new Date().toISOString(),
               url: currentUrl,
-              pageUrl: currentUrl, // Ajout d'une propriété pageUrl pour assurer la compatibilité
+              pageUrl: currentUrl,
               data: pageContent
             };
             
@@ -1683,7 +1727,6 @@
       },
       
       trackSegmentVisibility: function(segment, duration) {
-        // Récupérer l'URL de la page actuelle avec gestion d'erreur
         let currentUrl = '';
         try {
           currentUrl = window.location.href;
@@ -1699,7 +1742,6 @@
           }
         }
         
-        // URL de fallback si toutes les méthodes échouent
         if (!currentUrl) {
           currentUrl = 'https://stackunity.tech/fallback';
         }
@@ -1735,7 +1777,6 @@
           document.documentElement.offsetHeight
         );
         
-        // Récupérer l'URL de la page actuelle avec gestion d'erreur
         let currentUrl = '';
         try {
           currentUrl = window.location.href;
@@ -1751,7 +1792,6 @@
           }
         }
         
-        // URL de fallback si toutes les méthodes échouent
         if (!currentUrl) {
           currentUrl = 'https://stackunity.tech/fallback';
         }
@@ -1792,8 +1832,7 @@
         if (state.isExcluded) return;
         
         if (state.buffer.length === 0) return;
-        
-        // Vérification que les IDs essentiels sont présents
+
         if (!state.websiteId || !state.sessionId || !state.visitorId) {
           console.error('[StackUnity Tracker] Données d\'identification manquantes:', {
             websiteId: state.websiteId || 'MANQUANT',
@@ -1801,7 +1840,6 @@
             visitorId: state.visitorId || 'MANQUANT'
           });
           
-          // Tentative de récupération des IDs
           const script = document.currentScript || document.querySelector('script[data-website-id]');
           if (script) {
             state.websiteId = script.getAttribute('data-website-id') || state.websiteId;
@@ -1822,27 +1860,50 @@
           }
         }
         
-        // Vérification des URLs et enterTime dans les événements
         for (let i = 0; i < state.buffer.length; i++) {
           const event = state.buffer[i];
           
-          // Assurons-nous que chaque événement a un pageUrl valide
           if (!event.pageUrl || event.pageUrl === 'undefined' || event.pageUrl === 'null') {
             console.warn(`[StackUnity Tracker] Événement ${i} (${event.type}) sans pageUrl, ajout d'une URL par défaut`);
             event.pageUrl = 'https://stackunity.tech/fallback';
           }
           
-          // Pour les pageViews, assurons-nous que url et enterTime sont également définis
           if (event.type === 'pageView') {
             if (!event.url || event.url === 'undefined' || event.url === 'null') {
               console.warn(`[StackUnity Tracker] PageView ${i} sans url, ajout d'une URL par défaut`);
               event.url = event.pageUrl || 'https://stackunity.tech/fallback';
             }
             
-            // Vérification et ajout de enterTime si manquant
             if (!event.enterTime || event.enterTime === 'undefined' || event.enterTime === 'null') {
               console.warn(`[StackUnity Tracker] PageView ${i} sans enterTime, ajout du timestamp actuel`);
               event.enterTime = event.timestamp || new Date().toISOString();
+            }
+            
+            if (!event.deviceType || event.deviceType === 'undefined' || event.deviceType === 'null') {
+              console.warn(`[StackUnity Tracker] PageView ${i} sans deviceType, ajout d'une valeur par défaut`);
+              event.deviceType = utils.getDeviceType();
+            }
+            
+            if (!event.browser || event.browser === 'undefined' || event.browser === 'null') {
+              console.warn(`[StackUnity Tracker] PageView ${i} sans browser, ajout d'une valeur par défaut`);
+              event.browser = utils.getBrowserInfo();
+            }
+            
+            // Vérification et correction des informations de système d'exploitation
+            if (!event.os || event.os === 'undefined' || event.os === 'null') {
+              console.warn(`[StackUnity Tracker] PageView ${i} sans os, ajout d'une valeur par défaut`);
+              event.os = utils.getOSInfo();
+            }
+            
+            // Vérification et correction des informations de référent
+            if (!event.referrerSource || event.referrerSource === 'undefined' || event.referrerSource === 'null') {
+              console.warn(`[StackUnity Tracker] PageView ${i} sans referrerSource, ajout d'une valeur par défaut`);
+              event.referrerSource = 'direct';
+            }
+            
+            if (!event.referrerName && event.referrerSource !== 'direct') {
+              console.warn(`[StackUnity Tracker] PageView ${i} sans referrerName, ajout d'une valeur par défaut`);
+              event.referrerName = event.referrerSource.charAt(0).toUpperCase() + event.referrerSource.slice(1);
             }
           }
         }
@@ -1858,23 +1919,8 @@
           events: eventsToSend
         };
         
-        console.log('[StackUnity Tracker] Envoi de données avec IDs:', {
-          websiteId: dataToSend.websiteId,
-          sessionId: dataToSend.sessionId,
-          visitorId: dataToSend.visitorId,
-          eventsCount: dataToSend.events.length
-        });
-        
-        // Log détaillé des événements de type pageView
         const pageViewEvents = eventsToSend.filter(e => e.type === 'pageView');
-        if (pageViewEvents.length > 0) {
-          console.log('[StackUnity Tracker] Détails des pageViews à envoyer:', pageViewEvents.map(e => ({
-            id: e.id,
-            url: e.url,
-            pageUrl: e.pageUrl,
-            title: e.title
-          })));
-        }
+
         
         if (isBeforeUnload) {
           if (navigator.sendBeacon) {
@@ -1899,7 +1945,6 @@
             body: JSON.stringify(dataToSend),
             keepalive: true
           }).then(response => {
-            console.log('[StackUnity Tracker] Réponse du serveur:', response.status);
             return response.ok ? response.json() : Promise.reject('Erreur serveur');
           }).then(result => {
             console.log('[StackUnity Tracker] Données traitées:', result);
