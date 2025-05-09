@@ -2,7 +2,7 @@ import { defineNuxtConfig } from 'nuxt/config';
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
 
   nitro: {
     minify: true,

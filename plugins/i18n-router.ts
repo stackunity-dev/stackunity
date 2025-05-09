@@ -98,7 +98,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
         const localePath = generateLocalePath(pathWithoutPrefix, lang);
 
         if (currentPath !== localePath) {
-          console.log(`[i18n Router] Redirection vers le chemin localisé: ${localePath}`);
 
           if (nuxtApp.$router) {
             const currentUrl = new URL(window.location.href);

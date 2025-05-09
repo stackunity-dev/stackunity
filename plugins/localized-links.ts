@@ -31,7 +31,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
             if (!hasLanguagePrefix(href)) {
               try {
                 const localizedPath = nuxtLocalePath(href);
-                console.log(`[localized-links] Conversion de lien: ${href} → ${localizedPath}`);
                 el.setAttribute('href', localizedPath);
               } catch (error) {
                 const fallbackPath = fallbackLocalePath(href);
@@ -54,12 +53,9 @@ export default defineNuxtPlugin(({ vueApp }) => {
             if (!hasLanguagePrefix(href)) {
               try {
                 const localizedPath = nuxtLocalePath(href);
-                console.log(`[localized-links] Mise à jour de lien: ${href} → ${localizedPath}`);
                 el.setAttribute('href', localizedPath);
               } catch (error) {
-                // Utiliser le fallback si useLocalePath échoue
                 const fallbackPath = fallbackLocalePath(href);
-                console.log(`[localized-links] Fallback update: ${href} → ${fallbackPath}`);
                 el.setAttribute('href', fallbackPath);
               }
             }
@@ -76,7 +72,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
       try {
         const linkElements = document.querySelectorAll<HTMLAnchorElement>('a:not([data-localized])');
         if (linkElements.length > 0) {
-          console.log(`[localized-links] ${linkElements.length} liens trouvés à localiser automatiquement`);
 
           let localePath;
           try {
@@ -89,7 +84,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
           linkElements.forEach((link) => {
             const href = link.getAttribute('href');
             if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('/api/')) {
-              // Ne localiser que si le chemin n'a pas déjà un préfixe de langue
               if (!hasLanguagePrefix(href)) {
                 try {
                   const localizedPath = localePath(href);
@@ -129,7 +123,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
         try {
           const nuxtLocalePath = useLocalePath();
           const localizedPath = nuxtLocalePath(path);
-          console.log(`[localized-links] localePath: ${path} → ${localizedPath}`);
           return localizedPath;
         } catch (error) {
           console.warn(`[localized-links] Error in localePath for ${path}, using fallback:`, error);
@@ -141,7 +134,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
         try {
           const nuxtSwitchLocalePath = useSwitchLocalePath();
           const switchedPath = nuxtSwitchLocalePath(lang);
-          console.log(`[localized-links] switchLocalePath: Langue ${lang} → ${switchedPath}`);
           return switchedPath;
         } catch (error) {
           console.warn(`[localized-links] Error in switchLocalePath for ${lang}, using fallback:`, error);
