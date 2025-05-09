@@ -33,6 +33,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/pdfkit": "^0.13.9",
     "axios": "^1.8.1",
+    "b4a": "^1.6.7",
     "bcryptjs": "^3.0.2",
     "chart.js": "^4.4.8",
     "cheerio": "^1.0.0",
