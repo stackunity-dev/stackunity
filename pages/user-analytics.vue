@@ -1559,57 +1559,66 @@ async function fetchSiteDataForPeriod() {
 }
 
 function updateAnalyticsData(data: any) {
+  // Vérification et initialisation des valeurs par défaut pour les métriques
+  const totalVisitors = data.totalVisitors ?? 0;
+  const totalPageViews = data.totalPageViews ?? 0;
+  const avgSessionDuration = data.avgSessionDuration ?? 0;
+  const bounceCount = data.bounceCount ?? 0;
+
   metrics.value = [
     {
       label: t.analytics.visitors || 'Visites',
-      value: data.totalVisitors || 0,
+      value: totalVisitors,
       icon: 'mdi-account-outline',
       color: 'primary'
     },
     {
       label: t.analytics.totalPageViews || 'Pages vues',
-      value: data.totalPageViews || 0,
+      value: totalPageViews,
       icon: 'mdi-file-document-outline',
       color: 'success'
     },
     {
       label: t.analytics.timeOnSite || 'Temps moyen',
-      value: formatDuration(data.avgSessionDuration || 0),
+      value: formatDuration(avgSessionDuration),
       icon: 'mdi-clock-outline',
       color: 'info'
     },
     {
       label: t.analytics.bounceRate || 'Taux de rebond',
-      value: `${data.bounceCount || 0}`,
+      value: `${bounceCount}`,
       icon: 'mdi-arrow-u-left-top',
       color: 'warning'
     }
   ];
 
-  pageViews.value = data.topPages || [];
-  trafficSources.value = data.trafficSources || [];
-  deviceStats.value = data.devices || [];
-  errorEvents.value = data.errorEvents || [];
-  userFlows.value = data.userFlows || [];
-  browsers.value = data.browsers || [];
-  osSystems.value = data.os || [];
+  // S'assurer que toutes les propriétés existent
+  pageViews.value = Array.isArray(data.topPages) ? data.topPages : [];
+  trafficSources.value = Array.isArray(data.trafficSources) ? data.trafficSources : [];
+  deviceStats.value = Array.isArray(data.devices) ? data.devices : [];
+  errorEvents.value = Array.isArray(data.errorEvents) ? data.errorEvents : [];
+  userFlows.value = Array.isArray(data.userFlows) ? data.userFlows : [];
+  browsers.value = Array.isArray(data.browsers) ? data.browsers : [];
+  osSystems.value = Array.isArray(data.os) ? data.os : [];
 
+  // Traitement des interactions utilisateur
   if (data.interactions && data.interactions.data) {
-    userInteractions.value = data.interactions.data;
+    userInteractions.value = Array.isArray(data.interactions.data) ? data.interactions.data : [];
     totalInteractionsCount.value = data.interactions.total || 0;
   } else {
-    userInteractions.value = data.userInteractions || [];
+    userInteractions.value = Array.isArray(data.userInteractions) ? data.userInteractions : [];
     totalInteractionsCount.value = userInteractions.value.length;
   }
 
+  // Initialisation des données analytiques du site actuel
   currentSiteAnalytics.value = {
     websiteId: currentSite.value?.id || '',
-    totalVisitors: data.totalVisitors || 0,
-    totalPageViews: data.totalPageViews || 0,
-    avgSessionDuration: data.avgSessionDuration || 0,
-    bounceRate: data.bounceRate || 0,
-    bounceCount: data.bounceCount || 0,
-    frustratedSessions: data.frustratedSessions || 0,
+    totalVisitors: totalVisitors,
+    totalPageViews: totalPageViews,
+    avgSessionDuration: avgSessionDuration,
+    bounceRate: data.bounceRate ?? 0,
+    bounceCount: bounceCount,
+    frustratedSessions: data.frustratedSessions ?? 0,
     timeOnSite: data.timeOnSite || '0m 0s',
     topPages: pageViews.value,
     trafficSources: trafficSources.value,
@@ -1618,6 +1627,9 @@ function updateAnalyticsData(data: any) {
     errorEvents: errorEvents.value,
     userInteractions: userInteractions.value
   };
+
+  // S'assurer que pages filtrées est mis à jour
+  filteredPages.value = [...pageViews.value];
 
   checkDataLimits();
 }

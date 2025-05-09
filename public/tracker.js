@@ -1061,10 +1061,11 @@
         
         state.startTime = new Date();
         
-        const deviceType = utils.getDeviceType();
-        const browserInfo = utils.getBrowserInfo();
-        const osInfo = utils.getOSInfo();
-        const referrer = utils.getReferrer();
+        // Récupération des données de base
+        const deviceType = utils.getDeviceType() || 'unknown';
+        const browser = utils.getBrowserInfo() || 'Unknown 0.0';
+        const os = utils.getOSInfo() || 'Unknown';
+        const referrer = utils.getReferrer() || '';
         const { source: referrerSource, name: referrerName } = utils.getReferrerSource();
         const utmParams = utils.getUTMParams();
         
@@ -1085,7 +1086,6 @@
         
         if (!currentUrl) {
           currentUrl = 'https://stackunity.tech/fallback';
-          console.warn('[StackUnity Tracker] Utilisation de l\'URL de fallback car aucune URL n\'a pu être récupérée');
         }
         
         let currentPath = '';
@@ -1105,7 +1105,6 @@
           currentPath = '/fallback';
         }
         
-        
         const now = new Date();
         const enterTimeIso = now.toISOString();
         
@@ -1121,10 +1120,10 @@
           title: document.title || 'Page sans titre',
           referrer: referrer,
           referrerSource: referrerSource,
-          referrerName: referrerName, // Ajout du nom du référent
-          browser: browserInfo,
-          os: osInfo,
+          referrerName: referrerName,
           deviceType: deviceType,
+          browser: browser,
+          os: os,
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
           timestamp: enterTimeIso,
@@ -1142,7 +1141,7 @@
         state.hasActivity = false;
         state.scrollDepth = 0;
         
-          if (config.trackVisibility) {
+        if (config.trackVisibility) {
           setTimeout(() => {
             const pageContent = utils.analyzePageContent();
             
@@ -1603,43 +1602,42 @@
         state.startTime = new Date();
         state.scrollDepth = 0;
         
-        // Récupération des informations sur l'appareil
+        // Récupération des données de base
         const deviceType = utils.getDeviceType();
-        const browserInfo = utils.getBrowserInfo();
-        const osInfo = utils.getOSInfo();
+        const browser = utils.getBrowserInfo();
+        const os = utils.getOSInfo();
         
-        // Récupération des informations sur le référent
-        const referrer = document.URL; // L'URL précédente devient le référent
+        // Référent = page précédente pour navigation interne
+        const referrer = document.URL; 
         const referrerSource = 'internal';
         const referrerName = 'Internal Navigation';
         
-        // Récupération des paramètres UTM
+        // Paramètres UTM
         const utmParams = utils.getUTMParams();
         
-        // Création du timestamp en ISO pour enterTime
         const now = new Date();
         const enterTimeIso = now.toISOString();
         
-        state.buffer.push({
+        const pageview = {
           type: 'pageView',
           id: state.currentPageViewId,
           sessionId: state.sessionId,
           visitorId: state.visitorId,
           websiteId: state.websiteId,
           url: currentUrl,
-          pageUrl: currentUrl, // Ajout d'une propriété pageUrl pour assurer la compatibilité
+          pageUrl: currentUrl,
           path: currentPath,
           title: document.title || 'Page sans titre',
           referrer: referrer,
           referrerSource: referrerSource,
           referrerName: referrerName,
-          browser: browserInfo,
-          os: osInfo,
           deviceType: deviceType,
+          browser: browser,
+          os: os,
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
           timestamp: enterTimeIso,
-          enterTime: enterTimeIso, // Ajout de enterTime requis par le serveur
+          enterTime: enterTimeIso,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
           language: navigator.language || 'fr',
           utm_source: utmParams.utm_source,
@@ -1647,8 +1645,9 @@
           utm_campaign: utmParams.utm_campaign,
           utm_content: utmParams.utm_content,
           utm_term: utmParams.utm_term
-        });
+        };
         
+        state.buffer.push(pageview);
         state.hasActivity = false;
         
         if (config.trackVisibility) {
@@ -1863,47 +1862,61 @@
         for (let i = 0; i < state.buffer.length; i++) {
           const event = state.buffer[i];
           
+          // Vérification et correction de l'URL de la page
           if (!event.pageUrl || event.pageUrl === 'undefined' || event.pageUrl === 'null') {
-            console.warn(`[StackUnity Tracker] Événement ${i} (${event.type}) sans pageUrl, ajout d'une URL par défaut`);
-            event.pageUrl = 'https://stackunity.tech/fallback';
+            try {
+              event.pageUrl = window.location.href || document.URL || 'https://stackunity.tech/fallback';
+            } catch (e) {
+              event.pageUrl = 'https://stackunity.tech/fallback';
+            }
           }
           
           if (event.type === 'pageView') {
+            // Vérification et correction de l'URL
             if (!event.url || event.url === 'undefined' || event.url === 'null') {
-              console.warn(`[StackUnity Tracker] PageView ${i} sans url, ajout d'une URL par défaut`);
               event.url = event.pageUrl || 'https://stackunity.tech/fallback';
             }
             
+            // Vérification et correction de l'heure d'entrée
             if (!event.enterTime || event.enterTime === 'undefined' || event.enterTime === 'null') {
-              console.warn(`[StackUnity Tracker] PageView ${i} sans enterTime, ajout du timestamp actuel`);
               event.enterTime = event.timestamp || new Date().toISOString();
             }
             
+            // Vérification et correction du type d'appareil
             if (!event.deviceType || event.deviceType === 'undefined' || event.deviceType === 'null') {
-              console.warn(`[StackUnity Tracker] PageView ${i} sans deviceType, ajout d'une valeur par défaut`);
-              event.deviceType = utils.getDeviceType();
+              event.deviceType = utils.getDeviceType() || 'unknown';
             }
             
+            // Vérification et correction des informations de navigateur
             if (!event.browser || event.browser === 'undefined' || event.browser === 'null') {
-              console.warn(`[StackUnity Tracker] PageView ${i} sans browser, ajout d'une valeur par défaut`);
-              event.browser = utils.getBrowserInfo();
+              event.browser = utils.getBrowserInfo() || 'Unknown 0.0';
             }
             
             // Vérification et correction des informations de système d'exploitation
             if (!event.os || event.os === 'undefined' || event.os === 'null') {
-              console.warn(`[StackUnity Tracker] PageView ${i} sans os, ajout d'une valeur par défaut`);
-              event.os = utils.getOSInfo();
+              event.os = utils.getOSInfo() || 'Unknown';
             }
             
             // Vérification et correction des informations de référent
             if (!event.referrerSource || event.referrerSource === 'undefined' || event.referrerSource === 'null') {
-              console.warn(`[StackUnity Tracker] PageView ${i} sans referrerSource, ajout d'une valeur par défaut`);
               event.referrerSource = 'direct';
             }
             
             if (!event.referrerName && event.referrerSource !== 'direct') {
-              console.warn(`[StackUnity Tracker] PageView ${i} sans referrerName, ajout d'une valeur par défaut`);
               event.referrerName = event.referrerSource.charAt(0).toUpperCase() + event.referrerSource.slice(1);
+            }
+          }
+          
+          // Pour les autres types d'événements
+          if (event.type === 'interaction' || event.type === 'customEvent' || event.type === 'error') {
+            // Assurez-vous que pageViewId est défini
+            if (!event.pageViewId || event.pageViewId === 'undefined' || event.pageViewId === 'null') {
+              event.pageViewId = state.currentPageViewId;
+            }
+            
+            // Assurez-vous que timestamp est défini
+            if (!event.timestamp || event.timestamp === 'undefined' || event.timestamp === 'null') {
+              event.timestamp = new Date().toISOString();
             }
           }
         }

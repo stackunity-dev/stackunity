@@ -426,12 +426,39 @@ export default defineEventHandler(async (event) => {
         totalSessions,
         frustratedSessions,
         timeOnSite: `${Math.floor(avgSessionDuration / 60)}m ${avgSessionDuration % 60}s`,
-        topPages: topPagesRows,
-        trafficSources: trafficSourcesRows,
-        devices: deviceStatsRows,
-        browsers: browsersRows,
-        os: osRows,
-        errorEvents: errorEventsRows,
+        topPages: topPagesRows.map(page => ({
+          page: page.page || 'Unknown page',
+          views: page.views || 0,
+          avgTime: page.avgTime || '0m 0s'
+        })),
+        trafficSources: trafficSourcesRows.map(source => ({
+          source: source.source || 'unknown',
+          visitors: source.visitors || 0,
+          percentage: source.percentage || 0
+        })),
+        devices: deviceStatsRows.map(device => ({
+          type: device.type || 'unknown',
+          count: device.count || 0,
+          percentage: device.percentage || 0
+        })),
+        browsers: browsersRows.map(browser => ({
+          name: browser.name || 'Unknown',
+          count: browser.count || 0,
+          percentage: browser.percentage || 0,
+          type: browser.type || 'browser'
+        })),
+        os: osRows.map(os => ({
+          name: os.name || 'Unknown',
+          count: os.count || 0,
+          percentage: os.percentage || 0,
+          type: os.type || 'os'
+        })),
+        errorEvents: errorEventsRows.map(error => ({
+          page: error.page || 'Unknown page',
+          errorMessage: error.errorMessage || 'Unknown error',
+          count: error.count || 0,
+          browserInfo: error.browserInfo || 'Unknown browser'
+        })),
         userInteractions: userInteractions,
         period: period,
         interactions: {
