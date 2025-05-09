@@ -343,10 +343,12 @@
                     density="comfortable" class="page-data-table">
                     <template v-slot:item.page="{ item }">
                       <div class="d-flex align-center">
-                        <v-icon size="small" class="mr-2" :color="getItemColor(item)">mdi-file-document-outline</v-icon>
+                        <v-icon size="small" class="mr-2" :color="getItemColor(item)">
+                          {{ item.isHome ? 'mdi-home' : 'mdi-file-document-outline' }}
+                        </v-icon>
                         <div class="text-truncate" style="max-width: 300px;">
                           <v-tooltip activator="parent" :text="item.page" location="top" max-width="400"></v-tooltip>
-                          {{ formatPagePath(item.page) }}
+                          {{ formatPagePath(item.page, item.cleanPath, item.isHome) }}
                         </div>
                       </div>
                     </template>
@@ -362,10 +364,10 @@
 
                     <template v-slot:item.avgTime="{ item }">
                       <div class="d-flex align-center">
-                        <span class="font-weight-medium mr-2">{{ item.avgTime }}</span>
-                        <v-progress-linear :model-value="getTimePercentage(item.avgTime)"
-                          :color="getItemColor(item, false)" height="6" rounded class="time-progress"
-                          style="width: 80px;"></v-progress-linear>
+                        <v-icon size="small" class="mr-2" :color="getTimeColor(item)">mdi-clock-outline</v-icon>
+                        <span :class="{ 'text-grey': !item.hasDuration }">
+                          {{ item.avgTime }}
+                        </span>
                       </div>
                     </template>
 
@@ -1041,7 +1043,7 @@ const currentSite = ref<WebsiteWithStats | null>(null);
 const currentSiteAnalytics = ref<WebsiteAnalytics | null>(null);
 const showCodeDialog = ref(false);
 const metrics = ref<Array<{ label: string, value: any, icon: string, color: string }>>([]);
-const pageViews = ref<Array<PageView>>([]);
+const pageViews = ref<PageView[]>([]);
 const trafficSources = ref<Array<TrafficSource>>([]);
 const deviceStats = ref<Array<DeviceStats>>([]);
 const errorEvents = ref<Array<ErrorEvent>>([]);
@@ -1597,11 +1599,32 @@ function updateAnalyticsData(data: any) {
   let processedPages = Array.isArray(data.topPages) ? data.topPages : [];
 
   // Nettoyer et formater les données de pages
-  processedPages = processedPages.map(page => ({
-    page: page.page || 'Page inconnue',
-    views: typeof page.views === 'number' ? page.views : 0,
-    avgTime: page.avgTime || '0m 0s'
-  })).filter(page => page.page && page.page !== 'null' && page.page !== 'undefined');
+  processedPages = processedPages.map(page => {
+    // S'assurer que toutes les propriétés nécessaires sont présentes
+    const cleanedPage = {
+      page: page.page || 'Unknown page',
+      views: typeof page.views === 'number' ? page.views : 0,
+      avgTime: page.avgTime || '0m 0s',
+      // Nouvelles propriétés
+      cleanPath: page.cleanPath || '',
+      isHome: page.isHome === true,
+      avgTimeSeconds: typeof page.avgTimeSeconds === 'number' ? page.avgTimeSeconds : 0,
+      hasDuration: page.hasDuration === true
+    };
+
+    // Si cleanPath n'est pas fourni, essayer de l'extraire
+    if (!cleanedPage.cleanPath && cleanedPage.page.startsWith('http')) {
+      try {
+        const url = new URL(cleanedPage.page);
+        cleanedPage.cleanPath = url.pathname || '/';
+        cleanedPage.isHome = cleanedPage.cleanPath === '/' || cleanedPage.cleanPath === '';
+      } catch (e) {
+        // Ignorer les erreurs
+      }
+    }
+
+    return cleanedPage;
+  }).filter(page => page.page && page.page !== 'null' && page.page !== 'undefined');
 
   // Assigner les pages traitées
   pageViews.value = processedPages;
@@ -2060,64 +2083,81 @@ async function loadExclusions() {
 }
 
 // Ajouter cette fonction pour afficher une représentation lisible des URLs de page
-function formatPagePath(path: string) {
+function formatPagePath(path: string, cleanPath?: string, isHome?: boolean) {
   if (!path) return 'Page inconnue';
+
+  // Si nous avons déjà les informations nettoyées
+  if (isHome === true) return 'Page d\'accueil';
+  if (cleanPath === '/' || cleanPath === '') return 'Page d\'accueil';
 
   try {
     // Gérer les cas spéciaux
     if (path === '/' || path === '') return 'Page d\'accueil';
     if (path === 'Unknown page' || path === 'https://stackunity.tech/fallback') return 'Page inconnue';
 
-    // Gérer les URLs complètes
+    // Si c'est une URL complète, extraire le domaine et le chemin
+    let formattedPath = path;
     if (path.startsWith('http')) {
       try {
         const url = new URL(path);
-        path = url.pathname || '/';
+        // Supprimer le protocol et le domaine, garder uniquement le chemin
+        formattedPath = url.pathname;
 
-        // Si le chemin est vide, c'est probablement la page d'accueil
-        if (path === '/' || path === '') {
-          // Retourner le nom de domaine sans le protocol comme identifiant
-          return url.hostname.replace(/^www\./, '') || 'Page d\'accueil';
+        // S'il s'agit de la page d'accueil
+        if (formattedPath === '/' || formattedPath === '') {
+          return url.hostname.replace(/^www\./, '');
         }
       } catch (e) {
-        // Continuer avec le path original
+        // Continuer avec le chemin original
       }
     }
 
     // Supprimer les paramètres de requête et ancres
-    path = path.split('?')[0].split('#')[0];
+    formattedPath = formattedPath.split('?')[0].split('#')[0];
 
     // Supprimer les barres obliques de début et de fin
-    path = path.replace(/^\/|\/$/g, '');
+    formattedPath = formattedPath.replace(/^\/|\/$/g, '');
 
     // Si c'est une page vide après nettoyage
-    if (!path) return 'Page d\'accueil';
+    if (!formattedPath) return 'Page d\'accueil';
 
     // Obtenir le dernier segment du chemin pour plus de lisibilité
-    const pathSegments = path.split('/');
-    const lastSegment = pathSegments.pop() || path;
+    const pathSegments = formattedPath.split('/');
+    const lastSegment = pathSegments.pop() || formattedPath;
 
     // Si le dernier segment est vide, prendre l'avant-dernier
-    const displaySegment = lastSegment || pathSegments.pop() || path;
+    const displaySegment = lastSegment || pathSegments.pop() || formattedPath;
 
     // Remplacer les - et _ par des espaces pour plus de lisibilité
-    let formattedPath = displaySegment.replace(/[-_]/g, ' ');
+    let displayText = displaySegment.replace(/[-_]/g, ' ');
 
     // Formater avec des majuscules pour chaque mot
-    formattedPath = formattedPath.split(' ').map(word =>
+    displayText = displayText.split(' ').map(word =>
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
 
     // Si c'est trop long, le tronquer
-    if (formattedPath.length > 30) {
-      formattedPath = formattedPath.substring(0, 27) + '...';
+    if (displayText.length > 30) {
+      displayText = displayText.substring(0, 27) + '...';
     }
 
-    return formattedPath;
+    return displayText;
   } catch (e) {
     console.error('Erreur lors du formatage du chemin de page:', e);
     return path;
   }
+}
+
+// Fonction pour déterminer la couleur basée sur la durée
+function getTimeColor(item: any) {
+  if (!item.hasDuration) return 'grey';
+
+  const seconds = item.avgTimeSeconds || 0;
+  if (seconds < 10) return 'error';
+  if (seconds < 30) return 'warning';
+  if (seconds < 60) return 'info';
+  if (seconds < 180) return 'success';
+  return 'primary';
 }
 
 // Si la fonction de formatage d'URL est également définie localement, renommons-la pour éviter le conflit

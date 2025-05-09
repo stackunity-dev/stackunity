@@ -1085,6 +1085,7 @@
         if (state.isExcluded) return;
         
         state.startTime = new Date();
+        state.lastScrollTimestamp = new Date().getTime();
         
         // Récupération des données de base
         const deviceType = utils.getDeviceType() || 'unknown';
@@ -1522,7 +1523,10 @@
         state.isUnloading = true;
         
         const endTime = new Date();
-        const duration = Math.round((endTime.getTime() - state.startTime.getTime()) / 1000);
+        const startTimeMs = state.startTime.getTime();
+        const duration = Math.max(0, Math.round((endTime.getTime() - startTimeMs) / 1000));
+        
+        console.log('[StackUnity Tracker] Durée de la page:', duration, 'secondes');
         
         const pageViewExit = {
           type: 'pageViewExit',
@@ -1578,6 +1582,23 @@
       handleVisibilityChange: function() {
         if (document.visibilityState === 'hidden') {
           state.tabHidden = true;
+          
+          // Enregistrer la durée avant que l'utilisateur ne quitte l'onglet
+          const endTime = new Date();
+          const startTimeMs = state.startTime.getTime();
+          const duration = Math.round((endTime.getTime() - startTimeMs) / 1000);
+          
+          const pageVisitData = {
+            type: 'pageVisitDuration',
+            id: utils.generateUUID(),
+            pageViewId: state.currentPageViewId,
+            duration: duration,
+            timestamp: endTime.toISOString(),
+            pageUrl: window.location.href,
+            scrollDepth: state.scrollDepth
+          };
+          
+          state.buffer.push(pageVisitData);
           
           if (!state.hasActivity) {
             utils.sendBounceEvent();
@@ -1933,7 +1954,7 @@
           }
           
           // Pour les autres types d'événements
-          if (event.type === 'interaction' || event.type === 'customEvent' || event.type === 'error') {
+          if (event.type === 'interaction' || event.type === 'customEvent' || event.type === 'error' || event.type === 'pageVisitDuration') {
             // Assurez-vous que pageViewId est défini
             if (!event.pageViewId || event.pageViewId === 'undefined' || event.pageViewId === 'null') {
               event.pageViewId = state.currentPageViewId;

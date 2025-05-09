@@ -172,10 +172,17 @@ export default defineEventHandler(async (event) => {
       SELECT 
         COALESCE(page_url, 'Unknown page') AS page, 
         COUNT(*) AS views,
-        CONCAT(FLOOR(AVG(COALESCE(duration, 0)) / 60), 'm ', MOD(FLOOR(AVG(COALESCE(duration, 0))), 60), 's') AS avgTime
+        CONCAT(
+          FLOOR(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END) / 60), 
+          'm ', 
+          MOD(FLOOR(AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END)), 60), 
+          's'
+        ) AS avgTime,
+        AVG(CASE WHEN duration > 0 THEN duration ELSE NULL END) AS raw_avg_time
       FROM analytics_pageviews 
       WHERE website_id = ? AND page_url IS NOT NULL ${startDate ? 'AND enter_time >= ?' : ''}
       GROUP BY page_url 
+      HAVING COUNT(*) > 0
       ORDER BY views DESC 
       LIMIT 10
     `;
@@ -426,6 +433,25 @@ export default defineEventHandler(async (event) => {
       }
     };
 
+    // Fonction pour nettoyer l'URL pour un meilleur affichage
+    const cleanUrl = (url) => {
+      if (!url || url === 'Unknown page') return url;
+
+      try {
+        // Si c'est une URL complète, extraire le chemin
+        if (url.startsWith('http')) {
+          const urlObj = new URL(url);
+          return urlObj.pathname || '/';
+        }
+
+        // Sinon, retourner le chemin directement
+        return url;
+      } catch (e) {
+        console.error('Erreur lors du nettoyage d\'URL:', e);
+        return url;
+      }
+    };
+
     return {
       success: true,
       data: {
@@ -441,18 +467,25 @@ export default defineEventHandler(async (event) => {
         frustratedSessions,
         timeOnSite: `${Math.floor(avgSessionDuration / 60)}m ${avgSessionDuration % 60}s`,
         topPages: topPagesRows.map(page => {
+          // S'assurer que l'URL est valide ou fournir une alternative lisible
           let pageUrl = page.page || 'Unknown page';
-          if (pageUrl === 'Unknown page' || !isValidUrl(pageUrl)) {
-            if (pageUrl.startsWith('/')) {
-              pageUrl = pageUrl.replace(/^\/|\/$/g, '');
-              pageUrl = pageUrl || '/';
-            }
-          }
+          let cleanPageUrl = cleanUrl(pageUrl);
+
+          // Déterminer si c'est la page d'accueil
+          const isHomePage = cleanPageUrl === '/' || cleanPageUrl === '';
+
+          // Calculer la durée moyenne en secondes
+          const avgTimeSec = page.raw_avg_time || 0;
+          const hasValidTime = avgTimeSec > 0;
 
           return {
             page: pageUrl,
+            cleanPath: cleanPageUrl,
+            isHome: isHomePage,
             views: page.views || 0,
-            avgTime: page.avgTime || '0m 0s'
+            avgTime: hasValidTime ? page.avgTime : '0m 0s',
+            avgTimeSeconds: Math.round(avgTimeSec || 0),
+            hasDuration: hasValidTime
           };
         }),
         trafficSources: trafficSourcesRows.map(source => ({

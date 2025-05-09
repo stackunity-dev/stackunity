@@ -384,6 +384,76 @@ export default defineEventHandler(async (event) => {
             }
             break;
 
+          case 'pageVisitDuration':
+            try {
+              if (!event.pageViewId) {
+                console.error('pageVisitDuration: pageViewId manquant', event);
+                break;
+              }
+
+              const duration = event.duration !== undefined ? event.duration : 0;
+              const scrollDepth = event.scrollDepth !== undefined ? event.scrollDepth : 0;
+              const timestamp = event.timestamp ? new Date(event.timestamp) : new Date();
+
+              // Normaliser l'URL
+              let pageUrl = event.pageUrl || null;
+              if (pageUrl) {
+                try {
+                  const url = new URL(pageUrl);
+                  pageUrl = url.pathname || '/';
+                } catch (e) {
+                  // Continuer avec l'URL originale
+                }
+              }
+
+              console.log('Traitement de la durée de visite:', event.pageViewId, 'durée:', duration);
+
+              const [pageViewRows] = await pool.query<RowDataPacket[]>(
+                'SELECT pageview_id FROM analytics_pageviews WHERE pageview_id = ?',
+                [event.pageViewId]
+              );
+
+              if (Array.isArray(pageViewRows) && pageViewRows.length > 0) {
+                await pool.query(
+                  `UPDATE analytics_pageviews 
+                    SET duration = GREATEST(duration, ?), scroll_depth = GREATEST(scroll_depth, ?), is_short_visit = ? 
+                    WHERE pageview_id = ?`,
+                  [
+                    duration,
+                    scrollDepth,
+                    duration < 20 ? 1 : 0,
+                    event.pageViewId
+                  ]
+                );
+                console.log('Page vue mise à jour avec durée:', event.pageViewId, 'nouvelle durée:', duration);
+              } else {
+                console.warn('pageVisitDuration: Aucune page vue trouvée avec l\'ID', event.pageViewId);
+
+                // Créer une entrée d'interaction pour au moins conserver l'information
+                await pool.query(
+                  `INSERT INTO analytics_interactions
+                    (interaction_id, pageview_id, website_id, session_id, interaction_type, timestamp, value_data, page_url)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                  [
+                    event.id || require('crypto').randomUUID(),
+                    null,
+                    dbWebsiteId,
+                    sessionId,
+                    'page_duration',
+                    timestamp,
+                    JSON.stringify({
+                      duration: duration,
+                      scrollDepth: scrollDepth
+                    }),
+                    pageUrl
+                  ]
+                );
+              }
+            } catch (error) {
+              console.error('Erreur lors du traitement de pageVisitDuration:', error);
+            }
+            break;
+
           case 'interaction':
             let normalizedPageUrl = event.pageUrl || null;
             if (normalizedPageUrl) {

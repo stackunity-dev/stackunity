@@ -9,6 +9,10 @@ export interface PageView {
   page: string;
   views: number;
   avgTime: string;
+  cleanPath?: string;
+  isHome?: boolean;
+  avgTimeSeconds?: number;
+  hasDuration?: boolean;
 }
 
 export interface UserSession {
