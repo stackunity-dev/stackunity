@@ -6,6 +6,9 @@ interface StatsRow extends RowDataPacket {
   totalVisitors?: number;
   totalPageViews?: number;
   avgSessionDuration?: number;
+  avgPageDuration?: number;
+  pageViewsWithDuration?: number;
+  durationDataQuality?: number;
 }
 
 export default defineEventHandler(async (event) => {
@@ -57,12 +60,32 @@ export default defineEventHandler(async (event) => {
     );
     const avgSessionDuration = Math.round(avgSessionRows[0]?.avgSessionDuration || 0);
 
+    // Récupération des durées moyennes par page
+    const [avgPageRows] = await pool.query<StatsRow[]>(
+      `SELECT 
+         AVG(COALESCE(duration, 0)) AS avgPageDuration,
+         SUM(CASE WHEN duration IS NOT NULL AND duration > 0 THEN 1 ELSE 0 END) AS pageViewsWithDuration,
+         COUNT(*) AS totalPageViews
+       FROM analytics_pageviews 
+       WHERE website_id = ?`,
+      [dbWebsiteId]
+    );
+
+    const avgPageDuration = Math.round(avgPageRows[0]?.avgPageDuration || 0);
+    const pageViewsWithDuration = avgPageRows[0]?.pageViewsWithDuration || 0;
+    const durationDataQuality = totalPageViews > 0
+      ? Math.round((pageViewsWithDuration / totalPageViews) * 100)
+      : 0;
+
     return {
       success: true,
       data: {
         totalVisitors,
         totalPageViews,
-        avgSessionDuration
+        avgSessionDuration,
+        avgPageDuration,
+        pageViewsWithDuration,
+        durationDataQuality
       }
     };
   } catch (error) {

@@ -174,6 +174,8 @@ export interface WebsiteWithStats extends Website {
     visites: number;
     pages: number;
     temps: string;
+    dureePageMoyenne?: string;
+    qualiteDonnees?: number;
   }
 }
 

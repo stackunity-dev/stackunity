@@ -1162,7 +1162,9 @@ async function fetchWebsites() {
           stats: {
             visites: 0,
             pages: 0,
-            temps: '0m'
+            temps: '0m',
+            dureePageMoyenne: '0m',
+            qualiteDonnees: 0
           }
         };
 
@@ -1174,7 +1176,9 @@ async function fetchWebsites() {
             siteData.stats = {
               visites: statsResult.data.totalVisitors || 0,
               pages: statsResult.data.totalPageViews || 0,
-              temps: formatDuration(statsResult.data.avgSessionDuration || 0)
+              temps: formatDuration(statsResult.data.avgSessionDuration || 0),
+              dureePageMoyenne: formatDuration(statsResult.data.avgPageDuration || 0),
+              qualiteDonnees: statsResult.data.durationDataQuality || 0
             };
           }
         } catch (error) {
@@ -1221,7 +1225,9 @@ async function addWebsite() {
         stats: {
           visites: 0,
           pages: 0,
-          temps: '0m'
+          temps: '0m',
+          dureePageMoyenne: '0m',
+          qualiteDonnees: 0
         }
       };
 
