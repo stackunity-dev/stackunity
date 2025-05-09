@@ -594,6 +594,29 @@
         }
       },
 
+      sendSyncXhr: function(endpoint, data) {
+        try {
+          console.log('[StackUnity Tracker] Envoi synchrone via XHR');
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', endpoint, false); // false = synchrone
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          
+          const payload = {
+            websiteId: state.websiteId,
+            sessionId: state.sessionId,
+            visitorId: state.visitorId,
+            events: data
+          };
+          
+          xhr.send(JSON.stringify(payload));
+          console.log('[StackUnity Tracker] XHR synchrone envoyé avec succès');
+          return true;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de l\'envoi XHR synchrone:', e);
+          return false;
+        }
+      },
+
       getAuthenticatedUserId: function() {
         // @ts-ignore
         if (window.stackunityUserId) {
@@ -1012,25 +1035,35 @@
         const { source: referrerSource } = utils.getReferrerSource();
         const utmParams = utils.getUTMParams();
         
+        // S'assurer que l'URL est toujours présente
+        const currentUrl = window.location.href || document.URL || 'https://stackunity.tech/unknown';
+        const currentPath = window.location.pathname || '/unknown';
+        
+        console.log('[StackUnity Tracker] Tracking page view:', {
+          url: currentUrl,
+          path: currentPath,
+          title: document.title
+        });
+        
         const pageview = {
           type: 'pageView',
           id: state.currentPageViewId,
           sessionId: state.sessionId,
           visitorId: state.visitorId,
           websiteId: state.websiteId,
-          url: window.location.href,
-          path: window.location.pathname,
-          title: document.title,
+          url: currentUrl,
+          path: currentPath,
+          title: document.title || 'Page sans titre',
           referrer: referrer,
           referrerSource: referrerSource,
           browserInfo: browserInfo,
           osInfo: osInfo,
           deviceType: deviceType,
-          screenWidth: window.innerWidth,
-          screenHeight: window.innerHeight,
+          screenWidth: window.innerWidth || 1024,
+          screenHeight: window.innerHeight || 768,
           timestamp: new Date().toISOString(),
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          language: navigator.language,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+          language: navigator.language || 'fr',
           utmParams: utmParams
         };
         
@@ -1650,15 +1683,66 @@
         
         if (state.buffer.length === 0) return;
         
+        // Vérification que les IDs essentiels sont présents
+        if (!state.websiteId || !state.sessionId || !state.visitorId) {
+          console.error('[StackUnity Tracker] Données d\'identification manquantes:', {
+            websiteId: state.websiteId || 'MANQUANT',
+            sessionId: state.sessionId || 'MANQUANT',
+            visitorId: state.visitorId || 'MANQUANT'
+          });
+          
+          // Tentative de récupération des IDs
+          const script = document.currentScript || document.querySelector('script[data-website-id]');
+          if (script) {
+            state.websiteId = script.getAttribute('data-website-id') || state.websiteId;
+          }
+          
+          if (!state.visitorId) {
+            state.visitorId = utils.getVisitorId();
+          }
+          
+          if (!state.sessionId) {
+            state.sessionId = sessionStorage.getItem('stackunity_session_id') || utils.generateUUID();
+            sessionStorage.setItem('stackunity_session_id', state.sessionId);
+          }
+          
+          if (!state.websiteId || !state.sessionId || !state.visitorId) {
+            console.error('[StackUnity Tracker] Impossible de récupérer les IDs essentiels, abandon de l\'envoi');
+            return;
+          }
+        }
+        
         const eventsToSend = [...state.buffer];
         state.buffer = [];
         
+        // Créer l'objet de données complet avec toutes les informations requises
+        const dataToSend = {
+          websiteId: state.websiteId,
+          sessionId: state.sessionId,
+          visitorId: state.visitorId,
+          events: eventsToSend
+        };
+        
+        console.log('[StackUnity Tracker] Envoi de données avec IDs:', {
+          websiteId: dataToSend.websiteId,
+          sessionId: dataToSend.sessionId,
+          visitorId: dataToSend.visitorId,
+          eventsCount: dataToSend.events.length
+        });
+        
         if (isBeforeUnload) {
           if (navigator.sendBeacon) {
-            const data = new Blob([JSON.stringify(eventsToSend)], { type: 'application/json' });
-            navigator.sendBeacon(config.apiEndpoint, data);
+            const blob = new Blob([JSON.stringify(dataToSend)], { type: 'application/json' });
+            navigator.sendBeacon(config.apiEndpoint, blob);
           } else {
-            utils.sendSyncXhr(config.apiEndpoint, eventsToSend);
+            try {
+              const xhr = new XMLHttpRequest();
+              xhr.open('POST', config.apiEndpoint, false);
+              xhr.setRequestHeader('Content-Type', 'application/json');
+              xhr.send(JSON.stringify(dataToSend));
+            } catch (e) {
+              console.error('[StackUnity Tracker] Erreur XHR synchrone:', e);
+            }
           }
         } else {
           fetch(config.apiEndpoint, {
@@ -1666,11 +1750,15 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(eventsToSend),
+            body: JSON.stringify(dataToSend),
             keepalive: true
+          }).then(response => {
+            console.log('[StackUnity Tracker] Réponse du serveur:', response.status);
+            return response.ok ? response.json() : Promise.reject('Erreur serveur');
+          }).then(result => {
+            console.log('[StackUnity Tracker] Données traitées:', result);
           }).catch(error => {
-            console.error('Erreur lors de l\'envoi des événements:', error);
-            
+            console.error('[StackUnity Tracker] Erreur lors de l\'envoi des événements:', error);
             state.buffer = [...eventsToSend, ...state.buffer];
           });
         }
