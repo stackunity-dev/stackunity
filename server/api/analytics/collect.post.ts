@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
     if (query.emergency === '1' && query.websiteId && query.sessionId) {
-      console.log('Requête d\'urgence reçue:', query);
+      console.log("query", query);
 
       try {
         const [websiteRows] = await pool.query<RowDataPacket[]>(
