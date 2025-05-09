@@ -5,8 +5,8 @@ import { pool } from '../db';
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
+    console.log("query", query);
     if (query.emergency === '1' && query.websiteId && query.sessionId) {
-      console.log("query", query);
 
       try {
         const [websiteRows] = await pool.query<RowDataPacket[]>(
