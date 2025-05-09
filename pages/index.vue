@@ -109,6 +109,27 @@ import { getElevation, setHoverOff, setHoverOn } from '../utils/hover-state';
 const t = useTranslations('index');
 const isHydrating = ref(true);
 const ssrComplete = ref(false);
+const isClient = ref(false);
+const showSnackbar = ref(false);
+const snackbarText = ref('');
+const snackbarColor = ref('');
+const snackbarTimeout = ref(2000);
+const nuxtApp = useNuxtApp();
+const localePath = nuxtApp.$localePath;
+
+const getImageSrc = computed(() => {
+  if (currentLanguage.value === 'fr') {
+    return '/images/preview/preview-fr.avif';
+  } else if (currentLanguage.value === 'es') {
+    return '/images/preview/preview-es.avif';
+  } else if (currentLanguage.value === 'ar') {
+    return '/images/preview/preview-ar.avif';
+  } else if (currentLanguage.value === 'zh') {
+    return '/images/preview/preview-cn.avif';
+  } else {
+    return '/images/preview/preview-en.avif';
+  }
+});
 
 const Pricing = defineAsyncComponent({
   loader: () => import('../components/pricing.vue'),
@@ -130,6 +151,13 @@ definePageMeta({
     max: 10
   }
 })
+
+const stats = computed(() => [
+  { value: '10x', label: t().stats.accelerated },
+  { value: '100%', label: t().stats.quality },
+  { value: '24/7', label: t().stats.support },
+  { value: '50+', label: t().stats.tools }
+]);
 
 useHead({
   htmlAttrs: {
@@ -190,36 +218,6 @@ useHead({
     }
   ]
 })
-
-const nuxtApp = useNuxtApp()
-const localePath = nuxtApp.$localePath
-
-const stats = computed(() => [
-  { value: '10x', label: t().stats.accelerated },
-  { value: '100%', label: t().stats.quality },
-  { value: '24/7', label: t().stats.support },
-  { value: '50+', label: t().stats.tools }
-]);
-
-const showSnackbar = ref(false);
-const snackbarText = ref('');
-const snackbarColor = ref('');
-const snackbarTimeout = ref(2000);
-const isClient = ref(false);
-
-const getImageSrc = computed(() => {
-  if (currentLanguage.value === 'fr') {
-    return '/images/preview/preview-fr.avif';
-  } else if (currentLanguage.value === 'es') {
-    return '/images/preview/preview-es.avif';
-  } else if (currentLanguage.value === 'ar') {
-    return '/images/preview/preview-ar.avif';
-  } else if (currentLanguage.value === 'zh') {
-    return '/images/preview/preview-cn.avif';
-  } else {
-    return '/images/preview/preview-en.avif';
-  }
-});
 
 onServerPrefetch(async () => {
   ssrComplete.value = true;
