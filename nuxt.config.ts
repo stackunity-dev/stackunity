@@ -43,13 +43,6 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/i18n',
-    ['@nuxtjs/plausible', {
-      domain: 'stackunity.tech',
-      apiHost: "https://plausible.io",
-      ignoredHostsNames: ['localhost', '127.0.0.1'],
-      autoPageviews: true,
-      autoOutboundTracking: true
-    }],
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
         // @ts-expect-error
