@@ -1,5 +1,17 @@
 (function() {
-  const baseUrl = 'https://stackunity.tech';
+  const getBaseUrl = function() {
+    const currentHost = window.location.hostname;
+    console.log('[StackUnity Tracker] Hostname détecté:', currentHost);
+    if (currentHost === 'localhost' || currentHost.includes('192.168.') || currentHost.includes('127.0.0.1')) {
+      console.log('[StackUnity Tracker] Environnement de développement détecté');
+      return window.location.origin;
+    }
+    console.log('[StackUnity Tracker] Environnement de production détecté');
+    return 'https://stackunity.tech';
+  };
+
+  const baseUrl = getBaseUrl();
+  console.log('[StackUnity Tracker] URL de base utilisée:', baseUrl);
 
   const config = {
     apiEndpoint: baseUrl + '/api/analytics/collect',
@@ -19,6 +31,11 @@
     bounceTimeout: 30 * 1000,
     exclusionsEndpoint: baseUrl + '/api/analytics/website/{id}/exclusions'
   };
+
+  console.log('[StackUnity Tracker] Configuration:', {
+    apiEndpoint: config.apiEndpoint,
+    exclusionsEndpoint: config.exclusionsEndpoint
+  });
 
   const state = {
     websiteId: '',
@@ -598,37 +615,61 @@
     
     checkExclusions: async function(websiteId) {
       try {
+        console.log('[StackUnity Tracker] Début de la vérification des exclusions');
         const [ip, userId] = await Promise.all([
           utils.getUserIP(),
           Promise.resolve(utils.getAuthenticatedUserId())
         ]);
         
+        console.log('[StackUnity Tracker] IP:', ip ? 'Obtenue' : 'Non obtenue');
+        console.log('[StackUnity Tracker] User ID:', userId || 'Non disponible');
+        
         if (!ip && !userId) {
+          console.log('[StackUnity Tracker] Ni IP ni userId disponibles, pas d\'exclusion');
           return false;
         }
         
         const endpoint = config.exclusionsEndpoint.replace('{id}', websiteId);
+        console.log('[StackUnity Tracker] Endpoint d\'exclusion:', endpoint);
         
-        const response = await fetch(endpoint);
-        const result = await response.json();
-        
-        if (!result.success || !result.data || !Array.isArray(result.data)) {
-          return false;
-        }
-        
-        for (const exclusion of result.data) {
-          if (exclusion.type === 'ip' && ip && exclusion.value === ip) {
-            return true;
+        try {
+          const response = await fetch(endpoint);
+          console.log('[StackUnity Tracker] Statut de la réponse d\'exclusion:', response.status);
+          
+          if (!response.ok) {
+            console.error('[StackUnity Tracker] Erreur HTTP lors de la vérification des exclusions:', response.status);
+            return false;
           }
           
-          if (exclusion.type === 'user' && userId && exclusion.value === userId) {
-            return true;
+          const result = await response.json();
+          console.log('[StackUnity Tracker] Données d\'exclusion reçues:', result.success);
+          
+          if (!result.success || !result.data || !Array.isArray(result.data)) {
+            console.log('[StackUnity Tracker] Données d\'exclusion invalides');
+            return false;
           }
+          
+          for (const exclusion of result.data) {
+            if (exclusion.type === 'ip' && ip && exclusion.value === ip) {
+              console.log('[StackUnity Tracker] IP exclue trouvée');
+              return true;
+            }
+            
+            if (exclusion.type === 'user' && userId && exclusion.value === userId) {
+              console.log('[StackUnity Tracker] User ID exclu trouvé');
+              return true;
+            }
+          }
+          
+          console.log('[StackUnity Tracker] Aucune exclusion trouvée');
+          return false;
+        } catch (fetchError) {
+          console.error('[StackUnity Tracker] Erreur lors de la requête d\'exclusion:', fetchError);
+          // En cas d'erreur, on continue le tracking
+          return false;
         }
-        
-        return false;
       } catch (e) {
-        console.error('Erreur lors de la vérification des exclusions:', e);
+        console.error('[StackUnity Tracker] Erreur globale lors de la vérification des exclusions:', e);
         return false;
       }
     }
@@ -636,12 +677,16 @@
 
   const api = {
     sendData: function(endpoint, data) {
+      console.log('[StackUnity Tracker] Tentative d\'envoi de données vers:', endpoint);
+      console.log('[StackUnity Tracker] Données:', JSON.stringify(data).substring(0, 200) + '...');
+      
       if (navigator.sendBeacon && state.isUnloading) {
         try {
+          console.log('[StackUnity Tracker] Utilisation de Beacon API');
           navigator.sendBeacon(endpoint, JSON.stringify(data));
           return Promise.resolve();
         } catch (e) {
-          console.error('Beacon API failed:', e);
+          console.error('[StackUnity Tracker] Échec de Beacon API:', e);
         }
       }
       
@@ -651,9 +696,11 @@
       );
       
       if (hasOnlySubtleEvents && data.events && data.events.length < 5) {
+        console.log('[StackUnity Tracker] Utilisation de sendDataNoCors pour événements subtils');
         return api.sendDataNoCors(endpoint, data);
       }
       
+      console.log('[StackUnity Tracker] Utilisation de fetch standard');
       return fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -661,6 +708,12 @@
         },
         body: JSON.stringify(data),
         keepalive: state.isUnloading 
+      }).then(response => {
+        console.log('[StackUnity Tracker] Réponse reçue:', response.status);
+        return response;
+      }).catch(error => {
+        console.error('[StackUnity Tracker] Erreur fetch:', error);
+        throw error;
       });
     },
     
@@ -706,26 +759,41 @@
   const tracker = {
     init: function() {
       try {
+        console.log('[StackUnity Tracker] Initialisation du tracker');
         const script = document.currentScript || document.querySelector('script[data-website-id]');
-        if (!script) return;
+        if (!script) {
+          console.error('[StackUnity Tracker] Script tag non trouvé');
+          return;
+        }
         
         state.websiteId = script.getAttribute('data-website-id') || '';
-        if (!state.websiteId) return;
+        if (!state.websiteId) {
+          console.error('[StackUnity Tracker] Attribut data-website-id manquant');
+          return;
+        }
+        
+        console.log('[StackUnity Tracker] Website ID:', state.websiteId);
         
         state.visitorId = utils.getVisitorId();
         state.sessionId = sessionStorage.getItem('stackunity_session_id') || utils.generateUUID();
         sessionStorage.setItem('stackunity_session_id', state.sessionId);
         
+        console.log('[StackUnity Tracker] Vérification des exclusions');
         utils.checkExclusions(state.websiteId).then(isExcluded => {
           if (isExcluded) {
+            console.log('[StackUnity Tracker] Utilisateur exclu du tracking');
             state.isExcluded = true;
             return;
           }
           
+          console.log('[StackUnity Tracker] Configuration du tracking');
+          tracker.setupTracking();
+        }).catch(error => {
+          console.error('[StackUnity Tracker] Erreur lors de la vérification des exclusions:', error);
           tracker.setupTracking();
         });
       } catch (e) {
-        console.error('Erreur lors de l\'initialisation du tracker:', e);
+        console.error('[StackUnity Tracker] Erreur lors de l\'initialisation du tracker:', e);
       }
     },
     
