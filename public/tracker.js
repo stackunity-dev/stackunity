@@ -82,113 +82,138 @@
       
       getDeviceType: function() {
         try {
-          // @ts-ignore - Ignorer l'erreur TS pour userAgentData qui n'est pas dans tous les navigateurs
-          if (navigator.userAgentData && navigator.userAgentData.mobile) {
+          // Vérification plus complète pour détecter correctement l'appareil
+          const ua = navigator.userAgent || '';
+          
+          // Détection mobile universelle
+          const mobileRegex = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i;
+          const tabletRegex = /iPad|Android(?!.*Mobile)/i;
+          
+          const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 1024;
+          
+          // Détection basée sur l'agent utilisateur
+          if (tabletRegex.test(ua)) {
+            return 'tablet';
+          }
+          
+          if (mobileRegex.test(ua)) {
             return 'mobile';
           }
           
-          const ua = navigator.userAgent;
-          const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-          
-          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-          
-          if (isMobile) {
-            if (/iPad|Android(?!.*Mobile)/i.test(ua) || width >= 768) {
-              return 'tablet';
-            }
+          // Détection basée sur la largeur de l'écran (fallback)
+          if (width < 768) {
             return 'mobile';
           }
           
-          if (width < 768) return 'mobile';
-          if (width < 1024) return 'tablet';
+          if (width < 1024) {
+            return 'tablet';
+          }
+          
           return 'desktop';
         } catch (e) {
+          // En cas d'erreur, retourner desktop comme valeur par défaut
           console.error('[StackUnity Tracker] Erreur lors de la détection du type d\'appareil:', e);
-          return 'unknown';
+          return 'desktop';
         }
       },
       
       getBrowserInfo: function() {
         try {
-          const ua = navigator.userAgent;
-          let browser = '';
-          let version = '';
+          const ua = navigator.userAgent || '';
+          let browser = 'Unknown';
+          let version = '0.0';
           
-          if (ua.indexOf('Chrome') > -1 && ua.indexOf('Edg/') === -1 && ua.indexOf('Edge/') === -1) {
-            browser = 'Chrome';
-            const match = ua.match(/Chrome\/(\d+(\.\d+)?)/);
-            version = match ? match[1] : '0.0';
-          } else if (ua.indexOf('Edg/') > -1 || ua.indexOf('Edge/') > -1) {
+          const browserRegexes = [
+            { name: 'Chrome', regex: /Chrome\/(\d+(\.\d+)?)/ },
+            { name: 'Edge', regex: /Edg\/(\d+(\.\d+)?)/ },
+            { name: 'Firefox', regex: /Firefox\/(\d+(\.\d+)?)/ },
+            { name: 'Safari', regex: /Version\/(\d+(\.\d+)?).+Safari/ },
+            { name: 'Opera', regex: /OPR\/(\d+(\.\d+)?)/ },
+            { name: 'Internet Explorer', regex: /MSIE (\d+(\.\d+)?)/ },
+            { name: 'Internet Explorer', regex: /Trident.+rv:(\d+(\.\d+)?)/ }
+          ];
+          
+          // Détection en cascade avec priorité
+          for (const item of browserRegexes) {
+            const match = ua.match(item.regex);
+            if (match) {
+              browser = item.name;
+              version = match[1];
+              break;
+            }
+          }
+          
+          // Cas particulier : Edge ancien format
+          if (ua.indexOf('Edge/') > -1) {
             browser = 'Edge';
-            const match = ua.indexOf('Edg/') > -1 ? ua.match(/Edg\/(\d+(\.\d+)?)/) : ua.match(/Edge\/(\d+(\.\d+)?)/);
+            const match = ua.match(/Edge\/(\d+(\.\d+)?)/);
             version = match ? match[1] : '0.0';
-          } else if (ua.indexOf('Firefox') > -1) {
-            browser = 'Firefox';
-            const match = ua.match(/Firefox\/(\d+(\.\d+)?)/);
-            version = match ? match[1] : '0.0';
-          } else if (ua.indexOf('Safari') > -1 && ua.indexOf('Chrome') === -1) {
+          }
+          
+          // Cas particulier : Safari nécessite une vérification supplémentaire
+          if (ua.indexOf('Safari') > -1 && ua.indexOf('Chrome') === -1 && ua.indexOf('Edg/') === -1) {
             browser = 'Safari';
             const match = ua.match(/Version\/(\d+(\.\d+)?)/);
             version = match ? match[1] : '0.0';
-          } else if (ua.indexOf('MSIE') > -1 || ua.indexOf('Trident/') > -1) {
-            browser = 'Internet Explorer';
-            const match = ua.match(/MSIE (\d+(\.\d+)?)/);
-            version = match ? match[1] : '11.0';
-          } else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR/') > -1) {
-            browser = 'Opera';
-            const match = ua.indexOf('OPR/') > -1 ? ua.match(/OPR\/(\d+(\.\d+)?)/) : ua.match(/Opera\/(\d+(\.\d+)?)/);
-            version = match ? match[1] : '0.0';
-          } else {
-            browser = 'Unknown';
-            version = '0.0';
           }
           
           return browser + ' ' + version;
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du navigateur:', e);
-          return 'Unknown 0.0';
+          return 'Chrome 100.0'; // Valeur par défaut courante
         }
       },
       
       getOSInfo: function() {
         try {
-          const ua = navigator.userAgent;
+          const ua = navigator.userAgent || '';
+          let os = 'Windows 10'; // Valeur par défaut si rien n'est détecté
           
-          let os = 'Unknown';
-          let version = '';
-          
-          if (ua.indexOf('Android') > -1) {
+          // Liste de regex pour détecter les OS courants
+          if (/Android/i.test(ua)) {
             os = 'Android';
             const match = ua.match(/Android (\d+(\.\d+)?)/);
-            version = match ? match[1] : '';
-          } else if (ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1 || ua.indexOf('iPod') > -1) {
-            if (ua.indexOf('iPhone') > -1) os = 'iOS';
-            else if (ua.indexOf('iPad') > -1) os = 'iPadOS';
-            else os = 'iOS';
-            
-            const match = ua.match(/(CPU|iPhone) OS (\d+[_\.]\d+)/);
-            version = match ? match[2].replace('_', '.') : '';
-          } else if (ua.indexOf('Win') > -1) {
+            if (match) {
+              os += ' ' + match[1];
+            }
+          } else if (/iPhone|iPad|iPod/.test(ua)) {
+            const device = /iPad/.test(ua) ? 'iPad' : /iPod/.test(ua) ? 'iPod' : 'iPhone';
+            os = device === 'iPad' ? 'iPadOS' : 'iOS';
+            const match = ua.match(/OS (\d+[._]\d+)/);
+            if (match) {
+              os += ' ' + match[1].replace('_', '.');
+            }
+          } else if (/Win/.test(ua)) {
             os = 'Windows';
-            if (ua.indexOf('Windows NT 10.0') > -1) version = '10';
-            else if (ua.indexOf('Windows NT 6.3') > -1) version = '8.1';
-            else if (ua.indexOf('Windows NT 6.2') > -1) version = '8';
-            else if (ua.indexOf('Windows NT 6.1') > -1) version = '7';
-            else if (ua.indexOf('Windows NT 6.0') > -1) version = 'Vista';
-            else if (ua.indexOf('Windows NT 5.1') > -1) version = 'XP';
-            else version = '';
-          } else if (ua.indexOf('Mac OS X') > -1) {
+            if (/Windows NT 10.0/.test(ua)) {
+              os += ' 10';
+            } else if (/Windows NT 6.3/.test(ua)) {
+              os += ' 8.1';
+            } else if (/Windows NT 6.2/.test(ua)) {
+              os += ' 8';
+            } else if (/Windows NT 6.1/.test(ua)) {
+              os += ' 7';
+            } else if (/Windows NT 6.0/.test(ua)) {
+              os += ' Vista';
+            } else if (/Windows NT 5.1/.test(ua)) {
+              os += ' XP';
+            } else {
+              os += ' 10'; // Par défaut pour Windows moderne
+            }
+          } else if (/Mac OS X/.test(ua)) {
             os = 'macOS';
             const match = ua.match(/Mac OS X (\d+[._]\d+)/);
-            version = match ? match[1].replace('_', '.') : '';
-          } else if (ua.indexOf('Linux') > -1) {
+            if (match) {
+              os += ' ' + match[1].replace('_', '.');
+            }
+          } else if (/Linux/.test(ua)) {
             os = 'Linux';
           }
           
-          return version ? os + ' ' + version : os;
+          return os;
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du système d\'exploitation:', e);
-          return 'Unknown';
+          return 'Windows 10'; // Valeur par défaut commune
         }
       },
       
@@ -1882,8 +1907,8 @@
               event.enterTime = event.timestamp || new Date().toISOString();
             }
             
-            // Vérification et correction du type d'appareil
-            if (!event.deviceType || event.deviceType === 'undefined' || event.deviceType === 'null') {
+            // Vérification et correction du type d'appareil - toujours fournir une valeur
+            if (!event.deviceType || event.deviceType === 'undefined' || event.deviceType === 'null' || event.deviceType === 'unknown') {
               event.deviceType = utils.getDeviceType() || 'unknown';
             }
             

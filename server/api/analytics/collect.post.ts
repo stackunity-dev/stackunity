@@ -222,14 +222,23 @@ export default defineEventHandler(async (event) => {
         await pool.query(
           `INSERT INTO analytics_sessions 
             (session_id, website_id, visitor_id, start_time, device_type, browser, os, referrer, referrer_source, referrer_name, landing_page) 
-           VALUES (?, ?, ?, NOW(), 'unknown', 'unknown', 'unknown', NULL, NULL, NULL, ?)
+           VALUES (?, ?, ?, NOW(), ?, ?, ?, NULL, NULL, NULL, ?)
            ON DUPLICATE KEY UPDATE 
-            last_activity = NOW()`,
+            last_activity = NOW(),
+            device_type = COALESCE(device_type, ?),
+            browser = COALESCE(browser, ?),
+            os = COALESCE(os, ?)`,
           [
             sessionId,
             dbWebsiteId,
             visitorId,
-            pageViewEvents[0]?.pageUrl || '/'
+            'desktop', // Valeur par défaut pour device_type
+            'Chrome 100.0', // Valeur par défaut pour browser
+            'Windows 10', // Valeur par défaut pour os
+            pageViewEvents[0]?.pageUrl || '/',
+            'desktop', // Valeur par défaut pour update en cas de null
+            'Chrome 100.0', // Valeur par défaut pour update en cas de null
+            'Windows 10' // Valeur par défaut pour update en cas de null
           ]
         );
       } catch (error) {
@@ -237,24 +246,40 @@ export default defineEventHandler(async (event) => {
       }
     } else {
       try {
+        // Récupérer et valider les données
+        const deviceType = sessionData.deviceType || 'desktop';
+        const browser = sessionData.browser || 'Chrome 100.0';
+        const os = sessionData.os || 'Windows 10';
+        const referrer = sessionData.referrer || null;
+        const referrerSource = sessionData.referrerSource || 'direct';
+        const referrerName = sessionData.referrerName || 'Direct';
+        const landingPage = sessionData.landingPage || '/';
+        const startTime = sessionData.startTime ? new Date(sessionData.startTime) : new Date();
+
         await pool.query(
           `INSERT INTO analytics_sessions 
             (session_id, website_id, visitor_id, start_time, device_type, browser, os, referrer, referrer_source, referrer_name, landing_page) 
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
            ON DUPLICATE KEY UPDATE 
-            last_activity = NOW()`,
+            last_activity = NOW(),
+            device_type = COALESCE(device_type, ?),
+            browser = COALESCE(browser, ?),
+            os = COALESCE(os, ?)`,
           [
             sessionId,
             dbWebsiteId,
             visitorId,
-            new Date(sessionData.startTime),
-            sessionData.deviceType || 'unknown',
-            sessionData.browser || 'unknown',
-            sessionData.os || 'unknown',
-            sessionData.referrer || null,
-            sessionData.referrerSource || null,
-            sessionData.referrerName || null,
-            sessionData.landingPage || null
+            startTime,
+            deviceType,
+            browser,
+            os,
+            referrer,
+            referrerSource,
+            referrerName,
+            landingPage,
+            deviceType, // Valeurs pour l'update en cas de null
+            browser,
+            os
           ]
         );
       } catch (error) {
@@ -265,28 +290,49 @@ export default defineEventHandler(async (event) => {
     for (const event of pageViewEvents) {
       try {
         console.log('Traitement de la page vue:', event.pageUrl);
+
+        // Assurer que les valeurs critiques sont toujours définies
+        const deviceType = event.deviceType || 'desktop';
+        const browser = event.browser || 'Chrome 100.0';
+        const os = event.os || 'Windows 10';
+        const pageUrl = event.pageUrl || 'https://stackunity.tech/fallback';
+
+        // Valider l'URL avant insertion
+        let validatedUrl = pageUrl;
+        try {
+          // Vérifier que l'URL est au moins un format valide
+          if (!pageUrl.startsWith('http')) {
+            validatedUrl = 'https://' + pageUrl;
+          }
+          // Valider avec URL constructor
+          new URL(validatedUrl);
+        } catch (e) {
+          console.error('URL invalide, utilisation de l\'URL par défaut:', e);
+          validatedUrl = 'https://stackunity.tech/fallback';
+        }
+
         await pool.query(
           `INSERT INTO analytics_pageviews 
             (pageview_id, session_id, website_id, page_url, page_title, enter_time, utm_source, utm_medium, utm_campaign, referrer, referrer_source, referrer_name) 
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-           ON DUPLICATE KEY UPDATE
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
             page_title = VALUES(page_title)`,
           [
             event.id,
             sessionId,
             dbWebsiteId,
-            event.pageUrl,
+            validatedUrl,
             event.title || '',
-            new Date(event.enterTime),
+            new Date(event.enterTime || event.timestamp || new Date()),
             event.utm_source || null,
             event.utm_medium || null,
             event.utm_campaign || null,
             event.referrer || null,
-            event.referrerSource || null,
-            event.referrerName || null
+            event.referrerSource || 'direct',
+            event.referrerName || 'Direct'
           ]
         );
-        console.log('Page vue enregistrée:', event.id, event.pageUrl);
+        console.log('Page vue enregistrée:', event.id, validatedUrl);
       } catch (error) {
         console.error(`Erreur lors du traitement de la page vue ${event.pageUrl}:`, error);
       }

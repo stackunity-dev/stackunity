@@ -344,8 +344,9 @@
                     <template v-slot:item.page="{ item }">
                       <div class="d-flex align-center">
                         <v-icon size="small" class="mr-2" :color="getItemColor(item)">mdi-file-document-outline</v-icon>
-                        <div class="text-truncate" style="max-width: 300px;" :title="item.page">
-                          {{ item.page }}
+                        <div class="text-truncate" style="max-width: 300px;">
+                          <v-tooltip activator="parent" :text="item.page" location="top" max-width="400"></v-tooltip>
+                          {{ formatPagePath(item.page) }}
                         </div>
                       </div>
                     </template>
@@ -972,7 +973,7 @@ import { useUserStore } from '../stores/userStore';
 import {
   formatDate,
   formatDuration,
-  formatUrl,
+  formatUrl as formatUrlUtil,
   generateTrackingCode,
   getBrowserColor,
   getBrowserIcon,
@@ -1153,7 +1154,7 @@ async function fetchWebsites() {
           id: site.trackingId,
           name: site.name,
           url: site.url,
-          formattedUrl: formatUrl(site.url),
+          formattedUrl: formatUrlUtil(site.url),
           fullDomain: getFullDomain(site.url),
           addedAt: site.createdAt,
           stats: {
@@ -1212,7 +1213,7 @@ async function addWebsite() {
         id: result.websiteId,
         name: newSite.value.name,
         url: newSite.value.url,
-        formattedUrl: formatUrl(newSite.value.url),
+        formattedUrl: formatUrlUtil(newSite.value.url),
         fullDomain: getFullDomain(newSite.value.url),
         addedAt: new Date().toISOString(),
         stats: {
@@ -1592,10 +1593,32 @@ function updateAnalyticsData(data: any) {
     }
   ];
 
-  // S'assurer que toutes les propriétés existent
-  pageViews.value = Array.isArray(data.topPages) ? data.topPages : [];
-  trafficSources.value = Array.isArray(data.trafficSources) ? data.trafficSources : [];
-  deviceStats.value = Array.isArray(data.devices) ? data.devices : [];
+  // S'assurer que toutes les propriétés existent et traiter les pages
+  let processedPages = Array.isArray(data.topPages) ? data.topPages : [];
+
+  // Nettoyer et formater les données de pages
+  processedPages = processedPages.map(page => ({
+    page: page.page || 'Page inconnue',
+    views: typeof page.views === 'number' ? page.views : 0,
+    avgTime: page.avgTime || '0m 0s'
+  })).filter(page => page.page && page.page !== 'null' && page.page !== 'undefined');
+
+  // Assigner les pages traitées
+  pageViews.value = processedPages;
+
+  // Traiter les autres types de données
+  trafficSources.value = Array.isArray(data.trafficSources) ? data.trafficSources.map(source => ({
+    source: source.source || 'unknown',
+    visitors: typeof source.visitors === 'number' ? source.visitors : 0,
+    percentage: typeof source.percentage === 'number' ? source.percentage : 0
+  })) : [];
+
+  deviceStats.value = Array.isArray(data.devices) ? data.devices.map(device => ({
+    type: device.type || 'unknown',
+    count: typeof device.count === 'number' ? device.count : 0,
+    percentage: typeof device.percentage === 'number' ? device.percentage : 0
+  })) : [];
+
   errorEvents.value = Array.isArray(data.errorEvents) ? data.errorEvents : [];
   userFlows.value = Array.isArray(data.userFlows) ? data.userFlows : [];
   browsers.value = Array.isArray(data.browsers) ? data.browsers : [];
@@ -1631,7 +1654,33 @@ function updateAnalyticsData(data: any) {
   // S'assurer que pages filtrées est mis à jour
   filteredPages.value = [...pageViews.value];
 
+  // Log de débogage pour vérifier les données de pages
+  console.log('Pages traitées:', processedPages);
+
   checkDataLimits();
+}
+
+// Mise à jour du formattage des URL de page pour une meilleure lisibilité
+function formatUrl(url: string) {
+  if (!url) return 'URL inconnue';
+
+  try {
+    // Supprimer les protocoles
+    let formatted = url.replace(/^https?:\/\//, '');
+
+    // Supprimer les www.
+    formatted = formatted.replace(/^www\./, '');
+
+    // Limiter la longueur
+    if (formatted.length > 30) {
+      formatted = formatted.substring(0, 27) + '...';
+    }
+
+    return formatted;
+  } catch (e) {
+    console.error('Erreur lors du formatage de l\'URL:', e);
+    return url;
+  }
 }
 
 function getPageViewPercentage(views: number): number {
@@ -2009,6 +2058,93 @@ async function loadExclusions() {
     console.error('Erreur lors du chargement des exclusions:', error);
   }
 }
+
+// Ajouter cette fonction pour afficher une représentation lisible des URLs de page
+function formatPagePath(path: string) {
+  if (!path) return 'Page inconnue';
+
+  try {
+    // Gérer les cas spéciaux
+    if (path === '/' || path === '') return 'Page d\'accueil';
+    if (path === 'Unknown page' || path === 'https://stackunity.tech/fallback') return 'Page inconnue';
+
+    // Gérer les URLs complètes
+    if (path.startsWith('http')) {
+      try {
+        const url = new URL(path);
+        path = url.pathname || '/';
+
+        // Si le chemin est vide, c'est probablement la page d'accueil
+        if (path === '/' || path === '') {
+          // Retourner le nom de domaine sans le protocol comme identifiant
+          return url.hostname.replace(/^www\./, '') || 'Page d\'accueil';
+        }
+      } catch (e) {
+        // Continuer avec le path original
+      }
+    }
+
+    // Supprimer les paramètres de requête et ancres
+    path = path.split('?')[0].split('#')[0];
+
+    // Supprimer les barres obliques de début et de fin
+    path = path.replace(/^\/|\/$/g, '');
+
+    // Si c'est une page vide après nettoyage
+    if (!path) return 'Page d\'accueil';
+
+    // Obtenir le dernier segment du chemin pour plus de lisibilité
+    const pathSegments = path.split('/');
+    const lastSegment = pathSegments.pop() || path;
+
+    // Si le dernier segment est vide, prendre l'avant-dernier
+    const displaySegment = lastSegment || pathSegments.pop() || path;
+
+    // Remplacer les - et _ par des espaces pour plus de lisibilité
+    let formattedPath = displaySegment.replace(/[-_]/g, ' ');
+
+    // Formater avec des majuscules pour chaque mot
+    formattedPath = formattedPath.split(' ').map(word =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+
+    // Si c'est trop long, le tronquer
+    if (formattedPath.length > 30) {
+      formattedPath = formattedPath.substring(0, 27) + '...';
+    }
+
+    return formattedPath;
+  } catch (e) {
+    console.error('Erreur lors du formatage du chemin de page:', e);
+    return path;
+  }
+}
+
+// Si la fonction de formatage d'URL est également définie localement, renommons-la pour éviter le conflit
+function formatLocalUrl(url: string) {
+  if (!url) return 'URL inconnue';
+
+  try {
+    // Supprimer les protocoles
+    let formatted = url.replace(/^https?:\/\//, '');
+
+    // Supprimer les www.
+    formatted = formatted.replace(/^www\./, '');
+
+    // Limiter la longueur
+    if (formatted.length > 30) {
+      formatted = formatted.substring(0, 27) + '...';
+    }
+
+    return formatted;
+  } catch (e) {
+    console.error('Erreur lors du formatage de l\'URL:', e);
+    return url;
+  }
+}
+
+// Maintenant, utilisons formatUrlUtil qui est la fonction importée en cas de besoin
+// Si des références à formatUrl existaient dans le code, on doit les remplacer par formatUrlUtil ou formatLocalUrl
 </script>
 
 <style scoped>

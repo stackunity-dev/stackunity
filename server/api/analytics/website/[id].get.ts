@@ -170,11 +170,11 @@ export default defineEventHandler(async (event) => {
 
     const topPagesQuery = `
       SELECT 
-        page_url AS page, 
+        COALESCE(page_url, 'Unknown page') AS page, 
         COUNT(*) AS views,
-        CONCAT(FLOOR(AVG(duration) / 60), 'm ', MOD(FLOOR(AVG(duration)), 60), 's') AS avgTime
+        CONCAT(FLOOR(AVG(COALESCE(duration, 0)) / 60), 'm ', MOD(FLOOR(AVG(COALESCE(duration, 0))), 60), 's') AS avgTime
       FROM analytics_pageviews 
-      WHERE website_id = ? AND duration IS NOT NULL ${startDate ? 'AND enter_time >= ?' : ''}
+      WHERE website_id = ? AND page_url IS NOT NULL ${startDate ? 'AND enter_time >= ?' : ''}
       GROUP BY page_url 
       ORDER BY views DESC 
       LIMIT 10
@@ -412,6 +412,20 @@ export default defineEventHandler(async (event) => {
     );
     const frustratedSessions = frustratedSessionsRows[0]?.frustratedSessions || 0;
 
+    const isValidUrl = (url) => {
+      if (!url) return false;
+
+      try {
+        if (!url.startsWith('http')) {
+          url = 'https://' + url;
+        }
+        new URL(url);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
+
     return {
       success: true,
       data: {
@@ -426,11 +440,21 @@ export default defineEventHandler(async (event) => {
         totalSessions,
         frustratedSessions,
         timeOnSite: `${Math.floor(avgSessionDuration / 60)}m ${avgSessionDuration % 60}s`,
-        topPages: topPagesRows.map(page => ({
-          page: page.page || 'Unknown page',
-          views: page.views || 0,
-          avgTime: page.avgTime || '0m 0s'
-        })),
+        topPages: topPagesRows.map(page => {
+          let pageUrl = page.page || 'Unknown page';
+          if (pageUrl === 'Unknown page' || !isValidUrl(pageUrl)) {
+            if (pageUrl.startsWith('/')) {
+              pageUrl = pageUrl.replace(/^\/|\/$/g, '');
+              pageUrl = pageUrl || '/';
+            }
+          }
+
+          return {
+            page: pageUrl,
+            views: page.views || 0,
+            avgTime: page.avgTime || '0m 0s'
+          };
+        }),
         trafficSources: trafficSourcesRows.map(source => ({
           source: source.source || 'unknown',
           visitors: source.visitors || 0,
