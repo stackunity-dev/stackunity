@@ -1,6 +1,8 @@
 (function() {
+  const baseUrl = 'https://stackunity.tech';
+
   const config = {
-    apiEndpoint: '/api/analytics/collect',
+    apiEndpoint: baseUrl + '/api/analytics/collect',
     flushInterval: 10 * 1000,
     sessionTimeout: 30 * 60 * 1000, 
     trackClicks: true,
@@ -15,7 +17,7 @@
     inputDebounceTime: 2000,
     inputMinimumCharChange: 3,
     bounceTimeout: 30 * 1000,
-    exclusionsEndpoint: '/api/analytics/website/{id}/exclusions'
+    exclusionsEndpoint: baseUrl + '/api/analytics/website/{id}/exclusions'
   };
 
   const state = {
