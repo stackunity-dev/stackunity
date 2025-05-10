@@ -141,13 +141,23 @@ export default defineEventHandler(async (event) => {
       totalDeleted += customEventsResult.affectedRows;
     }
 
-    const [visitorsResult] = await pool.execute<ResultSetHeader>(`
-      DELETE v FROM analytics_visitors v
-      LEFT JOIN analytics_sessions s ON v.visitor_id = s.visitor_id
-      WHERE s.visitor_id IS NULL
-    `);
-    deletedCounts.visitors = visitorsResult.affectedRows;
-    totalDeleted += visitorsResult.affectedRows;
+    if (deleteAll) {
+      const [visitorsResult] = await pool.execute<ResultSetHeader>(`
+        DELETE v FROM analytics_visitors v
+        LEFT JOIN analytics_sessions s ON v.visitor_id = s.visitor_id
+        WHERE s.visitor_id IS NULL
+      `);
+      deletedCounts.visitors = visitorsResult.affectedRows;
+      totalDeleted += visitorsResult.affectedRows;
+    } else {
+      const [visitorsResult] = await pool.execute<ResultSetHeader>(`
+        DELETE v FROM analytics_visitors v
+        LEFT JOIN analytics_sessions s ON v.visitor_id = s.visitor_id AND s.website_id = ?
+        WHERE s.visitor_id IS NULL OR s.id IS NULL
+      `, [siteId]);
+      deletedCounts.visitors = visitorsResult.affectedRows;
+      totalDeleted += visitorsResult.affectedRows;
+    }
 
     console.log(`Purge de données pour le site ${websiteId} (${purgeOption}):`, deletedCounts);
 

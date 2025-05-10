@@ -83,6 +83,55 @@ function parseUserAgent(userAgent: string): { deviceType: string; browser: strin
   return { deviceType, browser, os };
 }
 
+// Fonction pour vérifier si un visiteur ou IP est exclu
+async function checkExclusions(websiteId: string, visitorId: string, ipAddress: string | null): Promise<boolean> {
+  try {
+    // Récupérer l'ID numérique du site web
+    const [websiteRows] = await pool.query<RowDataPacket[]>(
+      'SELECT id FROM analytics_websites WHERE tracking_id = ?',
+      [websiteId]
+    );
+
+    if (!Array.isArray(websiteRows) || websiteRows.length === 0) {
+      console.log('Site web non trouvé lors de la vérification des exclusions:', websiteId);
+      return false;
+    }
+
+    const dbWebsiteId = websiteRows[0].id;
+
+    // Vérifier si le visiteur est exclu
+    if (visitorId) {
+      const [visitorExclusion] = await pool.query<RowDataPacket[]>(
+        'SELECT id FROM analytics_exclusions WHERE website_id = ? AND type = ? AND value = ?',
+        [dbWebsiteId, 'user', visitorId]
+      );
+
+      if (Array.isArray(visitorExclusion) && visitorExclusion.length > 0) {
+        console.log(`Visiteur exclu: ${visitorId} pour le site ${websiteId}`);
+        return true;
+      }
+    }
+
+    // Vérifier si l'IP est exclue (si fournie)
+    if (ipAddress) {
+      const [ipExclusion] = await pool.query<RowDataPacket[]>(
+        'SELECT id FROM analytics_exclusions WHERE website_id = ? AND type = ? AND value = ?',
+        [dbWebsiteId, 'ip', ipAddress]
+      );
+
+      if (Array.isArray(ipExclusion) && ipExclusion.length > 0) {
+        console.log(`IP exclue: ${ipAddress} pour le site ${websiteId}`);
+        return true;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    console.error('Erreur lors de la vérification des exclusions:', error);
+    return false;
+  }
+}
+
 export default defineEventHandler(async (event) => {
   try {
     // Ajouter un log pour vérifier si le handler est appelé
@@ -216,6 +265,21 @@ export default defineEventHandler(async (event) => {
       return {
         success: false,
         message: 'Aucun événement à enregistrer'
+      };
+    }
+
+    // Obtenir l'adresse IP depuis la requête
+    const ipAddress = event.node.req.headers['x-forwarded-for'] as string ||
+      event.node.req.socket.remoteAddress ||
+      null;
+
+    // Vérifier les exclusions
+    const isExcluded = await checkExclusions(websiteId, visitorId, ipAddress);
+    if (isExcluded) {
+      console.log('Collection de données ignorée - Visiteur ou IP exclu:', { visitorId, ipAddress });
+      return {
+        success: true,
+        message: 'Exclusion appliquée'
       };
     }
 

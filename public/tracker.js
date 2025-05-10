@@ -18,7 +18,8 @@
       inputDebounceTime: 2000,
       inputMinimumCharChange: 3,
       bounceTimeout: 30 * 1000,
-      exclusionsEndpoint: `${baseUrl}/api/analytics/website/{id}/exclusions`
+      exclusionsEndpoint: `${baseUrl}/api/analytics/website/{id}/exclusions`,
+      checkExclusionsOnPageLoad: true
     };
 
     const state = {
@@ -626,11 +627,14 @@
       
       checkExclusions: async function(websiteId) {
         try {
-          
+          // Obtenir une identification fiable du visiteur
           const userId = utils.getAuthenticatedUserId();
+          const visitorId = localStorage.getItem('stackunity_visitor_id');
+          const ipAddress = await utils.getUserIP();
           
-          if (!userId) {
-            console.log('[StackUnity Tracker] Pas d\'userId disponible, on continue sans exclusion');
+          // Si on n'a pas d'information d'identification, on continue sans exclusion
+          if (!userId && !visitorId && !ipAddress) {
+            console.log('[StackUnity Tracker] Aucune information d\'identification disponible, on continue sans exclusion');
             return false;
           }
           
@@ -652,28 +656,40 @@
             
             for (const exclusion of result.data) {
               if (exclusion.type === 'user' && userId && exclusion.value === userId) {
+                console.log('[StackUnity Tracker] Utilisateur exclu détecté:', userId);
+                // Enregistrer l'état d'exclusion en local storage
+                localStorage.setItem('stackunity_excluded', 'true');
+                localStorage.setItem('stackunity_excluded_reason', 'user');
                 return true;
               }
+              
+              // Exclusion par adresse IP
+              if (exclusion.type === 'ip' && ipAddress && exclusion.value === ipAddress) {
+                console.log('[StackUnity Tracker] IP exclue détectée:', ipAddress);
+                // Enregistrer l'état d'exclusion en local storage
+                localStorage.setItem('stackunity_excluded', 'true');
+                localStorage.setItem('stackunity_excluded_reason', 'ip');
+                return true;
+              }
+            }
+            
+            // Vérifier si l'utilisateur était précédemment exclu
+            if (localStorage.getItem('stackunity_excluded') === 'true') {
+              console.log('[StackUnity Tracker] Suppression d\'une exclusion précédente');
+              localStorage.removeItem('stackunity_excluded');
+              localStorage.removeItem('stackunity_excluded_reason');
             }
             
             return false;
           } catch (fetchError) {
             console.error('[StackUnity Tracker] Erreur lors de la requête d\'exclusion:', fetchError);
-            console.error('[StackUnity Tracker] Détails de l\'erreur:', {
-              message: fetchError.message,
-              name: fetchError.name,
-              stack: fetchError.stack
-            });
-            return false;
+            // En cas d'erreur, vérifier si l'utilisateur était précédemment exclu
+            return localStorage.getItem('stackunity_excluded') === 'true';
           }
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur globale lors de la vérification des exclusions:', e);
-          console.error('[StackUnity Tracker] Détails de l\'erreur:', {
-            message: e.message,
-            name: e.name,
-            stack: e.stack
-          });
-          return false;
+          // En cas d'erreur, vérifier si l'utilisateur était précédemment exclu
+          return localStorage.getItem('stackunity_excluded') === 'true';
         }
       },
       
@@ -812,6 +828,13 @@
     const tracker = {
       init: function() {
         try {
+          // Vérifier d'abord si l'utilisateur est déjà marqué comme exclu dans le localStorage
+          if (localStorage.getItem('stackunity_excluded') === 'true') {
+            const reason = localStorage.getItem('stackunity_excluded_reason') || 'inconnu';
+            console.log(`[StackUnity Tracker] Utilisateur précédemment exclu (raison: ${reason}), analytics désactivés`);
+            state.isExcluded = true;
+            return;
+          }
           
           const script = document.currentScript || document.querySelector('script[data-website-id]');
           
@@ -827,27 +850,28 @@
             return;
           }
           
-          
           state.visitorId = utils.getVisitorId();
           state.sessionId = sessionStorage.getItem('stackunity_session_id') || utils.generateUUID();
           sessionStorage.setItem('stackunity_session_id', state.sessionId);
           
-          
-          tracker.setupTracking();
-          
-          try {
-            utils.checkExclusions(state.websiteId)
-              .then(isExcluded => {
-                if (isExcluded) {
-                  state.isExcluded = true;
-                }
-              })
-              .catch(error => {
-                console.error('[StackUnity Tracker] Erreur d\'exclusion:', error);
-              });
-          } catch (e) {
-            console.error('[StackUnity Tracker] Erreur lors de la vérification des exclusions:', e);
-          }
+          // Vérifier les exclusions avant de démarrer le tracking
+          utils.checkExclusions(state.websiteId)
+            .then(isExcluded => {
+              state.isExcluded = isExcluded;
+              
+              if (isExcluded) {
+                console.log('[StackUnity Tracker] Utilisateur exclu, analytics désactivés');
+                return;
+              }
+              
+              // Démarrer le tracking uniquement si non exclu
+              tracker.setupTracking();
+            })
+            .catch(error => {
+              console.error('[StackUnity Tracker] Erreur lors de la vérification des exclusions:', error);
+              // En cas d'erreur, on démarre quand même le tracking
+              tracker.setupTracking();
+            });
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de l\'initialisation du tracker:', e);
         }
