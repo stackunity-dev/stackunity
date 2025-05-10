@@ -4,6 +4,17 @@ import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   try {
+    // Ajouter un log pour vérifier si le handler est appelé
+    console.log('Appel du handler analytics/collect');
+
+    // Vérifier la connexion à la base de données
+    try {
+      const [result] = await pool.query('SELECT 1 as test');
+      console.log('Connexion à la base de données OK:', result);
+    } catch (dbError) {
+      console.error('Erreur de connexion à la base de données:', dbError);
+    }
+
     const query = getQuery(event);
     if (query.emergency === '1' && query.websiteId && query.sessionId) {
 
@@ -107,6 +118,8 @@ export default defineEventHandler(async (event) => {
     }
 
     const data = await readBody(event);
+    // Log des données brutes reçues
+    console.log('Données brutes reçues:', JSON.stringify(data));
     const { websiteId, sessionId, visitorId, events } = data;
 
     if (!websiteId || !sessionId || !visitorId || !events || !Array.isArray(events)) {
@@ -557,13 +570,6 @@ export default defineEventHandler(async (event) => {
                   const safeSessionId = sessionId || 'session-' + require('crypto').randomUUID();
                   const safeWebsiteId = dbWebsiteId || 1;
 
-                  console.log('Tentative de création d\'une nouvelle page view avec:', {
-                    pageViewId: event.pageViewId,
-                    sessionId: safeSessionId,
-                    websiteId: safeWebsiteId,
-                    pageUrl: pageUrl || '/',
-                    pageTitle: pageTitle
-                  });
 
                   const insertResult = await pool.query(
                     `INSERT INTO analytics_pageviews
