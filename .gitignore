@@ -33,6 +33,9 @@ Thumbs.db
 .cache/
 .temp/
 
+# Dossier de sauvegarde des configurations
+.config-backup/
+
 # Autres fichiers à ignorer
 node_modules
 .nuxt
