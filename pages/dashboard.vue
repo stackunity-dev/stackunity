@@ -397,7 +397,7 @@ const allTools = ref<ToolItem[]>([
     icon: 'mdi-database',
     color: 'info',
     route: '/database-designer',
-    disabled: !userStore.user?.isStandard,
+    disabled: !userStore.user?.isStandard || !userStore.user?.isPremium,
     category: 'development',
     isNew: false,
     visible: true
@@ -441,7 +441,7 @@ const allTools = ref<ToolItem[]>([
     icon: 'mdi-speedometer',
     color: 'primary',
     route: '/performance',
-    disabled: false,
+    disabled: !userStore.user?.isPremium,
     category: 'analysis',
     isNew: true,
     visible: true
