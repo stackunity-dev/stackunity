@@ -99,10 +99,9 @@ export const pool = mysql.createPool({
   {
     path: 'server/api/payment-webhook/index.ts',
     sanitize: (content) => {
-      const sanitizedContent = content
-        .replace(/stripe\s*=\s*new\s*Stripe\(process\.env\.STRIPE_SECRET_KEY\s*as\s*string\s*\|\|\s*['"].*?['"]/g, 
-                'stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string || "sk_test_example")');
-      return sanitizedContent;
+      return content
+        .replace(/const\s+stripe\s*=\s*new\s*Stripe\(.*?\)(\s*),\s*\{/g, 
+                'const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string || "sk_test_example"$1, {');
     }
   }
 ];
