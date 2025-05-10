@@ -688,11 +688,22 @@
       },
       
       isLocalEnvironment: function(url) {
-        if (!url) return false;
+        if (!url) {
+          // Si aucune URL n'est fournie, vérifier l'environnement actuel
+          const hostname = window.location.hostname || '';
+          return hostname === 'localhost' || 
+                 hostname === '127.0.0.1' ||
+                 hostname.startsWith('10.') ||
+                 hostname.includes('.local') ||
+                 hostname.includes('ngrok.io');
+        }
+        
         const cleanUrl = url.replace(/^https?:\/\//, '');
         return cleanUrl.startsWith('localhost') ||
-          cleanUrl.startsWith('127.0.0.1') ||
-          /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(cleanUrl);
+               cleanUrl.startsWith('127.0.0.1') ||
+               cleanUrl.match(/^10\./) ||
+               cleanUrl.includes('.local') ||
+               cleanUrl.includes('ngrok.io');
       },
       
       analyzePageContent: function() {
@@ -823,6 +834,15 @@
     const tracker = {
       init: function() {
         try {
+          // Vérifier si l'utilisateur est sur localhost
+          if (utils.isLocalEnvironment()) {
+            console.log('[StackUnity Tracker] Tracking désactivé sur environnement local');
+            state.isExcluded = true;
+            localStorage.setItem('stackunity_excluded', 'true');
+            localStorage.setItem('stackunity_excluded_reason', 'localhost');
+            return;
+          }
+          
           // Vérifier d'abord si l'utilisateur est déjà marqué comme exclu dans le localStorage
           if (localStorage.getItem('stackunity_excluded') === 'true') {
             const reason = localStorage.getItem('stackunity_excluded_reason') || 'inconnu';
@@ -1072,7 +1092,7 @@
       },
       
       trackPageView: function() {
-        if (state.isExcluded) return;
+        if (state.isExcluded || utils.isLocalEnvironment()) return;
         
         state.startTime = new Date();
         state.lastScrollTimestamp = new Date().getTime();
@@ -1172,6 +1192,8 @@
       },
       
       trackEvent: function(category, action, label, value) {
+        if (state.isExcluded || utils.isLocalEnvironment()) return;
+        
         const event = {
           type: 'customEvent',
           id: utils.generateUUID(),
@@ -1935,7 +1957,7 @@
       },
       
       flushEvents: function(isBeforeUnload = false) {
-        if (state.isExcluded) return;
+        if (state.isExcluded || utils.isLocalEnvironment()) return;
         
         if (state.buffer.length === 0) return;
 
@@ -1966,18 +1988,15 @@
           }
         }
         
-        // S'assurer que toutes les données pageVisitDuration et pageViewExit ont un pageViewId valide
         const hasDurationEvents = state.buffer.some(event => 
           (event.type === 'pageVisitDuration' || event.type === 'pageViewExit') && event.pageViewId
         );
         
-        // Si fermeture de page et pas d'événement de durée, ajouter une durée finale
         if (isBeforeUnload && !hasDurationEvents && state.currentPageViewId) {
           const now = new Date();
           const startTimeMs = state.startTime.getTime();
           const duration = Math.round((now.getTime() - startTimeMs) / 1000);
           
-          // Ajouter un événement de durée final
           state.buffer.push({
             type: 'pageVisitDuration',
             id: utils.generateUUID(),
@@ -1989,7 +2008,6 @@
             userAgent: navigator.userAgent || 'unknown'
           });
           
-          // Ajouter également un événement de sortie
           state.buffer.push({
             type: 'pageViewExit',
             id: utils.generateUUID(),
@@ -2001,11 +2019,9 @@
           });
         }
         
-        // Vérifier et corriger les données de chaque événement
         for (let i = 0; i < state.buffer.length; i++) {
           const event = state.buffer[i];
           
-          // Vérification et correction de l'URL de la page
           if (!event.pageUrl || event.pageUrl === 'undefined' || event.pageUrl === 'null') {
             try {
               event.pageUrl = window.location.href || document.URL || 'https://stackunity.tech/fallback';
@@ -2014,14 +2030,11 @@
             }
           }
           
-          // Pour les autres types d'événements
           if (event.type === 'interaction' || event.type === 'customEvent' || event.type === 'error' || event.type === 'pageVisitDuration') {
-            // Assurez-vous que pageViewId est défini
             if (!event.pageViewId || event.pageViewId === 'undefined' || event.pageViewId === 'null') {
               event.pageViewId = state.currentPageViewId;
             }
             
-            // Assurez-vous que timestamp est défini
             if (!event.timestamp || event.timestamp === 'undefined' || event.timestamp === 'null') {
               event.timestamp = new Date().toISOString();
             }
@@ -2030,8 +2043,7 @@
         
         const eventsToSend = [...state.buffer];
         state.buffer = [];
-        
-        // Créer l'objet de données complet avec toutes les informations requises
+
         const dataToSend = {
           websiteId: state.websiteId,
           sessionId: state.sessionId,
@@ -2082,14 +2094,12 @@
         // Création d'une nouvelle session
         state.sessionId = utils.generateUUID();
         sessionStorage.setItem('stackunity_session_id', state.sessionId);
-        
-        // Récupérer le référent et les UTM params
+
         const referrer = utils.getReferrer() || '';
         const { source: referrerSource, name: referrerName } = utils.getReferrerSource();
         const landingPage = window.location.href;
         const utmParams = utils.getUTMParams();
         
-        // Préparer l'événement de session
         const session = {
           type: 'session',
           id: utils.generateUUID(),
@@ -2121,7 +2131,6 @@
       }
     };
 
-    // Modifier le CSS du tracker pour s'assurer que tous les éléments sont bien cachés
     const trackerStyles = document.createElement('style');
     trackerStyles.textContent = `
       .stackunity-tracker-element,

@@ -2,7 +2,14 @@ import { defineEventHandler, getQuery, readBody } from 'h3';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../db';
 
-// Fonction pour analyser l'userAgent et extraire les informations utiles
+function isLocalIP(ip: string | null): boolean {
+  if (!ip) return false;
+  return ip === '127.0.0.1' ||
+    ip === 'localhost' ||
+    ip.startsWith('10.') ||
+    ip.startsWith('::1');
+}
+
 function parseUserAgent(userAgent: string): { deviceType: string; browser: string; os: string } {
   if (!userAgent) {
     return { deviceType: 'desktop', browser: 'Chrome', os: 'Windows 10' };
@@ -10,7 +17,6 @@ function parseUserAgent(userAgent: string): { deviceType: string; browser: strin
 
   const ua = userAgent.toLowerCase();
 
-  // Détection du type d'appareil
   let deviceType = 'desktop';
   if (
     ua.includes('iphone') ||
@@ -87,6 +93,20 @@ export default defineEventHandler(async (event) => {
   try {
     // Ajouter un log pour vérifier si le handler est appelé
     console.log('Appel du handler analytics/collect');
+
+    // Obtenir l'adresse IP depuis la requête
+    const ipAddress = event.node.req.headers['x-forwarded-for'] as string ||
+      event.node.req.socket.remoteAddress ||
+      null;
+
+    // Vérifier si l'IP est locale, dans ce cas ignorer le tracking
+    if (isLocalIP(ipAddress)) {
+      console.log(`[StackUnity Tracker] Requête ignorée - environnement local détecté: ${ipAddress}`);
+      return {
+        success: true,
+        message: 'Requête ignorée - environnement local'
+      };
+    }
 
     // Vérifier la connexion à la base de données
     try {
@@ -218,11 +238,6 @@ export default defineEventHandler(async (event) => {
         message: 'Aucun événement à enregistrer'
       };
     }
-
-    // Obtenir l'adresse IP depuis la requête
-    const ipAddress = event.node.req.headers['x-forwarded-for'] as string ||
-      event.node.req.socket.remoteAddress ||
-      null;
 
     // Extraire les informations de navigateur et OS du premier événement disponible
     let deviceType = 'desktop';
