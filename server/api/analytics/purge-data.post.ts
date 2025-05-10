@@ -80,7 +80,6 @@ export default defineEventHandler(async (event) => {
       );
       deletedCounts.interactions = interactionsResult.affectedRows;
       totalDeleted += interactionsResult.affectedRows;
-      console.log('Interactions supprimées (avec date limite):', interactionsResult.affectedRows);
     }
 
     if (deleteAll) {

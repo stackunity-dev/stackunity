@@ -642,48 +642,44 @@
           
           console.log('[StackUnity Tracker] Vérification des exclusions:', exclusions);
           
-          // Vérifier les exclusions par user ID
-          const userId = utils.getAuthenticatedUserId();
-          if (userId) {
-            const userExclusion = exclusions.find(exc => exc.type === 'user' && exc.value === userId);
-            if (userExclusion) {
-              console.log('[StackUnity Tracker] Utilisateur exclu trouvé:', userId);
-              localStorage.setItem('stackunity_excluded', 'true');
-              localStorage.setItem('stackunity_excluded_reason', 'user');
-              return true;
-            }
+          // Récupérer le visitor ID
+          const visitorId = utils.getVisitorId();
+          console.log('[StackUnity Tracker] Visitor ID actuel:', visitorId);
+          
+          // Vérifier si le visitor ID est exclu
+          const visitorExclusion = exclusions.find(exc => 
+            (exc.type === 'visitor' || exc.type === 'user') && 
+            (exc.value === visitorId || exc.value === utils.getAuthenticatedUserId())
+          );
+          
+          if (visitorExclusion) {
+            console.log('[StackUnity Tracker] Visitor ID exclu trouvé:', visitorId);
+            localStorage.setItem('stackunity_excluded', 'true');
+            localStorage.setItem('stackunity_excluded_reason', 'visitor');
+            return true;
           }
           
-          // Vérifier les exclusions par IP
+          // Convertir les anciennes exclusions IP en exclusions visitor
           const ipExclusions = exclusions.filter(exc => exc.type === 'ip');
           if (ipExclusions.length > 0) {
-            // Si nous sommes en environnement local (localhost)
-            const hostName = window.location.hostname;
-            const isLocal = hostName === 'localhost' || hostName === '127.0.0.1' || hostName.startsWith('192.168.');
+            console.log('[StackUnity Tracker] Exclusions IP trouvées - conversion en exclusion visitor');
             
-            if (isLocal) {
-              // Essayons de voir si l'IP actuelle correspond à une des exclusions
-              const currentHostname = window.location.hostname;
-              for (const ipExc of ipExclusions) {
-                // Si l'IP actuelle ou une IP locale correspond à l'exclusion
-                if (ipExc.value === currentHostname || 
-                    ipExc.value === '127.0.0.1' || 
-                    ipExc.value.startsWith('192.168.') ||
-                    ipExc.value === 'localhost') {
-                  console.log('[StackUnity Tracker] IP locale exclue trouvée:', ipExc.value);
-                  localStorage.setItem('stackunity_excluded', 'true');
-                  localStorage.setItem('stackunity_excluded_reason', 'ip');
-                  return true;
-                }
-              }
-            }
+            // Créer une nouvelle exclusion basée sur le visitor ID actuel
+            const newExclusions = exclusions.filter(exc => exc.type !== 'ip');
+            newExclusions.push({
+              type: 'visitor',
+              value: visitorId
+            });
             
-            // Marquer qu'il y a des IP exclues pour que le serveur puisse aussi vérifier
-            localStorage.setItem('stackunity_has_ip_exclusions', 'true');
-            console.log('[StackUnity Tracker] Exclusions IP enregistrées pour vérification côté serveur');
+            // Sauvegarder les nouvelles exclusions
+            localStorage.setItem(storageKey, JSON.stringify(newExclusions));
+            localStorage.setItem('stackunity_excluded', 'true');
+            localStorage.setItem('stackunity_excluded_reason', 'visitor_converted');
+            console.log('[StackUnity Tracker] Exclusion convertie en visitor ID:', visitorId);
+            return true;
           }
           
-          return false;
+          return localStorage.getItem('stackunity_excluded') === 'true';
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la vérification des exclusions:', e);
           // En cas d'erreur, vérifier si l'utilisateur était précédemment exclu

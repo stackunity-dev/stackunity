@@ -903,9 +903,9 @@
 
             <v-list class="mb-4 pa-0 bg-surface rounded-lg">
               <v-list-subheader>{{ t.analytics.currentExclusions || 'Exclusions actuelles' }}</v-list-subheader>
-              <v-list-item v-for="(exclusion, index) in ipExclusions" :key="index">
+              <v-list-item v-for="(exclusion, index) in visitorExclusions" :key="index">
                 <template v-slot:prepend>
-                  <v-icon>{{ exclusion.type === 'ip' ? 'mdi-ip-network' : 'mdi-account' }}</v-icon>
+                  <v-icon>{{ exclusion.type === 'visitor' ? 'mdi-account' : 'mdi-account' }}</v-icon>
                 </template>
                 <v-list-item-title>{{ exclusion.value }}</v-list-item-title>
                 <template v-slot:append>
@@ -915,7 +915,7 @@
                   </v-btn>
                 </template>
               </v-list-item>
-              <v-list-item v-if="ipExclusions.length === 0">
+              <v-list-item v-if="visitorExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
                   }}</v-list-item-title>
@@ -924,15 +924,20 @@
 
             <v-divider class="mb-4"></v-divider>
 
+            <v-btn color="secondary" block variant="outlined" class="mb-4" @click="addCurrentVisitor">
+              <v-icon start>mdi-cellphone</v-icon>
+              {{ t.analytics.excludeCurrentDevice || 'Exclure votre appareil actuel' }}
+            </v-btn>
+
             <v-form @submit.prevent="addExclusion">
               <v-select v-model="newExclusion.type" :items="[
-                { title: t.analytics.ipAddress || 'Adresse IP', value: 'ip' },
+                { title: t.analytics.visitorId || 'ID Visiteur', value: 'visitor' },
                 { title: t.analytics.userId || 'ID Utilisateur', value: 'user' }
               ]" :label="t.analytics.exclusionType || 'Type d\'exclusion'" variant="outlined" class="mb-3">
               </v-select>
 
               <v-text-field v-model="newExclusion.value"
-                :label="newExclusion.type === 'ip' ? (t.analytics.ipAddressPlaceholder || 'Adresse IP à exclure (ex: 192.168.1.1)') : (t.analytics.userIdPlaceholder || 'ID utilisateur à exclure')"
+                :label="newExclusion.type === 'visitor' ? (t.analytics.visitorIdPlaceholder || 'ID visiteur à exclure (ex: 123456)') : (t.analytics.userIdPlaceholder || 'ID utilisateur à exclure')"
                 variant="outlined" class="mb-3" :rules="[v => !!v || t.form.valueRequired || 'Valeur requise']">
               </v-text-field>
 
@@ -2154,21 +2159,43 @@ function updateSiteName() {
 }
 
 const showExclusionsDialog = ref(false);
-const ipExclusions = ref<Array<{ type: 'ip' | 'user', value: string }>>([]);
-const newExclusion = ref<{ type: 'ip' | 'user', value: string }>({
-  type: 'ip',
+const visitorExclusions = ref<Array<{ type: 'visitor' | 'user', value: string }>>([]);
+const newExclusion = ref<{ type: 'visitor' | 'user', value: string }>({
+  type: 'visitor',
   value: ''
 });
 
 function addExclusion() {
   if (newExclusion.value.value) {
-    ipExclusions.value.push({ ...newExclusion.value });
+    visitorExclusions.value.push({ ...newExclusion.value });
     newExclusion.value.value = '';
   }
 }
 
+function addCurrentVisitor() {
+  const visitorId = localStorage.getItem('stackunity_visitor_id');
+  if (visitorId) {
+    // Vérifier s'il existe déjà
+    const exists = visitorExclusions.value.some(exc =>
+      exc.type === 'visitor' && exc.value === visitorId
+    );
+
+    if (!exists) {
+      visitorExclusions.value.push({
+        type: 'visitor',
+        value: visitorId
+      });
+      showMessage('Votre appareil actuel a été ajouté aux exclusions', 'success');
+    } else {
+      showMessage('Votre appareil est déjà dans la liste des exclusions', 'info');
+    }
+  } else {
+    showMessage('Impossible de récupérer votre identifiant visiteur', 'error');
+  }
+}
+
 function removeExclusion(index: number) {
-  ipExclusions.value.splice(index, 1);
+  visitorExclusions.value.splice(index, 1);
 }
 
 // Modification pour utiliser localStorage au lieu des APIs
@@ -2178,7 +2205,7 @@ function saveExclusions() {
   try {
     // Sauvegarder dans localStorage avec une clé basée sur l'ID du site
     const storageKey = `stackunity_exclusions_${currentSite.value.id}`;
-    localStorage.setItem(storageKey, JSON.stringify(ipExclusions.value));
+    localStorage.setItem(storageKey, JSON.stringify(visitorExclusions.value));
 
     // Ajouter aussi une date de dernière mise à jour
     localStorage.setItem(`${storageKey}_updated`, new Date().toISOString());
@@ -2186,7 +2213,7 @@ function saveExclusions() {
     showMessage(t.analytics.exclusionsSaved || 'Exclusions sauvegardées avec succès', 'success');
     showExclusionsDialog.value = false;
 
-    // Afficher des instructions pour recharger le tracker
+    // Afficher des instructions pour recharger la page
     showMessage(t.analytics.exclusionsSaved ? 'Rechargez la page pour appliquer les exclusions' : 'Reload the page to apply exclusions', 'info');
   } catch (error) {
     console.error('Erreur lors de la sauvegarde des exclusions:', error);
@@ -2203,18 +2230,26 @@ function loadExclusions() {
     const savedExclusions = localStorage.getItem(storageKey);
 
     if (savedExclusions) {
-      ipExclusions.value = JSON.parse(savedExclusions);
+      const parsedExclusions = JSON.parse(savedExclusions);
+
+      // Convertir les anciennes exclusions 'ip' en 'visitor'
+      visitorExclusions.value = parsedExclusions.map(exc => {
+        if (exc.type === 'ip') {
+          return { type: 'visitor', value: exc.value };
+        }
+        return exc;
+      });
 
       // Obtenir la date de dernière mise à jour pour l'afficher si nécessaire
       const lastUpdated = localStorage.getItem(`${storageKey}_updated`);
       console.log('Exclusions chargées depuis localStorage, dernière mise à jour:', lastUpdated);
     } else {
-      ipExclusions.value = [];
+      visitorExclusions.value = [];
       console.log('Aucune exclusion trouvée dans localStorage');
     }
   } catch (error) {
     console.error('Erreur lors du chargement des exclusions:', error);
-    ipExclusions.value = [];
+    visitorExclusions.value = [];
   }
 }
 
