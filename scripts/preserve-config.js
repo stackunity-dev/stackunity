@@ -25,21 +25,30 @@ function encryptFile(content) {
 
 function decryptFile(encryptedContent) {
   try {
+    if (!encryptedContent.includes(':')) {
+      return encryptedContent;
+    }
+
     const textParts = encryptedContent.split(':');
     
     if (textParts.length !== 2) {
-      throw new Error('Format de texte chiffré invalide');
+      return encryptedContent;
     }
     
-    const iv = Buffer.from(textParts[0], 'hex');
-    const encryptedData = textParts[1];
-    
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
-    
-    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    
-    return decrypted;
+    try {
+      const iv = Buffer.from(textParts[0], 'hex');
+      const encryptedData = textParts[1];
+      
+      const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+      
+      let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+      decrypted += decipher.final('utf8');
+      
+      return decrypted;
+    } catch (cryptoErr) {
+      console.error('Erreur de déchiffrement cryptographique:', cryptoErr.message);
+      return encryptedContent;
+    }
   } catch (err) {
     console.error('Erreur lors du déchiffrement du fichier:', err);
     return encryptedContent;
@@ -112,14 +121,24 @@ function saveConfigs() {
       if (fs.existsSync(fullPath)) {
         const content = fs.readFileSync(fullPath, 'utf8');
         
-        const encryptedContent = encryptFile(content);
-        fs.writeFileSync(backupPath, encryptedContent);
-        console.log(`✅ Sauvegarde chiffrée de ${file.path} réussie`);
+        if (!content || content.trim() === '') {
+          console.log(`⚠️ Le fichier ${file.path} est vide, ignoré`);
+          return;
+        }
         
-        if (file.sanitize && typeof file.sanitize === 'function') {
-          const sanitizedContent = file.sanitize(content);
-          fs.writeFileSync(fullPath, sanitizedContent);
-          console.log(`✅ Version sanitisée créée pour ${file.path}`);
+        const encryptedContent = encryptFile(content);
+        
+        if (encryptedContent && encryptedContent.includes(':')) {
+          fs.writeFileSync(backupPath, encryptedContent);
+          console.log(`✅ Sauvegarde chiffrée de ${file.path} réussie`);
+          
+          if (file.sanitize && typeof file.sanitize === 'function') {
+            const sanitizedContent = file.sanitize(content);
+            fs.writeFileSync(fullPath, sanitizedContent);
+            console.log(`✅ Version sanitisée créée pour ${file.path}`);
+          }
+        } else {
+          console.error(`❌ Échec du chiffrement pour ${file.path}, sauvegarde non effectuée`);
         }
       } else {
         console.log(`⚠️ Le fichier ${file.path} n'existe pas`);
@@ -131,17 +150,33 @@ function saveConfigs() {
 }
 
 function restoreConfigs() {
+  console.log('Restauration des fichiers de configuration...');
   
   filesToPreserve.forEach(file => {
     const fullPath = path.join(__dirname, '..', file.path);
     const backupPath = path.join(backupDir, path.basename(file.path) + '.enc');
+    const legacyBackupPath = path.join(backupDir, path.basename(file.path)); // Pour compatibilité avec les anciennes sauvegardes
     
     try {
+      // Essayer d'abord le nouveau chemin avec .enc
       if (fs.existsSync(backupPath)) {
+        // Lire le contenu chiffré
         const encryptedContent = fs.readFileSync(backupPath, 'utf8');
         
+        if (!encryptedContent || encryptedContent.trim() === '') {
+          console.log(`⚠️ Le fichier de sauvegarde chiffré ${backupPath} est vide, ignoré`);
+          return;
+        }
+        
+        // Déchiffrer le contenu
         const originalContent = decryptFile(encryptedContent);
         
+        if (!originalContent || originalContent.trim() === '') {
+          console.log(`⚠️ Le contenu déchiffré de ${file.path} est vide, restauration annulée`);
+          return;
+        }
+        
+        // S'assurer que le répertoire du fichier de destination existe
         const dir = path.dirname(fullPath);
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
@@ -149,7 +184,21 @@ function restoreConfigs() {
         
         fs.writeFileSync(fullPath, originalContent);
         console.log(`✅ Restauration de ${file.path} réussie`);
-      } else {
+      } 
+      // Essayer l'ancien chemin sans .enc pour compatibilité
+      else if (fs.existsSync(legacyBackupPath)) {
+        const legacyContent = fs.readFileSync(legacyBackupPath, 'utf8');
+        
+        // S'assurer que le répertoire du fichier de destination existe
+        const dir = path.dirname(fullPath);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        
+        fs.writeFileSync(fullPath, legacyContent);
+        console.log(`✅ Restauration de ${file.path} réussie (à partir de l'ancien format)`);
+      }
+      else {
         console.log(`⚠️ Sauvegarde chiffrée de ${file.path} non trouvée`);
       }
     } catch (error) {
