@@ -37,3 +37,16 @@ referrer
 is_short_visit
 referrer_source
 referrer_name
+
+TABLE analytics_interactions : 
+
+interaction_id
+pageview_id
+website_id
+session_id
+interaction_type
+element_selector
+element_text
+timestamp
+value_data
+page_url

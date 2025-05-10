@@ -153,7 +153,7 @@ export default defineEventHandler(async (event) => {
       const [visitorsResult] = await pool.execute<ResultSetHeader>(`
         DELETE v FROM analytics_visitors v
         LEFT JOIN analytics_sessions s ON v.visitor_id = s.visitor_id AND s.website_id = ?
-        WHERE s.visitor_id IS NULL OR s.id IS NULL
+        WHERE s.visitor_id IS NULL OR s.session_id IS NULL
       `, [siteId]);
       deletedCounts.visitors = visitorsResult.affectedRows;
       totalDeleted += visitorsResult.affectedRows;

@@ -116,7 +116,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ tWithPurge.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ tWithPurge.welcome.few.description
-                      }}</p>
+                    }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ tWithPurge.welcome.few.action }}
@@ -267,7 +267,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                    }}</v-list-item-title>
+                  }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -645,7 +645,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                                }}</span>
+                              }}</span>
                             </div>
                           </td>
                           <td>
@@ -812,7 +812,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-              }}</p>
+            }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ tWithPurge.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -918,7 +918,7 @@
               <v-list-item v-if="ipExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                }}</v-list-item-title>
+                  }}</v-list-item-title>
               </v-list-item>
             </v-list>
 
@@ -2171,47 +2171,50 @@ function removeExclusion(index: number) {
   ipExclusions.value.splice(index, 1);
 }
 
-async function saveExclusions() {
+// Modification pour utiliser localStorage au lieu des APIs
+function saveExclusions() {
   if (!currentSite.value) return;
 
   try {
-    const response = await fetch(`/api/analytics/website/${currentSite.value.id}/exclusions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        exclusions: ipExclusions.value
-      }),
-    });
+    // Sauvegarder dans localStorage avec une clé basée sur l'ID du site
+    const storageKey = `stackunity_exclusions_${currentSite.value.id}`;
+    localStorage.setItem(storageKey, JSON.stringify(ipExclusions.value));
 
-    const result = await response.json();
+    // Ajouter aussi une date de dernière mise à jour
+    localStorage.setItem(`${storageKey}_updated`, new Date().toISOString());
 
-    if (result.success) {
-      showMessage(t.analytics.exclusionsSaved || 'Exclusions sauvegardées avec succès', 'success');
-      showExclusionsDialog.value = false;
-    } else {
-      showMessage(result.message || t.analytics.exclusionsSaveError || 'Erreur lors de la sauvegarde des exclusions', 'error');
-    }
+    showMessage(t.analytics.exclusionsSaved || 'Exclusions sauvegardées avec succès', 'success');
+    showExclusionsDialog.value = false;
+
+    // Afficher des instructions pour recharger le tracker
+    showMessage(t.analytics.exclusionsSaved ? 'Rechargez la page pour appliquer les exclusions' : 'Reload the page to apply exclusions', 'info');
   } catch (error) {
     console.error('Erreur lors de la sauvegarde des exclusions:', error);
     showMessage(t.analytics.exclusionsSaveError || 'Erreur lors de la sauvegarde des exclusions', 'error');
   }
 }
 
-async function loadExclusions() {
+function loadExclusions() {
   if (!currentSite.value) return;
 
   try {
-    const response = await fetch(`/api/analytics/website/${currentSite.value.id}/exclusions`);
-    const result = await response.json();
-    console.log(result);
+    // Charger depuis localStorage
+    const storageKey = `stackunity_exclusions_${currentSite.value.id}`;
+    const savedExclusions = localStorage.getItem(storageKey);
 
-    if (result.success && result.data) {
-      ipExclusions.value = result.data;
+    if (savedExclusions) {
+      ipExclusions.value = JSON.parse(savedExclusions);
+
+      // Obtenir la date de dernière mise à jour pour l'afficher si nécessaire
+      const lastUpdated = localStorage.getItem(`${storageKey}_updated`);
+      console.log('Exclusions chargées depuis localStorage, dernière mise à jour:', lastUpdated);
+    } else {
+      ipExclusions.value = [];
+      console.log('Aucune exclusion trouvée dans localStorage');
     }
   } catch (error) {
     console.error('Erreur lors du chargement des exclusions:', error);
+    ipExclusions.value = [];
   }
 }
 

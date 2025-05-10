@@ -17,9 +17,7 @@
       inputThrottleTime: 2000,
       inputDebounceTime: 2000,
       inputMinimumCharChange: 3,
-      bounceTimeout: 30 * 1000,
-      exclusionsEndpoint: `${baseUrl}/api/analytics/website/{id}/exclusions`,
-      checkExclusionsOnPageLoad: true
+      bounceTimeout: 30 * 1000
     };
 
     const state = {
@@ -625,69 +623,50 @@
         return null;
       },
       
-      checkExclusions: async function(websiteId) {
+      checkExclusions: function(websiteId) {
         try {
-          // Obtenir une identification fiable du visiteur
+          // Vérifier les exclusions directement dans le localStorage
+          const storageKey = `stackunity_exclusions_${websiteId}`;
+          const savedExclusions = localStorage.getItem(storageKey);
+          
+          if (!savedExclusions) {
+            console.log('[StackUnity Tracker] Aucune exclusion trouvée dans localStorage');
+            return false;
+          }
+          
+          const exclusions = JSON.parse(savedExclusions);
+          if (!Array.isArray(exclusions) || exclusions.length === 0) {
+            console.log('[StackUnity Tracker] Liste d\'exclusions vide ou invalide');
+            return false;
+          }
+          
+          console.log('[StackUnity Tracker] Vérification des exclusions:', exclusions);
+          
+          // Vérifier les exclusions par user ID
           const userId = utils.getAuthenticatedUserId();
+          if (userId) {
+            const userExclusion = exclusions.find(exc => exc.type === 'user' && exc.value === userId);
+            if (userExclusion) {
+              console.log('[StackUnity Tracker] Utilisateur exclu trouvé:', userId);
+              localStorage.setItem('stackunity_excluded', 'true');
+              localStorage.setItem('stackunity_excluded_reason', 'user');
+              return true;
+            }
+          }
+          
+          // Vérifier les exclusions par IP
+          // Comme nous ne pouvons pas accéder à l'IP côté client de manière fiable,
+          // cette vérification est principalement pour la compatibilité avec les exclusions existantes
           const visitorId = localStorage.getItem('stackunity_visitor_id');
-          const ipAddress = await utils.getUserIP();
-          
-          // Si on n'a pas d'information d'identification, on continue sans exclusion
-          if (!userId && !visitorId && !ipAddress) {
-            console.log('[StackUnity Tracker] Aucune information d\'identification disponible, on continue sans exclusion');
-            return false;
+          const ipExclusion = exclusions.find(exc => exc.type === 'ip');
+          if (ipExclusion) {
+            console.log('[StackUnity Tracker] Il existe des exclusions par IP, mais la vérification doit être faite côté serveur');
+            // Alternativement, on pourrait essayer de récupérer l'IP avec une API externe
           }
           
-          const endpoint = config.exclusionsEndpoint.replace('{id}', websiteId);
-          
-          try {
-            const response = await fetch(endpoint);
-            
-            if (!response.ok) {
-              console.error('[StackUnity Tracker] Erreur HTTP lors de la vérification des exclusions:', response.status);
-              return false;
-            }
-            
-            const result = await response.json();
-            
-            if (!result.success || !result.data || !Array.isArray(result.data)) {
-              return false;
-            }
-            
-            for (const exclusion of result.data) {
-              if (exclusion.type === 'user' && userId && exclusion.value === userId) {
-                console.log('[StackUnity Tracker] Utilisateur exclu détecté:', userId);
-                // Enregistrer l'état d'exclusion en local storage
-                localStorage.setItem('stackunity_excluded', 'true');
-                localStorage.setItem('stackunity_excluded_reason', 'user');
-                return true;
-              }
-              
-              // Exclusion par adresse IP
-              if (exclusion.type === 'ip' && ipAddress && exclusion.value === ipAddress) {
-                console.log('[StackUnity Tracker] IP exclue détectée:', ipAddress);
-                // Enregistrer l'état d'exclusion en local storage
-                localStorage.setItem('stackunity_excluded', 'true');
-                localStorage.setItem('stackunity_excluded_reason', 'ip');
-                return true;
-              }
-            }
-            
-            // Vérifier si l'utilisateur était précédemment exclu
-            if (localStorage.getItem('stackunity_excluded') === 'true') {
-              console.log('[StackUnity Tracker] Suppression d\'une exclusion précédente');
-              localStorage.removeItem('stackunity_excluded');
-              localStorage.removeItem('stackunity_excluded_reason');
-            }
-            
-            return false;
-          } catch (fetchError) {
-            console.error('[StackUnity Tracker] Erreur lors de la requête d\'exclusion:', fetchError);
-            // En cas d'erreur, vérifier si l'utilisateur était précédemment exclu
-            return localStorage.getItem('stackunity_excluded') === 'true';
-          }
+          return false;
         } catch (e) {
-          console.error('[StackUnity Tracker] Erreur globale lors de la vérification des exclusions:', e);
+          console.error('[StackUnity Tracker] Erreur lors de la vérification des exclusions:', e);
           // En cas d'erreur, vérifier si l'utilisateur était précédemment exclu
           return localStorage.getItem('stackunity_excluded') === 'true';
         }
@@ -855,23 +834,16 @@
           sessionStorage.setItem('stackunity_session_id', state.sessionId);
           
           // Vérifier les exclusions avant de démarrer le tracking
-          utils.checkExclusions(state.websiteId)
-            .then(isExcluded => {
-              state.isExcluded = isExcluded;
-              
-              if (isExcluded) {
-                console.log('[StackUnity Tracker] Utilisateur exclu, analytics désactivés');
-                return;
-              }
-              
-              // Démarrer le tracking uniquement si non exclu
-              tracker.setupTracking();
-            })
-            .catch(error => {
-              console.error('[StackUnity Tracker] Erreur lors de la vérification des exclusions:', error);
-              // En cas d'erreur, on démarre quand même le tracking
-              tracker.setupTracking();
-            });
+          const isExcluded = utils.checkExclusions(state.websiteId);
+          state.isExcluded = isExcluded;
+          
+          if (isExcluded) {
+            console.log('[StackUnity Tracker] Utilisateur exclu, analytics désactivés');
+            return;
+          }
+          
+          // Démarrer le tracking uniquement si non exclu
+          tracker.setupTracking();
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de l\'initialisation du tracker:', e);
         }
