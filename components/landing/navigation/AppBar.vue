@@ -40,9 +40,9 @@
               <v-icon size="small" class="mr-1">mdi-login</v-icon>
               {{ t().navigation.login }}
             </v-btn>
-            <v-btn icon @click="drawer = !drawer" class="menu-toggle-btn" aria-label="Toggle navigation menu"
-              :aria-expanded="drawer">
-              <div class="hamburger-icon" :class="{ 'active': drawer }" aria-hidden="true"
+            <v-btn icon @click="toggleDrawer()" class="menu-toggle-btn" aria-label="Toggle navigation menu"
+              :aria-expanded="isDrawerOpen">
+              <div class="hamburger-icon" :class="{ 'active': isDrawerOpen }" aria-hidden="true"
                 aria-label="Toggle navigation menu">
                 <span aria-hidden="true" aria-label="Toggle navigation menu"></span>
                 <span aria-hidden="true" aria-label="Toggle navigation menu"></span>
@@ -62,6 +62,7 @@ import { useDisplay } from 'vuetify';
 // @ts-ignore
 import { useNuxtApp } from '#app';
 import { useTranslations } from '../../../languages';
+import { useDrawerState } from '../../../utils/drawer-state';
 import '../landing.css';
 
 const t = useTranslations('index');
@@ -71,7 +72,8 @@ const display = useDisplay();
 const nuxtApp = useNuxtApp()
 const localePath = nuxtApp.$localePath
 
-const drawer = ref(false);
+// Utiliser l'état partagé du drawer
+const { isDrawerOpen, toggleDrawer } = useDrawerState();
 
 const menuItems = computed(() => [
   { title: t().navigation.features, href: '#features', icon: 'mdi-apps-box' },

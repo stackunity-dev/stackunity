@@ -1,5 +1,5 @@
 .landing-screen {
-  min-height: 100%;
+  min-height: 100vh;
   background-color: rgb(var(--v-theme-surface));
 }
 
@@ -330,11 +330,37 @@
   transition: opacity 0.3s ease;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1000;
+  background-color: transparent;
 }
 
 .mobile-nav-drawer.client-ready {
   opacity: 1;
+}
+
+/* Assurer que le drawer ne prend pas d'espace quand il est fermé */
+.mobile-nav-drawer .v-navigation-drawer {
+  height: 100vh !important;
+  position: fixed !important;
+  top: 0 !important;
+  background-color: rgb(var(--v-theme-surface)) !important;
+  z-index: 1000 !important;
+}
+
+/* Règles spécifiques pour mobile */
+@media (max-width: 600px) {
+  .mobile-nav-drawer {
+    height: auto;
+    min-height: initial;
+    background: transparent;
+    position: relative;
+  }
+  
+  .mobile-nav-drawer:not(.v-navigation-drawer--active) {
+    display: none;
+  }
 }
 
 .mobile-nav-item {
@@ -502,18 +528,5 @@ footer h4::after {
 
 .border-tertiary {
   border-top: 3px solid rgb(var(--v-theme-tertiary));
-}
-
-@media (max-width: 600px) {
-  .landing-screen {
-    height: auto;
-    min-height: initial;
-    overflow-y: visible;
-  }
-  
-  .main-content {
-    height: auto;
-    min-height: initial;
-  }
 }
 

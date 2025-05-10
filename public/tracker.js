@@ -770,6 +770,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
+          credentials: 'include',
           body: JSON.stringify(data),
           keepalive: state.isUnloading 
         }).then(response => {
@@ -2059,6 +2060,7 @@
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(dataToSend),
+            credentials: 'include',
             keepalive: true
           }).then(response => {
             return response.ok ? response.json() : Promise.reject('Erreur serveur');
