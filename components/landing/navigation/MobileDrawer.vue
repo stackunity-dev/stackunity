@@ -4,7 +4,7 @@
     v-show="isDrawerOpen">
     <v-navigation-drawer v-model="drawerModel" location="right" temporary class="pa-6" role="dialog" aria-modal="true">
       <div class="drawer-header mb-8 d-flex justify-space-between align-center">
-        <img src="https://stackunity.tech/logo/stackunity-title.png"
+        <img :src="`https://stackunity.tech/logo/stackunity-title.png`"
           alt="StackUnity - developement hub all-in-one platform" width="120" loading="eager">
         <v-btn icon variant="text" aria-label="Close navigation menu" @click="closeDrawer()">
           <v-icon>mdi-close</v-icon>
@@ -37,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useTranslations } from '../../../languages/';
-import { setHoverOn, setHoverOff, getElevation } from '../../../utils/hover-state';
 import { useDrawerState } from '../../../utils/drawer-state';
+import { getElevation, setHoverOff, setHoverOn } from '../../../utils/hover-state';
 // @ts-ignore
 import { useNuxtApp } from '#app';
 import '../landing.css';

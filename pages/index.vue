@@ -51,12 +51,6 @@
         <section id="faq" class="py-16">
           <ClientOnly>
             <Faq />
-            <template #fallback>
-              <div class="faq-loading-placeholder pa-8 text-center">
-                <h2 class="text-h4 mb-4">{{ t().faq.title }}</h2>
-                <p class="text-body-1">{{ t().faq.loading || 'Loading frequently asked questions...' }}</p>
-              </div>
-            </template>
           </ClientOnly>
         </section>
 
@@ -172,20 +166,20 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { property: 'og:title', content: computed(() => t().meta.title) },
     { property: 'og:description', content: computed(() => t().meta.description) },
-    { property: 'og:image', content: '/images/preview.png' },
+    { property: 'og:image', content: computed(() => `https://stackunity.tech${getImageSrc.value}?v=${Date.now()}`) },
     { property: 'og:url', content: 'https://stackunity.tech' },
     { property: 'og:site_name', content: 'StackUnity' },
     { property: 'og:type', content: 'website' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
-    { property: 'og:image:alt', content: 'Logo StackUnity' },
-    { property: 'og:image:secure_url', content: 'https://stackunity.tech/images/preview.png' },
+    { property: 'og:image:alt', content: 'Preview StackUnity' },
+    { property: 'og:image:secure_url', content: computed(() => `https://stackunity.tech${getImageSrc.value}?v=${Date.now()}`) },
     { property: 'og:locale', content: computed(() => currentLanguage.value === 'en' ? 'en_US' : currentLanguage.value === 'fr' ? 'fr_FR' : currentLanguage.value === 'es' ? 'es_ES' : currentLanguage.value === 'ar' ? 'ar_SA' : 'zh_CN') },
     { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: computed(() => t().meta.title) },
     { name: 'twitter:description', content: computed(() => t().meta.description) },
-    { name: 'twitter:image', content: '/images/preview.png' },
+    { name: 'twitter:image', content: computed(() => `https://stackunity.tech${getImageSrc.value}?v=${Date.now()}`) },
     { name: 'twitter:creator', content: '@stackunity' },
     { name: 'twitter:site', content: '@stackunity' }
   ],
@@ -198,6 +192,16 @@ useHead({
     {
       innerHTML: `
         document.documentElement.classList.add('index-page-ready');
+        window.addEventListener('load', function() {
+          const images = document.querySelectorAll('img');
+          images.forEach(img => {
+            if (img.complete && img.src) {
+              const url = new URL(img.src);
+              url.searchParams.set('v', Date.now().toString());
+              img.src = url.toString();
+            }
+          });
+        });
       `,
       type: 'text/javascript'
     }

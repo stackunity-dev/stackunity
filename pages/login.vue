@@ -6,7 +6,7 @@
           <div class="left-content text-center">
             <header>
               <h1>
-                <img src="https://stackunity.tech/logo/stackunity.png"
+                <img src="https://stackunity.tech/logo/stackunity.png?v=1"
                   alt="StackUnity - Develop faster and better with StackUnity" class="logo mb-8" width="350" />
                 <span class="sr-only">{{ t().hero.title }}</span>
               </h1>
@@ -27,7 +27,7 @@
         <v-col cols="12" md="6" class="right-panel d-flex align-center justify-center">
           <v-card class="login-card pa-md-8 pa-4 elevation-0" max-width="450" width="100%">
             <div class="d-flex justify-center d-md-none mb-6">
-              <img src="/logo/stackunity-title.png" alt="StackUnity Logo" width="240" />
+              <img src="/logo/stackunity-title.png?v=1" alt="StackUnity Logo" width="240" />
             </div>
 
             <h2 class="text-h5 font-weight-bold mb-2">{{ t().form.title }}</h2>
@@ -102,11 +102,11 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { property: 'og:title', content: computed(() => t().meta.title) },
     { property: 'og:description', content: computed(() => t().meta.description) },
-    { property: 'og:image', content: '/images/preview.png' },
+    { property: 'og:image', content: computed(() => `https://stackunity.tech/logo/stackunity-title.png?v=${Date.now()}`) },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: 'StackUnity Logo' },
-    { property: 'og:image:secure_url', content: 'https://stackunity.tech/logo/stackunity-title.png' },
+    { property: 'og:image:secure_url', content: computed(() => `https://stackunity.tech/logo/stackunity-title.png?v=${Date.now()}`) },
     { property: 'og:type', content: 'website' },
     { property: 'og:url', content: 'https://stackunity.tech/login' },
     { property: 'og:site_name', content: 'StackUnity' },
@@ -115,12 +115,29 @@ useHead({
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: computed(() => t().meta.title) },
     { name: 'twitter:description', content: computed(() => t().meta.description) },
-    { name: 'twitter:image', content: '/logo/stackunity-title.png' },
+    { name: 'twitter:image', content: computed(() => `https://stackunity.tech/logo/stackunity-title.png?v=${Date.now()}`) },
     { name: 'twitter:creator', content: '@stackunity' },
     { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.tech/login' }
+  ],
+  script: [
+    {
+      innerHTML: `
+        window.addEventListener('load', function() {
+          const images = document.querySelectorAll('img');
+          images.forEach(img => {
+            if (img.complete && img.src) {
+              const url = new URL(img.src);
+              url.searchParams.set('v', Date.now().toString());
+              img.src = url.toString();
+            }
+          });
+        });
+      `,
+      type: 'text/javascript'
+    }
   ]
 })
 
@@ -180,6 +197,17 @@ onMounted(async () => {
     if (userStore.isAuthenticated) {
       await handleRedirection();
     }
+
+    // Force reload images with timestamp to prevent caching issues
+    setTimeout(() => {
+      const images = document.querySelectorAll('img');
+      images.forEach(img => {
+        if (img.complete && img.src) {
+          const currentSrc = img.src;
+          img.src = currentSrc + (currentSrc.includes('?') ? '&' : '?') + 'v=' + Date.now();
+        }
+      });
+    }, 100);
   } catch (err) {
     console.error('[LOGIN] Error during authentication verification:', err);
   }

@@ -2131,31 +2131,6 @@
       }
     };
 
-    const trackerStyles = document.createElement('style');
-    trackerStyles.textContent = `
-      .stackunity-tracker-element,
-      img[src*="analytics/collect"],
-      img[src*="stackunity"],
-      div[data-segment-id] {
-        position: absolute !important;
-        width: 1px !important;
-        height: 1px !important;
-        padding: 0 !important;
-        margin: -1px !important;
-        overflow: hidden !important;
-        clip: rect(0, 0, 0, 0) !important;
-        white-space: nowrap !important;
-        border: 0 !important;
-        display: none !important;
-        opacity: 0 !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-        z-index: -9999 !important;
-        background-color: transparent !important;
-      }
-    `;
-    document.head.appendChild(trackerStyles);
-
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function() {
         tracker.init();
