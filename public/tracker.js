@@ -655,13 +655,32 @@
           }
           
           // Vérifier les exclusions par IP
-          // Comme nous ne pouvons pas accéder à l'IP côté client de manière fiable,
-          // cette vérification est principalement pour la compatibilité avec les exclusions existantes
-          const visitorId = localStorage.getItem('stackunity_visitor_id');
-          const ipExclusion = exclusions.find(exc => exc.type === 'ip');
-          if (ipExclusion) {
-            console.log('[StackUnity Tracker] Il existe des exclusions par IP, mais la vérification doit être faite côté serveur');
-            // Alternativement, on pourrait essayer de récupérer l'IP avec une API externe
+          const ipExclusions = exclusions.filter(exc => exc.type === 'ip');
+          if (ipExclusions.length > 0) {
+            // Si nous sommes en environnement local (localhost)
+            const hostName = window.location.hostname;
+            const isLocal = hostName === 'localhost' || hostName === '127.0.0.1' || hostName.startsWith('192.168.');
+            
+            if (isLocal) {
+              // Essayons de voir si l'IP actuelle correspond à une des exclusions
+              const currentHostname = window.location.hostname;
+              for (const ipExc of ipExclusions) {
+                // Si l'IP actuelle ou une IP locale correspond à l'exclusion
+                if (ipExc.value === currentHostname || 
+                    ipExc.value === '127.0.0.1' || 
+                    ipExc.value.startsWith('192.168.') ||
+                    ipExc.value === 'localhost') {
+                  console.log('[StackUnity Tracker] IP locale exclue trouvée:', ipExc.value);
+                  localStorage.setItem('stackunity_excluded', 'true');
+                  localStorage.setItem('stackunity_excluded_reason', 'ip');
+                  return true;
+                }
+              }
+            }
+            
+            // Marquer qu'il y a des IP exclues pour que le serveur puisse aussi vérifier
+            localStorage.setItem('stackunity_has_ip_exclusions', 'true');
+            console.log('[StackUnity Tracker] Exclusions IP enregistrées pour vérification côté serveur');
           }
           
           return false;

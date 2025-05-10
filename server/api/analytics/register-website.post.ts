@@ -1,8 +1,8 @@
 import { defineEventHandler, getRequestHeaders, readBody } from 'h3';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
-import { pool } from '../db';
 import { ServerTokenManager } from '../../utils/ServerTokenManager';
+import { pool } from '../db';
 
 interface RegisterWebsiteRequest {
   name: string;

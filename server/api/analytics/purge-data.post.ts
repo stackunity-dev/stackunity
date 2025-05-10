@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3';
-import { ResultSetHeader } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../db';
 
 interface DeletedCounts {
@@ -22,7 +22,9 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    const [websiteRows] = await pool.query(
+    console.log('Purge demandée pour site:', websiteId);
+
+    const [websiteRows] = await pool.query<RowDataPacket[]>(
       'SELECT id, tracking_id FROM analytics_websites WHERE tracking_id = ? OR id = ?',
       [websiteId, websiteId]
     );
@@ -36,6 +38,8 @@ export default defineEventHandler(async (event) => {
 
     const site = websiteRows[0];
     const siteId = site.id;
+
+    console.log('Site trouvé, id numérique:', siteId);
 
     let dateLimit = new Date();
     let deleteAll = false;
@@ -68,6 +72,7 @@ export default defineEventHandler(async (event) => {
       );
       deletedCounts.interactions = interactionsResult.affectedRows;
       totalDeleted += interactionsResult.affectedRows;
+      console.log('Interactions supprimées:', interactionsResult.affectedRows);
     } else {
       const [interactionsResult] = await pool.execute<ResultSetHeader>(
         'DELETE FROM analytics_interactions WHERE website_id = ? AND timestamp < ?',
@@ -75,6 +80,7 @@ export default defineEventHandler(async (event) => {
       );
       deletedCounts.interactions = interactionsResult.affectedRows;
       totalDeleted += interactionsResult.affectedRows;
+      console.log('Interactions supprimées (avec date limite):', interactionsResult.affectedRows);
     }
 
     if (deleteAll) {
@@ -84,6 +90,7 @@ export default defineEventHandler(async (event) => {
       );
       deletedCounts.pageviews = pageviewsResult.affectedRows;
       totalDeleted += pageviewsResult.affectedRows;
+      console.log('Pages vues supprimées:', pageviewsResult.affectedRows);
     } else {
       const [pageviewsResult] = await pool.execute<ResultSetHeader>(
         'DELETE FROM analytics_pageviews WHERE website_id = ? AND enter_time < ?',
@@ -91,22 +98,25 @@ export default defineEventHandler(async (event) => {
       );
       deletedCounts.pageviews = pageviewsResult.affectedRows;
       totalDeleted += pageviewsResult.affectedRows;
+      console.log('Pages vues supprimées (avec date limite):', pageviewsResult.affectedRows);
     }
 
     if (deleteAll) {
       const [sessionsResult] = await pool.execute<ResultSetHeader>(
-        'DELETE FROM analytics_sessions WHERE website_id = ?',
+        'DELETE s FROM analytics_sessions s WHERE s.website_id = ?',
         [siteId]
       );
       deletedCounts.sessions = sessionsResult.affectedRows;
       totalDeleted += sessionsResult.affectedRows;
+      console.log('Sessions supprimées:', sessionsResult.affectedRows);
     } else {
       const [sessionsResult] = await pool.execute<ResultSetHeader>(
-        'DELETE FROM analytics_sessions WHERE website_id = ? AND start_time < ?',
+        'DELETE s FROM analytics_sessions s WHERE s.website_id = ? AND s.start_time < ?',
         [siteId, dateLimitString]
       );
       deletedCounts.sessions = sessionsResult.affectedRows;
       totalDeleted += sessionsResult.affectedRows;
+      console.log('Sessions supprimées (avec date limite):', sessionsResult.affectedRows);
     }
 
     if (deleteAll) {
