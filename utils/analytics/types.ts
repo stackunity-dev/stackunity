@@ -51,6 +51,7 @@ export interface UserInteraction {
   elementText: string;
   timestamp: string;
   value: any;
+  pageUrl?: string;
 }
 
 export enum InteractionType {

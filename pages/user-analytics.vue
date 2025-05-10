@@ -116,7 +116,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ tWithPurge.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ tWithPurge.welcome.few.description
-                      }}</p>
+                    }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ tWithPurge.welcome.few.action }}
@@ -267,7 +267,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                    }}</v-list-item-title>
+                  }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -645,7 +645,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                                }}</span>
+                              }}</span>
                             </div>
                           </td>
                           <td>
@@ -701,7 +701,9 @@
               {{ t.tracking.trackingCodeDescription || "Ajoutez ce code avant la balise de fermeture body de votre site"
               }}
             </p>
-            <pre id="code" class="bg-surface pa-2 rounded"></pre>
+            <div class="code-container">
+              <pre id="code" class="bg-surface pa-2 rounded"></pre>
+            </div>
             <v-btn class="mt-2" prepend-icon="mdi-content-copy" variant="outlined" size="small"
               @click="copyTrackingCode(currentSite?.id || '')">
               {{ t.tracking.copyCode || 'Copier le code' }}
@@ -810,7 +812,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-              }}</p>
+            }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ tWithPurge.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -916,7 +918,7 @@
               <v-list-item v-if="ipExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                }}</v-list-item-title>
+                  }}</v-list-item-title>
               </v-list-item>
             </v-list>
 
@@ -1910,49 +1912,58 @@ function exportAnalyticsData() {
     filename += '.json';
     downloadFile(content, 'application/json', filename);
   } else {
+    // Format CSV
     let csvContent = '';
 
+    // En-tête du fichier
+    csvContent += `"Données d'analytics pour ${currentSite.value.name}"\n`;
+    csvContent += `"URL: ${currentSite.value.url}"\n`;
+    csvContent += `"Date d'export: ${new Date().toLocaleString()}"\n\n`;
+
     if (exportOptions.value.pages) {
-      csvContent += 'PAGES VUES\n';
-      csvContent += 'Page,Vues,Temps moyen\n';
+      csvContent += '"PAGES VUES"\n';
+      csvContent += '"Page";"Vues";"Temps moyen"\n';
       pageViews.value.forEach(page => {
-        csvContent += `"${page.page}",${page.views},"${page.avgTime}"\n`;
+        csvContent += `"${page.page.replace(/"/g, '""')}";"${page.views}";"${page.avgTime}"\n`;
       });
-      csvContent += '\n';
+      csvContent += '\n\n';
     }
 
     if (exportOptions.value.interactions && userInteractions.value.length) {
-      csvContent += 'INTERACTIONS\n';
-      csvContent += 'Type,Élément,Timestamp\n';
+      csvContent += '"INTERACTIONS"\n';
+      csvContent += '"Type";"Élément";"Page";"Timestamp";"Détails"\n';
       userInteractions.value.slice(0, 1000).forEach(interaction => {
-        csvContent += `"${interaction.type}","${interaction.elementSelector}","${interaction.timestamp}"\n`;
+        const details = interaction.value ? JSON.stringify(interaction.value).replace(/"/g, '""') : '';
+        // Utiliser 'as any' pour contourner l'erreur de typage ou vérifier l'existence de la propriété
+        const pageUrl = (interaction as any).pageUrl || '';
+        csvContent += `"${interaction.type}";"${(interaction.elementSelector || '').replace(/"/g, '""')}";"${pageUrl.replace(/"/g, '""')}";"${interaction.timestamp}";"${details}"\n`;
       });
-      csvContent += '\n';
+      csvContent += '\n\n';
     }
 
     if (exportOptions.value.errors && errorEvents.value.length) {
-      csvContent += 'ERREURS\n';
-      csvContent += 'Page,Message,Occurrences,Navigateur\n';
+      csvContent += '"ERREURS"\n';
+      csvContent += '"Page";"Message";"Occurrences";"Navigateur"\n';
       errorEvents.value.forEach(error => {
-        csvContent += `"${error.page}","${error.errorMessage.replace(/"/g, '""')}",${error.count},"${error.browserInfo}"\n`;
+        csvContent += `"${error.page.replace(/"/g, '""')}";"${error.errorMessage.replace(/"/g, '""')}";"${error.count}";"${error.browserInfo.replace(/"/g, '""')}"\n`;
       });
-      csvContent += '\n';
+      csvContent += '\n\n';
     }
 
     if (exportOptions.value.devices) {
-      csvContent += 'APPAREILS\n';
-      csvContent += 'Type,Nombre,Pourcentage\n';
+      csvContent += '"APPAREILS"\n';
+      csvContent += '"Type";"Nombre";"Pourcentage"\n';
       deviceStats.value.forEach(device => {
-        csvContent += `"${device.type}",${device.count},${device.percentage}\n`;
+        csvContent += `"${getDeviceLabel(device.type)}";"${device.count}";"${device.percentage}"\n`;
       });
-      csvContent += '\n';
+      csvContent += '\n\n';
     }
 
     if (exportOptions.value.sources) {
-      csvContent += 'SOURCES DE TRAFIC\n';
-      csvContent += 'Source,Visiteurs,Pourcentage\n';
+      csvContent += '"SOURCES DE TRAFIC"\n';
+      csvContent += '"Source";"Visiteurs";"Pourcentage"\n';
       trafficSources.value.forEach(source => {
-        csvContent += `"${source.source}",${source.visitors},${source.percentage}\n`;
+        csvContent += `"${getSourceLabel(source.source)}";"${source.visitors}";"${source.percentage}"\n`;
       });
     }
 
@@ -1968,7 +1979,11 @@ function exportAnalyticsData() {
 }
 
 function downloadFile(content: string, type: string, filename: string) {
-  const blob = new Blob([content], { type: `${type};charset=utf-8;` });
+  // Ajouter un BOM (Byte Order Mark) pour les fichiers CSV pour une meilleure compatibilité
+  const bom = type.includes('csv') ? new Uint8Array([0xEF, 0xBB, 0xBF]) : new Uint8Array();
+
+  // Créer un blob avec BOM + contenu
+  const blob = new Blob([bom, content], { type: `${type};charset=utf-8;` });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
 
@@ -2617,5 +2632,22 @@ function formatLocalUrl(url: string) {
 .tab-content {
   padding: 0;
   transition: all 0.3s ease;
+}
+
+.code-container {
+  max-width: 100%;
+  overflow-x: auto;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.code-container pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  padding: 16px;
+  margin: 0;
 }
 </style>
