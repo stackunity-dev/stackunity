@@ -9,7 +9,7 @@
           </div>
           <div>
             <div class="text-h6 font-weight-bold">StackUnity</div>
-            <div class="text-caption text-medium-emphasis">v1.0.2</div>
+            <div class="text-caption text-medium-emphasis">v1.1.0</div>
           </div>
         </div>
       </div>
