@@ -238,11 +238,6 @@ watch(() => currentLanguage.value, (newLang) => {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.stats-section {
-  background-color: rgba(30, 30, 30, 0.6);
-  backdrop-filter: blur(10px);
-}
-
 @media (max-width: 599px) {
   .stat-value {
     font-size: 1.5rem !important;
