@@ -116,7 +116,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ tWithPurge.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ tWithPurge.welcome.few.description
-                    }}</p>
+                      }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ tWithPurge.welcome.few.action }}
@@ -267,7 +267,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                  }}</v-list-item-title>
+                    }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -645,7 +645,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                              }}</span>
+                                }}</span>
                             </div>
                           </td>
                           <td>
@@ -812,7 +812,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-            }}</p>
+              }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ tWithPurge.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -918,7 +918,7 @@
               <v-list-item v-if="ipExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                  }}</v-list-item-title>
+                }}</v-list-item-title>
               </v-list-item>
             </v-list>
 
@@ -1924,7 +1924,8 @@ function exportAnalyticsData() {
       csvContent += '"PAGES VUES"\n';
       csvContent += '"Page";"Vues";"Temps moyen"\n';
       pageViews.value.forEach(page => {
-        csvContent += `"${page.page.replace(/"/g, '""')}";"${page.views}";"${page.avgTime}"\n`;
+        const cleanPage = page.page.replace(/"/g, '""').replace(/[;\n\r]/g, ' ').substring(0, 250);
+        csvContent += `"${cleanPage}";"${page.views}";"${page.avgTime}"\n`;
       });
       csvContent += '\n\n';
     }
@@ -1933,10 +1934,47 @@ function exportAnalyticsData() {
       csvContent += '"INTERACTIONS"\n';
       csvContent += '"Type";"Élément";"Page";"Timestamp";"Détails"\n';
       userInteractions.value.slice(0, 1000).forEach(interaction => {
-        const details = interaction.value ? JSON.stringify(interaction.value).replace(/"/g, '""') : '';
-        // Utiliser 'as any' pour contourner l'erreur de typage ou vérifier l'existence de la propriété
+        // Limiter et nettoyer les détails pour éviter les problèmes d'export
+        let details = '';
+        if (interaction.value) {
+          try {
+            const valueObj = typeof interaction.value === 'string' ? JSON.parse(interaction.value) : interaction.value;
+            // Simplifier les détails complexes
+            const simplifiedDetails = {};
+
+            // Limiter les objets imbriqués et les tableaux pour garder l'export lisible
+            Object.keys(valueObj).forEach(key => {
+              const val = valueObj[key];
+              if (typeof val === 'object' && val !== null) {
+                simplifiedDetails[key] = typeof val.length === 'number' ?
+                  `[Array:${val.length}]` :
+                  `[Object]`;
+              } else if (typeof val === 'string' && val.length > 50) {
+                simplifiedDetails[key] = val.substring(0, 47) + '...';
+              } else {
+                simplifiedDetails[key] = val;
+              }
+            });
+
+            details = JSON.stringify(simplifiedDetails).replace(/"/g, '""');
+          } catch (e) {
+            details = String(interaction.value).replace(/"/g, '""').substring(0, 100);
+          }
+        }
+
+        // Nettoyer et tronquer chaque valeur pour assurer la compatibilité CSV
         const pageUrl = (interaction as any).pageUrl || '';
-        csvContent += `"${interaction.type}";"${(interaction.elementSelector || '').replace(/"/g, '""')}";"${pageUrl.replace(/"/g, '""')}";"${interaction.timestamp}";"${details}"\n`;
+        const cleanElementSelector = (interaction.elementSelector || '')
+          .replace(/"/g, '""')
+          .replace(/[;\n\r]/g, ' ') // Remplacer les ; et sauts de ligne
+          .substring(0, 150); // Limiter la longueur
+
+        const cleanPageUrl = pageUrl
+          .replace(/"/g, '""')
+          .replace(/[;\n\r]/g, ' ')
+          .substring(0, 150);
+
+        csvContent += `"${interaction.type}";"${cleanElementSelector}";"${cleanPageUrl}";"${interaction.timestamp}";"${details}"\n`;
       });
       csvContent += '\n\n';
     }
@@ -1945,7 +1983,10 @@ function exportAnalyticsData() {
       csvContent += '"ERREURS"\n';
       csvContent += '"Page";"Message";"Occurrences";"Navigateur"\n';
       errorEvents.value.forEach(error => {
-        csvContent += `"${error.page.replace(/"/g, '""')}";"${error.errorMessage.replace(/"/g, '""')}";"${error.count}";"${error.browserInfo.replace(/"/g, '""')}"\n`;
+        const cleanPage = error.page.replace(/"/g, '""').replace(/[;\n\r]/g, ' ').substring(0, 250);
+        const cleanMessage = error.errorMessage.replace(/"/g, '""').replace(/[;\n\r]/g, ' ').substring(0, 500);
+        const cleanBrowser = error.browserInfo.replace(/"/g, '""').replace(/[;\n\r]/g, ' ');
+        csvContent += `"${cleanPage}";"${cleanMessage}";"${error.count}";"${cleanBrowser}"\n`;
       });
       csvContent += '\n\n';
     }

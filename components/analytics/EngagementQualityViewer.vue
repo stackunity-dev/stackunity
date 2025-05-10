@@ -60,7 +60,8 @@
 
                     <v-progress-circular :model-value="currentPageData.overallScore"
                       :color="getScoreColor(currentPageData.overallScore)" :rotate="-90" :size="120" :width="12"
-                      class="gauge-progress mb-2">{{ formatScore(currentPageData.overallScore) }}</v-progress-circular>
+                      class="gauge-progress mb-2" :key="`gauge-${currentPageData.pageUrl}`">{{
+                        formatScore(currentPageData.overallScore) }}</v-progress-circular>
                     <div class="gauge-label-wrapper mt-2">
                       <span class="gauge-label" :class="`text-${getScoreColor(currentPageData.overallScore)}`">
                         {{ getQualityLabel(currentPageData.overallScore) }}
@@ -72,7 +73,8 @@
             </v-card>
 
             <v-row class="mt-4">
-              <v-col v-for="(value, key) in currentPageData.metrics" :key="key" cols="6" sm="3">
+              <v-col v-for="(value, key) in currentPageData.metrics" :key="`metric-${key}-${currentPageData.pageUrl}`"
+                cols="6" sm="3">
                 <v-card class="metric-card h-100" :color="getScoreColor(value)" variant="outlined">
                   <v-card-text class="pa-3">
                     <div class="text-overline text-medium-emphasis text-center">{{ getMetricLabel(key) }}</div>
@@ -111,7 +113,8 @@
                 <v-divider></v-divider>
                 <v-card-text class="pa-4">
                   <v-row>
-                    <v-col v-for="(value, key) in currentPageData.factors" :key="key" cols="6" md="4" lg="3">
+                    <v-col v-for="(value, key) in currentPageData.factors"
+                      :key="`factor-${key}-${currentPageData.pageUrl}`" cols="6" md="4" lg="3">
                       <div class="factor-item pa-2 rounded-lg" :class="getFactorColorClass(key, value)">
                         <div class="text-caption text-medium-emphasis mb-1 d-flex align-center">
                           {{ getFactorLabel(key) }}
@@ -204,8 +207,18 @@ const pageOptions = computed(() => {
 });
 
 const currentPageData = computed(() => {
-  if (!selectedPage.value) return null;
-  return engagementData.value.find(data => data.pageUrl === selectedPage.value?.value) || null;
+  if (!selectedPage.value || engagementData.value.length === 0) return null;
+
+  // Rechercher explicitement par l'URL exacte
+  const pageData = engagementData.value.find(data => data.pageUrl === selectedPage.value?.value);
+
+  console.log('Current page data computed:',
+    pageData ?
+      `Found for ${selectedPage.value.value}, score: ${pageData.overallScore}` :
+      `Not found for ${selectedPage.value.value}`
+  );
+
+  return pageData || null;
 });
 
 function formatPageUrl(url: string): string {
@@ -496,8 +509,15 @@ async function fetchEngagementData() {
     const response = await fetch(`/api/analytics/website/${props.websiteId}/engagement${periodParam}`);
     const result = await response.json();
 
+    console.log('Engagement data response:', result);
+
     if (result.success && result.data) {
+      // Réinitialiser la sélection de page avant de mettre à jour les données
+      selectedPage.value = null;
+
       engagementData.value = result.data.map((item: EngagementMetrics) => {
+        console.log('Processing page data:', item.pageUrl, 'score:', item.overallScore);
+
         const fixedItem = { ...item };
         if (fixedItem.overallScore === null || !isFinite(fixedItem.overallScore)) {
           fixedItem.overallScore = 50;
@@ -533,11 +553,13 @@ async function fetchEngagementData() {
         return fixedItem;
       });
 
+      // Sélectionner la première page seulement après avoir mis à jour les données
       if (engagementData.value.length > 0) {
         selectedPage.value = {
           label: formatPageUrl(engagementData.value[0].pageUrl),
           value: engagementData.value[0].pageUrl
         };
+        console.log('Selected page after data update:', selectedPage.value);
       }
     } else {
       console.error('Failed to fetch engagement data:', result.message);
@@ -558,6 +580,35 @@ watch(() => props.websiteId, () => {
 watch(() => props.period, () => {
   if (props.websiteId) {
     fetchEngagementData();
+  }
+});
+
+// Ajouter un watch sur engagementData pour s'assurer que currentPageData est mis à jour
+watch(() => engagementData.value, (newData) => {
+  if (newData && newData.length > 0) {
+    // Forcer une nouvelle sélection
+    selectedPage.value = {
+      label: formatPageUrl(newData[0].pageUrl),
+      value: newData[0].pageUrl
+    };
+    console.log('Page selection updated after data change:', selectedPage.value);
+  }
+}, { deep: true });
+
+// Surveiller les changements de page sélectionnée
+watch(() => selectedPage.value, (newPage) => {
+  if (newPage) {
+    console.log('Page selection changed to:', newPage.value);
+
+    // Forcer une mise à jour des indicateurs visuels
+    if (document.querySelector('.score-gauge')) {
+      setTimeout(() => {
+        document.querySelector('.score-gauge')?.classList.add('animated');
+        setTimeout(() => {
+          document.querySelector('.score-gauge')?.classList.remove('animated');
+        }, 500);
+      }, 10);
+    }
   }
 });
 
@@ -585,16 +636,23 @@ onMounted(() => {
 
 .score-gauge {
   position: relative;
+  transition: all 0.4s ease;
+}
+
+.score-gauge.animated {
+  transform: scale(1.05);
 }
 
 .gauge-value {
   position: absolute;
   font-size: 2rem;
   font-weight: bold;
+  transition: all 0.3s ease;
 }
 
 .gauge-label-wrapper {
   margin-top: -20px;
+  transition: all 0.3s ease;
 }
 
 .gauge-label {
