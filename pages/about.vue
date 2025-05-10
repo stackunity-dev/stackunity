@@ -183,7 +183,7 @@ useHead({
     }
   ]
 });
-//
+///
 const companyValues = computed(() => [
   {
     title: t().about.values.items[0].title,
