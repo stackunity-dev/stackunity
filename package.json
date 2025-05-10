@@ -17,7 +17,7 @@
     "save-config": "node scripts/preserve-config.js save",
     "restore-config": "node scripts/preserve-config.js restore",
     "git": "npm run save-config && git add . && git commit -m 'build' && git push origin main && npm run restore-config",
-    "git-remove": "npm run save-config && git rm -r --cached server/utils server/api/payment server/api/auth server/api/user server/api/analyze stores/ do.md pages/website-analyzer.vue components/seo && git commit -m \"Remove sensitive files\" && git push origin main && npm run restore-config"
+    "git-remove": "npm run save-config && git rm -r --cached scripts/ server/utils server/api/payment server/api/auth server/api/user server/api/analyze stores/ do.md pages/website-analyzer.vue components/seo && git commit -m \"Remove sensitive files\" && git push origin main && npm run restore-config"
   },
   "config": {
     "rollup": {
