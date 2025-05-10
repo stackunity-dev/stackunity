@@ -6,8 +6,8 @@
           <div class="left-content text-center">
             <header>
               <h1>
-                <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
-                  class="logo mb-8" width="350" />
+                <img src="https://stackunity.tech/logo/stackunity.png"
+                  alt="StackUnity - Develop faster and better with StackUnity" class="logo mb-8" width="350" />
                 <span class="sr-only">{{ t().hero.title }}</span>
               </h1>
             </header>

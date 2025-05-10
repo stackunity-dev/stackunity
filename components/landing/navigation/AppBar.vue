@@ -4,8 +4,8 @@
       <v-container class="d-flex align-center py-0 my-0">
         <NuxtLink :to="localePath('/login')" class="text-decoration-none mr-2" aria-label="StackUnity Home">
           <div class="d-flex align-center brand-container">
-            <img src="/logo/stackunity-title.png" alt="StackUnity - developement hub all-in-one platform" width="150"
-              class="logo-image">
+            <img src="https://stackunity.tech/logo/stackunity-title.png"
+              alt="StackUnity - developement hub all-in-one platform" width="150" class="logo-image">
             <div class="brand-tagline d-none d-lg-flex align-center ml-2 pl-2 border-left">
               <span class="text-caption font-weight-medium text-gradient">{{ t().hero.tagline }}</span>
             </div>
