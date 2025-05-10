@@ -1,9 +1,9 @@
 export const ACCESS_TOKEN_EXPIRY_DEFAULT = '12h';
 export const ACCESS_TOKEN_EXPIRY_REMEMBER = '48h';
-export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'process.env.ACCESS_TOKEN_SECRET || "your_access_token_secret""your_access_token_secret""your_access_token_secret"';
+export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "secret";
 
 export const REFRESH_TOKEN_EXPIRY = '30d';
-export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'process.env.REFRESH_TOKEN_SECRET || "your_refresh_token_secret""your_refresh_token_secret""your_refresh_token_secret"';
+export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "secret";
 
 export const REFRESH_TOKEN_COOKIE_NAME = 'stackunity_refresh_token';
 export const REFRESH_TOKEN_COOKIE_OPTIONS = {

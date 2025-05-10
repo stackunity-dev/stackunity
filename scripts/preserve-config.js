@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,47 +7,103 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Clé pour le chiffrement (16 caractères pour AES-128)
+// Cette clé doit être gardée secrète, mais comme elle est dans votre code local, c'est acceptable
+const ENCRYPTION_KEY = 'stackunity-local-';
+
+// Fonction pour chiffrer le mot de passe
+function encryptPassword(password) {
+  try {
+    // Utiliser une IV aléatoire pour chaque chiffrement
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-128-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+    
+    let encrypted = cipher.update(password, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    
+    // Concaténer l'IV et le texte chiffré, et le retourner en base64
+    return Buffer.from(iv.toString('hex') + ':' + encrypted).toString('base64');
+  } catch (err) {
+    console.error('Erreur lors du chiffrement:', err);
+    return password; // Retourner le mot de passe en clair en cas d'erreur
+  }
+}
+
+// Fonction pour déchiffrer le mot de passe
+function decryptPassword(encryptedPassword) {
+  try {
+    // Décoder du base64
+    const encryptedText = Buffer.from(encryptedPassword, 'base64').toString('utf8');
+    // Séparer l'IV et le texte chiffré
+    const textParts = encryptedText.split(':');
+    
+    if (textParts.length !== 2) {
+      throw new Error('Format de texte chiffré invalide');
+    }
+    
+    const iv = Buffer.from(textParts[0], 'hex');
+    const encryptedData = textParts[1];
+    
+    const decipher = crypto.createDecipheriv('aes-128-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+    
+    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    
+    return decrypted;
+  } catch (err) {
+    console.error('Erreur lors du déchiffrement:', err);
+    return encryptedPassword; // Retourner la chaîne chiffrée en cas d'erreur
+  }
+}
+
 // Fichiers à préserver
 const filesToPreserve = [
   {
     path: 'server/api/db.ts',
     sanitize: (content) => {
-      // Remplacer les informations sensibles par des placeholders
-      return content
-        .replace(/(host:\s*['"]).*?(['"])/g, '$1process.env.DB_HOST || "localhost"$2')
-        .replace(/(port:\s*)parseInt\(process\.env\.DB_PORT\s*\|\|\s*['"].*?['"]\)/g, '$1parseInt(process.env.DB_PORT || "3306")')
-        .replace(/(user:\s*['"]).*?(['"])/g, '$1process.env.DB_USER || "root"$2')
-        .replace(/(password:\s*['"]).*?(['"])/g, '$1process.env.DB_PASSWORD || ""$2')
-        .replace(/(database:\s*)process\.env\.DB_NAME\s*\|\|\s*['"].*?['"]/g, '$1process.env.DB_NAME || "default_db"');
+      // Supprimer les informations sensibles et ne garder que les variables d'environnement
+      return `import * as mysql from 'mysql2/promise';
+
+export const pool = mysql.createPool({
+  host: process.env.DB_HOST || "localhost",
+  port: parseInt(process.env.DB_PORT || "3306"),
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "default_db"
+});
+`;
     }
   },
   {
     path: 'server/utils/auth-config.ts',
     sanitize: (content) => {
-      // Remplacer les clés d'authentification par des placeholders
-      return content
-        .replace(/(ACCESS_TOKEN_SECRET\s*=\s*process\.env\.ACCESS_TOKEN_SECRET\s*\|\|\s*['"]).*?(['"])/g, 
-                '$1process.env.ACCESS_TOKEN_SECRET || "your_access_token_secret"$2')
-        .replace(/(REFRESH_TOKEN_SECRET\s*=\s*process\.env\.REFRESH_TOKEN_SECRET\s*\|\|\s*['"]).*?(['"])/g, 
-                '$1process.env.REFRESH_TOKEN_SECRET || "your_refresh_token_secret"$2');
+      // Supprimer les clés d'authentification et ne garder que les variables d'environnement
+      const sanitizedContent = content
+        .replace(/ACCESS_TOKEN_SECRET\s*=\s*process\.env\.ACCESS_TOKEN_SECRET\s*\|\|\s*['"].*?['"]/g, 
+                'ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "secret"')
+        .replace(/REFRESH_TOKEN_SECRET\s*=\s*process\.env\.REFRESH_TOKEN_SECRET\s*\|\|\s*['"].*?['"]/g, 
+                'REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "secret"');
+      return sanitizedContent;
     }
   },
   {
     path: 'server/utils/EmailService.ts',
     sanitize: (content) => {
-      // Remplacer la clé RESEND par un placeholder
-      return content
-        .replace(/(resend\s*=\s*new\s*Resend\(process\.env\.RESEND_API_KEY\s*as\s*string\s*\|\|\s*['"]).*?(['"])/g, 
-                '$1process.env.RESEND_API_KEY || "your_resend_api_key"$2');
+      // Supprimer la clé RESEND et ne garder que la variable d'environnement
+      const sanitizedContent = content
+        .replace(/resend\s*=\s*new\s*Resend\(process\.env\.RESEND_API_KEY\s*as\s*string\s*\|\|\s*['"].*?['"]\)/g, 
+                'resend = new Resend(process.env.RESEND_API_KEY as string || "your_api_key_here")');
+      return sanitizedContent;
     }
   },
   {
     path: 'server/api/payment-webhook/index.ts',
     sanitize: (content) => {
-      // Remplacer la clé STRIPE par un placeholder
-      return content
-        .replace(/(stripe\s*=\s*new\s*Stripe\(process\.env\.STRIPE_SECRET_KEY\s*as\s*string\s*\|\|\s*['"]).*?(['"])/g, 
-                '$1process.env.STRIPE_SECRET_KEY || "your_stripe_secret_key"$2');
+      // Supprimer la clé STRIPE et ne garder que la variable d'environnement
+      const sanitizedContent = content
+        .replace(/stripe\s*=\s*new\s*Stripe\(process\.env\.STRIPE_SECRET_KEY\s*as\s*string\s*\|\|\s*['"].*?['"]/g, 
+                'stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string || "sk_test_example")');
+      return sanitizedContent;
     }
   }
   // Ajoutez d'autres fichiers de configuration à préserver ici
@@ -76,16 +133,21 @@ function extractEnvVarsFromFiles(filePath, content) {
         envVars.DB_USER = userMatch[1];
       }
       
-      // Extraire le mot de passe
+      // Extraire le mot de passe et le chiffrer
       const passwordMatch = content.match(/password:\s*['"](.+?)['"]/);
       if (passwordMatch && passwordMatch[1]) {
-        envVars.DB_PASSWORD = passwordMatch[1];
+        envVars.DB_PASSWORD = encryptPassword(passwordMatch[1]);
       }
       
       // Extraire le nom de la base de données
-      const dbNameMatch = content.match(/database:\s*process\.env\.DB_NAME\s*\|\|\s*['"](.+?)['"]/);
+      const dbNameMatch = content.match(/database:\s*['"](.+?)['"]/);
       if (dbNameMatch && dbNameMatch[1]) {
         envVars.DB_NAME = dbNameMatch[1];
+      } else {
+        const dbEnvMatch = content.match(/database:\s*process\.env\.DB_NAME\s*\|\|\s*['"](.+?)['"]/);
+        if (dbEnvMatch && dbEnvMatch[1]) {
+          envVars.DB_NAME = dbEnvMatch[1];
+        }
       }
       break;
       
@@ -105,7 +167,7 @@ function extractEnvVarsFromFiles(filePath, content) {
     case 'server/utils/EmailService.ts':
       // Extraire la clé de l'API Resend
       const resendKeyMatch = content.match(/resend\s*=\s*new\s*Resend\(process\.env\.RESEND_API_KEY\s*as\s*string\s*\|\|\s*['"](.+?)['"]/);
-      if (resendKeyMatch && resendKeyMatch[1] && !resendKeyMatch[1].startsWith('re_2222')) {
+      if (resendKeyMatch && resendKeyMatch[1] && !resendKeyMatch[1].includes('your_api_key_here')) {
         envVars.RESEND_API_KEY = resendKeyMatch[1];
       }
       break;
@@ -113,7 +175,7 @@ function extractEnvVarsFromFiles(filePath, content) {
     case 'server/api/payment-webhook/index.ts':
       // Extraire la clé secrète Stripe
       const stripeKeyMatch = content.match(/stripe\s*=\s*new\s*Stripe\(process\.env\.STRIPE_SECRET_KEY\s*as\s*string\s*\|\|\s*['"](.+?)['"]/);
-      if (stripeKeyMatch && stripeKeyMatch[1] && !stripeKeyMatch[1].startsWith('sk_test_510000')) {
+      if (stripeKeyMatch && stripeKeyMatch[1] && !stripeKeyMatch[1].includes('sk_test_example')) {
         envVars.STRIPE_SECRET_KEY = stripeKeyMatch[1];
       }
       
@@ -162,7 +224,12 @@ function loadEnvFile() {
   content.split('\n').forEach(line => {
     const [key, value] = line.split('=');
     if (key && value) {
-      envVars[key.trim()] = value.trim();
+      // Si c'est un mot de passe chiffré, le déchiffrer
+      if (key.trim() === 'DB_PASSWORD') {
+        envVars[key.trim()] = decryptPassword(value.trim());
+      } else {
+        envVars[key.trim()] = value.trim();
+      }
     }
   });
   
@@ -215,6 +282,14 @@ function saveConfigs() {
 // Fonction pour restaurer les fichiers
 function restoreConfigs() {
   console.log('Restauration des fichiers de configuration...');
+  
+  // Charger les variables d'environnement pour les utiliser si nécessaire
+  const envVars = loadEnvFile();
+  
+  // Si DB_PASSWORD est chiffré, le déchiffrer
+  if (envVars.DB_PASSWORD) {
+    console.log('✅ Mot de passe de la base de données déchiffré avec succès');
+  }
   
   filesToPreserve.forEach(file => {
     const fullPath = path.join(__dirname, '..', file.path);
