@@ -785,7 +785,7 @@ function formatScrollData(interaction: ExtendedUserInteraction): string {
   return description;
 }
 
-function formatInteractionDetails(interaction: ExtendedUserInteraction): string {
+function formatInteractionDetails(interaction: ExtendedUserInteraction) {
   if (!interaction.value) return '-';
 
   try {
@@ -815,9 +815,7 @@ function formatInteractionDetails(interaction: ExtendedUserInteraction): string 
       case 'input_change':
         let inputInfo: string[] = [];
 
-        if (interaction.value.valuePreview) {
-          inputInfo.push(`Valeur: "${interaction.value.valuePreview}"`);
-        } else if (interaction.value.hasValue) {
+        if (interaction.value.hasValue) {
           inputInfo.push(`Valeur présente (${interaction.value.valueLength} caractères)`);
         }
 
@@ -834,25 +832,12 @@ function formatInteractionDetails(interaction: ExtendedUserInteraction): string 
         }
 
         return countPrefix + inputInfo.join(' | ');
+      default:
+        return countPrefix + t.interactions.detailsNotAvailable;
     }
-
-    if (interaction.elementText) {
-      return countPrefix + interaction.elementText;
-    } else if (interaction.elementSelector) {
-      return countPrefix + interaction.elementSelector;
-    } else if (typeof interaction.value === 'object') {
-      const keys = Object.keys(interaction.value);
-      if (keys.length > 0) {
-        const firstKey = keys[0];
-        const firstValue = interaction.value[firstKey];
-        return countPrefix + `${firstKey}: ${typeof firstValue === 'object' ? t.interactionsCard.complexObject : String(firstValue)}`;
-      }
-    }
-
-    return countPrefix + (t.interactions.detailsNotAvailable);
   } catch (e) {
     console.error('Erreur lors du formatage des détails:', e);
-    return t.interactionsCard.formattingError;
+    return t.interactions.detailsNotAvailable;
   }
 }
 
