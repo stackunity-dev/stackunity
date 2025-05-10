@@ -237,7 +237,6 @@ export default defineEventHandler(async (event) => {
       raw_avg_time: row.raw_avg_time
     }))));
 
-    // Fonction pour normaliser une URL en supprimant les préfixes de langue
     const normalizeUrl = (url: string) => {
       if (!url) return url;
       try {
@@ -246,7 +245,6 @@ export default defineEventHandler(async (event) => {
           const urlObj = new URL(url);
           pathname = urlObj.pathname;
         }
-        // Supprimer le préfixe de langue
         return pathname.replace(/^\/(fr|en)(\/|$)/, '$2');
       } catch (e) {
         console.error('Erreur de normalisation URL:', e);
@@ -254,7 +252,6 @@ export default defineEventHandler(async (event) => {
       }
     };
 
-    // Ajuster la requête des sources de trafic
     let trafficSourcesQuery = `
       SELECT 
         CASE 
@@ -321,59 +318,60 @@ export default defineEventHandler(async (event) => {
 
     const [deviceStatsRows] = await pool.query<DeviceRow[]>(deviceStatsQuery, deviceStatsParams);
 
-    // Ajuster la requête des navigateurs
-    let browsersQuery = `
+    // Ajuster la requête des statistiques de navigateurs
+    let browserStatsQuery = `
       SELECT 
-        browser AS name,
+        CASE 
+          WHEN browser LIKE 'Chrome %' THEN 'Chrome'
+          WHEN browser LIKE 'Firefox %' THEN 'Firefox'
+          WHEN browser LIKE 'Safari %' THEN 'Safari'
+          WHEN browser LIKE 'Edge %' THEN 'Edge'
+          WHEN browser LIKE 'Opera %' THEN 'Opera'
+          WHEN browser LIKE 'Internet Explorer %' THEN 'Internet Explorer'
+          WHEN browser IS NULL OR browser = '' THEN 'Unknown'
+          ELSE SUBSTRING_INDEX(browser, ' ', 1)
+        END AS name,
         COUNT(*) AS count,
-        ROUND((COUNT(*) * 100.0) / (
-          SELECT SUM(browser_count) FROM (
-            SELECT COUNT(*) AS browser_count 
-            FROM analytics_sessions 
-            WHERE website_id = ? AND browser IS NOT NULL AND browser != '' ${startDate ? 'AND start_time >= ?' : ''}
-            GROUP BY browser
-          ) AS browser_counts
-        ), 2) AS percentage,
+        ROUND((COUNT(*) * 100.0) / (SELECT COUNT(*) FROM analytics_sessions WHERE website_id = ?)) AS percentage,
         'browser' AS type
-      FROM analytics_sessions
-      WHERE website_id = ? AND browser IS NOT NULL AND browser != '' ${startDate ? 'AND start_time >= ?' : ''}
-      GROUP BY browser
+      FROM analytics_sessions 
+      WHERE website_id = ? ${startDate ? 'AND start_time >= ?' : ''}
+      GROUP BY name
       ORDER BY count DESC
-      LIMIT 5
     `;
 
-    let browsersParams = startDate
-      ? [dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' '), dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' ')]
+    let browserStatsParams = startDate
+      ? [dbWebsiteId, dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' ')]
       : [dbWebsiteId, dbWebsiteId];
 
-    const [browsersRows] = await pool.query<BrowserOsRow[]>(browsersQuery, browsersParams);
+    const [browserRows] = await pool.query<BrowserOsRow[]>(browserStatsQuery, browserStatsParams);
 
-    // Ajuster la requête des systèmes d'exploitation
-    let osQuery = `
+    // Ajuster la requête des statistiques d'OS 
+    let osStatsQuery = `
       SELECT 
-        os AS name,
+        CASE 
+          WHEN os LIKE 'Windows %' THEN 'Windows'
+          WHEN os LIKE 'Android %' THEN 'Android'
+          WHEN os LIKE 'iOS %' THEN 'iOS'
+          WHEN os LIKE 'iPadOS %' THEN 'iPadOS'
+          WHEN os LIKE 'macOS %' THEN 'macOS'
+          WHEN os IS NULL OR os = '' THEN 'Unknown'
+          ELSE SUBSTRING_INDEX(os, ' ', 1)
+        END AS name,
         COUNT(*) AS count,
-        ROUND((COUNT(*) * 100.0) / (
-          SELECT SUM(os_count) FROM (
-            SELECT COUNT(*) AS os_count 
-            FROM analytics_sessions 
-            WHERE website_id = ? AND os IS NOT NULL AND os != '' ${startDate ? 'AND start_time >= ?' : ''}
-            GROUP BY os
-          ) AS os_counts
-        ), 2) AS percentage,
+        ROUND((COUNT(*) * 100.0) / (SELECT COUNT(*) FROM analytics_sessions WHERE website_id = ?)) AS percentage,
         'os' AS type
-      FROM analytics_sessions
-      WHERE website_id = ? AND os IS NOT NULL AND os != '' ${startDate ? 'AND start_time >= ?' : ''}
-      GROUP BY os
+      FROM analytics_sessions 
+      WHERE website_id = ? ${startDate ? 'AND start_time >= ?' : ''}
+      GROUP BY name
       ORDER BY count DESC
-      LIMIT 5
     `;
 
-    let osParams = startDate
-      ? [dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' '), dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' ')]
+    let osStatsParams = startDate
+      ? [dbWebsiteId, dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' ')]
       : [dbWebsiteId, dbWebsiteId];
 
-    const [osRows] = await pool.query<BrowserOsRow[]>(osQuery, osParams);
+    const [osRows] = await pool.query<BrowserOsRow[]>(osStatsQuery, osStatsParams);
 
     // Ajuster la requête des erreurs
     let errorEventsQuery = `
@@ -556,18 +554,15 @@ export default defineEventHandler(async (event) => {
       }
     };
 
-    // Fonction pour nettoyer l'URL pour un meilleur affichage
     const cleanUrl = (url) => {
       if (!url || url === 'Unknown page') return url;
 
       try {
-        // Si c'est une URL complète, extraire le chemin
         if (url.startsWith('http')) {
           const urlObj = new URL(url);
           return urlObj.pathname || '/';
         }
 
-        // Sinon, retourner le chemin directement
         return url;
       } catch (e) {
         console.error('Erreur lors du nettoyage d\'URL:', e);
@@ -594,17 +589,13 @@ export default defineEventHandler(async (event) => {
         pageViewsWithDuration: pageViewsWithDuration,
         durationDataQuality: durationDataQuality,
         topPages: topPagesRows.map(page => {
-          // S'assurer que l'URL est valide ou fournir une alternative lisible
           let pageUrl = page.page || 'Unknown page';
           let cleanPageUrl = cleanUrl(pageUrl);
 
-          // Normaliser l'URL pour supprimer les préfixes de langue
           cleanPageUrl = normalizeUrl(cleanPageUrl);
 
-          // Déterminer si c'est la page d'accueil
           const isHomePage = cleanPageUrl === '/' || cleanPageUrl === '';
 
-          // Calculer la durée moyenne en secondes
           const avgTimeSec = page.raw_avg_time || 0;
           const hasValidTime = avgTimeSec > 0;
           const viewsWithDuration = page.views_with_duration || 0;
@@ -632,7 +623,7 @@ export default defineEventHandler(async (event) => {
           count: device.count || 0,
           percentage: device.percentage || 0
         })),
-        browsers: browsersRows.map(browser => ({
+        browsers: browserRows.map(browser => ({
           name: browser.name || 'Unknown',
           count: browser.count || 0,
           percentage: browser.percentage || 0,

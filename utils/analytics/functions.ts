@@ -272,12 +272,54 @@ function generateTrackingCode(websiteId: string): string {
   `;
 }
 
+function normalizeUrl(url: string): string {
+  if (!url) return url;
+
+  try {
+    // Si c'est une URL complète, extraire le chemin
+    let pathname = url;
+    let hostname = '';
+
+    if (url.startsWith('http')) {
+      const urlObj = new URL(url);
+      pathname = urlObj.pathname;
+      hostname = urlObj.hostname;
+    }
+
+    // Supprimer les préfixes de langue
+    const normalizedPath = pathname.replace(/^\/(fr|en)(\/|$)/, '$2');
+
+    // Si le chemin est vide, retourner '/'
+    if (!normalizedPath || normalizedPath === '') {
+      return hostname ? hostname + '/' : '/';
+    }
+
+    return hostname ? hostname + normalizedPath : normalizedPath;
+  } catch (e) {
+    console.error('Erreur lors de la normalisation de l\'URL:', e);
+    return url;
+  }
+}
+
 export {
   formatDate,
-  formatDuration, formatUrl, generateTrackingCode, getBrowserColor, getBrowserIcon, getColorByIndex, getDeviceIcon,
-  getDeviceLabel, getFullDomain, getOsColor, getOsIcon, getReferrerColor,
-  getReferrerIcon, getSourceColor,
+  formatDuration,
+  formatUrl,
+  generateTrackingCode,
+  getBrowserColor,
+  getBrowserIcon,
+  getColorByIndex,
+  getDeviceIcon,
+  getDeviceLabel,
+  getFullDomain,
+  getOsColor,
+  getOsIcon,
+  getReferrerColor,
+  getReferrerIcon,
+  getSourceColor,
   getSourceIcon,
-  getSourceLabel, isLocalEnvironment
+  getSourceLabel,
+  isLocalEnvironment,
+  normalizeUrl
 };
 

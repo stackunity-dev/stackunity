@@ -996,7 +996,8 @@ import {
   getSourceColor,
   getSourceIcon,
   getSourceLabel,
-  isLocalEnvironment
+  isLocalEnvironment,
+  normalizeUrl
 } from '../utils/analytics/functions';
 import { BrowserOsStats, DetailedReferrer, DeviceStats, DeviceType, ErrorEvent, PageView, PurgeTranslations, TrafficSource, UserFlow, UserInteraction, WebsiteAnalytics, WebsiteWithStats } from '../utils/analytics/types';
 
@@ -1613,7 +1614,7 @@ function updateAnalyticsData(data: any) {
   let processedPages = Array.isArray(data.topPages) ? data.topPages : [];
 
   // Fonction pour normaliser une URL en supprimant les préfixes de langue
-  const normalizeUrl = (urlStr: string): { url: string, normalizedUrl: string, langPrefix: string | null } => {
+  const normalizeUrlWithDetails = (urlStr: string): { url: string, normalizedUrl: string, langPrefix: string | null } => {
     if (!urlStr) return { url: urlStr, normalizedUrl: urlStr, langPrefix: null };
     try {
       // Si c'est une URL complète, extraire le chemin
@@ -1651,10 +1652,10 @@ function updateAnalyticsData(data: any) {
         normalizedUrl = 'http://' + urlObj.host + urlObj.pathname;
       }
 
-      const { normalizedUrl: withoutLangPrefix } = normalizeUrl(normalizedUrl);
-      return withoutLangPrefix;
+      // Utiliser la fonction normalizeUrl importée (qui retourne une chaîne)
+      return normalizeUrl(normalizedUrl);
     } catch (e) {
-      console.error('Erreur lors de la normalisation de la clé d\'URL:', e);
+      console.error('Erreur normalisation URL:', e);
       return url;
     }
   };
@@ -1679,10 +1680,20 @@ function updateAnalyticsData(data: any) {
     // Si cleanPath n'est pas fourni, essayer de l'extraire
     if (!cleanedPage.cleanPath && cleanedPage.page.startsWith('http')) {
       try {
-        const normalized = normalizeUrl(cleanedPage.page);
-        cleanedPage.cleanPath = normalized.normalizedUrl || '/';
-        cleanedPage.isHome = cleanedPage.cleanPath === '/' || cleanedPage.cleanPath === '';
-        cleanedPage.langPrefix = normalized.langPrefix;
+        // Créer notre propre fonction locale de normalisation au lieu d'utiliser normalizeUrl
+        const url = new URL(cleanedPage.page);
+        const pathname = url.pathname;
+
+        // Extraire le préfixe de langue s'il existe
+        const langMatch = pathname.match(/^\/(fr|en)(\/|$)/);
+        const langPrefix = langMatch ? langMatch[1] : null;
+
+        // Normaliser le chemin
+        const normalizedPath = pathname.replace(/^\/(fr|en)(\/|$)/, '$2') || '/';
+
+        cleanedPage.cleanPath = normalizedPath;
+        cleanedPage.isHome = normalizedPath === '/' || normalizedPath === '';
+        cleanedPage.langPrefix = langPrefix;
       } catch (error) {
         // Ignorer les erreurs
         console.error('Erreur lors du traitement du chemin:', error);
@@ -1801,29 +1812,6 @@ function getPageViewPercentage(views: number): number {
   const totalViews = pageViews.value.reduce((sum, page) => sum + page.views, 0);
   return totalViews > 0 ? (views / totalViews) * 100 : 0;
 }
-
-function getTimePercentage(time: string): number {
-  const minutesMatch = time.match(/(\d+)m/);
-  const secondsMatch = time.match(/(\d+)s/);
-
-  const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
-  const seconds = secondsMatch ? parseInt(secondsMatch[1]) : 0;
-
-  const totalSeconds = (minutes * 60) + seconds;
-
-  const maxTimeSeconds = Math.max(...pageViews.value.map(page => {
-    const pageMinutesMatch = page.avgTime.match(/(\d+)m/);
-    const pageSecondsMatch = page.avgTime.match(/(\d+)s/);
-
-    const pageMinutes = pageMinutesMatch ? parseInt(pageMinutesMatch[1]) : 0;
-    const pageSeconds = pageSecondsMatch ? parseInt(pageSecondsMatch[1]) : 0;
-
-    return (pageMinutes * 60) + pageSeconds;
-  }));
-
-  return maxTimeSeconds > 0 ? (totalSeconds / maxTimeSeconds) * 100 : 0;
-}
-
 function expandPage(page: PageView) {
   console.log('Détails de la page:', page);
   showMessage(`Détails de la page : ${page.page}`, 'info');
@@ -2229,16 +2217,16 @@ async function loadExclusions() {
 
 // Ajouter cette fonction pour afficher une représentation lisible des URLs de page
 function formatPagePath(path: string, cleanPath?: string, isHome?: boolean) {
-  if (!path) return 'Page inconnue';
+  if (!path) return 'Unknown page';
 
   // Si nous avons déjà les informations nettoyées
-  if (isHome === true) return 'Page d\'accueil';
-  if (cleanPath === '/' || cleanPath === '') return 'Page d\'accueil';
+  if (isHome === true) return 'Landing page';
+  if (cleanPath === '/' || cleanPath === '') return 'Landing page';
 
   try {
     // Gérer les cas spéciaux
-    if (path === '/' || path === '') return 'Page d\'accueil';
-    if (path === 'Unknown page' || path === 'https://stackunity.tech/fallback') return 'Page inconnue';
+    if (path === '/' || path === '') return 'Landing page';
+    if (path === 'Unknown page' || path === 'https://stackunity.tech/fallback') return 'Unknown page';
 
     // Si c'est une URL complète, extraire le domaine et le chemin
     let formattedPath = path;

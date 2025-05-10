@@ -82,16 +82,13 @@
       
       getDeviceType: function() {
         try {
-          // Vérification plus complète pour détecter correctement l'appareil
           const ua = navigator.userAgent || '';
           
-          // Détection mobile universelle
           const mobileRegex = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i;
           const tabletRegex = /iPad|Android(?!.*Mobile)/i;
           
           const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 1024;
           
-          // Détection basée sur l'agent utilisateur
           if (tabletRegex.test(ua)) {
             return 'tablet';
           }
@@ -100,7 +97,6 @@
             return 'mobile';
           }
           
-          // Détection basée sur la largeur de l'écran (fallback)
           if (width < 768) {
             return 'mobile';
           }
@@ -111,7 +107,6 @@
           
           return 'desktop';
         } catch (e) {
-          // En cas d'erreur, retourner desktop comme valeur par défaut
           console.error('[StackUnity Tracker] Erreur lors de la détection du type d\'appareil:', e);
           return 'desktop';
         }
@@ -120,92 +115,80 @@
       getBrowserInfo: function() {
         try {
           const ua = navigator.userAgent || '';
+          console.log('ua', ua);
           let browser = 'Unknown';
           let version = '0.0';
           
-          const browserRegexes = [
-            { name: 'Chrome', regex: /Chrome\/(\d+(\.\d+)?)/ },
-            { name: 'Edge', regex: /Edg\/(\d+(\.\d+)?)/ },
-            { name: 'Firefox', regex: /Firefox\/(\d+(\.\d+)?)/ },
-            { name: 'Safari', regex: /Version\/(\d+(\.\d+)?).+Safari/ },
-            { name: 'Opera', regex: /OPR\/(\d+(\.\d+)?)/ },
-            { name: 'Internet Explorer', regex: /MSIE (\d+(\.\d+)?)/ },
-            { name: 'Internet Explorer', regex: /Trident.+rv:(\d+(\.\d+)?)/ }
-          ];
-          
-          // Détection en cascade avec priorité
-          for (const item of browserRegexes) {
-            const match = ua.match(item.regex);
-            if (match) {
-              browser = item.name;
-              version = match[1];
-              break;
-            }
-          }
-          
-          // Cas particulier : Edge ancien format
-          if (ua.indexOf('Edge/') > -1) {
+          // Détection plus précise des navigateurs
+          if (/Firefox\/(\d+(\.\d+)?)/.test(ua)) {
+            browser = 'Firefox';
+            const match = ua.match(/Firefox\/(\d+(\.\d+)?)/);
+            if (match && match[1]) version = match[1];
+          } else if (/Edg\/(\d+(\.\d+)?)/.test(ua)) {
             browser = 'Edge';
-            const match = ua.match(/Edge\/(\d+(\.\d+)?)/);
-            version = match ? match[1] : '0.0';
-          }
-          
-          // Cas particulier : Safari nécessite une vérification supplémentaire
-          if (ua.indexOf('Safari') > -1 && ua.indexOf('Chrome') === -1 && ua.indexOf('Edg/') === -1) {
+            const match = ua.match(/Edg\/(\d+(\.\d+)?)/);
+            if (match && match[1]) version = match[1];
+          } else if (/Chrome\/(\d+(\.\d+)?)/.test(ua)) {
+            browser = 'Chrome';
+            const match = ua.match(/Chrome\/(\d+(\.\d+)?)/);
+            if (match && match[1]) version = match[1];
+          } else if (/Safari\/(\d+(\.\d+)?)/.test(ua) && !/Chrome/.test(ua) && !/Edg\//.test(ua)) {
             browser = 'Safari';
             const match = ua.match(/Version\/(\d+(\.\d+)?)/);
-            version = match ? match[1] : '0.0';
+            version = match && match[1] ? match[1] : '0.0';
+          } else if (/OPR\/(\d+(\.\d+)?)/.test(ua)) {
+            browser = 'Opera';
+            const match = ua.match(/OPR\/(\d+(\.\d+)?)/);
+            if (match && match[1]) version = match[1];
+          } else if (/MSIE (\d+(\.\d+)?)/.test(ua) || /Trident.*rv:(\d+(\.\d+)?)/.test(ua)) {
+            browser = 'Internet Explorer';
+            const ieMatch = ua.match(/MSIE (\d+(\.\d+)?)/);
+            const tridentMatch = ua.match(/Trident.*rv:(\d+(\.\d+)?)/);
+            const match = ieMatch || tridentMatch;
+            version = match && match[1] ? match[1] : '11.0';
+          }
+          
+          // Version simplifiée pour réduire la taille
+          const versionParts = version.split('.');
+          if (versionParts.length > 0) {
+            version = versionParts[0];
           }
           
           return browser + ' ' + version;
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du navigateur:', e);
-          return 'Chrome 100.0'; // Valeur par défaut courante
+          return 'Chrome 100';
         }
       },
       
       getOSInfo: function() {
         try {
           const ua = navigator.userAgent || '';
-          let os = 'Windows 10'; // Valeur par défaut si rien n'est détecté
+          let os = 'Unknown';
           
-          // Liste de regex pour détecter les OS courants
-          if (/Android/i.test(ua)) {
-            os = 'Android';
-            const match = ua.match(/Android (\d+(\.\d+)?)/);
-            if (match) {
-              os += ' ' + match[1];
-            }
-          } else if (/iPhone|iPad|iPod/.test(ua)) {
-            const device = /iPad/.test(ua) ? 'iPad' : /iPod/.test(ua) ? 'iPod' : 'iPhone';
-            os = device === 'iPad' ? 'iPadOS' : 'iOS';
-            const match = ua.match(/OS (\d+[._]\d+)/);
-            if (match) {
-              os += ' ' + match[1].replace('_', '.');
-            }
-          } else if (/Win/.test(ua)) {
+          // Détection simplifiée des systèmes d'exploitation
+          if (/Windows NT 10\.0/.test(ua)) {
+            os = 'Windows 10';
+          } else if (/Windows NT 6\.3/.test(ua)) {
+            os = 'Windows 8.1';
+          } else if (/Windows NT 6\.2/.test(ua)) {
+            os = 'Windows 8';
+          } else if (/Windows NT 6\.1/.test(ua)) {
+            os = 'Windows 7';
+          } else if (/Windows/.test(ua)) {
             os = 'Windows';
-            if (/Windows NT 10.0/.test(ua)) {
-              os += ' 10';
-            } else if (/Windows NT 6.3/.test(ua)) {
-              os += ' 8.1';
-            } else if (/Windows NT 6.2/.test(ua)) {
-              os += ' 8';
-            } else if (/Windows NT 6.1/.test(ua)) {
-              os += ' 7';
-            } else if (/Windows NT 6.0/.test(ua)) {
-              os += ' Vista';
-            } else if (/Windows NT 5.1/.test(ua)) {
-              os += ' XP';
-            } else {
-              os += ' 10'; // Par défaut pour Windows moderne
-            }
+          } else if (/Android/.test(ua)) {
+            os = 'Android';
+            const match = ua.match(/Android (\d+)/);
+            if (match && match[1]) os = os + ' ' + match[1];
+          } else if (/iPhone|iPad|iPod/.test(ua)) {
+            os = /iPad/.test(ua) ? 'iPadOS' : 'iOS';
+            const match = ua.match(/OS (\d+)_/);
+            if (match && match[1]) os = os + ' ' + match[1];
           } else if (/Mac OS X/.test(ua)) {
             os = 'macOS';
-            const match = ua.match(/Mac OS X (\d+[._]\d+)/);
-            if (match) {
-              os += ' ' + match[1].replace('_', '.');
-            }
+            const match = ua.match(/Mac OS X 10[._](\d+)/);
+            if (match && match[1]) os = os + ' ' + match[1];
           } else if (/Linux/.test(ua)) {
             os = 'Linux';
           }
@@ -213,7 +196,7 @@
           return os;
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du système d\'exploitation:', e);
-          return 'Windows 10'; // Valeur par défaut commune
+          return 'Windows 10';
         }
       },
       
@@ -233,59 +216,41 @@
           const hostname = url.hostname.toLowerCase();
           console.log('[StackUnity Tracker] Hostname référent:', hostname);
           
-          // Amélioration de la détection des domaines de réseaux sociaux
-          const linkedinDomains = ['linkedin.com', 'lnkd.in', 'licdn.com', 'linked.in'];
-          if (linkedinDomains.some(domain => hostname.includes(domain))) {
-            console.log('[StackUnity Tracker] Référent LinkedIn détecté:', hostname);
-            return { source: 'linkedin', name: 'LinkedIn' };
+          // Amélioration de la détection des référents sociaux
+          const socialPatterns = [
+            { pattern: 'linkedin.com', source: 'linkedin', name: 'LinkedIn' },
+            { pattern: 'lnkd.in', source: 'linkedin', name: 'LinkedIn' },
+            { pattern: 'licdn.com', source: 'linkedin', name: 'LinkedIn' },
+            { pattern: 'linked.in', source: 'linkedin', name: 'LinkedIn' },
+            
+            { pattern: 'facebook.com', source: 'facebook', name: 'Facebook' },
+            { pattern: 'fb.com', source: 'facebook', name: 'Facebook' },
+            { pattern: 'fbcdn.net', source: 'facebook', name: 'Facebook' },
+            
+            { pattern: 'twitter.com', source: 'twitter', name: 'Twitter' },
+            { pattern: 't.co', source: 'twitter', name: 'Twitter' },
+            
+            { pattern: 'instagram.com', source: 'instagram', name: 'Instagram' },
+            
+            { pattern: 'google.', source: 'google', name: 'Google' },
+            { pattern: 'youtube.com', source: 'youtube', name: 'YouTube' },
+            { pattern: 'bing.com', source: 'bing', name: 'Bing' }
+          ];
+          
+          for (const pattern of socialPatterns) {
+            if (hostname.includes(pattern.pattern)) {
+              console.log(`[StackUnity Tracker] Référent ${pattern.name} détecté:`, hostname);
+              return { source: pattern.source, name: pattern.name };
+            }
           }
           
-          if (hostname.includes('facebook.com') || hostname.includes('fb.com')) {
-            console.log('[StackUnity Tracker] Référent Facebook détecté:', hostname);
-            return { source: 'facebook', name: 'Facebook' };
-          }
-          
-          if (hostname.includes('twitter.com') || hostname.includes('t.co') || hostname.includes('x.com')) {
-            console.log('[StackUnity Tracker] Référent Twitter détecté:', hostname);
-            return { source: 'twitter', name: 'Twitter' };
-          }
-          
-          if (hostname.includes('instagram.com')) {
-            console.log('[StackUnity Tracker] Référent Instagram détecté:', hostname);
-            return { source: 'instagram', name: 'Instagram' };
-          }
-          
-          if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
-            console.log('[StackUnity Tracker] Référent YouTube détecté:', hostname);
-            return { source: 'youtube', name: 'YouTube' };
-          }
-          
-          if (hostname.includes('google.')) {
-            console.log('[StackUnity Tracker] Référent Google détecté:', hostname);
-            return { source: 'google', name: 'Google' };
-          }
-          
-          if (hostname.includes('bing.com')) {
-            console.log('[StackUnity Tracker] Référent Bing détecté:', hostname);
-            return { source: 'bing', name: 'Bing' };
-          }
-          
-          if (hostname.includes('yahoo.com')) {
-            console.log('[StackUnity Tracker] Référent Yahoo détecté:', hostname);
-            return { source: 'yahoo', name: 'Yahoo' };
-          }
-          
-          if (hostname.includes('duckduckgo.com')) {
-            console.log('[StackUnity Tracker] Référent DuckDuckGo détecté:', hostname);
-            return { source: 'duckduckgo', name: 'DuckDuckGo' };
-          }
-          
-          // Pour tout autre référent, l'enregistrer comme référent externe
-          console.log('[StackUnity Tracker] Référent externe détecté:', hostname);
-          return { source: 'referral', name: hostname };
+          // Si on arrive ici, c'est un référent externe mais pas un réseau social connu
+          const domain = hostname.replace(/^www\./, '');
+          console.log('[StackUnity Tracker] Référent externe détecté:', domain);
+          return { source: 'referral', name: domain };
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de l\'analyse du référent:', e);
-          return { source: 'unknown', name: 'Unknown' };
+          return { source: 'direct', name: 'Direct' };
         }
       },
       
@@ -2181,6 +2146,29 @@
         return utils.sendBounceEvent(true);
       }
     };
+
+    const trackerStyles = document.createElement('style');
+    trackerStyles.textContent = `
+      .stackunity-tracker-element,
+      img[src*="analytics/collect"],
+      img[src*="stackunity"] {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        z-index: -9999 !important;
+      }
+    `;
+    document.head.appendChild(trackerStyles);
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function() {

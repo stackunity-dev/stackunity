@@ -313,16 +313,13 @@ export default defineEventHandler(async (event) => {
           validatedUrl = 'https://stackunity.tech/fallback';
         }
 
-        // Traitement spécial pour les référents LinkedIn
         let processedReferrerSource = referrerSource;
         let processedReferrerName = referrerName;
         let processedReferrer = referrer;
 
-        // S'assurer que le référent LinkedIn est correctement identifié
         if (referrer && typeof referrer === 'string') {
           try {
             const referrerLower = referrer.toLowerCase();
-            // Détection améliorée de LinkedIn
             const linkedinDomains = ['linkedin.com', 'lnkd.in', 'licdn.com', 'linked.in'];
             const isLinkedIn = linkedinDomains.some(domain => referrerLower.includes(domain));
 
@@ -345,28 +342,42 @@ export default defineEventHandler(async (event) => {
           }
         }
 
-        await pool.query(
-          `INSERT INTO analytics_pageviews 
-            (pageview_id, session_id, website_id, page_url, page_title, enter_time, duration, utm_source, utm_medium, utm_campaign, referrer, referrer_source, referrer_name) 
-            VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-            page_title = VALUES(page_title)`,
-          [
-            event.id,
-            sessionId,
-            dbWebsiteId,
-            validatedUrl,
-            event.title || '',
-            new Date(event.enterTime || event.timestamp || new Date()),
-            event.utm_source || null,
-            event.utm_medium || null,
-            event.utm_campaign || null,
-            processedReferrer,
-            processedReferrerSource,
-            processedReferrerName
-          ]
-        );
-        console.log('Page vue enregistrée:', event.id, validatedUrl);
+        try {
+          if (processedReferrerSource === 'linkedin') {
+            await pool.query(
+              `UPDATE analytics_sessions 
+               SET referrer_source = 'linkedin', referrer_name = 'LinkedIn'
+               WHERE session_id = ?`,
+              [sessionId]
+            );
+            console.log('Mise à jour spécifique référent LinkedIn pour la session:', sessionId);
+          }
+
+          await pool.query(
+            `INSERT INTO analytics_pageviews 
+              (pageview_id, session_id, website_id, page_url, page_title, enter_time, duration, utm_source, utm_medium, utm_campaign, referrer, referrer_source, referrer_name) 
+              VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?)
+              ON DUPLICATE KEY UPDATE
+              page_title = VALUES(page_title)`,
+            [
+              event.id,
+              sessionId,
+              dbWebsiteId,
+              validatedUrl,
+              event.title || '',
+              new Date(event.enterTime || event.timestamp || new Date()),
+              event.utm_source || null,
+              event.utm_medium || null,
+              event.utm_campaign || null,
+              processedReferrer,
+              processedReferrerSource,
+              processedReferrerName
+            ]
+          );
+          console.log('Page vue enregistrée:', event.id, validatedUrl, `Référent: ${processedReferrerSource} (${processedReferrerName})`);
+        } catch (error) {
+          console.error(`Erreur lors du traitement de la page vue ${event.pageUrl}:`, error);
+        }
       } catch (error) {
         console.error(`Erreur lors du traitement de la page vue ${event.pageUrl}:`, error);
       }

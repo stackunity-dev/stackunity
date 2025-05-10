@@ -210,40 +210,49 @@ const pageOptions = computed(() => {
 const currentPageData = computed(() => {
   if (!selectedPage.value || engagementData.value.length === 0) return null;
 
+  // Rechercher explicitement par l'URL exacte
   const pageData = engagementData.value.find(data => data.pageUrl === selectedPage.value?.value);
 
-  if (!pageData && selectedPage.value?.value) {
+  // Si on trouve la page, la retourner immédiatement
+  if (pageData) {
+    console.log('Page trouvée directement:', pageData.pageUrl, 'score:', pageData.overallScore);
+    return pageData;
+  }
+
+  // Si on ne trouve pas la page exacte, chercher avec normalisation des URLs (pour préfixes de langue)
+  if (selectedPage.value?.value) {
+    // Essai de normaliser l'URL pour trouver une correspondance approximative
     const normalizeUrl = (url) => {
       try {
+        // Extraire le chemin de l'URL
         let pathname = url;
         if (url.startsWith('http')) {
           const urlObj = new URL(url);
           pathname = urlObj.pathname;
         }
 
-        return pathname.replace(/^\/(fr|en)/, '');
+        // Supprimer les préfixes de langue
+        return pathname.replace(/^\/(fr|en)\//, '/').replace(/^\/(fr|en)$/, '/');
       } catch (e) {
         return url;
       }
     };
 
     const normalizedSelected = normalizeUrl(selectedPage.value.value);
+
+    console.log('Recherche avec URL normalisée:', normalizedSelected);
+
     const matchingPage = engagementData.value.find(data =>
       normalizeUrl(data.pageUrl) === normalizedSelected);
 
     if (matchingPage) {
-      console.log('Found matching page after URL normalization:', matchingPage.pageUrl);
+      console.log('Page trouvée après normalisation:', matchingPage.pageUrl, 'score:', matchingPage.overallScore);
       return matchingPage;
     }
   }
 
-  console.log('Current page data computed:',
-    pageData ?
-      `Found for ${selectedPage.value.value}, score: ${pageData.overallScore}` :
-      `Not found for ${selectedPage.value.value}`
-  );
-
-  return pageData || null;
+  console.log('Page non trouvée pour', selectedPage.value.value);
+  return null;
 });
 
 function formatPageUrl(url: string): string {
@@ -629,17 +638,22 @@ watch(() => props.period, () => {
   }
 });
 
-// Ajouter un watch sur engagementData pour s'assurer que currentPageData est mis à jour
+// Surveiller les données d'engagement pour sélectionner la première page après chargement
 watch(() => engagementData.value, (newData) => {
-  if (newData && newData.length > 0) {
-    // Forcer une nouvelle sélection
+  if (newData && newData.length > 0 && !selectedPage.value) {
+    console.log('Données d\'engagement reçues, sélection de la première page');
     selectedPage.value = {
       label: formatPageUrl(newData[0].pageUrl),
       value: newData[0].pageUrl
     };
-    console.log('Page selection updated after data change:', selectedPage.value);
-    // Forcer un refresh après un court délai
-    setTimeout(forceRefresh, 100);
+  }
+}, { immediate: true });
+
+// Surveiller explicitement les changements dans currentPageData
+watch(() => currentPageData.value, (newData) => {
+  if (newData) {
+    console.log('currentPageData a changé, rafraîchissement forcé');
+    nextTick(forceRefresh);
   }
 }, { deep: true });
 
@@ -654,29 +668,25 @@ watch(() => selectedPage.value, (newPage) => {
 
 // Fonction pour forcer un rafraîchissement des composants visuels
 function forceRefresh() {
-  console.log('Forcing refresh of gauge with value:',
+  console.log('Forçage rafraîchissement avec score:',
     currentPageData.value ? currentPageData.value.overallScore : 'no data');
 
-  // Forcer une mise à jour des indicateurs visuels
-  if (document.querySelector('.score-gauge')) {
-    document.querySelector('.score-gauge')?.classList.add('animated');
-    setTimeout(() => {
-      document.querySelector('.score-gauge')?.classList.remove('animated');
-    }, 500);
-  }
+  // Générer une clé unique pour forcer le rendu des composants
+  const refreshKey = Date.now().toString();
 
-  // Forcer un refresh du DOM en simulant une modification de données - MÉTHODE AMÉLIORÉE
-  if (selectedPage.value) {
-    const currentValue = selectedPage.value.value;
-    const currentLabel = selectedPage.value.label;
-    selectedPage.value = null;
-    nextTick(() => {
-      selectedPage.value = {
-        value: currentValue,
-        label: currentLabel
-      };
+  // Force le rafraîchissement des indicateurs visuels avec des clés uniques
+  nextTick(() => {
+    const gaugeElements = document.querySelectorAll('.score-gauge, .metric-card');
+    gaugeElements.forEach(el => {
+      if (el instanceof HTMLElement) {
+        el.dataset.refreshKey = refreshKey;
+        el.classList.add('animated');
+        setTimeout(() => {
+          el.classList.remove('animated');
+        }, 500);
+      }
     });
-  }
+  });
 }
 
 onMounted(() => {
