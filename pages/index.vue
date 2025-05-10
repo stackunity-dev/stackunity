@@ -201,21 +201,6 @@ useHead({
       `,
       type: 'text/javascript'
     }
-  ],
-  style: [
-    {
-      children: `
-        .index-page-ready {
-          background-color: #121212 !important;
-        }
-        .faq-loading-placeholder {
-          min-height: 300px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 8px;
-          background: rgba(0, 0, 0, 0.2);
-        }
-      `
-    }
   ]
 })
 
@@ -240,12 +225,6 @@ watch(() => currentLanguage.value, (newLang) => {
 </script>
 
 <style>
-.landing-screen {
-  background-color: #121212;
-  color: #fff;
-  overflow-x: hidden;
-}
-
 .main-content {
   min-height: 100vh;
   display: flex;

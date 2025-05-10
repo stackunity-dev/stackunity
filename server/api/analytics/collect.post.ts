@@ -2,6 +2,87 @@ import { defineEventHandler, getQuery, readBody } from 'h3';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../db';
 
+// Fonction pour analyser l'userAgent et extraire les informations utiles
+function parseUserAgent(userAgent: string): { deviceType: string; browser: string; os: string } {
+  if (!userAgent) {
+    return { deviceType: 'desktop', browser: 'Chrome', os: 'Windows 10' };
+  }
+
+  const ua = userAgent.toLowerCase();
+
+  // Détection du type d'appareil
+  let deviceType = 'desktop';
+  if (
+    ua.includes('iphone') ||
+    ua.includes('ipod') ||
+    (ua.includes('android') && !ua.includes('tablet')) ||
+    ua.includes('mobile') ||
+    ua.includes('blackberry')
+  ) {
+    deviceType = 'mobile';
+  } else if (
+    ua.includes('ipad') ||
+    ua.includes('tablet') ||
+    (ua.includes('android') && ua.includes('tablet'))
+  ) {
+    deviceType = 'tablet';
+  }
+
+  // Détection du navigateur
+  let browser = 'Chrome';
+  if (ua.includes('firefox/')) {
+    browser = 'Firefox';
+  } else if (ua.includes('safari/') && !ua.includes('chrome/') && !ua.includes('edg/')) {
+    browser = 'Safari';
+  } else if (ua.includes('opr/') || ua.includes('opera/')) {
+    browser = 'Opera';
+  } else if (ua.includes('edg/')) {
+    browser = 'Edge';
+  } else if (ua.includes('chrome/')) {
+    browser = 'Chrome';
+  } else if (ua.includes('msie') || ua.includes('trident/')) {
+    browser = 'Internet Explorer';
+  }
+
+  // Détection du système d'exploitation
+  let os = 'Windows 10';
+  if (ua.includes('windows')) {
+    if (ua.includes('windows nt 11') || ua.includes('windows 11')) {
+      os = 'Windows 11';
+    } else if (ua.includes('windows nt 10')) {
+      os = 'Windows 10';
+    } else if (ua.includes('windows nt 6.3')) {
+      os = 'Windows 8.1';
+    } else if (ua.includes('windows nt 6.2')) {
+      os = 'Windows 8';
+    } else if (ua.includes('windows nt 6.1')) {
+      os = 'Windows 7';
+    } else {
+      os = 'Windows';
+    }
+  } else if (ua.includes('macintosh') || ua.includes('mac os x')) {
+    os = 'macOS';
+  } else if (ua.includes('linux')) {
+    if (ua.includes('android')) {
+      os = 'Android';
+
+      // On peut essayer d'extraire la version d'Android
+      const androidVersionMatch = ua.match(/android\s([0-9.]+)/);
+      if (androidVersionMatch && androidVersionMatch[1]) {
+        os = `Android ${androidVersionMatch[1]}`;
+      }
+    } else {
+      os = 'Linux';
+    }
+  } else if (ua.includes('iphone') || ua.includes('ipod')) {
+    os = 'iOS';
+  } else if (ua.includes('ipad')) {
+    os = 'iPadOS';
+  }
+
+  return { deviceType, browser, os };
+}
+
 export default defineEventHandler(async (event) => {
   try {
     // Ajouter un log pour vérifier si le handler est appelé
@@ -161,8 +242,17 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    // Si on a détecté un userAgent mais pas les autres infos précises, on les analyse
+    if (userAgent !== 'Non spécifié' && (deviceType === 'desktop' && browser === 'Chrome' && os === 'Windows 10')) {
+      console.log('Analyse de l\'userAgent pour détecter browser/OS:', userAgent);
+      const parsedUA = parseUserAgent(userAgent);
+      deviceType = parsedUA.deviceType;
+      browser = parsedUA.browser;
+      os = parsedUA.os;
+    }
+
     // Enregistrer les informations détectées pour le débogage
-    console.log('Informations détectées:', { deviceType, browser, os, userAgent });
+    console.log('Informations détectées après analyse:', { deviceType, browser, os, userAgent });
 
     // Si les informations du navigateur et de l'OS ne sont pas spécifiées mais que nous avons un userAgent,
     // nous pourrions implémenter une fonction pour les détecter à partir du userAgent côté serveur

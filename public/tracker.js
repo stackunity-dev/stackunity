@@ -80,100 +80,6 @@
         }, {});
       },
       
-      getDeviceType: function() {
-        try {
-          const ua = (navigator.userAgent || '').toLowerCase();
-          
-          // Simplification de la détection des appareils
-          if (ua.includes('ipad') || ua.includes('tablet')) {
-            return 'tablet';
-          }
-          
-          if (ua.includes('mobile') || ua.includes('android') && !ua.includes('tablet') || 
-              ua.includes('iphone') || ua.includes('ipod')) {
-            return 'mobile';
-          }
-          
-          // Si la taille d'écran est très petite, c'est probablement un mobile
-          const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 1024;
-          if (width < 768) {
-            return 'mobile';
-          }
-          
-          return 'desktop';
-        } catch (e) {
-          console.error('[StackUnity Tracker] Erreur lors de la détection du type d\'appareil:', e);
-          return 'desktop';
-        }
-      },
-      
-      getBrowserInfo: function() {
-        try {
-          const ua = (navigator.userAgent || '').toLowerCase();
-          console.log('[StackUnity Tracker] User Agent:', ua);
-          
-          // Détection simplifiée des navigateurs en utilisant .includes()
-          if (ua.includes('edg/')) {
-            return 'Edge';
-          } else if (ua.includes('firefox/')) {
-            return 'Firefox';  
-          } else if (ua.includes('opr/') || ua.includes('opera/')) {
-            return 'Opera';
-          } else if (ua.includes('chrome/') && !ua.includes('chromium/')) {
-            return 'Chrome';
-          } else if (ua.includes('safari/') && !ua.includes('chrome/') && !ua.includes('edg/')) {
-            return 'Safari';
-          } else if (ua.includes('msie') || ua.includes('trident/')) {
-            return 'Internet Explorer';
-          } else if (ua.includes('brave')) {
-            return 'Brave';
-          }
-          
-          // Navigateur par défaut si aucune correspondance
-          return 'Chrome';
-        } catch (e) {
-          console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du navigateur:', e);
-          return 'Chrome';
-        }
-      },
-      
-      getOSInfo: function() {
-        try {
-          const ua = (navigator.userAgent || '').toLowerCase();
-          
-          // Détection simplifiée des OS en utilisant .includes()
-          if (ua.includes('windows nt 10.0')) {
-            return 'Windows 10';
-          } else if (ua.includes('windows nt 11.0') || ua.includes('windows 11')) {
-            return 'Windows 11';
-          } else if (ua.includes('windows nt 6.3')) {
-            return 'Windows 8.1';
-          } else if (ua.includes('windows nt 6.2')) {
-            return 'Windows 8';
-          } else if (ua.includes('windows nt 6.1')) {
-            return 'Windows 7';
-          } else if (ua.includes('windows')) {
-            return 'Windows';
-          } else if (ua.includes('android')) {
-            return 'Android';
-          } else if (ua.includes('iphone')) {
-            return 'iOS';
-          } else if (ua.includes('ipad')) {
-            return 'iPadOS';
-          } else if (ua.includes('mac os x') || ua.includes('macintosh')) {
-            return 'macOS';
-          } else if (ua.includes('linux')) {
-            return 'Linux';
-          }
-          
-          // OS par défaut si aucune correspondance
-          return 'Unknown';
-        } catch (e) {
-          console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du système d\'exploitation:', e);
-          return 'Unknown';
-        }
-      },
-      
       getReferrer: function() {
         console.log('[StackUnity Tracker] Récupération du référent brut:', document.referrer || 'Aucun référent');
         return document.referrer || null;
@@ -1160,9 +1066,6 @@
         state.lastScrollTimestamp = new Date().getTime();
         
         // Récupération des données de base
-        const deviceType = utils.getDeviceType() || 'unknown';
-        const browser = utils.getBrowserInfo() || 'Unknown 0.0';
-        const os = utils.getOSInfo() || 'Unknown';
         const referrer = utils.getReferrer() || '';
         const { source: referrerSource, name: referrerName } = utils.getReferrerSource();
         const utmParams = utils.getUTMParams();
@@ -1219,9 +1122,6 @@
           referrer: referrer,
           referrerSource: referrerSource,
           referrerName: referrerName,
-          deviceType: deviceType,
-          browser: browser,
-          os: os,
           userAgent: navigator.userAgent || 'unknown',
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
@@ -1586,7 +1486,7 @@
           message: e.message || 'Unknown error',
           stackTrace: e.error && e.error.stack ? e.error.stack : null,
           timestamp: new Date().toISOString(),
-          browserInfo: utils.getBrowserInfo() + ' ' + utils.getOSInfo()
+          browserInfo: navigator.userAgent || 'unknown'
         };
         
         state.buffer.push(error);
@@ -1600,7 +1500,7 @@
           message: ((e.reason && e.reason.message) || e.reason || 'Promise rejected') + ' (unhandled promise rejection)',
           stackTrace: e.reason && e.reason.stack ? e.reason.stack : null,
           timestamp: new Date().toISOString(),
-          browserInfo: utils.getBrowserInfo() + ' ' + utils.getOSInfo()
+          browserInfo: navigator.userAgent || 'unknown'
         };
         
         state.buffer.push(error);
@@ -1805,11 +1705,6 @@
         state.scrollDepth = 0;
         
         // Récupération des données de base
-        const deviceType = utils.getDeviceType();
-        const browser = utils.getBrowserInfo();
-        const os = utils.getOSInfo();
-        
-        // Référent = page précédente pour navigation interne
         const referrer = document.URL; 
         const referrerSource = 'internal';
         const referrerName = 'Internal Navigation';
@@ -1833,9 +1728,6 @@
           referrer: referrer,
           referrerSource: referrerSource,
           referrerName: referrerName,
-          deviceType: deviceType,
-          browser: browser,
-          os: os,
           userAgent: navigator.userAgent || 'unknown',
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
@@ -2165,6 +2057,41 @@
             state.buffer = [...eventsToSend, ...state.buffer];
           });
         }
+      },
+      setupSession: function() {
+        // Détection de la session préexistante
+        const storedSessionId = sessionStorage.getItem('stackunity_session_id') || '';
+        if (storedSessionId) {
+          state.sessionId = storedSessionId;
+          return;
+        }
+        
+        // Création d'une nouvelle session
+        state.sessionId = utils.generateUUID();
+        sessionStorage.setItem('stackunity_session_id', state.sessionId);
+        
+        // Récupérer le référent et les UTM params
+        const referrer = utils.getReferrer() || '';
+        const { source: referrerSource, name: referrerName } = utils.getReferrerSource();
+        const landingPage = window.location.href;
+        const utmParams = utils.getUTMParams();
+        
+        // Préparer l'événement de session
+        const session = {
+          type: 'session',
+          id: utils.generateUUID(),
+          sessionId: state.sessionId,
+          visitorId: state.visitorId,
+          websiteId: state.websiteId,
+          startTime: new Date().toISOString(),
+          userAgent: navigator.userAgent || 'unknown',
+          referrer: referrer,
+          referrerSource: referrerSource,
+          referrerName: referrerName,
+          landingPage: landingPage
+        };
+        
+        state.buffer.push(session);
       }
     };
 
