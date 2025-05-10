@@ -1,5 +1,5 @@
 .landing-screen {
-  min-height: 100vh;
+  min-height: 100%;
   background-color: rgb(var(--v-theme-surface));
 }
 
@@ -502,5 +502,18 @@ footer h4::after {
 
 .border-tertiary {
   border-top: 3px solid rgb(var(--v-theme-tertiary));
+}
+
+@media (max-width: 600px) {
+  .landing-screen {
+    height: auto;
+    min-height: initial;
+    overflow-y: visible;
+  }
+  
+  .main-content {
+    height: auto;
+    min-height: initial;
+  }
 }
 

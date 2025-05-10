@@ -1,12 +1,6 @@
 <template>
   <NuxtLayout>
-    <v-app id="app" class="app-container">
-      <div v-if="isReady">
-        <NuxtPage />
-      </div>
-      <div v-else class="app-loading">
-      </div>
-    </v-app>
+    <NuxtPage />
   </NuxtLayout>
 </template>
 
