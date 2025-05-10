@@ -243,7 +243,10 @@ export default defineEventHandler(async (event) => {
         CASE 
           WHEN referrer IS NULL OR referrer = '' THEN 'direct_links'
           WHEN referrer LIKE '%google%' THEN 'organic_search'
-          WHEN referrer LIKE '%facebook%' OR referrer LIKE '%twitter%' OR referrer LIKE '%instagram%' OR referrer LIKE '%linkedin%' THEN 'social_media'
+          WHEN referrer LIKE '%facebook%' OR referrer LIKE '%fb.com%' THEN 'social_media_facebook'
+          WHEN referrer LIKE '%twitter%' OR referrer LIKE '%t.co%' THEN 'social_media_twitter'
+          WHEN referrer LIKE '%instagram%' THEN 'social_media_instagram'
+          WHEN referrer LIKE '%linkedin%' OR referrer LIKE '%lnkd.in%' OR referrer LIKE '%licdn.com%' THEN 'social_media_linkedin'
           ELSE 'referrers'
         END AS source,
         COUNT(DISTINCT visitor_id) AS visitors,
@@ -256,7 +259,10 @@ export default defineEventHandler(async (event) => {
                CASE 
                  WHEN referrer IS NULL OR referrer = '' THEN 'direct_links'
                  WHEN referrer LIKE '%google%' THEN 'organic_search'
-                 WHEN referrer LIKE '%facebook%' OR referrer LIKE '%twitter%' OR referrer LIKE '%instagram%' OR referrer LIKE '%linkedin%' THEN 'social_media'
+                 WHEN referrer LIKE '%facebook%' OR referrer LIKE '%fb.com%' THEN 'social_media_facebook'
+                 WHEN referrer LIKE '%twitter%' OR referrer LIKE '%t.co%' THEN 'social_media_twitter'
+                 WHEN referrer LIKE '%instagram%' THEN 'social_media_instagram'
+                 WHEN referrer LIKE '%linkedin%' OR referrer LIKE '%lnkd.in%' OR referrer LIKE '%licdn.com%' THEN 'social_media_linkedin'
                  ELSE 'referrers'
                END
             ) AS source_counts)
@@ -372,6 +378,50 @@ export default defineEventHandler(async (event) => {
       : [dbWebsiteId];
 
     const [errorEventsRows] = await pool.query<ErrorRow[]>(errorEventsQuery, errorEventsParams);
+
+    // Ajout d'une requête pour les référents détaillés
+    const detailedReferrersQuery = `
+      SELECT 
+        CASE
+          WHEN referrer_source = 'linkedin' THEN 'social_media_linkedin'
+          WHEN referrer_source = 'facebook' THEN 'social_media_facebook'
+          WHEN referrer_source = 'twitter' THEN 'social_media_twitter'
+          WHEN referrer_source = 'instagram' THEN 'social_media_instagram'
+          WHEN referrer_source = 'google' THEN 'organic_search'
+          WHEN referrer_source = 'direct' THEN 'direct_links'
+          ELSE 'referrers'
+        END AS source,
+        referrer_name AS name,
+        referrer AS url,
+        COUNT(*) AS visits,
+        MAX(enter_time) AS lastVisit
+      FROM analytics_pageviews
+      WHERE website_id = ? 
+        AND referrer IS NOT NULL 
+        AND referrer != '' 
+        ${startDate ? 'AND enter_time >= ?' : ''}
+      GROUP BY source, name, url
+      ORDER BY visits DESC, lastVisit DESC
+      LIMIT 100
+    `;
+
+    const detailedReferrersParams = startDate
+      ? [dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' ')]
+      : [dbWebsiteId];
+
+    const [detailedReferrersRows] = await pool.query(
+      detailedReferrersQuery,
+      detailedReferrersParams
+    );
+
+    // Traitement des résultats des référents
+    const detailedReferrers = Array.isArray(detailedReferrersRows) ? detailedReferrersRows.map(row => ({
+      source: row.source || 'referrers',
+      name: row.name || 'Référent inconnu',
+      url: row.url || '',
+      visits: row.visits || 0,
+      lastVisit: row.lastVisit || new Date().toISOString()
+    })) : [];
 
     const page = parseInt(query.page as string) || 1;
     const limit = parseInt(query.limit as string) || 500;
@@ -588,7 +638,8 @@ export default defineEventHandler(async (event) => {
           limit: limit,
           page: page,
           hasMore: userInteractions.length === limit
-        }
+        },
+        detailedReferrers
       }
     };
   } catch (error) {

@@ -58,13 +58,14 @@
                   </div>
                   <div class="score-gauge d-flex flex-column align-center justify-center">
 
-                    <v-progress-circular :model-value="currentPageData.overallScore"
-                      :color="getScoreColor(currentPageData.overallScore)" :rotate="-90" :size="120" :width="12"
-                      class="gauge-progress mb-2" :key="`gauge-${currentPageData.pageUrl}`">{{
-                        formatScore(currentPageData.overallScore) }}</v-progress-circular>
+                    <v-progress-circular :model-value="Number(currentPageData.overallScore)"
+                      :color="getScoreColor(Number(currentPageData.overallScore))" :rotate="-90" :size="120" :width="12"
+                      class="gauge-progress mb-2" :key="`gauge-${currentPageData.pageUrl}-${Date.now()}`">
+                      {{ formatScore(Number(currentPageData.overallScore)) }}
+                    </v-progress-circular>
                     <div class="gauge-label-wrapper mt-2">
-                      <span class="gauge-label" :class="`text-${getScoreColor(currentPageData.overallScore)}`">
-                        {{ getQualityLabel(currentPageData.overallScore) }}
+                      <span class="gauge-label" :class="`text-${getScoreColor(Number(currentPageData.overallScore))}`">
+                        {{ getQualityLabel(Number(currentPageData.overallScore)) }}
                       </span>
                     </div>
                   </div>
@@ -73,15 +74,15 @@
             </v-card>
 
             <v-row class="mt-4">
-              <v-col v-for="(value, key) in currentPageData.metrics" :key="`metric-${key}-${currentPageData.pageUrl}`"
-                cols="6" sm="3">
-                <v-card class="metric-card h-100" :color="getScoreColor(value)" variant="outlined">
+              <v-col v-for="(value, key) in currentPageData.metrics"
+                :key="`metric-${key}-${currentPageData.pageUrl}-${Date.now()}`" cols="6" sm="3">
+                <v-card class="metric-card h-100" :color="getScoreColor(Number(value))" variant="outlined">
                   <v-card-text class="pa-3">
                     <div class="text-overline text-medium-emphasis text-center">{{ getMetricLabel(key) }}</div>
                     <div class="d-flex flex-column align-center mt-1">
-                      <div class="text-h5 font-weight-bold">{{ formatScore(value) }}</div>
-                      <v-progress-linear :model-value="value" :color="getScoreColor(value)" height="4" rounded
-                        class="mt-1" style="width: 80%"></v-progress-linear>
+                      <div class="text-h5 font-weight-bold">{{ formatScore(Number(value)) }}</div>
+                      <v-progress-linear :model-value="Number(value)" :color="getScoreColor(Number(value))" height="4"
+                        rounded class="mt-1" style="width: 80%"></v-progress-linear>
                       <div class="text-caption mt-1">{{ getMetricDescription(key) }}</div>
                     </div>
                   </v-card-text>
@@ -395,10 +396,17 @@ function getFactorColor(key: string, value: number): string {
 }
 
 function formatScore(score: number): string {
+  // S'assurer que score est un nombre
   if (score === null || score === undefined || !isFinite(score)) {
     score = 50;
   }
-  const roundedScore = Math.max(1, Math.round(score));
+
+  // Convertir explicitement en nombre et arrondir
+  const numericScore = Number(score);
+  const roundedScore = Math.max(1, Math.round(numericScore));
+
+  console.log('Formatting score:', score, 'as numeric:', numericScore, 'rounded:', roundedScore);
+
   return roundedScore.toString() + '%';
 }
 
@@ -519,12 +527,19 @@ async function fetchEngagementData() {
         console.log('Processing page data:', item.pageUrl, 'score:', item.overallScore);
 
         const fixedItem = { ...item };
-        if (fixedItem.overallScore === null || !isFinite(fixedItem.overallScore)) {
+
+        // S'assurer que le score global est un nombre valide
+        fixedItem.overallScore = Number(fixedItem.overallScore);
+        if (isNaN(fixedItem.overallScore) || !isFinite(fixedItem.overallScore)) {
+          console.log('Correcting invalid overall score', fixedItem.overallScore, 'to default 50');
           fixedItem.overallScore = 50;
         }
 
+        // Traiter tous les métriques pour s'assurer qu'ils sont numériques
         for (const key in fixedItem.metrics) {
-          if (fixedItem.metrics[key] === null || !isFinite(fixedItem.metrics[key])) {
+          fixedItem.metrics[key] = Number(fixedItem.metrics[key]);
+          if (isNaN(fixedItem.metrics[key]) || !isFinite(fixedItem.metrics[key])) {
+            console.log(`Correcting invalid metric ${key}:`, fixedItem.metrics[key]);
             switch (key) {
               case 'scrollDepthScore': fixedItem.metrics[key] = 40; break;
               case 'interactionDensity': fixedItem.metrics[key] = 35; break;
@@ -535,8 +550,11 @@ async function fetchEngagementData() {
           }
         }
 
+        // Traiter tous les facteurs pour s'assurer qu'ils sont numériques
         for (const key in fixedItem.factors) {
-          if (fixedItem.factors[key] === null || !isFinite(fixedItem.factors[key]) || fixedItem.factors[key] > 1000000) {
+          fixedItem.factors[key] = Number(fixedItem.factors[key]);
+          if (isNaN(fixedItem.factors[key]) || !isFinite(fixedItem.factors[key]) || fixedItem.factors[key] > 1000000) {
+            console.log(`Correcting invalid factor ${key}:`, fixedItem.factors[key]);
             switch (key) {
               case 'averageScrollSpeed': fixedItem.factors[key] = 42; break;
               case 'scrollJitter': fixedItem.factors[key] = 8; break;
@@ -550,6 +568,7 @@ async function fetchEngagementData() {
           }
         }
 
+        console.log('Fixed item for', item.pageUrl, 'score now:', fixedItem.overallScore);
         return fixedItem;
       });
 
@@ -560,6 +579,9 @@ async function fetchEngagementData() {
           value: engagementData.value[0].pageUrl
         };
         console.log('Selected page after data update:', selectedPage.value);
+
+        // Forcer un rafraîchissement immédiatement après
+        setTimeout(forceRefresh, 100);
       }
     } else {
       console.error('Failed to fetch engagement data:', result.message);
@@ -592,6 +614,8 @@ watch(() => engagementData.value, (newData) => {
       value: newData[0].pageUrl
     };
     console.log('Page selection updated after data change:', selectedPage.value);
+    // Forcer un refresh après un court délai
+    setTimeout(forceRefresh, 100);
   }
 }, { deep: true });
 
@@ -599,18 +623,31 @@ watch(() => engagementData.value, (newData) => {
 watch(() => selectedPage.value, (newPage) => {
   if (newPage) {
     console.log('Page selection changed to:', newPage.value);
-
-    // Forcer une mise à jour des indicateurs visuels
-    if (document.querySelector('.score-gauge')) {
-      setTimeout(() => {
-        document.querySelector('.score-gauge')?.classList.add('animated');
-        setTimeout(() => {
-          document.querySelector('.score-gauge')?.classList.remove('animated');
-        }, 500);
-      }, 10);
-    }
+    // Forcer un refresh après un court délai
+    setTimeout(forceRefresh, 100);
   }
 });
+
+// Fonction pour forcer un rafraîchissement des composants visuels
+function forceRefresh() {
+  console.log('Forcing refresh of gauge with value:',
+    currentPageData.value ? currentPageData.value.overallScore : 'no data');
+
+  // Forcer une mise à jour des indicateurs visuels
+  if (document.querySelector('.score-gauge')) {
+    document.querySelector('.score-gauge')?.classList.add('animated');
+    setTimeout(() => {
+      document.querySelector('.score-gauge')?.classList.remove('animated');
+    }, 500);
+  }
+
+  // Forcer un refresh du DOM en simulant une modification de données
+  const tempVal = selectedPage.value;
+  selectedPage.value = null;
+  setTimeout(() => {
+    selectedPage.value = tempVal;
+  }, 10);
+}
 
 onMounted(() => {
   if (props.websiteId) {

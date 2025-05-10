@@ -295,6 +295,9 @@ export default defineEventHandler(async (event) => {
         const browser = event.browser || 'Chrome 100.0';
         const os = event.os || 'Windows 10';
         const pageUrl = event.pageUrl || 'https://stackunity.tech/fallback';
+        const referrer = event.referrer || null;
+        const referrerSource = event.referrerSource || 'direct';
+        const referrerName = event.referrerName || 'Direct';
 
         // Valider l'URL avant insertion
         let validatedUrl = pageUrl;
@@ -308,6 +311,31 @@ export default defineEventHandler(async (event) => {
         } catch (e) {
           console.error('URL invalide, utilisation de l\'URL par défaut:', e);
           validatedUrl = 'https://stackunity.tech/fallback';
+        }
+
+        // Traitement spécial pour les référents LinkedIn
+        let processedReferrerSource = referrerSource;
+        let processedReferrerName = referrerName;
+        let processedReferrer = referrer;
+
+        // S'assurer que le référent LinkedIn est correctement identifié
+        if (referrer && typeof referrer === 'string') {
+          try {
+            const referrerLower = referrer.toLowerCase();
+            if (referrerLower.includes('linkedin') ||
+              referrerLower.includes('lnkd.in') ||
+              referrerLower.endsWith('licdn.com')) {
+              processedReferrerSource = 'linkedin';
+              processedReferrerName = 'LinkedIn';
+            }
+            // Journaliser pour le débogage
+            console.log('Traitement référent:', {
+              original: { referrer, referrerSource, referrerName },
+              processed: { processedReferrer, processedReferrerSource, processedReferrerName }
+            });
+          } catch (e) {
+            console.error('Erreur lors du traitement du référent:', e);
+          }
         }
 
         await pool.query(
@@ -326,9 +354,9 @@ export default defineEventHandler(async (event) => {
             event.utm_source || null,
             event.utm_medium || null,
             event.utm_campaign || null,
-            event.referrer || null,
-            event.referrerSource || 'direct',
-            event.referrerName || 'Direct'
+            processedReferrer,
+            processedReferrerSource,
+            processedReferrerName
           ]
         );
         console.log('Page vue enregistrée:', event.id, validatedUrl);

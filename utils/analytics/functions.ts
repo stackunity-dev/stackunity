@@ -9,6 +9,14 @@ function getSourceColor(source: string): string {
       return 'success';
     case 'social_media':
       return 'info';
+    case 'social_media_facebook':
+      return 'blue';
+    case 'social_media_twitter':
+      return 'light-blue';
+    case 'social_media_instagram':
+      return 'purple';
+    case 'social_media_linkedin':
+      return 'indigo';
     case 'direct_links':
       return 'primary';
     case 'referrers':
@@ -24,6 +32,14 @@ function getSourceIcon(source: string): string {
       return 'mdi-magnify';
     case 'social_media':
       return 'mdi-account-group';
+    case 'social_media_facebook':
+      return 'mdi-facebook';
+    case 'social_media_twitter':
+      return 'mdi-twitter';
+    case 'social_media_instagram':
+      return 'mdi-instagram';
+    case 'social_media_linkedin':
+      return 'mdi-linkedin';
     case 'direct_links':
       return 'mdi-link-variant';
     case 'referrers':
@@ -39,6 +55,14 @@ function getSourceLabel(source: string): string {
       return t.analytics.organicSearch;
     case 'social_media':
       return t.analytics.socialMedia;
+    case 'social_media_facebook':
+      return 'Facebook';
+    case 'social_media_twitter':
+      return 'Twitter';
+    case 'social_media_instagram':
+      return 'Instagram';
+    case 'social_media_linkedin':
+      return 'LinkedIn';
     case 'direct_links':
       return t.analytics.directLinks;
     case 'referrers':

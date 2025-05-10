@@ -229,7 +229,12 @@
           const url = new URL(referrer);
           const hostname = url.hostname.toLowerCase();
           
-          if (hostname.includes('linkedin.com') || hostname.includes('lnkd.in')) {
+          // Amélioration de la détection LinkedIn avec plus de patterns
+          if (hostname.includes('linkedin.com') || 
+              hostname.includes('lnkd.in') || 
+              hostname.includes('linkedin') || 
+              hostname.endsWith('licdn.com') ||
+              hostname.includes('linked.in')) {
             return { source: 'linkedin', name: 'LinkedIn' };
           } else if (hostname.includes('facebook.com') || hostname.includes('fb.com')) {
             return { source: 'facebook', name: 'Facebook' };
@@ -251,8 +256,12 @@
             return { source: 'duckduckgo', name: 'DuckDuckGo' };
           }
           
+          // Enregistrer la valeur brute pour le débogage
+          console.log('[StackUnity Tracker] Référent détecté:', hostname);
+          
           return { source: 'referral', name: hostname };
         } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de l\'analyse du référent:', e);
           return { source: 'unknown', name: 'Unknown' };
         }
       },

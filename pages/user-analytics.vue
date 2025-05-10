@@ -1612,8 +1612,41 @@ function updateAnalyticsData(data: any) {
   // S'assurer que toutes les propriétés existent et traiter les pages
   let processedPages = Array.isArray(data.topPages) ? data.topPages : [];
 
-  // Nettoyer et formater les données de pages
-  processedPages = processedPages.map(page => {
+  // Fonction pour normaliser une URL en supprimant les préfixes de langue
+  const normalizeUrl = (urlStr: string): { url: string, normalizedUrl: string, langPrefix: string | null } => {
+    if (!urlStr) return { url: urlStr, normalizedUrl: urlStr, langPrefix: null };
+    try {
+      // Si c'est une URL complète, extraire le chemin
+      let pathname = urlStr;
+      if (urlStr.startsWith('http')) {
+        const urlObj = new URL(urlStr);
+        pathname = urlObj.pathname;
+      }
+
+      // Vérifier les préfixes de langue
+      const langMatch = pathname.match(/^\/(fr|en)(\/|$)/);
+      if (langMatch) {
+        const langPrefix = langMatch[1];
+        // Normaliser en retirant le préfixe de langue
+        const normalizedPath = pathname.replace(/^\/(fr|en)/, '');
+        return {
+          url: urlStr,
+          normalizedUrl: normalizedPath || '/',
+          langPrefix
+        };
+      }
+
+      return { url: urlStr, normalizedUrl: pathname, langPrefix: null };
+    } catch (error) {
+      console.error('Erreur lors de la normalisation de l\'URL:', error);
+      return { url: urlStr, normalizedUrl: urlStr, langPrefix: null };
+    }
+  };
+
+  // Normaliser et regrouper les pages avec des préfixes de langue
+  const pageMap = new Map<string, PageView>();
+
+  processedPages.forEach(page => {
     // S'assurer que toutes les propriétés nécessaires sont présentes
     const cleanedPage = {
       page: page.page || 'Unknown page',
@@ -1623,25 +1656,49 @@ function updateAnalyticsData(data: any) {
       cleanPath: page.cleanPath || '',
       isHome: page.isHome === true,
       avgTimeSeconds: typeof page.avgTimeSeconds === 'number' ? page.avgTimeSeconds : 0,
-      hasDuration: page.hasDuration === true
+      hasDuration: page.hasDuration === true,
+      langPrefix: null as string | null
     };
 
     // Si cleanPath n'est pas fourni, essayer de l'extraire
     if (!cleanedPage.cleanPath && cleanedPage.page.startsWith('http')) {
       try {
-        const url = new URL(cleanedPage.page);
-        cleanedPage.cleanPath = url.pathname || '/';
+        const normalized = normalizeUrl(cleanedPage.page);
+        cleanedPage.cleanPath = normalized.normalizedUrl || '/';
         cleanedPage.isHome = cleanedPage.cleanPath === '/' || cleanedPage.cleanPath === '';
-      } catch (e) {
+        cleanedPage.langPrefix = normalized.langPrefix;
+      } catch (error) {
         // Ignorer les erreurs
+        console.error('Erreur lors du traitement du chemin:', error);
       }
     }
 
-    return cleanedPage;
-  }).filter(page => page.page && page.page !== 'null' && page.page !== 'undefined');
+    // Utiliser le chemin normalisé comme clé pour regrouper
+    const normalizedPath = cleanedPage.cleanPath || cleanedPage.page;
+
+    if (pageMap.has(normalizedPath)) {
+      // Page existe déjà, fusionner les vues
+      const existingPage = pageMap.get(normalizedPath)!;
+      existingPage.views += cleanedPage.views;
+
+      // Mettre à jour le temps moyen si des données sont disponibles
+      if (cleanedPage.hasDuration && existingPage.hasDuration) {
+        const totalSeconds = (existingPage.avgTimeSeconds || 0) + (cleanedPage.avgTimeSeconds || 0);
+        existingPage.avgTimeSeconds = totalSeconds / 2;
+        existingPage.avgTime = formatDuration(existingPage.avgTimeSeconds);
+      }
+    } else {
+      // Nouvelle page, l'ajouter à la map
+      pageMap.set(normalizedPath, cleanedPage);
+    }
+  });
+
+  // Convertir la map en tableau
+  const normalizedPages = Array.from(pageMap.values())
+    .filter(page => page.page && page.page !== 'null' && page.page !== 'undefined');
 
   // Assigner les pages traitées
-  pageViews.value = processedPages;
+  pageViews.value = normalizedPages;
 
   // Traiter les autres types de données
   trafficSources.value = Array.isArray(data.trafficSources) ? data.trafficSources.map(source => ({
@@ -1696,7 +1753,7 @@ function updateAnalyticsData(data: any) {
   filteredPages.value = [...pageViews.value];
 
   // Log de débogage pour vérifier les données de pages
-  console.log('Pages traitées:', processedPages);
+  console.log('Pages traitées et normalisées:', normalizedPages);
 
   checkDataLimits();
 }

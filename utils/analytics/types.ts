@@ -193,6 +193,9 @@ export interface DetailedReferrer {
   url: string;
   visits: number;
   lastVisit: string;
+  sourceType?: 'social' | 'search' | 'direct' | 'referral';
+  icon?: string;
+  color?: string;
 }
 
 export interface PurgeTranslations {
