@@ -178,7 +178,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useTranslations } from '../../languages';
 import { EngagementMetrics } from '../../utils/analytics/types';
 
@@ -210,8 +210,32 @@ const pageOptions = computed(() => {
 const currentPageData = computed(() => {
   if (!selectedPage.value || engagementData.value.length === 0) return null;
 
-  // Rechercher explicitement par l'URL exacte
   const pageData = engagementData.value.find(data => data.pageUrl === selectedPage.value?.value);
+
+  if (!pageData && selectedPage.value?.value) {
+    const normalizeUrl = (url) => {
+      try {
+        let pathname = url;
+        if (url.startsWith('http')) {
+          const urlObj = new URL(url);
+          pathname = urlObj.pathname;
+        }
+
+        return pathname.replace(/^\/(fr|en)/, '');
+      } catch (e) {
+        return url;
+      }
+    };
+
+    const normalizedSelected = normalizeUrl(selectedPage.value.value);
+    const matchingPage = engagementData.value.find(data =>
+      normalizeUrl(data.pageUrl) === normalizedSelected);
+
+    if (matchingPage) {
+      console.log('Found matching page after URL normalization:', matchingPage.pageUrl);
+      return matchingPage;
+    }
+  }
 
   console.log('Current page data computed:',
     pageData ?
@@ -641,12 +665,18 @@ function forceRefresh() {
     }, 500);
   }
 
-  // Forcer un refresh du DOM en simulant une modification de données
-  const tempVal = selectedPage.value;
-  selectedPage.value = null;
-  setTimeout(() => {
-    selectedPage.value = tempVal;
-  }, 10);
+  // Forcer un refresh du DOM en simulant une modification de données - MÉTHODE AMÉLIORÉE
+  if (selectedPage.value) {
+    const currentValue = selectedPage.value.value;
+    const currentLabel = selectedPage.value.label;
+    selectedPage.value = null;
+    nextTick(() => {
+      selectedPage.value = {
+        value: currentValue,
+        label: currentLabel
+      };
+    });
+  }
 }
 
 onMounted(() => {

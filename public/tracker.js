@@ -218,47 +218,70 @@
       },
       
       getReferrer: function() {
+        console.log('[StackUnity Tracker] Récupération du référent brut:', document.referrer || 'Aucun référent');
         return document.referrer || null;
       },
       
       getReferrerSource: function() {
         const referrer = document.referrer;
+        console.log('[StackUnity Tracker] Analyse du référent:', referrer || 'Direct');
+        
         if (!referrer) return { source: 'direct', name: 'Direct' };
         
         try {
           const url = new URL(referrer);
           const hostname = url.hostname.toLowerCase();
+          console.log('[StackUnity Tracker] Hostname référent:', hostname);
           
-          // Amélioration de la détection LinkedIn avec plus de patterns
-          if (hostname.includes('linkedin.com') || 
-              hostname.includes('lnkd.in') || 
-              hostname.includes('linkedin') || 
-              hostname.endsWith('licdn.com') ||
-              hostname.includes('linked.in')) {
+          // Amélioration de la détection des domaines de réseaux sociaux
+          const linkedinDomains = ['linkedin.com', 'lnkd.in', 'licdn.com', 'linked.in'];
+          if (linkedinDomains.some(domain => hostname.includes(domain))) {
+            console.log('[StackUnity Tracker] Référent LinkedIn détecté:', hostname);
             return { source: 'linkedin', name: 'LinkedIn' };
-          } else if (hostname.includes('facebook.com') || hostname.includes('fb.com')) {
+          }
+          
+          if (hostname.includes('facebook.com') || hostname.includes('fb.com')) {
+            console.log('[StackUnity Tracker] Référent Facebook détecté:', hostname);
             return { source: 'facebook', name: 'Facebook' };
-          } else if (hostname.includes('twitter.com') || hostname.includes('t.co')) {
+          }
+          
+          if (hostname.includes('twitter.com') || hostname.includes('t.co') || hostname.includes('x.com')) {
+            console.log('[StackUnity Tracker] Référent Twitter détecté:', hostname);
             return { source: 'twitter', name: 'Twitter' };
-          } else if (hostname.includes('instagram.com')) {
+          }
+          
+          if (hostname.includes('instagram.com')) {
+            console.log('[StackUnity Tracker] Référent Instagram détecté:', hostname);
             return { source: 'instagram', name: 'Instagram' };
-          } else if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+          }
+          
+          if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+            console.log('[StackUnity Tracker] Référent YouTube détecté:', hostname);
             return { source: 'youtube', name: 'YouTube' };
           }
           
           if (hostname.includes('google.')) {
+            console.log('[StackUnity Tracker] Référent Google détecté:', hostname);
             return { source: 'google', name: 'Google' };
-          } else if (hostname.includes('bing.com')) {
+          }
+          
+          if (hostname.includes('bing.com')) {
+            console.log('[StackUnity Tracker] Référent Bing détecté:', hostname);
             return { source: 'bing', name: 'Bing' };
-          } else if (hostname.includes('yahoo.com')) {
+          }
+          
+          if (hostname.includes('yahoo.com')) {
+            console.log('[StackUnity Tracker] Référent Yahoo détecté:', hostname);
             return { source: 'yahoo', name: 'Yahoo' };
-          } else if (hostname.includes('duckduckgo.com')) {
+          }
+          
+          if (hostname.includes('duckduckgo.com')) {
+            console.log('[StackUnity Tracker] Référent DuckDuckGo détecté:', hostname);
             return { source: 'duckduckgo', name: 'DuckDuckGo' };
           }
           
-          // Enregistrer la valeur brute pour le débogage
-          console.log('[StackUnity Tracker] Référent détecté:', hostname);
-          
+          // Pour tout autre référent, l'enregistrer comme référent externe
+          console.log('[StackUnity Tracker] Référent externe détecté:', hostname);
           return { source: 'referral', name: hostname };
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de l\'analyse du référent:', e);
@@ -2113,9 +2136,6 @@
           events: eventsToSend
         };
         
-        const pageViewEvents = eventsToSend.filter(e => e.type === 'pageView');
-
-        
         if (isBeforeUnload) {
           if (navigator.sendBeacon) {
             const blob = new Blob([JSON.stringify(dataToSend)], { type: 'application/json' });
@@ -2141,7 +2161,6 @@
           }).then(response => {
             return response.ok ? response.json() : Promise.reject('Erreur serveur');
           }).then(result => {
-            console.log('[StackUnity Tracker] Données traitées:', result);
           }).catch(error => {
             console.error('[StackUnity Tracker] Erreur lors de l\'envoi des événements:', error);
             state.buffer = [...eventsToSend, ...state.buffer];

@@ -322,12 +322,19 @@ export default defineEventHandler(async (event) => {
         if (referrer && typeof referrer === 'string') {
           try {
             const referrerLower = referrer.toLowerCase();
-            if (referrerLower.includes('linkedin') ||
-              referrerLower.includes('lnkd.in') ||
-              referrerLower.endsWith('licdn.com')) {
+            // Détection améliorée de LinkedIn
+            const linkedinDomains = ['linkedin.com', 'lnkd.in', 'licdn.com', 'linked.in'];
+            const isLinkedIn = linkedinDomains.some(domain => referrerLower.includes(domain));
+
+            if (isLinkedIn) {
               processedReferrerSource = 'linkedin';
               processedReferrerName = 'LinkedIn';
+              console.log('Référent LinkedIn détecté et traité:', {
+                original: referrer,
+                processed: 'LinkedIn'
+              });
             }
+
             // Journaliser pour le débogage
             console.log('Traitement référent:', {
               original: { referrer, referrerSource, referrerName },

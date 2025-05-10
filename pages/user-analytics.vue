@@ -1643,6 +1643,22 @@ function updateAnalyticsData(data: any) {
     }
   };
 
+  const getNormalizedKey = (url: string): string => {
+    try {
+      let normalizedUrl = url;
+      if (url.startsWith('http')) {
+        const urlObj = new URL(url);
+        normalizedUrl = 'http://' + urlObj.host + urlObj.pathname;
+      }
+
+      const { normalizedUrl: withoutLangPrefix } = normalizeUrl(normalizedUrl);
+      return withoutLangPrefix;
+    } catch (e) {
+      console.error('Erreur lors de la normalisation de la clé d\'URL:', e);
+      return url;
+    }
+  };
+
   // Normaliser et regrouper les pages avec des préfixes de langue
   const pageMap = new Map<string, PageView>();
 
@@ -1674,7 +1690,7 @@ function updateAnalyticsData(data: any) {
     }
 
     // Utiliser le chemin normalisé comme clé pour regrouper
-    const normalizedPath = cleanedPage.cleanPath || cleanedPage.page;
+    const normalizedPath = getNormalizedKey(cleanedPage.page);
 
     if (pageMap.has(normalizedPath)) {
       // Page existe déjà, fusionner les vues

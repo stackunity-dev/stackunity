@@ -237,6 +237,23 @@ export default defineEventHandler(async (event) => {
       raw_avg_time: row.raw_avg_time
     }))));
 
+    // Fonction pour normaliser une URL en supprimant les préfixes de langue
+    const normalizeUrl = (url: string) => {
+      if (!url) return url;
+      try {
+        let pathname = url;
+        if (url.startsWith('http')) {
+          const urlObj = new URL(url);
+          pathname = urlObj.pathname;
+        }
+        // Supprimer le préfixe de langue
+        return pathname.replace(/^\/(fr|en)(\/|$)/, '$2');
+      } catch (e) {
+        console.error('Erreur de normalisation URL:', e);
+        return url;
+      }
+    };
+
     // Ajuster la requête des sources de trafic
     let trafficSourcesQuery = `
       SELECT 
@@ -580,6 +597,9 @@ export default defineEventHandler(async (event) => {
           // S'assurer que l'URL est valide ou fournir une alternative lisible
           let pageUrl = page.page || 'Unknown page';
           let cleanPageUrl = cleanUrl(pageUrl);
+
+          // Normaliser l'URL pour supprimer les préfixes de langue
+          cleanPageUrl = normalizeUrl(cleanPageUrl);
 
           // Déterminer si c'est la page d'accueil
           const isHomePage = cleanPageUrl === '/' || cleanPageUrl === '';
