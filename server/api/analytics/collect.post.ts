@@ -138,6 +138,38 @@ export default defineEventHandler(async (event) => {
       };
     }
 
+    // Extraire les informations de navigateur et OS du premier événement disponible
+    let deviceType = 'desktop';
+    let browser = 'Chrome';
+    let os = 'Windows 10';
+    let userAgent = 'Non spécifié';
+
+    // Chercher ces informations dans les événements
+    for (const event of events) {
+      if (event.deviceType) deviceType = event.deviceType;
+      if (event.browser) browser = event.browser;
+      if (event.os) os = event.os;
+      if (event.userAgent) userAgent = event.userAgent;
+
+      // Les événements de type pageView contiennent toujours ces informations
+      if (event.type === 'pageView') {
+        deviceType = event.deviceType || deviceType;
+        browser = event.browser || browser;
+        os = event.os || os;
+        userAgent = event.userAgent || userAgent;
+        break; // Priorité aux événements pageView
+      }
+    }
+
+    // Enregistrer les informations détectées pour le débogage
+    console.log('Informations détectées:', { deviceType, browser, os, userAgent });
+
+    // Si les informations du navigateur et de l'OS ne sont pas spécifiées mais que nous avons un userAgent,
+    // nous pourrions implémenter une fonction pour les détecter à partir du userAgent côté serveur
+    if (browser === 'Chrome' && os === 'Windows 10' && userAgent !== 'Non spécifié') {
+      console.log('Utilisation des valeurs par défaut pour browser/OS alors que userAgent est spécifié:', userAgent);
+    }
+
     const pageViewEvents = events.filter(event => event.type === 'pageView');
     console.log('Événements pageView trouvés:', pageViewEvents.length);
 
@@ -231,26 +263,46 @@ export default defineEventHandler(async (event) => {
     const sessionData = events.find(event => event.type === 'session');
     if (!sessionData) {
       try {
+        // Trouver un éventuel pageView qui contiendrait des infos de référent
+        const pageViewWithReferrer = pageViewEvents.find(event => event.referrer || event.referrerSource || event.referrerName);
+
+        // Récupérer les informations de référent du premier pageView si disponible
+        const referrer = pageViewWithReferrer?.referrer || null;
+        const referrerSource = pageViewWithReferrer?.referrerSource || 'direct';
+        const referrerName = pageViewWithReferrer?.referrerName || 'Direct';
+        const landingPage = pageViewEvents[0]?.pageUrl || '/';
+
+        console.log('Création de session avec référent:', { referrer, referrerSource, referrerName });
+
         await pool.query(
           `INSERT INTO analytics_sessions 
             (session_id, website_id, visitor_id, start_time, device_type, browser, os, referrer, referrer_source, referrer_name, landing_page) 
-           VALUES (?, ?, ?, NOW(), ?, ?, ?, NULL, NULL, NULL, ?)
+           VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?)
            ON DUPLICATE KEY UPDATE 
             last_activity = NOW(),
             device_type = COALESCE(device_type, ?),
             browser = COALESCE(browser, ?),
-            os = COALESCE(os, ?)`,
+            os = COALESCE(os, ?),
+            referrer = COALESCE(referrer, ?),
+            referrer_source = COALESCE(referrer_source, ?),
+            referrer_name = COALESCE(referrer_name, ?)`,
           [
             sessionId,
             dbWebsiteId,
             visitorId,
-            'desktop', // Valeur par défaut pour device_type
-            'Chrome 100.0', // Valeur par défaut pour browser
-            'Windows 10', // Valeur par défaut pour os
-            pageViewEvents[0]?.pageUrl || '/',
-            'desktop', // Valeur par défaut pour update en cas de null
-            'Chrome 100.0', // Valeur par défaut pour update en cas de null
-            'Windows 10' // Valeur par défaut pour update en cas de null
+            deviceType, // Utiliser les valeurs détectées
+            browser,
+            os,
+            referrer,
+            referrerSource,
+            referrerName,
+            landingPage,
+            deviceType,
+            browser,
+            os,
+            referrer,
+            referrerSource,
+            referrerName
           ]
         );
       } catch (error) {
@@ -260,7 +312,7 @@ export default defineEventHandler(async (event) => {
       try {
         // Récupérer et valider les données
         const deviceType = sessionData.deviceType || 'desktop';
-        const browser = sessionData.browser || 'Chrome 100.0';
+        const browser = sessionData.browser || 'Chrome';
         const os = sessionData.os || 'Windows 10';
         const referrer = sessionData.referrer || null;
         const referrerSource = sessionData.referrerSource || 'direct';
@@ -276,7 +328,10 @@ export default defineEventHandler(async (event) => {
             last_activity = NOW(),
             device_type = COALESCE(device_type, ?),
             browser = COALESCE(browser, ?),
-            os = COALESCE(os, ?)`,
+            os = COALESCE(os, ?),
+            referrer = COALESCE(referrer, ?),
+            referrer_source = COALESCE(referrer_source, ?),
+            referrer_name = COALESCE(referrer_name, ?)`,
           [
             sessionId,
             dbWebsiteId,
@@ -291,7 +346,10 @@ export default defineEventHandler(async (event) => {
             landingPage,
             deviceType, // Valeurs pour l'update en cas de null
             browser,
-            os
+            os,
+            referrer,
+            referrerSource,
+            referrerName
           ]
         );
       } catch (error) {
@@ -305,7 +363,7 @@ export default defineEventHandler(async (event) => {
 
         // Assurer que les valeurs critiques sont toujours définies
         const deviceType = event.deviceType || 'desktop';
-        const browser = event.browser || 'Chrome 100.0';
+        const browser = event.browser || 'Chrome';
         const os = event.os || 'Windows 10';
         const pageUrl = event.pageUrl || 'https://stackunity.tech/fallback';
         const referrer = event.referrer || null;
@@ -465,8 +523,8 @@ export default defineEventHandler(async (event) => {
 
                   const insertResult = await pool.query(
                     `INSERT INTO analytics_pageviews
-                      (pageview_id, session_id, website_id, page_url, page_title, enter_time, exit_time, duration, scroll_depth, is_short_visit)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                      (pageview_id, session_id, website_id, page_url, page_title, enter_time, exit_time, duration, scroll_depth, is_short_visit, referrer, referrer_source, referrer_name)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                       event.pageViewId,
                       sessionId,
@@ -477,7 +535,10 @@ export default defineEventHandler(async (event) => {
                       exitTime,
                       duration,
                       scrollDepth,
-                      duration < 20 ? 1 : 0
+                      duration < 20 ? 1 : 0,
+                      event.referrer || null,
+                      event.referrerSource || 'direct',
+                      event.referrerName || 'Direct'
                     ]
                   );
                   console.log('Nouvel enregistrement pageview créé - Résultat:', JSON.stringify(insertResult));
@@ -587,8 +648,8 @@ export default defineEventHandler(async (event) => {
                       scrollDepth,
                       duration < 20 ? 1 : 0,
                       referrer,
-                      referrerSource,
-                      referrerName
+                      referrerSource || 'direct',
+                      referrerName || 'Direct'
                     ]
                   );
                   console.log('Nouvel enregistrement pageview créé - Résultat:', JSON.stringify(insertResult));

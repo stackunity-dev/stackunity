@@ -987,17 +987,13 @@
                 timestamp: now.toISOString(),
                 pageUrl: window.location.href,
                 scrollDepth: state.scrollDepth,
-                referrer: document.referrer,
-                referrerSource: utils.getReferrerSource().source,
-                referrerName: utils.getReferrerSource().name,
-                title: document.title
+                userAgent: navigator.userAgent || 'unknown'
               };
-              
-              // Forcer l'envoi immédiat pour éviter les pertes
+
               state.buffer.push(pageVisitData);
               tracker.flushEvents();
             }
-          }, 15000); // Réduire à 15 secondes au lieu de 30 secondes pour avoir plus de mises à jour
+          }, 15000);
           
           if (typeof utils.setupPageVisibilityObserver === 'function') {
             utils.setupPageVisibilityObserver();
@@ -1005,10 +1001,8 @@
           
         } catch (setupError) {
           console.error('[StackUnity Tracker] Erreur dans setupTracking:', setupError);
-          // Tentative minimale d'initialisation
           try {
             state.currentPageViewId = utils.generateUUID();
-            console.log('[StackUnity Tracker] PageViewId de secours généré:', state.currentPageViewId);
           } catch (e) {
             console.error('[StackUnity Tracker] Échec complet de l\'initialisation:', e);
           }
@@ -1074,7 +1068,8 @@
             duration: duration,
             timestamp: now.toISOString(),
             pageUrl: window.location.href,
-            scrollDepth: state.scrollDepth
+            scrollDepth: state.scrollDepth,
+            userAgent: navigator.userAgent || 'unknown'
           };
           
           // Créer l'événement de sortie de page
@@ -1084,7 +1079,8 @@
             pageViewId: state.currentPageViewId,
             exitTime: now.toISOString(),
             duration: duration,
-            scrollDepth: state.scrollDepth
+            scrollDepth: state.scrollDepth,
+            userAgent: navigator.userAgent || 'unknown'
           };
           
           // Ajouter les deux événements au buffer
@@ -1109,7 +1105,8 @@
                 scrollDepth: state.scrollDepth,
                 duration: Math.round((new Date().getTime() - state.startTime.getTime()) / 1000)
               },
-              pageUrl: window.location.href
+              pageUrl: window.location.href,
+              userAgent: navigator.userAgent || 'unknown'
             });
             
             tracker.flushEvents(true);
@@ -1225,6 +1222,7 @@
           deviceType: deviceType,
           browser: browser,
           os: os,
+          userAgent: navigator.userAgent || 'unknown',
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
           timestamp: enterTimeIso,
@@ -1336,7 +1334,8 @@
             x: e.clientX,
             y: e.clientY
           },
-          pageUrl: currentUrl
+          pageUrl: currentUrl,
+          userAgent: navigator.userAgent || 'unknown'
         };
         
         state.buffer.push(interaction);
@@ -1384,7 +1383,8 @@
               .filter(el => el.name && !el.name.match(/password|token|key|secret/i))
               .map(el => ({ name: el.name, type: el.type }))
           },
-          pageUrl: currentUrl
+          pageUrl: currentUrl,
+          userAgent: navigator.userAgent || 'unknown'
         };
         
         state.buffer.push(interaction);
@@ -1497,7 +1497,8 @@
             valuePreview: input.value && input.value.length > 0 ? input.value.substring(0, 20) + (input.value.length > 20 ? '...' : '') : '',
             fieldPurpose: utils.getInputFieldPurpose(input)
           },
-          pageUrl: currentUrl
+          pageUrl: currentUrl,
+          userAgent: navigator.userAgent || 'unknown'
         };
         
         state.buffer.push(eventData);
@@ -1566,7 +1567,8 @@
                 depth: depthReached,
                 pixelY: scrollTop
               },
-              pageUrl: currentUrl
+              pageUrl: currentUrl,
+              userAgent: navigator.userAgent || 'unknown'
             };
             
             state.buffer.push(scrollEvent);
@@ -1625,7 +1627,8 @@
           duration: duration,
           timestamp: endTime.toISOString(),
           pageUrl: window.location.href,
-          scrollDepth: state.scrollDepth
+          scrollDepth: state.scrollDepth,
+          userAgent: navigator.userAgent || 'unknown'
         };
         
         state.buffer.push(pageVisitData);
@@ -1636,7 +1639,8 @@
           pageViewId: state.currentPageViewId,
           exitTime: endTime.toISOString(),
           duration: duration,
-          scrollDepth: state.scrollDepth
+          scrollDepth: state.scrollDepth,
+          userAgent: navigator.userAgent || 'unknown'
         };
         
         state.buffer.push(pageViewExit);
@@ -1697,7 +1701,8 @@
             duration: duration,
             timestamp: endTime.toISOString(),
             pageUrl: window.location.href,
-            scrollDepth: state.scrollDepth
+            scrollDepth: state.scrollDepth,
+            userAgent: navigator.userAgent || 'unknown'
           };
           
           state.buffer.push(pageVisitData);
@@ -1709,7 +1714,8 @@
             pageViewId: state.currentPageViewId,
             exitTime: endTime.toISOString(),
             duration: duration,
-            scrollDepth: state.scrollDepth
+            scrollDepth: state.scrollDepth,
+            userAgent: navigator.userAgent || 'unknown'
           };
           
           state.buffer.push(pageExitEvent);
@@ -1772,7 +1778,8 @@
             duration: duration,
             timestamp: now.toISOString(),
             pageUrl: window.location.href,
-            scrollDepth: state.scrollDepth
+            scrollDepth: state.scrollDepth,
+            userAgent: navigator.userAgent || 'unknown'
           };
           
           state.buffer.push(pageVisitData);
@@ -1785,7 +1792,8 @@
             pageViewId: state.currentPageViewId,
             exitTime: now.toISOString(),
             duration: duration,
-            scrollDepth: state.scrollDepth
+            scrollDepth: state.scrollDepth,
+            userAgent: navigator.userAgent || 'unknown'
           };
           
           state.buffer.push(pageExitEvent);
@@ -1828,6 +1836,7 @@
           deviceType: deviceType,
           browser: browser,
           os: os,
+          userAgent: navigator.userAgent || 'unknown',
           screenWidth: window.innerWidth || 1024,
           screenHeight: window.innerHeight || 768,
           timestamp: enterTimeIso,
@@ -2072,7 +2081,8 @@
             duration: duration,
             timestamp: now.toISOString(),
             pageUrl: window.location.href,
-            scrollDepth: state.scrollDepth
+            scrollDepth: state.scrollDepth,
+            userAgent: navigator.userAgent || 'unknown'
           });
           
           // Ajouter également un événement de sortie
@@ -2082,7 +2092,8 @@
             pageViewId: state.currentPageViewId,
             exitTime: now.toISOString(),
             duration: duration,
-            scrollDepth: state.scrollDepth
+            scrollDepth: state.scrollDepth,
+            userAgent: navigator.userAgent || 'unknown'
           });
         }
         
