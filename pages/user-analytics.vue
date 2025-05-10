@@ -116,7 +116,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ tWithPurge.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ tWithPurge.welcome.few.description
-                    }}</p>
+                      }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ tWithPurge.welcome.few.action }}
@@ -267,7 +267,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                  }}</v-list-item-title>
+                    }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -645,7 +645,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                              }}</span>
+                                }}</span>
                             </div>
                           </td>
                           <td>
@@ -815,7 +815,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-            }}</p>
+              }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ tWithPurge.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -921,7 +921,7 @@
               <v-list-item v-if="visitorExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                  }}</v-list-item-title>
+                }}</v-list-item-title>
               </v-list-item>
             </v-list>
 
@@ -1049,7 +1049,8 @@ useHead({
 });
 
 const userStore = useUserStore();
-const websiteData = computed(() => userStore.websiteData);
+// S'assurer que websiteData est initialisé même si userStore.websiteData est null
+const websiteData = computed(() => userStore.websiteData || { website_name: '', main_url: '', all_urls: [], generated_sitemap: '' });
 const showAddSiteDialog = ref(false);
 const showSnackbar = ref(false);
 const snackbarText = ref('');
@@ -1070,8 +1071,8 @@ const activeTab = ref('pages');
 const totalInteractionsCount = ref<number>(0);
 
 const newSite = ref({
-  name: websiteData.value.website_name || '',
-  url: websiteData.value.main_url || ''
+  name: websiteData.value?.website_name || '',
+  url: websiteData.value?.main_url || ''
 });
 
 const websites = ref<WebsiteWithStats[]>([]);
@@ -1547,6 +1548,8 @@ async function purgeAnalyticsData() {
       if (currentSite.value) {
         selectSite(currentSite.value);
       }
+
+      navigateTo('/dashboard');
     } else {
       snackbarText.value = result.message || tWithPurge.purge.error;
       snackbarColor.value = 'error';
@@ -1583,7 +1586,6 @@ async function fetchSiteDataForPeriod() {
 }
 
 function updateAnalyticsData(data: any) {
-  // Vérification et initialisation des valeurs par défaut pour les métriques
   const totalVisitors = data.totalVisitors ?? 0;
   const totalPageViews = data.totalPageViews ?? 0;
   const avgSessionDuration = data.avgSessionDuration ?? 0;
@@ -1618,25 +1620,20 @@ function updateAnalyticsData(data: any) {
     }
   ];
 
-  // S'assurer que toutes les propriétés existent et traiter les pages
   let processedPages = Array.isArray(data.topPages) ? data.topPages : [];
 
-  // Fonction pour normaliser une URL en supprimant les préfixes de langue
   const normalizeUrlWithDetails = (urlStr: string): { url: string, normalizedUrl: string, langPrefix: string | null } => {
     if (!urlStr) return { url: urlStr, normalizedUrl: urlStr, langPrefix: null };
     try {
-      // Si c'est une URL complète, extraire le chemin
       let pathname = urlStr;
       if (urlStr.startsWith('http')) {
         const urlObj = new URL(urlStr);
         pathname = urlObj.pathname;
       }
 
-      // Vérifier les préfixes de langue
       const langMatch = pathname.match(/^\/(fr|en)(\/|$)/);
       if (langMatch) {
         const langPrefix = langMatch[1];
-        // Normaliser en retirant le préfixe de langue
         const normalizedPath = pathname.replace(/^\/(fr|en)/, '');
         return {
           url: urlStr,
@@ -1660,7 +1657,6 @@ function updateAnalyticsData(data: any) {
         urlForNormalization = 'http://' + urlObj.host + urlObj.pathname;
       }
 
-      // Utiliser la fonction normalizeUrl importée (qui retourne une chaîne)
       return normalizeUrl(urlForNormalization);
     } catch (e) {
       console.error('Erreur normalisation URL:', e);
@@ -1668,16 +1664,13 @@ function updateAnalyticsData(data: any) {
     }
   };
 
-  // Normaliser et regrouper les pages avec des préfixes de langue
   const pageMap = new Map<string, PageView>();
 
   processedPages.forEach(page => {
-    // S'assurer que toutes les propriétés nécessaires sont présentes
     const cleanedPage = {
       page: page.page || 'Unknown page',
       views: typeof page.views === 'number' ? page.views : 0,
       avgTime: page.avgTime || '0m 0s',
-      // Nouvelles propriétés
       cleanPath: page.cleanPath || '',
       isHome: page.isHome === true,
       avgTimeSeconds: typeof page.avgTimeSeconds === 'number' ? page.avgTimeSeconds : 0,
@@ -1685,57 +1678,45 @@ function updateAnalyticsData(data: any) {
       langPrefix: null as string | null
     };
 
-    // Si cleanPath n'est pas fourni, essayer de l'extraire
     if (!cleanedPage.cleanPath && cleanedPage.page.startsWith('http')) {
       try {
-        // Créer notre propre fonction locale de normalisation au lieu d'utiliser normalizeUrl
         const url = new URL(cleanedPage.page);
         const pathname = url.pathname;
 
-        // Extraire le préfixe de langue s'il existe
         const langMatch = pathname.match(/^\/(fr|en)(\/|$)/);
         const langPrefix = langMatch ? langMatch[1] : null;
 
-        // Normaliser le chemin
         const normalizedPath = pathname.replace(/^\/(fr|en)(\/|$)/, '$2') || '/';
 
         cleanedPage.cleanPath = normalizedPath;
         cleanedPage.isHome = normalizedPath === '/' || normalizedPath === '';
         cleanedPage.langPrefix = langPrefix;
       } catch (error) {
-        // Ignorer les erreurs
         console.error('Erreur lors du traitement du chemin:', error);
       }
     }
 
-    // Utiliser le chemin normalisé comme clé pour regrouper
     const normalizedPath = getNormalizedKey(cleanedPage.page);
 
     if (pageMap.has(normalizedPath)) {
-      // Page existe déjà, fusionner les vues
       const existingPage = pageMap.get(normalizedPath)!;
       existingPage.views += cleanedPage.views;
 
-      // Mettre à jour le temps moyen si des données sont disponibles
       if (cleanedPage.hasDuration && existingPage.hasDuration) {
         const totalSeconds = (existingPage.avgTimeSeconds || 0) + (cleanedPage.avgTimeSeconds || 0);
         existingPage.avgTimeSeconds = totalSeconds / 2;
         existingPage.avgTime = formatDuration(existingPage.avgTimeSeconds);
       }
     } else {
-      // Nouvelle page, l'ajouter à la map
       pageMap.set(normalizedPath, cleanedPage);
     }
   });
 
-  // Convertir la map en tableau
   const normalizedPages = Array.from(pageMap.values())
     .filter(page => page.page && page.page !== 'null' && page.page !== 'undefined');
 
-  // Assigner les pages traitées
   pageViews.value = normalizedPages;
 
-  // Traiter les autres types de données
   trafficSources.value = Array.isArray(data.trafficSources) ? data.trafficSources.map(source => ({
     source: source.source || 'unknown',
     visitors: typeof source.visitors === 'number' ? source.visitors : 0,
@@ -1753,7 +1734,6 @@ function updateAnalyticsData(data: any) {
   browsers.value = Array.isArray(data.browsers) ? data.browsers : [];
   osSystems.value = Array.isArray(data.os) ? data.os : [];
 
-  // Traitement des interactions utilisateur
   if (data.interactions && data.interactions.data) {
     userInteractions.value = Array.isArray(data.interactions.data) ? data.interactions.data : [];
     totalInteractionsCount.value = data.interactions.total || 0;
@@ -1762,7 +1742,6 @@ function updateAnalyticsData(data: any) {
     totalInteractionsCount.value = userInteractions.value.length;
   }
 
-  // Initialisation des données analytiques du site actuel
   currentSiteAnalytics.value = {
     websiteId: currentSite.value?.id || '',
     totalVisitors: totalVisitors,
@@ -1784,27 +1763,19 @@ function updateAnalyticsData(data: any) {
     userInteractions: userInteractions.value
   };
 
-  // S'assurer que pages filtrées est mis à jour
   filteredPages.value = [...pageViews.value];
-
-  // Log de débogage pour vérifier les données de pages
-  console.log('Pages traitées et normalisées:', normalizedPages);
 
   checkDataLimits();
 }
 
-// Mise à jour du formattage des URL de page pour une meilleure lisibilité
 function formatUrl(url: string) {
   if (!url) return 'URL inconnue';
 
   try {
-    // Supprimer les protocoles
     let formatted = url.replace(/^https?:\/\//, '');
 
-    // Supprimer les www.
     formatted = formatted.replace(/^www\./, '');
 
-    // Limiter la longueur
     if (formatted.length > 30) {
       formatted = formatted.substring(0, 27) + '...';
     }
