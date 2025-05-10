@@ -29,7 +29,7 @@
       <div class="dashboard-container pa-6" :class="{ 'compact-mode': isCompactMode }">
         <div class="welcome-section text-center mb-8">
           <h1 class="text-h3 font-weight-bold text-gradient mb-2">
-            {{ t().hero.title }} {{ 'Developer' }}
+            {{ t().hero.title }} {{ userStore.user?.username }}
           </h1>
           <p class="text-subtitle-1 text-medium-emphasis">
             {{ t().hero.subtitle }}

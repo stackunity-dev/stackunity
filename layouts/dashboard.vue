@@ -79,8 +79,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar class="border-b page-header px-4" :color="getHeaderColor()" flat scroll-behavior="elevate"
-      :elevation="0">
+    <v-app-bar class="border-b page-header px-4" color="secondary" flat scroll-behavior="elevate" :elevation="0">
       <v-app-bar-nav-icon v-if="display.smAndDown.value" @click="drawer = !drawer"
         color="on-surface"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
@@ -338,18 +337,6 @@ const getCurrentPageIcon = () => {
     return 'mdi-chart-box';
   } else {
     return 'mdi-application';
-  }
-};
-
-const getHeaderColor = () => {
-  if (currentPageTitle.value === t().menu.studio) {
-    return 'secondary';
-  } else if (currentPageTitle.value === t().menu.apiTestingHub) {
-    return 'info';
-  } else if (currentPageTitle.value === t().menu.uxAnalyzer) {
-    return 'secondary';
-  } else {
-    return 'primary';
   }
 };
 

@@ -285,6 +285,9 @@ export default {
     exclusionDeleteCancel: 'Cancelar',
     exclusionDeleteConfirmation: 'Entiendo que esta acción es irreversible y confirmo la eliminación',
     avgPageTime: 'Tiempo promedio por página',
+    excludeCurrentDevice: 'Excluir dispositivo actual',
+    visitorId: 'ID de visitante',
+    visitorIdPlaceholder: 'ID de visitante para excluir (ej: 123456)',
   },
   interactions: {
     title: 'Interacciones de Usuario',

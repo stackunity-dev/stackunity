@@ -285,6 +285,9 @@ export default {
     exclusionDeleteCancel: '取消',
     exclusionDeleteConfirmation: '我理解此操作是不可逆的，并确认删除',
     avgPageTime: '平均页面时间',
+    excludeCurrentDevice: '排除当前设备',
+    visitorId: '访客ID',
+    visitorIdPlaceholder: '访客ID排除 (如: 123456)',
   },
   interactions: {
     title: '用户互动',

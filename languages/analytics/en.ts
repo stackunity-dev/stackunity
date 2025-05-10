@@ -287,6 +287,9 @@ export default {
     exclusionsSaved: 'Exclusions saved successfully.',
     exclusionDeleteError: 'Error while deleting exclusions.',
     avgPageTime: 'Avg. Page Time',
+    excludeCurrentDevice: 'Exclude Current Device',
+    visitorId: 'Visitor ID',
+    visitorIdPlaceholder: 'Visitor ID to exclude (ex: 123456)',
   },
   interactions: {
     title: 'User Interactions',

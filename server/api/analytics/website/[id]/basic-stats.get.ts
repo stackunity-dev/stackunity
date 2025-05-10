@@ -77,15 +77,13 @@ export default defineEventHandler(async (event) => {
       ? Math.round((pageViewsWithDuration / totalPageViews) * 100)
       : 0;
 
-    // Si nous avons peu de pages avec des durées, essayons d'obtenir une meilleure moyenne
-    // en regardant les 100 dernières vues de pages avec durée
     let enhancedAvgPageDuration = avgPageDuration;
     if (pageViewsWithDuration > 0 && pageViewsWithDuration < 10) {
       const [recentPageRows] = await pool.query<StatsRow[]>(
         `SELECT AVG(duration) AS avgPageDuration
          FROM analytics_pageviews 
          WHERE website_id = ? AND duration IS NOT NULL AND duration > 0
-         ORDER BY timestamp DESC
+         ORDER BY enter_time DESC
          LIMIT 100`,
         [dbWebsiteId]
       );

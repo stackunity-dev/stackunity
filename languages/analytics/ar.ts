@@ -281,6 +281,9 @@ export default {
     exclusionsSaved: 'تم حفظ الإلغاءات بنجاح.',
     exclusionDeleteError: 'حدث خطأ أثناء حذف الإلغاءات.',
     avgPageTime: 'متوسط الوقت للصفحة',
+    excludeCurrentDevice: 'إلغاء الجهاز الحالي',
+    visitorId: 'معرف الزائر',
+    visitorIdPlaceholder: 'معرف الزائر للإلغاء (مثل: 123456)',
   },
   interactions: {
     title: 'تفاعلات المستخدم',
