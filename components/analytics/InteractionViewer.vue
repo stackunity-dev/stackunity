@@ -454,7 +454,10 @@ const filteredInteractions = computed(() => {
   if (groupSimilarInteractions) {
     const groups = new Map();
     interactions.forEach(interaction => {
-      const key = `${interaction.type}-${interaction.elementSelector}`;
+      let key = interaction.type === 'scroll_depth' && interaction.value && interaction.value.depth
+        ? `${interaction.type}-${interaction.elementSelector}-depth-${interaction.value.depth}`
+        : `${interaction.type}-${interaction.elementSelector}`;
+
       if (!groups.has(key)) {
         groups.set(key, { ...interaction, count: 1 });
       } else {
@@ -547,7 +550,7 @@ const timelineData = computed<TimelineSeriesData>(() => {
         name: formattedTime,
         itemStyle: { color: '#1976D2' }
       });
-    } else if (interaction.type === 'scroll') {
+    } else if (interaction.type === 'scroll' || interaction.type === 'scroll_depth') {
       series.scroll.push({
         value,
         name: formattedTime,
@@ -740,6 +743,7 @@ function getTypeValue(type: string): number {
   switch (type) {
     case 'click': return 0;
     case 'scroll': return 1;
+    case 'scroll_depth': return 1;
     case 'form_submit': return 2;
     case 'input_change': return 3;
     default: return 4;
@@ -765,7 +769,17 @@ function getInteractionColor(type: string): string {
 }
 
 function formatScrollData(interaction: ExtendedUserInteraction): string {
-  if (interaction.type !== 'scroll' || !interaction.value || !interaction.value.scrollDepth) {
+  if (!interaction.value) return '-';
+
+  // Traiter les interactions scroll_depth différemment
+  if (interaction.type === 'scroll_depth') {
+    const depth = interaction.value.depth || 0;
+    const pixelY = interaction.value.pixelY || 0;
+    return `${depth}% de profondeur (${Math.round(Number(pixelY))}px)`;
+  }
+
+  // Pour les interactions scroll normales
+  if (interaction.type !== 'scroll' || !interaction.value.scrollDepth) {
     return '-';
   }
 
@@ -796,6 +810,7 @@ function formatInteractionDetails(interaction: ExtendedUserInteraction) {
 
     switch (interaction.type) {
       case 'scroll':
+      case 'scroll_depth':
         return countPrefix + formatScrollData(interaction);
       case 'click':
         let clickDetails = '';
@@ -897,6 +912,14 @@ function formatSelectedValue(value: any): string {
   try {
     if (typeof value !== 'object' || value === null) {
       return String(value);
+    }
+
+    // Format spécial pour les valeurs de scroll_depth
+    if (value.depth !== undefined && value.pixelY !== undefined) {
+      return JSON.stringify({
+        depth: value.depth,
+        pixelY: Math.round(Number(value.pixelY))
+      }, null, 2);
     }
 
     if (Object.keys(value).length === 0) {

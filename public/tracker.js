@@ -1422,8 +1422,44 @@
       },
       
       recordInputInteraction: function(input, fieldIdentifier) {
-        const labelText = utils.getInputLabel(input);
-        const currentUrl = window.location.href;
+        let labelText = '';
+        
+        if (input.id) {
+          const label = document.querySelector(`label[for="${input.id}"]`);
+          if (label) {
+            labelText = label.textContent ? label.textContent.trim() : '';
+          }
+        }
+        
+        if (!labelText && input.parentElement) {
+          const parentLabel = input.closest('label');
+          if (parentLabel) {
+            const clone = parentLabel.cloneNode(true);
+            Array.from(clone.querySelectorAll('input, select, textarea, button')).forEach(el => el.remove());
+            labelText = clone.textContent.trim();
+          }
+        }
+        
+        // Récupérer l'URL de la page actuelle avec gestion d'erreur
+        let currentUrl = '';
+        try {
+          currentUrl = window.location.href;
+        } catch (e) {
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL pour un input:', e);
+        }
+        
+        if (!currentUrl) {
+          try {
+            currentUrl = document.URL;
+          } catch (e) {
+            console.error('[StackUnity Tracker] Erreur lors de la récupération de document.URL pour un input:', e);
+          }
+        }
+        
+        // URL de fallback si toutes les méthodes échouent
+        if (!currentUrl) {
+          currentUrl = 'https://stackunity.tech/fallback';
+        }
         
         const eventData = {
           type: 'interaction',
@@ -1438,6 +1474,7 @@
             fieldType: input.type || 'text',
             hasValue: input.value && input.value.length > 0,
             valueLength: input.value ? input.value.length : 0,
+            valuePreview: input.value && input.value.length > 0 ? input.value.substring(0, 20) + (input.value.length > 20 ? '...' : '') : '',
             fieldPurpose: utils.getInputFieldPurpose(input)
           },
           pageUrl: currentUrl
