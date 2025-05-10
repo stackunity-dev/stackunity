@@ -2,5 +2,7 @@ User-agent: *
 Allow: /
 
 Sitemap: https://stackunity.tech/sitemap.xml
+Sitemap: https://stackunity.tech/sitemap_pages.xml
+Sitemap: https://stackunity.tech/sitemap_languages.xml
 
 Host: https://stackunity.tech

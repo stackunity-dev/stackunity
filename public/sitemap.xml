@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>https://stackunity.tech/sitemap-pages.xml</loc>
-    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <loc>https://stackunity.tech/sitemap_pages.xml</loc>
+    <lastmod>2025-05-10T12:00:00Z</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://stackunity.tech/sitemap-languages.xml</loc>
-    <lastmod>2025-04-14T17:38:24.143Z</lastmod>
+    <loc>https://stackunity.tech/sitemap_languages.xml</loc>
+    <lastmod>2025-05-10T12:00:00Z</lastmod>
   </sitemap>
 </sitemapindex>
