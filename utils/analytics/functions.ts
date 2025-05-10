@@ -75,49 +75,53 @@ function getSourceLabel(source: string): string {
 function getBrowserIcon(browserInfo: string): string {
   if (!browserInfo) return 'mdi-web';
 
-  const browserInfoLower = browserInfo.toLowerCase();
-  if (browserInfoLower.includes('chrome')) return 'mdi-google-chrome';
-  if (browserInfoLower.includes('firefox')) return 'mdi-firefox';
-  if (browserInfoLower.includes('safari')) return 'mdi-apple-safari';
-  if (browserInfoLower.includes('edge')) return 'mdi-microsoft-edge';
-  if (browserInfoLower.includes('explorer') || browserInfoLower.includes('ie')) return 'mdi-internet-explorer';
-  if (browserInfoLower.includes('opera')) return 'mdi-opera';
+  if (browserInfo.toLowerCase().includes('chrome')) return 'mdi-google-chrome';
+  if (browserInfo.toLowerCase().includes('firefox')) return 'mdi-firefox';
+  if (browserInfo.toLowerCase().includes('safari')) return 'mdi-apple-safari';
+  if (browserInfo.toLowerCase().includes('edge')) return 'mdi-microsoft-edge';
+  if (browserInfo.toLowerCase().includes('internet explorer') || browserInfo.toLowerCase().includes('ie')) return 'mdi-internet-explorer';
+  if (browserInfo.toLowerCase().includes('opera')) return 'mdi-opera';
+  if (browserInfo.toLowerCase().includes('brave')) return 'mdi-web';
+
   return 'mdi-web';
 }
 
 function getBrowserColor(browserInfo: string): string {
   if (!browserInfo) return 'grey';
 
-  const browserInfoLower = browserInfo.toLowerCase();
-  if (browserInfoLower.includes('chrome')) return 'green';
-  if (browserInfoLower.includes('firefox')) return 'orange';
-  if (browserInfoLower.includes('safari')) return 'blue';
-  if (browserInfoLower.includes('edge')) return 'teal';
-  if (browserInfoLower.includes('explorer') || browserInfoLower.includes('ie')) return 'blue-grey';
-  if (browserInfoLower.includes('opera')) return 'red';
+  if (browserInfo.toLowerCase().includes('chrome')) return 'green';
+  if (browserInfo.toLowerCase().includes('firefox')) return 'orange';
+  if (browserInfo.toLowerCase().includes('safari')) return 'blue';
+  if (browserInfo.toLowerCase().includes('edge')) return 'teal';
+  if (browserInfo.toLowerCase().includes('internet explorer') || browserInfo.toLowerCase().includes('ie')) return 'blue-grey';
+  if (browserInfo.toLowerCase().includes('opera')) return 'red';
+  if (browserInfo.toLowerCase().includes('brave')) return 'orange-darken-3';
+
   return 'grey';
 }
 
 function getOsIcon(osInfo: string): string {
   if (!osInfo) return 'mdi-laptop';
 
-  const osInfoLower = osInfo.toLowerCase();
-  if (osInfoLower.includes('windows')) return 'mdi-microsoft-windows';
-  if (osInfoLower.includes('mac')) return 'mdi-apple';
-  if (osInfoLower.includes('ios')) return 'mdi-apple-ios';
-  if (osInfoLower.includes('android')) return 'mdi-android';
-  if (osInfoLower.includes('linux')) return 'mdi-linux';
+  if (osInfo.toLowerCase().includes('windows')) return 'mdi-microsoft-windows';
+  if (osInfo.toLowerCase().includes('macos')) return 'mdi-apple';
+  if (osInfo.toLowerCase().includes('ios')) return 'mdi-apple-ios';
+  if (osInfo.toLowerCase().includes('ipados')) return 'mdi-tablet-ipad';
+  if (osInfo.toLowerCase().includes('android')) return 'mdi-android';
+  if (osInfo.toLowerCase().includes('linux')) return 'mdi-linux';
+
   return 'mdi-laptop';
 }
 
 function getOsColor(osInfo: string): string {
   if (!osInfo) return 'grey';
 
-  const osInfoLower = osInfo.toLowerCase();
-  if (osInfoLower.includes('windows')) return 'blue';
-  if (osInfoLower.includes('mac') || osInfoLower.includes('ios')) return 'grey';
-  if (osInfoLower.includes('android')) return 'green';
-  if (osInfoLower.includes('linux')) return 'orange';
+  if (osInfo.toLowerCase().includes('windows')) return 'blue';
+  if (osInfo.toLowerCase().includes('macos')) return 'grey-darken-2';
+  if (osInfo.toLowerCase().includes('ios') || osInfo.toLowerCase().includes('ipados')) return 'blue-grey';
+  if (osInfo.toLowerCase().includes('android')) return 'green';
+  if (osInfo.toLowerCase().includes('linux')) return 'orange';
+
   return 'grey';
 }
 

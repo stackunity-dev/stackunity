@@ -82,27 +82,22 @@
       
       getDeviceType: function() {
         try {
-          const ua = navigator.userAgent || '';
+          const ua = (navigator.userAgent || '').toLowerCase();
           
-          const mobileRegex = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i;
-          const tabletRegex = /iPad|Android(?!.*Mobile)/i;
-          
-          const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 1024;
-          
-          if (tabletRegex.test(ua)) {
+          // Simplification de la détection des appareils
+          if (ua.includes('ipad') || ua.includes('tablet')) {
             return 'tablet';
           }
           
-          if (mobileRegex.test(ua)) {
+          if (ua.includes('mobile') || ua.includes('android') && !ua.includes('tablet') || 
+              ua.includes('iphone') || ua.includes('ipod')) {
             return 'mobile';
           }
           
+          // Si la taille d'écran est très petite, c'est probablement un mobile
+          const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 1024;
           if (width < 768) {
             return 'mobile';
-          }
-          
-          if (width < 1024) {
-            return 'tablet';
           }
           
           return 'desktop';
@@ -114,89 +109,68 @@
       
       getBrowserInfo: function() {
         try {
-          const ua = navigator.userAgent || '';
-          console.log('ua', ua);
-          let browser = 'Unknown';
-          let version = '0.0';
+          const ua = (navigator.userAgent || '').toLowerCase();
+          console.log('[StackUnity Tracker] User Agent:', ua);
           
-          // Détection plus précise des navigateurs
-          if (/Firefox\/(\d+(\.\d+)?)/.test(ua)) {
-            browser = 'Firefox';
-            const match = ua.match(/Firefox\/(\d+(\.\d+)?)/);
-            if (match && match[1]) version = match[1];
-          } else if (/Edg\/(\d+(\.\d+)?)/.test(ua)) {
-            browser = 'Edge';
-            const match = ua.match(/Edg\/(\d+(\.\d+)?)/);
-            if (match && match[1]) version = match[1];
-          } else if (/Chrome\/(\d+(\.\d+)?)/.test(ua)) {
-            browser = 'Chrome';
-            const match = ua.match(/Chrome\/(\d+(\.\d+)?)/);
-            if (match && match[1]) version = match[1];
-          } else if (/Safari\/(\d+(\.\d+)?)/.test(ua) && !/Chrome/.test(ua) && !/Edg\//.test(ua)) {
-            browser = 'Safari';
-            const match = ua.match(/Version\/(\d+(\.\d+)?)/);
-            version = match && match[1] ? match[1] : '0.0';
-          } else if (/OPR\/(\d+(\.\d+)?)/.test(ua)) {
-            browser = 'Opera';
-            const match = ua.match(/OPR\/(\d+(\.\d+)?)/);
-            if (match && match[1]) version = match[1];
-          } else if (/MSIE (\d+(\.\d+)?)/.test(ua) || /Trident.*rv:(\d+(\.\d+)?)/.test(ua)) {
-            browser = 'Internet Explorer';
-            const ieMatch = ua.match(/MSIE (\d+(\.\d+)?)/);
-            const tridentMatch = ua.match(/Trident.*rv:(\d+(\.\d+)?)/);
-            const match = ieMatch || tridentMatch;
-            version = match && match[1] ? match[1] : '11.0';
+          // Détection simplifiée des navigateurs en utilisant .includes()
+          if (ua.includes('edg/')) {
+            return 'Edge';
+          } else if (ua.includes('firefox/')) {
+            return 'Firefox';  
+          } else if (ua.includes('opr/') || ua.includes('opera/')) {
+            return 'Opera';
+          } else if (ua.includes('chrome/') && !ua.includes('chromium/')) {
+            return 'Chrome';
+          } else if (ua.includes('safari/') && !ua.includes('chrome/') && !ua.includes('edg/')) {
+            return 'Safari';
+          } else if (ua.includes('msie') || ua.includes('trident/')) {
+            return 'Internet Explorer';
+          } else if (ua.includes('brave')) {
+            return 'Brave';
           }
           
-          // Version simplifiée pour réduire la taille
-          const versionParts = version.split('.');
-          if (versionParts.length > 0) {
-            version = versionParts[0];
-          }
-          
-          return browser + ' ' + version;
+          // Navigateur par défaut si aucune correspondance
+          return 'Chrome';
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du navigateur:', e);
-          return 'Chrome 100';
+          return 'Chrome';
         }
       },
       
       getOSInfo: function() {
         try {
-          const ua = navigator.userAgent || '';
-          let os = 'Unknown';
+          const ua = (navigator.userAgent || '').toLowerCase();
           
-          // Détection simplifiée des systèmes d'exploitation
-          if (/Windows NT 10\.0/.test(ua)) {
-            os = 'Windows 10';
-          } else if (/Windows NT 6\.3/.test(ua)) {
-            os = 'Windows 8.1';
-          } else if (/Windows NT 6\.2/.test(ua)) {
-            os = 'Windows 8';
-          } else if (/Windows NT 6\.1/.test(ua)) {
-            os = 'Windows 7';
-          } else if (/Windows/.test(ua)) {
-            os = 'Windows';
-          } else if (/Android/.test(ua)) {
-            os = 'Android';
-            const match = ua.match(/Android (\d+)/);
-            if (match && match[1]) os = os + ' ' + match[1];
-          } else if (/iPhone|iPad|iPod/.test(ua)) {
-            os = /iPad/.test(ua) ? 'iPadOS' : 'iOS';
-            const match = ua.match(/OS (\d+)_/);
-            if (match && match[1]) os = os + ' ' + match[1];
-          } else if (/Mac OS X/.test(ua)) {
-            os = 'macOS';
-            const match = ua.match(/Mac OS X 10[._](\d+)/);
-            if (match && match[1]) os = os + ' ' + match[1];
-          } else if (/Linux/.test(ua)) {
-            os = 'Linux';
+          // Détection simplifiée des OS en utilisant .includes()
+          if (ua.includes('windows nt 10.0')) {
+            return 'Windows 10';
+          } else if (ua.includes('windows nt 11.0') || ua.includes('windows 11')) {
+            return 'Windows 11';
+          } else if (ua.includes('windows nt 6.3')) {
+            return 'Windows 8.1';
+          } else if (ua.includes('windows nt 6.2')) {
+            return 'Windows 8';
+          } else if (ua.includes('windows nt 6.1')) {
+            return 'Windows 7';
+          } else if (ua.includes('windows')) {
+            return 'Windows';
+          } else if (ua.includes('android')) {
+            return 'Android';
+          } else if (ua.includes('iphone')) {
+            return 'iOS';
+          } else if (ua.includes('ipad')) {
+            return 'iPadOS';
+          } else if (ua.includes('mac os x') || ua.includes('macintosh')) {
+            return 'macOS';
+          } else if (ua.includes('linux')) {
+            return 'Linux';
           }
           
-          return os;
+          // OS par défaut si aucune correspondance
+          return 'Unknown';
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la récupération des informations du système d\'exploitation:', e);
-          return 'Windows 10';
+          return 'Unknown';
         }
       },
       
@@ -214,34 +188,66 @@
         try {
           const url = new URL(referrer);
           const hostname = url.hostname.toLowerCase();
+          const fullReferrer = referrer.toLowerCase();
           console.log('[StackUnity Tracker] Hostname référent:', hostname);
           
-          // Amélioration de la détection des référents sociaux
-          const socialPatterns = [
-            { pattern: 'linkedin.com', source: 'linkedin', name: 'LinkedIn' },
-            { pattern: 'lnkd.in', source: 'linkedin', name: 'LinkedIn' },
-            { pattern: 'licdn.com', source: 'linkedin', name: 'LinkedIn' },
-            { pattern: 'linked.in', source: 'linkedin', name: 'LinkedIn' },
-            
-            { pattern: 'facebook.com', source: 'facebook', name: 'Facebook' },
-            { pattern: 'fb.com', source: 'facebook', name: 'Facebook' },
-            { pattern: 'fbcdn.net', source: 'facebook', name: 'Facebook' },
-            
-            { pattern: 'twitter.com', source: 'twitter', name: 'Twitter' },
-            { pattern: 't.co', source: 'twitter', name: 'Twitter' },
-            
-            { pattern: 'instagram.com', source: 'instagram', name: 'Instagram' },
-            
-            { pattern: 'google.', source: 'google', name: 'Google' },
-            { pattern: 'youtube.com', source: 'youtube', name: 'YouTube' },
-            { pattern: 'bing.com', source: 'bing', name: 'Bing' }
-          ];
+          // Détection plus complète des référents LinkedIn
+          if (hostname.includes('linkedin') || 
+              hostname.includes('lnkd.in') || 
+              hostname.includes('licdn') || 
+              hostname.includes('linked.in') ||
+              fullReferrer.includes('/linkedin.') ||
+              fullReferrer.includes('linkedin/')) {
+            console.log('[StackUnity Tracker] Référent LinkedIn détecté:', hostname);
+            return { source: 'linkedin', name: 'LinkedIn' };
+          }
           
-          for (const pattern of socialPatterns) {
-            if (hostname.includes(pattern.pattern)) {
-              console.log(`[StackUnity Tracker] Référent ${pattern.name} détecté:`, hostname);
-              return { source: pattern.source, name: pattern.name };
-            }
+          // Détection Facebook
+          if (hostname.includes('facebook') || 
+              hostname.includes('fb.com') || 
+              hostname.includes('fbcdn.net') ||
+              fullReferrer.includes('/facebook.') ||
+              fullReferrer.includes('facebook/')) {
+            console.log('[StackUnity Tracker] Référent Facebook détecté:', hostname);
+            return { source: 'facebook', name: 'Facebook' };
+          }
+          
+          // Détection Twitter/X
+          if (hostname.includes('twitter') || 
+              hostname.includes('t.co') || 
+              hostname.includes('x.com') ||
+              fullReferrer.includes('/twitter.') ||
+              fullReferrer.includes('twitter/')) {
+            console.log('[StackUnity Tracker] Référent Twitter détecté:', hostname);
+            return { source: 'twitter', name: 'Twitter' };
+          }
+          
+          // Détection Instagram
+          if (hostname.includes('instagram') ||
+              fullReferrer.includes('/instagram.') ||
+              fullReferrer.includes('instagram/')) {
+            console.log('[StackUnity Tracker] Référent Instagram détecté:', hostname);
+            return { source: 'instagram', name: 'Instagram' };
+          }
+          
+          // Détection Google
+          if (hostname.includes('google') ||
+              hostname.includes('goo.gl')) {
+            console.log('[StackUnity Tracker] Référent Google détecté:', hostname);
+            return { source: 'google', name: 'Google' };
+          }
+          
+          // Détection YouTube
+          if (hostname.includes('youtube') ||
+              hostname.includes('youtu.be')) {
+            console.log('[StackUnity Tracker] Référent YouTube détecté:', hostname);
+            return { source: 'youtube', name: 'YouTube' };
+          }
+          
+          // Détection Bing
+          if (hostname.includes('bing')) {
+            console.log('[StackUnity Tracker] Référent Bing détecté:', hostname);
+            return { source: 'bing', name: 'Bing' };
           }
           
           // Si on arrive ici, c'est un référent externe mais pas un réseau social connu
@@ -443,6 +449,12 @@
           marker.style.height = (endY - startY) + 'px';
           marker.style.pointerEvents = 'none';
           marker.style.zIndex = '-9999';
+          marker.style.visibility = 'hidden';
+          marker.style.opacity = '0';
+          marker.style.background = 'transparent';
+          marker.style.border = 'none';
+          marker.style.display = 'none';
+          marker.setAttribute('class', 'stackunity-tracker-element');
           marker.setAttribute('data-segment-id', i.toString());
           marker.setAttribute('data-start-percent', startPercent.toString());
           marker.setAttribute('data-end-percent', endPercent.toString());
@@ -960,6 +972,12 @@
               const startTimeMs = state.startTime.getTime();
               const duration = Math.round((now.getTime() - startTimeMs) / 1000);
               
+              console.log('[StackUnity Tracker] Envoi mise à jour durée:', {
+                pageViewId: state.currentPageViewId,
+                duration: duration,
+                timestamp: now.toISOString(),
+                scrollDepth: state.scrollDepth
+              });
               
               const pageVisitData = {
                 type: 'pageVisitDuration',
@@ -968,11 +986,16 @@
                 duration: duration,
                 timestamp: now.toISOString(),
                 pageUrl: window.location.href,
-                scrollDepth: state.scrollDepth
+                scrollDepth: state.scrollDepth,
+                referrer: document.referrer,
+                referrerSource: utils.getReferrerSource().source,
+                referrerName: utils.getReferrerSource().name,
+                title: document.title
               };
               
+              // Forcer l'envoi immédiat pour éviter les pertes
               state.buffer.push(pageVisitData);
-              api.flushBuffer();
+              tracker.flushEvents();
             }
           }, 15000); // Réduire à 15 secondes au lieu de 30 secondes pour avoir plus de mises à jour
           
@@ -2147,11 +2170,13 @@
       }
     };
 
+    // Modifier le CSS du tracker pour s'assurer que tous les éléments sont bien cachés
     const trackerStyles = document.createElement('style');
     trackerStyles.textContent = `
       .stackunity-tracker-element,
       img[src*="analytics/collect"],
-      img[src*="stackunity"] {
+      img[src*="stackunity"],
+      div[data-segment-id] {
         position: absolute !important;
         width: 1px !important;
         height: 1px !important;
@@ -2166,6 +2191,7 @@
         visibility: hidden !important;
         pointer-events: none !important;
         z-index: -9999 !important;
+        background-color: transparent !important;
       }
     `;
     document.head.appendChild(trackerStyles);

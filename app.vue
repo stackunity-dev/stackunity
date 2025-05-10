@@ -92,23 +92,6 @@ useHead({
       'data-website-id': 'ab8568cc-7922-481f-94e2-0d62e1072c5a'
     }
   ],
-  style: [
-    {
-      children: `
-
-
-        
-        .app-loading {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          width: 100vw;
-          background-color: #121212;
-        }
-      `
-    }
-  ]
 });
 
 onErrorCaptured((err, instance, info) => {
@@ -337,20 +320,10 @@ onMounted(() => {
 </script>
 
 <style>
-html,
-body {
-  background-color: #121212;
-  color: #fff;
-}
-
 body {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-.app-container {
-  min-height: 100vh;
 }
 
 [data-segment-id] {

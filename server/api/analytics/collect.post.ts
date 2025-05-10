@@ -488,6 +488,11 @@ export default defineEventHandler(async (event) => {
               const scrollDepth = event.scrollDepth !== undefined ? event.scrollDepth : 0;
               const timestamp = event.timestamp ? new Date(event.timestamp) : new Date();
 
+              // Récupérer les informations de référent si elles sont disponibles
+              const referrer = event.referrer || null;
+              const referrerSource = event.referrerSource || 'direct';
+              const referrerName = event.referrerName || 'Direct';
+
               // Normaliser l'URL
               let pageUrl = event.pageUrl || null;
               if (pageUrl) {
@@ -504,7 +509,8 @@ export default defineEventHandler(async (event) => {
                 duration: duration,
                 pageUrl: pageUrl,
                 timestamp: timestamp,
-                eventData: JSON.stringify(event)
+                eventData: JSON.stringify(event),
+                ua: event.userAgent || 'Non spécifié'
               });
 
               const [pageViewRows] = await pool.query<RowDataPacket[]>(
@@ -533,9 +539,9 @@ export default defineEventHandler(async (event) => {
               } else {
                 console.warn('pageVisitDuration: Création d\'un nouvel enregistrement pageview pour l\'ID', event.pageViewId);
 
-                // Extraire le titre de la page depuis l'URL
-                let pageTitle = "Page sans titre";
-                if (pageUrl) {
+                // Extraire le titre de la page
+                let pageTitle = event.title || "Page sans titre";
+                if (!pageTitle && pageUrl) {
                   try {
                     const segments = pageUrl.split('/').filter(s => s);
                     pageTitle = segments.length > 0 ? segments[segments.length - 1] : "Page d'accueil";
@@ -547,21 +553,36 @@ export default defineEventHandler(async (event) => {
 
                 // Créer un nouvel enregistrement pageview
                 try {
+                  // S'assurer que les valeurs critiques sont toujours définies
+                  const safeSessionId = sessionId || 'session-' + require('crypto').randomUUID();
+                  const safeWebsiteId = dbWebsiteId || 1;
+
+                  console.log('Tentative de création d\'une nouvelle page view avec:', {
+                    pageViewId: event.pageViewId,
+                    sessionId: safeSessionId,
+                    websiteId: safeWebsiteId,
+                    pageUrl: pageUrl || '/',
+                    pageTitle: pageTitle
+                  });
+
                   const insertResult = await pool.query(
                     `INSERT INTO analytics_pageviews
-                      (pageview_id, session_id, website_id, page_url, page_title, enter_time, exit_time, duration, scroll_depth, is_short_visit)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                      (pageview_id, session_id, website_id, page_url, page_title, enter_time, exit_time, duration, scroll_depth, is_short_visit, referrer, referrer_source, referrer_name)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                       event.pageViewId,
-                      sessionId,
-                      dbWebsiteId,
+                      safeSessionId,
+                      safeWebsiteId,
                       pageUrl || '/',
                       pageTitle,
                       new Date(timestamp.getTime() - duration * 1000), // Estimer l'heure d'entrée
                       timestamp,
                       duration,
                       scrollDepth,
-                      duration < 20 ? 1 : 0
+                      duration < 20 ? 1 : 0,
+                      referrer,
+                      referrerSource,
+                      referrerName
                     ]
                   );
                   console.log('Nouvel enregistrement pageview créé - Résultat:', JSON.stringify(insertResult));
@@ -569,24 +590,32 @@ export default defineEventHandler(async (event) => {
                   console.error('Erreur lors de la création d\'un nouvel enregistrement pageview:', insertError);
 
                   // Comme fallback, enregistrer comme interaction
-                  await pool.query(
-                    `INSERT INTO analytics_interactions
-                      (interaction_id, pageview_id, website_id, session_id, interaction_type, timestamp, value_data, page_url)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [
-                      event.id || require('crypto').randomUUID(),
-                      null,
-                      dbWebsiteId,
-                      sessionId,
-                      'page_duration',
-                      timestamp,
-                      JSON.stringify({
-                        duration: duration,
-                        scrollDepth: scrollDepth
-                      }),
-                      pageUrl
-                    ]
-                  );
+                  try {
+                    await pool.query(
+                      `INSERT INTO analytics_interactions
+                        (interaction_id, pageview_id, website_id, session_id, interaction_type, timestamp, value_data, page_url)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                      [
+                        event.id || require('crypto').randomUUID(),
+                        null,
+                        dbWebsiteId,
+                        sessionId,
+                        'page_duration',
+                        timestamp,
+                        JSON.stringify({
+                          duration: duration,
+                          scrollDepth: scrollDepth,
+                          referrer: referrer,
+                          referrerSource: referrerSource,
+                          referrerName: referrerName
+                        }),
+                        pageUrl
+                      ]
+                    );
+                    console.log('Enregistré comme interaction en fallback');
+                  } catch (fallbackError) {
+                    console.error('Échec total de l\'enregistrement des données de durée:', fallbackError);
+                  }
                 }
               }
             } catch (error) {

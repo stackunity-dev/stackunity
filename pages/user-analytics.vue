@@ -1646,14 +1646,14 @@ function updateAnalyticsData(data: any) {
 
   const getNormalizedKey = (url: string): string => {
     try {
-      let normalizedUrl = url;
+      let urlForNormalization = url;
       if (url.startsWith('http')) {
         const urlObj = new URL(url);
-        normalizedUrl = 'http://' + urlObj.host + urlObj.pathname;
+        urlForNormalization = 'http://' + urlObj.host + urlObj.pathname;
       }
 
       // Utiliser la fonction normalizeUrl importée (qui retourne une chaîne)
-      return normalizeUrl(normalizedUrl);
+      return normalizeUrl(urlForNormalization);
     } catch (e) {
       console.error('Erreur normalisation URL:', e);
       return url;
