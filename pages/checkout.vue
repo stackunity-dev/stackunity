@@ -480,7 +480,7 @@ onMounted(async () => {
 
     await updateTaxRates();
 
-    const stripePublicKey = process.env.STRIPE_PUBLISHABLE_KEY;
+    const stripePublicKey = 'pk_live_51R8HEwL1ZwIYz99yojPngr0GNrqqLUQtGy1cYUWXVvjgeP7zKXCRwpKkCktaIQFOEskA3XnNbVuX60l2UwLP0SHv00o1udOfFO';
 
     if (!stripePublicKey) {
       console.error('Stripe public key is missing');
