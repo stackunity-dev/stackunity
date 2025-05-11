@@ -107,7 +107,8 @@ export default {
       placeholder: "Nombre en la tarjeta"
     },
     payButton: "Pagar",
-    securePayment: "Pago seguro a través de Stripe"
+    securePayment: "Pago seguro a través de Stripe",
+    refundGuarantee: "Garantía de reembolso de 30 días"
   },
   messages: {
     vatReverseCharge: "Autoliquidación de IVA aplicada (0% de IVA)",

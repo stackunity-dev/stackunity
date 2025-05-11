@@ -10,15 +10,17 @@
             </h1>
 
             <div class="premium-highlight mb-8">
-              <v-chip color="primary" size="x-large" class="premium-badge">
+              <v-chip v-if="selectedPlan === 'premium'" color="primary" size="x-large" class="premium-badge">
                 <v-icon start icon="mdi-crown" class="mr-2"></v-icon>
                 {{ t().plans.bestChoice }}
               </v-chip>
-              <h2 class="text-h4 font-weight-bold mt-4 text-white mb-2">{{ t().plans.premium.title }}</h2>
-              <p class="text-subtitle-1 text-white-darken-2 premium-tagline">{{ t().plans.premium.description }}</p>
+              <h2 class="text-h4 font-weight-bold mt-4 text-white mb-2">{{ selectedPlan === 'premium' ?
+                t().plans.premium.title : t().plans.standard.title }}</h2>
+              <p class="text-subtitle-1 text-white-darken-2 premium-tagline">{{ selectedPlan === 'premium' ?
+                t().plans.premium.description : t().plans.standard.description }}</p>
             </div>
 
-            <div class="features-list">
+            <div class="features-list ml-12">
               <div v-for="(feature, index) in features" :key="index" class="feature-item d-flex align-center"
                 :class="{ 'mb-6': index !== features.length - 1 }">
                 <v-icon color="primary" size="x-large" class="mr-3">{{ feature.icon }}</v-icon>
@@ -49,7 +51,7 @@
               <img src="/logo/stackunity-title.png" alt="StackUnity Logo" width="300" />
             </div>
 
-            <h2 class="text-h4 font-weight-bold text-center mb-6">{{ t().meta.title }}</h2>
+            <h2 class="text-h5 font-weight-bold text-center mb-4">{{ t().meta.title }}</h2>
 
             <div class="price-card mb-6">
               <v-card class="elevation-3 rounded-lg overflow-hidden">
@@ -145,16 +147,7 @@
               </v-card>
             </div>
 
-            <div class="benefits-section mb-6 pa-4 rounded-lg">
-              <h3 class="text-h6 font-weight-bold mb-4">{{ selectedPlan === 'premium' ?
-                t().benefits.premiumTitle : t().benefits.standardTitle }}</h3>
-              <div class="benefits-list">
-                <div v-for="(benefit, index) in benefits" :key="index" class="benefit-item d-flex align-center mb-3">
-                  <v-icon color="success" size="small" class="mr-2">mdi-check-circle</v-icon>
-                  <span class="text-body-2">{{ benefit }}</span>
-                </div>
-              </div>
-            </div>
+
 
             <v-form @submit.prevent="processPayment">
               <div class="credit-card-container mb-6">
@@ -177,7 +170,7 @@
                     </div>
                   </div>
 
-                  <v-row dense class="mb-4">
+                  <v-row dense>
                     <v-col cols="12">
                       <v-autocomplete v-model="billingCountry" :items="countries" item-title="name" item-value="code"
                         :label="t().payment.billingCountry" variant="outlined" @update:model-value="updateTaxRates"
@@ -251,7 +244,7 @@
                 </div>
                 <div class="d-flex align-center justify-center">
                   <v-icon icon="mdi-clock-outline" size="small" class="mr-2" color="info"></v-icon>
-                  <span class="text-caption text-medium-emphasis">Garantie de remboursement 30 jours</span>
+                  <span class="text-caption text-medium-emphasis">{{ t().payment.refundGuarantee }}</span>
                 </div>
               </div>
             </v-form>
@@ -373,16 +366,17 @@ const taxDetails = ref({
   discountedBaseAmount: 300
 });
 
-const benefits = computed(() => {
-  return selectedPlan.value === 'premium' ? t().benefits.premium : t().benefits.standard;
-});
-
 const features = computed(() => {
   return selectedPlan.value === 'premium' ? [
     {
       icon: 'mdi-rocket-launch',
       title: t().features.advancedTools.title,
       description: t().features.advancedTools.description
+    },
+    {
+      icon: 'mdi-chart-box',
+      title: t().features.analytics.title,
+      description: t().features.analytics.description
     },
     {
       icon: 'mdi-shield-check',
@@ -393,11 +387,6 @@ const features = computed(() => {
       icon: 'mdi-update',
       title: t().features.regularUpdates.title,
       description: t().features.regularUpdates.description
-    },
-    {
-      icon: 'mdi-account-group',
-      title: t().features.teamCollaboration.title,
-      description: t().features.teamCollaboration.description
     }
   ] : [
     {

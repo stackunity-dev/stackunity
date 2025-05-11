@@ -107,7 +107,8 @@ export default {
       placeholder: "卡上的姓名"
     },
     payButton: "支付",
-    securePayment: "通过Stripe安全支付"
+    securePayment: "通过Stripe安全支付",
+    refundGuarantee: "30天退款保证"
   },
   messages: {
     vatReverseCharge: "已应用增值税反向收费（0%增值税）",

@@ -107,7 +107,8 @@ export default {
       placeholder: "Nom sur la carte"
     },
     payButton: "Payer",
-    securePayment: "Paiement sécurisé via Stripe"
+    securePayment: "Paiement sécurisé via Stripe",
+    refundGuarantee: "Garantie de remboursement de 30 jours"
   },
   messages: {
     vatReverseCharge: "Auto-liquidation de TVA appliquée (0% de TVA)",

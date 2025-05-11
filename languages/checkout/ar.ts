@@ -107,7 +107,8 @@ export default {
       placeholder: "الاسم على البطاقة"
     },
     payButton: "دفع",
-    securePayment: "دفع آمن عبر Stripe"
+    securePayment: "دفع آمن عبر Stripe",
+    refundGuarantee: "التأكيد المرجعي للاسترجاع 30 يوم"
   },
   messages: {
     vatReverseCharge: "تم تطبيق التحصيل العكسي لضريبة القيمة المضافة (0% ضريبة القيمة المضافة)",
