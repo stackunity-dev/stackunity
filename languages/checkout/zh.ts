@@ -9,6 +9,10 @@ export default {
       title: "高级开发工具",
       description: "访问高级开发工具和功能"
     },
+    analytics: {
+      title: "高级分析工具",
+      description: "访问完整的分析数据以供您的网站"
+    },
     prioritySupport: {
       title: "优先支持",
       description: "获得所有问题的优先支持"
@@ -66,6 +70,8 @@ export default {
     exportOutsideEU: "欧盟外出口 - 增值税不适用"
   },
   benefits: {
+    premiumTitle: "高级功能",
+    standardTitle: "标准功能",
     premium: [
       "无限制访问所有高级功能",
       "优先支持和更新",
@@ -82,6 +88,7 @@ export default {
     ]
   },
   payment: {
+    paymentInformation: "支付信息",
     billingCountry: "账单国家",
     businessCustomer: "我是为企业购买",
     vatNumber: {
@@ -114,5 +121,11 @@ export default {
     postPaymentError: "支付成功，但某些支付后操作失败。请刷新您的页面。",
     premiumUpdateError: "支付成功，但高级状态更新失败。请刷新页面。",
     reloginRequired: "您的高级状态已更新。请重新登录以访问您的高级功能。"
+  },
+  testimonials: {
+    premium: {
+      text: "StackUnity 完全改变了我的开发工作流程。投资绝对值得！",
+      author: "Nûr D. - 全栈开发者"
+    }
   }
 } 

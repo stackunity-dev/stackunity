@@ -9,6 +9,10 @@ export default {
       title: "Outils de Développement Avancés",
       description: "Accès aux outils et fonctionnalités premium de développement"
     },
+    analytics: {
+      title: "Outils d'Analyse Premium",
+      description: "Accès aux données d'analyse complètes pour votre site web"
+    },
     prioritySupport: {
       title: "Support Prioritaire",
       description: "Obtenez un support prioritaire pour toutes vos questions"
@@ -66,6 +70,8 @@ export default {
     exportOutsideEU: "Export hors UE - TVA non applicable"
   },
   benefits: {
+    premiumTitle: "Fonctionnalités Premium",
+    standardTitle: "Fonctionnalités Standard",
     premium: [
       "Accès illimité à toutes les fonctionnalités premium",
       "Support et mises à jour prioritaires",
@@ -82,6 +88,7 @@ export default {
     ]
   },
   payment: {
+    paymentInformation: "Informations de paiement",
     billingCountry: "Pays de facturation",
     businessCustomer: "J'achète pour une entreprise",
     vatNumber: {
@@ -114,5 +121,11 @@ export default {
     postPaymentError: "Paiement réussi mais certaines opérations post-paiement ont échoué. Veuillez rafraîchir votre page.",
     premiumUpdateError: "Paiement réussi mais échec de la mise à jour du statut premium. Veuillez rafraîchir la page.",
     reloginRequired: "Votre statut premium a été mis à jour. Veuillez vous reconnecter pour accéder à vos fonctionnalités premium."
+  },
+  testimonials: {
+    premium: {
+      text: "StackUnity a complètement transformé mon workflow de développement. L'investissement en vaut vraiment la peine!",
+      author: "Nûr D. - Développeur Full Stack"
+    }
   }
 } 

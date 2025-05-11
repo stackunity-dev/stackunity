@@ -9,6 +9,15 @@
               <span class="sr-only">{{ t().meta.title }}</span>
             </h1>
 
+            <div class="premium-highlight mb-8">
+              <v-chip color="primary" size="x-large" class="premium-badge">
+                <v-icon start icon="mdi-crown" class="mr-2"></v-icon>
+                {{ t().plans.bestChoice }}
+              </v-chip>
+              <h2 class="text-h4 font-weight-bold mt-4 text-white mb-2">{{ t().plans.premium.title }}</h2>
+              <p class="text-subtitle-1 text-white-darken-2 premium-tagline">{{ t().plans.premium.description }}</p>
+            </div>
+
             <div class="features-list">
               <div v-for="(feature, index) in features" :key="index" class="feature-item d-flex align-center"
                 :class="{ 'mb-6': index !== features.length - 1 }">
@@ -16,6 +25,18 @@
                 <div class="text-left">
                   <p class="text-body-1 font-weight-medium text-white mb-1">{{ feature.title }}</p>
                   <p class="text-body-2 text-white-darken-2">{{ feature.description }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-section mt-8">
+              <div class="testimonial-card pa-4">
+                <div class="testimonial-stars mb-2 d-flex justify-center">
+                  <v-icon color="amber" v-for="i in 5" :key="i">mdi-star</v-icon>
+                </div>
+                <p class="testimonial-text text-body-2 mb-3">{{ t().testimonials.premium.text }}</p>
+                <div class="testimonial-author">
+                  <span class="text-caption font-weight-medium">{{ t().testimonials.premium.author }}</span>
                 </div>
               </div>
             </div>
@@ -28,14 +49,20 @@
               <img src="/logo/stackunity-title.png" alt="StackUnity Logo" width="300" />
             </div>
 
+            <h2 class="text-h4 font-weight-bold text-center mb-6">{{ t().meta.title }}</h2>
+
             <div class="price-card mb-6">
               <v-card class="elevation-3 rounded-lg overflow-hidden">
+                <div class="card-premium-banner" v-if="selectedPlan === 'premium'">
+                  <v-icon icon="mdi-crown" class="mr-1" size="small"></v-icon>
+                  {{ t().plans.bestChoice }}
+                </div>
                 <v-card-text class="pa-6">
                   <div class="d-flex justify-space-between align-center mb-4">
                     <div>
-                      <h2 class="text-h5 font-weight-bold mb-1">{{ selectedPlan === 'premium' ? t().plans.premium.title
+                      <h3 class="text-h5 font-weight-bold mb-1">{{ selectedPlan === 'premium' ? t().plans.premium.title
                         :
-                        t().plans.standard.title }}</h2>
+                        t().plans.standard.title }}</h3>
                       <div class="text-subtitle-1 text-medium-emphasis">{{ selectedPlan === 'premium' ?
                         t().plans.premium.description : t().plans.standard.description }}</div>
                     </div>
@@ -118,15 +145,24 @@
               </v-card>
             </div>
 
-            <div class="benefits-list mb-6">
-              <div v-for="(benefit, index) in benefits" :key="index" class="benefit-item d-flex align-center mb-3">
-                <v-icon color="success" size="small" class="mr-2">mdi-check-circle</v-icon>
-                <span class="text-body-2">{{ benefit }}</span>
+            <div class="benefits-section mb-6 pa-4 rounded-lg">
+              <h3 class="text-h6 font-weight-bold mb-4">{{ selectedPlan === 'premium' ?
+                t().benefits.premiumTitle : t().benefits.standardTitle }}</h3>
+              <div class="benefits-list">
+                <div v-for="(benefit, index) in benefits" :key="index" class="benefit-item d-flex align-center mb-3">
+                  <v-icon color="success" size="small" class="mr-2">mdi-check-circle</v-icon>
+                  <span class="text-body-2">{{ benefit }}</span>
+                </div>
               </div>
             </div>
 
             <v-form @submit.prevent="processPayment">
               <div class="credit-card-container mb-6">
+                <div class="payment-section-title d-flex align-center mb-4">
+                  <v-icon icon="mdi-credit-card-outline" class="mr-2" color="primary"></v-icon>
+                  <h3 class="text-h6 font-weight-bold">{{ t().payment.paymentInformation }}</h3>
+                </div>
+
                 <div class="credit-card-wrapper">
                   <div class="credit-card-header d-flex justify-space-between align-center mb-4">
                     <div class="credit-card-chip"></div>
@@ -198,7 +234,7 @@
               </div>
 
               <v-btn block color="primary" type="submit" :loading="loading" min-height="52"
-                class="text-none font-weight-medium rounded-lg">
+                class="pay-button text-none font-weight-medium rounded-lg">
                 <v-icon start class="mr-2">mdi-credit-card-check-outline</v-icon>
                 {{ t().payment.payButton }} {{ taxDetails.totalAmount }}€
                 <template v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0">TTC</template>
@@ -208,9 +244,15 @@
                 </template>
               </v-btn>
 
-              <div class="d-flex align-center justify-center mt-5">
-                <v-icon icon="mdi-shield-check-outline" size="small" class="mr-2"></v-icon>
-                <span class="text-caption text-medium-emphasis">{{ t().payment.securePayment }}</span>
+              <div class="garanties-section mt-5">
+                <div class="d-flex align-center justify-center mb-2">
+                  <v-icon icon="mdi-shield-check-outline" size="small" class="mr-2" color="success"></v-icon>
+                  <span class="text-caption text-medium-emphasis">{{ t().payment.securePayment }}</span>
+                </div>
+                <div class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-clock-outline" size="small" class="mr-2" color="info"></v-icon>
+                  <span class="text-caption text-medium-emphasis">Garantie de remboursement 30 jours</span>
+                </div>
               </div>
             </v-form>
           </v-card>
@@ -741,6 +783,9 @@ const applyPromoCode = async () => {
 .checkout-card {
   background-color: rgb(var(--v-theme-surface));
   border-radius: 16px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
 .sr-only {
@@ -824,11 +869,34 @@ const applyPromoCode = async () => {
 .price-card {
   background: linear-gradient(145deg, rgb(var(--v-theme-surface)) 0%, rgb(var(--v-theme-surface-variant)) 100%);
   border-radius: 12px;
+  transition: transform 0.3s ease;
 }
+
+.price-card:hover {
+  transform: translateY(-4px);
+}
+
 .price-card .v-card {
   background: rgba(var(--v-theme-surface), 0.8);
   backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
 }
+
+.card-premium-banner {
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  background: linear-gradient(45deg, rgba(var(--v-theme-primary), 1), rgba(var(--v-theme-info), 1));
+  color: white;
+  padding: 5px 30px;
+  font-weight: bold;
+  font-size: 12px;
+  transform: rotate(45deg);
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
 .price-details {
   background: rgba(var(--v-theme-surface-variant), 0.1);
   padding: 16px;
@@ -861,5 +929,68 @@ const applyPromoCode = async () => {
   background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-info)));
   color: white;
   box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.3);
+}
+
+.benefits-section {
+  background: rgba(var(--v-theme-surface-variant), 0.05);
+  border: 1px solid rgba(var(--v-theme-primary), 0.1);
+  transition: all 0.3s ease;
+}
+
+.benefits-section:hover {
+  border-color: rgba(var(--v-theme-primary), 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.pay-button {
+  font-size: 1.1rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-info)));
+  box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.4);
+}
+
+.pay-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(var(--v-theme-primary), 0.5);
+}
+
+.premium-badge {
+  background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-info)));
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(var(--v-theme-primary), 0.3);
+}
+
+.premium-tagline {
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+.testimonial-section {
+  margin-top: 3rem;
+}
+
+.testimonial-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.testimonial-text {
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.garanties-section {
+  background: rgba(var(--v-theme-surface-variant), 0.05);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(var(--v-theme-success), 0.1);
 }
 </style>

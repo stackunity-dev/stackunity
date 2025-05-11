@@ -9,6 +9,10 @@ export default {
       title: "أدوات تطوير متقدمة",
       description: "الوصول إلى أدوات وميزات التطوير المتميزة"
     },
+    analytics: {
+      title: "أدوات تحليل متقدمة",
+      description: "الوصول إلى جميع بيانات التحليل لموقعك"
+    },
     prioritySupport: {
       title: "دعم ذو أولوية",
       description: "احصل على دعم ذو أولوية لجميع أسئلتك"
@@ -66,6 +70,8 @@ export default {
     exportOutsideEU: "تصدير خارج الاتحاد الأوروبي - ضريبة القيمة المضافة غير منطبقة"
   },
   benefits: {
+    premiumTitle: "الميزات المتميزة",
+    standardTitle: "الميزات القياسية",
     premium: [
       "وصول غير محدود لجميع الميزات المتميزة",
       "دعم وتحديثات ذات أولوية",
@@ -82,6 +88,7 @@ export default {
     ]
   },
   payment: {
+    paymentInformation: "معلومات الدفع",
     billingCountry: "بلد الفوترة",
     businessCustomer: "أنا أشتري لشركة",
     vatNumber: {
@@ -114,5 +121,11 @@ export default {
     postPaymentError: "تم الدفع بنجاح ولكن فشلت بعض عمليات ما بعد الدفع. يرجى تحديث صفحتك.",
     premiumUpdateError: "تم الدفع بنجاح ولكن فشل تحديث الحالة المتميزة. يرجى تحديث الصفحة.",
     reloginRequired: "تم تحديث حالتك المتميزة. يرجى تسجيل الدخول مرة أخرى للوصول إلى ميزاتك المتميزة."
+  },
+  testimonials: {
+    premium: {
+      text: "تم تحديث حالتك المتميزة. يرجى تسجيل الدخول مرة أخرى للوصول إلى ميزاتك المتميزة.",
+      author: "Nûr D. - Full Stack Developer"
+    }
   }
 } 

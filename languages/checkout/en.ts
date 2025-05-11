@@ -9,6 +9,10 @@ export default {
       title: "Advanced Development Tools",
       description: "Access to premium development tools and features"
     },
+    analytics: {
+      title: "Analytics",
+      description: "Access to full analytics data for your website"
+    },
     prioritySupport: {
       title: "Priority Support",
       description: "Get priority support for all your questions"
@@ -66,6 +70,8 @@ export default {
     exportOutsideEU: "Export outside EU - VAT not applicable"
   },
   benefits: {
+    premiumTitle: "Premium Features",
+    standardTitle: "Standard Features",
     premium: [
       "Unlimited access to all premium features",
       "Priority support and updates",
@@ -82,6 +88,7 @@ export default {
     ]
   },
   payment: {
+    paymentInformation: "Payment Information",
     billingCountry: "Billing Country",
     businessCustomer: "I'm purchasing for a business",
     vatNumber: {
@@ -114,5 +121,11 @@ export default {
     postPaymentError: "Payment successful but some post-payment operations failed. Please refresh your page.",
     premiumUpdateError: "Payment successful but premium status update failed. Please refresh the page.",
     reloginRequired: "Your premium status has been updated. Please log in again to access your premium features."
+  },
+  testimonials: {
+    premium: {
+      text: "StackUnity has completely transformed my development workflow. The investment is definitely worth it!",
+      author: "Nûr D. - Full Stack Developer"
+    }
   }
 } 

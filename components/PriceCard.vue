@@ -3,11 +3,14 @@
     <div v-if="isPopular" class="popular-badge">{{ t().section.popular }}</div>
     <v-card-item>
       <div class="d-flex align-center mb-4" aria-label="Plan details">
-        <v-avatar :color="plan.avatarColor" size="48" class="mr-4">
-          <v-icon>{{ plan.icon }}</v-icon>
-        </v-avatar>
+        <img src="/images/logo.png" alt="StackUnity Logo" class="rounded-pill mr-2" width="48" height="48" />
         <div>
-          <div class="text-h5 font-weight-bold">{{ plan.name }}</div>
+          <div class="text-h5 font-weight-bold" :class="{
+            'text-gradient-gold': plan.name === 'Premium',
+            'text-gradient-standard': plan.name === 'Standard'
+          }">
+            {{ plan.name }}
+          </div>
           <div class="text-subtitle-2 text-medium-emphasis">{{ plan.description }}</div>
         </div>
       </div>
@@ -15,21 +18,23 @@
         {{ selectedCurrency }}{{ displayPrice }}
         <span class="text-subtitle-1 text-medium-emphasis" aria-label="Lifetime"> /{{ t().plans.lifetime.name }}</span>
       </div>
-      <v-chip v-if="plan.freeTrialDays">
+      <v-chip v-if="plan.freeTrialDays" color="success" variant="outlined" prepend-icon="mdi-timer-outline"
+        class="mb-4">
         {{ t().plans.standard.trial.days.replace('{days}', plan.freeTrialDays) }}
       </v-chip>
       <v-divider class="mb-4"></v-divider>
       <v-list density="compact" class="bg-transparent">
         <v-list-item v-for="feature in plan.features" :key="feature" class="text-body-1">
           <template v-slot:prepend>
-            <v-icon class="mr-2" color="success">mdi-check</v-icon>
+            <v-icon class="mr-2" color="success">mdi-check-circle</v-icon>
           </template>
           {{ feature }}
         </v-list-item>
       </v-list>
     </v-card-item>
     <v-card-actions class="pa-6 pt-0">
-      <v-btn block :color="btnColor" variant="elevated" :to="btnTo" class="btn-action" aria-label="Get started">
+      <v-btn block :color="btnColor" variant="elevated" :to="btnTo" class="btn-action" aria-label="Get started"
+        size="large">
         {{ btnText }}
         <v-icon v-if="btnIcon" end>{{ btnIcon }}</v-icon>
       </v-btn>
@@ -125,5 +130,45 @@ const displayPrice = computed(() => {
   transform: rotate(45deg);
   z-index: 1;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.text-gradient-gold {
+  background-image: linear-gradient(45deg,
+      #F59E0B,
+      #FBBF24,
+      #D97706);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  animation: gradient 3s linear infinite;
+}
+
+.text-gradient-standard {
+  background-image: linear-gradient(45deg,
+      #3B82F6,
+      #60A5FA,
+      #2563EB);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  animation: gradient 3s linear infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
 }
 </style>
