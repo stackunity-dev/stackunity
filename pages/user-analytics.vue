@@ -2550,8 +2550,34 @@ function checkCurrentExclusionStatus() {
 }
 
 function removeCurrentExclusion() {
+  // Supprimer les marqueurs d'exclusion
   localStorage.removeItem('stackunity_excluded');
   localStorage.removeItem('stackunity_excluded_reason');
+
+  // Supprimer l'ID visiteur des exclusions
+  if (currentSite.value) {
+    const storageKey = `stackunity_exclusions_${currentSite.value.id}`;
+    try {
+      // Récupérer la liste des exclusions actuelle
+      const savedExclusions = localStorage.getItem(storageKey);
+      if (savedExclusions) {
+        const exclusions = JSON.parse(savedExclusions);
+        const visitorId = localStorage.getItem('stackunity_visitor_id');
+
+        // Filtrer pour retirer l'ID visiteur actuel
+        const newExclusions = exclusions.filter(exc =>
+          !(exc.type === 'visitor' && exc.value === visitorId)
+        );
+
+        // Sauvegarder la nouvelle liste
+        localStorage.setItem(storageKey, JSON.stringify(newExclusions));
+        localStorage.setItem(`${storageKey}_updated`, new Date().toISOString());
+      }
+    } catch (e) {
+      console.error('Erreur lors de la suppression de l\'exclusion:', e);
+    }
+  }
+
   isCurrentlyExcluded.value = false;
   exclusionReason.value = '';
   showMessage(t.analytics.reactivateTracking || 'Tracking réactivé avec succès. Rechargez la page pour que les changements prennent effet.', 'success');
