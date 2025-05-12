@@ -99,7 +99,7 @@
                           <v-divider vertical class="mx-2"></v-divider>
                           <div class="stat-item text-center">
                             <div class="text-caption text-medium-emphasis">{{ t.analytics.interactions || 'Interactions'
-                              }}</div>
+                            }}</div>
                             <div class="text-subtitle-1 font-weight-bold">
                               {{ site.stats && site.stats.totalInteractions || '0' }}
                             </div>
@@ -125,7 +125,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ t.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ t.welcome.few.description
-                      }}</p>
+                    }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ t.welcome.few.action }}
@@ -277,7 +277,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                    }}</v-list-item-title>
+                  }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -429,12 +429,12 @@
                         <v-btn value="pie" size="small">
                           <v-icon>mdi-chart-pie</v-icon>
                           <v-tooltip activator="parent">{{ t.analytics.chart.chartPie || 'Graphique circulaire'
-                            }}</v-tooltip>
+                          }}</v-tooltip>
                         </v-btn>
                         <v-btn value="donut" size="small">
                           <v-icon>mdi-chart-donut</v-icon>
                           <v-tooltip activator="parent">{{ t.analytics.chart.chartDonut || 'Graphique annulaire'
-                            }}</v-tooltip>
+                          }}</v-tooltip>
                         </v-btn>
                       </v-btn-toggle>
                     </div>
@@ -700,7 +700,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                                }}</span>
+                              }}</span>
                             </div>
                           </td>
                           <td>
@@ -871,7 +871,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-              }}</p>
+            }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ t.engagement.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -994,7 +994,7 @@
               <v-list-item v-if="visitorExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                }}</v-list-item-title>
+                  }}</v-list-item-title>
               </v-list-item>
             </v-list>
 
@@ -2550,26 +2550,21 @@ function checkCurrentExclusionStatus() {
 }
 
 function removeCurrentExclusion() {
-  // Supprimer les marqueurs d'exclusion
   localStorage.removeItem('stackunity_excluded');
   localStorage.removeItem('stackunity_excluded_reason');
 
-  // Supprimer l'ID visiteur des exclusions
   if (currentSite.value) {
     const storageKey = `stackunity_exclusions_${currentSite.value.id}`;
     try {
-      // Récupérer la liste des exclusions actuelle
       const savedExclusions = localStorage.getItem(storageKey);
       if (savedExclusions) {
         const exclusions = JSON.parse(savedExclusions);
         const visitorId = localStorage.getItem('stackunity_visitor_id');
 
-        // Filtrer pour retirer l'ID visiteur actuel
         const newExclusions = exclusions.filter(exc =>
           !(exc.type === 'visitor' && exc.value === visitorId)
         );
 
-        // Sauvegarder la nouvelle liste
         localStorage.setItem(storageKey, JSON.stringify(newExclusions));
         localStorage.setItem(`${storageKey}_updated`, new Date().toISOString());
       }

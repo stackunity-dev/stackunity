@@ -753,34 +753,40 @@
       },
       
       getLocation: function(callback) {
-        // Vérifier si la géolocalisation est disponible dans le navigateur
-        if (navigator.geolocation) {
+        console.log('[StackUnity DEBUG] Tentative de récupération de la géolocalisation');
+        
+        if (!navigator.geolocation) {
+          console.log('[StackUnity DEBUG] Géolocalisation non supportée par le navigateur');
+          return callback(null);
+        }
+        
+        try {
           navigator.geolocation.getCurrentPosition(
-            // Succès
             function(position) {
-              const locationData = {
+              console.log('[StackUnity DEBUG] Géolocalisation réussie:', {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy,
-                timestamp: new Date(position.timestamp).toISOString()
-              };
-              console.log('[StackUnity Tracker] Géolocalisation récupérée:', locationData);
-              callback(locationData);
+                accuracy: position.coords.accuracy
+              });
+              
+              callback({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy
+              });
             },
-            // Erreur
             function(error) {
-              console.warn('[StackUnity Tracker] Erreur de géolocalisation:', error.message);
+              console.log('[StackUnity DEBUG] Erreur de géolocalisation:', error.code, error.message);
               callback(null);
             },
-            // Options
             {
-              enableHighAccuracy: false, // Précision standard pour éviter la surconsommation de batterie
-              timeout: 5000,            // Timeout après 5 secondes
-              maximumAge: 600000        // Accepter une position de moins de 10 minutes
+              enableHighAccuracy: false,
+              timeout: 5000,
+              maximumAge: 0
             }
           );
-        } else {
-          console.warn('[StackUnity Tracker] Géolocalisation non supportée par ce navigateur');
+        } catch (e) {
+          console.log('[StackUnity DEBUG] Exception lors de la géolocalisation:', e);
           callback(null);
         }
       },
@@ -1125,21 +1131,20 @@
       },
       
       trackPageView: function() {
-        if (state.isExcluded || utils.isLocalEnvironment()) return;
+        if (state.isExcluded || utils.isLocalEnvironment()) {
+          console.log('[StackUnity DEBUG] Tracking désactivé - isExcluded:', state.isExcluded, 'isLocalEnvironment:', utils.isLocalEnvironment());
+          return;
+        }
+        
+        console.log('[StackUnity DEBUG] Début trackPageView');
         
         state.startTime = new Date();
-        state.lastScrollTimestamp = new Date().getTime();
-        
-        // Récupération des données de base
-        const referrer = utils.getReferrer() || '';
-        const { source: referrerSource, name: referrerName } = utils.getReferrerSource();
-        const utmParams = utils.getUTMParams();
         
         let currentUrl = '';
         try {
           currentUrl = window.location.href;
         } catch (e) {
-          console.error('[StackUnity Tracker] Erreur lors de la récupération de window.location.href:', e);
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL:', e);
         }
         
         if (!currentUrl) {
@@ -1154,25 +1159,9 @@
           currentUrl = 'https://stackunity.tech/fallback';
         }
         
-        let currentPath = '';
-        try {
-          currentPath = window.location.pathname;
-        } catch (e) {
-          console.error('[StackUnity Tracker] Erreur lors de la récupération de window.location.pathname:', e);
-          try {
-            const urlObj = new URL(currentUrl);
-            currentPath = urlObj.pathname;
-          } catch (e2) {
-            currentPath = '/fallback';
-          }
-        }
-        
-        if (!currentPath) {
-          currentPath = '/fallback';
-        }
-        
-        const now = new Date();
-        const enterTimeIso = now.toISOString();
+        const referrer = utils.getReferrer();
+        const referrerInfo = utils.getReferrerSource();
+        const utmParams = utils.getUTMParams();
         
         const pageview = {
           type: 'pageView',
@@ -1182,24 +1171,26 @@
           websiteId: state.websiteId,
           url: currentUrl,
           pageUrl: currentUrl,
-          path: currentPath,
-          title: document.title || 'Page sans titre',
+          path: window.location.pathname || '/',
+          title: document.title || 'Untitled Page',
           referrer: referrer,
-          referrerSource: referrerSource,
-          referrerName: referrerName,
+          referrerSource: referrerInfo.source,
+          referrerName: referrerInfo.name,
           userAgent: navigator.userAgent || 'unknown',
-          screenWidth: window.innerWidth || 1024,
-          screenHeight: window.innerHeight || 768,
-          timestamp: enterTimeIso,
-          enterTime: enterTimeIso,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-          language: navigator.language || 'fr',
+          screenWidth: window.screen.width,
+          screenHeight: window.screen.height,
+          timestamp: new Date().toISOString(),
+          enterTime: new Date().toISOString(),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown',
+          language: navigator.language || 'unknown',
           utm_source: utmParams.utm_source,
           utm_medium: utmParams.utm_medium,
           utm_campaign: utmParams.utm_campaign,
           utm_content: utmParams.utm_content,
           utm_term: utmParams.utm_term
         };
+        
+        console.log('[StackUnity DEBUG] Données de pageView:', pageview);
         
         state.buffer.push(pageview);
         state.hasActivity = false;
@@ -1224,12 +1215,19 @@
             };
             
             state.buffer.push(locationEvent);
-            console.log('[StackUnity Tracker] Événement de géolocalisation ajouté:', locationEvent);
+            console.log('[StackUnity DEBUG] Événement de géolocalisation ajouté:', locationEvent);
+            
+            // Forcer l'envoi immédiat des données de géolocalisation
+            console.log('[StackUnity DEBUG] Envoi forcé des données de géolocalisation');
+            tracker.flushEvents();
+          } else {
+            console.log('[StackUnity DEBUG] Pas de données de géolocalisation disponibles');
           }
         });
         
         if (config.trackVisibility) {
           setTimeout(() => {
+            console.log('[StackUnity DEBUG] Configuration de la visibilité');
           }, 500);
         }
       },
@@ -1259,6 +1257,8 @@
         const target = e.target.closest('a, button, [role="button"], input[type="button"], input[type="submit"]');
         
         if (!target) return;
+        
+        console.log('[StackUnity DEBUG] Clic détecté sur:', target);
         
         let selector = '';
         
@@ -1328,6 +1328,19 @@
         const relativeX = (clickX / pageWidth * 100).toFixed(2);
         const relativeY = (clickY / pageHeight * 100).toFixed(2);
         
+        console.log('[StackUnity DEBUG] Dimensions du clic:', {
+          pageWidth,
+          pageHeight,
+          viewportWidth,
+          viewportHeight,
+          scrollLeft,
+          scrollTop,
+          clickX,
+          clickY,
+          relativeX,
+          relativeY
+        });
+        
         const interaction = {
           type: 'interaction',
           id: utils.generateUUID(),
@@ -1354,6 +1367,8 @@
           pageUrl: currentUrl,
           userAgent: navigator.userAgent || 'unknown'
         };
+        
+        console.log('[StackUnity DEBUG] Données d\'interaction envoyées:', interaction);
         
         state.buffer.push(interaction);
         state.hasActivity = true;
