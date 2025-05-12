@@ -750,7 +750,40 @@
       },
       
       formatDate: function(dateString) {
-      }
+      },
+      
+      getLocation: function(callback) {
+        // Vérifier si la géolocalisation est disponible dans le navigateur
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            // Succès
+            function(position) {
+              const locationData = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+                timestamp: new Date(position.timestamp).toISOString()
+              };
+              console.log('[StackUnity Tracker] Géolocalisation récupérée:', locationData);
+              callback(locationData);
+            },
+            // Erreur
+            function(error) {
+              console.warn('[StackUnity Tracker] Erreur de géolocalisation:', error.message);
+              callback(null);
+            },
+            // Options
+            {
+              enableHighAccuracy: false, // Précision standard pour éviter la surconsommation de batterie
+              timeout: 5000,            // Timeout après 5 secondes
+              maximumAge: 600000        // Accepter une position de moins de 10 minutes
+            }
+          );
+        } else {
+          console.warn('[StackUnity Tracker] Géolocalisation non supportée par ce navigateur');
+          callback(null);
+        }
+      },
     };
 
     const api = {
@@ -1172,21 +1205,31 @@
         state.hasActivity = false;
         state.scrollDepth = 0;
         
-        if (config.trackVisibility) {
-          setTimeout(() => {
-            const pageContent = utils.analyzePageContent();
-            
-            const pageAnalysis = {
-              type: 'pageAnalysis',
+        // Essayer de récupérer la géolocalisation si l'utilisateur l'autorise
+        utils.getLocation(function(locationData) {
+          if (locationData) {
+            // Ajouter un événement de géolocalisation
+            const locationEvent = {
+              type: 'geoLocation',
               id: utils.generateUUID(),
               pageViewId: state.currentPageViewId,
+              sessionId: state.sessionId,
+              visitorId: state.visitorId,
+              websiteId: state.websiteId,
               timestamp: new Date().toISOString(),
-              url: currentUrl,
-              pageUrl: currentUrl,
-              data: pageContent
+              latitude: locationData.latitude,
+              longitude: locationData.longitude,
+              accuracy: locationData.accuracy,
+              pageUrl: currentUrl
             };
             
-            state.buffer.push(pageAnalysis);
+            state.buffer.push(locationEvent);
+            console.log('[StackUnity Tracker] Événement de géolocalisation ajouté:', locationEvent);
+          }
+        });
+        
+        if (config.trackVisibility) {
+          setTimeout(() => {
           }, 500);
         }
       },
@@ -1255,6 +1298,36 @@
           currentUrl = 'https://stackunity.tech/fallback';
         }
         
+        // Récupérer les dimensions de la page et du viewport
+        const pageWidth = Math.max(
+          document.body.scrollWidth,
+          document.body.offsetWidth,
+          document.documentElement.clientWidth,
+          document.documentElement.scrollWidth,
+          document.documentElement.offsetWidth
+        );
+        
+        const pageHeight = Math.max(
+          document.body.scrollHeight,
+          document.body.offsetHeight,
+          document.documentElement.clientHeight,
+          document.documentElement.scrollHeight,
+          document.documentElement.offsetHeight
+        );
+        
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Coordonnées absolues du clic par rapport à la page entière
+        const clickX = e.clientX + scrollLeft;
+        const clickY = e.clientY + scrollTop;
+        
+        // Coordonnées relatives en pourcentage
+        const relativeX = (clickX / pageWidth * 100).toFixed(2);
+        const relativeY = (clickY / pageHeight * 100).toFixed(2);
+        
         const interaction = {
           type: 'interaction',
           id: utils.generateUUID(),
@@ -1265,8 +1338,18 @@
           timestamp: new Date().toISOString(),
           value: {
             href: target.href || null,
-            x: e.clientX,
-            y: e.clientY
+            clientX: e.clientX,        // Position relative à la fenêtre visible
+            clientY: e.clientY,
+            pageX: clickX,             // Position absolue sur la page
+            pageY: clickY,
+            relativeX: parseFloat(relativeX),  // Position relative en pourcentage
+            relativeY: parseFloat(relativeY),
+            pageWidth: pageWidth,      // Dimensions totales de la page
+            pageHeight: pageHeight,
+            viewportWidth: viewportWidth, // Dimensions de la fenêtre visible
+            viewportHeight: viewportHeight,
+            scrollTop: scrollTop,      // Position du scroll
+            scrollLeft: scrollLeft
           },
           pageUrl: currentUrl,
           userAgent: navigator.userAgent || 'unknown'

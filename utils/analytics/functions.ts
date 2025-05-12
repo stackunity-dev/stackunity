@@ -280,7 +280,6 @@ function normalizeUrl(url: string): string {
   if (!url) return url;
 
   try {
-    // Si c'est une URL complète, extraire le chemin
     let pathname = url;
     let hostname = '';
 
@@ -290,10 +289,8 @@ function normalizeUrl(url: string): string {
       hostname = urlObj.hostname;
     }
 
-    // Supprimer les préfixes de langue
     const normalizedPath = pathname.replace(/^\/(fr|en)(\/|$)/, '$2');
 
-    // Si le chemin est vide, retourner '/'
     if (!normalizedPath || normalizedPath === '') {
       return hostname ? hostname + '/' : '/';
     }
@@ -301,6 +298,54 @@ function normalizeUrl(url: string): string {
     return hostname ? hostname + normalizedPath : normalizedPath;
   } catch (e) {
     console.error('Erreur lors de la normalisation de l\'URL:', e);
+    return url;
+  }
+}
+
+function formatDateToYYYYMMDD(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getChartColor(index: number): string {
+  const colors = [
+    '#1976D2',
+    '#4CAF50',
+    '#FF9800',
+    '#9C27B0',
+    '#F44336',
+    '#00BCD4',
+    '#FFEB3B',
+    '#3F51B5',
+    '#E91E63',
+    '#009688',
+  ];
+
+  return colors[index % colors.length];
+}
+
+function formatPagePath(url: string, cleanPath: string | null | undefined, isHome: boolean | null | undefined) {
+  if (!url) return 'Unknown page';
+
+  if (isHome) return "Landing page";
+
+  try {
+    if (cleanPath) {
+      return cleanPath === '/' ? "Landing page" : cleanPath;
+    }
+
+    if (url.startsWith('http')) {
+      const urlObj = new URL(url);
+      const path = urlObj.pathname;
+      return path === '/' ? "Landing page" : path;
+    }
+
+    return url === '/' ? "Landing page" : url;
+  } catch (e) {
+    console.error('Erreur lors du formatage du chemin de page:', e);
     return url;
   }
 }
@@ -324,6 +369,9 @@ export {
   getSourceIcon,
   getSourceLabel,
   isLocalEnvironment,
-  normalizeUrl
+  normalizeUrl,
+  formatDateToYYYYMMDD,
+  getChartColor,
+  formatPagePath
 };
 

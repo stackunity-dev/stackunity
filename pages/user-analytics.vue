@@ -26,16 +26,24 @@
           </v-col>
         </v-row>
 
-        <template v-if="!currentSite">
+        <template v-if="isLoading">
+          <v-row>
+            <v-col v-for="i in 4" :key="`skeleton-site-${i}`" cols="12" sm="6" md="4" lg="3">
+              <div class="skeleton-site-card"></div>
+            </v-col>
+          </v-row>
+        </template>
+
+        <template v-else-if="!currentSite">
           <template v-if="websites.length === 0">
             <v-card class="mb-6 bg-transparent rounded-lg" elevation="24">
               <v-card-text class="text-center py-8">
                 <v-icon class="mb-4" icon="mdi-chart-timeline-variant" size="64" color="primary"></v-icon>
-                <h2 class="text-h4 mb-2">{{ tWithPurge.welcome.empty.title }}</h2>
-                <p class="text-body-1 mb-6 mx-auto" style="max-width: 600px;">{{ tWithPurge.welcome.empty.description }}
+                <h2 class="text-h4 mb-2">{{ t.welcome.empty.title }}</h2>
+                <p class="text-body-1 mb-6 mx-auto" style="max-width: 600px;">{{ t.welcome.empty.description }}
                 </p>
                 <v-btn color="primary" prepend-icon="mdi-plus" size="large" @click="showAddSiteDialog = true">
-                  {{ tWithPurge.welcome.empty.action }}
+                  {{ t.welcome.empty.action }}
                 </v-btn>
               </v-card-text>
             </v-card>
@@ -90,9 +98,10 @@
                           </div>
                           <v-divider vertical class="mx-2"></v-divider>
                           <div class="stat-item text-center">
-                            <div class="text-caption text-medium-emphasis">{{ t.analytics.temps }}</div>
+                            <div class="text-caption text-medium-emphasis">{{ t.analytics.interactions || 'Interactions'
+                              }}</div>
                             <div class="text-subtitle-1 font-weight-bold">
-                              {{ site.stats.dureePageMoyenne || '0s' }}
+                              {{ site.stats && site.stats.totalInteractions || '0' }}
                             </div>
                           </div>
                         </div>
@@ -114,12 +123,12 @@
                     <div class="add-site-icon-container mb-4 pulse-animation">
                       <v-icon icon="mdi-web-plus" size="48" color="primary"></v-icon>
                     </div>
-                    <h3 class="text-h5 font-weight-bold mb-3">{{ tWithPurge.welcome.few.title }}</h3>
-                    <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ tWithPurge.welcome.few.description
+                    <h3 class="text-h5 font-weight-bold mb-3">{{ t.welcome.few.title }}</h3>
+                    <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ t.welcome.few.description
                       }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
-                      {{ tWithPurge.welcome.few.action }}
+                      {{ t.welcome.few.action }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -174,9 +183,10 @@
                       </div>
                       <v-divider vertical class="mx-2"></v-divider>
                       <div class="stat-item text-center">
-                        <div class="text-caption text-medium-emphasis">{{ t.analytics.temps }}</div>
+                        <div class="text-caption text-medium-emphasis">{{ t.analytics.interactions || 'Interactions' }}
+                        </div>
                         <div class="text-subtitle-1 font-weight-bold">
-                          {{ site.stats.dureePageMoyenne || '0s' }}
+                          {{ site.stats && site.stats.totalInteractions || '0' }}
                         </div>
                       </div>
                     </div>
@@ -195,11 +205,11 @@
           <v-card v-if="websites.length <= 3" class="mt-6 bg-surface">
             <v-card-title class="text-h5">
               <v-icon start class="mr-2">mdi-lightbulb</v-icon>
-              {{ tWithPurge.welcome.features }}
+              {{ t.welcome.features }}
             </v-card-title>
             <v-card-text>
               <v-row>
-                <v-col v-for="(card, i) in tWithPurge.welcome.cards" :key="i" cols="12" sm="6" md="3">
+                <v-col v-for="(card, i) in t.welcome.cards" :key="i" cols="12" sm="6" md="3">
                   <v-card class="h-100" variant="outlined">
                     <v-card-text class="text-center">
                       <v-icon :icon="card.icon" size="36" :color="card.color" class="mb-3"></v-icon>
@@ -253,7 +263,7 @@
               </template>
               <v-list>
                 <v-list-item prepend-icon="mdi-database-remove" @click="showDataPurgeDialog = true">
-                  <v-list-item-title>{{ tWithPurge.purge.purgeData || 'Purger les données' }}</v-list-item-title>
+                  <v-list-item-title>{{ t.engagement.purge.purgeData || 'Purger les données' }}</v-list-item-title>
                 </v-list-item>
                 <v-list-item prepend-icon="mdi-delete" @click="showDeleteSiteDialog = true">
                   <v-list-item-title>{{ t.analytics.deleteSite || 'Supprimer l\'analytique' }}</v-list-item-title>
@@ -277,17 +287,23 @@
             <div class="d-flex align-center">
               <v-icon class="mr-2">mdi-database-alert</v-icon>
               <div>
-                <strong>{{ tWithPurge.purge.dataLimitAlert }}</strong>
-                <div>{{ tWithPurge.purge.dataLimitDescription.replace('{count}', dataCount.toString()) }}</div>
+                <strong>{{ t.engagement.purge.dataLimitAlert }}</strong>
+                <div>{{ t.engagement.purge.dataLimitDescription.replace('{count}', dataCount.toString()) }}</div>
               </div>
               <v-spacer></v-spacer>
               <v-btn v-if="isAdmin" color="warning" variant="text" @click="showDataPurgeDialog = true">
-                {{ tWithPurge.purge.purgeNow }}
+                {{ t.engagement.purge.purgeNow }}
               </v-btn>
             </div>
           </v-alert>
 
-          <v-row>
+          <v-row v-if="isMetricsLoading">
+            <v-col v-for="i in 4" :key="`skeleton-metric-${i}`" cols="6" md="3">
+              <div class="skeleton-card"></div>
+            </v-col>
+          </v-row>
+
+          <v-row v-else>
             <v-col v-for="(metric, index) in metrics" :key="index" cols="6" md="3">
               <v-card class="metric-card h-100 bg-surface">
                 <v-card-text>
@@ -305,11 +321,17 @@
             </v-col>
           </v-row>
 
-          <v-card class="analytics-tabs-card mt-4">
+          <div v-if="isMetricsLoading" class="skeleton-tabs mt-4"></div>
+
+          <v-card v-else class="analytics-tabs-card mt-4">
             <v-tabs v-model="activeTab" bg-color="transparent" color="primary" slider-color="primary" show-arrows>
               <v-tab value="pages" class="tab-button">
                 <v-icon class="mr-2">mdi-file-document-outline</v-icon>
                 {{ t.page }}
+              </v-tab>
+              <v-tab value="maps" class="tab-button">
+                <v-icon class="mr-2">mdi-map-marker</v-icon>
+                {{ t.map }}
               </v-tab>
               <v-tab value="sources" class="tab-button">
                 <v-icon class="mr-2">mdi-traffic-light</v-icon>
@@ -343,8 +365,14 @@
                       class="mx-2" style="max-width: 250px;" @update:model-value="filterPages"></v-text-field>
                   </div>
 
-                  <v-data-table :headers="pageHeaders" :items="filteredPages" :items-per-page="10" :search="pageSearch"
-                    density="comfortable" class="page-data-table">
+                  <div v-if="isPagesLoading" class="skeleton-table mb-4" style="height: 350px;">
+                    <div v-for="i in 8" :key="`skeleton-page-row-${i}`" class="skeleton-row"
+                      :style="`opacity: ${1 - i * 0.1}`">
+                    </div>
+                  </div>
+
+                  <v-data-table v-else :headers="pageHeaders" :items="filteredPages" :items-per-page="10"
+                    :search="pageSearch" density="comfortable" class="page-data-table">
                     <template v-slot:item.page="{ item }">
                       <div class="d-flex align-center">
                         <v-icon size="small" class="mr-2" :color="getItemColor(item)">
@@ -375,76 +403,95 @@
                       </div>
                     </template>
 
-                    <template v-slot:item.actions="{ item }">
-                      <div class="d-flex">
-                        <v-btn size="x-small" icon variant="text" color="primary" @click="expandPage(item)"
-                          class="mr-1">
-                          <v-icon size="small">mdi-chart-line</v-icon>
-                          <v-tooltip activator="parent" location="top">Voir l'évolution des visites</v-tooltip>
-                        </v-btn>
-                        <v-btn size="x-small" icon variant="text" color="info" @click="showPageDetails(item)">
-                          <v-icon size="small">mdi-information-outline</v-icon>
-                          <v-tooltip activator="parent" location="top">Détails de la page</v-tooltip>
-                        </v-btn>
-                      </div>
-                    </template>
-
                     <template v-slot:bottom>
                       <div class="text-center pt-2 pb-2">
                         <v-btn v-if="pageViews.length > 10" color="primary" variant="text" @click="exportPageData">
-                          Exporter les données
+                          {{ t.analytics.exportData || 'Exporter les données' }}
                           <v-icon end>mdi-download</v-icon>
                         </v-btn>
                       </div>
                     </template>
                   </v-data-table>
 
-                  <div class="mt-4">
+                  <div v-if="isPageDistributionLoading" class="mt-4">
+                    <div class="skeleton-header"></div>
+                    <div class="skeleton-chart"></div>
+                  </div>
+
+                  <div v-else class="mt-4">
                     <div class="d-flex align-center mb-2">
                       <h3 class="text-subtitle-1 font-weight-medium">
-                        <v-icon class="mr-2" color="primary">mdi-chart-line</v-icon>
-                        {{ selectedPage ? t.analytics.chart.pageTitle.replace('{pageName}', formatPagePath(selectedPage,
-                          null,
-                          selectedPage ===
-                          '/')) :
-                          t.analytics.chart.allPages }}
+                        <v-icon class="mr-2" color="primary">mdi-chart-pie</v-icon>
+                        {{ t.analytics.chart.pageDistribution || 'Distribution des vues par page' }}
                       </h3>
                       <v-spacer></v-spacer>
-                      <v-btn v-if="selectedPage" size="small" variant="text" color="primary"
-                        @click="updatePageTrackingData(null)">
-                        <v-icon start size="small">mdi-eye</v-icon>
-                        {{ t.analytics.chart.viewAllPages }}
-                      </v-btn>
-                    </div>
-
-                    <div class="mb-4 d-flex align-center date-filter">
-                      <v-text-field v-model="dateRange.start" :label="t.analytics.chart.dateStart" type="date"
-                        density="compact" class="mr-2" hide-details style="max-width: 150px;"></v-text-field>
-                      <v-text-field v-model="dateRange.end" :label="t.analytics.chart.dateEnd" type="date"
-                        density="compact" class="mr-2" hide-details style="max-width: 150px;"></v-text-field>
-                      <v-btn-toggle v-model="chartType" mandatory density="comfortable" color="primary"
-                        style="margin-left: auto;">
-                        <v-btn value="line" size="small">
-                          <v-icon>mdi-chart-line</v-icon>
-                          <v-tooltip activator="parent">{{ t.analytics.chart.chartLine }}</v-tooltip>
+                      <v-btn-toggle v-model="chartDisplayMode" mandatory density="comfortable" color="primary">
+                        <v-btn value="pie" size="small">
+                          <v-icon>mdi-chart-pie</v-icon>
+                          <v-tooltip activator="parent">{{ t.analytics.chart.chartPie || 'Graphique circulaire'
+                            }}</v-tooltip>
                         </v-btn>
-                        <v-btn value="bar" size="small">
-                          <v-icon>mdi-chart-bar</v-icon>
-                          <v-tooltip activator="parent">{{ t.analytics.chart.chartBar }}</v-tooltip>
+                        <v-btn value="donut" size="small">
+                          <v-icon>mdi-chart-donut</v-icon>
+                          <v-tooltip activator="parent">{{ t.analytics.chart.chartDonut || 'Graphique annulaire'
+                            }}</v-tooltip>
                         </v-btn>
                       </v-btn-toggle>
                     </div>
 
-                    <v-card class="pa-2" variant="outlined">
-                      <v-chart class="chart" :option="pageViewsChartData" autoresize />
+                    <v-card class="pa-4" variant="outlined">
+                      <v-row>
+                        <v-col cols="12" md="8">
+                          <v-chart class="page-distribution-chart" :option="pageDistributionChartData" autoresize />
+                        </v-col>
+                        <v-col cols="12" md="4">
+                          <div class="page-legend">
+                            <h4 class="text-subtitle-2 mb-2">{{ t.analytics.chart.topPages || 'Pages principales' }}
+                            </h4>
+                            <div v-for="(page, index) in topPagesForChart" :key="index"
+                              class="page-legend-item mb-2 pa-2">
+                              <div class="d-flex align-center justify-space-between">
+                                <div class="d-flex align-center">
+                                  <v-avatar :color="getColorByIndex(index)" size="10" class="mr-2"></v-avatar>
+                                  <div class="text-caption text-truncate" style="max-width: 180px;" :title="page.page">
+                                    {{ formatPagePath(page.page, page.cleanPath, page.isHome) }}
+                                  </div>
+                                </div>
+                                <v-chip size="x-small" :color="getColorByIndex(index)" class="ml-2">
+                                  {{ page.views }}
+                                </v-chip>
+                              </div>
+                              <v-progress-linear :model-value="getPageViewPercentage(page.views)"
+                                :color="getColorByIndex(index)" height="4" rounded class="mt-1">
+                              </v-progress-linear>
+                            </div>
+                          </div>
+                        </v-col>
+                      </v-row>
                     </v-card>
                   </div>
                 </v-card-text>
               </v-window-item>
 
+              <v-window-item value="maps">
+                <WorldMapViewer :websiteId="currentSite?.id || ''" :period="selectedPeriod" />
+              </v-window-item>
+
               <v-window-item value="sources">
                 <v-card-text>
-                  <v-row>
+                  <v-row v-if="isSourcesLoading">
+                    <v-col cols="12" md="8">
+                      <div class="skeleton-table" style="height: 300px;">
+                        <div v-for="i in 5" :key="`skeleton-source-row-${i}`" class="skeleton-row"
+                          :style="`opacity: ${1 - i * 0.15}`"></div>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                      <div class="skeleton-chart"></div>
+                    </v-col>
+                  </v-row>
+
+                  <v-row v-else>
                     <v-col cols="12" md="8">
                       <v-table density="comfortable">
                         <thead>
@@ -476,55 +523,6 @@
                   </v-row>
 
                   <v-divider class="my-6"></v-divider>
-
-                  <v-row v-if="detailedReferrers.length > 0">
-                    <v-col cols="12">
-                      <div class="d-flex align-center mb-4">
-                        <h3 class="text-subtitle-1 font-weight-medium">
-                          <v-icon class="mr-2" color="primary">mdi-link-variant</v-icon>
-                          Sources de référence détaillées
-                        </h3>
-                        <v-spacer></v-spacer>
-                        <v-chip color="primary" variant="outlined" size="small">
-                          <v-icon start size="x-small">mdi-information-outline</v-icon>
-                          Sites qui renvoient vers le vôtre
-                        </v-chip>
-                      </div>
-
-                      <v-card variant="outlined" class="mb-4">
-                        <v-data-table :headers="referrerHeaders" :items="detailedReferrers" :items-per-page="10"
-                          density="comfortable">
-                          <template v-slot:item.source="{ item }">
-                            <div class="d-flex align-center">
-                              <v-avatar :color="getReferrerColor(item.source)" size="28" class="mr-2">
-                                <v-icon size="small" color="white">{{ getReferrerIcon(item.source) }}</v-icon>
-                              </v-avatar>
-                              <div>
-                                <div class="font-weight-medium">{{ item.name }}</div>
-                                <div class="text-caption text-medium-emphasis">{{ item.source }}</div>
-                              </div>
-                            </div>
-                          </template>
-
-                          <template v-slot:item.url="{ item }">
-                            <div class="text-truncate" style="max-width: 250px;" :title="item.url">
-                              {{ item.url }}
-                            </div>
-                          </template>
-
-                          <template v-slot:item.visits="{ item }">
-                            <v-chip size="small" :color="getReferrerColor(item.source)" variant="tonal">
-                              {{ item.visits }}
-                            </v-chip>
-                          </template>
-
-                          <template v-slot:item.lastVisit="{ item }">
-                            <div class="text-caption">{{ formatDate(item.lastVisit) }}</div>
-                          </template>
-                        </v-data-table>
-                      </v-card>
-                    </v-col>
-                  </v-row>
 
                   <v-row class="mt-6">
                     <v-col cols="12">
@@ -586,7 +584,19 @@
 
               <v-window-item value="devices">
                 <v-card-text>
-                  <v-row>
+                  <v-row v-if="isDevicesLoading">
+                    <v-col cols="12" md="8">
+                      <div class="skeleton-table" style="height: 200px;">
+                        <div v-for="i in 4" :key="`skeleton-device-row-${i}`" class="skeleton-row"
+                          :style="`opacity: ${1 - i * 0.2}`"></div>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                      <div class="skeleton-chart"></div>
+                    </v-col>
+                  </v-row>
+
+                  <v-row v-else>
                     <v-col cols="12" md="8">
                       <v-table density="comfortable">
                         <thead>
@@ -664,7 +674,7 @@
                   <div class="d-flex align-center mb-4">
                     <h3 class="text-subtitle-1 font-weight-medium">{{ t.errorTab || 'Suivi des erreurs' }}</h3>
                     <v-spacer></v-spacer>
-                    <v-chip v-if="errorEvents.length > 0" color="error" size="small" class="mr-2">
+                    <v-chip v-if="errorEvents && errorEvents.length > 0" color="error" size="small" class="mr-2">
                       {{ errorEvents.length }} {{ t.error.errorDetected }}
                     </v-chip>
                     <v-chip v-else color="success" size="small" class="mr-2">
@@ -684,7 +694,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="(error, index) in errorEvents" :key="index" class="error-row">
+                        <tr v-for="(error, index) in errorEvents || []" :key="index" class="error-row">
                           <td>
                             <div class="d-flex align-center">
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
@@ -715,16 +725,17 @@
                     </v-table>
                   </v-card>
 
-                  <v-card v-if="errorEvents.length" class="no-errors-card pa-6 text-center mt-4">
-                    <v-icon :color="errorEvents.length > 0 ? 'error' : 'warning'" size="64" class="mb-4">{{
-                      errorEvents.length > 0 ?
-                        'mdi-alert-circle' :
-                        'mdi-check-circle'
-                    }}</v-icon>
-                    <h3 class="text-h6 mb-2">{{ errorEvents.length > 0 ? t.error.errorDetected :
+                  <v-card v-if="errorEvents && errorEvents.length" class="no-errors-card pa-6 text-center mt-4">
+                    <v-icon :color="errorEvents && errorEvents.length > 0 ? 'error' : 'warning'" size="64"
+                      class="mb-4">{{
+                        errorEvents && errorEvents.length > 0 ?
+                          'mdi-alert-circle' :
+                          'mdi-check-circle'
+                      }}</v-icon>
+                    <h3 class="text-h6 mb-2">{{ errorEvents && errorEvents.length > 0 ? t.error.errorDetected :
                       t.error.noErrorDetected }}</h3>
                     <p class="text-body-2 text-medium-emphasis">
-                      {{ errorEvents.length > 0 ? t.error.errorDetectedDescription :
+                      {{ errorEvents && errorEvents.length > 0 ? t.error.errorDetectedDescription :
                         t.error.noErrorDetectedDescription }}
                     </p>
                   </v-card>
@@ -792,23 +803,23 @@
         <v-card>
           <v-card-title class="text-h5 bg-error text-white">
             <v-icon class="mr-2">mdi-delete</v-icon>
-            {{ tWithPurge.purge.title }}
+            {{ t.engagement.purge.title }}
           </v-card-title>
           <v-card-text class="pt-4">
-            <p class="mb-2">{{ tWithPurge.purge.description }}</p>
-            <v-select v-model="purgeOption" :items="purgeOptions" :label="tWithPurge.purge.selectData"
+            <p class="mb-2">{{ t.engagement.purge.description }}</p>
+            <v-select v-model="purgeOption" :items="purgeOptions" :label="t.engagement.purge.selectData"
               variant="outlined" class="mb-3"></v-select>
             <v-alert v-if="purgeOption === 'all'" type="warning" variant="tonal" class="mb-3">
-              <strong>{{ tWithPurge.purge.warning }}</strong> {{ tWithPurge.purge.warningAllData }}
+              <strong>{{ t.engagement.purge.warning }}</strong> {{ t.engagement.purge.warningAllData }}
             </v-alert>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="showDataPurgeDialog = false">
-              {{ tWithPurge.purge.cancel }}
+              {{ t.engagement.purge.cancel }}
             </v-btn>
             <v-btn color="error" variant="tonal" @click="generateSecurityQuestion()">
-              {{ tWithPurge.purge.confirmDelete }}
+              {{ t.engagement.purge.confirmDelete }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -818,33 +829,33 @@
         <v-card class="rounded-lg">
           <v-card-title class="text-h5 text-white bg-error">
             <v-icon class="mr-2">mdi-shield-lock</v-icon>
-            {{ tWithPurge.purge.security.title }}
+            {{ t.engagement.purge.security.title }}
           </v-card-title>
           <v-card-text class="pt-4">
-            <p class="mb-2">{{ tWithPurge.purge.security.description }}</p>
+            <p class="mb-2">{{ t.engagement.purge.security.description }}</p>
             <p class="mb-4 font-weight-bold">{{ securityQuestion }}</p>
 
-            <v-text-field v-model="securityAnswer" :label="tWithPurge.purge.security.placeholder" variant="outlined"
+            <v-text-field v-model="securityAnswer" :label="t.engagement.purge.security.placeholder" variant="outlined"
               type="number" class="mb-3" hide-details @keydown.enter="validateSecurityAnswer"></v-text-field>
 
             <v-checkbox v-model="confirmSecurityCheck" class="mt-4" color="error">
               <template v-slot:label>
-                <div>{{ tWithPurge.purge.security.confirm }}</div>
+                <div>{{ t.engagement.purge.security.confirm }}</div>
               </template>
             </v-checkbox>
 
             <v-alert v-if="securityError" type="error" variant="tonal" class="mt-3">
-              {{ tWithPurge.purge.security.incorrect }}
+              {{ t.engagement.purge.security.incorrect }}
             </v-alert>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="cancelSecurityDialog">
-              {{ tWithPurge.purge.cancel }}
+              {{ t.engagement.purge.cancel }}
             </v-btn>
             <v-btn color="error" variant="tonal" @click="validateSecurityAnswer"
               :disabled="!securityAnswer || !confirmSecurityCheck">
-              {{ tWithPurge.purge.security.validate }}
+              {{ t.engagement.purge.security.validate }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -862,7 +873,7 @@
               ' Cette opération est irréversible.'
               }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
-              <strong>{{ tWithPurge.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
+              <strong>{{ t.engagement.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
             </v-alert>
             <v-text-field v-model="deleteSiteConfirmation"
@@ -872,7 +883,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="showDeleteSiteDialog = false">
-              {{ tWithPurge.purge.cancel }}
+              {{ t.engagement.purge.cancel }}
             </v-btn>
             <v-btn color="error" variant="tonal" @click="deleteSite"
               :disabled="deleteSiteConfirmation !== currentSite?.name">
@@ -899,17 +910,17 @@
 
             <v-divider class="my-3"></v-divider>
 
-            <v-checkbox v-model="exportOptions.pages" :label="t.export.pages" color="primary"></v-checkbox>
-            <v-checkbox v-model="exportOptions.interactions" :label="t.export.interactions"
-              color="primary"></v-checkbox>
-            <v-checkbox v-model="exportOptions.errors" :label="t.export.errors" color="primary"></v-checkbox>
-            <v-checkbox v-model="exportOptions.devices" :label="t.export.devices" color="primary"></v-checkbox>
-            <v-checkbox v-model="exportOptions.sources" :label="t.export.sources" color="primary"></v-checkbox>
+            <v-checkbox v-model="exportOptions.pages" label="Pages" color="primary"></v-checkbox>
+            <v-checkbox v-model="exportOptions.interactions" label="Interactions" color="primary"></v-checkbox>
+            <v-checkbox v-model="exportOptions.errors" label="Errors" color="primary"></v-checkbox>
+            <v-checkbox v-model="exportOptions.devices" label="Devices" color="primary"></v-checkbox>
+            <v-checkbox v-model="exportOptions.sources" label="Sources" color="primary"></v-checkbox>
+
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="showExportDialog = false">
-              {{ tWithPurge.purge.cancel }}
+              {{ t.engagement.purge.cancel }}
             </v-btn>
             <v-btn color="secondary" variant="tonal" @click="exportAnalyticsData"
               :disabled="!Object.values(exportOptions).some(v => v)">
@@ -948,6 +959,23 @@
           <v-card-text class="pt-4">
             <p class="mb-4">{{ t.analytics.exclusionsDescription ||
               'Exclure certaines adresses IP ou utilisateurs des statistiques(exemple : votre propre activité)' }}</p>
+
+            <v-alert v-if="isCurrentlyExcluded" color="error" variant="tonal" class="mb-4">
+              <div class="d-flex align-center">
+                <v-icon class="mr-2">mdi-account-cancel</v-icon>
+                <div>
+                  <strong>{{ t.analytics.exclusionStatus || 'Statut d\'exclusion' }}</strong>
+                  <div>{{ t.analytics.exclusionDescription ||
+                    'Votre activité n\'est pas comptabilisée dans les statistiques' }}
+                  </div>
+                </div>
+                <v-spacer></v-spacer>
+                <v-btn color="error" variant="outlined" @click="removeCurrentExclusion">
+                  <v-icon start>mdi-account-check</v-icon>
+                  {{ t.analytics.reactivateTracking || 'Réactiver le tracking' }}
+                </v-btn>
+              </div>
+            </v-alert>
 
             <v-list class="mb-4 pa-0 bg-surface rounded-lg">
               <v-list-subheader>{{ t.analytics.currentExclusions || 'Exclusions actuelles' }}</v-list-subheader>
@@ -1009,64 +1037,85 @@
         </v-card>
       </v-dialog>
 
-      <snackBar v-model="showSnackbar" :text="snackbarText" :color="snackbarColor" :timeout="3000" />
+      <snackBar v-if="showSnackbar" v-model="showSnackbar" :text="snackbarText" :color="snackbarColor"
+        :timeout="3000" />
     </v-main>
   </v-app>
 </template>
 
 <script lang="ts" setup>
-declare module 'vue-echarts';
-import highlight from 'highlight.js';
-import 'highlight.js/styles/github-dark.css';
-import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue';
-import InteractionViewer from '../components/analytics/InteractionViewer.vue';
-import snackBar from '../components/snackbar.vue';
+import { computed, defineAsyncComponent, defineComponent, nextTick, onMounted, provide, ref, watch } from 'vue';
 // @ts-ignore
 import { definePageMeta, navigateTo, useHead } from '#imports';
 import { BarChart, LineChart, PieChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { defineComponent, provide } from 'vue';
-import VChart, { THEME_KEY } from 'vue-echarts';
+import highlight from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
+import { THEME_KEY } from 'vue-echarts';
+import '../css/analytics.css';
 import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
+
+const onAsyncError = (err) => {
+  console.error('Erreur lors du chargement d\'un composant asynchrone:', err);
+  return null;
+};
+
+const InteractionViewer = defineAsyncComponent({
+  loader: () => import('../components/analytics/InteractionViewer.vue'),
+  onError: onAsyncError
+});
+
+const DeadZoneViewer = defineAsyncComponent({
+  loader: () => import('../components/analytics/DeadZoneViewer.vue'),
+  onError: onAsyncError
+});
+
+const EngagementQualityViewer = defineAsyncComponent({
+  loader: () => import('../components/analytics/EngagementQualityViewer.vue'),
+  onError: onAsyncError
+});
+
+const WorldMapViewer = defineAsyncComponent({
+  loader: () => import('../components/analytics/WorldMapViewer.vue'),
+  onError: onAsyncError
+});
+
+const snackBar = defineAsyncComponent({
+  loader: () => import('../components/snackbar.vue'),
+  onError: onAsyncError
+});
+
+const VChart = defineAsyncComponent({
+  loader: () => import('vue-echarts'),
+  onError: onAsyncError
+});
+
 import {
   formatDate,
+  formatDateToYYYYMMDD,
   formatDuration,
+  formatPagePath,
   formatUrl as formatUrlUtil,
   generateTrackingCode,
   getBrowserColor,
   getBrowserIcon,
+  getChartColor,
   getColorByIndex,
   getDeviceIcon,
   getDeviceLabel,
   getFullDomain,
   getOsColor,
   getOsIcon,
-  getReferrerColor,
-  getReferrerIcon,
   getSourceColor,
   getSourceIcon,
   getSourceLabel,
   isLocalEnvironment,
   normalizeUrl
 } from '../utils/analytics/functions';
-import { BrowserOsStats, DetailedReferrer, DeviceStats, DeviceType, ErrorEvent, PageView, PurgeTranslations, TrafficSource, UserFlow, UserInteraction, WebsiteAnalytics, WebsiteWithStats } from '../utils/analytics/types';
-
-const DeadZoneViewer = defineAsyncComponent(() =>
-  import('../components/analytics/DeadZoneViewer.vue')
-);
-
-const EngagementQualityViewer = defineAsyncComponent(() =>
-  import('../components/analytics/EngagementQualityViewer.vue')
-);
-
-declare module '../languages' {
-  interface AnalyticsTranslations {
-    purge: PurgeTranslations;
-  }
-}
+import { BrowserOsStats, DetailedReferrer, DeviceStats, DeviceType, ErrorEvent, PageView, TrafficSource, UserFlow, UserInteraction, WebsiteAnalytics, WebsiteWithStats } from '../utils/analytics/types';
 
 use([
   CanvasRenderer,
@@ -1080,7 +1129,6 @@ use([
 ]);
 
 const t = useTranslations('analytics')();
-const tWithPurge = t as typeof t & { purge: PurgeTranslations };
 
 definePageMeta({
   layout: 'dashboard'
@@ -1113,22 +1161,21 @@ const browsers = ref<Array<BrowserOsStats>>([]);
 const osSystems = ref<Array<BrowserOsStats>>([]);
 const activeTab = ref('pages');
 const totalInteractionsCount = ref<number>(0);
+const websites = ref<WebsiteWithStats[]>([]);
+const interactionsTab = ref('interactions');
+const showDataPurgeDialog = ref(false);
+const purgeOption = ref('older90');
 
 const newSite = ref({
   name: websiteData.value?.website_name || '',
   url: websiteData.value?.main_url || ''
 });
 
-const websites = ref<WebsiteWithStats[]>([]);
-const interactionsTab = ref('interactions');
-
-const showDataPurgeDialog = ref(false);
-const purgeOption = ref('older90');
 const purgeOptions = [
-  { title: tWithPurge.purge.options.older90, value: 'older90' },
-  { title: tWithPurge.purge.options.older30, value: 'older30' },
-  { title: tWithPurge.purge.options.older7, value: 'older7' },
-  { title: tWithPurge.purge.options.all, value: 'all' }
+  { title: t.engagement.purge.options.older90, value: 'older90' },
+  { title: t.engagement.purge.options.older30, value: 'older30' },
+  { title: t.engagement.purge.options.older7, value: 'older7' },
+  { title: t.engagement.purge.options.all, value: 'all' }
 ];
 const purgeLoading = ref(false);
 const dataCount = ref(0);
@@ -1161,7 +1208,7 @@ const pageHeaders = [
 ];
 
 const securityQuestion = computed(() => {
-  return tWithPurge.purge.security.question
+  return t.engagement.purge.security.question
     .replace('{num1}', securityNum1.value.toString())
     .replace('{num2}', securityNum2.value.toString());
 });
@@ -1207,7 +1254,16 @@ onMounted(() => {
   initDefaultDateRange();
 });
 
+// Variables pour les états de chargement
+const isLoading = ref(true);
+const isMetricsLoading = ref(true);
+const isPageDistributionLoading = ref(true);
+const isPagesLoading = ref(true);
+const isSourcesLoading = ref(true);
+const isDevicesLoading = ref(true);
+
 async function fetchWebsites() {
+  isLoading.value = true;
   try {
     const response = await fetch('/api/analytics/websites');
     const result = await response.json();
@@ -1226,6 +1282,7 @@ async function fetchWebsites() {
             pages: 0,
             temps: '0m',
             dureePageMoyenne: '0m',
+            totalInteractions: 0,
             qualiteDonnees: 0
           }
         };
@@ -1240,6 +1297,7 @@ async function fetchWebsites() {
               pages: statsResult.data.totalPageViews || 0,
               temps: formatDuration(statsResult.data.avgSessionDuration || 0),
               dureePageMoyenne: formatDuration(statsResult.data.avgPageDuration || 0),
+              totalInteractions: statsResult.data.totalInteractions || 0,
               qualiteDonnees: statsResult.data.durationDataQuality || 0
             };
           }
@@ -1256,6 +1314,8 @@ async function fetchWebsites() {
     }
   } catch (error) {
     console.error('Error fetching websites:', error);
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -1289,6 +1349,7 @@ async function addWebsite() {
           pages: 0,
           temps: '0m',
           dureePageMoyenne: '0m',
+          totalInteractions: 0,
           qualiteDonnees: 0
         }
       };
@@ -1315,6 +1376,11 @@ async function addWebsite() {
 
 async function selectSite(site: WebsiteWithStats) {
   currentSite.value = site;
+  isMetricsLoading.value = true;
+  isPageDistributionLoading.value = true;
+  isPagesLoading.value = true;
+  isSourcesLoading.value = true;
+  isDevicesLoading.value = true;
 
   try {
     loadExclusions();
@@ -1323,8 +1389,12 @@ async function selectSite(site: WebsiteWithStats) {
 
     if (result.success) {
       updateAnalyticsData(result.data);
+      isMetricsLoading.value = false;
+      isSourcesLoading.value = false;
+      isDevicesLoading.value = false;
 
-      // Récupération des données temporelles pour le graphique
+      await loadPageDistribution();
+
       try {
         const timeSeriesResponse = await fetch(`/api/analytics/website/${site.id}/time-series?period=${selectedPeriod.value}`);
         const timeSeriesResult = await timeSeriesResponse.json();
@@ -1335,24 +1405,33 @@ async function selectSite(site: WebsiteWithStats) {
             views: item.count
           }));
 
-          // Mettre à jour le graphique pour la page sélectionnée par défaut
           updatePageTrackingData(null);
         } else {
-          // Données factices en cas d'échec
           generateMockTimeSeriesData();
         }
       } catch (error) {
         console.error('Erreur de récupération des données temporelles:', error);
-        // Données factices en cas d'erreur
         generateMockTimeSeriesData();
+      } finally {
+        isPagesLoading.value = false;
       }
     } else {
       console.error('Erreur de récupération des données:', result.message);
       showMessage(result.message || t.analytics.error, 'error');
+      isMetricsLoading.value = false;
+      isPageDistributionLoading.value = false;
+      isPagesLoading.value = false;
+      isSourcesLoading.value = false;
+      isDevicesLoading.value = false;
     }
   } catch (error) {
     console.error('Error fetching website stats:', error);
     showMessage(t.analytics.error, 'error');
+    isMetricsLoading.value = false;
+    isPageDistributionLoading.value = false;
+    isPagesLoading.value = false;
+    isSourcesLoading.value = false;
+    isDevicesLoading.value = false;
   }
 }
 
@@ -1374,151 +1453,78 @@ function copyTrackingCode(websiteId: string) {
     });
 }
 
-// Ajouter un ref pour la plage de dates personnalisée
 const dateRange = ref({
   start: '',
   end: ''
 });
 
-// Ajouter une fonction pour formater la date au format YYYY-MM-DD
-function formatDateToYYYYMMDD(date) {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+const chartDisplayMode = ref('pie');
 
-// Ajouter un référence pour le type de graphique
-const chartType = ref('line');
+const topPagesForChart = computed(() => {
+  if (!pageViews.value || !Array.isArray(pageViews.value)) return [];
+  const sortedPages = [...pageViews.value].sort((a, b) => b.views - a.views);
+  return sortedPages.slice(0, 10);
+});
 
-// Modifier la fonction pour le graphique
-const pageViewsChartData = computed(() => {
-  // Limite fixe de 3 mois (90 jours) maximum
-  let filteredData = [...pagesTrackingData.value];
+const pageDistributionChartData = computed(() => {
+  // Vérifier si topPagesForChart.value existe et n'est pas vide
+  if (!topPagesForChart.value || topPagesForChart.value.length === 0) {
+    return {
+      series: []
+    };
+  }
 
-  // Si une plage de dates personnalisée est définie, filtrer les données
-  if (dateRange.value.start && dateRange.value.end) {
-    filteredData = filteredData.filter(item =>
-      item.date >= dateRange.value.start &&
-      item.date <= dateRange.value.end
-    );
-  } else {
-    // Sinon, limiter à 90 jours (3 mois)
-    if (filteredData.length > 90) {
-      filteredData = filteredData.slice(filteredData.length - 90);
+  const topPages = topPagesForChart.value;
+
+  const chartData = topPages.map((page, index) => ({
+    name: formatPagePath(page.page, page.cleanPath, page.isHome),
+    value: page.views,
+    itemStyle: {
+      color: getChartColor(index)
     }
-  }
-
-  // Simplifier en gardant au maximum 30 points pour un affichage plus lisible
-  let displayData = filteredData;
-  if (displayData.length > 30) {
-    const step = Math.floor(displayData.length / 30);
-    displayData = displayData.filter((_, index) => index % step === 0 || index === displayData.length - 1);
-  }
-
-  // Formater les dates pour l'affichage
-  const dates = displayData.map(item => {
-    const date = new Date(item.date);
-    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-  });
+  }));
 
   return {
-    // Configuration très simple et épurée comme l'exemple fourni
-    xAxis: {
-      type: 'category',
-      data: dates,
-      axisLine: {
-        lineStyle: {
-          color: '#ccc'
-        }
-      },
-      axisTick: {
-        show: false  // Masquer les graduations
-      },
-      axisLabel: {
-        color: '#666',
-        interval: Math.max(1, Math.floor(dates.length / 12))
-      },
-      splitLine: {
-        show: false  // Masquer les lignes verticales
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLine: {
-        show: true,
-        lineStyle: {
-          color: '#ccc'
-        }
-      },
-      axisTick: {
-        show: false  // Masquer les graduations
-      },
-      splitLine: {
-        show: false  // Masquer les lignes horizontales
-      }
-    },
     tooltip: {
-      trigger: 'axis',
-      formatter: function (params) {
-        const data = params[0];
-        return `${dates[data.dataIndex]}<br/>${data.seriesName}: ${data.value}`;
-      }
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c} ({d}%)'
+    },
+    legend: {
+      show: false
     },
     series: [
       {
-        name: t.analytics.chart.visitors,
-        data: displayData.map(item => item.views),
-        type: chartType.value, // Utiliser le type dynamique (line ou bar)
-        smooth: false,
-        symbol: 'circle',
-        symbolSize: 6,
+        name: t.analytics.chart.pageViews || 'Vues de page',
+        type: 'pie',
+        radius: chartDisplayMode.value === 'pie' ? '70%' : ['50%', '70%'],
+        center: ['50%', '50%'],
+        avoidLabelOverlap: true,
         itemStyle: {
-          color: '#6366F1',
-          // Configuration spécifique pour les barres
-          ...(chartType.value === 'bar' ? {
-            borderRadius: [3, 3, 0, 0]
-          } : {})
+          borderRadius: 4,
+          borderColor: 'rgba(0, 0, 0, 0.05)',
+          borderWidth: 2
         },
-        lineStyle: chartType.value === 'line' ? {
-          width: 3,
-          color: '#6366F1'
-        } : undefined,
-        // Options spécifiques au graphique en barres
-        ...(chartType.value === 'bar' ? {
-          barWidth: '50%',
-          barMaxWidth: 30,
-          showBackground: true,
-          backgroundStyle: {
-            color: 'rgba(180, 180, 180, 0.1)',
-            borderRadius: [3, 3, 0, 0]
-          }
-        } : {}),
+        label: {
+          show: false
+        },
         emphasis: {
-          scale: true,
+          label: {
+            show: true,
+            fontSize: '14',
+            fontWeight: 'bold'
+          },
           itemStyle: {
             shadowBlur: 10,
-            shadowColor: 'rgba(0, 0, 0, 0.3)'
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
           }
-        }
+        },
+        data: chartData
       }
-    ],
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    }
+    ]
   };
 });
 
-// Fonction pour changer le type de graphique
-function toggleChartType() {
-  chartType.value = chartType.value === 'line' ? 'bar' : 'line';
-}
-
-// Fonction pour initialiser les dates par défaut (3 derniers mois)
 function initDefaultDateRange() {
   const end = new Date();
   const start = new Date();
@@ -1530,13 +1536,14 @@ function initDefaultDateRange() {
   };
 }
 
-// Fonction pour appliquer le filtre de date
-function applyDateFilter() {
-  // Re-échantillonner les données avec la nouvelle plage
-  updatePageTrackingData(selectedPage.value);
-}
-
 const trafficSourcesChartData = computed(() => {
+  // Vérifier si trafficSources.value existe et n'est pas vide
+  if (!trafficSources.value || trafficSources.value.length === 0) {
+    return {
+      series: []
+    };
+  }
+
   return {
     darkMode: true,
     backgroundColor: '#1E1E1E',
@@ -1594,7 +1601,14 @@ const trafficSourcesChartData = computed(() => {
   };
 });
 
+
 const deviceStatsChartData = computed(() => {
+  if (!deviceStats.value || deviceStats.value.length === 0) {
+    return {
+      series: []
+    };
+  }
+
   return {
     darkMode: true,
     backgroundColor: '#1E1E1E',
@@ -1661,8 +1675,8 @@ provide(THEME_KEY, 'dark');
 function checkDataLimits() {
   if (!currentSiteAnalytics.value) return;
 
-  const pageViewCount = pageViews.value.reduce((sum, page) => sum + page.views, 0);
-  const interactionCount = userInteractions.value.length;
+  const pageViewCount = pageViews.value && pageViews.value.length ? pageViews.value.reduce((sum, page) => sum + page.views, 0) : 0;
+  const interactionCount = userInteractions.value && userInteractions.value.length ? userInteractions.value.length : 0;
   const sessionCount = currentSiteAnalytics.value.totalVisitors || 0;
 
   const totalRecords = pageViewCount + interactionCount + sessionCount;
@@ -1716,7 +1730,7 @@ async function purgeAnalyticsData() {
     const result = await response.json();
 
     if (result.success) {
-      snackbarText.value = `${tWithPurge.purge.success} ${tWithPurge.purge.successCount.replace('{count}', result.deletedCount || '')}`;
+      snackbarText.value = `${t.engagement.purge.success} ${t.engagement.purge.successCount.replace('{count}', result.deletedCount || '')}`;
       snackbarColor.value = 'success';
       showSnackbar.value = true;
 
@@ -1726,13 +1740,13 @@ async function purgeAnalyticsData() {
 
       navigateTo('/dashboard');
     } else {
-      snackbarText.value = result.message || tWithPurge.purge.error;
+      snackbarText.value = result.message || t.engagement.purge.error;
       snackbarColor.value = 'error';
       showSnackbar.value = true;
     }
   } catch (error) {
     console.error('Erreur lors de la purge des données:', error);
-    snackbarText.value = `${tWithPurge.purge.error} ${tWithPurge.purge.tryAgain}`;
+    snackbarText.value = `${t.engagement.purge.error} ${t.engagement.purge.tryAgain}`;
     snackbarColor.value = 'error';
     showSnackbar.value = true;
   } finally {
@@ -1744,14 +1758,24 @@ async function purgeAnalyticsData() {
 async function fetchSiteDataForPeriod() {
   if (!currentSite.value) return;
 
+  isMetricsLoading.value = true;
+  isPageDistributionLoading.value = true;
+  isPagesLoading.value = true;
+  isSourcesLoading.value = true;
+  isDevicesLoading.value = true;
+
   try {
     const response = await fetch(`/api/analytics/website/${currentSite.value.id}?period=${selectedPeriod.value}&limit=500`);
     const result = await response.json();
 
     if (result.success) {
       updateAnalyticsData(result.data);
+      isMetricsLoading.value = false;
+      isSourcesLoading.value = false;
+      isDevicesLoading.value = false;
 
-      // Actualiser les données temporelles
+      await loadPageDistribution();
+
       try {
         const timeSeriesResponse = await fetch(`/api/analytics/website/${currentSite.value.id}/time-series?period=${selectedPeriod.value}`);
         const timeSeriesResult = await timeSeriesResponse.json();
@@ -1762,7 +1786,6 @@ async function fetchSiteDataForPeriod() {
             views: item.count
           }));
 
-          // Mettre à jour les données de la page actuellement sélectionnée
           updatePageTrackingData(selectedPage.value);
         } else {
           generateMockTimeSeriesData();
@@ -1770,15 +1793,76 @@ async function fetchSiteDataForPeriod() {
       } catch (error) {
         console.error('Erreur de récupération des données temporelles:', error);
         generateMockTimeSeriesData();
+      } finally {
+        isPagesLoading.value = false;
       }
     } else {
       console.error('Erreur de récupération des données par période:', result.message);
       showMessage(result.message || t.analytics.error, 'error');
+      isMetricsLoading.value = false;
+      isPageDistributionLoading.value = false;
+      isPagesLoading.value = false;
+      isSourcesLoading.value = false;
+      isDevicesLoading.value = false;
     }
   } catch (error) {
     console.error('Error fetching website stats for period:', error);
     showMessage(t.analytics.error, 'error');
+    isMetricsLoading.value = false;
+    isPageDistributionLoading.value = false;
+    isPagesLoading.value = false;
+    isSourcesLoading.value = false;
+    isDevicesLoading.value = false;
   }
+}
+
+function generateMockTimeSeriesData(useTestData = false) {
+  const today = new Date();
+  const data: Array<{ date: string, views: number }> = [];
+
+  const period = useTestData ? 365 : (selectedPeriod.value === '7d' ? 7 : selectedPeriod.value === '30d' ? 30 : 90);
+
+  for (let i = period; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(today.getDate() - i);
+
+    let views;
+    if (useTestData) {
+      const dayOfWeek = date.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+      const baseTrend = isWeekend ? 20 : 45;
+
+      const month = date.getMonth();
+      let seasonalFactor = 1;
+
+      if (month >= 5 && month <= 7) {
+        seasonalFactor = 0.7;
+      } else if (month >= 10 || month <= 1) {
+        seasonalFactor = 1.3;
+      }
+
+      const growthFactor = 1 + (period - i) / period * 0.5;
+
+      const randomVariation = Math.random() * 25 - 10;
+
+      views = Math.max(1, Math.round((baseTrend * seasonalFactor * growthFactor) + randomVariation));
+
+      if (Math.random() < 0.02) {
+        views = views * (2 + Math.random() * 3);
+      }
+    } else {
+      views = Math.floor(Math.random() * 45) + 5;
+    }
+
+    data.push({
+      date: date.toISOString().split('T')[0],
+      views: Math.round(views)
+    });
+  }
+
+  pageViewsTimeSeries.value = data;
+  updatePageTrackingData(selectedPage.value);
 }
 
 function updateAnalyticsData(data: any) {
@@ -1817,33 +1901,6 @@ function updateAnalyticsData(data: any) {
   ];
 
   let processedPages = Array.isArray(data.topPages) ? data.topPages : [];
-
-  const normalizeUrlWithDetails = (urlStr: string): { url: string, normalizedUrl: string, langPrefix: string | null } => {
-    if (!urlStr) return { url: urlStr, normalizedUrl: urlStr, langPrefix: null };
-    try {
-      let pathname = urlStr;
-      if (urlStr.startsWith('http')) {
-        const urlObj = new URL(urlStr);
-        pathname = urlObj.pathname;
-      }
-
-      const langMatch = pathname.match(/^\/(fr|en)(\/|$)/);
-      if (langMatch) {
-        const langPrefix = langMatch[1];
-        const normalizedPath = pathname.replace(/^\/(fr|en)/, '');
-        return {
-          url: urlStr,
-          normalizedUrl: normalizedPath || '/',
-          langPrefix
-        };
-      }
-
-      return { url: urlStr, normalizedUrl: pathname, langPrefix: null };
-    } catch (error) {
-      console.error('Erreur lors de la normalisation de l\'URL:', error);
-      return { url: urlStr, normalizedUrl: urlStr, langPrefix: null };
-    }
-  };
 
   const getNormalizedKey = (url: string): string => {
     try {
@@ -1984,6 +2041,7 @@ function formatUrl(url: string) {
 }
 
 function getPageViewPercentage(views: number): number {
+  if (!pageViews.value || !Array.isArray(pageViews.value)) return 0;
   const totalViews = pageViews.value.reduce((sum, page) => sum + page.views, 0);
   return totalViews > 0 ? (views / totalViews) * 100 : 0;
 }
@@ -2347,7 +2405,6 @@ function addExclusion() {
 function addCurrentVisitor() {
   const visitorId = localStorage.getItem('stackunity_visitor_id');
   if (visitorId) {
-    // Vérifier s'il existe déjà
     const exists = visitorExclusions.value.some(exc =>
       exc.type === 'visitor' && exc.value === visitorId
     );
@@ -2370,22 +2427,18 @@ function removeExclusion(index: number) {
   visitorExclusions.value.splice(index, 1);
 }
 
-// Modification pour utiliser localStorage au lieu des APIs
 function saveExclusions() {
   if (!currentSite.value) return;
 
   try {
-    // Sauvegarder dans localStorage avec une clé basée sur l'ID du site
     const storageKey = `stackunity_exclusions_${currentSite.value.id}`;
     localStorage.setItem(storageKey, JSON.stringify(visitorExclusions.value));
 
-    // Ajouter aussi une date de dernière mise à jour
     localStorage.setItem(`${storageKey}_updated`, new Date().toISOString());
 
     showMessage(t.analytics.exclusionsSaved || 'Exclusions sauvegardées avec succès', 'success');
     showExclusionsDialog.value = false;
 
-    // Afficher des instructions pour recharger la page
     showMessage(t.analytics.exclusionsSaved ? 'Rechargez la page pour appliquer les exclusions' : 'Reload the page to apply exclusions', 'info');
   } catch (error) {
     console.error('Erreur lors de la sauvegarde des exclusions:', error);
@@ -2397,14 +2450,13 @@ function loadExclusions() {
   if (!currentSite.value) return;
 
   try {
-    // Charger depuis localStorage
+    checkCurrentExclusionStatus();
     const storageKey = `stackunity_exclusions_${currentSite.value.id}`;
     const savedExclusions = localStorage.getItem(storageKey);
 
     if (savedExclusions) {
       const parsedExclusions = JSON.parse(savedExclusions);
 
-      // Convertir les anciennes exclusions 'ip' en 'visitor'
       visitorExclusions.value = parsedExclusions.map(exc => {
         if (exc.type === 'ip') {
           return { type: 'visitor', value: exc.value };
@@ -2412,12 +2464,8 @@ function loadExclusions() {
         return exc;
       });
 
-      // Obtenir la date de dernière mise à jour pour l'afficher si nécessaire
-      const lastUpdated = localStorage.getItem(`${storageKey}_updated`);
-      console.log('Exclusions chargées depuis localStorage, dernière mise à jour:', lastUpdated);
     } else {
       visitorExclusions.value = [];
-      console.log('Aucune exclusion trouvée dans localStorage');
     }
   } catch (error) {
     console.error('Erreur lors du chargement des exclusions:', error);
@@ -2425,34 +2473,6 @@ function loadExclusions() {
   }
 }
 
-// Ajouter cette fonction pour afficher une représentation lisible des URLs de page
-function formatPagePath(url: string, cleanPath: string | null | undefined, isHome: boolean | null | undefined) {
-  if (!url) return 'Page inconnue';
-
-  if (isHome) return "Page d'accueil";
-
-  try {
-    // Si nous avons un chemin nettoyé, l'utiliser
-    if (cleanPath) {
-      return cleanPath === '/' ? "Page d'accueil" : cleanPath;
-    }
-
-    // Sinon, essayer de nettoyer l'URL nous-mêmes
-    if (url.startsWith('http')) {
-      const urlObj = new URL(url);
-      const path = urlObj.pathname;
-      return path === '/' ? "Page d'accueil" : path;
-    }
-
-    // Si c'est déjà un chemin, le retourner tel quel
-    return url === '/' ? "Page d'accueil" : url;
-  } catch (e) {
-    console.error('Erreur lors du formatage du chemin de page:', e);
-    return url;
-  }
-}
-
-// Fonction pour déterminer la couleur basée sur la durée
 function getTimeColor(item: PageView) {
   if (!item.hasDuration) return 'grey';
 
@@ -2464,58 +2484,20 @@ function getTimeColor(item: PageView) {
   return 'primary';
 }
 
-// Fonction pour déterminer la classe CSS basée sur la qualité des données
-function getQualityClass(quality: number): string {
-  if (quality < 30) return 'text-error';
-  if (quality < 70) return 'text-warning';
-  return 'text-success';
-}
-
-// Si la fonction de formatage d'URL est également définie localement, renommons-la pour éviter le conflit
-function formatLocalUrl(url: string) {
-  if (!url) return 'URL inconnue';
-
-  try {
-    // Supprimer les protocoles
-    let formatted = url.replace(/^https?:\/\//, '');
-
-    // Supprimer les www.
-    formatted = formatted.replace(/^www\./, '');
-
-    // Limiter la longueur
-    if (formatted.length > 30) {
-      formatted = formatted.substring(0, 27) + '...';
-    }
-
-    return formatted;
-  } catch (e) {
-    console.error('Erreur lors du formatage de l\'URL:', e);
-    return url;
-  }
-}
-
-// Maintenant, utilisons formatUrlUtil qui est la fonction importée en cas de besoin
-// Si des références à formatUrl existaient dans le code, on doit les remplacer par formatUrlUtil ou formatLocalUrl
-
-// Ajouter une nouvelle référence pour les données temporelles
 const pageViewsTimeSeries = ref<Array<{ date: string, views: number }>>([]);
 const pagesTrackingData = ref<Array<{ date: string, page: string, views: number }>>([]);
 const selectedPage = ref<string | null>(null);
 
-// Ajouter cette fonction pour mettre à jour les données spécifiques à une page
 function updatePageTrackingData(page: string | null) {
   selectedPage.value = page;
 
   if (page) {
-    // Filtrer les données pour la page spécifique (simulé pour l'instant)
-    // Dans une vraie implémentation, nous ferions un appel API pour obtenir les données par page
     pagesTrackingData.value = pageViewsTimeSeries.value.map(item => ({
       date: item.date,
       page: page,
-      views: Math.floor(item.views * (Math.random() * 0.5 + 0.1)) // Simuler que cette page représente 10-60% des vues
+      views: Math.floor(item.views * (Math.random() * 0.5 + 0.1))
     }));
   } else {
-    // Utiliser les données globales si aucune page n'est sélectionnée
     pagesTrackingData.value = pageViewsTimeSeries.value.map(item => ({
       date: item.date,
       page: 'Toutes les pages',
@@ -2524,536 +2506,60 @@ function updatePageTrackingData(page: string | null) {
   }
 }
 
-// Mise à jour de la fonction generateMockTimeSeriesData
-function generateMockTimeSeriesData(useTestData = false) {
-  const today = new Date();
-  const data: Array<{ date: string, views: number }> = [];
+async function loadPageDistribution() {
+  if (!currentSite.value) return;
 
-  // Si useTestData est true, générer 365 jours de données (1 an)
-  const period = useTestData ? 365 : (selectedPeriod.value === '7d' ? 7 : selectedPeriod.value === '30d' ? 30 : 90);
+  isPageDistributionLoading.value = true;
 
-  for (let i = period; i >= 0; i--) {
-    const date = new Date();
-    date.setDate(today.getDate() - i);
+  try {
+    const response = await fetch(`/api/analytics/website/${currentSite.value.id}/page-distribution?period=${selectedPeriod.value}&limit=20`);
+    const result = await response.json();
 
-    let views;
-    if (useTestData) {
-      // Générer des données plus réalistes et variées pour le jeu de test
-      const dayOfWeek = date.getDay(); // 0 = dimanche, 6 = samedi
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    if (result.success && result.data) {
+      const pages = result.data.pages.map(page => ({
+        page: page.page,
+        views: page.views,
+        avgTime: '',
+        cleanPath: page.cleanPath,
+        isHome: page.isHome,
+        percentage: page.percentage
+      }));
 
-      // Tendance de base: plus élevée en semaine
-      const baseTrend = isWeekend ? 20 : 45;
+      pageViews.value = pages;
+      filteredPages.value = [...pages];
 
-      // Tendance saisonnière: été plus bas, hiver plus haut
-      const month = date.getMonth(); // 0 = janvier, 11 = décembre
-      let seasonalFactor = 1;
-
-      if (month >= 5 && month <= 7) { // Été (juin-août)
-        seasonalFactor = 0.7;
-      } else if (month >= 10 || month <= 1) { // Hiver (nov-fév)
-        seasonalFactor = 1.3;
-      }
-
-      // Tendance globale croissante
-      const growthFactor = 1 + (period - i) / period * 0.5;
-
-      // Ajouter une variation aléatoire
-      const randomVariation = Math.random() * 25 - 10;
-
-      // Calculer le nombre final de vues
-      views = Math.max(1, Math.round((baseTrend * seasonalFactor * growthFactor) + randomVariation));
-
-      // Ajouter des pics occasionnels (campagnes marketing simulées)
-      if (Math.random() < 0.02) { // 2% de chance d'avoir un pic
-        views = views * (2 + Math.random() * 3); // 2-5x plus de vues
-      }
+      snackbarText.value = t.analytics.dataLoaded || 'Données de distribution de pages chargées';
+      snackbarColor.value = 'success';
+      showSnackbar.value = true;
     } else {
-      // Comportement original pour les données normales
-      views = Math.floor(Math.random() * 45) + 5;
+      console.error('Erreur lors du chargement de la distribution des pages:', result.message);
     }
-
-    data.push({
-      date: date.toISOString().split('T')[0],
-      views: Math.round(views)
-    });
+  } catch (error) {
+    console.error('Erreur lors du chargement de la distribution des pages:', error);
+  } finally {
+    isPageDistributionLoading.value = false;
   }
-
-  pageViewsTimeSeries.value = data;
-  updatePageTrackingData(selectedPage.value);
 }
 
-// Fonction showPageDetails pour remplacer l'ancienne expandPage
-function showPageDetails(page: PageView) {
-  console.log('Informations détaillées de la page:', page);
-  showMessage(`Page: ${page.page} - ${page.views} vues`, 'info');
+const isCurrentlyExcluded = ref(false);
+const exclusionReason = ref('');
+
+function checkCurrentExclusionStatus() {
+  isCurrentlyExcluded.value = localStorage.getItem('stackunity_excluded') === 'true';
+  exclusionReason.value = localStorage.getItem('stackunity_excluded_reason') || 'inconnue';
 }
+
+function removeCurrentExclusion() {
+  localStorage.removeItem('stackunity_excluded');
+  localStorage.removeItem('stackunity_excluded_reason');
+  isCurrentlyExcluded.value = false;
+  exclusionReason.value = '';
+  showMessage(t.analytics.reactivateTracking || 'Tracking réactivé avec succès. Rechargez la page pour que les changements prennent effet.', 'success');
+}
+
+watch(() => showExclusionsDialog.value, (newVal) => {
+  if (newVal) {
+    checkCurrentExclusionStatus();
+  }
+});
 </script>
-
-<style scoped>
-.main-content {
-  min-height: auto;
-  background-color: var(--v-theme-background);
-  position: relative;
-  flex: 1;
-}
-
-.metric-card {
-  border-left: 4px solid;
-  border-radius: 8px;
-}
-
-.metric-card:nth-child(1) {
-  border-left-color: rgb(var(--v-theme-primary));
-}
-
-.metric-card:nth-child(2) {
-  border-left-color: rgb(var(--v-theme-success));
-}
-
-.metric-card:nth-child(3) {
-  border-left-color: rgb(var(--v-theme-info));
-}
-
-.metric-card:nth-child(4) {
-  border-left-color: rgb(var(--v-theme-warning));
-}
-
-.modern-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  overflow: hidden;
-  border: none;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
-  backdrop-filter: blur(10px);
-}
-
-.modern-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-}
-
-.site-card-banner {
-  position: relative;
-  height: 140px;
-  overflow: hidden;
-}
-
-.site-card-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(1px);
-  transition: all 0.3s ease;
-}
-
-.modern-card:hover .site-card-overlay {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.site-card-header {
-  position: relative;
-  z-index: 2;
-}
-
-.site-icon-container {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  z-index: 3;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
-
-.modern-card:hover .site-icon-container {
-  transform: scale(1.1) rotate(15deg);
-}
-
-.site-url-chip {
-  background: rgba(255, 255, 255, 0.2) !important;
-  backdrop-filter: blur(5px);
-  border: none !important;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.95) !important;
-  max-width: 150px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.status-chip {
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  border-radius: 12px;
-  padding: 0 8px;
-}
-
-.site-stats {
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 6px;
-}
-
-.stat-item {
-  flex: 1;
-}
-
-.view-analytics-btn {
-  text-transform: none;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
-}
-
-.view-analytics-btn:hover {
-  letter-spacing: 1px;
-}
-
-.pulse-animation {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 15px rgba(var(--v-theme-primary), 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0);
-  }
-}
-
-.scale-on-hover {
-  transition: transform 0.3s ease;
-}
-
-.scale-on-hover:hover {
-  transform: scale(1.05);
-}
-
-.bg-gradient-primary {
-  background: linear-gradient(135deg, #1976d2, #1565c0);
-}
-
-.bg-gradient-secondary {
-  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
-}
-
-.bg-gradient-success {
-  background: linear-gradient(135deg, #4caf50, #388e3c);
-}
-
-.bg-gradient-info {
-  background: linear-gradient(135deg, #03a9f4, #0288d1);
-}
-
-.bg-gradient-indigo {
-  background: linear-gradient(135deg, #3f51b5, #303f9f);
-}
-
-.bg-gradient-deep-purple {
-  background: linear-gradient(135deg, #673ab7, #512da8);
-}
-
-.bg-gradient-cyan {
-  background: linear-gradient(135deg, #00bcd4, #0097a7);
-}
-
-.bg-gradient-teal {
-  background: linear-gradient(135deg, #009688, #00796b);
-}
-
-.bg-gradient-amber {
-  background: linear-gradient(135deg, #ffc107, #ffa000);
-}
-
-.add-site-card {
-  transition: all 0.3s ease;
-  border: 1px solid rgba(var(--v-theme-primary), 0.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.add-site-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-  border-color: rgba(var(--v-theme-primary), 0.3);
-}
-
-.add-site-icon-container {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.1), rgba(var(--v-theme-primary), 0.2));
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-  box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.2);
-}
-
-.period-select :deep(.v-field__outline) {
-  border-width: 1px;
-}
-
-.period-select :deep(.v-field__input) {
-  padding-top: 0;
-  padding-bottom: 0;
-  min-height: 36px;
-}
-
-.page-stat-card {
-  transition: all 0.2s ease;
-  border-radius: 8px;
-}
-
-.page-stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.page-url {
-  opacity: 0.7;
-}
-
-.views-progress,
-.time-progress {
-  transition: all 0.3s ease;
-}
-
-.views-progress:hover,
-.time-progress:hover {
-  height: 8px !important;
-}
-
-.tech-stats-card {
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.tech-stats-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-}
-
-.tech-card-title {
-  background-color: rgba(0, 0, 0, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 12px 16px;
-}
-
-.tech-stat-item {
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.tech-stat-item:last-child {
-  border-bottom: none;
-}
-
-.tech-count {
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 2px 6px;
-  border-radius: 10px;
-  min-width: 30px;
-  text-align: center;
-}
-
-.interactions-card {
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-}
-
-.interactions-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-}
-
-.errors-card {
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  background-color: rgba(244, 67, 54, 0.03);
-  border: 1px solid rgba(244, 67, 54, 0.1);
-}
-
-.error-row {
-  transition: background-color 0.2s ease;
-}
-
-.error-row:hover {
-  background-color: rgba(244, 67, 54, 0.05);
-}
-
-.error-message {
-  font-family: 'Roboto Mono', monospace;
-  font-size: 0.8rem;
-  color: rgba(244, 67, 54, 0.9);
-}
-
-.no-errors-card {
-  background-color: rgba(76, 175, 80, 0.03);
-  border: 1px solid rgba(76, 175, 80, 0.1);
-  border-radius: 8px;
-}
-
-.dev-chip {
-  background: linear-gradient(135deg, #673ab7, #9c27b0) !important;
-  color: white !important;
-  font-weight: bold;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.5px;
-}
-
-.analytics-description {
-  max-width: 800px;
-  line-height: 1.6;
-}
-
-.primary-action-btn {
-  transition: all 0.3s ease;
-  border-radius: 8px;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-
-.primary-action-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.analytics-header {
-  border-left: 4px solid rgb(var(--v-theme-primary));
-}
-
-.analytics-tabs-card {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
-  background: rgba(var(--v-theme-surface), 1);
-  border: 1px solid rgba(var(--v-theme-primary), 0.08);
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.analytics-tabs-card:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-}
-
-.tab-button {
-  min-width: 120px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  padding: 0 24px;
-  height: 48px;
-}
-
-.tab-button:before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, rgba(var(--v-theme-primary), 0.7), rgba(var(--v-theme-primary), 0.3));
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.3s ease;
-  border-radius: 3px 3px 0 0;
-}
-
-.tab-button:hover:before,
-.tab-button.v-tab--selected:before {
-  transform: scaleX(1);
-  transform-origin: left;
-}
-
-.tab-button.v-tab--selected {
-  font-weight: 600;
-  background-color: rgba(var(--v-theme-primary), 0.05);
-}
-
-.tab-content {
-  padding: 0;
-  transition: all 0.3s ease;
-}
-
-.code-container {
-  max-width: 100%;
-  overflow-x: auto;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.code-container pre {
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 14px;
-  padding: 16px;
-  margin: 0;
-}
-
-.chart {
-  height: 400px;
-  width: 100%;
-  border-radius: 8px;
-  padding: 16px;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-/* Corriger le sélecteur ::v-deep pour Vue 3 */
-:deep(.echarts) {
-  animation: fadeIn 0.6s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.traffic-chart,
-.device-chart {
-  height: 300px;
-  width: 100%;
-}
-
-.date-filter {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.date-filter :deep(.v-field__input) {
-  margin-right: 8px;
-}
-</style>

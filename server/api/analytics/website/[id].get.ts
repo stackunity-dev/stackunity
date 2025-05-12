@@ -150,7 +150,6 @@ export default defineEventHandler(async (event) => {
     );
     const avgSessionDuration = Math.round(avgSessionRows[0]?.avgSessionDuration || 0);
 
-    // Ajouter requête pour calculer la durée moyenne de toutes les pages
     const avgPageDurationQuery = `
       SELECT 
         AVG(CASE WHEN duration IS NOT NULL AND duration > 0 THEN duration ELSE NULL END) AS avgPageDuration,
@@ -172,13 +171,6 @@ export default defineEventHandler(async (event) => {
       ? Math.min(100, Math.round(pageViewsWithDuration * 100 / totalPageViewsFromDuration))
       : 0;
 
-    console.log('Durée moyenne des pages:', {
-      avgPageDuration,
-      pageViewsWithDuration,
-      totalPageViews: totalPageViewsFromDuration,
-      durationDataQuality
-    });
-
     const bounceRateQuery = `
       SELECT 
       (SUM(CASE WHEN is_bounce = 1 THEN 1 ELSE 0 END) / GREATEST(COUNT(*), 1)) * 100 AS bounceRate,
@@ -188,7 +180,6 @@ export default defineEventHandler(async (event) => {
       WHERE website_id = ? ${startDate ? 'AND start_time >= ?' : ''}
     `;
 
-    console.log('Requête de rebond:', bounceRateQuery);
 
     const [bounceRows] = await pool.query<StatsRow[]>(
       bounceRateQuery,
@@ -222,20 +213,13 @@ export default defineEventHandler(async (event) => {
       LIMIT 10
     `;
 
-    console.log('Requête topPages:', topPagesQuery.replace(/\s+/g, ' '));
 
     const [topPagesRows] = await pool.query<PageRow[]>(
       topPagesQuery,
       startDate ? [dbWebsiteId, startDate.toISOString().slice(0, 19).replace('T', ' ')] : [dbWebsiteId]
     );
 
-    console.log('Résultats top pages (durées):', JSON.stringify(topPagesRows.map(row => ({
-      page: row.page,
-      views: row.views,
-      views_with_duration: row.views_with_duration,
-      avgTime: row.avgTime,
-      raw_avg_time: row.raw_avg_time
-    }))));
+
 
     const normalizeUrl = (url: string) => {
       if (!url) return url;
@@ -293,7 +277,6 @@ export default defineEventHandler(async (event) => {
 
     const [trafficSourcesRows] = await pool.query<SourceRow[]>(trafficSourcesQuery, trafficSourcesParams);
 
-    // Ajuster la requête des statistiques d'appareils
     let deviceStatsQuery = `
       SELECT 
         device_type AS type,
@@ -318,7 +301,6 @@ export default defineEventHandler(async (event) => {
 
     const [deviceStatsRows] = await pool.query<DeviceRow[]>(deviceStatsQuery, deviceStatsParams);
 
-    // Ajuster la requête des statistiques de navigateurs
     let browserStatsQuery = `
       SELECT 
         CASE 
@@ -346,7 +328,6 @@ export default defineEventHandler(async (event) => {
 
     const [browserRows] = await pool.query<BrowserOsRow[]>(browserStatsQuery, browserStatsParams);
 
-    // Ajuster la requête des statistiques d'OS 
     let osStatsQuery = `
       SELECT 
         CASE 
@@ -373,7 +354,6 @@ export default defineEventHandler(async (event) => {
 
     const [osRows] = await pool.query<BrowserOsRow[]>(osStatsQuery, osStatsParams);
 
-    // Ajuster la requête des erreurs
     let errorEventsQuery = `
       SELECT 
         p.page_url AS page,
@@ -394,7 +374,6 @@ export default defineEventHandler(async (event) => {
 
     const [errorEventsRows] = await pool.query<ErrorRow[]>(errorEventsQuery, errorEventsParams);
 
-    // Ajout d'une requête pour les référents détaillés
     const detailedReferrersQuery = `
       SELECT 
         CASE
@@ -429,7 +408,6 @@ export default defineEventHandler(async (event) => {
       detailedReferrersParams
     );
 
-    // Traitement des résultats des référents
     const detailedReferrers = Array.isArray(detailedReferrersRows) ? detailedReferrersRows.map(row => ({
       source: row.source || 'referrers',
       name: row.name || 'Référent inconnu',
@@ -442,7 +420,6 @@ export default defineEventHandler(async (event) => {
     const limit = parseInt(query.limit as string) || 500;
     const offset = (page - 1) * limit;
 
-    // Définir les types à exclure
     const excludedInteractionTypes = ['page_viewexit', 'pageViewExit', 'visibility_snapshot', 'segment_visibility', 'page_duration', 'pageVisitDuration', 'page_exit'];
 
     const excludedTypesSQL = excludedInteractionTypes.map(() => '?').join(',');
@@ -466,7 +443,6 @@ export default defineEventHandler(async (event) => {
       LIMIT ? OFFSET ?
     `;
 
-    // Ajuster la requête de comptage également
     const getTotalInteractions = async (websiteId, dateFilter) => {
       const [countRows] = await pool.query(
         `SELECT COUNT(*) as total FROM analytics_interactions 
@@ -477,7 +453,6 @@ export default defineEventHandler(async (event) => {
       return countRows[0].total;
     };
 
-    // Adapter les paramètres pour inclure la liste des types exclus
     const [interactionRows] = await pool.query<InteractionRow[]>(
       interactionsQuery,
       [
@@ -539,20 +514,6 @@ export default defineEventHandler(async (event) => {
       frustratedSessionsParams
     );
     const frustratedSessions = frustratedSessionsRows[0]?.frustratedSessions || 0;
-
-    const isValidUrl = (url) => {
-      if (!url) return false;
-
-      try {
-        if (!url.startsWith('http')) {
-          url = 'https://' + url;
-        }
-        new URL(url);
-        return true;
-      } catch (e) {
-        return false;
-      }
-    };
 
     const cleanUrl = (url) => {
       if (!url || url === 'Unknown page') return url;

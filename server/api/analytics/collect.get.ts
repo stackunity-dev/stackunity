@@ -5,8 +5,6 @@ export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
 
-    console.log('Emergency tracking request received:', query);
-
     if (query.emergency && query.websiteId) {
       const websiteId = query.websiteId as string;
       const sessionId = query.sessionId as string;

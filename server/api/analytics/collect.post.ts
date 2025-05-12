@@ -935,6 +935,43 @@ export default defineEventHandler(async (event) => {
               console.error('Erreur lors du traitement de sessionEnd:', error);
             }
             break;
+
+          case 'geoLocation':
+            try {
+              if (!event.latitude || !event.longitude) {
+                console.error('geoLocation: données de localisation manquantes', event);
+                break;
+              }
+
+              console.log('Traitement de geoLocation:', {
+                latitude: event.latitude,
+                longitude: event.longitude,
+                accuracy: event.accuracy || 'non spécifié'
+              });
+
+              // Insérer les données de géolocalisation
+              await pool.query(
+                `INSERT INTO analytics_geo_locations 
+                  (pageview_id, session_id, visitor_id, website_id, 
+                   latitude, longitude, accuracy, timestamp) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                  event.pageViewId,
+                  sessionId,
+                  visitorId,
+                  dbWebsiteId,
+                  event.latitude,
+                  event.longitude,
+                  event.accuracy || null,
+                  new Date(event.timestamp || new Date())
+                ]
+              );
+
+              console.log('Données de géolocalisation enregistrées avec succès');
+            } catch (error) {
+              console.error('Erreur lors du traitement des données de géolocalisation:', error);
+            }
+            break;
         }
       } catch (error) {
         console.error(`Erreur lors du traitement de l'événement ${event.type}:`, error);

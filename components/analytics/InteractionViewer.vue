@@ -166,12 +166,42 @@
             'mobile-viewport': isMobileDevice,
             'tablet-viewport': isTabletDevice
           }" ref="viewportRef">
-            <iframe v-if="showWebsiteFrame && isValidUrl(selectedUrl)" :src="getFrameUrl(selectedUrl)"
-              class="website-iframe" sandbox="allow-same-origin allow-scripts" loading="lazy"
-              referrerpolicy="no-referrer">
-            </iframe>
+            <div class="viewport-size-indicator" v-if="actualDimensions.width && actualDimensions.height">
+              <v-chip size="small" color="info" variant="outlined">
+                <v-icon start size="x-small">mdi-monitor</v-icon>
+                {{ actualDimensions.width }}x{{ actualDimensions.height }}px
+              </v-chip>
+            </div>
 
-            <div class="click-heatmap" ref="heatmapContainer">
+            <div class="iframe-container" v-if="showWebsiteFrame && isValidUrl(selectedUrl)" :style="{
+              width: `${actualDimensions.width}px`,
+              height: `${actualDimensions.height}px`,
+              maxWidth: '100%',
+              overflow: 'hidden',
+              position: 'relative',
+              transform: `scale(${frameScale})`,
+              transformOrigin: 'top left',
+              border: '1px solid rgba(var(--v-border-color), 0.2)'
+            }">
+              <iframe :src="getFrameUrl(selectedUrl)" class="website-iframe" :style="{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                position: 'absolute',
+                top: 0,
+                left: 0
+              }" sandbox="allow-same-origin allow-scripts" loading="lazy" referrerpolicy="no-referrer">
+              </iframe>
+            </div>
+
+            <div class="click-heatmap" ref="heatmapContainer" :style="{
+              width: `${actualDimensions.width * frameScale}px`,
+              height: `${actualDimensions.height * frameScale}px`,
+              position: showWebsiteFrame ? 'absolute' : 'relative',
+              top: 0,
+              left: 0,
+              pointerEvents: 'none'
+            }">
               <v-chart class="chart" :option="heatmapOption" autoresize />
             </div>
           </div>
@@ -306,7 +336,7 @@ import { HeatmapChart, LineChart, ScatterChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TooltipComponent, VisualMapComponent } from 'echarts/components';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { computed, defineComponent, onMounted, provide, ref, watch } from 'vue';
+import { computed, defineComponent, nextTick, onMounted, provide, ref, watch } from 'vue';
 import VChart, { THEME_KEY } from 'vue-echarts';
 import { useTranslations } from '../../languages';
 import { UserInteraction } from '../../utils/analytics/types';
@@ -356,7 +386,7 @@ const props = defineProps<{
 
 const viewMode = ref('timeline');
 const selectedInteraction = ref<ExtendedUserInteraction | null>(null);
-const heatmapContainer = ref(null);
+const heatmapContainer = ref<HTMLElement | null>(null);
 const filterType = ref('Tous');
 const searchQuery = ref('');
 const loading = ref(false);
@@ -701,13 +731,38 @@ function getScaledPosition(position, dimension) {
   return position * (viewportScale.value || 1);
 }
 
+const deviceDimensions = ref({
+  width: 1024,
+  height: 768
+});
+
+const frameScale = ref(1);
+
 const clickDotsData = computed(() => {
   return filteredInteractionsByUrl.value
-    .filter(i => i.type === 'click' && i.value && i.value.x && i.value.y)
+    .filter(i => i.type === 'click' && i.value)
     .map(interaction => {
+      const value = interaction.value || {};
+      const hasPageProps = value.pageWidth && value.pageHeight && value.pageX !== undefined && value.pageY !== undefined;
+
+      const x = hasPageProps ? value.pageX : (value.x || value.clientX || 0);
+      const y = hasPageProps ? value.pageY : (value.y || value.clientY || 0);
+
+      const pageWidth = hasPageProps ? value.pageWidth : (viewportWidth.value || 1024);
+      const pageHeight = hasPageProps ? value.pageHeight : (viewportHeight.value || 768);
+
+      const relativeX = hasPageProps ? (value.relativeX || (x / pageWidth * 100)) : (x / pageWidth * 100);
+      const relativeY = hasPageProps ? (value.relativeY || (y / pageHeight * 100)) : (y / pageHeight * 100);
+
       return {
-        x: getScaledPosition(interaction.value.x, 'width'),
-        y: getScaledPosition(interaction.value.y, 'height'),
+        x: getScaledPosition(x, 'width'),
+        y: getScaledPosition(y, 'height'),
+        relativeX: relativeX,
+        relativeY: relativeY,
+        pageWidth: pageWidth,
+        pageHeight: pageHeight,
+        viewportWidth: value.viewportWidth || viewportWidth.value,
+        viewportHeight: value.viewportHeight || viewportHeight.value,
         color: '#1976D2',
         timestamp: interaction.timestamp,
         text: interaction.elementText || ''
@@ -719,9 +774,7 @@ function isValidUrl(url: string): boolean {
   if (url === 'Toutes les pages') return false;
 
   try {
-    // Vérifie si l'URL est valide
     const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
-    // Permettre localhost pour les tests en développement
     return true;
   } catch (e) {
     return false;
@@ -731,7 +784,6 @@ function isValidUrl(url: string): boolean {
 function getFrameUrl(url: string): string {
   if (!url || url === 'Toutes les pages') return '';
 
-  // S'assurer que l'URL commence par http:// ou https://
   if (!url.startsWith('http')) {
     url = 'https://' + url;
   }
@@ -771,14 +823,12 @@ function getInteractionColor(type: string): string {
 function formatScrollData(interaction: ExtendedUserInteraction): string {
   if (!interaction.value) return '-';
 
-  // Traiter les interactions scroll_depth différemment
   if (interaction.type === 'scroll_depth') {
     const depth = interaction.value.depth || 0;
     const pixelY = interaction.value.pixelY || 0;
     return `${depth}% de profondeur (${Math.round(Number(pixelY))}px)`;
   }
 
-  // Pour les interactions scroll normales
   if (interaction.type !== 'scroll' || !interaction.value.scrollDepth) {
     return '-';
   }
@@ -817,10 +867,26 @@ function formatInteractionDetails(interaction: ExtendedUserInteraction) {
         if (interaction.elementText) {
           clickDetails = `"${interaction.elementText}"`;
         }
-        if (typeof interaction.value.x !== 'undefined' && typeof interaction.value.y !== 'undefined') {
-          clickDetails += clickDetails ? ` at the position (${interaction.value.x}, ${interaction.value.y})` :
-            `Position: (${interaction.value.x}, ${interaction.value.y})`;
+
+        const value = interaction.value;
+        if (value) {
+          const hasPageCoords = value.pageX !== undefined && value.pageY !== undefined;
+          const hasClientCoords = value.clientX !== undefined && value.clientY !== undefined;
+
+          if (hasPageCoords && hasClientCoords) {
+            clickDetails += clickDetails ?
+              ` à la position (${value.pageX}, ${value.pageY}) | relatif: (${value.relativeX?.toFixed(2) || 0}%, ${value.relativeY?.toFixed(2) || 0}%)` :
+              `Position: absolue (${value.pageX}, ${value.pageY}) | relative (${value.relativeX?.toFixed(2) || 0}%, ${value.relativeY?.toFixed(2) || 0}%)`;
+
+            if (value.pageWidth && value.pageHeight) {
+              clickDetails += ` sur page ${value.pageWidth}x${value.pageHeight}px`;
+            }
+          } else if (value.x !== undefined && value.y !== undefined) {
+            clickDetails += clickDetails ? ` à la position (${value.x}, ${value.y})` :
+              `Position: (${value.x}, ${value.y})`;
+          }
         }
+
         return countPrefix + (clickDetails || t.interactions.detailsNotAvailable);
       case 'form_submit':
         if (interaction.value.formId || interaction.value.action) {
@@ -914,7 +980,6 @@ function formatSelectedValue(value: any): string {
       return String(value);
     }
 
-    // Format spécial pour les valeurs de scroll_depth
     if (value.depth !== undefined && value.pixelY !== undefined) {
       return JSON.stringify({
         depth: value.depth,
@@ -1051,19 +1116,52 @@ defineComponent({
 
 provide(THEME_KEY, 'dark');
 
-const clickData = computed(() => {
-  return filteredInteractionsByUrl.value
-    .filter(i => i.type === 'click' && i.value && i.value.x && i.value.y)
-    .map(interaction => {
-      return [
-        interaction.value.x,
-        interaction.value.y,
-        1
-      ];
-    });
+const viewportWidth = ref(1920);
+const viewportHeight = ref(1080);
+
+const actualDimensions = ref({
+  width: 1024,
+  height: 768
 });
 
+function updateHeatmapDimensions() {
+  let width = deviceDimensions.value.width;
+  let height = deviceDimensions.value.height;
+  let scale = 1;
+
+  const pageData = clickDotsData.value.find(click => click.pageWidth && click.pageHeight);
+  if (pageData) {
+    width = pageData.pageWidth;
+    height = pageData.pageHeight;
+
+    if (isMobileDevice.value) {
+      width = 390;
+      height = 844;
+    } else if (isTabletDevice.value) {
+      width = 768;
+      height = 1024;
+    }
+
+    const containerWidth = viewportRef.value ? viewportRef.value.clientWidth * 0.9 : 1000;
+    if (width > containerWidth) {
+      scale = containerWidth / width;
+    }
+  }
+
+  actualDimensions.value = { width, height };
+  frameScale.value = scale;
+
+  if (heatmapContainer.value) {
+    heatmapContainer.value.style.width = `${width * scale}px`;
+    heatmapContainer.value.style.height = `${height * scale}px`;
+  }
+}
+
 const heatmapOption = computed(() => {
+  const points = clickDotsData.value.map(point => {
+    return [point.relativeX, point.relativeY, 1];
+  });
+
   return {
     backgroundColor: showWebsiteFrame.value ? 'transparent' : '#1E1E1E40',
     textStyle: {
@@ -1139,7 +1237,7 @@ const heatmapOption = computed(() => {
       {
         name: 'Click Map',
         type: 'scatter',
-        data: clickData.value,
+        data: points,
         symbol: 'circle',
         symbolSize: function (val) {
           return showWebsiteFrame ? val[2] * 20 : val[2] * 15;
@@ -1171,6 +1269,12 @@ const heatmapOption = computed(() => {
       }
     ]
   };
+});
+
+watch([clickDotsData, selectedDevice, showWebsiteFrame], () => {
+  nextTick(() => {
+    updateHeatmapDimensions();
+  });
 });
 </script>
 
@@ -1229,28 +1333,60 @@ const heatmapOption = computed(() => {
 .click-heatmap-container {
   position: relative;
   width: 100%;
-  background-color: transparent;
+  background-color: #f5f5f5;
   border-radius: 8px;
   overflow: hidden;
 }
 
+.click-heatmap-viewport {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  margin: 0 auto;
+  background-color: rgba(var(--v-theme-surface-variant), 0.5);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.click-heatmap-viewport.has-iframe {
+  background-color: rgba(var(--v-theme-background), 1);
+}
+
+.click-heatmap-viewport.mobile-viewport {
+  max-width: 390px;
+}
+
+.click-heatmap-viewport.tablet-viewport {
+  max-width: 768px;
+}
+
+.click-heatmap {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
 .click-heatmap-header {
-  margin-bottom: 10px;
+  background-color: rgba(var(--v-theme-surface), 1);
+  padding: 8px 16px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom: 1px solid rgba(var(--v-border-color), 0.12);
 }
 
 .browser-mock {
-  background: #2a2a2a;
-  border-radius: 8px 8px 0 0;
-  padding: 8px;
   display: flex;
-  flex-direction: column;
-  transition: all 0.3s ease;
-  width: 100%;
+  align-items: center;
+  background-color: rgba(var(--v-theme-surface), 1);
 }
 
 .browser-controls {
   display: flex;
-  margin-bottom: 8px;
+  margin-right: 16px;
 }
 
 .browser-dot {
@@ -1258,6 +1394,10 @@ const heatmapOption = computed(() => {
   height: 12px;
   border-radius: 50%;
   margin-right: 6px;
+  opacity: 0.7;
+}
+
+.browser-dot:nth-child(1) {
   background-color: #ff5f57;
 }
 
@@ -1266,208 +1406,45 @@ const heatmapOption = computed(() => {
 }
 
 .browser-dot:nth-child(3) {
-  background-color: #28ca41;
+  background-color: #28ca42;
 }
 
 .browser-address-bar {
-  background: #1a1a1a;
-  border-radius: 4px;
-  padding: 6px 12px;
-  color: #aaa;
-  font-size: 14px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  flex: 1;
+  background-color: rgba(var(--v-theme-surface-variant), 0.5);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  user-select: none;
-}
-
-.click-heatmap-viewport {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 56.25%;
-  background-color: rgba(240, 240, 240, 0.05);
-  overflow: hidden;
-  border-radius: 0 0 8px 8px;
-  transition: all 0.3s ease;
-}
-
-.click-heatmap-viewport.has-iframe {
-  background-color: #fff;
-  padding-bottom: 65%;
-}
-
-.click-heatmap-viewport.mobile-viewport {
-  max-width: 375px;
-  margin: 0 auto;
-  padding-bottom: 180%;
-  border-radius: 20px;
-}
-
-.click-heatmap-viewport.tablet-viewport {
-  max-width: 768px;
-  margin: 0 auto;
-  padding-bottom: 130%;
-  border-radius: 12px;
-}
-
-.browser-mock.mobile-frame {
-  max-width: 375px;
-  margin: 0 auto;
-  border-radius: 20px 20px 0 0;
-  padding: 12px 8px 8px;
-  background: #111;
-}
-
-.browser-mock.tablet-frame {
-  max-width: 768px;
-  margin: 0 auto;
-  border-radius: 12px 12px 0 0;
-  padding: 10px 8px 8px;
-  background: #1a1a1a;
-}
-
-.browser-mock.mobile-frame .browser-controls {
-  justify-content: center;
-  position: relative;
-}
-
-.browser-mock.mobile-frame .browser-controls::before {
-  content: "";
-  position: absolute;
-  top: -5px;
-  width: 40%;
-  height: 5px;
-  background: #222;
-  border-radius: 3px;
-}
-
-.website-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  z-index: 1;
-  transform-origin: top left;
-  pointer-events: auto;
-  overflow: auto;
-}
-
-.mobile-viewport .website-iframe,
-.tablet-viewport .website-iframe {
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-.click-dots-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.click-dot {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 10px rgba(25, 118, 210, 0.7);
-  animation: pulse 2s infinite;
-  pointer-events: none;
-}
-
-@keyframes pulse {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.2);
-    opacity: 0.5;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.7;
-  }
-}
-
-.click-heatmap-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.08;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.mock-header {
-  height: 15%;
-  background: linear-gradient(to right, #ddd 0%, #ccc 100%);
-  margin-bottom: 2%;
-}
-
-.mock-content {
-  display: flex;
-  height: 65%;
-  margin-bottom: 2%;
-}
-
-.mock-sidebar {
-  width: 25%;
-  background: linear-gradient(to bottom, #ddd 0%, #ccc 100%);
-  margin-right: 2%;
-}
-
-.mock-main {
-  flex: 1;
-  background: linear-gradient(to bottom, #eee 0%, #ddd 100%);
-}
-
-.mock-footer {
-  height: 15%;
-  background: linear-gradient(to right, #ccc 0%, #ddd 100%);
-}
-
-.click-heatmap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  padding: 0;
-}
-
-.has-iframe .chart {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 5;
-  pointer-events: none;
-}
-
-.heatmap-legend {
-  background-color: #2a2a2a;
-  border-radius: 4px;
-  padding: 8px;
 }
 
 .heatmap-gradient {
-  width: 150px;
-  height: 10px;
-  background: linear-gradient(to right, rgba(245, 66, 66, 0.3), rgba(245, 66, 66, 0.9));
-  border-radius: 5px;
+  height: 12px;
+  width: 100px;
+  background: linear-gradient(to right, #3366cc, #dc3912, #ff9900, #109618);
+  border-radius: 2px;
+}
+
+.viewport-size-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.iframe-container {
+  margin: 0 auto;
+  transform-origin: top left;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 600px) {
+  .click-heatmap-viewport {
+    padding: 8px;
+  }
 }
 
 .filter-select {

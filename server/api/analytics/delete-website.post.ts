@@ -70,10 +70,6 @@ export default defineEventHandler(async (event) => {
     try {
       await connection.beginTransaction();
 
-      await connection.execute(
-        'DELETE FROM analytics_exclusions WHERE website_id = ?',
-        [trackingId]
-      );
 
       await connection.execute(
         'DELETE FROM analytics_interactions WHERE website_id = ?',

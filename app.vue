@@ -90,6 +90,14 @@ useHead({
 
 onErrorCaptured((err, instance, info) => {
   try {
+    console.warn('Erreur Vue détaillée:', {
+      message: err.message,
+      stack: err.stack,
+      component: instance?.$options?.name || 'Unknown component',
+      info: info,
+      instance: instance
+    });
+
     if (
       err instanceof TypeError &&
       (err.message.includes("'parentNode'") ||
@@ -102,10 +110,18 @@ onErrorCaptured((err, instance, info) => {
         err.message.includes("'title'") ||
         err.message.includes("before initialization"))
     ) {
-      console.warn('Erreur Vue ignorée:', err.message);
+      console.error('Erreur de propriété undefined détectée:', {
+        message: err.message,
+        path: instance?.$options?.__file || 'Fichier inconnu',
+        componentType: instance?.$options?.name || 'Type inconnu',
+        props: instance?.$props || 'Pas de props',
+        errorLocation: info
+      });
+
       return false;
     }
   } catch (e) {
+    console.error('Erreur dans le gestionnaire d\'erreurs:', e);
   }
 
   return true;

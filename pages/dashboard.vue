@@ -644,14 +644,14 @@ onBeforeUnmount(() => {
 <style scoped>
 main {
   min-height: 100vh;
-  background-color: var(--v-theme-background);
+  background-color: rgb(var(--v-theme-background));
   position: relative;
   flex: 1;
   width: 100%;
 }
 
 .main-content {
-  background-color: var(--v-theme-background);
+  background-color: rgb(var(--v-theme-background));
   flex: 1;
   width: 100%;
 }

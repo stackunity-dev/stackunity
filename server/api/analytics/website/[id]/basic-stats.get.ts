@@ -9,6 +9,7 @@ interface StatsRow extends RowDataPacket {
   avgPageDuration?: number;
   pageViewsWithDuration?: number;
   durationDataQuality?: number;
+  totalInteractions?: number;
 }
 
 export default defineEventHandler(async (event) => {
@@ -52,6 +53,14 @@ export default defineEventHandler(async (event) => {
     );
     const totalPageViews = pageViewRows[0]?.totalPageViews || 0;
 
+    const [interactionRows] = await pool.query<StatsRow[]>(
+      `SELECT COUNT(*) AS totalInteractions 
+       FROM analytics_interactions 
+       WHERE website_id = ?`,
+      [dbWebsiteId]
+    );
+    const totalInteractions = interactionRows[0]?.totalInteractions || 0;
+
     const [avgSessionRows] = await pool.query<StatsRow[]>(
       `SELECT AVG(duration) AS avgSessionDuration 
        FROM analytics_sessions 
@@ -60,7 +69,6 @@ export default defineEventHandler(async (event) => {
     );
     const avgSessionDuration = Math.round(avgSessionRows[0]?.avgSessionDuration || 0);
 
-    // Récupération des durées moyennes par page
     const [avgPageRows] = await pool.query<StatsRow[]>(
       `SELECT 
          AVG(CASE WHEN duration IS NOT NULL AND duration > 0 THEN duration ELSE NULL END) AS avgPageDuration,
@@ -98,6 +106,7 @@ export default defineEventHandler(async (event) => {
       data: {
         totalVisitors,
         totalPageViews,
+        totalInteractions,
         avgSessionDuration,
         avgPageDuration: enhancedAvgPageDuration,
         pageViewsWithDuration,

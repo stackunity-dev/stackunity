@@ -64,8 +64,6 @@ export default defineEventHandler(async (event) => {
       allResults = [...allResults, ...(pageviewRows as PageviewRow[])];
     }
 
-    console.log(`Total URLs found: ${allResults.length}`);
-    console.log(`Missing URLs: ${pageviewIds.length - allResults.length}`);
 
     return {
       success: true,

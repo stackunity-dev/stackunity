@@ -582,7 +582,14 @@ const currentLocale = computed(() => {
   margin-left: 256px;
   width: calc(100% - 256px);
   padding-top: 64px;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(103, 90, 200, 0.4), transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(45, 158, 225, 0.4), transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(200, 80, 190, 0.3), transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(24, 144, 132, 0.3), transparent 35%),
+    linear-gradient(120deg, rgba(10, 15, 30, 0.1), rgba(20, 35, 60, 0.2));
 }
+
 
 @media (max-width: 960px) {
   .content-wrapper {

@@ -67,66 +67,8 @@ export default defineEventHandler(async (event) => {
     );
 
     const pageUrls = (pageUrlRows as RowDataPacket[]).map(row => row.page_url);
-    console.log(`Found ${pageUrls.length} unique page URLs: ${JSON.stringify(pageUrls)}`);
 
-    // Pour chaque URL, analyser les interactions pour détecter les zones mortes
     const results: any[] = [];
-
-    // Si aucune URL trouvée, générer des données de test pour afficher quelque chose
-    if (pageUrls.length === 0) {
-      console.log("No pages found, generating mock data for testing");
-      return {
-        success: true,
-        data: [
-          {
-            url: 'http://localhost:3000/en/user-analytics',
-            pageHeight: 1200,
-            segments: [
-              { start: 0, end: 20, interactionCount: 78, interactionDensity: 85, clicks: 50, scrolls: 20, formSubmits: 5, inputChanges: 3 },
-              { start: 20, end: 40, interactionCount: 45, interactionDensity: 60, clicks: 30, scrolls: 15, formSubmits: 0, inputChanges: 0 },
-              { start: 40, end: 60, interactionCount: 12, interactionDensity: 25, clicks: 8, scrolls: 4, formSubmits: 0, inputChanges: 0 },
-              { start: 60, end: 80, interactionCount: 5, interactionDensity: 10, clicks: 3, scrolls: 2, formSubmits: 0, inputChanges: 0 },
-              { start: 80, end: 100, interactionCount: 3, interactionDensity: 5, clicks: 1, scrolls: 2, formSubmits: 0, inputChanges: 0 }
-            ],
-            deadZones: [
-              { start: 60, end: 80, interactionDensity: 10 },
-              { start: 80, end: 100, interactionDensity: 5 }
-            ],
-            coverageScore: 37,
-            totalInteractions: 143,
-            interactionCount: {
-              clicks: 92,
-              scrolls: 43,
-              formSubmits: 5,
-              inputChanges: 3
-            }
-          },
-          {
-            url: 'http://localhost:3000/en',
-            pageHeight: 1500,
-            segments: [
-              { start: 0, end: 25, interactionCount: 120, interactionDensity: 90, clicks: 70, scrolls: 40, formSubmits: 8, inputChanges: 2 },
-              { start: 25, end: 50, interactionCount: 75, interactionDensity: 65, clicks: 45, scrolls: 28, formSubmits: 2, inputChanges: 0 },
-              { start: 50, end: 70, interactionCount: 25, interactionDensity: 45, clicks: 15, scrolls: 10, formSubmits: 0, inputChanges: 0 },
-              { start: 70, end: 85, interactionCount: 10, interactionDensity: 20, clicks: 6, scrolls: 4, formSubmits: 0, inputChanges: 0 },
-              { start: 85, end: 100, interactionCount: 3, interactionDensity: 8, clicks: 2, scrolls: 1, formSubmits: 0, inputChanges: 0 }
-            ],
-            deadZones: [
-              { start: 70, end: 85, interactionDensity: 20 },
-              { start: 85, end: 100, interactionDensity: 8 }
-            ],
-            coverageScore: 46,
-            totalInteractions: 233,
-            interactionCount: {
-              clicks: 138,
-              scrolls: 83,
-              formSubmits: 10,
-              inputChanges: 2
-            }
-          }
-        ]
-      };
-    }
 
     for (const pageUrl of pageUrls) {
       console.log(`Processing page URL: ${pageUrl}`);
@@ -282,41 +224,6 @@ export default defineEventHandler(async (event) => {
           inputChanges: segments.reduce((sum, s) => sum + s.inputChanges, 0)
         }
       });
-    }
-
-    console.log(`Dead zone analysis complete - Found data for ${results.length} pages`);
-
-    // Si aucun résultat trouvé malgré les URLs, retourner des données de test
-    if (results.length === 0) {
-      console.log("No results found despite having page URLs, generating mock data for testing");
-      return {
-        success: true,
-        data: [
-          {
-            url: pageUrls[0] || 'http://localhost:3000/en/user-analytics',
-            pageHeight: 1200,
-            segments: [
-              { start: 0, end: 20, interactionCount: 78, interactionDensity: 85, clicks: 50, scrolls: 20, formSubmits: 5, inputChanges: 3 },
-              { start: 20, end: 40, interactionCount: 45, interactionDensity: 60, clicks: 30, scrolls: 15, formSubmits: 0, inputChanges: 0 },
-              { start: 40, end: 60, interactionCount: 12, interactionDensity: 25, clicks: 8, scrolls: 4, formSubmits: 0, inputChanges: 0 },
-              { start: 60, end: 80, interactionCount: 5, interactionDensity: 10, clicks: 3, scrolls: 2, formSubmits: 0, inputChanges: 0 },
-              { start: 80, end: 100, interactionCount: 3, interactionDensity: 5, clicks: 1, scrolls: 2, formSubmits: 0, inputChanges: 0 }
-            ],
-            deadZones: [
-              { start: 60, end: 80, interactionDensity: 10 },
-              { start: 80, end: 100, interactionDensity: 5 }
-            ],
-            coverageScore: 37,
-            totalInteractions: 143,
-            interactionCount: {
-              clicks: 92,
-              scrolls: 43,
-              formSubmits: 5,
-              inputChanges: 3
-            }
-          }
-        ]
-      };
     }
 
     return {
