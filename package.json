@@ -39,6 +39,8 @@
     "bcryptjs": "^3.0.2",
     "chart.js": "^4.4.8",
     "cheerio": "^1.0.0",
+    "cytoscape": "^3.32.0",
+    "cytoscape-dagre": "^2.5.0",
     "echarts": "^5.6.0",
     "highlight.js": "^11.11.1",
     "jsonwebtoken": "^9.0.2",

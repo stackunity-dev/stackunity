@@ -12,10 +12,6 @@
             <v-icon start>mdi-file-document-multiple</v-icon>
             {{ t().tabs.templates }}
           </v-tab>
-          <v-tab value="diagram" class="text-subtitle-1">
-            <v-icon start>mdi-chart-bubble</v-icon>
-            {{ t().tabs.diagram }}
-          </v-tab>
         </v-tabs>
 
         <v-row class="mt-6">
@@ -77,6 +73,10 @@
                             </v-list-item>
                           </v-list>
                         </v-menu>
+                        <v-btn color="warning" @click="importSQLFiles" prepend-icon="mdi-folder-open" variant="tonal"
+                          class="mr-2 mb-2">
+                          {{ t().actions.import }}
+                        </v-btn>
                         <v-btn color="error" @click="deleteSQLSchema" prepend-icon="mdi-delete" variant="tonal"
                           class="mb-2">
                           {{ t().actions.delete }}
@@ -479,6 +479,15 @@
                     <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                       <v-icon color="white" class="mr-2">mdi-chart-bubble</v-icon>
                       {{ t().tabs.diagram }}
+                      <v-spacer></v-spacer>
+                      <v-btn color="white" variant="text" @click="rearrangeTables">
+                        <v-icon start>mdi-arrange-send-backward</v-icon>
+                        {{ t().actions.rearrange || "Réorganiser" }}
+                      </v-btn>
+                      <v-btn color="white" variant="text" @click="exportDiagramImage">
+                        <v-icon start>mdi-export</v-icon>
+                        {{ t().actions.export }}
+                      </v-btn>
                     </v-card-title>
                     <v-card-text class="pa-4">
                       <div v-if="tables.length === 0" class="text-center pa-8">
@@ -489,59 +498,81 @@
                           {{ t().table.add }}
                         </v-btn>
                       </div>
-                      <div v-else class="er-diagram-container">
-                        <div id="er-diagram" class="er-diagram">
-                          <div v-for="(table, tableIndex) in tables" :key="table.id" class="er-table"
-                            :style="getTablePosition(tableIndex)" @mousedown="startDrag($event, table)"
-                            :id="`table-${table.id}`">
-                            <div class="er-table-header">{{ table.name || t().table.unnamed }}</div>
-                            <div class="er-table-content">
-                              <div v-for="column in table.columns" :key="column.name" class="er-column" :class="{
-                                'primary-key': column.primaryKey,
-                                'foreign-key': column.foreignKey
-                              }">
-                                <span class="er-column-icon">
-                                  <v-icon v-if="column.primaryKey" size="x-small"
-                                    color="amber-darken-2">mdi-key</v-icon>
-                                  <v-icon v-else-if="column.foreignKey" size="x-small"
-                                    color="blue-darken-1">mdi-link-variant</v-icon>
-                                  <v-icon v-else size="x-small" color="grey">mdi-circle-small</v-icon>
-                                </span>
-                                <span class="er-column-name">{{ column.name }}</span>
-                                <span class="er-column-type">{{ column.type }}</span>
+                      <div v-else>
+                        <div class="d-flex mb-4">
+                          <v-btn-group>
+                            <v-btn color="primary" variant="tonal" @click="zoomIn" prepend-icon="mdi-magnify-plus">
+                              Zoom +
+                            </v-btn>
+                            <v-btn color="primary" variant="tonal" @click="zoomOut" prepend-icon="mdi-magnify-minus">
+                              Zoom -
+                            </v-btn>
+                            <v-btn color="primary" variant="tonal" @click="resetZoom" prepend-icon="mdi-fit-to-page">
+                              Reset
+                            </v-btn>
+                          </v-btn-group>
+                          <v-spacer></v-spacer>
+                          <v-select v-model="diagramLayout" :items="layoutOptions" label="Layout" density="compact"
+                            class="max-width-200" hide-details @update:model-value="changeLayout"></v-select>
+                        </div>
+                        <div class="custom-diagram-container">
+                          <div id="custom-diagram" class="custom-diagram" ref="customDiagram">
+                            <div v-for="(table, index) in tables" :key="table.id" class="custom-table"
+                              :style="getTablePosition(index)" @mousedown="startDrag($event, table)"
+                              :id="`table-${table.id}`">
+                              <div class="custom-table-header">
+                                <div class="custom-table-title">{{ table.name || 'Sans nom' }}</div>
+                                <div class="custom-table-actions">
+                                  <v-icon size="small" @click="focusTable(table)" class="mr-1">mdi-magnify</v-icon>
+                                </div>
+                              </div>
+                              <div class="custom-table-content">
+                                <div v-for="column in table.columns" :key="column.name" class="custom-column"
+                                  :class="{ 'primary-key': column.primaryKey, 'foreign-key': column.foreignKey }">
+                                  <span class="custom-column-icon">
+                                    <v-icon v-if="column.primaryKey" size="x-small"
+                                      color="amber-darken-2">mdi-key</v-icon>
+                                    <v-icon v-else-if="column.foreignKey" size="x-small"
+                                      color="blue-darken-1">mdi-link-variant</v-icon>
+                                    <v-icon v-else size="x-small" color="grey">mdi-circle-small</v-icon>
+                                  </span>
+                                  <span class="custom-column-name">{{ column.name }}</span>
+                                  <span class="custom-column-type">{{ column.type }}</span>
+                                </div>
                               </div>
                             </div>
+                            <svg class="custom-relations">
+                              <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5"
+                                  orient="auto">
+                                  <polygon points="0 0, 10 3.5, 0 7" fill="#2196F3" />
+                                </marker>
+                              </defs>
+                              <g v-for="(table, tableIndex) in tables" :key="`rel-${table.id}`">
+                                <template v-for="column in table.columns" :key="`rel-${table.id}-${column.name}`">
+                                  <g v-if="column.foreignKey && column.referencedTable">
+                                    <line :x1="getRelationCoords(table, column).x1"
+                                      :y1="getRelationCoords(table, column).y1"
+                                      :x2="getRelationCoords(table, column).x2"
+                                      :y2="getRelationCoords(table, column).y2" stroke="#2196F3" stroke-width="2"
+                                      marker-end="url(#arrowhead)" />
+                                    <text :x="getRelationLabelPosition(table, column).x"
+                                      :y="getRelationLabelPosition(table, column).y" fill="#333" font-size="12"
+                                      text-anchor="middle">
+                                      <tspan dy="-5" :x="getRelationLabelPosition(table, column).x">{{ column.name }}
+                                      </tspan>
+                                      <tspan dy="15" :x="getRelationLabelPosition(table, column).x">↓</tspan>
+                                      <tspan dy="15" :x="getRelationLabelPosition(table, column).x">{{
+                                        column.referencedColumn }}</tspan>
+                                    </text>
+                                  </g>
+                                </template>
+                              </g>
+                            </svg>
                           </div>
-                          <svg class="er-relations">
-                            <g v-for="(table, tableIndex) in tables" :key="`rel-${table.id}`">
-                              <template v-for="column in table.columns" :key="`rel-${table.id}-${column.name}`">
-                                <line v-if="column.foreignKey && column.referencedTable"
-                                  :x1="getRelationCoords(table, column).x1" :y1="getRelationCoords(table, column).y1"
-                                  :x2="getRelationCoords(table, column).x2" :y2="getRelationCoords(table, column).y2"
-                                  stroke="#2196F3" stroke-width="2" marker-end="url(#arrowhead)" />
-                              </template>
-                            </g>
-                            <defs>
-                              <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5"
-                                orient="auto">
-                                <polygon points="0 0, 10 3.5, 0 7" fill="#2196F3" />
-                              </marker>
-                            </defs>
-                          </svg>
                         </div>
                       </div>
                     </v-card-text>
-                    <v-card-actions class="pa-4 pt-0">
-                      <v-spacer></v-spacer>
-                      <v-btn color="primary" variant="tonal" @click="autoArrangeTables">
-                        <v-icon start>mdi-arrange-send-backward</v-icon>
-                        {{ t().actions.rearrange || "Rearrange" }}
-                      </v-btn>
-                      <v-btn disabled color="success" variant="tonal" @click="exportDiagram">
-                        <v-icon start>mdi-export</v-icon>
-                        {{ t().actions.export }}
-                      </v-btn>
-                    </v-card-actions>
                   </v-card>
                 </v-col>
               </v-row>
@@ -552,11 +583,66 @@
     </v-main>
 
     <snackBar v-model="showSnackbar" :text="snackbarText" :color="snackbarColor" :timeout="3000" />
+
+    <!-- Remplacer l'input file existant par un input qui accepte les dossiers -->
+    <input type="file" ref="fileInput" @change="handleFileImport" multiple accept=".sql" webkitdirectory directory
+      style="display: none" />
+
+    <!-- Dialog pour l'importation des fichiers SQL -->
+    <v-dialog v-model="importDialog" max-width="700">
+      <v-card>
+        <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
+          <v-icon color="white" class="mr-2">mdi-database-import</v-icon>
+          {{ t().import.title || 'Import SQL Files' }}
+        </v-card-title>
+        <v-card-text class="pa-4">
+          <v-alert v-if="importedFiles.length === 0" type="info" class="mb-4">
+            {{ t().import.noFiles || 'No SQL files selected. Please select a folder containing SQL files to import.' }}
+          </v-alert>
+
+          <v-list v-else lines="two" class="mb-4">
+            <v-list-subheader>{{ t().import.selectedFiles || 'Selected Files' }} ({{ importedFiles.length
+            }})</v-list-subheader>
+            <div v-if="importedFiles.length > 10" class="text-caption mb-2">
+              Showing 10 of {{ importedFiles.length }} files
+            </div>
+            <v-list-item v-for="(file, index) in importedFiles.slice(0, 10)" :key="index">
+              <template v-slot:prepend>
+                <v-avatar color="primary" variant="tonal">
+                  <v-icon>mdi-database</v-icon>
+                </v-avatar>
+              </template>
+              <v-list-item-title>{{ file.name }}</v-list-item-title>
+              <v-list-item-subtitle>{{ formatFileSize(file.size) }}</v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+
+          <v-alert v-if="importError" type="error" class="mb-4">
+            {{ importError }}
+          </v-alert>
+        </v-card-text>
+        <v-card-actions class="pa-4 pt-0">
+          <v-btn color="primary" variant="tonal" prepend-icon="mdi-folder-open" @click="selectFiles">
+            {{ t().import.selectFiles || 'Select Folder' }}
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="error" variant="text" @click="importDialog = false">
+            {{ t().actions.cancel || 'Cancel' }}
+          </v-btn>
+          <v-btn color="success" variant="tonal" @click="processImportedFiles" :disabled="importedFiles.length === 0"
+            :loading="isImporting">
+            {{ t().import.process || 'Process Files' }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script lang="ts" setup>
 import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+import sql from 'highlight.js/lib/languages/sql';
 import 'highlight.js/styles/atom-one-dark.css';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -565,12 +651,13 @@ import { useUserStore } from '../stores/userStore';
 import { getSQLTemplate, getSQLTemplateNames } from '../utils/sqlTemplates';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
-import javascript from 'highlight.js/lib/languages/javascript';
-import sql from 'highlight.js/lib/languages/sql';
 import { useTranslations } from '../languages';
 import { Column, DatabaseType, SQLSchema, StoredTable, Table } from '../utils/sql/types';
 
 const t = useTranslations('databaseDesigner');
+
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('sql', sql);
 
 useHead({
   title: t().meta.title,
@@ -649,6 +736,80 @@ const highlightedSQL = computed(() => {
     ignoreIllegals: true
   }).value;
 });
+
+async function convertToNoSQLHandler(type: string) {
+  try {
+    const { convertToNoSQL } = await import('../utils/sql/nosql');
+
+    const schema: SQLSchema = {
+      database_name: databaseName.value,
+      tables: tables.value
+    };
+
+    currentDatabaseType.value = DatabaseType.NOSQL;
+
+    const result = convertToNoSQL(schema, {
+      nosqlType: type as any,
+      includeTimestamps: true
+    });
+
+    generatedSQL.value = result;
+
+    setTimeout(() => {
+      const codeElement = document.querySelector('.bg-grey-darken-4 pre code');
+      if (codeElement) {
+        codeElement.innerHTML = hljs.highlight(result, { language: 'javascript' }).value;
+      }
+    }, 0);
+
+    snackbarText.value = `SQL converted to NoSQL (${type})`;
+    snackbarColor.value = 'success';
+    showSnackbar.value = true;
+  } catch (error: any) {
+    console.error('Error converting NoSQL:', error);
+
+    snackbarText.value = `Error converting: ${error.message}`;
+    snackbarColor.value = 'error';
+    showSnackbar.value = true;
+  }
+}
+
+async function convertToORMHandler(type: string) {
+  try {
+    const { convertToORM } = await import('../utils/sql/orm');
+
+    const schema: SQLSchema = {
+      database_name: databaseName.value,
+      tables: tables.value
+    };
+
+    currentDatabaseType.value = DatabaseType.ORM;
+
+    const result = convertToORM(schema, {
+      ormType: type as any,
+      includeTimestamps: true
+    });
+
+    generatedSQL.value = result;
+
+    setTimeout(() => {
+      const codeElement = document.querySelector('.bg-grey-darken-4 pre code');
+      if (codeElement) {
+        codeElement.innerHTML = hljs.highlight(result, { language: 'javascript' }).value;
+      }
+    }, 0);
+
+    snackbarText.value = `SQL converted to ORM (${type})`;
+    snackbarColor.value = 'success';
+    showSnackbar.value = true;
+  } catch (error: any) {
+    console.error('Error converting ORM:', error);
+
+    snackbarText.value = `Error converting: ${error.message}`;
+    snackbarColor.value = 'error';
+    showSnackbar.value = true;
+  }
+}
 
 const loadSchemaNames = async () => {
   try {
@@ -934,18 +1095,40 @@ const applyTemplateToDatabase = () => {
       if (col.unique) constraints.push('unique' as never);
       if (col.autoIncrement) constraints.push('autoIncrement' as never);
 
-      newTable.columns.push({
+      const column: Column = {
         name: col.name,
         type: col.type,
         nullable: col.nullable,
         default: col.default || '',
+        defaultType: undefined,
         primaryKey: isPrimaryKey,
-        autoIncrement: col.autoIncrement || false,
-        unique: col.unique || false,
         foreignKey: false,
         notNull: !col.nullable,
+        unique: col.unique || false,
+        autoIncrement: col.autoIncrement || false,
+        referencedTable: '',
+        referencedColumn: '',
         constraints: constraints
-      });
+      };
+
+      // Extraire la valeur par défaut
+      const defaultMatch = col.constraints.match(/DEFAULT\s+([^,\s]+)/i);
+      if (defaultMatch) {
+        column.constraints?.push('default');
+        const defaultValue = defaultMatch[1];
+
+        if (defaultValue.toUpperCase() === 'NULL') {
+          column.defaultType = 'NULL';
+        } else if (defaultValue.toUpperCase() === 'CURRENT_TIMESTAMP') {
+          column.defaultType = 'CURRENT_TIMESTAMP';
+        } else {
+          column.defaultType = 'custom';
+          // Enlever les guillemets si présents
+          column.default = defaultValue.replace(/^['"]|['"]$/g, '');
+        }
+      }
+
+      newTable.columns.push(column);
     });
 
     if (templateTable.foreignKeys) {
@@ -1063,8 +1246,8 @@ const loadSelectedSchema = (schema: any) => {
         notNull: Boolean(column.notNull),
         unique: Boolean(column.unique),
         autoIncrement: Boolean(column.autoIncrement),
-        referencedTable: column.referencedTable || '',
-        referencedColumn: column.referencedColumn || '',
+        referencedTable: '',
+        referencedColumn: '',
         constraints: [
           ...(column.primaryKey ? ['primaryKey'] : []),
           ...(column.foreignKey ? ['foreignKey'] : []),
@@ -1084,210 +1267,34 @@ const loadSelectedSchema = (schema: any) => {
 };
 
 const currentDatabaseType = ref<DatabaseType>(DatabaseType.SQL);
+let cytoscape: any = null;
+let cytoscapeInstance: any = null;
 
-const tablePositions = ref<Map<string, { x: number, y: number }>>(new Map());
-const draggingTable = ref<{ table: any, startX: number, startY: number, offsetX: number, offsetY: number } | null>(null);
-
-const getTablePosition = (index: number) => {
-  const table = tables.value[index];
-  if (tablePositions.value.has(table.id)) {
-    const position = tablePositions.value.get(table.id);
-    return {
-      left: `${position?.x}px`,
-      top: `${position?.y}px`
-    };
-  }
-  const cols = 4;
-  const row = Math.floor(index / cols);
-  const col = index % cols;
-  const x = 50 + col * 250;
-  const y = 50 + row * 300;
-  tablePositions.value.set(table.id, { x, y });
-  return { left: `${x}px`, top: `${y}px` };
+const initCytoscape = async () => {
+  // Cette fonction n'est plus utilisée, gardée pour référence
 };
-
-const startDrag = (event: MouseEvent, table: any) => {
-  if (event.target instanceof HTMLElement) {
-    const targetIsHeader = event.target.closest('.er-table-header');
-    if (!targetIsHeader) {
-      return;
-    }
+// Mettre à jour le diagramme lorsque les tables changent
+watch(tables, () => {
+  if (cytoscapeInstance) {
+    cytoscapeInstance.destroy();
+    cytoscapeInstance = null;
   }
 
-  const tablePosition = tablePositions.value.get(table.id) || { x: 0, y: 0 };
-  draggingTable.value = {
-    table,
-    startX: event.clientX,
-    startY: event.clientY,
-    offsetX: tablePosition.x,
-    offsetY: tablePosition.y
-  };
+  // Attendre que le DOM soit mis à jour
+  setTimeout(() => {
+    initCytoscape();
+  }, 100);
+}, { deep: true });
 
-  document.addEventListener('mousemove', onDrag);
-  document.addEventListener('mouseup', stopDrag);
-  event.preventDefault();
-};
-
-const onDrag = (event: MouseEvent) => {
-  if (!draggingTable.value) return;
-
-  const diagramContainer = document.querySelector('.er-diagram-container');
-  if (!diagramContainer) return;
-
-  const containerRect = diagramContainer.getBoundingClientRect();
-
-  const dx = event.clientX - draggingTable.value.startX;
-  const dy = event.clientY - draggingTable.value.startY;
-
-  const newX = Math.max(0, draggingTable.value.offsetX + dx);
-  const newY = Math.max(0, draggingTable.value.offsetY + dy);
-
-  tablePositions.value.set(draggingTable.value.table.id, { x: newX, y: newY });
-
-  const padding = 50;
-  if (event.clientX > containerRect.right - padding) {
-    diagramContainer.scrollLeft += 10;
-  } else if (event.clientX < containerRect.left + padding) {
-    diagramContainer.scrollLeft -= 10;
-  }
-
-  if (event.clientY > containerRect.bottom - padding) {
-    diagramContainer.scrollTop += 10;
-  } else if (event.clientY < containerRect.top + padding) {
-    diagramContainer.scrollTop -= 10;
-  }
-};
-
-const stopDrag = () => {
-  document.removeEventListener('mousemove', onDrag);
-  document.removeEventListener('mouseup', stopDrag);
-  draggingTable.value = null;
-};
-
-const getRelationCoords = (table: any, column: any) => {
-  const result = { x1: 0, y1: 0, x2: 0, y2: 0 };
-
-  if (!column.referencedTable) return result;
-
-  const sourceTable = table;
-  const targetTable = tables.value.find(t => t.name === column.referencedTable);
-
-  if (!sourceTable || !targetTable) return result;
-
-  const sourcePosition = tablePositions.value.get(sourceTable.id) || { x: 0, y: 0 };
-  const targetPosition = tablePositions.value.get(targetTable.id) || { x: 0, y: 0 };
-
-  result.x1 = sourcePosition.x + 220;
-  result.y1 = sourcePosition.y + 50;
-
-  result.x2 = targetPosition.x;
-  result.y2 = targetPosition.y + 50;
-
-  return result;
-};
-
-const autoArrangeTables = () => {
-  const centerX = 1000;
-  const centerY = 750;
-  const radius = tables.value.length <= 4 ? 250 : 400;
-
-  tables.value.forEach((table, index) => {
-    const angle = (index / tables.value.length) * 2 * Math.PI;
-    const x = centerX + radius * Math.cos(angle);
-    const y = centerY + radius * Math.sin(angle);
-
-    tablePositions.value.set(table.id, { x, y });
-  });
-
-  snackbarText.value = t().notifications.rearranged || "Tables rearranged";
-  snackbarColor.value = "success";
-  showSnackbar.value = true;
-};
-
-const exportDiagram = async (format: 'png' | 'svg') => {
-  try {
-
-  } catch (error) {
-    console.error(`Error exporting ${format}:`, error);
-  }
-};
-
-async function convertToNoSQLHandler(type: string) {
-  try {
-    const { convertToNoSQL } = await import('../utils/sql/nosql');
-
-    const schema: SQLSchema = {
-      database_name: databaseName.value,
-      tables: tables.value
-    };
-
-    currentDatabaseType.value = DatabaseType.NOSQL;
-
-    const result = convertToNoSQL(schema, {
-      nosqlType: type as any,
-      includeTimestamps: true
-    });
-
-    generatedSQL.value = result;
-
+// Mettre à jour le diagramme lorsque l'onglet change
+watch(activeTab, (newTab) => {
+  if (newTab === 'diagram' && tables.value.length > 0) {
+    // Attendre que le DOM soit mis à jour
     setTimeout(() => {
-      const codeElement = document.querySelector('.bg-grey-darken-4 pre code');
-      if (codeElement) {
-        codeElement.innerHTML = hljs.highlight(result, { language: 'javascript' }).value;
-      }
-    }, 0);
-
-    snackbarText.value = `SQL converted to NoSQL (${type})`;
-    snackbarColor.value = 'success';
-    showSnackbar.value = true;
-  } catch (error: any) {
-    console.error('Error converting NoSQL:', error);
-
-    snackbarText.value = `Error converting: ${error.message}`;
-    snackbarColor.value = 'error';
-    showSnackbar.value = true;
+      initCytoscape();
+    }, 100);
   }
-}
-
-async function convertToORMHandler(type: string) {
-  try {
-    const { convertToORM } = await import('../utils/sql/orm');
-
-    const schema: SQLSchema = {
-      database_name: databaseName.value,
-      tables: tables.value
-    };
-
-    currentDatabaseType.value = DatabaseType.ORM;
-
-    const result = convertToORM(schema, {
-      ormType: type as any,
-      includeTimestamps: true
-    });
-
-    generatedSQL.value = result;
-
-    setTimeout(() => {
-      const codeElement = document.querySelector('.bg-grey-darken-4 pre code');
-      if (codeElement) {
-        codeElement.innerHTML = hljs.highlight(result, { language: 'javascript' }).value;
-      }
-    }, 0);
-
-    snackbarText.value = `SQL converted to ORM (${type})`;
-    snackbarColor.value = 'success';
-    showSnackbar.value = true;
-  } catch (error: any) {
-    console.error('Error converting ORM:', error);
-
-    snackbarText.value = `Error converting: ${error.message}`;
-    snackbarColor.value = 'error';
-    showSnackbar.value = true;
-  }
-}
-
-hljs.registerLanguage('sql', sql);
-hljs.registerLanguage('javascript', javascript);
+});
 
 onMounted(async () => {
   try {
@@ -1298,6 +1305,10 @@ onMounted(async () => {
     if (schemaId) {
       await loadSchemaById(schemaId);
     }
+
+    // Initialiser le zoom par défaut
+    diagramScale.value = 1.5;
+
   } catch (error) {
     console.error('Error in onMounted:', error);
     snackbarText.value = 'Error loading initial';
@@ -1378,6 +1389,415 @@ const getTemplateDescription = (templateKey: string) => {
       const template = sqlTemplateOptions.value.find(t => t.value === templateKey);
       return template ? template.description : '';
   }
+};
+
+// Import dialog and file handling
+const fileInput = ref<HTMLInputElement | null>(null);
+const importDialog = ref(false);
+const importedFiles = ref<File[]>([]);
+const importError = ref('');
+const isImporting = ref(false);
+
+// Import SQL files
+const importSQLFiles = () => {
+  importDialog.value = true;
+  importedFiles.value = [];
+  importError.value = '';
+};
+
+const selectFiles = () => {
+  if (fileInput.value) {
+    fileInput.value.click();
+  }
+};
+
+const handleFileImport = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    importedFiles.value = Array.from(input.files);
+  }
+};
+
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return bytes + ' bytes';
+  else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  else return (bytes / 1048576).toFixed(1) + ' MB';
+};
+
+// Ajouter une variable pour suivre la progression
+const importProgress = ref(0);
+const totalFilesToProcess = ref(0);
+
+const processImportedFiles = async () => {
+  try {
+    isImporting.value = true;
+    importError.value = '';
+    importProgress.value = 0;
+
+    // Vider les tables existantes si nécessaire
+    if (tables.value.length > 0) {
+      const confirmClear = window.confirm(t().import.confirmClear || 'This will clear your current tables. Continue?');
+      if (confirmClear) {
+        tables.value = [];
+      } else {
+        isImporting.value = false;
+        return;
+      }
+    }
+
+    // Filtrer uniquement les fichiers SQL
+    const sqlFiles = importedFiles.value.filter(file => file.name.toLowerCase().endsWith('.sql'));
+    totalFilesToProcess.value = sqlFiles.length;
+
+    if (sqlFiles.length === 0) {
+      importError.value = 'No SQL files found in the selected folder.';
+      isImporting.value = false;
+      return;
+    }
+
+    // Traiter les fichiers par lots pour éviter de bloquer l'interface
+    const batchSize = 5;
+    let processedTables: Table[] = [];
+
+    for (let i = 0; i < sqlFiles.length; i += batchSize) {
+      const batch = sqlFiles.slice(i, i + batchSize);
+
+      // Traiter chaque lot de fichiers en parallèle
+      const batchResults = await Promise.all(batch.map(async (file) => {
+        try {
+          const content = await readFileContent(file);
+          return parseSQLContent(content);
+        } catch (e) {
+          console.error(`Error processing file ${file.name}:`, e);
+          return [];
+        }
+      }));
+
+      // Fusionner les résultats
+      batchResults.forEach(tables => {
+        processedTables = [...processedTables, ...tables];
+      });
+
+      // Mettre à jour la progression
+      importProgress.value = Math.min(100, Math.round(((i + batch.length) / sqlFiles.length) * 100));
+
+      // Permettre à l'interface de se mettre à jour
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+
+    // Ajouter les tables analysées
+    tables.value = [...tables.value, ...processedTables];
+
+    // Générer le SQL après l'importation
+    generateSQL();
+
+    // Fermer le dialogue
+    importDialog.value = false;
+
+    // Afficher un message de succès
+    snackbarText.value = `${processedTables.length} tables imported successfully from ${sqlFiles.length} files`;
+    snackbarColor.value = 'success';
+    showSnackbar.value = true;
+  } catch (error) {
+    console.error('Error importing SQL files:', error);
+    importError.value = error instanceof Error ? error.message : 'Unknown error during import';
+  } finally {
+    isImporting.value = false;
+    importProgress.value = 0;
+  }
+};
+
+const readFileContent = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        resolve(e.target.result as string);
+      } else {
+        reject(new Error('Failed to read file content'));
+      }
+    };
+    reader.onerror = () => reject(new Error(`Error reading file: ${file.name}`));
+    reader.readAsText(file);
+  });
+};
+
+const parseSQLContent = (sqlContent: string): Table[] => {
+  const tables: Table[] = [];
+
+  // Expressions régulières pour analyser le SQL
+  const createTableRegex = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?[`"']?(\w+)[`"']?\s*\(([\s\S]*?)\)[^)]*?;/gi;
+  const columnRegex = /\s*[`"']?(\w+)[`"']?\s+(\w+(?:\(\d+(?:,\d+)?\))?)\s*((?:NOT\s+NULL|DEFAULT\s+[^,]+|PRIMARY\s+KEY|UNIQUE|AUTO_INCREMENT|REFERENCES\s+[^,]+)*)[,]?/gi;
+
+  // Trouver toutes les déclarations CREATE TABLE
+  let tableMatch;
+  while ((tableMatch = createTableRegex.exec(sqlContent)) !== null) {
+    const tableName = tableMatch[1];
+    const tableContent = tableMatch[2];
+
+    const table: Table = {
+      id: Math.random().toString(36).substring(2, 15),
+      name: tableName,
+      columns: [],
+      foreignKeys: [],
+      defaultOptions: []
+    };
+
+    // Analyser les colonnes
+    let columnMatch;
+    while ((columnMatch = columnRegex.exec(tableContent)) !== null) {
+      const columnName = columnMatch[1];
+      const columnType = columnMatch[2].toUpperCase();
+      const columnConstraints = columnMatch[3] || '';
+
+      const column: Column = {
+        name: columnName,
+        type: columnType,
+        nullable: !columnConstraints.includes('NOT NULL'),
+        default: '',
+        defaultType: undefined,
+        primaryKey: columnConstraints.includes('PRIMARY KEY'),
+        foreignKey: columnConstraints.includes('REFERENCES'),
+        notNull: columnConstraints.includes('NOT NULL'),
+        unique: columnConstraints.includes('UNIQUE'),
+        autoIncrement: columnConstraints.includes('AUTO_INCREMENT'),
+        referencedTable: '',
+        referencedColumn: '',
+        constraints: []
+      };
+
+      // Extraire les contraintes
+      if (column.primaryKey) column.constraints?.push('primaryKey');
+      if (column.notNull) column.constraints?.push('notNull');
+      if (column.unique) column.constraints?.push('unique');
+      if (column.autoIncrement) column.constraints?.push('autoIncrement');
+
+      // Extraire la valeur par défaut
+      const defaultMatch = columnConstraints.match(/DEFAULT\s+([^,\s]+)/i);
+      if (defaultMatch) {
+        column.constraints?.push('default');
+        const defaultValue = defaultMatch[1];
+
+        if (defaultValue.toUpperCase() === 'NULL') {
+          column.defaultType = 'NULL';
+        } else if (defaultValue.toUpperCase() === 'CURRENT_TIMESTAMP') {
+          column.defaultType = 'CURRENT_TIMESTAMP';
+        } else {
+          column.defaultType = 'custom';
+          // Enlever les guillemets si présents
+          column.default = defaultValue.replace(/^['"]|['"]$/g, '');
+        }
+      }
+
+      // Extraire les clés étrangères
+      const foreignKeyMatch = columnConstraints.match(/REFERENCES\s+[`"']?(\w+)[`"']?\s*\(\s*[`"']?(\w+)[`"']?\s*\)/i);
+      if (foreignKeyMatch) {
+        column.foreignKey = true;
+        column.constraints?.push('foreignKey');
+        column.referencedTable = foreignKeyMatch[1];
+        column.referencedColumn = foreignKeyMatch[2];
+      }
+
+      table.columns.push(column);
+    }
+
+    tables.push(table);
+  }
+
+  return tables;
+};
+
+// Variables pour le diagramme personnalisé
+const diagramLayout = ref('dagre');
+const layoutOptions = [
+  { title: 'Hiérarchique', value: 'dagre' },
+  { title: 'Concentrique', value: 'concentric' },
+  { title: 'Circulaire', value: 'circle' },
+  { title: 'Grille', value: 'grid' },
+  { title: 'Aléatoire', value: 'random' }
+];
+const tablePositions = ref<Map<string, { x: number, y: number }>>(new Map());
+const draggingTable = ref<{ table: any, startX: number, startY: number, offsetX: number, offsetY: number } | null>(null);
+const diagramScale = ref(1.5);
+const customDiagram = ref<HTMLElement | null>(null);
+
+// Fonctions pour le diagramme personnalisé
+const getTablePosition = (index: number) => {
+  const table = tables.value[index];
+  if (tablePositions.value.has(table.id)) {
+    const position = tablePositions.value.get(table.id);
+    return {
+      left: `${position?.x}px`,
+      top: `${position?.y}px`,
+      transform: `scale(${diagramScale.value})`,
+      transformOrigin: 'top left'
+    };
+  }
+  const cols = 2; // Réduire le nombre de colonnes pour espacer les tables
+  const row = Math.floor(index / cols);
+  const col = index % cols;
+  const x = 100 + col * 600; // Beaucoup plus d'espace horizontal
+  const y = 100 + row * 450; // Beaucoup plus d'espace vertical
+  tablePositions.value.set(table.id, { x, y });
+  return {
+    left: `${x}px`,
+    top: `${y}px`,
+    transform: `scale(${diagramScale.value})`,
+    transformOrigin: 'top left'
+  };
+};
+
+const startDrag = (event: MouseEvent, table: any) => {
+  if (event.target instanceof HTMLElement) {
+    const targetIsHeader = event.target.closest('.custom-table-header');
+    if (!targetIsHeader) {
+      return;
+    }
+  }
+
+  const tablePosition = tablePositions.value.get(table.id) || { x: 0, y: 0 };
+  draggingTable.value = {
+    table,
+    startX: event.clientX,
+    startY: event.clientY,
+    offsetX: tablePosition.x,
+    offsetY: tablePosition.y
+  };
+
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('mouseup', stopDrag);
+  event.preventDefault();
+};
+
+const onDrag = (event: MouseEvent) => {
+  if (!draggingTable.value) return;
+
+  const diagramContainer = document.querySelector('.custom-diagram-container');
+  if (!diagramContainer) return;
+
+  const containerRect = diagramContainer.getBoundingClientRect();
+
+  const dx = event.clientX - draggingTable.value.startX;
+  const dy = event.clientY - draggingTable.value.startY;
+
+  const newX = Math.max(0, draggingTable.value.offsetX + dx);
+  const newY = Math.max(0, draggingTable.value.offsetY + dy);
+
+  tablePositions.value.set(draggingTable.value.table.id, { x: newX, y: newY });
+
+  const padding = 50;
+  if (event.clientX > containerRect.right - padding) {
+    diagramContainer.scrollLeft += 10;
+  } else if (event.clientX < containerRect.left + padding) {
+    diagramContainer.scrollLeft -= 10;
+  }
+
+  if (event.clientY > containerRect.bottom - padding) {
+    diagramContainer.scrollTop += 10;
+  } else if (event.clientY < containerRect.top + padding) {
+    diagramContainer.scrollTop -= 10;
+  }
+};
+
+const stopDrag = () => {
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('mouseup', stopDrag);
+  draggingTable.value = null;
+};
+
+const getRelationCoords = (table: any, column: any) => {
+  const result = { x1: 0, y1: 0, x2: 0, y2: 0 };
+
+  if (!column.referencedTable) return result;
+
+  const sourceTable = table;
+  const targetTable = tables.value.find(t => t.name === column.referencedTable);
+
+  if (!sourceTable || !targetTable) return result;
+
+  const sourcePosition = tablePositions.value.get(sourceTable.id) || { x: 0, y: 0 };
+  const targetPosition = tablePositions.value.get(targetTable.id) || { x: 0, y: 0 };
+
+  // Position de départ (côté droit de la table source)
+  result.x1 = sourcePosition.x + 350;
+  result.y1 = sourcePosition.y + 60;
+
+  // Position d'arrivée (côté gauche de la table cible)
+  result.x2 = targetPosition.x;
+  result.y2 = targetPosition.y + 60;
+
+  return result;
+};
+
+const getRelationLabelPosition = (table: any, column: any) => {
+  const coords = getRelationCoords(table, column);
+  return {
+    x: coords.x1 + (coords.x2 - coords.x1) / 2,
+    y: coords.y1 + (coords.y2 - coords.y1) / 2
+  };
+};
+
+const rearrangeTables = () => {
+  const centerX = 1000;
+  const centerY = 750;
+  const radius = tables.value.length <= 4 ? 450 : 600;
+
+  tables.value.forEach((table, index) => {
+    const angle = (index / tables.value.length) * 2 * Math.PI;
+    const x = centerX + radius * Math.cos(angle);
+    const y = centerY + radius * Math.sin(angle);
+
+    tablePositions.value.set(table.id, { x, y });
+  });
+
+  snackbarText.value = t().notifications.rearranged || "Tables réorganisées";
+  snackbarColor.value = "success";
+  showSnackbar.value = true;
+};
+
+const zoomIn = () => {
+  diagramScale.value = Math.min(2.5, diagramScale.value + 0.2);
+};
+
+const zoomOut = () => {
+  diagramScale.value = Math.max(0.5, diagramScale.value - 0.2);
+};
+
+const resetZoom = () => {
+  diagramScale.value = 1.5;
+};
+
+const focusTable = (table: any) => {
+  const position = tablePositions.value.get(table.id);
+  if (!position || !customDiagram.value) return;
+
+  const container = document.querySelector('.custom-diagram-container');
+  if (container) {
+    container.scrollTo({
+      left: position.x - 100,
+      top: position.y - 100,
+      behavior: 'smooth'
+    });
+  }
+};
+
+const exportDiagramImage = () => {
+  try {
+    const container = document.getElementById('custom-diagram');
+    if (!container) return;
+
+    // Utiliser html2canvas (à installer)
+    snackbarText.value = "Fonctionnalité d'export à implémenter";
+    snackbarColor.value = "info";
+    showSnackbar.value = true;
+  } catch (error) {
+    console.error('Error exporting diagram:', error);
+  }
+};
+
+const changeLayout = (layout: string) => {
+  diagramLayout.value = layout;
+  rearrangeTables();
 };
 </script>
 
@@ -1513,5 +1933,186 @@ const getTemplateDescription = (templateKey: string) => {
   height: 100%;
   z-index: 1;
   pointer-events: none;
+}
+
+/* Styles pour Cytoscape */
+.cy-diagram {
+  width: 100%;
+  height: 600px;
+  background-color: #fafafa;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+
+.max-width-200 {
+  max-width: 200px;
+}
+
+.tooltip-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.tooltip-table th,
+.tooltip-table td {
+  border-bottom: 1px solid #eee;
+  padding: 4px;
+  text-align: left;
+}
+
+/* Styles pour le diagramme personnalisé */
+.custom-diagram-container {
+  width: 100%;
+  height: 700px;
+  overflow: auto;
+  position: relative;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+}
+
+.custom-diagram {
+  position: relative;
+  width: 3000px;
+  height: 2000px;
+}
+
+.custom-table {
+  position: absolute;
+  width: 350px;
+  /* Plus large */
+  background-color: white;
+  border-radius: 12px;
+  /* Plus arrondi */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  /* Ombre plus prononcée */
+  user-select: none;
+  z-index: 2;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  transform-origin: center;
+}
+
+.custom-table:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.custom-table-header {
+  background: linear-gradient(135deg, #1976d2, #2196F3);
+  color: white;
+  padding: 20px;
+  /* Plus de padding */
+  font-weight: bold;
+  font-size: 18px;
+  /* Police plus grande */
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+}
+
+.custom-table-title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.custom-table-actions {
+  display: flex;
+  align-items: center;
+}
+
+.custom-table-content {
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.custom-column {
+  padding: 15px 20px;
+  /* Plus de padding */
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  /* Police plus grande */
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.custom-column:hover {
+  background-color: #f5f5f5;
+}
+
+.custom-column:last-child {
+  border-bottom: none;
+}
+
+.custom-column.primary-key {
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.custom-column.primary-key:hover {
+  background-color: rgba(255, 193, 7, 0.2);
+}
+
+.custom-column.foreign-key {
+  background-color: rgba(33, 150, 243, 0.1);
+}
+
+.custom-column.foreign-key:hover {
+  background-color: rgba(33, 150, 243, 0.2);
+}
+
+.custom-column-icon {
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.custom-column-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.custom-column-type {
+  color: #757575;
+  font-size: 12px;
+  padding: 2px 6px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+.custom-relations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.custom-relations text {
+  pointer-events: none;
+  font-family: 'Roboto', sans-serif;
+  background: white;
+  padding: 2px;
+}
+
+.custom-relations line {
+  stroke-dasharray: 5, 5;
+  animation: dash 30s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 1000;
+  }
 }
 </style>

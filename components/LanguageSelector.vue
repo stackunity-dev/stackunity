@@ -72,7 +72,6 @@ const updateDocumentMeta = (lang: SupportedLanguage) => {
 }
 
 onMounted(() => {
-  console.log('[LanguageSelector] onMounted');
   const savedLanguage = localStorage.getItem('preferred_language') as SupportedLanguage | null;
   if (savedLanguage && currentLanguage.value !== savedLanguage) {
     console.log(`[LanguageSelector] Restoring saved language: ${savedLanguage}`);

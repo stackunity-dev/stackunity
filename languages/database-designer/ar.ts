@@ -56,7 +56,18 @@ export default {
     generate: 'إنشاء SQL',
     copy: 'نسخ إلى الحافظة',
     download: 'تنزيل',
-    rearrange: 'إعادة ترتيب'
+    rearrange: 'إعادة ترتيب',
+    import: 'استيراد'
+  },
+  import: {
+    title: 'استيراد ملفات SQL',
+    noFiles: 'لا يوجد ملفات SQL محددة. يرجى تحديد ملفات SQL لاستيرادها.',
+    selectedFiles: 'ملفات محددة',
+    process: 'معالجة الملفات',
+    selectFiles: 'اختر الملفات',
+    cancel: 'إلغاء',
+    confirm: 'تأكيد',
+    confirmClear: 'هذا سيؤدي إلى حذف الجداول الحالية. هل أنت متأكد؟'
   },
   export: {
     json: 'JSON',

@@ -15,9 +15,9 @@
               <v-carousel hide-delimiters show-arrows="hover" cycle height="auto">
                 <v-carousel-item src="/images/preview/preview-timeline.avif" contain
                   class="bg-surface-variant floating-image"></v-carousel-item>
-                <v-carousel-item src="/images/preview/preview-access.avif" contain
+                <v-carousel-item src="/images/preview/preview-website.avif" contain
                   class="bg-surface-variant floating-image"></v-carousel-item>
-                <v-carousel-item src="/images/preview/preview-deadzones.avif" contain
+                <v-carousel-item src="/images/preview/preview-access.avif" contain
                   class="bg-surface-variant floating-image"></v-carousel-item>
               </v-carousel>
             </div>

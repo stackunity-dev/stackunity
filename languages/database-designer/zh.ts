@@ -56,7 +56,18 @@ export default {
     generate: '生成SQL',
     copy: '复制到剪贴板',
     download: '下载',
-    rearrange: '重新排列'
+    rearrange: '重新排列',
+    import: '导入'
+  },
+  import: {
+    title: '导入SQL文件',
+    noFiles: '未选择SQL文件。请选择SQL文件进行导入。',
+    selectedFiles: '已选文件',
+    process: '处理文件',
+    selectFiles: '选择文件',
+    cancel: '取消',
+    confirm: '确认',
+    confirmClear: '这将清除您当前的表。继续吗？'
   },
   export: {
     json: 'JSON',

@@ -56,7 +56,18 @@ export default {
     generate: 'Generate SQL',
     copy: 'Copy to clipboard',
     download: 'Download',
-    rearrange: 'Rearrange'
+    rearrange: 'Rearrange',
+    import: 'Import'
+  },
+  import: {
+    title: 'Import SQL Files',
+    noFiles: 'No SQL files selected. Please select SQL files to import.',
+    selectedFiles: 'Selected Files',
+    process: 'Process Files',
+    selectFiles: 'Select Files',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    confirmClear: 'This will clear your current tables. Continue?'
   },
   export: {
     json: 'JSON',

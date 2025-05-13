@@ -625,71 +625,55 @@
       
       checkExclusions: function(websiteId) {
         try {
-          // Vérifier les exclusions directement dans le localStorage
-          const storageKey = `stackunity_exclusions_${websiteId}`;
+            const storageKey = `stackunity_exclusions_${websiteId}`;
           const savedExclusions = localStorage.getItem(storageKey);
           
           if (!savedExclusions) {
-            console.log('[StackUnity Tracker] Aucune exclusion trouvée dans localStorage');
             return false;
           }
           
           const exclusions = JSON.parse(savedExclusions);
           if (!Array.isArray(exclusions) || exclusions.length === 0) {
-            console.log('[StackUnity Tracker] Liste d\'exclusions vide ou invalide');
             return false;
           }
           
-          console.log('[StackUnity Tracker] Vérification des exclusions:', exclusions);
-          
-          // Récupérer le visitor ID
           const visitorId = utils.getVisitorId();
-          console.log('[StackUnity Tracker] Visitor ID actuel:', visitorId);
-          
-          // Vérifier si le visitor ID est exclu
+
           const visitorExclusion = exclusions.find(exc => 
             (exc.type === 'visitor' || exc.type === 'user') && 
             (exc.value === visitorId || exc.value === utils.getAuthenticatedUserId())
           );
           
           if (visitorExclusion) {
-            console.log('[StackUnity Tracker] Visitor ID exclu trouvé:', visitorId);
             localStorage.setItem('stackunity_excluded', 'true');
             localStorage.setItem('stackunity_excluded_reason', 'visitor');
             return true;
           }
           
-          // Convertir les anciennes exclusions IP en exclusions visitor
           const ipExclusions = exclusions.filter(exc => exc.type === 'ip');
           if (ipExclusions.length > 0) {
-            console.log('[StackUnity Tracker] Exclusions IP trouvées - conversion en exclusion visitor');
             
-            // Créer une nouvelle exclusion basée sur le visitor ID actuel
             const newExclusions = exclusions.filter(exc => exc.type !== 'ip');
             newExclusions.push({
               type: 'visitor',
               value: visitorId
             });
             
-            // Sauvegarder les nouvelles exclusions
             localStorage.setItem(storageKey, JSON.stringify(newExclusions));
             localStorage.setItem('stackunity_excluded', 'true');
             localStorage.setItem('stackunity_excluded_reason', 'visitor_converted');
-            console.log('[StackUnity Tracker] Exclusion convertie en visitor ID:', visitorId);
             return true;
           }
           
           return localStorage.getItem('stackunity_excluded') === 'true';
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la vérification des exclusions:', e);
-          // En cas d'erreur, vérifier si l'utilisateur était précédemment exclu
           return localStorage.getItem('stackunity_excluded') === 'true';
         }
       },
       
       isLocalEnvironment: function(url) {
         if (!url) {
-          // Si aucune URL n'est fournie, vérifier l'environnement actuel
           const hostname = window.location.hostname || '';
           return hostname === 'localhost' || 
                  hostname === '127.0.0.1' ||
