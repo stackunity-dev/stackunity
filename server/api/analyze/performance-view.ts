@@ -10,7 +10,7 @@ export interface PerformanceData {
   optimizationTips: OptimizationTip[];
 }
 
-export const analyzeWebsitePerformance = async (mainUrl: string, maxUrls: number = 3): Promise<PerformanceData> => {
+export const analyzeWebsitePerformance = async (mainUrl: string, maxUrls: number = 10): Promise<PerformanceData> => {
   try {
     const urlsToCrawl = await discoverWebsiteUrls(mainUrl, maxUrls);
 

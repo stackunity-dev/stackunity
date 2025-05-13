@@ -18,7 +18,7 @@
               <template v-slot:default="{ value }">
                 <span class="text-caption text-grey-darken-1">{{ t().loading.progress.replace('{value}',
                   Math.ceil(value).toString())
-                  }}</span>
+                }}</span>
               </template>
             </v-progress-linear>
           </v-fade-transition>
@@ -100,7 +100,7 @@
                           <v-card-text class="pa-3">
                             <p class="text-caption text-grey mb-1">{{ socialMetaPreview.url }}</p>
                             <h3 class="text-subtitle-1 font-weight-bold mb-2 text-truncate">{{ socialMetaPreview.ogTitle
-                              }}</h3>
+                            }}</h3>
                             <p class="text-body-2 social-description">{{ socialMetaPreview.ogDescription }}</p>
                           </v-card-text>
                         </v-card>
@@ -164,7 +164,7 @@
                         <v-card class="mb-4 rounded-lg elevation-2">
                           <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg">
                             <v-icon color="white" class="mr-2">mdi-chart-donut</v-icon>
-                            SSUC metrics
+                            SSCUP metrics
                           </v-card-title>
                           <v-card-text class="pa-4">
                             <v-row>

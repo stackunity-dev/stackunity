@@ -99,7 +99,7 @@
                           <v-divider vertical class="mx-2"></v-divider>
                           <div class="stat-item text-center">
                             <div class="text-caption text-medium-emphasis">{{ t.analytics.interactions || 'Interactions'
-                            }}</div>
+                              }}</div>
                             <div class="text-subtitle-1 font-weight-bold">
                               {{ site.stats && site.stats.totalInteractions || '0' }}
                             </div>
@@ -125,7 +125,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ t.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ t.welcome.few.description
-                    }}</p>
+                      }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ t.welcome.few.action }}
@@ -277,7 +277,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                  }}</v-list-item-title>
+                    }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -305,7 +305,7 @@
 
           <v-row v-else>
             <v-col v-for="(metric, index) in metrics" :key="index" cols="6" md="3">
-              <v-card class="metric-card h-100 bg-surface">
+              <v-card class="metric-card h-100" elevation="3" rounded="lg">
                 <v-card-text>
                   <div class="d-flex align-center">
                     <v-avatar :color="metric.color + '-lighten-4'" size="42" class="mr-3">
@@ -429,12 +429,12 @@
                         <v-btn value="pie" size="small">
                           <v-icon>mdi-chart-pie</v-icon>
                           <v-tooltip activator="parent">{{ t.analytics.chart.chartPie || 'Graphique circulaire'
-                          }}</v-tooltip>
+                            }}</v-tooltip>
                         </v-btn>
                         <v-btn value="donut" size="small">
                           <v-icon>mdi-chart-donut</v-icon>
                           <v-tooltip activator="parent">{{ t.analytics.chart.chartDonut || 'Graphique annulaire'
-                          }}</v-tooltip>
+                            }}</v-tooltip>
                         </v-btn>
                       </v-btn-toggle>
                     </div>
@@ -536,20 +536,8 @@
                           {{ t.analytics.browsers }}
                         </v-card-title>
                         <v-card-text>
-                          <div v-for="(browser, index) in browsers" :key="'browser-' + index" class="tech-stat-item">
-                            <div class="d-flex align-center justify-space-between mb-1">
-                              <div class="d-flex align-center">
-                                <v-icon size="small" class="mr-2" :color="getBrowserColor(browser.name)">
-                                  {{ getBrowserIcon(browser.name) }}
-                                </v-icon>
-                                <span class="text-body-2">{{ browser.name }}</span>
-                              </div>
-                              <span class="text-caption tech-count">{{ browser.count }}</span>
-                            </div>
-                            <v-progress-linear :model-value="browser.percentage" :color="getBrowserColor(browser.name)"
-                              height="8" rounded bg-color="grey-darken-3"></v-progress-linear>
-                            <div class="text-caption text-right mt-1">{{ browser.percentage }}%</div>
-                          </div>
+                          <v-chart class="browser-chart" :option="browsersChartData" autoresize
+                            style="height: 300px;" />
                         </v-card-text>
                       </v-card>
                     </v-col>
@@ -561,20 +549,7 @@
                           {{ t.analytics.osSystems }}
                         </v-card-title>
                         <v-card-text>
-                          <div v-for="(system, index) in osSystems" :key="'os-' + index" class="tech-stat-item">
-                            <div class="d-flex align-center justify-space-between mb-1">
-                              <div class="d-flex align-center">
-                                <v-icon size="small" class="mr-2" :color="getOsColor(system.name)">
-                                  {{ getOsIcon(system.name) }}
-                                </v-icon>
-                                <span class="text-body-2">{{ system.name }}</span>
-                              </div>
-                              <span class="text-caption tech-count">{{ system.count }}</span>
-                            </div>
-                            <v-progress-linear :model-value="system.percentage" :color="getOsColor(system.name)"
-                              height="8" rounded bg-color="grey-darken-3"></v-progress-linear>
-                            <div class="text-caption text-right mt-1">{{ system.percentage }}%</div>
-                          </div>
+                          <v-chart class="os-chart" :option="osSystemsChartData" autoresize style="height: 300px;" />
                         </v-card-text>
                       </v-card>
                     </v-col>
@@ -641,8 +616,8 @@
                       {{ t.deadZoneViewer.title || 'Zones mortes' }}
                     </v-tab>
                     <v-tab value="engagement">
-                      <v-icon class="mr-2">mdi-chart-bell-curve</v-icon>
-                      {{ t.engagement?.title || 'Qualité d\'engagement' }}
+                      <v-icon class="mr-2">mdi-calendar-clock</v-icon>
+                      Soon...
                     </v-tab>
                   </v-tabs>
 
@@ -661,7 +636,7 @@
                       <DeadZoneViewer :websiteId="currentSite.id" />
                     </v-window-item>
 
-                    <v-window-item value="engagement">
+                    <v-window-item>
 
                       <EngagementQualityViewer :websiteId="currentSite.id" />
                     </v-window-item>
@@ -700,7 +675,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                              }}</span>
+                                }}</span>
                             </div>
                           </td>
                           <td>
@@ -871,7 +846,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-            }}</p>
+              }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ t.engagement.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -994,7 +969,7 @@
               <v-list-item v-if="visitorExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                  }}</v-list-item-title>
+                }}</v-list-item-title>
               </v-list-item>
             </v-list>
 
@@ -1108,14 +1083,13 @@ import {
   getDeviceLabel,
   getFullDomain,
   getOsColor,
-  getOsIcon,
   getSourceColor,
   getSourceIcon,
   getSourceLabel,
   isLocalEnvironment,
   normalizeUrl
 } from '../utils/analytics/functions';
-import { BrowserOsStats, DetailedReferrer, DeviceStats, DeviceType, ErrorEvent, PageView, TrafficSource, UserFlow, UserInteraction, WebsiteAnalytics, WebsiteWithStats } from '../utils/analytics/types';
+import { BrowserOsStats, DeviceStats, DeviceType, ErrorEvent, PageView, TrafficSource, UserFlow, UserInteraction, WebsiteAnalytics, WebsiteWithStats } from '../utils/analytics/types';
 
 use([
   CanvasRenderer,
@@ -1386,6 +1360,7 @@ async function selectSite(site: WebsiteWithStats) {
     loadExclusions();
     const response = await fetch(`/api/analytics/website/${site.id}?period=${selectedPeriod.value}&limit=500`);
     const result = await response.json();
+
 
     if (result.success) {
       updateAnalyticsData(result.data);
@@ -2046,12 +2021,6 @@ function getPageViewPercentage(views: number): number {
   return totalViews > 0 ? (views / totalViews) * 100 : 0;
 }
 
-function expandPage(page: PageView) {
-  console.log('Détails de la page:', page);
-  updatePageTrackingData(page.page);
-  showMessage(`Données de la page ${page.page} chargées`, 'info');
-}
-
 function filterPages() {
   filteredPages.value = pageViews.value.filter(page =>
     page.page.toLowerCase().includes(pageSearch.value.toLowerCase())
@@ -2109,15 +2078,6 @@ const exportOptions = ref({
   devices: true,
   sources: true
 });
-
-const referrerHeaders = [
-  { title: 'Source', key: 'source', sortable: true },
-  { title: 'URL', key: 'url', sortable: true },
-  { title: 'Visites', key: 'visits', sortable: true, align: 'center' as const },
-  { title: 'Dernière visite', key: 'lastVisit', sortable: true }
-];
-
-const detailedReferrers = ref<DetailedReferrer[]>([]);
 
 async function deleteSite() {
   if (!currentSite.value || deleteSiteConfirmation.value !== currentSite.value.name) return;
@@ -2582,5 +2542,188 @@ watch(() => showExclusionsDialog.value, (newVal) => {
   if (newVal) {
     checkCurrentExclusionStatus();
   }
+});
+
+const browsersChartData = computed(() => {
+  if (!browsers.value || browsers.value.length === 0) {
+    return {
+      series: []
+    };
+  }
+
+  // Trier les navigateurs par nombre d'utilisations décroissant
+  const sortedBrowsers = [...browsers.value].sort((a, b) => b.count - a.count);
+
+  return {
+    darkMode: true,
+    backgroundColor: '#1E1E1E',
+    textStyle: {
+      color: '#ffffff'
+    },
+    title: {
+      text: t.analytics.browsers || 'Navigateurs',
+      left: 'center',
+      textStyle: {
+        color: '#ffffff'
+      }
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'value',
+      axisLabel: {
+        color: '#cccccc'
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#555555'
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#333333'
+        }
+      }
+    },
+    yAxis: {
+      type: 'category',
+      data: sortedBrowsers.map(browser => browser.name),
+      axisLabel: {
+        color: '#cccccc',
+        formatter: (value) => {
+          const browser = sortedBrowsers.find(b => b.name === value);
+          return `${value} (${browser ? browser.percentage : 0}%)`;
+        }
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#555555'
+        }
+      }
+    },
+    series: [
+      {
+        name: t.analytics.browsers || 'Navigateurs',
+        type: 'bar',
+        barWidth: '60%',
+        data: sortedBrowsers.map(browser => ({
+          value: browser.count,
+          itemStyle: {
+            color: getBrowserColor(browser.name) === 'primary' ? '#1976D2' :
+              getBrowserColor(browser.name) === 'info' ? '#2196F3' :
+                getBrowserColor(browser.name) === 'success' ? '#4CAF50' :
+                  getBrowserColor(browser.name) === 'error' ? '#F44336' :
+                    getBrowserColor(browser.name) === 'warning' ? '#FB8C00' :
+                      browser.name.toLowerCase().includes('chrome') ? '#4CAF50' :
+                        browser.name.toLowerCase().includes('firefox') ? '#FF9800' :
+                          browser.name.toLowerCase().includes('edge') ? '#2196F3' :
+                            browser.name.toLowerCase().includes('safari') ? '#03A9F4' :
+                              browser.name.toLowerCase().includes('opera') ? '#F44336' : '#9E9E9E'
+          }
+        }))
+      }
+    ]
+  };
+});
+
+const osSystemsChartData = computed(() => {
+  if (!osSystems.value || osSystems.value.length === 0) {
+    return {
+      series: []
+    };
+  }
+
+  // Trier les systèmes d'exploitation par nombre d'utilisations décroissant
+  const sortedSystems = [...osSystems.value].sort((a, b) => b.count - a.count);
+
+  return {
+    darkMode: true,
+    backgroundColor: '#1E1E1E',
+    textStyle: {
+      color: '#ffffff'
+    },
+    title: {
+      text: t.analytics.osSystems || 'Systèmes d\'exploitation',
+      left: 'center',
+      textStyle: {
+        color: '#ffffff'
+      }
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'value',
+      axisLabel: {
+        color: '#cccccc'
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#555555'
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#333333'
+        }
+      }
+    },
+    yAxis: {
+      type: 'category',
+      data: sortedSystems.map(system => system.name),
+      axisLabel: {
+        color: '#cccccc',
+        formatter: (value) => {
+          const system = sortedSystems.find(s => s.name === value);
+          return `${value} (${system ? system.percentage : 0}%)`;
+        }
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#555555'
+        }
+      }
+    },
+    series: [
+      {
+        name: t.analytics.osSystems || 'Systèmes d\'exploitation',
+        type: 'bar',
+        barWidth: '60%',
+        data: sortedSystems.map(system => ({
+          value: system.count,
+          itemStyle: {
+            color: system.name.toLowerCase().includes('windows') ? '#2196F3' :
+              system.name.toLowerCase().includes('mac') ? '#9E9E9E' :
+                system.name.toLowerCase().includes('ios') ? '#03A9F4' :
+                  system.name.toLowerCase().includes('android') ? '#4CAF50' :
+                    system.name.toLowerCase().includes('linux') ? '#FF9800' :
+                      getOsColor(system.name) === 'success' ? '#4CAF50' :
+                        getOsColor(system.name) === 'info' ? '#2196F3' :
+                          getOsColor(system.name) === 'warning' ? '#FB8C00' :
+                            getOsColor(system.name) === 'error' ? '#F44336' : '#9E9E9E'
+          }
+        }))
+      }
+    ]
+  };
 });
 </script>

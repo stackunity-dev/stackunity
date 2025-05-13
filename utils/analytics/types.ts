@@ -199,3 +199,21 @@ export interface DetailedReferrer {
   icon?: string;
   color?: string;
 }
+
+export interface ExtendedUserInteraction extends UserInteraction {
+  pageUrl?: string;
+  count?: number;
+}
+
+export type DataPoint = {
+  value: number[];
+  name: string;
+  itemStyle: { color: string };
+};
+
+export type TimelineSeriesData = {
+  click: DataPoint[];
+  scroll: DataPoint[];
+  form_submit: DataPoint[];
+  input_change: DataPoint[];
+};

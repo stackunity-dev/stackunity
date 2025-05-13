@@ -10,24 +10,11 @@ html.v-theme--dark .main-content {
 }
 
 .metric-card {
-  border-left: 4px solid;
   border-radius: 8px;
 }
 
 .metric-card:nth-child(1) {
-  border-left-color: rgb(var(--v-theme-primary));
-}
-
-.metric-card:nth-child(2) {
-  border-left-color: rgb(var(--v-theme-success));
-}
-
-.metric-card:nth-child(3) {
-  border-left-color: rgb(var(--v-theme-info));
-}
-
-.metric-card:nth-child(4) {
-  border-left-color: rgb(var(--v-theme-warning));
+  border-left: 4px solid rgb(var(--v-theme-secondary));
 }
 
 .modern-card {

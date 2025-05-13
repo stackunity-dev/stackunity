@@ -753,21 +753,14 @@
       },
       
       getLocation: function(callback) {
-        console.log('[StackUnity DEBUG] Tentative de récupération de la géolocalisation');
         
         if (!navigator.geolocation) {
-          console.log('[StackUnity DEBUG] Géolocalisation non supportée par le navigateur');
           return callback(null);
         }
         
         try {
           navigator.geolocation.getCurrentPosition(
             function(position) {
-              console.log('[StackUnity DEBUG] Géolocalisation réussie:', {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy
-              });
               
               callback({
                 latitude: position.coords.latitude,
@@ -776,7 +769,6 @@
               });
             },
             function(error) {
-              console.log('[StackUnity DEBUG] Erreur de géolocalisation:', error.code, error.message);
               callback(null);
             },
             {
@@ -873,7 +865,6 @@
     const tracker = {
       init: function() {
         try {
-          // Vérifier si l'utilisateur est sur localhost
           if (utils.isLocalEnvironment()) {
             console.log('[StackUnity Tracker] Tracking désactivé sur environnement local');
             state.isExcluded = true;
@@ -882,7 +873,6 @@
             return;
           }
           
-          // Vérifier d'abord si l'utilisateur est déjà marqué comme exclu dans le localStorage
           if (localStorage.getItem('stackunity_excluded') === 'true') {
             const reason = localStorage.getItem('stackunity_excluded_reason') || 'inconnu';
             console.log(`[StackUnity Tracker] Utilisateur précédemment exclu (raison: ${reason}), analytics désactivés`);
@@ -908,7 +898,6 @@
           state.sessionId = sessionStorage.getItem('stackunity_session_id') || utils.generateUUID();
           sessionStorage.setItem('stackunity_session_id', state.sessionId);
           
-          // Vérifier les exclusions avant de démarrer le tracking
           const isExcluded = utils.checkExclusions(state.websiteId);
           state.isExcluded = isExcluded;
           
@@ -917,7 +906,6 @@
             return;
           }
           
-          // Démarrer le tracking uniquement si non exclu
           tracker.setupTracking();
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de l\'initialisation du tracker:', e);
@@ -942,7 +930,6 @@
             state.bounceDetected = !state.hasActivity;
           }, config.bounceTimeout);
           
-          // Ajouter un intervalle pour envoyer régulièrement des mises à jour de durée
           setInterval(() => {
             if (!state.isUnloading && !state.tabHidden && state.currentPageViewId) {
               const now = new Date();
@@ -1032,12 +1019,10 @@
         window.addEventListener('beforeunload', function() {
           state.isUnloading = true;
           
-          // Enregistrer la durée finale de la page
           const now = new Date();
           const startTimeMs = state.startTime.getTime();
           const duration = Math.round((now.getTime() - startTimeMs) / 1000);
           
-          // Créer l'événement de durée de visite
           const durationEvent = {
             type: 'pageVisitDuration',
             id: utils.generateUUID(),
@@ -1049,7 +1034,6 @@
             userAgent: navigator.userAgent || 'unknown'
           };
           
-          // Créer l'événement de sortie de page
           const exitEvent = {
             type: 'pageViewExit',
             id: utils.generateUUID(),
@@ -1060,11 +1044,9 @@
             userAgent: navigator.userAgent || 'unknown'
           };
           
-          // Ajouter les deux événements au buffer
           state.buffer.push(durationEvent);
           state.buffer.push(exitEvent);
           
-          // Forcer l'envoi des données
           tracker.flushEvents(true);
         });
         
@@ -1196,10 +1178,8 @@
         state.hasActivity = false;
         state.scrollDepth = 0;
         
-        // Essayer de récupérer la géolocalisation si l'utilisateur l'autorise
         utils.getLocation(function(locationData) {
           if (locationData) {
-            // Ajouter un événement de géolocalisation
             const locationEvent = {
               type: 'geoLocation',
               id: utils.generateUUID(),
@@ -1217,7 +1197,6 @@
             state.buffer.push(locationEvent);
             console.log('[StackUnity DEBUG] Événement de géolocalisation ajouté:', locationEvent);
             
-            // Forcer l'envoi immédiat des données de géolocalisation
             console.log('[StackUnity DEBUG] Envoi forcé des données de géolocalisation');
             tracker.flushEvents();
           } else {
@@ -1258,39 +1237,39 @@
         
         if (!target) return;
         
-        console.log('[StackUnity DEBUG] Clic détecté sur:', target);
-        
         let selector = '';
         
         if (target.id) {
           selector = `#${target.id}`;
         } else if (target.className && typeof target.className === 'string') {
-          selector = `.${target.className.trim().replace(/\s+/g, '.')}`;
+          selector = `.${target.className.trim().replace(/\\s+/g, '.')}`; 
         } else {
           selector = target.tagName.toLowerCase();
           
           if (target.parentNode && target.parentNode.childNodes.length > 1) {
             const siblings = Array.from(target.parentNode.childNodes).filter(n => n.nodeType === 1);
             const index = siblings.indexOf(target);
-            if (index > -1) {
-              selector += `:nth-child(${index + 1})`;
-            }
+            selector += `:nth-child(${index + 1})`;
           }
         }
         
+        // Récupérer le texte de l'élément
+        let elementText = '';
+        if (target.textContent) {
+          elementText = target.textContent.trim().substring(0, 50);
+        } else if (target.value) {
+          elementText = target.value.trim().substring(0, 50);
+        } else if (target.alt) {
+          elementText = target.alt.trim().substring(0, 50);
+        }
+        
+        // Récupérer l'URL de la page actuelle avec gestion d'erreur
         let currentUrl = '';
         try {
-          currentUrl = window.location.href;
+          currentUrl = window.location.href || document.URL;
         } catch (e) {
-          console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL pour un clic:', e);
-        }
-        
-        if (!currentUrl) {
-          try {
-            currentUrl = document.URL;
-          } catch (e) {
-            console.error('[StackUnity Tracker] Erreur lors de la récupération de document.URL pour un clic:', e);
-          }
+          console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'URL:', e);
+          currentUrl = 'https://stackunity.tech/fallback';
         }
         
         // URL de fallback si toutes les méthodes échouent
@@ -1301,78 +1280,82 @@
         // Récupérer les dimensions de la page et du viewport
         const pageWidth = Math.max(
           document.body.scrollWidth,
-          document.body.offsetWidth,
-          document.documentElement.clientWidth,
           document.documentElement.scrollWidth,
-          document.documentElement.offsetWidth
+          document.body.offsetWidth,
+          document.documentElement.offsetWidth,
+          document.body.clientWidth,
+          document.documentElement.clientWidth
         );
         
         const pageHeight = Math.max(
           document.body.scrollHeight,
-          document.body.offsetHeight,
-          document.documentElement.clientHeight,
           document.documentElement.scrollHeight,
-          document.documentElement.offsetHeight
+          document.body.offsetHeight,
+          document.documentElement.offsetHeight,
+          document.body.clientHeight,
+          document.documentElement.clientHeight
         );
         
-        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const viewportWidth = window.innerWidth || 
+          document.documentElement.clientWidth || 
+          document.body.clientWidth;
+        
+        const viewportHeight = window.innerHeight || 
+          document.documentElement.clientHeight || 
+          document.body.clientHeight;
+        
+        // Position du scroll
         const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
         // Coordonnées absolues du clic par rapport à la page entière
-        const clickX = e.clientX + scrollLeft;
-        const clickY = e.clientY + scrollTop;
+        const pageX = e.clientX + scrollLeft;
+        const pageY = e.clientY + scrollTop;
         
         // Coordonnées relatives en pourcentage
-        const relativeX = (clickX / pageWidth * 100).toFixed(2);
-        const relativeY = (clickY / pageHeight * 100).toFixed(2);
+        const relativeX = (pageX / pageWidth * 100).toFixed(2);
+        const relativeY = (pageY / pageHeight * 100).toFixed(2);
         
-        console.log('[StackUnity DEBUG] Dimensions du clic:', {
+        console.log('[StackUnity DEBUG] Clic détecté:', {
+          selector,
+          elementText,
+          pageX,
+          pageY,
+          relativeX,
+          relativeY,
           pageWidth,
           pageHeight,
           viewportWidth,
-          viewportHeight,
-          scrollLeft,
-          scrollTop,
-          clickX,
-          clickY,
-          relativeX,
-          relativeY
+          viewportHeight
         });
         
-        const interaction = {
+        const clickData = {
           type: 'interaction',
-          id: utils.generateUUID(),
+          id: utils.generateId(),
           pageViewId: state.currentPageViewId,
           interactionType: 'click',
-          elementSelector: selector,
-          elementText: target.textContent ? target.textContent.trim() : '',
           timestamp: new Date().toISOString(),
           value: {
-            href: target.href || null,
-            clientX: e.clientX,        // Position relative à la fenêtre visible
-            clientY: e.clientY,
-            pageX: clickX,             // Position absolue sur la page
-            pageY: clickY,
-            relativeX: parseFloat(relativeX),  // Position relative en pourcentage
+            x: e.clientX,
+            y: e.clientY,
+            pageX: pageX,
+            pageY: pageY,
+            relativeX: parseFloat(relativeX),
             relativeY: parseFloat(relativeY),
-            pageWidth: pageWidth,      // Dimensions totales de la page
+            pageWidth: pageWidth,
             pageHeight: pageHeight,
-            viewportWidth: viewportWidth, // Dimensions de la fenêtre visible
+            viewportWidth: viewportWidth,
             viewportHeight: viewportHeight,
-            scrollTop: scrollTop,      // Position du scroll
-            scrollLeft: scrollLeft
+            href: target.href || null
           },
+          elementSelector: selector,
+          elementText: elementText,
           pageUrl: currentUrl,
-          userAgent: navigator.userAgent || 'unknown'
+          userAgent: navigator.userAgent
         };
         
-        console.log('[StackUnity DEBUG] Données d\'interaction envoyées:', interaction);
-        
-        state.buffer.push(interaction);
-        state.hasActivity = true;
-        state.lastActivity = new Date();
+        state.buffer.push(clickData);
+        tracker.flushEvents();
       },
       
       handleFormSubmit: function(e) {
@@ -1492,7 +1475,6 @@
           }
         }
         
-        // Récupérer l'URL de la page actuelle avec gestion d'erreur
         let currentUrl = '';
         try {
           currentUrl = window.location.href;
@@ -1508,7 +1490,6 @@
           }
         }
         
-        // URL de fallback si toutes les méthodes échouent
         if (!currentUrl) {
           currentUrl = 'https://stackunity.tech/fallback';
         }
@@ -1566,7 +1547,6 @@
         if (scrollPercent > state.scrollDepth) {
           state.scrollDepth = scrollPercent;
           
-          // Récupérer l'URL de la page actuelle avec gestion d'erreur
           let currentUrl = '';
           try {
             currentUrl = window.location.href;
@@ -1582,7 +1562,6 @@
             }
           }
           
-          // URL de fallback si toutes les méthodes échouent
           if (!currentUrl) {
             currentUrl = 'https://stackunity.tech/fallback';
           }
@@ -1648,10 +1627,7 @@
         const endTime = new Date();
         const startTimeMs = state.startTime.getTime();
         const duration = Math.max(0, Math.round((endTime.getTime() - startTimeMs) / 1000));
-        
-        console.log('[StackUnity Tracker] Durée de la page lors du unload:', duration, 'secondes');
       
-        // Envoyer une mise à jour finale de la durée
         const pageVisitData = {
           type: 'pageVisitDuration',
           id: utils.generateUUID(),
@@ -1721,7 +1697,6 @@
         if (document.visibilityState === 'hidden') {
           state.tabHidden = true;
           
-          // Enregistrer la durée avant que l'utilisateur ne quitte l'onglet
           const endTime = new Date();
           const startTimeMs = state.startTime.getTime();
           const duration = Math.round((endTime.getTime() - startTimeMs) / 1000);
@@ -1739,7 +1714,6 @@
           
           state.buffer.push(pageVisitData);
           
-          // Ajouter également un événement de sortie de page
           const pageExitEvent = {
             type: 'pageViewExit',
             id: utils.generateUUID(),
@@ -1792,17 +1766,14 @@
       },
       
       handleHistoryChange: function() {
-        // Vérifier si l'URL a changé
         const currentUrl = window.location.href || document.URL || 'https://stackunity.tech/fallback';
         const currentPath = window.location.pathname || '/fallback';
         
-        // Enregistrer la durée de la page précédente avant de changer de page
         if (state.currentPageViewId) {
           const now = new Date();
           const startTimeMs = state.startTime.getTime();
           const duration = Math.round((now.getTime() - startTimeMs) / 1000);
           
-          // Envoyer la durée finale
           const pageVisitData = {
             type: 'pageVisitDuration',
             id: utils.generateUUID(),
@@ -1815,9 +1786,7 @@
           };
           
           state.buffer.push(pageVisitData);
-          console.log('[StackUnity Tracker] Durée finale avant navigation:', duration, 'secondes');
           
-          // Envoyer également un événement de sortie de page
           const pageExitEvent = {
             type: 'pageViewExit',
             id: utils.generateUUID(),
@@ -1836,12 +1805,10 @@
         state.startTime = new Date();
         state.scrollDepth = 0;
         
-        // Récupération des données de base
         const referrer = document.URL; 
         const referrerSource = 'internal';
         const referrerName = 'Internal Navigation';
         
-        // Paramètres UTM
         const utmParams = utils.getUTMParams();
         
         const now = new Date();

@@ -1,27 +1,27 @@
 export default {
   meta: {
-    title: 'Análisis de Contenido - StackUnity',
-    description: 'Analice la estructura y calidad de sus páginas web para mejorar su SEO'
+    title: 'Análisis de contenido - StackUnity',
+    description: 'Analiza la estructura y la calidad de tus páginas web para mejorar tu SEO'
   },
   page: {
-    title: 'Análisis de Contenido',
-    subtitle: 'Analice la estructura y calidad de sus páginas web para mejorar su SEO'
+    title: 'Análisis de contenido',
+    subtitle: 'Analiza la estructura y la calidad de tus páginas web para mejorar tu SEO'
   },
   form: {
-    urlLabel: 'URL del sitio a analizar',
-    urlPlaceholder: 'https://ejemplo.com',
-    urlHint: 'Ingrese la URL completa incluyendo https://',
-    urlRule: 'Por favor, ingrese una URL válida que comience con http:// o https://',
-    crawlEnabled: 'Analizar también páginas enlazadas',
+    urlLabel: 'URL del sitio web a analizar',
+    urlPlaceholder: 'https://example.com',
+    urlHint: 'Introduce la URL completa incluyendo https://',
+    urlRule: 'Por favor, introduce una URL válida que comience con http:// o https://',
+    crawlEnabled: 'Analiza también las páginas vinculadas',
     crawlHint: 'Límite: 10 URLs máximo',
     analyzeButton: 'Analizar contenido'
   },
   loading: {
-    text: 'Análisis en progreso'
+    text: 'Analizando en progreso'
   },
   averageScore: {
     title: 'Puntuación media del contenido',
-    calculated: 'Puntuación media calculada de {count} páginas analizadas',
+    calculated: 'Puntuación media calculada a partir de {count} páginas analizadas',
     exportButton: 'Exportar'
   },
   contentScore: {
@@ -29,30 +29,30 @@ export default {
     excellent: 'Excelente',
     good: 'Bueno',
     average: 'Promedio',
-    poor: 'Deficiente',
+    poor: 'Malo',
     critical: 'Crítico'
   },
   improvement: {
     title: 'Prioridad de mejora',
     lowestScore: 'La página con la puntuación más baja ({score}%) es',
-    openInNew: 'Abrir en nueva pestaña'
+    openInNew: 'Abrir en una nueva pestaña'
   },
   trends: {
     improving: 'Mejorando',
-    declining: 'Empeorando',
+    declining: 'Declinando',
     stable: 'Estable',
     tooltipImproving: 'La calidad del contenido está mejorando en todas las páginas',
-    tooltipDeclining: 'La calidad del contenido está empeorando en todas las páginas',
-    tooltipStable: 'La calidad del contenido es constante en todas las páginas'
+    tooltipDeclining: 'La calidad del contenido está declinando en todas las páginas',
+    tooltipStable: 'La calidad del contenido es consistente en todas las páginas'
   },
   statistics: {
-    title: 'Estadísticas de contenido',
+    title: 'Estadísticas del contenido',
     wordCount: 'Número de palabras',
     readabilityScore: 'Puntuación de legibilidad',
     headingsDetected: 'Encabezados detectados',
     links: 'Enlaces',
-    internal: 'Internos',
-    external: 'Externos'
+    internal: 'Interno',
+    external: 'Externo'
   },
   readability: {
     veryEasy: 'Muy fácil',
@@ -64,57 +64,57 @@ export default {
     veryDifficult: 'Muy difícil'
   },
   wordCount: {
-    tooShort: 'Muy corto',
+    tooShort: 'Demasiado corto',
     short: 'Corto',
     good: 'Bueno',
     excellent: 'Excelente'
   },
   headings: {
     title: 'Estructura de encabezados',
-    noHeadings: 'No se detectaron encabezados (H1-H6) en esta página.'
+    noHeadings: 'No se han detectado encabezados (H1-H6) en esta página.'
   },
   issues: {
     title: 'Problemas detectados',
-    noIssues: 'No se detectaron problemas importantes en el contenido.',
-    missingH1: 'Falta encabezado H1',
+    noIssues: 'No se han detectado problemas importantes en el contenido.',
+    missingH1: 'Encabezado H1 ausente',
     multipleH1: 'Múltiples encabezados H1',
-    shortContent: 'Contenido demasiado corto',
-    poorReadability: 'Baja puntuación de legibilidad',
-    lowKeywordDensity: 'Baja densidad de palabras clave',
+    shortContent: 'El contenido es demasiado corto',
+    poorReadability: 'Puntuación de legibilidad pobre',
+    lowKeywordDensity: 'Densidad de palabras clave baja',
     missingAltText: 'Imágenes sin texto alternativo',
-    brokenHeadingStructure: 'Estructura de encabezado rota',
-    lowWordCount: 'Número bajo de palabras',
-    duplicateTitle: 'Título y H1 duplicados',
-    noExternalLinks: 'Sin enlaces externos',
+    brokenHeadingStructure: 'Estructura de encabezados rota',
+    lowWordCount: 'Número de palabras bajo',
+    duplicateTitle: 'Título duplicado y H1',
+    noExternalLinks: 'No hay enlaces externos',
     tooManyLinks: 'Demasiados enlaces',
-    lowTextToHtmlRatio: 'Proporción baja de texto/HTML'
+    lowTextToHtmlRatio: 'Bajo ratio de texto a HTML'
   },
   images: {
-    title: 'Análisis de Imágenes',
-    preview: 'Vista previa de imagen',
+    title: 'Análisis de imágenes',
+    preview: 'Vista previa de la imagen',
     altText: 'Texto alternativo',
-    missingAlt: 'Falta texto alternativo',
+    missingAlt: 'Texto alternativo ausente',
     hasAlt: 'Texto alternativo presente',
     dimensions: 'Dimensiones',
-    hasDimensions: 'Optimizada',
+    hasDimensions: 'Optimizado',
     noDimensions: 'Sin dimensiones'
   },
   keywords: {
     title: 'Análisis de palabras clave',
     topKeywords: 'Palabras clave principales',
     density: 'Densidad',
-    optimal: 'Óptima',
-    tooLow: 'Muy baja',
-    tooHigh: 'Muy alta',
-    noKeywords: 'No se detectaron palabras clave significativas'
+    optimal: 'Óptimo',
+    tooLow: 'Demasiado bajo',
+    tooHigh: 'Demasiado alto',
+    noKeywords: 'No se han detectado palabras clave significativas'
   },
   seo: {
     title: 'Elementos SEO',
-    metaTitle: 'Meta Título',
-    metaDescription: 'Meta Descripción',
-    canonical: 'URL Canónica',
+    metaTitle: 'Título Meta',
+    metaDescription: 'Descripción Meta',
+    canonical: 'URL canónica',
     og: 'Etiquetas Open Graph',
-    missingElement: 'Faltante',
+    missingElement: 'Ausente',
     tooShort: 'Demasiado corto',
     tooLong: 'Demasiado largo',
     good: 'Bueno'
@@ -122,75 +122,103 @@ export default {
   recommendations: {
     title: 'Recomendaciones',
     excellentQuality: {
-      title: 'Excelente calidad de contenido',
-      description: 'Tu contenido está bien estructurado y optimizado para SEO. ¡Sigue con el buen trabajo!'
+      title: 'Calidad de contenido excelente',
+      description: 'Tu contenido está bien estructurado y optimizado para SEO. ¡Mantente así!'
     },
     improveContent: {
       title: 'Cómo mejorar tu contenido',
       addMoreContent: {
         title: 'Añadir más contenido',
-        description: 'Tu contenido tiene {count} palabras. Considera expandirlo a al menos 800-1000 palabras para un mejor rendimiento SEO.'
+        description: 'Tu contenido tiene {count} palabras. Considera expandirlo a al menos 800-1000 palabras para mejorar el rendimiento de SEO.'
       },
       addH1: {
         title: 'Añadir un encabezado H1',
-        description: 'Cada página debe tener exactamente un encabezado H1 que describa claramente el contenido de la página.'
+        description: 'Cada página debe tener exactamente un encabezado H1 que describa el contenido de la página.'
       },
       multipleH1: {
         title: 'Usar solo un encabezado H1',
-        description: 'Tu página tiene {count} encabezados H1. Para un mejor SEO, usa exactamente un H1 y estructura los demás encabezados con H2-H6.'
+        description: 'Tu página tiene {count} encabezados H1. Para mejor SEO, usa exactamente uno H1 y estructura los otros encabezados con H2-H6.'
       },
       addH2: {
-        title: 'Añadir subencabezados H2',
-        description: 'Usa subencabezados H2 para dividir tu contenido en secciones lógicas para una mejor legibilidad y SEO.'
+        title: 'Añadir encabezados H2',
+        description: 'Usa encabezados H2 para dividir tu contenido en secciones lógicas para mejor legibilidad y SEO.'
       },
       addAltText: {
-        title: 'Añadir texto alternativo a las imágenes',
-        description: '{count} imagen(es) sin texto alternativo. Añade un texto descriptivo a todas las imágenes para una mejor accesibilidad y SEO.'
+        title: 'Añadir texto alternativo a imágenes',
+        description: '{count} imágenes sin texto alternativo. Añade texto alternativo descriptivo a todas las imágenes para mejor accesibilidad y SEO.'
       },
       improveReadability: {
         title: 'Mejorar la legibilidad',
-        description: 'Tu contenido tiene un puntaje de legibilidad de {score}. Intenta usar oraciones más cortas y un lenguaje más simple.'
+        description: 'Tu contenido tiene una puntuación de legibilidad de {score}. Intenta usar frases más cortas y un lenguaje más simple.'
       },
       addInternalLinks: {
         title: 'Añadir enlaces internos',
-        description: 'Añade enlaces a otras páginas relevantes de tu sitio para mejorar la navegación y el SEO.'
+        description: 'Añade enlaces a otras páginas relevantes en tu sitio para mejorar la navegación y SEO.'
       },
       addExternalLinks: {
         title: 'Añadir enlaces externos',
-        description: 'Enlaza a fuentes externas autorizadas para aumentar la credibilidad y el valor SEO.'
+        description: 'Crea enlaces a fuentes de autoridad externas para aumentar la credibilidad y el valor de SEO.'
       },
       generalImprovements: {
         title: 'Mejoras generales',
-        description: '- Usa un lenguaje más variado y atractivo\n- Añade elementos multimedia (imágenes, videos, infografías)\n- Incluye ejemplos específicos y datos para respaldar tus puntos\n- Estructura el contenido con una introducción y conclusión claras'
+        description: '- Usa un lenguaje más variado y atractivo\n- Añade elementos multimedia (imágenes, videos, infografías)\n- Incluye ejemplos específicos y datos para respaldar tus puntos\n- Estructura el contenido con claras introducciones y conclusiones'
       }
     },
     seoTips: {
-      title: 'Consejos de optimización SEO',
+      title: 'SEO tips',
       useKeywords: {
         title: 'Usar palabras clave objetivo',
-        description: 'Incluye tu palabra clave principal en el título, el encabezado H1, el primer párrafo y naturalmente en todo el contenido.'
+        description: 'Usa palabras clave objetivo en el título, la descripción Meta y el contenido.'
+      },
+      addAltText: {
+        title: 'Añadir texto alternativo a imágenes',
+        description: '{count} imágenes sin texto alternativo. Añade texto alternativo descriptivo a todas las imágenes para mejor accesibilidad y SEO.'
+      },
+      addH2: {
+        title: 'Añadir encabezados H2',
+        description: 'Usa encabezados H2 para dividir tu contenido en secciones lógicas para mejor legibilidad y SEO.'
+      },
+      addH1: {
+        title: 'Añadir un encabezado H1',
+        description: 'Cada página debe tener exactamente un encabezado H1 que describa el contenido de la página.'
+      },
+      addMoreContent: {
+        title: 'Añadir más contenido',
+        description: 'Tu contenido tiene {count} palabras. Considera expandirlo a al menos 800-1000 palabras para mejorar el rendimiento de SEO.'
+      },
+      addExternalLinks: {
+        title: 'Añadir enlaces externos',
+        description: 'Crea enlaces a fuentes de autoridad externas para aumentar la credibilidad y el valor de SEO.'
+      },
+      addInternalLinks: {
+        title: 'Añadir enlaces internos',
+        description: 'Añade enlaces a otras páginas relevantes en tu sitio para mejorar la navegación y SEO.'
+      },
+      generalImprovements: {
+        title: 'Mejoras generales',
+        description: '- Usa un lenguaje más variado y atractivo\n- Añade elementos multimedia (imágenes, videos, infografías)\n- Incluye ejemplos específicos y datos para respaldar tus puntos\n- Estructura el contenido con claras introducciones y conclusiones'
       },
       optimizeMeta: {
-        title: 'Optimizar la meta descripción',
-        description: 'Crea una meta descripción convincente (150-160 caracteres) que incluya tu palabra clave objetivo.'
+        title: 'Optimizar descripción Meta',
+        description: 'Crea una descripción Meta atractiva (150-160 caracteres) que incluya tus palabras clave objetivo.'
       },
       improveSpeed: {
         title: 'Mejorar la velocidad de la página',
-        description: 'Optimiza las imágenes, reduce los scripts y aprovecha el almacenamiento en caché del navegador para mejorar los tiempos de carga.'
+        description: 'Optimiza imágenes, reduce scripts y usa caché del navegador para mejorar los tiempos de carga.'
       },
       mobileOptimization: {
-        title: 'Optimización móvil',
-        description: 'Asegúrate de que tu página sea completamente responsive y ofrezca una buena experiencia de usuario en dispositivos móviles.'
+        title: 'Optimización para móviles',
+        description: 'Asegura que tu página sea totalmente responsive y ofrezca una buena experiencia de usuario en dispositivos móviles.'
       },
       useSchema: {
-        title: 'Usar marcado schema',
-        description: 'Implementa el marcado schema.org apropiado para ayudar a los motores de búsqueda a entender mejor tu contenido.'
+        title: 'Usar esquema',
+        description: 'Usa el esquema schema.org para describir tu contenido para ayudar a los motores de búsqueda a entenderlo y aumentar las tasas de clic en los resultados de búsqueda.'
       }
     }
   },
   error: {
     title: 'Error',
-    message: 'No se pudo analizar la URL. Por favor, verifique la URL e intente nuevamente.',
+    message: 'Error al analizar la URL. Por favor, verifica la URL y vuelve a intentarlo.',
     retry: 'Reintentar'
   }
 } 

@@ -11,8 +11,16 @@
 
         <FadeInSection>
           <section class="pt-8 d-flex justify-center" aria-labelledby="how-it-works-heading">
-            <img :src="getImageSrc" alt="Preview of StackUnity" class="hero-image rounded-lg" loading="eager"
-              width="90%" height="auto">
+            <div style="width: 90%;">
+              <v-carousel hide-delimiters show-arrows="hover" cycle height="auto">
+                <v-carousel-item src="/images/preview/preview-timeline.avif" contain
+                  class="bg-surface-variant floating-image"></v-carousel-item>
+                <v-carousel-item src="/images/preview/preview-access.avif" contain
+                  class="bg-surface-variant floating-image"></v-carousel-item>
+                <v-carousel-item src="/images/preview/preview-deadzones.avif" contain
+                  class="bg-surface-variant floating-image"></v-carousel-item>
+              </v-carousel>
+            </div>
           </section>
         </FadeInSection>
 
@@ -166,27 +174,27 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { property: 'og:title', content: computed(() => t().meta.title) },
     { property: 'og:description', content: computed(() => t().meta.description) },
-    { property: 'og:image', content: computed(() => `https://stackunity.tech${getImageSrc.value}?v=${Date.now()}`) },
+    { property: 'og:image', content: computed(() => `https://stackunity.tech/images/StackUnity-analytics.avif`) },
     { property: 'og:url', content: 'https://stackunity.tech' },
     { property: 'og:site_name', content: 'StackUnity' },
     { property: 'og:type', content: 'website' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: 'Preview StackUnity' },
-    { property: 'og:image:secure_url', content: computed(() => `https://stackunity.tech${getImageSrc.value}?v=${Date.now()}`) },
+    { property: 'og:image:secure_url', content: computed(() => `https://stackunity.tech/images/StackUnity-analytics.avif`) },
     { property: 'og:locale', content: computed(() => currentLanguage.value === 'en' ? 'en_US' : currentLanguage.value === 'fr' ? 'fr_FR' : currentLanguage.value === 'es' ? 'es_ES' : currentLanguage.value === 'ar' ? 'ar_SA' : 'zh_CN') },
     { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: computed(() => t().meta.title) },
     { name: 'twitter:description', content: computed(() => t().meta.description) },
-    { name: 'twitter:image', content: computed(() => `https://stackunity.tech${getImageSrc.value}?v=${Date.now()}`) },
+    { name: 'twitter:image', content: computed(() => `https://stackunity.tech/images/StackUnity-analytics.avif`) },
     { name: 'twitter:creator', content: '@stackunity' },
     { name: 'twitter:site', content: '@stackunity' }
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.tech' },
     { rel: 'preload', href: '/logo/stackunity-title.png', as: 'image' },
-    { rel: 'preload', href: computed(() => getImageSrc.value), as: 'image' }
+    { rel: 'preload', href: '/images/StackUnity-analytics.avif', as: 'image' }
   ],
   script: [
     {
@@ -226,6 +234,14 @@ watch(() => currentLanguage.value, (newLang) => {
     }
   }
 });
+
+const getImageDiapora = computed(() => {
+  const image1 = '/images/preview/preview-timeline.avif';
+  const image2 = '/images/preview/preview-heatmap.avif';
+  const image3 = '/images/preview/preview-deadzones.avif';
+
+  return [image1, image2, image3];
+})
 </script>
 
 <style>
@@ -251,5 +267,19 @@ watch(() => currentLanguage.value, (newLang) => {
   .stat-label {
     font-size: 0.7rem !important;
   }
+}
+
+.fade-transition-enter-active,
+.fade-transition-leave-active {
+  transition: opacity 0.8s ease;
+}
+
+.fade-transition-enter-from,
+.fade-transition-leave-to {
+  opacity: 0;
+}
+
+:deep(.v-carousel .v-window__container) {
+  transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.5, 1);
 }
 </style>

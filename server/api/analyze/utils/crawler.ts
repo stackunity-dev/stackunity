@@ -2,7 +2,23 @@ import axios from 'axios';
 import { load } from 'cheerio';
 
 export function normalizeUrl(url: string): string {
-  return url.replace(/\/+$/, '') || '/';
+  try {
+    const urlObj = new URL(url);
+
+    let path = urlObj.pathname;
+    if (path.length > 1 && path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+
+    urlObj.pathname = path;
+
+    urlObj.search = '';
+    urlObj.hash = '';
+
+    return urlObj.toString();
+  } catch (e) {
+    return url.replace(/\/+$/, '') || '/';
+  }
 }
 
 export async function crawlWebsite(url: string, maxUrls: number) {
@@ -27,13 +43,18 @@ export async function crawlWebsite(url: string, maxUrls: number) {
     '.svg',
     '.css',
     '.js',
-    '.ico'
+    '.ico',
+    '/_nuxt/',
+    '/nuxt/',
+    '/static/',
+    '/builds/',
+    'fonts.googleapis'
   ];
 
   const actualMaxUrls = Math.min(maxUrls, 100);
 
   let attempts = 0;
-  const maxAttempts = 40;
+  const maxAttempts = 20;
 
   while (urlsToVisit.length > 0 && visitedUrls.size < actualMaxUrls && attempts < maxAttempts) {
     attempts++;
@@ -63,7 +84,7 @@ export async function crawlWebsite(url: string, maxUrls: number) {
           'Cache-Control': 'max-age=0'
         },
         timeout: 20000,
-        maxContentLength: 10 * 1024 * 1024,
+        maxContentLength: 10 * 1024 * 1024 * 10,
         maxRedirects: 5,
         validateStatus: (status) => status >= 200 && status < 400
       });
@@ -125,8 +146,7 @@ export async function crawlWebsite(url: string, maxUrls: number) {
               return null;
             }
 
-            fullUrl = normalizeUrl(fullUrl);
-            return fullUrl;
+            return normalizeUrl(fullUrl);
           } catch (e) {
             return null;
           }
@@ -138,6 +158,17 @@ export async function crawlWebsite(url: string, maxUrls: number) {
           !failedUrls.has(link) &&
           !excludePatterns.some(pattern => link.includes(pattern))
         )
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .sort((a, b) => {
+          const importantKeywords = ['contact', 'about', 'services', 'products', 'blog', 'pricing', 'legal', 'privacy'];
+          const aIsImportant = importantKeywords.some(kw => a.toLowerCase().includes(kw));
+          const bIsImportant = importantKeywords.some(kw => b.toLowerCase().includes(kw));
+
+          if (aIsImportant && !bIsImportant) return -1;
+          if (!aIsImportant && bIsImportant) return 1;
+
+          return a.length - b.length;
+        })
         .slice(0, 10);
 
       urlsToVisit.push(...newUrls);

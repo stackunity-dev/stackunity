@@ -16,7 +16,9 @@ export default {
     autoRefresh: 'Rafraîchissement auto',
     interval: 'Intervalle',
     view: 'Voir',
-    refresh: 'Rafraîchir'
+    refresh: 'Rafraîchir',
+    toggleMockup: 'Basculer vers la vue de mockup',
+    rotate: 'Tourner'
   },
   intervals: {
     fiveSeconds: '5 secondes',

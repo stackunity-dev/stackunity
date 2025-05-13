@@ -16,7 +16,9 @@ export default {
     autoRefresh: 'Auto-refresh',
     interval: 'Interval',
     view: 'View',
-    refresh: 'Refresh'
+    refresh: 'Refresh',
+    toggleMockup: 'Toggle Mockup',
+    rotate: 'Rotate'
   },
   intervals: {
     fiveSeconds: '5 seconds',

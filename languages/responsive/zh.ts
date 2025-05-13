@@ -16,7 +16,9 @@ export default {
     autoRefresh: '自动刷新',
     interval: '间隔',
     view: '查看',
-    refresh: '刷新'
+    refresh: '刷新',
+    toggleMockup: '切换到模拟视图',
+    rotate: '旋转'
   },
   intervals: {
     fiveSeconds: '5 秒',

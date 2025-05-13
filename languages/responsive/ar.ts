@@ -16,7 +16,9 @@ export default {
     autoRefresh: 'تحديث تلقائي',
     interval: 'الفاصل الزمني',
     view: 'عرض',
-    refresh: 'تحديث'
+    refresh: 'تحديث',
+    toggleMockup: 'تبديل العارضة',
+    rotate: 'تدوير'
   },
   intervals: {
     fiveSeconds: '5 ثوان',

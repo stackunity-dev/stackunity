@@ -357,8 +357,8 @@ const heatmapOption = computed(() => {
                 </div>
                 <div style="padding: 5px;">
                   <b>${params.data[2]}%</b> d'activité<br/>
-                  ${segment?.clicks || 0} clics<br/>
-                  ${segment?.scrolls || 0} défilements
+                  ${segment?.clicks || 0} ${t.deadZoneViewer.clicks}<br/>
+                  ${segment?.scrolls || 0} ${t.deadZoneViewer.scrolls}
                 </div>`;
       }
     },
@@ -403,7 +403,7 @@ const heatmapOption = computed(() => {
       orient: 'horizontal',
       left: 'center',
       bottom: '5%',
-      text: ['Activité élevée', 'Faible activité'],
+      text: [t.deadZoneViewer.highActivity, t.deadZoneViewer.lowActivity],
       color: ['#4CAF50', '#FFEB3B', '#FF9800', '#F44336'],
       textStyle: {
         fontSize: 12
@@ -418,7 +418,7 @@ const heatmapOption = computed(() => {
       }
     },
     series: [{
-      name: 'Densité d\'interaction',
+      name: t.deadZoneViewer.interactionDensity,
       type: 'heatmap',
       data: data,
       label: {

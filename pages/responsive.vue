@@ -40,22 +40,53 @@
                 <v-icon size="small" class="mr-2">{{ device.icon }}</v-icon>
                 <span class="text-caption">{{ getDeviceDimensions(device.id) }}</span>
                 <v-spacer></v-spacer>
-                <v-btn density="compact" icon="mdi-refresh" size="small" variant="text" @click="refreshCurrentIframe"
-                  :aria-label="t().controls.refresh"></v-btn>
+                <v-btn-group density="compact">
+                  <v-btn icon="mdi-monitor-screenshot" size="small" variant="text" @click="toggleMockupMode"
+                    :color="useMockupMode ? 'primary' : undefined" :aria-label="translations.controls.toggleMockup">
+                    <v-tooltip activator="parent">{{ translations.controls.toggleMockup }}</v-tooltip>
+                  </v-btn>
+                  <v-btn icon="mdi-rotate-3d-variant" size="small" variant="text" @click="toggleOrientation"
+                    :aria-label="translations.controls.rotate">
+                    <v-tooltip activator="parent">{{ translations.controls.rotate }}</v-tooltip>
+                  </v-btn>
+                  <v-btn icon="mdi-refresh" size="small" variant="text" @click="refreshCurrentIframe"
+                    :aria-label="translations.controls.refresh">
+                    <v-tooltip activator="parent">{{ translations.controls.refresh }}</v-tooltip>
+                  </v-btn>
+                </v-btn-group>
               </div>
               <div v-if="displayUrl" class="iframe-wrapper">
-                <iframe v-if="tab === device.id" :src="displayUrl" class="responsive-iframe"
-                  sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes"
-                  :style="getIframeStyle(device.id)"
-                  :ref="el => { if (el) iframeRefs[device.id] = el as HTMLIFrameElement }"
-                  :key="`${device.id}-${iframeKey}`" @load="handleIframeLoad(device.id)"></iframe>
-                <div v-if="xFrameError" class="iframe-error">
-                  <v-icon color="error" size="large" class="mb-2">mdi-alert-circle</v-icon>
-                  <p>{{ t().messages.iframeError }}</p>
-                  <v-btn color="primary" size="small" :href="displayUrl" target="_blank" class="mt-2">
-                    {{ t().messages.openInNewTab }}
-                  </v-btn>
-                </div>
+                <template v-if="useMockupMode">
+                  <DeviceMockup v-if="tab === device.id" :device-id="device.id" :orientation="orientation"
+                    :url="displayUrl">
+                    <iframe :src="displayUrl" class="responsive-iframe"
+                      sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes"
+                      style="width: 100%; height: 100%; border: none;"
+                      :ref="el => { if (el && tab === device.id) iframeRefs[device.id] = el as HTMLIFrameElement }"
+                      :key="`${device.id}-${iframeKey}`" @load="handleIframeLoad(device.id)"></iframe>
+                    <div v-if="xFrameError" class="iframe-error mockup-error">
+                      <v-icon color="error" size="large" class="mb-2">mdi-alert-circle</v-icon>
+                      <p>{{ t().messages.iframeError }}</p>
+                      <v-btn color="primary" size="small" :href="displayUrl" target="_blank" class="mt-2">
+                        {{ t().messages.openInNewTab }}
+                      </v-btn>
+                    </div>
+                  </DeviceMockup>
+                </template>
+                <template v-else>
+                  <iframe v-if="tab === device.id" :src="displayUrl" class="responsive-iframe"
+                    sandbox="allow-forms allow-same-origin allow-scripts" scrolling="yes"
+                    :style="getIframeStyle(device.id)"
+                    :ref="el => { if (el && tab === device.id) iframeRefs[device.id] = el as HTMLIFrameElement }"
+                    :key="`${device.id}-${iframeKey}`" @load="handleIframeLoad(device.id)"></iframe>
+                  <div v-if="xFrameError" class="iframe-error">
+                    <v-icon color="error" size="large" class="mb-2">mdi-alert-circle</v-icon>
+                    <p>{{ t().messages.iframeError }}</p>
+                    <v-btn color="primary" size="small" :href="displayUrl" target="_blank" class="mt-2">
+                      {{ t().messages.openInNewTab }}
+                    </v-btn>
+                  </div>
+                </template>
               </div>
               <div v-else class="iframe-placeholder d-flex flex-column align-center justify-center">
                 <v-icon size="large" color="grey-lighten-1">mdi-web-off</v-icon>
@@ -74,6 +105,7 @@
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
+import DeviceMockup from '../components/responsive/DeviceMockup.vue';
 import snackBar from '../components/snackbar.vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
@@ -114,11 +146,6 @@ interface IframeRefs {
   [key: string]: HTMLIFrameElement | null;
 }
 
-interface RefreshInterval {
-  title: string;
-  value: number;
-}
-
 const display = useDisplay();
 const userStore = useUserStore();
 
@@ -151,6 +178,7 @@ const autoRefresh = ref<boolean>(false);
 const refreshInterval = ref<number>(5);
 const isClient = typeof window !== 'undefined';
 let refreshTimer: number | null = null;
+const useMockupMode = ref<boolean>(true);
 
 const refreshIntervalOptions = computed(() => [
   { title: t().intervals.fiveSeconds, value: 5 },
@@ -269,6 +297,57 @@ watch([autoRefresh, refreshInterval], () => {
   setupAutoRefresh();
 });
 
+const toggleMockupMode = (): void => {
+  useMockupMode.value = !useMockupMode.value;
+
+  setTimeout(() => {
+    iframeKey.value++;
+    cleanupIframes();
+  }, 300);
+};
+
+const toggleOrientation = (): void => {
+  orientation.value = orientation.value === 'portrait' ? 'landscape' : 'portrait';
+
+  setTimeout(() => {
+    iframeKey.value++;
+  }, 300);
+};
+
+const cleanupIframes = (): void => {
+  Object.keys(iframeRefs.value).forEach(key => {
+    if (key !== tab.value) {
+      iframeRefs.value[key] = null;
+    }
+  });
+
+  if (isClient) {
+    setTimeout(() => {
+      const allIframes = document.querySelectorAll('.v-window-item:not(.v-window-item--active) iframe');
+      allIframes.forEach((iframe: Element) => {
+        if (iframe.parentNode) {
+          iframe.parentNode.removeChild(iframe);
+        }
+      });
+
+      const unusedMockups = document.querySelectorAll('.v-window-item:not(.v-window-item--active) .device-mockup-container');
+      unusedMockups.forEach((mockup: Element) => {
+        if (mockup.parentNode) {
+          mockup.parentNode.removeChild(mockup);
+        }
+      });
+    }, 100);
+  }
+};
+
+watch(() => tab.value, (newTab, oldTab) => {
+  cleanupIframes();
+
+  setTimeout(() => {
+    iframeKey.value++;
+  }, 300);
+}, { immediate: true });
+
 if (isClient) {
   window.addEventListener('error', (e) => {
     if (e.message && e.message.includes('Refused to display') && e.message.includes('X-Frame-Options')) {
@@ -282,6 +361,17 @@ onBeforeUnmount(() => {
     clearInterval(refreshTimer);
   }
 });
+
+const translations = {
+  controls: {
+    autoRefresh: t().controls.autoRefresh || 'Actualisation auto',
+    interval: t().controls.interval || 'Intervalle',
+    view: t().controls.view || 'Voir',
+    refresh: t().controls.refresh || 'Actualiser',
+    toggleMockup: 'Mode réaliste',
+    rotate: 'Rotation'
+  }
+};
 </script>
 
 <style scoped>
@@ -304,13 +394,10 @@ main {
 }
 
 .responsive-iframe {
-  resize: both;
-  min-width: 300px;
-  min-height: 200px;
-  max-width: 100%;
+  display: block;
   border: none;
-  transition: all 0.3s ease;
-  transform-origin: top left;
+  width: 100%;
+  height: 100%;
 }
 
 .iframe-container {
@@ -331,12 +418,12 @@ main {
   background-color: rgb(var(--v-theme-surface));
 }
 
-.v-window-item .iframe-container {
-  width: 100%;
-  max-width: 100%;
+.v-window-item {
+  height: auto !important;
+  min-height: 600px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .iframe-container.landscape {
@@ -368,6 +455,18 @@ main {
   display: flex;
   justify-content: center;
   padding: 1rem;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  overflow: visible;
+}
+
+.iframe-wrapper:has(.device-mockup-container) {
+  padding: 1rem;
+  overflow: visible;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .iframe-error {
@@ -420,7 +519,6 @@ main {
   }
 }
 
-/* Mode sombre amélioré */
 :deep(.dark-theme) .iframe-container {
   border-color: #424242;
   background-color: #212121;
@@ -441,7 +539,6 @@ main {
   background: linear-gradient(to right, #1a1f35, #121212);
 }
 
-/* Personnalisations pour les boutons et éléments d'interface */
 :deep(.v-tabs .v-tab) {
   min-width: 100px;
   padding: 0 16px;
@@ -450,5 +547,101 @@ main {
 :deep(.v-window) {
   border-radius: 0 0 12px 12px;
   overflow: hidden;
+  background-color: #f5f5f5;
+}
+
+.mockup-error {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.device-mockup-container.landscape {
+  max-width: 90vw;
+  transform-origin: center;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+.v-btn.v-btn--active {
+  color: rgb(var(--v-theme-primary));
+  background-color: rgba(var(--v-theme-primary), 0.1);
+}
+
+:deep(.dark-theme) .iframe-wrapper {
+  background-color: #2c2c2c;
+}
+
+.device-mockup-container {
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.device-mockup-container.landscape {
+  transform: rotate(0deg);
+}
+
+.iframe-wrapper .device-frame {
+  transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.iframe-wrapper:hover .device-frame {
+  transform: translateY(-5px);
+}
+
+:deep(.device-frame) {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.iframe-container.landscape :deep(.device-mockup-container) {
+  transform: rotate(0deg);
+}
+
+.v-window-item {
+  height: auto !important;
+  min-height: 600px;
+}
+
+:deep(.device-laptop),
+:deep(.device-desktop) {
+  margin-bottom: 50px;
+}
+
+:deep(.device-content iframe) {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  display: block !important;
+}
+
+/* S'assurer que les onglets inactifs sont complètement masqués */
+:deep(.v-window-item:not(.v-window-item--active)) {
+  display: none !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* S'assurer que l'onglet actif est visible */
+:deep(.v-window-item.v-window-item--active) {
+  display: flex !important;
+  visibility: visible !important;
+  position: relative !important;
+  opacity: 1 !important;
 }
 </style>
