@@ -9,6 +9,7 @@ interface DeletedCounts {
   errors?: number;
   customEvents?: number;
   visitors?: number;
+  geoLocations?: number;
 }
 
 export default defineEventHandler(async (event) => {
@@ -166,6 +167,22 @@ export default defineEventHandler(async (event) => {
       `, [siteId]);
       deletedCounts.visitors = visitorsResult.affectedRows;
       totalDeleted += visitorsResult.affectedRows;
+    }
+
+    if (deleteAll) {
+      const [geoLocationsResult] = await pool.execute<ResultSetHeader>(
+        'DELETE FROM analytics_geo_locations WHERE website_id = ?',
+        [siteId]
+      );
+      deletedCounts.geoLocations = geoLocationsResult.affectedRows;
+      totalDeleted += geoLocationsResult.affectedRows;
+    } else {
+      const [geoLocationsResult] = await pool.execute<ResultSetHeader>(
+        'DELETE FROM analytics_geo_locations WHERE website_id = ? AND timestamp < ?',
+        [siteId, dateLimitString]
+      );
+      deletedCounts.geoLocations = geoLocationsResult.affectedRows;
+      totalDeleted += geoLocationsResult.affectedRows;
     }
 
     console.log(`Purge de données pour le site ${websiteId} (${purgeOption}):`, deletedCounts);
