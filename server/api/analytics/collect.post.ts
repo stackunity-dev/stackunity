@@ -370,6 +370,24 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    // Avant d'insérer une session, s'assurer que le visiteur existe
+    try {
+      await pool.query(
+        `INSERT INTO analytics_visitors (visitor_id, last_activity)
+         VALUES (?, NOW())
+         ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+        [visitorId]
+      );
+      console.log('Visiteur créé ou mis à jour:', visitorId);
+    } catch (error) {
+      console.error('Erreur lors de la création/mise à jour du visiteur:', error);
+      return {
+        success: false,
+        message: 'Erreur lors de la création du visiteur',
+        error: error.message
+      };
+    }
+
     const sessionData = events.find(event => event.type === 'session');
     if (!sessionData) {
       try {
@@ -417,6 +435,11 @@ export default defineEventHandler(async (event) => {
         );
       } catch (error) {
         console.error('Erreur lors de la création de la session:', error);
+        return {
+          success: false,
+          message: 'Erreur lors de la création de la session',
+          error: error.message
+        };
       }
     } else {
       try {
@@ -470,6 +493,17 @@ export default defineEventHandler(async (event) => {
     for (const event of pageViewEvents) {
       try {
         console.log('Traitement de la page vue:', event.pageUrl);
+
+        // Vérifier que la session existe
+        const [sessionExists] = await pool.query<RowDataPacket[]>(
+          'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+          [sessionId]
+        );
+
+        if (!sessionExists[0].count) {
+          console.error(`La session ${sessionId} n'existe pas, impossible d'ajouter une page vue`);
+          continue;
+        }
 
         // Assurer que les valeurs critiques sont toujours définies
         const deviceType = event.deviceType || 'desktop';
@@ -571,6 +605,56 @@ export default defineEventHandler(async (event) => {
       }
 
       try {
+        const [sessionExists] = await pool.query<RowDataPacket[]>(
+          'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+          [sessionId]
+        );
+
+        if (!sessionExists[0].count) {
+          console.error(`La session ${sessionId} n'existe pas, impossible de traiter l'événement ${event.type}`);
+
+          // Recréer la session si elle n'existe pas (après purge data)
+          try {
+
+            await pool.query(
+              `INSERT INTO analytics_visitors (visitor_id, last_activity)
+               VALUES (?, NOW())
+               ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+              [visitorId]
+            );
+
+            // Récupérer les informations de référent du premier pageView si disponible
+            const pageViewWithReferrer = pageViewEvents.find(event => event.referrer || event.referrerSource || event.referrerName);
+            const referrer = pageViewWithReferrer?.referrer || null;
+            const referrerSource = pageViewWithReferrer?.referrerSource || 'direct';
+            const referrerName = pageViewWithReferrer?.referrerName || 'Direct';
+            const landingPage = pageViewEvents[0]?.pageUrl || '/';
+
+            await pool.query(
+              `INSERT INTO analytics_sessions 
+                (session_id, website_id, visitor_id, start_time, device_type, browser, os, referrer, referrer_source, referrer_name, landing_page) 
+               VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                sessionId,
+                dbWebsiteId,
+                visitorId,
+                deviceType,
+                browser,
+                os,
+                referrer,
+                referrerSource,
+                referrerName,
+                landingPage
+              ]
+            );
+            console.log(`Session ${sessionId} recréée avec succès après purge data`);
+            // Continuer le traitement de l'événement
+          } catch (recreateError) {
+            console.error(`Impossible de recréer la session ${sessionId} après purge data:`, recreateError);
+            continue;
+          }
+        }
+
         switch (event.type) {
           case 'pageViewExit':
             try {
@@ -630,6 +714,41 @@ export default defineEventHandler(async (event) => {
                 // Créer un nouvel enregistrement pageview
                 try {
                   const enterTime = new Date(exitTime.getTime() - (duration * 1000));
+
+                  // Vérifier que la session existe avant d'insérer une page vue
+                  const [sessionCheck] = await pool.query<RowDataPacket[]>(
+                    'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+                    [sessionId]
+                  );
+
+                  if (!sessionCheck[0].count) {
+                    console.log(`Recréation de la session ${sessionId} avant d'insérer la page vue`);
+
+                    // Vérifier d'abord que le visiteur existe
+                    await pool.query(
+                      `INSERT INTO analytics_visitors (visitor_id, last_activity)
+                       VALUES (?, NOW())
+                       ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+                      [visitorId]
+                    );
+
+                    await pool.query(
+                      `INSERT INTO analytics_sessions 
+                        (session_id, website_id, visitor_id, start_time, device_type, browser, os, landing_page) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                      [
+                        sessionId,
+                        dbWebsiteId,
+                        visitorId,
+                        enterTime,
+                        deviceType,
+                        browser,
+                        os,
+                        pageUrl
+                      ]
+                    );
+                    console.log(`Session ${sessionId} recréée avec succès`);
+                  }
 
                   const insertResult = await pool.query(
                     `INSERT INTO analytics_pageviews
@@ -741,6 +860,41 @@ export default defineEventHandler(async (event) => {
                   const safeSessionId = sessionId || 'session-' + require('crypto').randomUUID();
                   const safeWebsiteId = dbWebsiteId || 1;
 
+                  // Vérifier que la session existe avant d'insérer une page vue
+                  const [sessionCheck] = await pool.query<RowDataPacket[]>(
+                    'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+                    [safeSessionId]
+                  );
+
+                  if (!sessionCheck[0].count) {
+                    console.log(`Recréation de la session ${safeSessionId} avant d'insérer la page vue pour pageVisitDuration`);
+
+                    // Vérifier d'abord que le visiteur existe
+                    await pool.query(
+                      `INSERT INTO analytics_visitors (visitor_id, last_activity)
+                       VALUES (?, NOW())
+                       ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+                      [visitorId]
+                    );
+
+                    const enterTime = new Date(timestamp.getTime() - duration * 1000);
+                    await pool.query(
+                      `INSERT INTO analytics_sessions 
+                        (session_id, website_id, visitor_id, start_time, device_type, browser, os, landing_page) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                      [
+                        safeSessionId,
+                        safeWebsiteId,
+                        visitorId,
+                        enterTime,
+                        deviceType,
+                        browser,
+                        os,
+                        pageUrl || '/'
+                      ]
+                    );
+                    console.log(`Session ${safeSessionId} recréée avec succès pour pageVisitDuration`);
+                  }
 
                   const insertResult = await pool.query(
                     `INSERT INTO analytics_pageviews
@@ -807,6 +961,40 @@ export default defineEventHandler(async (event) => {
             }
 
             try {
+              // Vérifier que la session existe avant de traiter l'interaction
+              const [interactionSessionCheck] = await pool.query<RowDataPacket[]>(
+                'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+                [sessionId]
+              );
+
+              if (!interactionSessionCheck[0].count) {
+                console.log(`Recréation de la session ${sessionId} avant d'insérer une interaction`);
+
+                // Vérifier d'abord que le visiteur existe
+                await pool.query(
+                  `INSERT INTO analytics_visitors (visitor_id, last_activity)
+                   VALUES (?, NOW())
+                   ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+                  [visitorId]
+                );
+
+                await pool.query(
+                  `INSERT INTO analytics_sessions 
+                    (session_id, website_id, visitor_id, start_time, device_type, browser, os, landing_page) 
+                   VALUES (?, ?, ?, NOW(), ?, ?, ?, ?)`,
+                  [
+                    sessionId,
+                    dbWebsiteId,
+                    visitorId,
+                    deviceType,
+                    browser,
+                    os,
+                    normalizedPageUrl || '/'
+                  ]
+                );
+                console.log(`Session ${sessionId} recréée avec succès pour l'interaction`);
+              }
+
               if (event.pageViewId) {
                 const [pageViewRows] = await pool.query<RowDataPacket[]>(
                   'SELECT pageview_id FROM analytics_pageviews WHERE pageview_id = ?',
@@ -833,6 +1021,66 @@ export default defineEventHandler(async (event) => {
                   );
                 } else {
                   console.warn(`Interaction ignorée: pageViewId ${event.pageViewId} non trouvé dans la base de données`);
+
+                  // Créer une page vue manquante pour cette interaction
+                  const pageViewId = event.pageViewId;
+                  const pageTitle = "Page reconstruite";
+
+                  try {
+                    await pool.query(
+                      `INSERT INTO analytics_pageviews
+                        (pageview_id, session_id, website_id, page_url, page_title, enter_time)
+                       VALUES (?, ?, ?, ?, ?, ?)`,
+                      [
+                        pageViewId,
+                        sessionId,
+                        dbWebsiteId,
+                        normalizedPageUrl || '/',
+                        pageTitle,
+                        new Date(event.timestamp)
+                      ]
+                    );
+                    console.log(`Page vue ${pageViewId} recréée pour l'interaction`);
+
+                    // Maintenant insérer l'interaction
+                    await pool.query(
+                      `INSERT INTO analytics_interactions
+                        (interaction_id, pageview_id, website_id, session_id, interaction_type, element_selector, timestamp, element_text, value_data, page_url)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                      [
+                        event.id,
+                        pageViewId,
+                        dbWebsiteId,
+                        sessionId,
+                        event.interactionType,
+                        event.elementSelector || '',
+                        new Date(event.timestamp),
+                        event.elementText || null,
+                        JSON.stringify(event.value || {}),
+                        normalizedPageUrl
+                      ]
+                    );
+                  } catch (pageViewCreateError) {
+                    console.error(`Erreur lors de la création de la page vue pour l'interaction:`, pageViewCreateError);
+                    // Continuer avec l'insertion sans pageViewId
+                    await pool.query(
+                      `INSERT INTO analytics_interactions
+                        (interaction_id, pageview_id, website_id, session_id, interaction_type, element_selector, timestamp, element_text, value_data, page_url)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                      [
+                        event.id,
+                        null,
+                        dbWebsiteId,
+                        sessionId,
+                        event.interactionType,
+                        event.elementSelector || '',
+                        new Date(event.timestamp),
+                        event.elementText || null,
+                        JSON.stringify(event.value || {}),
+                        normalizedPageUrl
+                      ]
+                    );
+                  }
                 }
               } else {
                 await pool.query(
@@ -859,39 +1107,113 @@ export default defineEventHandler(async (event) => {
             break;
 
           case 'error':
-            await pool.query(
-              `INSERT INTO analytics_errors
-                (error_id, pageview_id, website_id, session_id, message, stack_trace, timestamp, browser_info)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-              [
-                event.id,
-                event.pageViewId,
-                dbWebsiteId,
-                sessionId,
-                event.message || 'Unknown error',
-                event.stackTrace || null,
-                new Date(event.timestamp),
-                event.browserInfo || '{}'
-              ]
-            );
+            try {
+              // Vérifier que la session existe avant de traiter l'erreur
+              const [errorSessionCheck] = await pool.query<RowDataPacket[]>(
+                'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+                [sessionId]
+              );
+
+              if (!errorSessionCheck[0].count) {
+                console.log(`Recréation de la session ${sessionId} avant d'insérer une erreur`);
+
+                // Vérifier d'abord que le visiteur existe
+                await pool.query(
+                  `INSERT INTO analytics_visitors (visitor_id, last_activity)
+                   VALUES (?, NOW())
+                   ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+                  [visitorId]
+                );
+
+                await pool.query(
+                  `INSERT INTO analytics_sessions 
+                    (session_id, website_id, visitor_id, start_time, device_type, browser, os) 
+                   VALUES (?, ?, ?, NOW(), ?, ?, ?)`,
+                  [
+                    sessionId,
+                    dbWebsiteId,
+                    visitorId,
+                    deviceType,
+                    browser,
+                    os
+                  ]
+                );
+                console.log(`Session ${sessionId} recréée avec succès pour l'erreur`);
+              }
+
+              await pool.query(
+                `INSERT INTO analytics_errors
+                  (error_id, pageview_id, website_id, session_id, message, stack_trace, timestamp, browser_info)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                  event.id,
+                  event.pageViewId,
+                  dbWebsiteId,
+                  sessionId,
+                  event.message || 'Unknown error',
+                  event.stackTrace || null,
+                  new Date(event.timestamp),
+                  event.browserInfo || '{}'
+                ]
+              );
+            } catch (error) {
+              console.error('Erreur lors du traitement de l\'événement d\'erreur:', error);
+            }
             break;
 
           case 'customEvent':
-            await pool.query(
-              `INSERT INTO analytics_custom_events
-                (event_id, pageview_id, website_id, session_id, event_name, event_category, timestamp, properties)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-              [
-                event.id,
-                event.pageViewId,
-                dbWebsiteId,
-                sessionId,
-                event.name,
-                event.category || 'general',
-                new Date(event.timestamp),
-                JSON.stringify(event.properties || {})
-              ]
-            );
+            try {
+              // Vérifier que la session existe avant de traiter l'événement personnalisé
+              const [customEventSessionCheck] = await pool.query<RowDataPacket[]>(
+                'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+                [sessionId]
+              );
+
+              if (!customEventSessionCheck[0].count) {
+                console.log(`Recréation de la session ${sessionId} avant d'insérer un événement personnalisé`);
+
+                // Vérifier d'abord que le visiteur existe
+                await pool.query(
+                  `INSERT INTO analytics_visitors (visitor_id, last_activity)
+                   VALUES (?, NOW())
+                   ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+                  [visitorId]
+                );
+
+                await pool.query(
+                  `INSERT INTO analytics_sessions 
+                    (session_id, website_id, visitor_id, start_time, device_type, browser, os) 
+                   VALUES (?, ?, ?, NOW(), ?, ?, ?)`,
+                  [
+                    sessionId,
+                    dbWebsiteId,
+                    visitorId,
+                    deviceType,
+                    browser,
+                    os
+                  ]
+                );
+                console.log(`Session ${sessionId} recréée avec succès pour l'événement personnalisé`);
+              }
+
+              await pool.query(
+                `INSERT INTO analytics_custom_events
+                  (event_id, pageview_id, website_id, session_id, event_name, event_category, timestamp, properties)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                  event.id,
+                  event.pageViewId,
+                  dbWebsiteId,
+                  sessionId,
+                  event.name,
+                  event.category || 'general',
+                  new Date(event.timestamp),
+                  JSON.stringify(event.properties || {})
+                ]
+              );
+            } catch (error) {
+              console.error('Erreur lors du traitement de l\'événement personnalisé:', error);
+            }
             break;
 
           case 'sessionEnd':
@@ -907,21 +1229,63 @@ export default defineEventHandler(async (event) => {
               const isComplete = event.isComplete === true;
               const isShortSession = duration < 20;
 
-              await pool.query(
-                `UPDATE analytics_sessions
-                 SET end_time = ?, duration = ?, is_bounce = ?, is_complete = ?, exit_page = ?, is_short_session = ?
-                 WHERE session_id = ?`,
-                [
-                  endTime,
-                  duration,
-                  isBounce ? 1 : 0,
-                  isComplete ? 1 : 0,
-                  event.exitPage || null,
-                  isShortSession ? 1 : 0,
-                  sessionId
-                ]
+              // Vérifier que la session existe
+              const [sessionEndCheck] = await pool.query<RowDataPacket[]>(
+                'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+                [sessionId]
               );
-              console.log('Session terminée:', sessionId, 'durée:', duration, 'rebond:', isBounce ? 'OUI' : 'NON');
+
+              if (!sessionEndCheck[0].count) {
+                console.log(`Recréation de la session ${sessionId} avant de la marquer comme terminée`);
+
+                // Vérifier d'abord que le visiteur existe
+                await pool.query(
+                  `INSERT INTO analytics_visitors (visitor_id, last_activity)
+                   VALUES (?, NOW())
+                   ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+                  [visitorId]
+                );
+
+                // Créer la session avec les informations de fin déjà incluses
+                await pool.query(
+                  `INSERT INTO analytics_sessions 
+                    (session_id, website_id, visitor_id, start_time, end_time, duration, is_bounce, is_complete, exit_page, is_short_session, device_type, browser, os) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                  [
+                    sessionId,
+                    dbWebsiteId,
+                    visitorId,
+                    new Date(endTime.getTime() - duration * 1000), // Estimer l'heure de début
+                    endTime,
+                    duration,
+                    isBounce ? 1 : 0,
+                    isComplete ? 1 : 0,
+                    event.exitPage || null,
+                    isShortSession ? 1 : 0,
+                    deviceType,
+                    browser,
+                    os
+                  ]
+                );
+                console.log(`Session ${sessionId} recréée et marquée comme terminée`);
+              } else {
+                // Mettre à jour la session existante
+                await pool.query(
+                  `UPDATE analytics_sessions
+                   SET end_time = ?, duration = ?, is_bounce = ?, is_complete = ?, exit_page = ?, is_short_session = ?
+                   WHERE session_id = ?`,
+                  [
+                    endTime,
+                    duration,
+                    isBounce ? 1 : 0,
+                    isComplete ? 1 : 0,
+                    event.exitPage || null,
+                    isShortSession ? 1 : 0,
+                    sessionId
+                  ]
+                );
+                console.log('Session terminée:', sessionId, 'durée:', duration, 'rebond:', isBounce ? 'OUI' : 'NON');
+              }
 
               if (isShortSession) {
                 await pool.query(
@@ -948,6 +1312,39 @@ export default defineEventHandler(async (event) => {
                 longitude: event.longitude,
                 accuracy: event.accuracy || 'non spécifié'
               });
+
+              // Vérifier que la session existe avant de traiter la géolocalisation
+              const [geoSessionCheck] = await pool.query<RowDataPacket[]>(
+                'SELECT COUNT(*) as count FROM analytics_sessions WHERE session_id = ?',
+                [sessionId]
+              );
+
+              if (!geoSessionCheck[0].count) {
+                console.log(`Recréation de la session ${sessionId} avant d'insérer des données de géolocalisation`);
+
+                // Vérifier d'abord que le visiteur existe
+                await pool.query(
+                  `INSERT INTO analytics_visitors (visitor_id, last_activity)
+                   VALUES (?, NOW())
+                   ON DUPLICATE KEY UPDATE last_activity = NOW()`,
+                  [visitorId]
+                );
+
+                await pool.query(
+                  `INSERT INTO analytics_sessions 
+                    (session_id, website_id, visitor_id, start_time, device_type, browser, os) 
+                   VALUES (?, ?, ?, NOW(), ?, ?, ?)`,
+                  [
+                    sessionId,
+                    dbWebsiteId,
+                    visitorId,
+                    deviceType,
+                    browser,
+                    os
+                  ]
+                );
+                console.log(`Session ${sessionId} recréée avec succès pour la géolocalisation`);
+              }
 
               // Insérer les données de géolocalisation
               await pool.query(
@@ -976,17 +1373,6 @@ export default defineEventHandler(async (event) => {
       } catch (error) {
         console.error(`Erreur lors du traitement de l'événement ${event.type}:`, error);
       }
-    }
-
-    try {
-      await pool.query(
-        `INSERT INTO analytics_visitors (visitor_id, last_activity)
-         VALUES (?, NOW())
-         ON DUPLICATE KEY UPDATE last_activity = NOW()`,
-        [visitorId]
-      );
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour du visiteur:', error);
     }
 
     return {

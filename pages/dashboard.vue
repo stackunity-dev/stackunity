@@ -392,11 +392,11 @@ const allTools = ref<ToolItem[]>([
     visible: true
   },
   {
-    title: 'databaseDesigner',
+    title: 'databaseManagement',
     description: 'Generate and visualize complex SQL schemas in just a few clicks',
     icon: 'mdi-database',
     color: 'info',
-    route: '/database-designer',
+    route: '/database-management',
     disabled: !userStore.user?.isStandard || !userStore.user?.isPremium,
     category: 'development',
     isNew: false,

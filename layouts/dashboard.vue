@@ -196,8 +196,8 @@ const currentPageTitle = computed(() => {
     return t().menu.performance;
   } else if (path.includes('/animations')) {
     return t().menu.cssPlayground;
-  } else if (path.includes('/database-designer')) {
-    return t().menu.databaseDesigner;
+  } else if (path.includes('/database-management')) {
+    return t().menu.databaseManagement;
   } else if (path.includes('/semantic')) {
     return t().menu.structureAccessibility;
   } else if (path.includes('/security')) {
@@ -311,7 +311,7 @@ const getCurrentPageIcon = () => {
     return 'mdi-speedometer';
   } else if (path.includes('/animations')) {
     return 'mdi-animation';
-  } else if (path.includes('/database-designer')) {
+  } else if (path.includes('/database-management')) {
     return 'mdi-database-cog';
   } else if (path.includes('/api-testing-hub')) {
     return 'mdi-api';
@@ -464,7 +464,7 @@ const items = computed(() => [
     prependIcon: 'mdi-database-outline',
     link: true,
     children: [
-      createPremiumMenuItem(t().features.databaseDesigner, '/database-designer', 'mdi-database', 'databaseDesigner', 'standard'),
+      createPremiumMenuItem(t().features.databaseManagement, '/database-management', 'mdi-database', 'databaseManagement', 'standard'),
       { title: t().features.apiTestingHub, link: '/api-testing-hub', icon: 'mdi-api' }
     ]
   },
