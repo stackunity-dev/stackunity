@@ -21,14 +21,6 @@ export default {
       },
       cta: 'جرب مجانًا'
     },
-    standard: {
-      name: 'قياسي',
-      description: 'للفرق المتنامية',
-      trial: {
-        days: 'تجربة مجانية لمدة {days} أيام مشمولة'
-      },
-      cta: 'ابدأ التجربة المجانية'
-    },
     premium: {
       name: 'بريميوم',
       description: 'افتح جميع الميزات',
@@ -58,7 +50,6 @@ export default {
     table: {
       feature: 'الميزة',
       free: 'مجاني',
-      standard: 'قياسي',
       premium: 'بريميوم'
     }
   },
@@ -70,7 +61,7 @@ export default {
     visualImpairment: 'محاكاة ضعف البصر',
     completeVisualImpairment: 'محاكاة كاملة لضعف البصر',
     completeStudio: 'ميزات الاستوديو الكاملة',
-    databaseDesigner: 'مصمم قواعد البيانات',
+    databaseManagement: 'إدارة قواعد البيانات',
     robots: 'مولد Robots.txt و Schema.org',
     performanceAnalysis: 'تحليل الأداء',
     contentAnalysis: 'تحليل المحتوى',

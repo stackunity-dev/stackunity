@@ -10,7 +10,7 @@ export default {
   },
   tabs: {
     terminal: 'SQL Terminal',
-    editor: 'SQL Editor',
+    visualizer: 'Visualizer',
     config: 'Configuration'
   },
   database: {

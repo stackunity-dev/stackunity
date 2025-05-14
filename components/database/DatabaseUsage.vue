@@ -83,7 +83,7 @@ import { getColorByIndex } from '../../utils/database/function';
 import { TableSize } from '../../utils/database/types';
 import { useTranslations } from '../../languages';
 
-const t = useTranslations('databaseDesigner')();
+const t = useTranslations('databaseManagement')();
 
 use([PieChart, TooltipComponent, LegendComponent, TitleComponent, CanvasRenderer]);
 

@@ -1315,7 +1315,7 @@
         
         const clickData = {
           type: 'interaction',
-          id: utils.generateId(),
+          id: utils.generateUUID(),
           pageViewId: state.currentPageViewId,
           interactionType: 'click',
           timestamp: new Date().toISOString(),

@@ -21,14 +21,6 @@ export default {
       },
       cta: 'PRUEBA GRATIS'
     },
-    standard: {
-      name: 'Estándar',
-      description: 'Para equipos en crecimiento',
-      trial: {
-        days: '{days} días de prueba gratuita incluidos'
-      },
-      cta: 'Iniciar prueba gratuita'
-    },
     premium: {
       name: 'Premium',
       description: 'Desbloquea todas las funciones',
@@ -58,7 +50,6 @@ export default {
     table: {
       feature: 'Característica',
       free: 'Gratis',
-      standard: 'Estándar',
       premium: 'Premium'
     }
   },
@@ -70,7 +61,7 @@ export default {
     visualImpairment: 'Simulación de discapacidad visual',
     completeVisualImpairment: 'Simulación completa de discapacidad visual',
     completeStudio: 'Funciones completas de Studio',
-    databaseDesigner: 'Diseñador de base de datos',
+    databaseManagement: 'Gestión de base de datos',
     robots: 'Generador de Robots.txt y Schema.org',
     performanceAnalysis: 'Análisis de rendimiento',
     contentAnalysis: 'Análisis de contenido',

@@ -1,88 +1,88 @@
 export default {
   menu: {
     dashboard: "لوحة التحكم",
-    website: "الموقع الإلكتروني",
-    cssPlayground: "منصة CSS",
-    databaseManagement: "إدارة قاعدة البيانات",
-    apiTestingHub: "مركز اختبار API",
-    responsive: "متجاوب",
-    accessibility: "إمكانية الوصول",
-    structureAccessibility: "الهيكل وإمكانية الوصول",
-    robotsSchema: "الروبوتات والمخطط",
-    performance: "الأداء",
-    workflow: "سير العمل",
+    website: "الموقع",
+    workflow: "العملية",
     system: "النظام",
     administration: "الإدارة",
     newsletter: "النشرة الإخبارية",
-    feedback: "التعليقات",
-    premium: "المميز",
+    feedback: "التغذية الرجعية",
+    premium: "الميزة المميزة",
     settings: "الإعدادات",
     logout: "تسجيل الخروج",
-    studio: "استوديو",
+    cssPlayground: "ملعب CSS",
+    databaseManagement: "إدارة القواعد البيانية",
+    apiTestingHub: "مركز اختبار الواصلات",
+    responsive: "الاستجابة",
+    accessibility: "الوصولية",
+    structureAccessibility: "الهيكلة والوصولية",
+    robotsSchema: "الروبوتات والمخططات",
+    studio: "المختبر",
     content: "المحتوى",
-    userEngagement: "مشاركة المستخدم",
+    userEngagement: "المستخدمين المستوعبين",
     security: "الأمان",
-    visual: "المرئي",
+    performance: "الأداء",
+    visual: "المرء",
     uxAnalyzer: "StackUnity Analytics"
   },
   categories: {
-    frontend: "الواجهة الأمامية",
-    backend: "الخلفية",
-    uiux: "واجهة المستخدم/تجربة المستخدم",
+    frontend: "المكتبة الأمامية",
+    backend: "المكتبة الخلفية",
+    uiux: "UI/UX",
     analyzer: "المحلل"
   },
   features: {
-    cssPlayground: "منصة CSS",
-    studio: "الاستوديو",
-    robotsSchema: "الروبوتات والمخطط",
-    databaseManagement: "إدارة قاعدة البيانات",
-    apiTestingHub: "مركز اختبار API",
-    responsive: "متجاوب",
-    accessibility: "إمكانية الوصول",
+    cssPlayground: "ملعب CSS",
+    studio: "المختبر",
+    robotsSchema: "الروبوتات والمخططات",
+    databaseManagement: "إدارة القواعد البيانية",
+    apiTestingHub: "مركز اختبار الواصلات",
+    responsive: "الاستجابة",
+    accessibility: "الوصولية",
     performance: "الأداء",
-    structureAccessibility: "الهيكل وإمكانية الوصول",
+    structureAccessibility: "الهيكلة والوصولية",
     content: "المحتوى",
-    userEngagement: "مشاركة المستخدم",
+    userEngagement: "المستخدمين المستوعبين",
     security: "الأمان",
-    visual: "المرئي",
-    uxAnalyzer: "Analytics"
+    visual: "المرء",
+    uxAnalyzer: "التحليلات"
   },
   premiumLabel: {
-    standard: "قياسي",
-    premium: "مميز"
+    standard: "المعيارية",
+    premium: "المميزة"
   },
   studio: {
-    beta: "نسخة تجريبية",
-    studioMode: "وضع الاستوديو",
-    seoMode: "وضع تحسين محركات البحث"
+    beta: "الإصدار البيتا",
+    studioMode: "وضع المختبر",
+    seoMode: "وضع التصميم"
   },
   feedback: {
-    title: "شارك ملاحظاتك",
+    title: "شارك تغذية",
     types: {
-      suggestion: "اقتراح",
-      bug: "تقرير خطأ",
-      improvement: "ميزة",
+      suggestion: "الاقتراح",
+      bug: "الإبلاغ عن الأخطاء",
+      improvement: "الميزة",
       other: "أخرى"
     },
     form: {
-      typeLabel: "ما نوع الملاحظات التي ترغب في مشاركتها؟",
+      typeLabel: "ما نوع التغذية التي تريد مشاركتها؟",
       titleLabel: "العنوان",
       titleRequired: "العنوان مطلوب",
-      descriptionLabel: "وصف مفصل",
-      descriptionHint: "يرجى تقديم أكبر قدر ممكن من التفاصيل",
+      descriptionLabel: "الوصف المفصل",
+      descriptionHint: "يرجى تقديم المعلومات بالتفصيل",
       descriptionRequired: "الوصف مطلوب",
       ratingLabel: {
         feature: "كيف تقيم هذه الميزة؟",
-        bug: "ما مدى تأثير هذا الخطأ على سير عملك؟"
+        bug: "كم يؤثر هذا الأخطاء على عملك؟"
       },
       ratingRequired: "التقييم مطلوب",
       emailLabel: "البريد الإلكتروني (اختياري)",
-      emailHint: "سنستخدمه للمتابعة إذا لزم الأمر",
+      emailHint: "سنستخدم هذا للتواصل إذا لزم الأمر",
       cancel: "إلغاء",
-      submit: "إرسال التعليقات"
+      submit: "إرسال التغذية"
     },
-    success: "تم إرسال التعليقات بنجاح! شكرًا على مساهمتك.",
-    error: "حدث خطأ أثناء إرسال تعليقاتك. يرجى المحاولة مرة أخرى لاحقًا.",
+    success: "تم إرسال التغذية بنجاح! شكرا لك على مشاركتك.",
+    error: "حدث خطأ أثناء إرسال التغذية. يرجى المحاولة مرة أخرى لاحقاً.",
     validationError: "يرجى ملء جميع الحقول المطلوبة"
   }
 } 

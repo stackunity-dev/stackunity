@@ -10,7 +10,7 @@ export default {
   },
   tabs: {
     terminal: 'SQL 终端',
-    editor: 'SQL 编辑器',
+    visualizer: '可视化器',
     config: '配置'
   },
   database: {
@@ -42,7 +42,7 @@ export default {
     quickStart: '快速入门指南',
     quickStartText: 'SQL 数据库工作室是一个用于创建和管理数据库的工具。它允许您创建、编辑和删除表、列和索引。',
     step1Title: '添加数据库连接',
-    step1Text: '点击“添加连接”按钮以创建新连接。',
+    step1Text: '点击"添加连接"按钮以创建新连接。',
     step2Title: '连接到您的数据库',
     step2Text: '点击数据库旁边的连接图标。',
     step3Title: '运行 SQL 查询',
@@ -92,9 +92,10 @@ export default {
     delete: '删除',
     empty: '没有连接',
     notConnected: '没有数据库连接',
-    connectPrompt: '点击“新”按钮以创建新连接',
+    connectPrompt: '点击"新"按钮以创建新连接',
     connect: '连接',
     connected: '已连接',
+    exportDatabase: '导出数据库为 JSON',
     form: {
       name: 'Name',
       type: 'Type',

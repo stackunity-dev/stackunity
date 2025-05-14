@@ -1,6 +1,3 @@
-import { relative } from "path";
-import { validate } from "uuid";
-import { viewDepthKey } from "vue-router";
 
 export default {
   meta: {
@@ -20,12 +17,13 @@ export default {
   mostVisitedPages: 'Most Visited Pages',
   views: 'Views',
   avgTime: 'Avg. Time',
-  page: 'Page',
-  map: 'Map',
-  source: 'Source',
-  device: 'Device',
-  errorTab: 'Error',
+  page: 'Pages',
+  map: 'Geography',
+  source: 'Sources',
+  device: 'Devices',
+  errorTab: 'Errors',
   interactionsTab: 'Interactions',
+  engagementTab: 'Engagement',
   analyticsFor: 'Analytics for',
   cancel: 'Cancel',
   add: 'Add',

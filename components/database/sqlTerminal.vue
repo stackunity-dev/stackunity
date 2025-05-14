@@ -283,9 +283,12 @@
         </v-card-title>
         <v-card-text class="pa-4">
           <v-form ref="saveQueryForm" @submit.prevent="saveQuery">
-            <v-text-field v-model="newQueryName" label="Query Name" variant="outlined" class="mb-2"
+            <v-text-field v-model="newQuery.name" label="Query Name" variant="outlined" class="mb-2"
               :rules="[v => !!v || 'The name is required']"></v-text-field>
-            <v-textarea v-model="newQueryDescription" label="Description (optional)" variant="outlined"></v-textarea>
+            <v-textarea v-model="newQuery.query" label="SQL Query" variant="outlined" rows="5" class="mb-2"
+              :rules="[v => !!v || 'The query is required']"></v-textarea>
+            <v-text-field v-model="newQuery.description" label="Description (optional)"
+              variant="outlined"></v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions class="pa-4 pt-0">
@@ -308,10 +311,11 @@ import { nextTick, onMounted, ref, watch } from 'vue';
 import { useTranslations } from '../../languages';
 import { DatabaseConnection, TerminalLine } from '../../utils/database/types';
 
-const t = useTranslations('databaseDesigner');
+const t = useTranslations('databaseManagement');
 
 const emit = defineEmits<{
   (e: 'connection-change', connection: DatabaseConnection | null): void
+  (e: 'query-results', results: any[], title: string): void
 }>();
 
 const props = defineProps<{
@@ -360,8 +364,7 @@ const newConnection = ref<DatabaseConnection>({
 });
 
 const savedQueries = ref<{ id: string; name: string; query: string; description?: string }[]>([]);
-const newQueryName = ref('');
-const newQueryDescription = ref('');
+const newQuery = ref<{ name: string; query: string; description: string }>({ name: '', query: '', description: '' });
 const saveQueryForm = ref<any>(null);
 
 const showDataTable = ref(false);
@@ -843,21 +846,22 @@ const saveQuery = async () => {
 
   try {
     const response = await axios.post('/api/database/saved-queries', {
-      name: newQueryName.value,
-      query: sqlCommand.value,
-      description: newQueryDescription.value
+      name: newQuery.value.name,
+      query: newQuery.value.query || sqlCommand.value,
+      description: newQuery.value.description
     });
 
     if (response.data.success) {
       savedQueries.value.push({
         id: response.data.query.id,
-        name: newQueryName.value,
-        query: sqlCommand.value,
-        description: newQueryDescription.value
+        name: newQuery.value.name,
+        query: newQuery.value.query || sqlCommand.value,
+        description: newQuery.value.description
       });
       showSaveQueryDialog.value = false;
-      newQueryName.value = '';
-      newQueryDescription.value = '';
+      newQuery.value.name = '';
+      newQuery.value.query = '';
+      newQuery.value.description = '';
     }
   } catch (error) {
     console.error('Error saving query:', error);

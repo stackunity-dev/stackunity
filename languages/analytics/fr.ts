@@ -16,11 +16,11 @@ export default {
   mostVisitedPages: 'Pages les plus visitées',
   views: 'Vues',
   avgTime: 'Temps moyen',
-  page: 'Page',
-  map: 'Carte',
-  source: 'Source',
-  device: 'Appareil',
-  errorTab: 'Erreur',
+  page: 'Pages',
+  map: 'Géographie',
+  source: 'Sources',
+  device: 'Appareils',
+  errorTab: 'Erreurs',
   interactionsTab: 'Interactions',
   analyticsFor: 'Analytics pour',
   cancel: 'Annuler',
@@ -654,6 +654,7 @@ export default {
       devices: 'Appareils',
       sources: 'Sources',
     },
-  }
+  },
+  engagementTab: 'Engagement',
 };
 

@@ -10,7 +10,7 @@ export default {
   },
   tabs: {
     terminal: 'محطة البيانات الخاصة بك',
-    editor: 'محرر البيانات الخاصة بك',
+    visualizer: 'المرء',
     config: 'التكوين'
   },
   database: {
@@ -95,6 +95,7 @@ export default {
     connectPrompt: 'انقر على زر "جديد" لإنشاء اتصال جديد',
     connect: 'اتصل',
     connected: 'متصل',
+    exportDatabase: 'تصدير قاعدة البيانات كـ JSON',
     form: {
       name: 'الاسم',
       type: 'النوع',

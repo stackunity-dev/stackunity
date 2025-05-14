@@ -341,6 +341,10 @@
                 <v-icon class="mr-2">mdi-devices</v-icon>
                 {{ t.device }}
               </v-tab>
+              <v-tab value="engagement" class="tab-button">
+                <v-icon class="mr-2">mdi-chart-areaspline</v-icon>
+                {{ t.engagementTab || "Engagement" }}
+              </v-tab>
               <v-tab value="interactions" class="tab-button">
                 <v-icon class="mr-2">mdi-cursor-default-click-outline</v-icon>
                 {{ t.interactionsTab }}
@@ -615,10 +619,6 @@
                       <v-icon class="mr-2">mdi-eye-off-outline</v-icon>
                       {{ t.deadZoneViewer.title || 'Zones mortes' }}
                     </v-tab>
-                    <v-tab value="engagement">
-                      <v-icon class="mr-2">mdi-calendar-clock</v-icon>
-                      Soon...
-                    </v-tab>
                   </v-tabs>
 
                   <v-window v-model="interactionsTab">
@@ -636,9 +636,8 @@
                       <DeadZoneViewer :websiteId="currentSite.id" />
                     </v-window-item>
 
-                    <v-window-item>
-
-                      <EngagementQualityViewer :websiteId="currentSite.id" />
+                    <v-window-item value="engagement">
+                      <EngagementAnalytics :websiteId="currentSite.id" />
                     </v-window-item>
                   </v-window>
                 </v-card-text>
@@ -1029,13 +1028,13 @@ import { CanvasRenderer } from 'echarts/renderers';
 import highlight from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { THEME_KEY } from 'vue-echarts';
+import EngagementAnalytics from '../components/analytics/EngagementAnalytics.vue';
 import '../css/analytics.css';
 import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 
 const onAsyncError = (err) => {
-  console.error('Erreur lors du chargement d\'un composant asynchrone:', err);
-  return null;
+  console.error('Error loading component:', err);
 };
 
 const InteractionViewer = defineAsyncComponent({
@@ -1045,11 +1044,6 @@ const InteractionViewer = defineAsyncComponent({
 
 const DeadZoneViewer = defineAsyncComponent({
   loader: () => import('../components/analytics/DeadZoneViewer.vue'),
-  onError: onAsyncError
-});
-
-const EngagementQualityViewer = defineAsyncComponent({
-  loader: () => import('../components/analytics/EngagementQualityViewer.vue'),
   onError: onAsyncError
 });
 

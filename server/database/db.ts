@@ -1,29 +1,23 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
-import * as mysql from 'mysql2/promise';
+import { Pool } from 'mysql2/promise';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { pool as poolApi } from '../api/db';
 
-// Configuration de la base de données
-const dbConfig = poolApi
+// Utilisez directement le pool existant au lieu d'en créer un nouveau
+let pool: Pool | null = poolApi;
 
-// Pool de connexion à la base de données
-let pool: mysql.Pool | null = null;
-
-/**
- * Initialise la connexion à la base de données
- */
 export async function initDatabase() {
   try {
-    // Créer le pool de connexion
-    pool = mysql.createPool(dbConfig);
+    if (!pool) {
+      console.error('Database pool is not initialized');
+      return false;
+    }
 
-    // Tester la connexion
     const connection = await pool.getConnection();
     console.log('Database connection established successfully');
 
-    // Initialiser le schéma de la base de données
     await initSchema();
 
     connection.release();
@@ -34,24 +28,18 @@ export async function initDatabase() {
   }
 }
 
-/**
- * Initialise le schéma de la base de données
- */
 async function initSchema() {
   if (!pool) return;
 
   try {
-    // Lire le fichier de schéma
     const schemaPath = path.join(process.cwd(), 'server', 'database', 'schema.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
 
-    // Diviser le schéma en instructions SQL individuelles
     const queries = schema
       .split(';')
       .filter(query => query.trim().length > 0)
       .map(query => query.trim() + ';');
 
-    // Exécuter chaque instruction SQL
     for (const query of queries) {
       await pool.query(query);
     }
@@ -63,9 +51,6 @@ async function initSchema() {
   }
 }
 
-/**
- * Récupère une connexion du pool
- */
 export async function getConnection() {
   if (!pool) {
     await initDatabase();
@@ -78,9 +63,6 @@ export async function getConnection() {
   return pool.getConnection();
 }
 
-/**
- * Exécute une requête SQL avec des paramètres
- */
 export async function query<T>(sql: string, params?: any[]): Promise<T> {
   if (!pool) {
     await initDatabase();
@@ -99,9 +81,6 @@ export async function query<T>(sql: string, params?: any[]): Promise<T> {
   }
 }
 
-/**
- * Chiffre des données sensibles
- */
 export function encryptSensitiveData(data: string): string {
   if (!data) return '';
 
@@ -121,9 +100,6 @@ export function encryptSensitiveData(data: string): string {
   }
 }
 
-/**
- * Déchiffre des données sensibles
- */
 export function decryptSensitiveData(encryptedData: string): string {
   if (!encryptedData || !encryptedData.includes(':')) return '';
 
@@ -146,16 +122,10 @@ export function decryptSensitiveData(encryptedData: string): string {
   }
 }
 
-/**
- * Génère un nouvel identifiant unique
- */
 export function generateId(): string {
   return uuidv4();
 }
 
-/**
- * Ferme la connexion à la base de données
- */
 export async function closeDatabase() {
   if (pool) {
     await pool.end();

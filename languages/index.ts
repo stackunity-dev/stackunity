@@ -78,11 +78,11 @@ import apiTestingHubEs from './api-testing-hub/es';
 import apiTestingHubFr from './api-testing-hub/fr';
 import apiTestingHubZh from './api-testing-hub/zh';
 
-import databaseDesignerAr from './database-designer/ar';
-import databaseDesignerEn from './database-designer/en';
-import databaseDesignerEs from './database-designer/es';
-import databaseDesignerFr from './database-designer/fr';
-import databaseDesignerZh from './database-designer/zh';
+import databaseManagementAr from './database-management/ar';
+import databaseManagementEn from './database-management/en';
+import databaseManagementEs from './database-management/es';
+import databaseManagementFr from './database-management/fr';
+import databaseManagementZh from './database-management/zh';
 
 import responsiveAr from './responsive/ar';
 import responsiveEn from './responsive/en';
@@ -203,7 +203,7 @@ export interface TranslationsStore {
   faq: typeof faqEn;
   website: typeof websiteEn;
   apiTestingHub: typeof apiTestingHubEn;
-  databaseDesigner: typeof databaseDesignerEn;
+  databaseManagement: typeof databaseManagementEn;
   responsive: typeof responsiveEn;
   accessibility: typeof accessibilityEn;
   about: typeof aboutEn;
@@ -238,7 +238,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqEn,
     website: websiteEn,
     apiTestingHub: apiTestingHubEn,
-    databaseDesigner: databaseDesignerEn,
+    databaseManagement: databaseManagementEn,
     responsive: responsiveEn,
     accessibility: accessibilityEn,
     about: aboutEn,
@@ -271,7 +271,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqFr,
     website: websiteFr,
     apiTestingHub: apiTestingHubFr,
-    databaseDesigner: databaseDesignerFr,
+    databaseManagement: databaseManagementFr,
     responsive: responsiveFr,
     accessibility: accessibilityFr,
     about: aboutFr,
@@ -304,7 +304,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqAr,
     website: websiteAr,
     apiTestingHub: apiTestingHubAr,
-    databaseDesigner: databaseDesignerAr,
+    databaseManagement: databaseManagementAr,
     responsive: responsiveAr,
     accessibility: accessibilityAr,
     about: aboutAr,
@@ -337,7 +337,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqEs,
     website: websiteEs,
     apiTestingHub: apiTestingHubEs,
-    databaseDesigner: databaseDesignerEs,
+    databaseManagement: databaseManagementEs,
     responsive: responsiveEs,
     accessibility: accessibilityEs,
     about: aboutEs,
@@ -370,7 +370,7 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqZh,
     website: websiteZh,
     apiTestingHub: apiTestingHubZh,
-    databaseDesigner: databaseDesignerZh,
+    databaseManagement: databaseManagementZh,
     responsive: responsiveZh,
     accessibility: accessibilityZh,
     about: aboutZh,

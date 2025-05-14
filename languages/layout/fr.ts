@@ -16,6 +16,7 @@ export default {
     responsive: "Responsive",
     accessibility: "Accessibilité",
     structureAccessibility: "Structure et Accessibilité",
+    robotsSchema: "Robots et Schéma",
     studio: "Studio",
     content: "Contenu",
     userEngagement: "Engagement utilisateur",

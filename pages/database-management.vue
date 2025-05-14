@@ -18,7 +18,8 @@
             <v-window-item value="terminal">
               <v-row class="pa-4">
                 <v-col cols="12">
-                  <SQLTerminal @connection-change="handleConnectionChange" :initialConnection="activeConnection" />
+                  <SQLTerminal @connection-change="handleConnectionChange" :initialConnection="activeConnection"
+                    @query-executed="handleQueryExecuted" ref="sqlTerminalRef" />
                 </v-col>
               </v-row>
             </v-window-item>
@@ -126,7 +127,7 @@
                             <div class="text-subtitle-2">{{ t().database.notConnected || 'Not connected' }}</div>
                             <div class="text-body-2">{{ t().database.connectPrompt ||
                               'Connect to a database to start'
-                            }}</div>
+                              }}</div>
                           </div>
                         </div>
                       </v-alert>
@@ -260,7 +261,7 @@
               <v-list-item-title>{{ t().database.step1Title || 'Add a Database Connection' }}</v-list-item-title>
               <v-list-item-subtitle>{{ t().database.step1Text ||
                 'Go to Configuration tab and add your database details'
-              }}</v-list-item-subtitle>
+                }}</v-list-item-subtitle>
             </v-list-item>
             <v-list-item>
               <template v-slot:prepend>
@@ -270,7 +271,7 @@
               </template>
               <v-list-item-title>{{ t().database.step2Title || 'Connect to Your Database' }}</v-list-item-title>
               <v-list-item-subtitle>{{ t().database.step2Text || 'Click the connect icon next to your database'
-              }}</v-list-item-subtitle>
+                }}</v-list-item-subtitle>
             </v-list-item>
             <v-list-item>
               <template v-slot:prepend>
@@ -280,7 +281,7 @@
               </template>
               <v-list-item-title>{{ t().database.step3Title || 'Run SQL Queries' }}</v-list-item-title>
               <v-list-item-subtitle>{{ t().database.step3Text || 'Use the SQL Terminal or Editor to execute commands'
-              }}</v-list-item-subtitle>
+                }}</v-list-item-subtitle>
             </v-list-item>
           </v-list>
 
@@ -309,7 +310,59 @@
       </v-card>
     </v-dialog>
 
-    <snackbar />
+    <v-dialog v-model="showUpgradeDialog" max-width="500px">
+      <v-card>
+        <v-card-title class="bg-amber text-white">
+          {{ t().premium.upgradeTitle || 'Upgrade to Premium' }}
+        </v-card-title>
+        <v-card-text class="pa-4">
+          <v-alert color="amber" variant="tonal" class="mb-4">
+            <div class="d-flex align-center">
+              <v-icon color="amber-darken-3" class="mr-2">mdi-crown</v-icon>
+              <div class="text-subtitle-1">{{ t().premium.unlockFeatures || 'Unlock Premium Features' }}</div>
+            </div>
+          </v-alert>
+
+          <h3 class="text-h6 mb-2">{{ t().premium.featuresIncluded || 'Features Included:' }}</h3>
+          <v-list>
+            <v-list-item prepend-icon="mdi-brain">
+              <v-list-item-title>{{ t().premium.sqlAssistant || 'SQL Assistant AI' }}</v-list-item-title>
+              <v-list-item-subtitle>{{ t().premium.sqlAssistantDesc ||
+                'Advanced AI-powered SQL assistance and generation'
+              }}</v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item prepend-icon="mdi-chart-areaspline">
+              <v-list-item-title>{{ t().premium.dataVis || 'Advanced Data Visualization' }}</v-list-item-title>
+              <v-list-item-subtitle>{{ t().premium.dataVisDesc || 'Interactive charts and visual query execution plans'
+                }}</v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item prepend-icon="mdi-tools">
+              <v-list-item-title>{{ t().premium.productivity || 'Productivity Tools' }}</v-list-item-title>
+              <v-list-item-subtitle>{{ t().premium.productivityDesc ||
+                'Query scheduler, version history, and advanced exports'
+              }}</v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+
+          <v-alert color="info" variant="tonal" class="mt-4 mb-4">
+            {{ t().premium.limitedOffer || 'Limited time offer: Get 20% off when you upgrade today!' }}
+          </v-alert>
+        </v-card-text>
+        <v-card-actions class="pa-4">
+          <v-spacer></v-spacer>
+          <v-btn variant="text" @click="showUpgradeDialog = false">
+            {{ t().buttons.cancel || 'Later' }}
+          </v-btn>
+          <v-btn color="amber-darken-2" @click="redirectToPricing">
+            {{ t().premium.viewPlans || 'View Plans' }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <snackbar v-model="showSnackbar" :text="snackbarText" :color="snackbarColor" :timeout="3000" />
   </div>
 </template>
 
@@ -318,10 +371,11 @@ import { onMounted, ref } from 'vue';
 import DatabaseUsage from '../components/database/DatabaseUsage.vue';
 import SQLTerminal from '../components/database/sqlTerminal.vue';
 import { useTranslations } from '../languages';
+import snackbar from '../components/snackbar.vue';
 // @ts-ignore
-import { definePageMeta } from '#imports';
+import { definePageMeta, navigateTo } from '#imports';
 
-const t = useTranslations('databaseDesigner');
+const t = useTranslations('databaseManagement');
 
 definePageMeta({
   layout: 'dashboard',
@@ -339,6 +393,8 @@ interface DatabaseConnection {
 }
 
 const activeTab = ref('terminal');
+const sqlTerminalRef = ref<InstanceType<typeof SQLTerminal> | null>(null);
+const showUpgradeDialog = ref(false);
 const isPremiumFeature = ref(false);
 const connections = ref<DatabaseConnection[]>([]);
 const activeConnection = ref<DatabaseConnection | null>(null);
@@ -352,6 +408,7 @@ const connectionToDelete = ref<DatabaseConnection | null>(null);
 const testing = ref(false);
 const saving = ref(false);
 const deleting = ref(false);
+const showSnackbar = ref(false);
 
 const newConnection = ref<DatabaseConnection>({
   id: '',
@@ -364,7 +421,6 @@ const newConnection = ref<DatabaseConnection>({
   password: ''
 });
 
-// Options pour les types de connexion
 const connectionTypes = [
   { title: 'MySQL', value: 'mysql' },
   { title: 'PostgreSQL', value: 'postgres' },
@@ -372,15 +428,8 @@ const connectionTypes = [
   { title: 'SQL Server', value: 'mssql' }
 ];
 
-// Snackbar pour les notifications
 const snackbarText = ref('');
 const snackbarColor = ref('');
-const showSnackbar = ref(false);
-
-// Fonctions
-const toggleInfoPanel = () => {
-  showInfoPanel.value = !showInfoPanel.value;
-};
 
 const showAddConnectionDialog = () => {
   editMode.value = false;
@@ -397,142 +446,6 @@ const showAddConnectionDialog = () => {
   showConnectionDialog.value = true;
 };
 
-const editConnection = (connection: DatabaseConnection) => {
-  editMode.value = true;
-  newConnection.value = { ...connection };
-  showConnectionDialog.value = true;
-};
-
-const deleteConnection = (connection: DatabaseConnection) => {
-  connectionToDelete.value = connection;
-  showDeleteDialog.value = true;
-};
-
-const testConnection = async () => {
-  testing.value = true;
-  try {
-    // Simulation d'un test de connexion
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // 80% de chance de succès pour la démo
-    const success = Math.random() > 0.2;
-
-    if (success) {
-      snackbarText.value = t().database.connectionSuccessful || 'Connection successful!';
-      snackbarColor.value = 'success';
-    } else {
-      snackbarText.value = t().database.connectionFailed || 'Connection failed. Check your credentials.';
-      snackbarColor.value = 'error';
-    }
-    showSnackbar.value = true;
-  } catch (error) {
-    console.error('Connection test error:', error);
-    snackbarText.value = t().database.connectionError || 'Error testing connection';
-    snackbarColor.value = 'error';
-    showSnackbar.value = true;
-  } finally {
-    testing.value = false;
-  }
-};
-
-const saveConnection = async () => {
-  // Vérification de la validité du formulaire
-  const isValid = await connectionForm.value?.validate();
-  if (!isValid?.valid) return;
-
-  saving.value = true;
-
-  try {
-    // Simulation d'un appel API
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    if (editMode.value) {
-      // Mise à jour d'une connexion existante
-      const index = connections.value.findIndex(c => c.id === newConnection.value.id);
-      if (index !== -1) {
-        connections.value[index] = { ...newConnection.value };
-      }
-    } else {
-      // Création d'une nouvelle connexion
-      newConnection.value.id = Math.random().toString(36).substring(2, 11);
-      connections.value.push({ ...newConnection.value });
-    }
-
-    // Sauvegarder dans le localStorage (dans une vraie application, utilisez une API)
-    localStorage.setItem('database_connections', JSON.stringify(connections.value));
-
-    showConnectionDialog.value = false;
-
-    snackbarText.value = editMode.value
-      ? (t().database.connectionUpdated || 'Connection updated successfully')
-      : (t().database.connectionAdded || 'Connection added successfully');
-    snackbarColor.value = 'success';
-    showSnackbar.value = true;
-  } catch (error) {
-    console.error('Error saving connection:', error);
-    snackbarText.value = t().database.savingError || 'Error saving connection';
-    snackbarColor.value = 'error';
-    showSnackbar.value = true;
-  } finally {
-    saving.value = false;
-  }
-};
-
-const confirmDelete = async () => {
-  if (!connectionToDelete.value) return;
-
-  deleting.value = true;
-
-  try {
-    // Simulation d'un appel API
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    // Supprimer la connexion
-    connections.value = connections.value.filter(c => c.id !== connectionToDelete.value?.id);
-
-    // Si la connexion supprimée est la connexion active, déconnecter
-    if (activeConnection.value?.id === connectionToDelete.value.id) {
-      activeConnection.value = null;
-    }
-
-    // Sauvegarder dans le localStorage
-    localStorage.setItem('database_connections', JSON.stringify(connections.value));
-
-    showDeleteDialog.value = false;
-
-    snackbarText.value = t().database.connectionDeleted || 'Connection deleted successfully';
-    snackbarColor.value = 'success';
-    showSnackbar.value = true;
-  } catch (error) {
-    console.error('Error deleting connection:', error);
-    snackbarText.value = t().database.deletingError || 'Error deleting connection';
-    snackbarColor.value = 'error';
-    showSnackbar.value = true;
-  } finally {
-    deleting.value = false;
-    connectionToDelete.value = null;
-  }
-};
-
-const connectToDatabase = (connection: DatabaseConnection) => {
-  activeConnection.value = connection;
-
-  snackbarText.value = t().database.connectedTo?.replace('{name}', connection.name) ||
-    `Connected to ${connection.name}`;
-  snackbarColor.value = 'success';
-  showSnackbar.value = true;
-
-  // Rediriger vers l'onglet terminal ou éditeur
-  if (activeTab.value === 'config') {
-    activeTab.value = 'terminal';
-  }
-};
-
-const handleConnectionChange = (connection: DatabaseConnection | null) => {
-  activeConnection.value = connection;
-};
-
-// Chargement des connexions depuis le localStorage
 onMounted(() => {
   const savedConnectionsJson = localStorage.getItem('database_connections');
   if (savedConnectionsJson) {
@@ -543,6 +456,11 @@ onMounted(() => {
     }
   }
 });
+
+function redirectToPricing() {
+  showUpgradeDialog.value = false;
+  navigateTo('/checkout');
+}
 </script>
 
 <style scoped>

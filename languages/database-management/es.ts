@@ -10,7 +10,7 @@ export default {
   },
   tabs: {
     terminal: 'SQL Terminal',
-    editor: 'SQL Editor',
+    visualizer: 'Visualizer',
     config: 'Configuración'
   },
   database: {
@@ -95,6 +95,7 @@ export default {
     connectPrompt: 'Haz clic en el botón "Nuevo" para crear una nueva conexión',
     connect: 'Conectar',
     connected: 'Conectado',
+    exportDatabase: 'Exportar Base de Datos como JSON',
     form: {
       name: 'Nombre',
       type: 'Tipo',

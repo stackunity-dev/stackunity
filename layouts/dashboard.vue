@@ -464,7 +464,7 @@ const items = computed(() => [
     prependIcon: 'mdi-database-outline',
     link: true,
     children: [
-      createPremiumMenuItem(t().features.databaseManagement, '/database-management', 'mdi-database', 'databaseManagement', 'standard'),
+      { title: t().features.databaseManagement, link: '/database-management', icon: 'mdi-database' },
       { title: t().features.apiTestingHub, link: '/api-testing-hub', icon: 'mdi-api' }
     ]
   },

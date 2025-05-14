@@ -21,14 +21,6 @@ export default {
       },
       cta: '免费试用'
     },
-    standard: {
-      name: '标准',
-      description: '适合成长中的团队',
-      trial: {
-        days: '包含{days}天免费试用'
-      },
-      cta: '开始免费试用'
-    },
     premium: {
       name: '高级',
       description: '解锁所有功能',
@@ -58,7 +50,6 @@ export default {
     table: {
       feature: '功能',
       free: '免费',
-      standard: '标准',
       premium: '高级'
     }
   },
@@ -70,7 +61,7 @@ export default {
     visualImpairment: '视觉障碍模拟',
     completeVisualImpairment: '完整视觉障碍模拟',
     completeStudio: '完整工作室功能',
-    databaseDesigner: '数据库设计器',
+    databaseManagement: '数据库管理',
     robots: 'Robots.txt和Schema.org生成器',
     performanceAnalysis: '性能分析',
     contentAnalysis: '内容分析',

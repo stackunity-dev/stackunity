@@ -21,14 +21,6 @@ export default {
       },
       cta: 'TRY FOR FREE'
     },
-    standard: {
-      name: 'Standard',
-      description: 'For growing teams',
-      trial: {
-        days: '{days} days free trial included'
-      },
-      cta: 'Start Free Trial'
-    },
     premium: {
       name: 'Premium',
       description: 'Unlock all features',
@@ -58,7 +50,6 @@ export default {
     table: {
       feature: 'Feature',
       free: 'Free',
-      standard: 'Standard',
       premium: 'Premium'
     }
   },
@@ -70,7 +61,7 @@ export default {
     visualImpairment: 'Visual impairment simulation',
     completeVisualImpairment: 'Complete visual impairment simulation',
     completeStudio: 'Complete Studio features',
-    databaseDesigner: 'Database Designer features',
+    databaseManagement: 'Database Management',
     robots: 'Robots.txt and Schema.org Generator',
     performanceAnalysis: 'Performance Analysis',
     contentAnalysis: 'Content Analysis',
