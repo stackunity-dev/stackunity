@@ -1,4 +1,3 @@
-
 export default {
   meta: {
     title: 'StackUnity Analytics',

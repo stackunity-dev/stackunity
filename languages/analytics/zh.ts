@@ -20,6 +20,7 @@ export default {
   map: '地图',
   source: '来源',
   device: '设备',
+  engagementTab: '互动',
   errorTab: '错误',
   interactionsTab: '交互',
   analyticsFor: '分析',

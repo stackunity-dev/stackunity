@@ -78,11 +78,11 @@ import apiTestingHubEs from './api-testing-hub/es';
 import apiTestingHubFr from './api-testing-hub/fr';
 import apiTestingHubZh from './api-testing-hub/zh';
 
-import databaseManagementAr from './database-management/ar';
-import databaseManagementEn from './database-management/en';
-import databaseManagementEs from './database-management/es';
-import databaseManagementFr from './database-management/fr';
-import databaseManagementZh from './database-management/zh';
+import databaseManagementAr from './database-designer/ar';
+import databaseManagementEn from './database-designer/en';
+import databaseManagementEs from './database-designer/es';
+import databaseManagementFr from './database-designer/fr';
+import databaseManagementZh from './database-designer/zh';
 
 import responsiveAr from './responsive/ar';
 import responsiveEn from './responsive/en';

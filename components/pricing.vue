@@ -16,45 +16,54 @@
             {{ currency.symbol }} ({{ currency.code }})
           </v-chip>
         </v-chip-group>
-
       </div>
 
       <v-row justify="center" align="stretch">
-        <v-col cols="12" sm="6" lg="4">
+        <v-col cols="12" sm="6" md="5">
           <price-card :plan="freePlan" :selected-currency="selectedCurrency" card-class="free-plan"
             :btn-text="t().plans.free.cta" btn-color="primary" btn-to="/signup" />
         </v-col>
 
-        <v-col cols="12" sm="6" lg="4">
-          <price-card :plan="standardPlan" :selected-currency="selectedCurrency" card-class="standard-plan"
-            :btn-text="t().plans.standard.cta" btn-color="secondary" btn-to="/signup" />
+        <v-col cols="12" class="d-flex justify-center align-center d-sm-none py-4">
+          <v-chip color="warning" size="large" label variant="elevated" class="compare-chip">
+            <v-icon start>mdi-compare</v-icon>
+            {{ t().section.compare || 'Comparer' }}
+          </v-chip>
         </v-col>
 
-        <v-col cols="12" sm="6" lg="4">
+        <v-col cols="12" sm="6" md="5">
           <price-card :plan="premiumPlan" :selected-currency="selectedCurrency" :is-popular="true"
-            card-class="premium-plan" :btn-text="t().plans.premium.cta" btn-color="tertiary" btn-to="/signup"
+            card-class="premium-plan highlight-card" :btn-text="t().plans.premium.cta" btn-color="tertiary" btn-to="/signup"
             btn-icon="mdi-arrow-right" />
         </v-col>
       </v-row>
 
-      <v-row class="mt-12" justify="center">
-        <v-col cols="12" md="8" lg="6">
-          <v-card class="guarantee-card" flat>
-            <v-card-text class="text-center">
-              <v-icon color="warning" size="32" class="mb-2">{{ guarantee.icon }}</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ guarantee.title }}</h3>
+      <v-row class="my-8 justify-center">
+        <v-col cols="12" md="10" lg="8">
+          <v-card class="guarantee-card" elevation="2">
+            <v-card-text class="text-center pa-6">
+              <v-icon color="warning" size="42" class="mb-3">{{ guarantee.icon }}</v-icon>
+              <h3 class="text-h5 font-weight-bold mb-3">{{ guarantee.title }}</h3>
               <p class="text-body-1 text-medium-emphasis">
                 {{ guarantee.description }}
               </p>
+              <v-rating
+                v-model="rating"
+                color="warning"
+                density="compact"
+                readonly
+                half-increments
+                class="mt-3 justify-center"
+              ></v-rating>
             </v-card-text>
           </v-card>
         </v-col>
       </v-row>
 
-      <v-row class="mt-12 justify-center">
+      <v-row class="mt-10 justify-center">
         <v-col cols="12" class="text-center">
-          <v-btn color="primary" variant="outlined" @click="showFeatureComparison = !showFeatureComparison"
-            aria-label="Show full feature comparison">
+          <v-btn color="primary" size="large" variant="outlined" @click="showFeatureComparison = !showFeatureComparison"
+            class="compare-features-btn" aria-label="Show full feature comparison">
             {{ showFeatureComparison ? t().comparison.hide : t().comparison.show }}
             <v-icon end>{{ showFeatureComparison ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
           </v-btn>
@@ -64,13 +73,12 @@
       <v-expand-transition>
         <v-row v-if="showFeatureComparison" class="mt-6">
           <v-col cols="12">
-            <v-card>
+            <v-card class="comparison-table-card">
               <v-table>
                 <thead>
                   <tr>
                     <th class="text-left">{{ t().comparison.table.feature }}</th>
                     <th class="text-center">{{ t().comparison.table.free }}</th>
-                    <th class="text-center">{{ t().comparison.table.standard }}</th>
                     <th class="text-center">{{ t().comparison.table.premium }}</th>
                   </tr>
                 </thead>
@@ -78,16 +86,12 @@
                   <tr v-for="feature in comparisonFeatures" :key="feature.name">
                     <td>{{ feature.name }}</td>
                     <td class="text-center">
-                      <v-icon v-if="feature.free" color="success">mdi-check</v-icon>
-                      <v-icon v-else color="error">mdi-close</v-icon>
+                      <v-icon v-if="feature.free" color="success" size="large">mdi-check-circle</v-icon>
+                      <v-icon v-else color="error" size="small">mdi-close</v-icon>
                     </td>
                     <td class="text-center">
-                      <v-icon v-if="feature.standard" color="success">mdi-check</v-icon>
-                      <v-icon v-else color="error">mdi-close</v-icon>
-                    </td>
-                    <td class="text-center">
-                      <v-icon v-if="feature.premium" color="success">mdi-check</v-icon>
-                      <v-icon v-else color="error">mdi-close</v-icon>
+                      <v-icon v-if="feature.premium" color="success" size="large">mdi-check-circle</v-icon>
+                      <v-icon v-else color="error" size="small">mdi-close</v-icon>
                     </td>
                   </tr>
                 </tbody>
@@ -96,6 +100,22 @@
           </v-col>
         </v-row>
       </v-expand-transition>
+      
+      <v-row class="mt-12 justify-center" v-if="!showFeatureComparison">
+        <v-col cols="12" sm="8" md="6" class="text-center">
+          <v-alert
+            color="info"
+            border="start"
+            variant="tonal"
+            density="compact"
+            icon="mdi-information-outline"
+            class="limited-time-offer"
+          >
+            {{ t().section.limitedOffer || 'Offre à durée limitée !' }}
+          </v-alert>
+        </v-col>
+      </v-row>
+      
     </v-container>
   </section>
 </template>
@@ -109,6 +129,7 @@ const t = useTranslations('pricing');
 
 const selectedCurrency = ref('€');
 const showFeatureComparison = ref(false);
+const rating = ref(5);
 
 const currencies = ref([
   { symbol: '€', code: 'EUR' },
@@ -149,9 +170,14 @@ const premiumPlan = ref({
     '£': (249.99 * 0.85).toFixed(2),
     duration: 'lifetime'
   },
-  hasDiscount: false,
+  hasDiscount: true,
   freeTrialDays: 7,
   features: [
+    t().features.cssPlayground,
+    t().features.simpleStudio,
+    t().features.apiTesting,
+    t().features.contrastChecker,
+    t().features.visualImpairment,
     t().features.performanceAnalysis,
     t().features.contentAnalysis,
     t().features.userEngagement,
@@ -174,7 +200,7 @@ const comparisonFeatures = ref([
   { name: t().features.apiTesting, free: true, premium: true },
   { name: t().features.contrastChecker, free: true, premium: true },
   { name: t().features.visualImpairment, free: true, premium: true },
-  { name: t().features.completeVisualImpairment, free: true, premium: true },
+  { name: t().features.completeVisualImpairment, free: false, premium: true },
   { name: t().features.completeStudio, free: false, premium: true },
   { name: t().features.databaseManagement, free: false, premium: true },
   { name: t().features.robots, free: false, premium: true },
@@ -213,15 +239,22 @@ const comparisonFeatures = ref([
 }
 
 .premium-plan {
-  background-color: rgba(var(--v-theme-secondary), 0.3);
-}
-
-.standard-plan {
-  background-color: rgba(var(--v-theme-info), 0.2);
+  background: linear-gradient(135deg, rgba(var(--v-theme-tertiary), 0.1), rgba(var(--v-theme-warning), 0.2));
+  border: 2px solid rgba(var(--v-theme-warning), 0.3);
 }
 
 .free-plan {
-  background-color: rgba(var(--v-theme-primary), 0.2);
+  background-color: rgba(var(--v-theme-primary), 0.1);
+}
+
+.highlight-card {
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(var(--v-theme-warning), 0.15);
+}
+
+.highlight-card:hover {
+  transform: scale(1.05) translateY(-8px);
+  box-shadow: 0 16px 32px rgba(var(--v-theme-warning), 0.2);
 }
 
 .popular-badge {
@@ -239,49 +272,47 @@ const comparisonFeatures = ref([
 }
 
 .guarantee-card {
-  background: rgba(var(--v-theme-warning), 0.1);
+  background: linear-gradient(135deg, rgba(var(--v-theme-warning), 0.05), rgba(var(--v-theme-warning), 0.15));
   border: 1px solid rgba(var(--v-theme-warning), 0.2);
   transition: all 0.3s ease;
+  border-radius: 16px;
 }
 
 .guarantee-card:hover {
-  background: rgba(var(--v-theme-warning), 0.15);
+  background: linear-gradient(135deg, rgba(var(--v-theme-warning), 0.1), rgba(var(--v-theme-warning), 0.2));
+  transform: translateY(-4px);
 }
 
-.section-subtitle {
-  font-size: 0.85rem;
-  letter-spacing: 1.5px;
-  display: inline-block;
-  padding: 5px 15px;
-  border-radius: 20px;
-  background-color: rgba(var(--v-theme-primary), 0.1);
-  margin-bottom: 10px;
+.compare-features-btn {
+  padding: 0 32px;
+  height: 48px;
+  border-radius: 24px;
+  font-weight: 500;
 }
 
-.text-gradient {
-  background: linear-gradient(90deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-info)));
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient 3s linear infinite;
+.comparison-table-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-@keyframes gradient {
-  0% {
-    background-position: 0% center;
-  }
-  50% {
-    background-position: 100% center;
-  }
-  100% {
-    background-position: 0% center;
-  }
+.limited-time-offer {
+  border-width: 3px;
+  font-weight: 500;
 }
 
-/* Animation des icônes de fonctionnalités */
-.v-list-item:hover .v-icon {
-  transform: scale(1.2);
-  transition: transform 0.2s ease;
+.compare-chip {
+  padding: 0 20px;
+  height: 40px;
+}
+
+@keyframes highlight-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--v-theme-warning), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0); }
+}
+
+.highlight-card {
+  animation: highlight-pulse 2s infinite;
 }
 </style>

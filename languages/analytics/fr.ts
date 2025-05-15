@@ -22,6 +22,7 @@ export default {
   device: 'Appareils',
   errorTab: 'Erreurs',
   interactionsTab: 'Interactions',
+  engagementTab: 'Engagement',
   analyticsFor: 'Analytics pour',
   cancel: 'Annuler',
   add: 'Ajouter',
@@ -655,6 +656,5 @@ export default {
       sources: 'Sources',
     },
   },
-  engagementTab: 'Engagement',
 };
 

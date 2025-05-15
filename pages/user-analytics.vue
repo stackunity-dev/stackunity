@@ -99,7 +99,7 @@
                           <v-divider vertical class="mx-2"></v-divider>
                           <div class="stat-item text-center">
                             <div class="text-caption text-medium-emphasis">{{ t.analytics.interactions || 'Interactions'
-                              }}</div>
+                            }}</div>
                             <div class="text-subtitle-1 font-weight-bold">
                               {{ site.stats && site.stats.totalInteractions || '0' }}
                             </div>
@@ -125,7 +125,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ t.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ t.welcome.few.description
-                      }}</p>
+                    }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ t.welcome.few.action }}
@@ -277,7 +277,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                    }}</v-list-item-title>
+                  }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -340,10 +340,6 @@
               <v-tab value="devices" class="tab-button">
                 <v-icon class="mr-2">mdi-devices</v-icon>
                 {{ t.device }}
-              </v-tab>
-              <v-tab value="engagement" class="tab-button">
-                <v-icon class="mr-2">mdi-chart-areaspline</v-icon>
-                {{ t.engagementTab || "Engagement" }}
               </v-tab>
               <v-tab value="interactions" class="tab-button">
                 <v-icon class="mr-2">mdi-cursor-default-click-outline</v-icon>
@@ -433,12 +429,12 @@
                         <v-btn value="pie" size="small">
                           <v-icon>mdi-chart-pie</v-icon>
                           <v-tooltip activator="parent">{{ t.analytics.chart.chartPie || 'Graphique circulaire'
-                            }}</v-tooltip>
+                          }}</v-tooltip>
                         </v-btn>
                         <v-btn value="donut" size="small">
                           <v-icon>mdi-chart-donut</v-icon>
                           <v-tooltip activator="parent">{{ t.analytics.chart.chartDonut || 'Graphique annulaire'
-                            }}</v-tooltip>
+                          }}</v-tooltip>
                         </v-btn>
                       </v-btn-toggle>
                     </div>
@@ -636,9 +632,6 @@
                       <DeadZoneViewer :websiteId="currentSite.id" />
                     </v-window-item>
 
-                    <v-window-item value="engagement">
-                      <EngagementAnalytics :websiteId="currentSite.id" />
-                    </v-window-item>
                   </v-window>
                 </v-card-text>
               </v-window-item>
@@ -674,7 +667,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                                }}</span>
+                              }}</span>
                             </div>
                           </td>
                           <td>
@@ -845,7 +838,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-              }}</p>
+            }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ t.engagement.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -968,7 +961,7 @@
               <v-list-item v-if="visitorExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                }}</v-list-item-title>
+                  }}</v-list-item-title>
               </v-list-item>
             </v-list>
 

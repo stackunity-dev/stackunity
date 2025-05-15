@@ -10,14 +10,12 @@
             </h1>
 
             <div class="premium-highlight mb-8">
-              <v-chip v-if="selectedPlan === 'premium'" color="primary" size="x-large" class="premium-badge">
+              <v-chip color="primary" size="x-large" class="premium-badge">
                 <v-icon start icon="mdi-crown" class="mr-2"></v-icon>
                 {{ t().plans.bestChoice }}
               </v-chip>
-              <h2 class="text-h4 font-weight-bold mt-4 text-white mb-2">{{ selectedPlan === 'premium' ?
-                t().plans.premium.title : t().plans.standard.title }}</h2>
-              <p class="text-subtitle-1 text-white-darken-2 premium-tagline">{{ selectedPlan === 'premium' ?
-                t().plans.premium.description : t().plans.standard.description }}</p>
+              <h2 class="text-h4 font-weight-bold mt-4 text-white mb-2">{{ t().plans.premium.title }}</h2>
+              <p class="text-subtitle-1 text-white-darken-2 premium-tagline">{{ t().plans.premium.description }}</p>
             </div>
 
             <div class="features-list ml-12">
@@ -55,20 +53,17 @@
 
             <div class="price-card mb-6">
               <v-card class="elevation-3 rounded-lg overflow-hidden">
-                <div class="card-premium-banner" v-if="selectedPlan === 'premium'">
+                <div class="card-premium-banner">
                   <v-icon icon="mdi-crown" class="mr-1" size="small"></v-icon>
                   {{ t().plans.bestChoice }}
                 </div>
                 <v-card-text class="pa-6">
                   <div class="d-flex justify-space-between align-center mb-4">
                     <div>
-                      <h3 class="text-h5 font-weight-bold mb-1">{{ selectedPlan === 'premium' ? t().plans.premium.title
-                        :
-                        t().plans.standard.title }}</h3>
-                      <div class="text-subtitle-1 text-medium-emphasis">{{ selectedPlan === 'premium' ?
-                        t().plans.premium.description : t().plans.standard.description }}</div>
+                      <h3 class="text-h5 font-weight-bold mb-1">{{ t().plans.premium.title }}</h3>
+                      <div class="text-subtitle-1 text-medium-emphasis">{{ t().plans.premium.description }}</div>
                     </div>
-                    <v-chip color="primary" size="large" class="ml-2" v-if="selectedPlan === 'premium'">
+                    <v-chip color="primary" size="large" class="ml-2">
                       <v-icon start>mdi-crown</v-icon>
                       {{ t().plans.bestChoice }}
                     </v-chip>
@@ -76,24 +71,11 @@
 
                   <v-divider class="mb-4"></v-divider>
 
-                  <div class="plan-switch mb-4">
-                    <v-btn-toggle v-model="selectedPlan" mandatory color="primary" class="rounded-lg"
-                      @update:model-value="updateTaxRates">
-                      <v-btn value="standard" class="text-none">
-                        {{ t().plans.option.standard }}
-                        <v-tooltip activator="parent" location="top">
-                          <div class="text-caption">{{ t().plans.tooltip.lifetimeAccess }}</div>
-                          <div class="text-caption">{{ t().plans.tooltip.standardFeatures }}</div>
-                        </v-tooltip>
-                      </v-btn>
-                      <v-btn value="premium" class="text-none">
-                        {{ t().plans.option.premium }}
-                        <v-tooltip activator="parent" location="top">
-                          <div class="text-caption">{{ t().plans.tooltip.lifetimeAccess }}</div>
-                          <div class="text-caption">{{ t().plans.tooltip.premiumFeatures }}</div>
-                        </v-tooltip>
-                      </v-btn>
-                    </v-btn-toggle>
+                  <div class="premium-features mb-4">
+                    <div v-for="(feature, index) in features" :key="index" class="d-flex align-center mb-2">
+                      <v-icon color="success" class="mr-2">mdi-check-circle</v-icon>
+                      <span class="text-body-2">{{ feature.title }}</span>
+                    </div>
                   </div>
 
                   <div class="price-details">
@@ -146,8 +128,6 @@
                 </v-card-text>
               </v-card>
             </div>
-
-
 
             <v-form @submit.prevent="processPayment">
               <div class="credit-card-container mb-6">
@@ -245,6 +225,26 @@
                 <div class="d-flex align-center justify-center">
                   <v-icon icon="mdi-clock-outline" size="small" class="mr-2" color="info"></v-icon>
                   <span class="text-caption text-medium-emphasis">{{ t().payment.refundGuarantee }}</span>
+                </div>
+              </div>
+
+              <div class="trust-indicators mt-5">
+                <div class="text-center mb-3">
+                  <span class="text-caption text-medium-emphasis">{{ t().trustIndicators.title }}</span>
+                </div>
+                <div class="d-flex justify-center align-center flex-wrap">
+                  <v-chip size="small" class="ma-1" color="surface-variant" variant="outlined">
+                    <v-icon size="x-small" start>mdi-shield-check</v-icon>
+                    {{ t().trustIndicators.securePayment }}
+                  </v-chip>
+                  <v-chip size="small" class="ma-1" color="surface-variant" variant="outlined">
+                    <v-icon size="x-small" start>mdi-check-decagram</v-icon>
+                    {{ t().trustIndicators.satisfaction }}
+                  </v-chip>
+                  <v-chip size="small" class="ma-1" color="surface-variant" variant="outlined">
+                    <v-icon size="x-small" start>mdi-update</v-icon>
+                    {{ t().trustIndicators.updates }}
+                  </v-chip>
                 </div>
               </div>
             </v-form>
@@ -367,7 +367,7 @@ const taxDetails = ref({
 });
 
 const features = computed(() => {
-  return selectedPlan.value === 'premium' ? [
+  return [
     {
       icon: 'mdi-rocket-launch',
       title: t().features.advancedTools.title,
@@ -387,27 +387,6 @@ const features = computed(() => {
       icon: 'mdi-update',
       title: t().features.regularUpdates.title,
       description: t().features.regularUpdates.description
-    }
-  ] : [
-    {
-      icon: 'mdi-star',
-      title: t().features.standardTools.title,
-      description: t().features.standardTools.description
-    },
-    {
-      icon: 'mdi-help-circle',
-      title: t().features.basicSupport.title,
-      description: t().features.basicSupport.description
-    },
-    {
-      icon: 'mdi-update',
-      title: t().features.regularUpdates.title,
-      description: t().features.regularUpdates.description
-    },
-    {
-      icon: 'mdi-account-group',
-      title: t().features.teamCollaboration.title,
-      description: t().features.teamCollaboration.description
     }
   ];
 });
@@ -689,14 +668,12 @@ const applyPromoCode = async () => {
 
   try {
     loading.value = true;
-    // Utiliser directement le code promo dans le checkout 
-    // au lieu de faire une requête spécifique pour valider le code
     const response = await userStore.checkout(
       cardholderName.value,
       billingCountry.value,
       isBusinessCustomer.value,
       vatNumber.value,
-      promoCode.value, // Ajouter le code promo
+      promoCode.value,
       selectedPlan.value
     );
 
@@ -981,5 +958,51 @@ const applyPromoCode = async () => {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid rgba(var(--v-theme-success), 0.1);
+}
+
+.premium-features {
+  background: rgba(var(--v-theme-primary), 0.08);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.special-offer-card {
+  background: linear-gradient(135deg, rgba(var(--v-theme-error), 0.05), rgba(var(--v-theme-warning), 0.08));
+  border: 1px solid rgba(var(--v-theme-error), 0.2);
+  border-radius: 8px;
+  position: relative;
+}
+
+.special-offer-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 20px 20px 0;
+  border-color: transparent rgba(var(--v-theme-error), 0.4) transparent transparent;
+}
+
+.trust-indicators {
+  border-top: 1px dashed rgba(var(--v-theme-on-surface), 0.1);
+  padding-top: 1rem;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(var(--v-theme-primary), 0.7);
+  }
+  100% {
+    box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.4);
+  }
+}
+
+.pay-button {
+  animation: pulse 2s infinite;
 }
 </style>

@@ -128,5 +128,16 @@ export default {
       text: "StackUnity a complètement transformé mon workflow de développement. L'investissement en vaut vraiment la peine!",
       author: "Nûr D. - Développeur Full Stack"
     }
+  },
+  specialOffer: {
+    title: "Offre limitée dans le temps",
+    description: "Tarif promotionnel disponible uniquement aujourd'hui"
+  },
+  trustIndicators: {
+    title: "Ils nous font confiance",
+    securePayment: "Paiement sécurisé",
+    satisfaction: "Satisfaction garantie",
+    customers: "+5000 clients satisfaits",
+    updates: "Mises à jour régulières"
   }
 } 

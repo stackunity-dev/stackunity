@@ -1,4 +1,3 @@
-import { arrayBuffer } from "stream/consumers";
 
 export default {
   meta: {
@@ -22,6 +21,7 @@ export default {
   map: 'الخريطة',
   source: 'المصدر',
   device: 'الجهاز',
+  engagementTab: 'التفاعلات',
   errorTab: 'الأخطاء',
   interactionsTab: 'التفاعلات',
   analyticsFor: 'التحليلات ل',

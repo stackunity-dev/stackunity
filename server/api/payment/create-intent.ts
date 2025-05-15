@@ -17,7 +17,6 @@ export default defineEventHandler(async (event) => {
       vat_number = '',
       is_business = false,
       promo_code = '',
-      selected_plan = ''
     } = body;
 
     const userId = body.user_id;
@@ -42,7 +41,7 @@ export default defineEventHandler(async (event) => {
     let stripe;
     try {
       stripe = new Stripe(stripeSecretKey, {
-        apiVersion: '2025-03-31.basil',
+        apiVersion: '2025-04-30.basil',
       });
     } catch (stripeInitError) {
       console.error('Failed to initialize Stripe:', stripeInitError);
@@ -52,21 +51,8 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    if (!selected_plan || (selected_plan !== 'premium' && selected_plan !== 'standard')) {
-      console.log('Plan validation failed:', { received: selected_plan, allowed: ['premium', 'standard'] });
-      return {
-        success: false,
-        error: 'Invalid plan selected'
-      };
-    }
 
-    let baseAmount = 0;
-
-    if (selected_plan === 'premium') {
-      baseAmount = 24999; // 249.99€
-    } else if (selected_plan === 'standard') {
-      baseAmount = 14999; // 149.99€
-    }
+    let baseAmount = 24999; // 249.99€
 
     let discountAmount = 0;
     let discountDescription = '';
@@ -246,7 +232,6 @@ export default defineEventHandler(async (event) => {
           discount_description: discountDescription,
           tax_amount: (taxCalculation ? taxCalculation.tax_amount_exclusive : 0).toString(),
           tax_rate: (taxCalculation ? (taxCalculation.tax_amount_exclusive / discountedBaseAmount * 100).toFixed(2) : '0').toString(),
-          selected_plan,
           promo_code
         },
         automatic_payment_methods: {

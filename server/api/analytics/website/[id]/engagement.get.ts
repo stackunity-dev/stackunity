@@ -54,18 +54,18 @@ export default defineEventHandler(async (event) => {
     const scrollQuery = `
       SELECT 
         AVG(CASE 
-          WHEN JSON_EXTRACT(value_data, '$.scrollDepth') IS NOT NULL 
-          THEN CAST(JSON_EXTRACT(value_data, '$.scrollDepth') AS DECIMAL(10,2))
+          WHEN JSON_EXTRACT(value_data, '$.depth') IS NOT NULL 
+          THEN CAST(JSON_EXTRACT(value_data, '$.depth') AS DECIMAL(10,2))
           ELSE NULL 
         END) AS averageScrollDepth,
-        COUNT(*) AS totalPageViews,
-        SUM(CASE WHEN JSON_EXTRACT(value_data, '$.scrollDepth') >= 25 THEN 1 ELSE 0 END) AS reaching25,
-        SUM(CASE WHEN JSON_EXTRACT(value_data, '$.scrollDepth') >= 50 THEN 1 ELSE 0 END) AS reaching50,
-        SUM(CASE WHEN JSON_EXTRACT(value_data, '$.scrollDepth') >= 75 THEN 1 ELSE 0 END) AS reaching75,
-        SUM(CASE WHEN JSON_EXTRACT(value_data, '$.scrollDepth') >= 100 THEN 1 ELSE 0 END) AS reaching100
+        COUNT(DISTINCT pageview_id) AS totalPageViews,
+        SUM(CASE WHEN JSON_EXTRACT(value_data, '$.depth') >= 25 THEN 1 ELSE 0 END) AS reaching25,
+        SUM(CASE WHEN JSON_EXTRACT(value_data, '$.depth') >= 50 THEN 1 ELSE 0 END) AS reaching50,
+        SUM(CASE WHEN JSON_EXTRACT(value_data, '$.depth') >= 75 THEN 1 ELSE 0 END) AS reaching75,
+        SUM(CASE WHEN JSON_EXTRACT(value_data, '$.depth') >= 100 THEN 1 ELSE 0 END) AS reaching100
       FROM analytics_interactions
       WHERE website_id = ? 
-        AND interaction_type = 'page_duration'
+        AND interaction_type = 'scroll_depth'
         ${startDate ? dateFilter : ''}
     `;
 
@@ -78,11 +78,11 @@ export default defineEventHandler(async (event) => {
     const totalPageViews = scrollData.totalPageViews || 1; // Éviter la division par zéro
 
     const scrollMetrics = {
-      averageScrollDepth: scrollData.averageScrollDepth || 0,
-      percentagesReaching25: (scrollData.reaching25 / totalPageViews) * 100 || 0,
-      percentagesReaching50: (scrollData.reaching50 / totalPageViews) * 100 || 0,
-      percentagesReaching75: (scrollData.reaching75 / totalPageViews) * 100 || 0,
-      percentagesReaching100: (scrollData.reaching100 / totalPageViews) * 100 || 0
+      averageScrollDepth: Number(scrollData.averageScrollDepth) || 0,
+      percentagesReaching25: Math.min(100, Number((scrollData.reaching25 / totalPageViews) * 100) || 0),
+      percentagesReaching50: Math.min(100, Number((scrollData.reaching50 / totalPageViews) * 100) || 0),
+      percentagesReaching75: Math.min(100, Number((scrollData.reaching75 / totalPageViews) * 100) || 0),
+      percentagesReaching100: Math.min(100, Number((scrollData.reaching100 / totalPageViews) * 100) || 0)
     };
 
     const timeQuery = `
@@ -118,10 +118,10 @@ export default defineEventHandler(async (event) => {
     const totalSessions = timeData.totalSessions || 1;
 
     const timeMetrics = {
-      averageSessionDuration: timeData.averageSessionDuration || 0,
-      averageTimeOnPage: pageTimeData.averageTimeOnPage || 0,
-      totalTimeSpent: timeData.totalTimeSpent || 0,
-      bounceRate: (timeData.bounceCount / totalSessions) * 100 || 0
+      averageSessionDuration: Number(timeData.averageSessionDuration) || 0,
+      averageTimeOnPage: Number(pageTimeData.averageTimeOnPage) || 0,
+      totalTimeSpent: Number(timeData.totalTimeSpent) || 0,
+      bounceRate: Math.min(100, Number((timeData.bounceCount / totalSessions) * 100) || 0)
     };
 
     const sessionQuery = `
@@ -163,10 +163,10 @@ export default defineEventHandler(async (event) => {
     const uniqueVisitors = sessionData.uniqueVisitors || 1;
 
     const sessionMetrics = {
-      totalSessions: sessionData.totalSessions || 0,
-      uniqueVisitors: uniqueVisitors,
-      sessionsPerVisitor: sessionData.totalSessions / uniqueVisitors || 1,
-      returningVisitors: returningData.returningVisitors || 0
+      totalSessions: Number(sessionData.totalSessions) || 0,
+      uniqueVisitors: Number(uniqueVisitors) || 0,
+      sessionsPerVisitor: Number(sessionData.totalSessions / uniqueVisitors) || 1,
+      returningVisitors: Number(returningData.returningVisitors) || 0
     };
 
     const clickQuery = `
@@ -181,6 +181,60 @@ export default defineEventHandler(async (event) => {
 
     const [clickRows] = await pool.query<RowDataPacket[]>(
       clickQuery,
+      startDate ? [dbWebsiteId, ...dateParams] : [dbWebsiteId]
+    );
+
+    // Requête pour les interactions de formulaire
+    const formQuery = `
+      SELECT 
+        COUNT(*) AS totalFormSubmits,
+        COUNT(DISTINCT session_id) AS sessionsWithForms,
+        COUNT(DISTINCT element_selector) AS uniqueForms
+      FROM analytics_interactions
+      WHERE website_id = ? 
+        AND interaction_type = 'form_submit'
+        ${startDate ? dateFilter : ''}
+    `;
+
+    const [formRows] = await pool.query<RowDataPacket[]>(
+      formQuery,
+      startDate ? [dbWebsiteId, ...dateParams] : [dbWebsiteId]
+    );
+
+    // Requête pour les interactions de champs de saisie
+    const inputQuery = `
+      SELECT 
+        COUNT(*) AS totalInputChanges,
+        COUNT(DISTINCT session_id) AS sessionsWithInputs,
+        COUNT(DISTINCT element_selector) AS uniqueInputs
+      FROM analytics_interactions
+      WHERE website_id = ? 
+        AND interaction_type = 'input_change'
+        ${startDate ? dateFilter : ''}
+    `;
+
+    const [inputRows] = await pool.query<RowDataPacket[]>(
+      inputQuery,
+      startDate ? [dbWebsiteId, ...dateParams] : [dbWebsiteId]
+    );
+
+    // Requête pour les formulaires les plus utilisés
+    const topFormsQuery = `
+      SELECT 
+        element_selector AS selector,
+        COUNT(*) AS count
+      FROM analytics_interactions
+      WHERE website_id = ? 
+        AND interaction_type = 'form_submit'
+        AND element_selector IS NOT NULL
+        ${startDate ? dateFilter : ''}
+      GROUP BY element_selector
+      ORDER BY count DESC
+      LIMIT 3
+    `;
+
+    const [topFormsRows] = await pool.query<RowDataPacket[]>(
+      topFormsQuery,
       startDate ? [dbWebsiteId, ...dateParams] : [dbWebsiteId]
     );
 
@@ -204,28 +258,56 @@ export default defineEventHandler(async (event) => {
     );
 
     const clickData = clickRows[0];
+    const formData = formRows[0];
+    const inputData = inputRows[0];
     const totalClicks = clickData.totalClicks || 0;
     const totalMinutes = timeData.totalTimeSpent / 60 || 1;
 
     const clickMetrics = {
-      clickRate: clickData.sessionsWithClicks / totalSessions || 0,
-      clicksPerSession: totalClicks / totalSessions || 0,
-      clicksPerMinute: totalClicks / totalMinutes || 0,
-      mostClickedElements: elementRows
+      clickRate: Math.min(1, Number(clickData.sessionsWithClicks / totalSessions) || 0),
+      clicksPerSession: Number(totalClicks / totalSessions) || 0,
+      clicksPerMinute: Number(totalClicks / totalMinutes) || 0,
+      mostClickedElements: elementRows.map(row => ({
+        selector: row.selector,
+        count: Number(row.count) || 0
+      }))
     };
 
-    const timeScore = Math.min(100, (timeMetrics.averageTimeOnPage / 120) * 100);
-    const scrollScore = scrollMetrics.averageScrollDepth;
-    const clickScore = Math.min(100, (clickMetrics.clicksPerSession / 3) * 100);
-    const bounceScore = Math.max(0, 100 - timeMetrics.bounceRate);
-    const returnScore = Math.min(100, (sessionMetrics.returningVisitors / uniqueVisitors) * 200);
+    // Nouvelles métriques d'engagement pour les formulaires
+    const formMetrics = {
+      totalFormSubmits: Number(formData.totalFormSubmits) || 0,
+      formSubmitRate: Math.min(1, Number(formData.sessionsWithForms / totalSessions) || 0),
+      averageFormSubmitsPerSession: Number(formData.totalFormSubmits / totalSessions) || 0,
+      uniqueForms: Number(formData.uniqueForms) || 0,
+      topForms: topFormsRows.map(row => ({
+        selector: row.selector,
+        count: Number(row.count) || 0
+      }))
+    };
+
+    // Nouvelles métriques d'engagement pour les champs de saisie
+    const inputMetrics = {
+      totalInputChanges: Number(inputData.totalInputChanges) || 0,
+      inputChangeRate: Math.min(1, Number(inputData.sessionsWithInputs / totalSessions) || 0),
+      averageInputChangesPerSession: Number(inputData.totalInputChanges / totalSessions) || 0,
+      uniqueInputs: Number(inputData.uniqueInputs) || 0
+    };
+
+    const timeScore = Math.min(100, Number((timeMetrics.averageTimeOnPage / 120) * 100));
+    const scrollScore = Math.min(100, Number(scrollMetrics.averageScrollDepth));
+    const clickScore = Math.min(100, Number((clickMetrics.clicksPerSession / 3) * 100));
+    const bounceScore = Math.max(0, Math.min(100, Number(100 - timeMetrics.bounceRate)));
+    const returnScore = Math.min(100, Number((sessionMetrics.returningVisitors / uniqueVisitors) * 200));
+    // Nouveau score pour l'engagement avec les formulaires
+    const formScore = Math.min(100, Number((formMetrics.formSubmitRate * 100) + (inputMetrics.inputChangeRate * 50)));
 
     const globalScore = Math.round(
-      timeScore * 0.3 +
-      scrollScore * 0.25 +
+      timeScore * 0.2 +
+      scrollScore * 0.2 +
       clickScore * 0.2 +
       bounceScore * 0.15 +
-      returnScore * 0.1
+      returnScore * 0.1 +
+      formScore * 0.15
     );
 
     return {
@@ -235,7 +317,9 @@ export default defineEventHandler(async (event) => {
         scrollMetrics,
         timeMetrics,
         sessionMetrics,
-        clickMetrics
+        clickMetrics,
+        formMetrics,
+        inputMetrics
       }
     };
   } catch (error) {

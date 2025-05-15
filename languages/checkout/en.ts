@@ -128,5 +128,16 @@ export default {
       text: "StackUnity has completely transformed my development workflow. The investment is definitely worth it!",
       author: "Nûr D. - Full Stack Developer"
     }
+  },
+  specialOffer: {
+    title: "Limited time offer",
+    description: "Promotional offer available only today"
+  },
+  trustIndicators: {
+    title: "They trust us",
+    securePayment: "Secure payment",
+    satisfaction: "Satisfaction guaranteed",
+    customers: "+5000 satisfied customers",
+    updates: "Regular updates"
   }
 } 

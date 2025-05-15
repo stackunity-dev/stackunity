@@ -20,6 +20,7 @@ export default {
   map: 'Mapa',
   source: 'Fuente',
   device: 'Dispositivo',
+  engagementTab: 'Interacciones',
   errorTab: 'Error',
   interactionsTab: 'Interacciones',
   analyticsFor: 'Análisis para',
