@@ -16,7 +16,6 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Récupérer les informations de connexion depuis la base de données
     const connections = await query<any[]>(
       `SELECT id, name, type, host, port, database_name, username, 
               password_encrypted, created_at, updated_at

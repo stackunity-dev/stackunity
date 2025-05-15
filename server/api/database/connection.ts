@@ -3,7 +3,6 @@ import { createError, defineEventHandler, getMethod, H3Event, readBody } from 'h
 import { decryptSensitiveData, encryptSensitiveData, generateId, query } from '../../database/db';
 import { getConnectionPool } from './pool';
 
-// Fonction de déchiffrement sécurisée
 export function decryptData(encryptedData: string): string {
   if (!encryptedData || !encryptedData.includes(':')) return '';
 
@@ -26,7 +25,6 @@ export function decryptData(encryptedData: string): string {
   }
 }
 
-// Interface pour les connexions de base de données
 export interface DatabaseConnection {
   id: string;
   name: string;
@@ -41,7 +39,6 @@ export interface DatabaseConnection {
   updatedAt?: string;
 }
 
-// Stockage temporaire des connexions (dans un environnement de production, utilisez une base de données)
 const connections = new Map<string, DatabaseConnection>();
 
 function getDefaultPort(dbType: string): number {
@@ -88,7 +85,6 @@ async function handleCreateConnection(event: H3Event) {
     const body = await readBody(event);
     const user = event.context.user || { id: 'demo-user' };
 
-    // Validation des entrées
     if (!body.name || !body.type || !body.host || !body.database || !body.username || !body.password) {
       throw createError({
         statusCode: 400,
@@ -97,7 +93,6 @@ async function handleCreateConnection(event: H3Event) {
       });
     }
 
-    // Tester la connexion avant de l'enregistrer
     await getConnectionPool({
       id: 'test-connection',
       type: body.type,
@@ -108,14 +103,11 @@ async function handleCreateConnection(event: H3Event) {
       password: body.password
     });
 
-    // Chiffrer le mot de passe
     const encryptedPassword = encryptSensitiveData(body.password);
 
-    // Générer un ID pour la nouvelle connexion
     const connectionId = generateId();
 
     try {
-      // Créer une nouvelle connexion
       await query(
         `INSERT INTO database_info 
          (id, user_id, name, type, host, port, database_name, username, password_encrypted) 

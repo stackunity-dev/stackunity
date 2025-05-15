@@ -18,8 +18,7 @@
             <v-window-item value="terminal">
               <v-row class="pa-4">
                 <v-col cols="12">
-                  <SQLTerminal @connection-change="handleConnectionChange" :initialConnection="activeConnection"
-                    @query-executed="handleQueryExecuted" ref="sqlTerminalRef" />
+                  <SQLTerminal :initialConnection="activeConnection" ref="sqlTerminalRef" />
                 </v-col>
               </v-row>
             </v-window-item>
@@ -127,7 +126,7 @@
                             <div class="text-subtitle-2">{{ t().database.notConnected || 'Not connected' }}</div>
                             <div class="text-body-2">{{ t().database.connectPrompt ||
                               'Connect to a database to start'
-                              }}</div>
+                            }}</div>
                           </div>
                         </div>
                       </v-alert>
@@ -200,9 +199,6 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="pa-4 pt-0">
-          <v-btn variant="text" @click="testConnection" :loading="testing">
-            {{ t().database.testConnection || 'Test Connection' }}
-          </v-btn>
           <v-spacer></v-spacer>
           <v-btn variant="tonal" @click="showConnectionDialog = false">
             {{ t().actions.cancel || 'Cancel' }}
@@ -261,7 +257,7 @@
               <v-list-item-title>{{ t().database.step1Title || 'Add a Database Connection' }}</v-list-item-title>
               <v-list-item-subtitle>{{ t().database.step1Text ||
                 'Go to Configuration tab and add your database details'
-                }}</v-list-item-subtitle>
+              }}</v-list-item-subtitle>
             </v-list-item>
             <v-list-item>
               <template v-slot:prepend>
@@ -271,7 +267,7 @@
               </template>
               <v-list-item-title>{{ t().database.step2Title || 'Connect to Your Database' }}</v-list-item-title>
               <v-list-item-subtitle>{{ t().database.step2Text || 'Click the connect icon next to your database'
-                }}</v-list-item-subtitle>
+              }}</v-list-item-subtitle>
             </v-list-item>
             <v-list-item>
               <template v-slot:prepend>
@@ -281,7 +277,7 @@
               </template>
               <v-list-item-title>{{ t().database.step3Title || 'Run SQL Queries' }}</v-list-item-title>
               <v-list-item-subtitle>{{ t().database.step3Text || 'Use the SQL Terminal or Editor to execute commands'
-                }}</v-list-item-subtitle>
+              }}</v-list-item-subtitle>
             </v-list-item>
           </v-list>
 
@@ -310,55 +306,24 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="showUpgradeDialog" max-width="500px">
-      <v-card>
-        <v-card-title class="bg-amber text-white">
-          {{ t().premium.upgradeTitle || 'Upgrade to Premium' }}
+    <v-dialog v-model="betaDialog" max-width="600px">
+      <v-card class="rounded-lg">
+        <v-card-title class="bg-secondary text-white">
+          <v-icon color="white" class="mr-2">mdi-information-outline</v-icon>
+          Beta Feature
         </v-card-title>
         <v-card-text class="pa-4">
-          <v-alert color="amber" variant="tonal" class="mb-4">
-            <div class="d-flex align-center">
-              <v-icon color="amber-darken-3" class="mr-2">mdi-crown</v-icon>
-              <div class="text-subtitle-1">{{ t().premium.unlockFeatures || 'Unlock Premium Features' }}</div>
-            </div>
-          </v-alert>
-
-          <h3 class="text-h6 mb-2">{{ t().premium.featuresIncluded || 'Features Included:' }}</h3>
-          <v-list>
-            <v-list-item prepend-icon="mdi-brain">
-              <v-list-item-title>{{ t().premium.sqlAssistant || 'SQL Assistant AI' }}</v-list-item-title>
-              <v-list-item-subtitle>{{ t().premium.sqlAssistantDesc ||
-                'Advanced AI-powered SQL assistance and generation'
-              }}</v-list-item-subtitle>
-            </v-list-item>
-
-            <v-list-item prepend-icon="mdi-chart-areaspline">
-              <v-list-item-title>{{ t().premium.dataVis || 'Advanced Data Visualization' }}</v-list-item-title>
-              <v-list-item-subtitle>{{ t().premium.dataVisDesc || 'Interactive charts and visual query execution plans'
-                }}</v-list-item-subtitle>
-            </v-list-item>
-
-            <v-list-item prepend-icon="mdi-tools">
-              <v-list-item-title>{{ t().premium.productivity || 'Productivity Tools' }}</v-list-item-title>
-              <v-list-item-subtitle>{{ t().premium.productivityDesc ||
-                'Query scheduler, version history, and advanced exports'
-              }}</v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-
-          <v-alert color="info" variant="tonal" class="mt-4 mb-4">
-            {{ t().premium.limitedOffer || 'Limited time offer: Get 20% off when you upgrade today!' }}
-          </v-alert>
+          <p>
+            This is a beta feature for now. <br>
+            Please come in few days for the full version.
+          </p>
+          <v-btn color="warning" variant="tonal" class="ma-2" @click="betaDialog = false">
+            Close
+          </v-btn>
+          <v-btn color="secondary" variant="tonal" class="ma-2" @click="betaDialog = false">
+            Continue
+          </v-btn>
         </v-card-text>
-        <v-card-actions class="pa-4">
-          <v-spacer></v-spacer>
-          <v-btn variant="text" @click="showUpgradeDialog = false">
-            {{ t().buttons.cancel || 'Later' }}
-          </v-btn>
-          <v-btn color="amber-darken-2" @click="redirectToPricing">
-            {{ t().premium.viewPlans || 'View Plans' }}
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -377,6 +342,10 @@ import { definePageMeta, navigateTo } from '#imports';
 
 const t = useTranslations('databaseManagement');
 
+onMounted(() => {
+  betaDialog.value = true;
+});
+
 definePageMeta({
   layout: 'dashboard',
 });
@@ -394,7 +363,6 @@ interface DatabaseConnection {
 
 const activeTab = ref('terminal');
 const sqlTerminalRef = ref<InstanceType<typeof SQLTerminal> | null>(null);
-const showUpgradeDialog = ref(false);
 const isPremiumFeature = ref(false);
 const connections = ref<DatabaseConnection[]>([]);
 const activeConnection = ref<DatabaseConnection | null>(null);
@@ -405,7 +373,7 @@ const showDeleteDialog = ref(false);
 const showInfoPanel = ref(false);
 const editMode = ref(false);
 const connectionToDelete = ref<DatabaseConnection | null>(null);
-const testing = ref(false);
+const betaDialog = ref(false);
 const saving = ref(false);
 const deleting = ref(false);
 const showSnackbar = ref(false);
@@ -430,6 +398,53 @@ const connectionTypes = [
 
 const snackbarText = ref('');
 const snackbarColor = ref('');
+
+const editConnection = (connection: DatabaseConnection) => {
+  editMode.value = true;
+  newConnection.value = { ...connection };
+  showConnectionDialog.value = true;
+};
+
+const deleteConnection = (connection: DatabaseConnection) => {
+  connectionToDelete.value = connection;
+  showDeleteDialog.value = true;
+};
+
+const saveConnection = async () => {
+  try {
+    const response = await fetch('/api/database/connection', {
+      method: 'POST',
+      body: JSON.stringify(newConnection.value)
+    });
+    if (!response.ok) {
+      throw new Error('Failed to save connection');
+    }
+    const data = await response.json();
+  } catch (error) {
+    console.error('Error saving connection:', error);
+  }
+};
+
+const confirmDelete = async () => {
+  try {
+    const response = await fetch('/api/database/connection', {
+      method: 'DELETE',
+      body: JSON.stringify({ id: connectionToDelete.value?.id })
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete connection');
+    }
+    const data = await response.json();
+    if (data.success) {
+      connections.value = connections.value.filter(conn => conn.id !== connectionToDelete.value?.id);
+      snackbarText.value = data.message;
+      snackbarColor.value = 'success';
+      showSnackbar.value = true;
+    }
+  } catch (error) {
+    console.error('Error deleting connection:', error);
+  }
+};
 
 const showAddConnectionDialog = () => {
   editMode.value = false;
@@ -457,10 +472,18 @@ onMounted(() => {
   }
 });
 
-function redirectToPricing() {
-  showUpgradeDialog.value = false;
-  navigateTo('/checkout');
-}
+const connectToDatabase = (connection: DatabaseConnection) => {
+  activeConnection.value = connection;
+
+  snackbarText.value = t().database.connectedTo?.replace('{name}', connection.name) ||
+    `Connected to ${connection.name}`;
+  snackbarColor.value = 'success';
+  showSnackbar.value = true;
+
+  if (activeTab.value === 'config') {
+    activeTab.value = 'terminal';
+  }
+};
 </script>
 
 <style scoped>
