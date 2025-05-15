@@ -135,9 +135,18 @@ const getImageSrc = computed(() => {
 
 const Pricing = defineAsyncComponent({
   loader: () => import('../components/pricing.vue'),
-  delay: 200,
+  delay: 0,
   suspensible: false,
-  timeout: 10000
+  timeout: 0,
+  loadingComponent: undefined,
+  errorComponent: undefined,
+  onError(error, retry, fail, attempts) {
+    if (attempts <= 3) {
+      retry();
+    } else {
+      fail();
+    }
+  }
 });
 
 const Faq = defineAsyncComponent({
@@ -193,8 +202,6 @@ useHead({
   ],
   link: [
     { rel: 'canonical', href: 'https://stackunity.tech' },
-    { rel: 'preload', href: '/logo/stackunity-title.png', as: 'image' },
-    { rel: 'preload', href: '/images/StackUnity-analytics.avif', as: 'image' }
   ],
   script: [
     {
