@@ -1002,7 +1002,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async updatePremiumStatus(selectedPlan: string) {
+    async updatePremiumStatus() {
       try {
         if (!this.user) {
           return { success: false, error: 'user not found' };
@@ -1021,7 +1021,7 @@ export const useUserStore = defineStore('user', {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token}`
           },
-          body: JSON.stringify({ userId, selectedPlan })
+          body: JSON.stringify({ userId })
         });
 
         if (!response.ok) {
@@ -1032,17 +1032,8 @@ export const useUserStore = defineStore('user', {
 
         if (data.success) {
           if (this.user) {
-            if (selectedPlan === 'premium') {
-              this.user.isPremium = true;
-              this.user.isStandard = false;
-              this.isPremium = true;
-              this.isStandard = false;
-            } else if (selectedPlan === 'standard') {
-              this.user.isPremium = false;
-              this.user.isStandard = true;
-              this.isPremium = false;
-              this.isStandard = true;
-            }
+            this.user.isPremium = data.isPremium;
+            this.isPremium = data.isPremium;
 
             if (data.subscription_status) {
               this.user.subscription_status = data.subscription_status;
@@ -1069,8 +1060,7 @@ export const useUserStore = defineStore('user', {
 
           return {
             success: true,
-            isPremium: selectedPlan === 'premium',
-            isStandard: selectedPlan === 'standard',
+            isPremium: data.isPremium,
             subscription_status: data.subscription_status,
             requireRelogin: true
           };

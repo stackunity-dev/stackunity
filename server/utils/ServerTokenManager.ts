@@ -8,8 +8,6 @@ import {
 } from './auth-config';
 import { TokenPayload } from './TokenManager';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
 export class ServerTokenManager {
   static generateAccessToken(payload: TokenPayload & { isRememberMe?: boolean }): string {
     const expiresIn = payload.isRememberMe ? ACCESS_TOKEN_EXPIRY_REMEMBER : ACCESS_TOKEN_EXPIRY_DEFAULT;
@@ -44,7 +42,7 @@ export class ServerTokenManager {
 
   static verifyToken(token: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      jwt.verify(token, ACCESS_TOKEN_SECRET as string, (err, decoded) => {
         if (err) {
           reject(err);
         } else {
@@ -55,6 +53,6 @@ export class ServerTokenManager {
   }
 
   static generateToken(payload: any): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+    return jwt.sign(payload, ACCESS_TOKEN_SECRET as string, { expiresIn: ACCESS_TOKEN_EXPIRY_DEFAULT });
   }
 } 

@@ -7,7 +7,8 @@ export default {
     title: 'Choisissez votre forfait',
     subtitle: 'Tarifs',
     description: 'Commencez avec un essai gratuit de 7 jours. Aucune carte de crédit requise.',
-    popular: 'LE PLUS POPULAIRE'
+    popular: 'LE PLUS POPULAIRE',
+    compare: 'Comparer'
   },
   currency: {
     label: 'Sélectionner la devise'

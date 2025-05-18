@@ -27,14 +27,14 @@
         <v-col cols="12" class="d-flex justify-center align-center d-sm-none py-4">
           <v-chip color="warning" size="large" label variant="elevated" class="compare-chip">
             <v-icon start>mdi-compare</v-icon>
-            {{ t().section.compare || 'Comparer' }}
+            {{ t().section.compare || 'Compare' }}
           </v-chip>
         </v-col>
 
         <v-col cols="12" sm="6" md="5">
           <price-card :plan="premiumPlan" :selected-currency="selectedCurrency" :is-popular="true"
-            card-class="premium-plan highlight-card" :btn-text="t().plans.premium.cta" btn-color="tertiary" btn-to="/signup"
-            btn-icon="mdi-arrow-right" />
+            card-class="premium-plan highlight-card" :btn-text="t().plans.premium.cta" btn-color="tertiary"
+            btn-to="/signup" btn-icon="mdi-arrow-right" />
         </v-col>
       </v-row>
 
@@ -47,14 +47,8 @@
               <p class="text-body-1 text-medium-emphasis">
                 {{ guarantee.description }}
               </p>
-              <v-rating
-                v-model="rating"
-                color="warning"
-                density="compact"
-                readonly
-                half-increments
-                class="mt-3 justify-center"
-              ></v-rating>
+              <v-rating v-model="rating" color="warning" density="compact" readonly half-increments
+                class="mt-3 justify-center"></v-rating>
             </v-card-text>
           </v-card>
         </v-col>
@@ -100,22 +94,7 @@
           </v-col>
         </v-row>
       </v-expand-transition>
-      
-      <v-row class="mt-12 justify-center" v-if="!showFeatureComparison">
-        <v-col cols="12" sm="8" md="6" class="text-center">
-          <v-alert
-            color="info"
-            border="start"
-            variant="tonal"
-            density="compact"
-            icon="mdi-information-outline"
-            class="limited-time-offer"
-          >
-            {{ t().section.limitedOffer || 'Offre à durée limitée !' }}
-          </v-alert>
-        </v-col>
-      </v-row>
-      
+
     </v-container>
   </section>
 </template>
@@ -307,9 +286,15 @@ const comparisonFeatures = ref([
 }
 
 @keyframes highlight-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(var(--v-theme-warning), 0); }
-  100% { box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--v-theme-warning), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0);
+  }
 }
 
 .highlight-card {

@@ -11,6 +11,7 @@ export default {
   tabs: {
     terminal: 'SQL 终端',
     visualizer: '可视化器',
+    analyzer: 'SQL 分析器',
     config: '配置'
   },
   database: {
@@ -96,6 +97,9 @@ export default {
     connect: '连接',
     connected: '已连接',
     exportDatabase: '导出数据库为 JSON',
+    terminal: '终端',
+    query: '查询',
+    visualizer: '可视化器',
     form: {
       name: 'Name',
       type: 'Type',
@@ -127,5 +131,71 @@ export default {
     loadingUsageData: '加载使用数据...',
     connectToSeeUsage: '连接到数据库以查看空间使用情况',
     errorLoadingData: '加载数据错误'
+  },
+  sqlAnalyzer: {
+    title: 'SQL Analyzer',
+    noQuery: '没有查询执行',
+    tabs: {
+      analysis: '分析',
+      optimization: '优化',
+      execution: '执行'
+    },
+    queryAnalysis: {
+      title: '查询分析',
+      tables: '表',
+      affectedTables: '受影响的表',
+      warnings: '警告',
+      queryMetrics: {
+        executionTime: '执行时间',
+        rowsAffected: '受影响的行',
+        queryType: '查询类型',
+        queryComplexity: '查询复杂性',
+        queryCost: '查询成本'
+      }
+    },
+    queryOptimization: {
+      title: '查询优化',
+      tables: '表',
+      affectedTables: '受影响的表',
+      warnings: '警告',
+      faster: '更快',
+      noSuggestions: '没有建议',
+      indexSuggestions: '索引建议',
+      copy: '复制优化查询',
+      apply: '应用优化',
+      noIndexSuggestions: '没有索引建议',
+    },
+    executionPlan: {
+      title: '执行计划',
+      noExecutionPlan: '没有执行计划',
+      efficiency: '效率',
+      notAvailable: '不可用',
+      estimatedTime: '估计时间',
+    }
+  },
+  sqlVisualizer: {
+    title: 'SQL 可视化器',
+    noResults: '没有结果显示',
+    noQuery: '没有查询执行',
+    download: '下载',
+    barChartHint: '条形图可视化',
+    lineChartHint: '折线图可视化',
+    barChart: '条形图',
+    lineChart: '折线图',
+    pieChart: '饼图',
+    pieChartHint: '饼图可视化',
+    heatmapHint: '热图可视化',
+    customization: '自定义',
+    xAxis: 'X轴',
+    yAxis: 'Y轴',
+    chartType: '图表类型',
+    chartSize: '图表大小',
+    chartSizeHint: '调整图表大小以满足您的需求',
+    groupBy: '分组',
+    dataPointLimit: '数据点限制',
+    showLegend: '显示图例',
+    dashboardTitle: '仪表板',
+    addWidget: '添加小部件',
+    emptyDashboard: '没有小部件',
   }
-} 
+}

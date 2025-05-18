@@ -10,6 +10,7 @@ export default {
   },
   tabs: {
     terminal: 'SQL Terminal',
+    analyzer: 'SQL Analyzer',
     visualizer: 'Visualizer',
     config: 'Configuration'
   },
@@ -96,6 +97,9 @@ export default {
     connect: 'Connecter',
     connected: 'Connecté',
     exportDatabase: 'Exporter la base de données en JSON',
+    terminal: 'Terminal',
+    query: 'Requête',
+    visualizer: 'Visualisateur',
     form: {
       name: 'Nom',
       type: 'Type',
@@ -127,5 +131,71 @@ export default {
     loadingUsageData: 'Chargement des données...',
     connectToSeeUsage: 'Connectez-vous à une base de données pour voir l\'utilisation de l\'espace',
     errorLoadingData: 'Erreur lors du chargement des données'
+  },
+  sqlAnalyzer: {
+    title: 'SQL Analyzer',
+    noQuery: 'Aucune requête exécutée',
+    tabs: {
+      analysis: 'Analyse',
+      optimization: 'Optimisation',
+      execution: 'Exécution'
+    },
+    queryAnalysis: {
+      title: 'Analyse de la requête',
+      tables: 'Tables',
+      affectedTables: 'Tables affectées',
+      warnings: 'Avertissements',
+      queryMetrics: {
+        executionTime: 'Temps d\'exécution',
+        rowsAffected: 'Lignes affectées',
+        queryType: 'Type de requête',
+        queryComplexity: 'Complexité de la requête',
+        queryCost: 'Coût de la requête'
+      }
+    },
+    queryOptimization: {
+      title: 'Optimisation de la requête',
+      tables: 'Tables',
+      affectedTables: 'Tables affectées',
+      warnings: 'Avertissements',
+      faster: 'Plus rapide',
+      noSuggestions: 'Aucune suggestion trouvée',
+      indexSuggestions: 'Suggestions d\'index',
+      copy: 'Copier la requête optimisée',
+      apply: 'Appliquer l\'optimisation',
+      noIndexSuggestions: 'Aucune suggestion d\'index trouvée',
+    },
+    executionPlan: {
+      title: 'Plan d\'exécution',
+      noExecutionPlan: 'Aucun plan d\'exécution disponible',
+      efficiency: 'Efficiency',
+      notAvailable: 'Non disponible',
+      estimatedTime: 'Temps estimé',
+    }
+  },
+  sqlVisualizer: {
+    title: 'SQL Visualizer',
+    noResults: 'Aucun résultat à afficher',
+    noQuery: 'Aucune requête exécutée',
+    download: 'Télécharger',
+    barChartHint: 'Visualisation du graphique en barres',
+    lineChartHint: 'Visualisation du graphique en ligne',
+    barChart: 'Graphique en barres',
+    lineChart: 'Graphique en ligne',
+    pieChart: 'Graphique en secteurs',
+    pieChartHint: 'Visualisation du graphique en secteurs',
+    heatmapHint: 'Visualisation du graphique en chaleur',
+    customization: 'Personnalisations',
+    xAxis: 'Axe X',
+    yAxis: 'Axe Y',
+    chartType: 'Type de graphique',
+    chartSize: 'Taille du graphique',
+    chartSizeHint: 'Ajustez la taille du graphique à vos besoins',
+    groupBy: 'Regrouper par',
+    dataPointLimit: 'Limite de points de données',
+    showLegend: 'Afficher la légende',
+    dashboardTitle: 'Tableau de bord',
+    addWidget: 'Ajouter un widget',
+    emptyDashboard: 'Aucun widget ajouté',
   }
-} 
+}

@@ -23,7 +23,7 @@
         <v-col cols="12" lg="9">
           <v-card class="rounded-lg" elevation="2">
             <div v-if="activeTab === 'website'">
-              <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center"
+              <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center"
                 id="website-settings-title">
                 <v-icon color="white" class="mr-2" aria-hidden="true">mdi-web</v-icon>
                 <h2 class="text-h5 mb-0">{{ t().website.title }}</h2>
@@ -47,7 +47,7 @@
                   <v-col cols="12" sm="6">
                     <v-card variant="outlined" class="mb-3 pa-3">
                       <v-card-title class="text-subtitle-1 font-weight-bold">{{ t().website.analysis.title
-                        }}</v-card-title>
+                      }}</v-card-title>
                       <v-card-text class="pa-0">
                         <p class="text-body-2 mb-3">{{ t().website.analysis.description }}</p>
                         <v-btn color="secondary" variant="outlined" prepend-icon="mdi-magnify"
@@ -68,7 +68,7 @@
                     <div class="d-flex justify-space-between align-center mb-3">
                       <h3 class="text-h6 font-weight-bold">{{ t().website.analysis.urlsDetected }} ({{
                         analyzisUrls.length
-                        }})</h3>
+                      }})</h3>
                       <div>
                         <v-btn color="secondary" variant="outlined" density="comfortable" size="small"
                           prepend-icon="mdi-content-copy" @click="copyUrlsToClipboard" aria-label="Copy all URLs">
@@ -177,7 +177,7 @@
             </div>
 
             <div v-if="activeTab === 'appearance'">
-              <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
+              <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                 <v-icon color="white" class="mr-2">mdi-palette-outline</v-icon>
                 {{ t().appearance.title }}
               </v-card-title>
@@ -201,7 +201,7 @@
                             :color="isActiveTheme('dark') ? 'white' : 'primary'">mdi-weather-night</v-icon>
                           <span class="mt-2" :class="{ 'text-white': isActiveTheme('dark') }">{{
                             t().appearance.theme.dark
-                            }}</span>
+                          }}</span>
                         </v-card>
                       </v-col>
                       <v-col cols="12" sm="4">
@@ -211,7 +211,7 @@
                             :color="isActiveTheme('system') ? 'white' : 'primary'">mdi-theme-light-dark</v-icon>
                           <span class="mt-2" :class="{ 'text-white': isActiveTheme('system') }">{{
                             t().appearance.theme.system
-                            }}</span>
+                          }}</span>
                         </v-card>
                       </v-col>
                     </v-row>
@@ -230,8 +230,8 @@
             </div>
 
             <div v-if="activeTab === 'security'">
-              <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
-                <v-icon color="white" class="mr-2">mdi-shield-outline</v-icon>
+              <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
+                <v-icon color="white" class="mr-2">mdi-security</v-icon>
                 {{ t().security.title }}
               </v-card-title>
               <v-card-text class="pa-4">
@@ -260,7 +260,7 @@
             </div>
 
             <div v-if="activeTab === 'cookies'">
-              <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
+              <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                 <v-icon color="white" class="mr-2">mdi-cookie-settings-outline</v-icon>
                 {{ t().cookies.title }}
               </v-card-title>
@@ -335,7 +335,7 @@
             </div>
 
             <div v-if="activeTab === 'privacy'">
-              <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
+              <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                 <v-icon color="white" class="mr-2">mdi-delete-outline</v-icon>
                 {{ t().privacy.title }}
               </v-card-title>

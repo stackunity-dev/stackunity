@@ -196,8 +196,8 @@ const currentPageTitle = computed(() => {
     return t().menu.performance;
   } else if (path.includes('/animations')) {
     return t().menu.cssPlayground;
-  } else if (path.includes('/database-management')) {
-    return t().menu.databaseManagement;
+  } else if (path.includes('/stackql')) {
+    return t().menu.stackQL;
   } else if (path.includes('/semantic')) {
     return t().menu.structureAccessibility;
   } else if (path.includes('/security')) {
@@ -311,7 +311,7 @@ const getCurrentPageIcon = () => {
     return 'mdi-speedometer';
   } else if (path.includes('/animations')) {
     return 'mdi-animation';
-  } else if (path.includes('/database-management')) {
+  } else if (path.includes('/stackql')) {
     return 'mdi-database-cog';
   } else if (path.includes('/api-testing-hub')) {
     return 'mdi-api';
@@ -464,7 +464,7 @@ const items = computed(() => [
     prependIcon: 'mdi-database-outline',
     link: true,
     children: [
-      { title: t().features.databaseManagement, link: '/database-management', icon: 'mdi-database' },
+      { title: t().features.stackQL, link: '/stackql', icon: 'mdi-database' },
       { title: t().features.apiTestingHub, link: '/api-testing-hub', icon: 'mdi-api' }
     ]
   },

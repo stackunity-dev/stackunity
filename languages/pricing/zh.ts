@@ -7,7 +7,8 @@ export default {
     title: '选择您的方案',
     subtitle: '价格',
     description: '从7天免费试用开始。无需信用卡。',
-    popular: '最受欢迎'
+    popular: '最受欢迎',
+    compare: '比较'
   },
   currency: {
     label: '选择货币'

@@ -8,6 +8,14 @@
               <v-icon start>mdi-console</v-icon>
               {{ t().tabs.terminal || 'SQL Terminal' }}
             </v-tab>
+            <v-tab value="analyzer" class="text-subtitle-1">
+              <v-icon start>mdi-code-braces</v-icon>
+              {{ t().tabs.analyzer || 'SQL Analyzer' }}
+            </v-tab>
+            <v-tab value="visualizer" class="text-subtitle-1">
+              <v-icon start>mdi-chart-line</v-icon>
+              {{ t().tabs.visualizer || 'SQL Visualizer' }}
+            </v-tab>
             <v-tab value="config" class="text-subtitle-1">
               <v-icon start>mdi-cogs</v-icon>
               {{ t().tabs.config || 'Configuration' }}
@@ -18,7 +26,28 @@
             <v-window-item value="terminal">
               <v-row class="pa-4">
                 <v-col cols="12">
-                  <SQLTerminal :initialConnection="activeConnection" ref="sqlTerminalRef" />
+                  <SQLTerminal :initialConnection="activeConnection" ref="sqlTerminalRef"
+                    @connection-change="activeConnection = $event" @query-results="handleQueryResults"
+                    @change-tab="activeTab = $event" />
+                </v-col>
+              </v-row>
+            </v-window-item>
+
+            <v-window-item value="analyzer">
+              <v-row class="pa-4">
+                <v-col cols="12">
+                  <SQLQueryAnalyzer :key="(activeConnection?.id || '') + '-' + lastExecutedQuery"
+                    :query="lastExecutedQuery" :database-type="activeConnection?.type || 'mysql'"
+                    :analysis-results="analysisResults" :connection-id="activeConnection?.id || ''"
+                    @apply-optimization="applyOptimization" />
+                </v-col>
+              </v-row>
+            </v-window-item>
+
+            <v-window-item value="visualizer">
+              <v-row class="pa-4">
+                <v-col cols="12">
+                  <SQLResultVisualizer :results="results" :columns="columns" :loading="isExecuting" />
                 </v-col>
               </v-row>
             </v-window-item>
@@ -335,10 +364,12 @@
 import { onMounted, ref } from 'vue';
 import DatabaseUsage from '../components/database/DatabaseUsage.vue';
 import SQLTerminal from '../components/database/sqlTerminal.vue';
-import { useTranslations } from '../languages';
 import snackbar from '../components/snackbar.vue';
+import { useTranslations } from '../languages';
 // @ts-ignore
-import { definePageMeta, navigateTo } from '#imports';
+import { definePageMeta } from '#imports';
+import SQLQueryAnalyzer from '../components/database/SQLQueryAnalyzer.vue';
+import SQLResultVisualizer from '../components/database/SqlResultVisualizer.vue';
 
 const t = useTranslations('databaseManagement');
 
@@ -367,6 +398,26 @@ const isPremiumFeature = ref(false);
 const connections = ref<DatabaseConnection[]>([]);
 const activeConnection = ref<DatabaseConnection | null>(null);
 const connectionForm = ref<any>(null);
+
+// Variables pour les tabs SQLQueryAnalyzer et SQLResultVisualizer
+const lastExecutedQuery = ref('');
+const analysisResults = ref({
+  queryType: '',
+  affectedTables: [],
+  tableDetails: [],
+  warnings: [],
+  indexSuggestions: [],
+  optimizations: [],
+  executionPlan: {
+    totalCost: 0,
+    steps: []
+  },
+  efficiency: 0,
+  estimatedTime: 0
+});
+const results = ref<any[]>([]);
+const columns = ref<string[]>([]);
+const isExecuting = ref(false);
 
 const showConnectionDialog = ref(false);
 const showDeleteDialog = ref(false);
@@ -482,6 +533,23 @@ const connectToDatabase = (connection: DatabaseConnection) => {
 
   if (activeTab.value === 'config') {
     activeTab.value = 'terminal';
+  }
+};
+
+const applyOptimization = (optimizedQuery: string) => {
+  if (optimizedQuery && sqlTerminalRef.value) {
+    if ('updateQuery' in sqlTerminalRef.value) {
+      (sqlTerminalRef.value as any).updateQuery(optimizedQuery);
+    }
+  }
+};
+
+const handleQueryResults = (data: { query: string, results: any[], columns: string[] }) => {
+  results.value = data.results;
+  columns.value = data.columns;
+  lastExecutedQuery.value = data.query;
+  if (data.results.length > 5) {
+    activeTab.value = 'visualizer';
   }
 };
 </script>

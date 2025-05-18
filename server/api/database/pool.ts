@@ -5,10 +5,8 @@ import { open } from 'sqlite';
 import * as sqlite3 from 'sqlite3';
 import { decryptData } from './connection';
 
-// Stockage des pools de connexion actifs
 const pools: Record<string, any> = {};
 
-// Interface pour les options de connexion
 interface ConnectionOptions {
   id: string;
   type: string;
@@ -194,12 +192,18 @@ export async function executeQuery(connectionId: string, query: string, params: 
 
     switch (type) {
       case 'mysql': {
-        const [rows, fieldInfo] = await pool.execute(query, params);
-        results = rows;
-        fields = fieldInfo;
+        if (query.trim().toUpperCase().startsWith('USE')) {
+          const [rows, fieldInfo] = await pool.query(query);
+          results = rows;
+          fields = fieldInfo;
+        } else {
+          const [rows, fieldInfo] = await pool.execute(query, params);
+          results = rows;
+          fields = fieldInfo;
+        }
 
-        if (!Array.isArray(rows) && 'affectedRows' in rows) {
-          affectedRows = rows.affectedRows;
+        if (!Array.isArray(results) && 'affectedRows' in results) {
+          affectedRows = results.affectedRows;
         }
         break;
       }
@@ -274,10 +278,7 @@ export async function closeConnectionPool(connectionId: string): Promise<boolean
   }
 }
 
-/**
- * Ferme tous les pools de connexion inactifs
- * Cette fonction peut être appelée périodiquement pour libérer les ressources
- */
+
 export async function cleanupIdlePools(maxIdleTime: number = 30 * 60 * 1000): Promise<void> {
   const now = Date.now();
   const connectionIds = Object.keys(pools);
@@ -290,7 +291,6 @@ export async function cleanupIdlePools(maxIdleTime: number = 30 * 60 * 1000): Pr
   }
 }
 
-// Configurer un nettoyage périodique des pools inactifs (toutes les 15 minutes)
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     cleanupIdlePools().catch(err => {

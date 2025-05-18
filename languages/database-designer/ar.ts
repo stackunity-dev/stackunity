@@ -10,8 +10,9 @@ export default {
   },
   tabs: {
     terminal: 'محطة البيانات الخاصة بك',
+    analyzer: 'محلل البيانات الخاصة بك',
     visualizer: 'المرء',
-    config: 'التكوين'
+    config: 'التكوين',
   },
   database: {
     description: 'إدارة الاتصالات بقاعدة البيانات الخاصة بك',
@@ -96,6 +97,9 @@ export default {
     connect: 'اتصل',
     connected: 'متصل',
     exportDatabase: 'تصدير قاعدة البيانات كـ JSON',
+    terminal: 'محطة',
+    query: 'الاستعلام',
+    visualizer: 'المرء',
     form: {
       name: 'الاسم',
       type: 'النوع',
@@ -127,5 +131,71 @@ export default {
     loadingUsageData: 'جاري تحميل البيانات...',
     connectToSeeUsage: 'اتصل بقاعدة البيانات لرؤية استخدام المساحة',
     errorLoadingData: 'خطأ في تحميل البيانات'
+  },
+  sqlAnalyzer: {
+    title: 'SQL Analyzer',
+    noQuery: 'لا يوجد أوامر تم تنفيذها بعد',
+    tabs: {
+      analysis: 'تحليل',
+      optimization: 'تحسين',
+      execution: 'تنفيذ'
+    },
+    queryAnalysis: {
+      title: 'تحليل الأوامر',
+      tables: 'الجداول',
+      affectedTables: 'الجداول المؤثرة',
+      warnings: 'التحذيرات',
+      queryMetrics: {
+        executionTime: 'وقت التنفيذ',
+        rowsAffected: 'الصفوف المؤثرة',
+        queryType: 'نوع الأمر',
+        queryComplexity: 'تعقيد الأمر',
+        queryCost: 'تكلفة الأمر'
+      }
+    },
+    queryOptimization: {
+      title: 'تحسين الأوامر',
+      tables: 'الجداول',
+      affectedTables: 'الجداول المؤثرة',
+      warnings: 'التحذيرات',
+      faster: 'أسرع',
+      noSuggestions: 'لا يوجد اقتراحات',
+      indexSuggestions: 'اقتراحات المؤشرات',
+      copy: 'نسخ الأمر المحسن',
+      apply: 'تطبيق التحسين',
+      noIndexSuggestions: 'لا يوجد اقتراحات للمؤشرات',
+    },
+    executionPlan: {
+      title: 'خطة تنفيذ',
+      noExecutionPlan: 'لا يوجد خطة تنفيذ',
+      efficiency: 'الكفاءة',
+      notAvailable: 'غير متاح',
+      estimatedTime: 'وقت التقدير',
+    }
+  },
+  sqlVisualizer: {
+    title: 'SQL Visualizer',
+    noResults: 'لا يوجد نتائج للعرض',
+    noQuery: 'لا يوجد أوامر تم تنفيذها بعد',
+    download: 'تحميل',
+    barChartHint: 'رسم بياني عمودي',
+    lineChartHint: 'رسم بياني خطي',
+    barChart: 'رسم بياني عمودي',
+    lineChart: 'رسم بياني خطي',
+    pieChart: 'رسم بياني قطاعي',
+    pieChartHint: 'رسم بياني قطاعي',
+    heatmapHint: 'رسم بياني حراري',
+    customization: 'التخصيصات',
+    xAxis: 'المحور السيني',
+    yAxis: 'المحور الصادي',
+    chartType: 'نوع الرسم البياني',
+    chartSize: 'حجم الرسم البياني',
+    chartSizeHint: 'تعديل حجم الرسم البياني حسب الحاجة',
+    groupBy: 'تجميع حسب',
+    dataPointLimit: 'حد النقاط البيانية',
+    showLegend: 'عرض الرسم البياني',
+    dashboardTitle: 'لوحة التحكم',
+    addWidget: 'إضافة عنصر',
+    emptyDashboard: 'لا يوجد عناصر في لوحة التحكم',
   }
-} 
+}

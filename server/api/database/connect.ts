@@ -1,6 +1,6 @@
 import { createError, defineEventHandler, readBody } from 'h3';
 import { decryptSensitiveData, query } from '../../database/db';
-import { getConnectionPool } from './pool';
+import { getConnectionPool, testConnection } from './pool';
 
 export default defineEventHandler(async (event) => {
   try {
@@ -25,7 +25,6 @@ export default defineEventHandler(async (event) => {
     );
 
     if (!connections || connections.length === 0) {
-      // Si la connexion n'existe pas dans la base de données, essayer les connexions de démo
       if (connectionId.startsWith('demo')) {
         const demoConnection = {
           id: connectionId,
@@ -104,7 +103,23 @@ export default defineEventHandler(async (event) => {
         password: password
       });
 
-      // Mettre à jour la date de dernière utilisation
+      // Vérification de disponibilité réelle
+      const isAvailable = await testConnection({
+        id: connectionId,
+        type: connectionInfo.type,
+        host: connectionInfo.host,
+        port: connectionInfo.port,
+        database: connectionInfo.database_name,
+        username: connectionInfo.username,
+        password: password
+      });
+      if (!isAvailable) {
+        return {
+          success: false,
+          message: 'Database is not available or cannot be reached.'
+        };
+      }
+
       await query(
         `UPDATE database_info SET last_used_at = NOW() WHERE id = ?`,
         [connectionId]
@@ -119,6 +134,21 @@ export default defineEventHandler(async (event) => {
       };
     } catch (error: any) {
       console.error('Error establishing database connection:', error);
+      const errMsg = error.message?.toLowerCase() || '';
+      if (
+        errMsg.includes('econnrefused') ||
+        errMsg.includes('timeout') ||
+        errMsg.includes('not allowed') ||
+        errMsg.includes('host unreachable') ||
+        errMsg.includes('access denied') ||
+        errMsg.includes('no route') ||
+        errMsg.includes('network')
+      ) {
+        return {
+          success: false,
+          message: 'Connection refused or blocked. Please check your database firewall, allowed IPs, or network settings.'
+        };
+      }
       return {
         success: false,
         message: `Failed to connect: ${error.message}`

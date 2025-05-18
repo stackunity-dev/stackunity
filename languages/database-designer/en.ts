@@ -1,3 +1,5 @@
+import { title } from "process";
+
 export default {
   meta: {
     title: 'Database Management',
@@ -10,6 +12,7 @@ export default {
   },
   tabs: {
     terminal: 'SQL Terminal',
+    analyzer: 'SQL Analyzer',
     visualizer: 'Visualizer',
     config: 'Configuration'
   },
@@ -96,6 +99,9 @@ export default {
     connect: 'Connect',
     connected: 'Connected',
     exportDatabase: 'Export Database as JSON',
+    terminal: 'Terminal',
+    visualizer: 'Visualizer',
+    query: 'Query',
     form: {
       name: 'Name',
       type: 'Type',
@@ -127,5 +133,71 @@ export default {
     loadingUsageData: 'Loading usage data...',
     connectToSeeUsage: 'Connect to a database to see space usage',
     errorLoadingData: 'Error loading data'
+  },
+  sqlAnalyzer: {
+    title: 'SQL Analyzer',
+    noQuery: 'No query executed yet',
+    tabs: {
+      analysis: 'Analysis',
+      optimization: 'Optimization',
+      execution: 'Execution'
+    },
+    queryAnalysis: {
+      title: 'Query Analysis',
+      tables: 'Tables',
+      affectedTables: 'Affected Tables',
+      warnings: 'Warnings',
+      queryMetrics: {
+        executionTime: 'Execution Time',
+        rowsAffected: 'Rows Affected',
+        queryType: 'Query Type',
+        queryComplexity: 'Query Complexity',
+        queryCost: 'Query Cost'
+      }
+    },
+    queryOptimization: {
+      title: 'Query Optimization',
+      tables: 'Tables',
+      affectedTables: 'Affected Tables',
+      warnings: 'Warnings',
+      faster: 'Faster',
+      noSuggestions: 'No suggestions found',
+      indexSuggestions: 'Index Suggestions',
+      copy: 'Copy Optimized Query',
+      apply: 'Apply Optimization',
+      noIndexSuggestions: 'No index suggestions found',
+    },
+    executionPlan: {
+      title: 'Execution Plan',
+      noExecutionPlan: 'No execution plan available',
+      efficiency: 'Efficiency',
+      notAvailable: 'Not available',
+      estimatedTime: 'Estimated Time',
+    }
+  },
+  sqlVisualizer: {
+    title: 'SQL Visualizer',
+    noResults: 'No results to display',
+    noQuery: 'No query executed yet',
+    download: 'Download',
+    barChartHint: 'Bar chart visualization',
+    lineChartHint: 'Line chart visualization',
+    barChart: 'Bar Chart',
+    lineChart: 'Line Chart',
+    pieChart: 'Pie Chart',
+    pieChartHint: 'Pie chart visualization',
+    heatmapHint: 'Heatmap visualization',
+    customization: 'Customizations',
+    xAxis: 'X-Axis',
+    yAxis: 'Y-Axis',
+    chartType: 'Chart Type',
+    chartSize: 'Chart Size',
+    chartSizeHint: 'Adjust the chart size to your needs',
+    groupBy: 'Group By',
+    dataPointLimit: 'Data Point Limit',
+    showLegend: 'Show Legend',
+    dashboardTitle: 'Dashboard',
+    addWidget: 'Add Widget',
+    emptyDashboard: 'No widgets added yet',
   }
-} 
+}

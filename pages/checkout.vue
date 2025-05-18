@@ -575,7 +575,7 @@ const processPayment = async () => {
 
     if (paymentIntent.status === 'succeeded') {
       try {
-        const updateResult = await userStore.updatePremiumStatus(selectedPlan.value);
+        const updateResult = await userStore.updatePremiumStatus();
         if (!updateResult.success) {
           console.error('Erreur lors de la mise à jour du statut premium:', updateResult.error);
           showSnackbar.value = true;

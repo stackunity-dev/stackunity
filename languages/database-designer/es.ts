@@ -10,6 +10,7 @@ export default {
   },
   tabs: {
     terminal: 'SQL Terminal',
+    analyzer: 'SQL Analyzer',
     visualizer: 'Visualizer',
     config: 'Configuración'
   },
@@ -96,6 +97,9 @@ export default {
     connect: 'Conectar',
     connected: 'Conectado',
     exportDatabase: 'Exportar Base de Datos como JSON',
+    terminal: 'Terminal',
+    query: 'Consulta',
+    visualizer: 'Visualizador',
     form: {
       name: 'Nombre',
       type: 'Tipo',
@@ -127,5 +131,71 @@ export default {
     loadingUsageData: 'Cargando datos de uso...',
     connectToSeeUsage: 'Conecta a una base de datos para ver el uso del espacio',
     errorLoadingData: 'Error al cargar los datos'
+  },
+  sqlAnalyzer: {
+    title: 'SQL Analyzer',
+    noQuery: 'No se han ejecutado consultas',
+    tabs: {
+      analysis: 'Análisis',
+      optimization: 'Optimización',
+      execution: 'Ejecución'
+    },
+    queryAnalysis: {
+      title: 'Análisis de Consulta',
+      tables: 'Tablas',
+      affectedTables: 'Tablas Afectadas',
+      warnings: 'Advertencias',
+      queryMetrics: {
+        executionTime: 'Tiempo de Ejecución',
+        rowsAffected: 'Filas Afectadas',
+        queryType: 'Tipo de Consulta',
+        queryComplexity: 'Complejidad de la Consulta',
+        queryCost: 'Coste de la Consulta'
+      }
+    },
+    queryOptimization: {
+      title: 'Optimización de Consulta',
+      tables: 'Tablas',
+      affectedTables: 'Tablas Afectadas',
+      warnings: 'Advertencias',
+      faster: 'Más Rápido',
+      noSuggestions: 'No se encontraron sugerencias',
+      indexSuggestions: 'Sugerencias de Índices',
+      copy: 'Copiar Consulta Optimizada',
+      apply: 'Aplicar Optimización',
+      noIndexSuggestions: 'No se encontraron sugerencias de índices',
+    },
+    executionPlan: {
+      title: 'Plan de Ejecución',
+      noExecutionPlan: 'No hay plan de ejecución disponible',
+      efficiency: 'Eficiencia',
+      notAvailable: 'No disponible',
+      estimatedTime: 'Tiempo Estimado',
+    }
+  },
+  sqlVisualizer: {
+    title: 'SQL Visualizer',
+    noResults: 'No hay resultados para mostrar',
+    noQuery: 'No se han ejecutado consultas',
+    download: 'Descargar',
+    barChartHint: 'Visualización de gráfico de barras',
+    lineChartHint: 'Visualización de gráfico de línea',
+    barChart: 'Gráfico de Barras',
+    lineChart: 'Gráfico de Línea',
+    pieChart: 'Gráfico de Pastel',
+    pieChartHint: 'Visualización de gráfico de pastel',
+    heatmapHint: 'Visualización de mapa de calor',
+    customization: 'Personalización',
+    xAxis: 'Eje X',
+    yAxis: 'Eje Y',
+    chartType: 'Tipo de Gráfico',
+    chartSize: 'Tamaño del Gráfico',
+    chartSizeHint: 'Ajusta el tamaño del gráfico según tus necesidades',
+    groupBy: 'Agrupar por',
+    dataPointLimit: 'Límite de Puntos de Datos',
+    showLegend: 'Mostrar Leyenda',
+    dashboardTitle: 'Panel de Control',
+    addWidget: 'Agregar Widget',
+    emptyDashboard: 'No hay widgets agregados',
   }
-} 
+}

@@ -7,7 +7,8 @@ export default {
     title: 'اختر خطتك',
     subtitle: 'الأسعار',
     description: 'ابدأ بتجربة مجانية لمدة 7 أيام. لا تحتاج إلى بطاقة ائتمان.',
-    popular: 'الأكثر شعبية'
+    popular: 'الأكثر شعبية',
+    compare: 'مقارنة'
   },
   currency: {
     label: 'اختر العملة'

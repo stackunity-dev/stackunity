@@ -7,7 +7,8 @@ export default {
     title: 'Choose your plan',
     subtitle: 'Pricing',
     description: 'Start with a 7-day free trial. No credit card required.',
-    popular: 'MOST POPULAR'
+    popular: 'MOST POPULAR',
+    compare: 'Compare'
   },
   currency: {
     label: 'Select currency'

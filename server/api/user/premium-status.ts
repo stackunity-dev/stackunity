@@ -4,7 +4,7 @@ import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const { userId, selectedPlan } = body;
+  const { userId } = body;
 
   if (!userId) {
     console.error('Erreur: userId manquant dans la requête premium-status');
@@ -14,33 +14,24 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  if (!selectedPlan) {
-    console.error('Erreur: selectedPlan manquant dans la requête premium-status');
-    return {
-      success: false,
-      error: 'Selected plan is required'
-    };
-  }
-
   try {
-    const isPremium = selectedPlan === 'premium' ? 1 : 0;
-    const isStandard = selectedPlan === 'standard' ? 1 : 0;
+    const isPremium = 1;
+    const isStandard = 0;
     const subscription_status = 'active';
     const payment_status = 'paid';
 
     const [updateResult] = await pool.execute<ResultSetHeader>(
       `UPDATE users 
        SET isPremium = ?, 
-           isStandard = ?, 
            subscription_status = ?, 
            payment_status = ? 
        WHERE id = ?`,
-      [isPremium, isStandard, subscription_status, payment_status, userId]
+      [isPremium, subscription_status, payment_status, userId]
     );
 
     if (updateResult.affectedRows > 0) {
       const [userRows] = await pool.execute<RowDataPacket[]>(
-        `SELECT id, username, email, isPremium, isStandard, isAdmin, 
+        `SELECT id, username, email, isPremium, isAdmin, 
           subscription_status, payment_status, trial_start_date, trial_end_date 
          FROM users WHERE id = ?`,
         [userId]
@@ -48,7 +39,6 @@ export default defineEventHandler(async (event) => {
 
       if (userRows.length > 0) {
         const userIsPremium = userRows[0].isPremium === 1 || userRows[0].isPremium === true;
-        const userIsStandard = userRows[0].isStandard === 1 || userRows[0].isStandard === true;
         const userIsAdmin = userRows[0].isAdmin === 1 || userRows[0].isAdmin === true;
         let daysLeft = 0;
         if (userRows[0].subscription_status === 'trial' && userRows[0].trial_end_date) {
@@ -63,7 +53,6 @@ export default defineEventHandler(async (event) => {
         return {
           success: true,
           isPremium: userIsPremium,
-          isStandard: userIsStandard,
           subscription_status: userRows[0].subscription_status,
           payment_status: userRows[0].payment_status,
           trial_end_date: userRows[0].trial_end_date,
@@ -73,7 +62,6 @@ export default defineEventHandler(async (event) => {
             username: userRows[0].username,
             email: userRows[0].email,
             isPremium: userIsPremium,
-            isStandard: userIsStandard,
             isAdmin: userIsAdmin,
             subscription_status: userRows[0].subscription_status,
             payment_status: userRows[0].payment_status,

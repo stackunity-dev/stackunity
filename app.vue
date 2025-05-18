@@ -90,13 +90,6 @@ useHead({
 
 onErrorCaptured((err, instance, info) => {
   try {
-    console.warn('Erreur Vue détaillée:', {
-      message: err.message,
-      stack: err.stack,
-      component: instance?.$options?.name || 'Unknown component',
-      info: info,
-      instance: instance
-    });
 
     if (
       err instanceof TypeError &&
@@ -112,10 +105,6 @@ onErrorCaptured((err, instance, info) => {
     ) {
       console.error('Erreur de propriété undefined détectée:', {
         message: err.message,
-        path: instance?.$options?.__file || 'Fichier inconnu',
-        componentType: instance?.$options?.name || 'Type inconnu',
-        props: instance?.$props || 'Pas de props',
-        errorLocation: info
       });
 
       return false;

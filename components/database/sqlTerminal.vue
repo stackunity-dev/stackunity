@@ -137,7 +137,7 @@
 
             <div class="terminal-output pa-4" ref="terminalOutput">
               <div v-for="(line, index) in terminalLines" :key="index" class="terminal-line">
-                <pre :class="['line-content', line.type]">{{ line.content }}</pre>
+                <pre :class="['line-content', line.type]" v-html="line.content"></pre>
               </div>
             </div>
 
@@ -180,7 +180,7 @@
                       <v-list-item v-for="(query, index) in savedQueries" :key="index" @click="loadSavedQuery(query)">
                         <v-list-item-title class="text-caption">{{ query.name }}</v-list-item-title>
                         <v-list-item-subtitle class="text-caption text-truncate">{{ query.query
-                          }}</v-list-item-subtitle>
+                        }}</v-list-item-subtitle>
                       </v-list-item>
                       <v-list-item v-if="savedQueries.length === 0" class="text-center">
                         <v-list-item-title class="text-caption">No saved queries</v-list-item-title>
@@ -189,9 +189,18 @@
                   </v-card>
                 </v-menu>
               </div>
-              <v-textarea v-model="sqlCommand" variant="outlined" placeholder="Entrez votre requête SQL ici..."
-                auto-grow rows="4" @keydown="handleKeydown" hide-details class="sql-textarea" :disabled="isExecuting"
-                bg-color="grey-darken-4" color="primary"></v-textarea>
+              <div class="codemirror-wrapper">
+                <Codemirror v-model="sqlCommand" :extensions="[sql({ upperCaseKeywords: true })]" :theme="oneDark"
+                  :style="{
+                    height: '220px',
+                    fontSize: '15px',
+                    borderRadius: '8px',
+                    border: '1px solid #444',
+                    background: '#232323',
+                    color: '#fff',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                  }" placeholder="Enter your SQL query here..." />
+              </div>
             </div>
           </div>
         </div>
@@ -210,7 +219,7 @@
           </v-alert>
           <v-responsive class="mx-auto" max-width="600px">
             <v-form ref="connectionForm" @submit.prevent="saveConnection">
-              <v-row :no-gutters="$vuetify.display.xs" class="mt-2">
+              <v-row :no-gutters="false" class="mt-2">
                 <v-col cols="12">
                   <v-text-field v-model="newConnection.name" :label="t().sqlTerminal.form.name" variant="outlined"
                     class="mb-2" :rules="[v => !!v || t().sqlTerminal.validation.required]"
@@ -219,7 +228,7 @@
                 </v-col>
               </v-row>
 
-              <v-row :no-gutters="$vuetify.display.xs">
+              <v-row :no-gutters="false">
                 <v-col cols="12" sm="6">
                   <v-select v-model="newConnection.type" :items="connectionTypes" :label="t().sqlTerminal.form.type"
                     variant="outlined" class="mb-2"
@@ -302,20 +311,45 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="showJsonDialog" max-width="700px">
+      <v-card>
+        <v-card-title class="bg-primary text-white">{{ jsonDialogTitle }}</v-card-title>
+        <v-card-text style="background: #232323;">
+          <pre style="margin:0;"><code id="json-dialog-code" class="hljs json" v-html="jsonDialogContent"></code></pre>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="showJsonDialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
+import { sql } from '@codemirror/lang-sql';
+// @ts-ignore
+import { oneDark } from '@codemirror/theme-one-dark';
 import axios from 'axios';
+import hljs from 'highlight.js/lib/core';
+import json from 'highlight.js/lib/languages/json';
+import 'highlight.js/styles/github-dark.css';
 import { nextTick, onMounted, ref, watch } from 'vue';
+// @ts-ignore
+import { Codemirror } from 'vue-codemirror';
 import { useTranslations } from '../../languages';
 import { DatabaseConnection, TerminalLine } from '../../utils/database/types';
+
+hljs.registerLanguage('json', json);
 
 const t = useTranslations('databaseManagement');
 
 const emit = defineEmits<{
-  (e: 'connection-change', connection: DatabaseConnection | null): void
-  (e: 'query-results', results: any[], title: string): void
+  (e: 'connection-change', connection: DatabaseConnection | null): void;
+  (e: 'query-results', data: { query: string, results: any[], columns: string[] }): void;
+  (e: 'change-tab', tab: string): void;
 }>();
 
 const props = defineProps<{
@@ -373,6 +407,39 @@ const dataTableHeaders = ref<{ title: string; key: string; align?: "start" | "en
 const dataTableItems = ref<any[]>([]);
 
 const isExporting = ref(false);
+const results = ref<any[]>([]);
+const columns = ref<string[]>([]);
+const lastExecutedQuery = ref('');
+const isAnalyzing = ref(false);
+const analysisResults = ref({
+  queryType: '',
+  affectedTables: [],
+  tableDetails: [],
+  warnings: [],
+  indexSuggestions: [],
+  optimizations: [],
+  executionPlan: {
+    totalCost: 0,
+    steps: []
+  },
+  efficiency: 0,
+  estimatedTime: 0
+});
+
+const highlightedSql = ref('');
+
+const showJsonDialog = ref(false);
+const jsonDialogContent = ref('');
+const jsonDialogTitle = ref('JSON value');
+
+const keywords = [
+  'SELECT', 'FROM', 'WHERE', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP',
+  'TABLE', 'DATABASE', 'INDEX', 'VIEW', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER',
+  'GROUP', 'ORDER', 'BY', 'HAVING', 'LIMIT', 'OFFSET', 'AS', 'ON', 'AND', 'OR',
+  'NOT', 'NULL', 'IS', 'IN', 'BETWEEN', 'LIKE', 'DISTINCT', 'UNION', 'ALL',
+  'EXISTS', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'COUNT', 'SUM', 'AVG',
+  'MAX', 'MIN', 'SHOW', 'USE', 'DATABASES', 'TABLES', 'INTO', 'VALUES', 'SET'
+];
 
 watch(() => props.initialConnection, (newConnection) => {
   if (newConnection && !isConnected.value) {
@@ -440,7 +507,11 @@ const disconnect = async () => {
 };
 
 const addTerminalLine = (content: string, type: 'command' | 'result' | 'error' | 'info') => {
-  terminalLines.value.push({ content, type });
+  let formattedContent = content;
+  if (type === 'command' || type === 'result') {
+    formattedContent = applySqlSyntaxHighlighting(content);
+  }
+  terminalLines.value.push({ content: formattedContent, type });
   nextTick(() => {
     if (terminalOutput.value) {
       terminalOutput.value.scrollTop = terminalOutput.value.scrollHeight;
@@ -448,33 +519,70 @@ const addTerminalLine = (content: string, type: 'command' | 'result' | 'error' |
   });
 };
 
-const executeCommand = async () => {
-  if (!sqlCommand.value || !isConnected.value) return;
+const applySqlSyntaxHighlighting = (text: string): string => {
+  const keywords = [
+    'SELECT', 'FROM', 'WHERE', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP',
+    'TABLE', 'DATABASE', 'INDEX', 'VIEW', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER',
+    'GROUP', 'ORDER', 'BY', 'HAVING', 'LIMIT', 'OFFSET', 'AS', 'ON', 'AND', 'OR',
+    'NOT', 'NULL', 'IS', 'IN', 'BETWEEN', 'LIKE', 'DISTINCT', 'UNION', 'ALL',
+    'EXISTS', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'COUNT', 'SUM', 'AVG',
+    'MAX', 'MIN', 'SHOW', 'USE', 'DATABASES', 'TABLES', 'INTO', 'VALUES', 'SET'
+  ];
 
-  const command = sqlCommand.value.trim();
-  addTerminalLine(command, 'command');
+  let result = text;
+  keywords.forEach(keyword => {
+    const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+    result = result.replace(regex, `<span class="sql-keyword">${keyword}</span>`);
+  });
+
+  return result;
+};
+
+const executeCommand = async () => {
+  if (!isConnected.value || !sqlCommand.value.trim() || isExecuting.value) return;
 
   isExecuting.value = true;
+  lastExecutedQuery.value = sqlCommand.value;
 
   try {
-    if (command.toLowerCase() === 'help') {
+    if (sqlCommand.value.toLowerCase() === 'help') {
       displayHelp();
-    } else if (command.toLowerCase() === 'clear') {
+    } else if (sqlCommand.value.toLowerCase() === 'clear') {
       terminalLines.value = [];
-    } else if (command.toLowerCase().startsWith('use ')) {
-      const dbName = command.substring(4).trim();
+    } else if (sqlCommand.value.toLowerCase().startsWith('use ')) {
+      const dbName = sqlCommand.value.substring(4).trim();
       await handleUseDatabase(dbName);
-    } else if (command.toLowerCase() === 'show databases') {
+    } else if (sqlCommand.value.toLowerCase() === 'show databases') {
       await handleShowDatabases();
-    } else if (command.toLowerCase() === 'show tables') {
+    } else if (sqlCommand.value.toLowerCase() === 'show tables') {
       await handleShowTables();
     } else {
-      await executeComplexQuery(command);
+      await executeComplexQuery(sqlCommand.value);
     }
+
+    const queryColumns = dataTableHeaders.value.length > 0
+      ? dataTableHeaders.value.map(header => header.title)
+      : (results.value.length > 0 ? Object.keys(results.value[0]) : []);
+    const data = dataTableItems.value.length > 0
+      ? dataTableItems.value
+      : results.value;
+
+    emit('query-results', {
+      query: lastExecutedQuery.value,
+      results: data,
+      columns: queryColumns
+    });
+
+    analyzeQuery(lastExecutedQuery.value);
+
+    if (dataTableHeaders.value.length > 0) {
+      columns.value = queryColumns;
+      results.value = dataTableItems.value;
+    }
+
   } catch (error: any) {
     addTerminalLine(`Error executing query: ${error.message}`, 'error');
   } finally {
-    sqlCommand.value = '';
     isExecuting.value = false;
   }
 };
@@ -592,6 +700,73 @@ const handleShowTables = async () => {
   }
 };
 
+const addTerminalTable = (columns: string[], rows: any[]) => {
+  let table = `<div class='terminal-table-container' tabindex='0' aria-label='SQL results table'><table class='terminal-table'><thead><tr>`;
+  columns.forEach(col => {
+    let header = col.length > 18 ? col.slice(0, 16) + '…' : col;
+    let headerTooltip = col.length > 18 ? ` title='${col.replace(/'/g, '&apos;').replace(/"/g, '&quot;')}'` : '';
+    table += `<th scope='col'${headerTooltip}>${header}</th>`;
+  });
+  table += '</tr></thead><tbody>';
+
+  rows.forEach((row, rowIndex) => {
+    table += `<tr>`;
+    columns.forEach((col, colIndex) => {
+      let value = row[col];
+      let displayValue = '';
+      let tooltip = '';
+      if (value === null || value === undefined) {
+        displayValue = 'NULL';
+      } else if (typeof value === 'object') {
+        let jsonStr = JSON.stringify(value, null, 2);
+        let preview = jsonStr.length > 18 ? jsonStr.slice(0, 16) + '…' : jsonStr;
+        displayValue = `<span class='json-preview'>{${preview}}</span><button class='json-plus' tabindex='0' aria-label='Show JSON value' data-json='${encodeURIComponent(jsonStr)}'>+</button>`;
+      } else {
+        let strValue = String(value);
+        if (strValue.length > 18) {
+          displayValue = strValue.slice(0, 16) + '…';
+          tooltip = ` title='${strValue.replace(/'/g, '&apos;').replace(/"/g, '&quot;')}'`;
+        } else {
+          displayValue = strValue;
+        }
+      }
+      table += `<td${tooltip} tabindex='0' aria-label='${col}: ${typeof value === 'object' ? 'JSON' : value}'>${displayValue}</td>`;
+    });
+    table += `</tr>`;
+  });
+  table += '</tbody></table></div>';
+  terminalLines.value.push({ content: table, type: 'result' });
+  nextTick(() => {
+    if (terminalOutput.value) {
+      terminalOutput.value.scrollTop = terminalOutput.value.scrollHeight;
+    }
+    document.querySelectorAll('.json-plus').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const json = decodeURIComponent(el.getAttribute('data-json') || '');
+        openJsonDialog(json);
+      });
+      el.addEventListener('keydown', (e) => {
+        const event = e as KeyboardEvent;
+        if (event.key === 'Enter' || event.key === ' ') {
+          const json = decodeURIComponent(el.getAttribute('data-json') || '');
+          openJsonDialog(json);
+        }
+      });
+    });
+  });
+};
+
+const openJsonDialog = (json: string) => {
+  jsonDialogContent.value = json;
+  showJsonDialog.value = true;
+  nextTick(() => {
+    const codeBlock = document.getElementById('json-dialog-code');
+    if (codeBlock) {
+      hljs.highlightElement(codeBlock as HTMLElement);
+    }
+  });
+};
+
 const executeComplexQuery = async (query: string) => {
   if (!selectedConnection.value) return;
 
@@ -609,60 +784,34 @@ const executeComplexQuery = async (query: string) => {
     if (response.data.success) {
       if (response.data.results && Array.isArray(response.data.results)) {
         const results = response.data.results;
+        const columns = Object.keys(results[0] || {});
 
-        if (results.length > 10) {
-          addTerminalLine(`Query returned ${results.length} rows. Displaying in table view.`, 'info');
-          showTableView(results, `Results for: ${query.substring(0, 50)}${query.length > 50 ? '...' : ''}`);
-        } else {
-          if (results.length > 0) {
-            const columns = Object.keys(results[0]);
-
-            const columnWidths = columns.map(col => {
-              let maxWidth = col.length;
-              for (const row of results) {
-                const cellValue = String(row[col] !== null ? row[col] : 'NULL');
-                maxWidth = Math.max(maxWidth, cellValue.length);
-              }
-              return maxWidth + 2;
+        if (results.length > 0) {
+          addTerminalTable(columns, results);
+          nextTick(() => {
+            const emittedColumns = dataTableHeaders.value.length > 0
+              ? dataTableHeaders.value.map(header => header.title)
+              : columns;
+            const emittedResults = dataTableItems.value.length > 0
+              ? dataTableItems.value
+              : results;
+            emit('query-results', {
+              query: query,
+              results: emittedResults,
+              columns: emittedColumns
             });
-
-            let resultTable = columns.map((col, i) => col.padEnd(columnWidths[i])).join('');
-            resultTable += '\n';
-
-            resultTable += columns.map((_, i) => '-'.repeat(columnWidths[i])).join('');
-            resultTable += '\n';
-
-            for (const row of results) {
-              resultTable += columns.map((col, i) => {
-                const cellValue = row[col] !== null ? row[col] : 'NULL';
-                return String(cellValue).padEnd(columnWidths[i]);
-              }).join('');
-              resultTable += '\n';
+            if (results.length > 5) {
+              addTerminalLine('Redirecting to visualization for better data display...', 'info');
+              emit('change-tab', 'visualizer');
             }
-
-            resultTable += `\n${results.length} rows returned (${response.data.executionTime || 0} ms)`;
-            addTerminalLine(resultTable, 'result');
-
-            if (results.length > 0) {
-              addTerminalLine('', 'info');
-              const tableViewBtn = document.createElement('button');
-              tableViewBtn.className = 'table-view-btn';
-              tableViewBtn.textContent = 'Afficher en vue tabulaire';
-              tableViewBtn.onclick = () => showTableView(results, `Results for: ${query}`);
-
-              setTimeout(() => {
-                const lastLine = terminalOutput.value?.lastElementChild;
-                if (lastLine) {
-                  const btnContainer = document.createElement('div');
-                  btnContainer.className = 'terminal-btn-container';
-                  btnContainer.appendChild(tableViewBtn);
-                  lastLine.appendChild(btnContainer);
-                }
-              }, 10);
-            }
-          } else {
-            addTerminalLine('Query executed successfully. 0 rows returned.', 'result');
-          }
+          });
+        } else {
+          addTerminalLine('Query executed successfully. 0 rows returned.', 'result');
+          emit('query-results', {
+            query: query,
+            results: [],
+            columns: columns
+          });
         }
       } else if (response.data.affectedRows !== undefined) {
         addTerminalLine(`Query executed successfully. ${response.data.affectedRows} rows affected.`, 'result');
@@ -874,23 +1023,6 @@ const loadSavedQuery = (query: { id: string; name: string; query: string; descri
   sqlCommand.value = query.query;
 };
 
-const showTableView = (results: any[], title: string) => {
-  if (!results || results.length === 0) return;
-
-  const columns = Object.keys(results[0]);
-  dataTableHeaders.value = columns.map(col => ({
-    title: col,
-    key: col,
-    align: typeof results[0][col] === 'number' ? 'end' : 'start'
-  }));
-
-  dataTableItems.value = results;
-
-  dataTableTitle.value = title || 'Query Results';
-
-  showDataTable.value = true;
-};
-
 const exportDatabase = async () => {
   if (!selectedConnection.value) return;
 
@@ -963,6 +1095,64 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 };
 
+const analyzeQuery = async (query) => {
+  if (!query.trim()) return;
+
+  isAnalyzing.value = true;
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    analysisResults.value = {
+      queryType: query.trim().toUpperCase().split(' ')[0],
+      affectedTables: extractTablesFromQuery(query),
+      tableDetails: [],
+      warnings: [],
+      indexSuggestions: [],
+      optimizations: [],
+      executionPlan: {
+        totalCost: 100,
+        steps: []
+      },
+      efficiency: Math.floor(Math.random() * 100),
+      estimatedTime: Math.floor(Math.random() * 500)
+    };
+
+  } catch (error) {
+    console.error('Error analyzing query:', error);
+  } finally {
+    isAnalyzing.value = false;
+  }
+};
+
+const extractTablesFromQuery = (query) => {
+  const matches = query.match(/from\s+([a-zA-Z0-9_]+)|join\s+([a-zA-Z0-9_]+)/gi);
+  if (!matches) return [];
+
+  return matches.map(match => {
+    const parts = match.split(/\s+/);
+    return parts[parts.length - 1];
+  });
+};
+
+const applyOptimization = (optimizedQuery) => {
+  if (optimizedQuery) {
+    sqlCommand.value = optimizedQuery;
+  }
+};
+
+const updateQuery = (query: string) => {
+  sqlCommand.value = query;
+};
+
+defineExpose({
+  updateQuery
+});
+
+const handleSqlInput = () => {
+  highlightedSql.value = applySqlSyntaxHighlighting(sqlCommand.value);
+};
+
 onMounted(() => {
   loadConnections();
   loadSavedQueries();
@@ -977,6 +1167,134 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sql-editor-container {
+  position: relative;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.sql-textarea {
+  font-family: 'Fira Code', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  background-color: transparent !important;
+  border-radius: 8px;
+}
+
+:deep(.sql-textarea .v-field__input) {
+  color: white !important;
+  caret-color: white !important;
+  background: transparent !important;
+  font-family: 'Fira Code', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  padding: 12px !important;
+  min-height: 120px !important;
+  tab-size: 2;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.sql-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  white-space: pre-wrap;
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px;
+  color: transparent;
+  z-index: 2;
+  overflow: hidden;
+  tab-size: 2;
+}
+
+.terminal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.terminal-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.terminal-output {
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: #1e1e1e;
+  color: #fff;
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  height: 200px;
+  min-height: 150px;
+  padding: 12px;
+}
+
+.sql-input-container {
+  border-top: 1px solid #444;
+  padding: 12px !important;
+  flex-shrink: 0;
+  background-color: #2d2d2d;
+}
+
+.terminal-line {
+  margin-bottom: 10px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.line-content {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.line-content.command {
+  color: #64B5F6;
+  font-weight: bold;
+  border-left: 2px solid #64B5F6;
+  padding-left: 8px;
+}
+
+.line-content.result {
+  color: #A5D6A7;
+  background-color: rgba(165, 214, 167, 0.05);
+}
+
+.line-content.error {
+  color: #EF5350;
+  background-color: rgba(239, 83, 80, 0.05);
+  border-left: 2px solid #EF5350;
+  padding-left: 8px;
+}
+
+.line-content.info {
+  color: #E0E0E0;
 }
 
 .connection-list {
@@ -1047,148 +1365,6 @@ onMounted(() => {
   overflow: auto;
 }
 
-.terminal-content {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-.terminal-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-.terminal-output {
-  flex-grow: 1;
-  overflow-y: auto;
-  background-color: #1e1e1e;
-  color: #fff;
-  font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  height: 200px;
-  min-height: 150px;
-  padding: 12px;
-  border-radius: 0;
-}
-
-.sql-input-container {
-  border-top: 1px solid #444;
-  padding: 12px !important;
-  flex-shrink: 0;
-}
-
-.sql-textarea {
-  font-family: 'Consolas', 'Monaco', monospace !important;
-  font-size: 14px !important;
-  border-radius: 8px;
-  margin-top: 8px;
-}
-
-:deep(.sql-textarea .v-field__input) {
-  padding: 12px !important;
-  min-height: 120px !important;
-  color: #e0e0e0 !important;
-  line-height: 1.5 !important;
-}
-
-:deep(.sql-textarea .v-field__outline) {
-  color: #555 !important;
-}
-
-.terminal-line {
-  margin-bottom: 10px;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.line-content {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  border-radius: 4px;
-  padding: 2px 4px;
-}
-
-.line-content.command {
-  color: #64B5F6;
-  font-weight: bold;
-  border-left: 2px solid #64B5F6;
-  padding-left: 8px;
-}
-
-.line-content.result {
-  color: #A5D6A7;
-  background-color: rgba(165, 214, 167, 0.05);
-}
-
-.line-content.error {
-  color: #EF5350;
-  background-color: rgba(239, 83, 80, 0.05);
-  border-left: 2px solid #EF5350;
-  padding-left: 8px;
-}
-
-.line-content.info {
-  color: #E0E0E0;
-}
-
-.terminal-input-field {
-  font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 14px;
-  background-color: #2d2d2d;
-  color: #ffffff;
-}
-
-.terminal-input {
-  background-color: #2d2d2d !important;
-  border-top: 1px solid #444;
-  padding: 8px 12px !important;
-}
-
-.terminal-btn-container {
-  margin-top: 8px;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.table-view-btn {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background-color 0.3s;
-}
-
-.table-view-btn:hover {
-  background-color: #45a049;
-}
-
-:deep(.v-field__input) {
-  color: #ffffff !important;
-}
-
-:deep(.v-field__outline) {
-  color: #444444 !important;
-}
-
 .data-table-header {
   display: flex;
   justify-content: flex-end;
@@ -1225,5 +1401,146 @@ onMounted(() => {
   color: #ffffff;
   border-bottom: 1px solid #444;
   padding: 8px 12px !important;
+}
+
+.terminal-table-container {
+  overflow-x: auto !important;
+  margin-bottom: 12px;
+  max-width: 100%;
+  background: #181818;
+  padding-bottom: 4px;
+}
+.terminal-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  background: #181818;
+  color: #e0e0e0;
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+}
+.terminal-table th,
+.terminal-table td {
+  border: 1px solid #333;
+  padding: 6px 8px;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.terminal-table th {
+  background: #232323;
+  color: #b0b0b0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-weight: bold;
+  cursor: help;
+}
+.terminal-table tr:nth-child(even) {
+  background: #222;
+}
+.terminal-table tr:nth-child(odd) {
+  background: #181818;
+}
+.terminal-table tr:hover {
+  background: #2d2d2d;
+}
+.terminal-table td:focus,
+.terminal-table th:focus {
+  outline: 2px solid #64B5F6;
+  outline-offset: -2px;
+}
+.json-preview {
+  color: #64B5F6;
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  margin-right: 4px;
+}
+.json-plus {
+  background: #64B5F6;
+  color: #181818;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 0 6px;
+  cursor: pointer;
+  outline: none;
+  margin-left: 2px;
+  vertical-align: middle;
+  transition: background 0.2s;
+}
+.json-plus:focus,
+.json-plus:hover {
+  outline: 2px solid #64B5F6;
+  background: #90caf9;
+}
+.json-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.json-modal-content {
+  background: #232323;
+  color: #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 80vw;
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+.json-modal pre {
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-bottom: 16px;
+}
+.json-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #64B5F6;
+  color: #181818;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+:deep(.sql-keyword) {
+  color: #ffb300 !important;
+  font-weight: bold;
+}
+:deep(.cm-string) {
+  color: #00e676 !important;
+}
+:deep(.cm-number) {
+  color: #29b6f6 !important;
+}
+:deep(.cm-comment) {
+  color: #bdbdbd !important;
+  font-style: italic;
+}
+.codemirror-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #232323;
+  border: 1px solid #444;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 </style>

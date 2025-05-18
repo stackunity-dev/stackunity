@@ -7,7 +7,8 @@ export default {
     title: 'Elija su plan',
     subtitle: 'Precios',
     description: 'Comience con una prueba gratuita de 7 días. No se requiere tarjeta de crédito.',
-    popular: 'MÁS POPULAR'
+    popular: 'MÁS POPULAR',
+    compare: 'Comparar'
   },
   currency: {
     label: 'Seleccionar moneda'
