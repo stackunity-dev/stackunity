@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                          }}€</span>
+                        }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -777,6 +777,7 @@ const submitCardPayment = async () => {
     });
 
     const data = await response.json();
+    console.log(data);
 
     if (data.success) {
       if (data.needs3ds && data.redirectUrl) {
@@ -784,7 +785,6 @@ const submitCardPayment = async () => {
         window.location.href = data.redirectUrl;
         return;
       }
-      // Sinon
       snackbarColor.value = 'success';
       snackbarText.value = 'Commande créée, aucun 3DS requis.';
       showSnackbar.value = true;

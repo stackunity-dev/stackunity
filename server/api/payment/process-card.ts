@@ -86,6 +86,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const paypal = await getPayPalClient();
+    console.log('🔁 PayPal client:', paypal);
     const requestId = `order-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     console.log(`🆔 Création de la commande PayPal [Request ID: ${requestId}]`);
 
@@ -132,6 +133,8 @@ export default defineEventHandler(async (event) => {
     console.log('📦 Commande PayPal créée:', JSON.stringify(order.result, null, 2));
 
     const needs3ds = order.result.payment_source?.card?.payer_action?.url;
+
+    console.log('🔁 Redirection 3DS:', needs3ds);
 
     return {
       success: true,
