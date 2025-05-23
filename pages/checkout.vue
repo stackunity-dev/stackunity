@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                          }}€</span>
+                        }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -178,72 +178,13 @@
                   </v-row>
 
                   <div class="payment-methods">
-                    <v-tabs v-model="activePaymentMethod" color="primary" class="mb-4">
-                      <v-tab value="card">Credit Card</v-tab>
-                      <v-tab value="paypal">PayPal</v-tab>
-                    </v-tabs>
-
-                    <v-window v-model="activePaymentMethod">
-                      <v-window-item value="card">
-                        <div id="card-form" class="card_container">
-                          <v-text-field v-model="cardDetails.name" label="Cardholder Name" placeholder="Your name"
-                            :rules="[v => !!v || 'Name is required']" variant="outlined" density="comfortable"
-                            class="mb-4"></v-text-field>
-
-                          <v-row>
-                            <v-col cols="12" md="8">
-                              <v-text-field v-model="cardDetails.number" label="Card Number"
-                                placeholder="1234 5678 9012 3456" variant="outlined" density="comfortable" class="mb-4"
-                                :rules="[v => !!v || 'Card number is required']" maxlength="19"
-                                @input="formatCardNumber"></v-text-field>
-                            </v-col>
-                            <v-col cols="12" md="4">
-                              <v-text-field v-model="cardDetails.cvv" label="CVV" placeholder="123" variant="outlined"
-                                density="comfortable" class="mb-4" :rules="[v => !!v || 'CVV is required']"
-                                maxlength="4" type="password"></v-text-field>
-                            </v-col>
-                          </v-row>
-
-                          <v-text-field v-model="cardDetails.expiry" label="Expiry Date (MM/YY)" placeholder="01/25"
-                            variant="outlined" density="comfortable" class="mb-4"
-                            :rules="[v => !!v || 'Expiry date is required']" maxlength="5"
-                            @input="formatExpiryDate"></v-text-field>
-
-                          <div class="billing-address">
-                            <div class="text-subtitle-2 mb-4">Billing Address</div>
-                            <v-text-field v-model="billingAddress.line1" label="Address" variant="outlined"
-                              density="comfortable" class="mb-4"></v-text-field>
-                            <v-text-field v-model="billingAddress.line2" label="Address Line 2 (Optional)"
-                              variant="outlined" density="comfortable" class="mb-4"></v-text-field>
-                            <v-text-field v-model="billingAddress.adminArea2" label="State" variant="outlined"
-                              density="comfortable" class="mb-4"></v-text-field>
-                            <v-row>
-                              <v-col cols="6">
-                                <v-text-field v-model="billingAddress.adminArea1" label="City" variant="outlined"
-                                  density="comfortable" class="mb-4"></v-text-field>
-                              </v-col>
-                              <v-col cols="6">
-                                <v-text-field v-model="billingAddress.postalCode" label="Postal Code" variant="outlined"
-                                  density="comfortable" class="mb-4"></v-text-field>
-                              </v-col>
-                            </v-row>
-                            <v-text-field v-model="billingAddress.countryCode" label="Country" variant="outlined"
-                              density="comfortable" class="mb-4"></v-text-field>
-                          </div>
-
-                          <v-btn color="secondary" block class="mt-6" :loading="loading" @click="submitCardPayment"
-                            :disabled="!isFormValid" size="large" elevation="2">
-                            Pay Now
-                          </v-btn>
-                        </div>
-                      </v-window-item>
-
-                      <v-window-item value="paypal">
-                        <div class="paypal-container">
-                          <div id="paypal-button-container" class="mt-4" style="min-height: 150px;"></div>
-                        </div>
-                      </v-window-item>
-                    </v-window>
+                    <v-btn color="secondary" block class="mt-6" :loading="loading" @click="submitCardPayment"
+                      size="large" elevation="2">
+                      Pay Now
+                    </v-btn>
+                    <div class="paypal-container">
+                      <div id="paypal-button-container" class="mt-4" style="min-height: 150px;"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -603,7 +544,7 @@ watch(activePaymentMethod, async (newValue) => {
         currency: "EUR",
         intent: "capture",
         components: "buttons",
-        'disable-funding': 'card'
+        disableFunding: "card"
       });
 
       if (paypal) {
@@ -673,19 +614,17 @@ onMounted(async () => {
     }
 
     await updateTaxRates();
-
     await nextTick();
 
     const paypalContainer = document.getElementById('paypal-button-container');
-    if (!paypalContainer) {
-      return;
-    }
+    if (!paypalContainer) return;
 
     const paypal = await loadScript({
       clientId: 'ASBf0oA-RI0eCLn5QRyo9GHGLe9KgfdfrkAHT6SAqk0m8AWPzVvIUbbxazk4fjZfGEiWVnucG9dtHMLf',
       currency: "EUR",
       intent: "capture",
-      components: "buttons"
+      components: "buttons",
+      disableFunding: "card"
     });
 
     if (paypal) {
