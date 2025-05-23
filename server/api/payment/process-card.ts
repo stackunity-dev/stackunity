@@ -47,6 +47,28 @@ const validateCardDetails = (cardDetails: any) => {
   }
 };
 
+async function retryCapture(orderId, retries = 3, delay = 3000, paypal: any) {
+  const captureRequest = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
+  captureRequest.requestBody({});
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const capture = await paypal.execute(captureRequest);
+      console.log(`📦 Tentative ${attempt}: Capture réussie`, JSON.stringify(capture.result, null, 2));
+      return capture;
+    } catch (error) {
+      console.warn(`⚠️ Tentative ${attempt} échouée:`, error?.message || error);
+      if (attempt < retries) {
+        console.log(`🔁 Nouvelle tentative dans ${delay / 1000}s...`);
+        await new Promise(res => setTimeout(res, delay));
+      } else {
+        console.error(`❌ Capture échouée après ${retries} tentatives.`);
+        throw error;
+      }
+    }
+  }
+}
+
 export default defineEventHandler(async (event) => {
   try {
     const userId = getUserId(event);
@@ -129,9 +151,7 @@ export default defineEventHandler(async (event) => {
     const order = await paypal.execute(createRequest);
     const orderId = order.result.id;
 
-    const captureRequest = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
-    captureRequest.requestBody({});
-    const capture = await paypal.execute(captureRequest);
+    const capture = await retryCapture(orderId, 3, 3000, paypal);
     console.log('📦 Capture PayPal:', JSON.stringify(capture.result, null, 2));
 
 
