@@ -38,9 +38,8 @@ const success = ref('');
 
 onMounted(async () => {
   try {
-    console.log('🔍 Route:', route.query);
-    const token = route.query.token || route.query.code || route.query.paymentId;
-    if (!token) {
+    const orderId = localStorage.getItem('pendingOrderId');
+    if (!orderId) {
       throw new Error('Aucun ID de commande trouvé');
     }
 
@@ -50,7 +49,7 @@ onMounted(async () => {
         'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ token })
+      body: JSON.stringify({ orderId })
     });
 
     const data = await response.json();

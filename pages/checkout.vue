@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                          }}€</span>
+                        }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -780,6 +780,9 @@ const submitCardPayment = async () => {
     console.log(data);
 
     if (data.success) {
+      if (data.orderId) {
+        localStorage.setItem('pendingOrderId', data.orderId);
+      }
       if (data.redirectUrl) {
         console.log('🔁 Redirection 3DS:', data.redirectUrl);
         window.location.href = data.redirectUrl;

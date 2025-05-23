@@ -129,6 +129,7 @@ export default defineEventHandler(async (event) => {
     });
 
     const order = await paypal.execute(createRequest);
+    const orderId = order.result.id;
 
     let redirectUrl = null;
 
@@ -139,9 +140,9 @@ export default defineEventHandler(async (event) => {
 
     return {
       success: true,
-      orderId: order.result.id,
+      orderId,
       needs3ds: !!redirectUrl,
-      redirectUrl: redirectUrl || null
+      redirectUrl
     };
 
   } catch (error: any) {
