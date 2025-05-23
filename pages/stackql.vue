@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <main class="fill-bg">
     <v-container fluid class="pa-4 fill-height">
       <v-row class="fill-height">
         <v-col cols="12">
@@ -39,7 +39,7 @@
                   <SQLQueryAnalyzer :key="(activeConnection?.id || '') + '-' + lastExecutedQuery"
                     :query="lastExecutedQuery" :database-type="activeConnection?.type || 'mysql'"
                     :analysis-results="analysisResults" :connection-id="activeConnection?.id || ''"
-                    @apply-optimization="applyOptimization" />
+                    :active-connection="activeConnection || {}" @apply-optimization="applyOptimization" />
                 </v-col>
               </v-row>
             </v-window-item>
@@ -56,7 +56,7 @@
               <v-row class="pa-4">
                 <v-col cols="12" md="6">
                   <v-card class="rounded-lg" elevation="2">
-                    <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
+                    <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                       <v-icon color="white" class="mr-2">mdi-database-cog</v-icon>
                       {{ t().database.connections || 'Database Connections' }}
                     </v-card-title>
@@ -81,10 +81,6 @@
                           {{ t().database.description || 'Manage your database connections' }}
                         </p>
 
-                        <v-btn color="primary" prepend-icon="mdi-plus" class="mb-4" @click="showAddConnectionDialog">
-                          {{ t().database.addConnection || 'Add Connection' }}
-                        </v-btn>
-
                         <v-table v-if="connections.length > 0" class="rounded-lg border">
                           <thead>
                             <tr>
@@ -100,18 +96,35 @@
                               <td>{{ conn.name }}</td>
                               <td>{{ conn.type }}</td>
                               <td>{{ conn.host }}:{{ conn.port }}</td>
-                              <td>{{ conn.database }}</td>
+                              <td>{{ conn.database_name }}</td>
                               <td class="text-center">
-                                <v-btn icon variant="text" size="small" color="primary"
-                                  @click="connectToDatabase(conn)">
-                                  <v-icon>mdi-connection</v-icon>
-                                </v-btn>
-                                <v-btn icon variant="text" size="small" color="primary" @click="editConnection(conn)">
-                                  <v-icon>mdi-pencil</v-icon>
-                                </v-btn>
-                                <v-btn icon variant="text" size="small" color="error" @click="deleteConnection(conn)">
-                                  <v-icon>mdi-delete</v-icon>
-                                </v-btn>
+                                <v-tooltip location="top">
+                                  <template v-slot:activator="{ props }">
+                                    <v-btn icon variant="text" size="small" color="primary"
+                                      @click="connectToDatabase(conn)" v-bind="props">
+                                      <v-icon>mdi-connection</v-icon>
+                                    </v-btn>
+                                  </template>
+                                  <span>Connect</span>
+                                </v-tooltip>
+                                <v-tooltip location="top">
+                                  <template v-slot:activator="{ props }">
+                                    <v-btn icon variant="text" size="small" color="primary"
+                                      @click="editConnection(conn)" v-bind="props">
+                                      <v-icon>mdi-pencil</v-icon>
+                                    </v-btn>
+                                  </template>
+                                  <span>Edit</span>
+                                </v-tooltip>
+                                <v-tooltip location="top">
+                                  <template v-slot:activator="{ props }">
+                                    <v-btn icon variant="text" size="small" color="error"
+                                      @click="deleteConnection(conn)" v-bind="props">
+                                      <v-icon>mdi-delete</v-icon>
+                                    </v-btn>
+                                  </template>
+                                  <span>Delete</span>
+                                </v-tooltip>
                               </td>
                             </tr>
                           </tbody>
@@ -127,62 +140,71 @@
 
                 <v-col cols="12" md="6">
                   <v-card class="rounded-lg" elevation="2">
-                    <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
-                      <v-icon color="white" class="mr-2">mdi-information-outline</v-icon>
-                      {{ t().database.info || 'SQL Database Information' }}
+                    <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
+                      <v-icon color="white" class="mr-2">mdi-cog</v-icon>
+                      Editor Preferences
                     </v-card-title>
                     <v-card-text class="py-4">
-                      <v-alert v-if="activeConnection" color="success" variant="tonal" class="mb-4">
-                        <div class="d-flex align-center">
-                          <v-avatar color="success" size="32" variant="tonal" class="mr-2">
-                            <v-icon>mdi-database-check</v-icon>
-                          </v-avatar>
-                          <div>
-                            <div class="text-subtitle-2">{{ t().database.connected || 'Connected to database' }}
-                            </div>
-                            <div class="text-body-2">{{ activeConnection.name }} - {{ activeConnection.database }}
-                            </div>
-                          </div>
-                        </div>
-                      </v-alert>
+                      <div class="text-h6 mb-2">SQL Snippets</div>
+                      <v-table density="compact" class="mb-4" aria-label="SQL snippets">
+                        <thead>
+                          <tr>
+                            <th>Command</th>
+                            <th>Shortcut</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="snippet in sqlSnippets" :key="snippet.label">
+                            <td>{{ snippet.description }}</td>
+                            <td>
+                              <v-text-field v-model="snippet.shortcut" density="compact" variant="outlined" hide-details
+                                @update:model-value="updateSnippetShortcut(snippet)"></v-text-field>
+                            </td>
+                            <td>
+                              <v-btn icon size="small" variant="text" color="error"
+                                @click="resetSnippetShortcut(snippet)">
+                                <v-icon>mdi-refresh</v-icon>
+                              </v-btn>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-table>
+                      <v-btn size="small" variant="tonal" color="secondary" @click="resetAllSnippetShortcuts">
+                        Reset all shortcuts
+                      </v-btn>
 
-                      <v-alert v-else color="info" variant="tonal" class="mb-4">
-                        <div class="d-flex align-center">
-                          <v-avatar color="info" size="32" variant="tonal" class="mr-2">
-                            <v-icon>mdi-database-off</v-icon>
-                          </v-avatar>
-                          <div>
-                            <div class="text-subtitle-2">{{ t().database.notConnected || 'Not connected' }}</div>
-                            <div class="text-body-2">{{ t().database.connectPrompt ||
-                              'Connect to a database to start'
-                            }}</div>
-                          </div>
-                        </div>
-                      </v-alert>
+                      <div class="text-h6 mt-6 mb-2">Shortcuts</div>
+                      <v-table density="compact" class="mb-4" aria-label="Editor shortcuts">
+                        <thead>
+                          <tr>
+                            <th>Action</th>
+                            <th>Shortcut</th>
+                            <th>Edit</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(shortcut, key) in editorShortcuts" :key="key">
+                            <td>{{ shortcut.label }}</td>
+                            <td>{{ shortcut.value }}</td>
+                            <td>
+                              <v-btn icon size="small" variant="text" @click="editShortcut(key)">
+                                <v-icon>mdi-pencil</v-icon>
+                              </v-btn>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-table>
+                      <v-btn size="small" variant="tonal" color="secondary" @click="resetShortcuts">Reset all
+                        shortcuts</v-btn>
 
-                      <div class="sql-info mb-4">
-                        <h3 class="text-h6 mb-2">{{ t().database.features || 'SQL Database Studio Features' }}</h3>
-                        <v-list>
-                          <v-list-item prepend-icon="mdi-console" title="SQL Terminal"
-                            subtitle="Connect and execute SQL commands directly"></v-list-item>
-                          <v-list-item prepend-icon="mdi-code-braces" title="SQL Editor"
-                            subtitle="Write and execute complex SQL queries with syntax highlighting"></v-list-item>
-                          <v-list-item prepend-icon="mdi-chart-line" title="Query Results"
-                            subtitle="Visualize results in tables with export capabilities"></v-list-item>
-                          <v-list-item prepend-icon="mdi-database-export" title="Import/Export"
-                            subtitle="Import and export SQL data"></v-list-item>
-                        </v-list>
-                      </div>
+                      <div class="text-h6 mt-6 mb-2">Font & Size</div>
+                      <v-select v-model="editorFont" :items="fontOptions" label="Font" class="mb-2" />
+                      <v-slider v-model="editorFontSize" min="12" max="22" step="1" label="Font Size" thumb-label
+                        class="mb-2" />
 
-                      <div class="text-body-2 text-grey-darken-1">
-                        {{ t().database.securityNote || 'Your connection details are securely encrypted locally.' }}
-                      </div>
                     </v-card-text>
                   </v-card>
-                </v-col>
-
-                <v-col cols="12">
-                  <DatabaseUsage :activeConnection="activeConnection" />
                 </v-col>
               </v-row>
             </v-window-item>
@@ -193,7 +215,7 @@
 
     <v-dialog v-model="showConnectionDialog" max-width="500px">
       <v-card>
-        <v-card-title class="bg-primary text-white">
+        <v-card-title class="bg-secondary text-white">
           {{ editMode ? (t().database.editConnection || 'Edit Connection') : (t().database.addConnection ||
             'Add Connection') }}
         </v-card-title>
@@ -264,7 +286,7 @@
 
     <v-dialog v-model="showInfoPanel" max-width="700px">
       <v-card>
-        <v-card-title class="bg-primary text-white">
+        <v-card-title class="bg-secondary text-white">
           {{ t().database.help || 'SQL Database Studio Help' }}
         </v-card-title>
         <v-card-text class="pa-4">
@@ -286,7 +308,7 @@
               <v-list-item-title>{{ t().database.step1Title || 'Add a Database Connection' }}</v-list-item-title>
               <v-list-item-subtitle>{{ t().database.step1Text ||
                 'Go to Configuration tab and add your database details'
-              }}</v-list-item-subtitle>
+                }}</v-list-item-subtitle>
             </v-list-item>
             <v-list-item>
               <template v-slot:prepend>
@@ -296,7 +318,7 @@
               </template>
               <v-list-item-title>{{ t().database.step2Title || 'Connect to Your Database' }}</v-list-item-title>
               <v-list-item-subtitle>{{ t().database.step2Text || 'Click the connect icon next to your database'
-              }}</v-list-item-subtitle>
+                }}</v-list-item-subtitle>
             </v-list-item>
             <v-list-item>
               <template v-slot:prepend>
@@ -306,7 +328,7 @@
               </template>
               <v-list-item-title>{{ t().database.step3Title || 'Run SQL Queries' }}</v-list-item-title>
               <v-list-item-subtitle>{{ t().database.step3Text || 'Use the SQL Terminal or Editor to execute commands'
-              }}</v-list-item-subtitle>
+                }}</v-list-item-subtitle>
             </v-list-item>
           </v-list>
 
@@ -335,50 +357,97 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="betaDialog" max-width="600px">
-      <v-card class="rounded-lg">
+    <v-dialog v-model="showSecurityNotice" max-width="540px" persistent>
+      <v-card>
         <v-card-title class="bg-secondary text-white">
-          <v-icon color="white" class="mr-2">mdi-information-outline</v-icon>
-          Beta Feature
+          <v-icon class="mr-2">mdi-shield-lock</v-icon>
+          Security & Privacy Notice
         </v-card-title>
         <v-card-text class="pa-4">
-          <p>
-            This is a beta feature for now. <br>
-            Please come in few days for the full version.
-          </p>
-          <v-btn color="warning" variant="tonal" class="ma-2" @click="betaDialog = false">
-            Close
-          </v-btn>
-          <v-btn color="secondary" variant="tonal" class="ma-2" @click="betaDialog = false">
-            Continue
-          </v-btn>
+          <div class="mb-3">
+            <h3 class="text-h6 mb-2 d-flex align-center">
+              <v-icon color="success" class="mr-2">mdi-lock-check</v-icon>
+              Your Data is Safe
+            </h3>
+            <p class="mb-2">
+              <strong>Your database credentials are always encrypted (AES-256).</strong>
+            </p>
+            <ul class="mb-2 pl-4">
+              <li>No sensitive information is ever sent to third parties or stored on external servers.</li>
+              <li>All connections use secure protocols (TLS/SSL when available).</li>
+              <li>You are always in control of your data and can delete your credentials at any time.</li>
+            </ul>
+          </div>
+          <v-alert type="info" variant="tonal" class="mb-2">
+            You are always in control of your data.
+          </v-alert>
         </v-card-text>
+        <v-card-actions class="pa-4 pt-0">
+          <v-spacer></v-spacer>
+          <v-btn variant="text" color="secondary" :href="'/privacy'" target="_blank" class="ml-2"
+            aria-label="Read full security policy">
+            <v-icon start size="small">mdi-file-document-outline</v-icon>
+            Read full security policy
+          </v-btn>
+          <v-btn color="primary" @click="acceptSecurityNotice" autofocus>OK</v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
     <snackbar v-model="showSnackbar" :text="snackbarText" :color="snackbarColor" :timeout="3000" />
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import DatabaseUsage from '../components/database/DatabaseUsage.vue';
+import { onMounted, ref, watch } from 'vue';
 import SQLTerminal from '../components/database/sqlTerminal.vue';
 import snackbar from '../components/snackbar.vue';
 import { useTranslations } from '../languages';
 // @ts-ignore
-import { definePageMeta } from '#imports';
+import { definePageMeta, useHead } from '#imports';
+import axios from 'axios';
 import SQLQueryAnalyzer from '../components/database/SQLQueryAnalyzer.vue';
 import SQLResultVisualizer from '../components/database/SqlResultVisualizer.vue';
+import { useUserStore } from '../stores/userStore';
+import { SQL_SNIPPETS } from '../utils/database/command';
 
 const t = useTranslations('databaseManagement');
+const userStore = useUserStore();
+
+const loadConnections = async () => {
+  try {
+    const response = await axios.get('/api/database/connections', {
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    });
+
+    if (response.data.success && response.data.connections) {
+      connections.value = response.data.connections;
+    }
+  } catch (error) {
+    console.error('Error loading connections:', error);
+    snackbarText.value = 'Failed to load connections';
+    snackbarColor.value = 'error';
+    showSnackbar.value = true;
+  }
+};
 
 onMounted(() => {
+  loadConnections();
   betaDialog.value = true;
+  showSecurityNotice.value = localStorage.getItem('securityNoticeAccepted') !== 'true';
 });
 
 definePageMeta({
   layout: 'dashboard',
+});
+
+useHead({
+  title: 'StackQL - SQL Database Management',
+  meta: [
+    { name: 'description', content: 'StackQL is a SQL Database Management tool that allows you to connect to various SQL databases, execute queries, and manage your database connections securely.' },
+  ],
 });
 
 interface DatabaseConnection {
@@ -387,6 +456,7 @@ interface DatabaseConnection {
   type: string;
   host: string;
   port: number;
+  database_name?: string;
   database: string;
   username: string;
   password: string;
@@ -399,7 +469,6 @@ const connections = ref<DatabaseConnection[]>([]);
 const activeConnection = ref<DatabaseConnection | null>(null);
 const connectionForm = ref<any>(null);
 
-// Variables pour les tabs SQLQueryAnalyzer et SQLResultVisualizer
 const lastExecutedQuery = ref('');
 const analysisResults = ref({
   queryType: '',
@@ -428,6 +497,7 @@ const betaDialog = ref(false);
 const saving = ref(false);
 const deleting = ref(false);
 const showSnackbar = ref(false);
+const showSecurityNotice = ref(false);
 
 const newConnection = ref<DatabaseConnection>({
   id: '',
@@ -450,6 +520,37 @@ const connectionTypes = [
 const snackbarText = ref('');
 const snackbarColor = ref('');
 
+const defaultShortcuts: Record<string, { label: string; value: string }> = {
+  run: { label: 'Run Query', value: 'Ctrl+Enter' },
+  format: { label: 'Format SQL', value: 'Ctrl+Shift+F' },
+  comment: { label: 'Toggle Comment', value: 'Ctrl+/' },
+  save: { label: 'Save Query', value: 'Ctrl+S' },
+  clear: { label: 'Clear Editor', value: 'Ctrl+L' }
+};
+
+const editorShortcuts = ref<Record<string, { label: string; value: string }>>(
+  JSON.parse(localStorage.getItem('editorShortcuts') || 'null') || defaultShortcuts
+);
+
+function editShortcut(key: string) {
+  const newValue = prompt(`Set new shortcut for ${editorShortcuts.value[key].label}:`, editorShortcuts.value[key].value);
+  if (newValue) {
+    editorShortcuts.value[key].value = newValue;
+    localStorage.setItem('editorShortcuts', JSON.stringify(editorShortcuts.value));
+  }
+}
+
+function resetShortcuts() {
+  editorShortcuts.value = JSON.parse(JSON.stringify(defaultShortcuts));
+  localStorage.setItem('editorShortcuts', JSON.stringify(editorShortcuts.value));
+}
+
+const fontOptions = ['Fira Code', 'Consolas', 'Menlo', 'Monaco', 'Source Code Pro'];
+const editorFont = ref(localStorage.getItem('editorFont') || 'Fira Code');
+const editorFontSize = ref(Number(localStorage.getItem('editorFontSize')) || 15);
+watch(editorFont, v => localStorage.setItem('editorFont', v));
+watch(editorFontSize, v => localStorage.setItem('editorFontSize', String(v)));
+
 const editConnection = (connection: DatabaseConnection) => {
   editMode.value = true;
   newConnection.value = { ...connection };
@@ -465,6 +566,9 @@ const saveConnection = async () => {
   try {
     const response = await fetch('/api/database/connection', {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      },
       body: JSON.stringify(newConnection.value)
     });
     if (!response.ok) {
@@ -480,6 +584,9 @@ const confirmDelete = async () => {
   try {
     const response = await fetch('/api/database/connection', {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      },
       body: JSON.stringify({ id: connectionToDelete.value?.id })
     });
     if (!response.ok) {
@@ -512,27 +619,33 @@ const showAddConnectionDialog = () => {
   showConnectionDialog.value = true;
 };
 
-onMounted(() => {
-  const savedConnectionsJson = localStorage.getItem('database_connections');
-  if (savedConnectionsJson) {
-    try {
-      connections.value = JSON.parse(savedConnectionsJson);
-    } catch (e) {
-      console.error('Error parsing saved connections:', e);
+const connectToDatabase = async (connection: DatabaseConnection) => {
+  try {
+    const response = await axios.post('/api/database/connect', {
+      connectionId: connection.id
+    }, {
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    });
+
+    if (response.data.success) {
+      activeConnection.value = connection;
+      snackbarText.value = t().database.connectedTo?.replace('{name}', connection.name) ||
+        `Connected to ${connection.name}`;
+      snackbarColor.value = 'success';
+      showSnackbar.value = true;
+
+      if (activeTab.value === 'config') {
+        activeTab.value = 'terminal';
+      }
+    } else {
+      throw new Error(response.data.message || 'Failed to connect');
     }
-  }
-});
-
-const connectToDatabase = (connection: DatabaseConnection) => {
-  activeConnection.value = connection;
-
-  snackbarText.value = t().database.connectedTo?.replace('{name}', connection.name) ||
-    `Connected to ${connection.name}`;
-  snackbarColor.value = 'success';
-  showSnackbar.value = true;
-
-  if (activeTab.value === 'config') {
-    activeTab.value = 'terminal';
+  } catch (error: any) {
+    snackbarText.value = error.message || 'Connection failed';
+    snackbarColor.value = 'error';
+    showSnackbar.value = true;
   }
 };
 
@@ -548,9 +661,33 @@ const handleQueryResults = (data: { query: string, results: any[], columns: stri
   results.value = data.results;
   columns.value = data.columns;
   lastExecutedQuery.value = data.query;
-  if (data.results.length > 5) {
-    activeTab.value = 'visualizer';
-  }
+};
+
+function acceptSecurityNotice() {
+  showSecurityNotice.value = false;
+  localStorage.setItem('securityNoticeAccepted', 'true');
+}
+
+const sqlSnippets = ref(SQL_SNIPPETS.map(snippet => ({
+  ...snippet,
+  shortcut: localStorage.getItem(`sqlSnippetShortcut_${snippet.label}`) || snippet.shortcut
+})));
+
+const updateSnippetShortcut = (snippet: any) => {
+  localStorage.setItem(`sqlSnippetShortcut_${snippet.label}`, snippet.shortcut);
+};
+
+const resetSnippetShortcut = (snippet: any) => {
+  snippet.shortcut = SQL_SNIPPETS.find(s => s.label === snippet.label)?.shortcut || '';
+  localStorage.removeItem(`sqlSnippetShortcut_${snippet.label}`);
+};
+
+const resetAllSnippetShortcuts = () => {
+  sqlSnippets.value = SQL_SNIPPETS.map(snippet => ({
+    ...snippet,
+    shortcut: snippet.shortcut
+  }));
+  localStorage.clear();
 };
 </script>
 
@@ -566,5 +703,19 @@ const handleQueryResults = (data: { query: string, results: any[], columns: stri
 .sql-info {
   max-height: 300px;
   overflow-y: auto;
+}
+
+main,
+.v-application,
+.v-main,
+body,
+html {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 30%, #0f172a, #0a0f1f);
+}
+
+.fill-bg {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 30%, #0f172a, #0a0f1f);
 }
 </style>

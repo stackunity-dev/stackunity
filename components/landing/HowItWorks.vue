@@ -11,9 +11,9 @@
       </div>
 
       <div class="steps-container">
-        <div v-for="(step, i) in steps" :key="i" class="step-item">
+        <v-card v-for="(step, i) in steps" :key="i" class="step-item" :color="step.color" variant="tonal">
           <div class="step-number" :class="`text-${step.color}`">0{{ i + 1 }}</div>
-          <div class="step-content">
+          <v-card-text class="step-content">
             <div class="step-icon">
               <v-icon :icon="getStepIcon(i)" :color="step.color" size="large"></v-icon>
             </div>
@@ -23,8 +23,8 @@
               {{ t().cta.learnMore }}
               <v-icon end>mdi-arrow-right</v-icon>
             </v-btn>
-          </div>
-        </div>
+          </v-card-text>
+        </v-card>
       </div>
     </v-container>
   </section>
@@ -80,21 +80,23 @@ const steps = computed(() => [
 .steps-container {
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 40px;
 }
 
 .step-item {
   position: relative;
-  display: flex;
-  padding: 24px;
-  border-radius: 8px;
-  background-color: rgba(var(--v-theme-surface-variant), 0.1);
+  transition: transform 0.3s ease;
+  margin-top: 5px;
+}
+
+.step-item:hover {
+  transform: translateY(-5px);
 }
 
 .step-number {
   position: absolute;
-  top: -20px;
-  right: 20px;
+  top: -5px;
+  right: 10px;
   font-size: 72px;
   font-weight: 800;
   opacity: 0.6;
@@ -102,8 +104,8 @@ const steps = computed(() => [
 }
 
 .step-content {
-  flex-grow: 1;
-  padding-right: 80px;
+  padding: 24px !important;
+  padding-top: 8px !important;
 }
 
 .step-icon {
@@ -129,12 +131,12 @@ const steps = computed(() => [
 
   .step-item {
     flex: 1;
-    flex-direction: column;
+    margin-top: 8px;
   }
 
   .step-number {
-    top: -30px;
-    right: 30px;
+    top: -8px;
+    right: 15px;
     font-size: 90px;
   }
 }

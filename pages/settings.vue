@@ -12,8 +12,10 @@
               <v-list-item prepend-icon="mdi-shield-outline" :title="t().navigation.security" value="security"
                 @click="activeTab = 'security'" rounded="lg" :active="activeTab === 'security'" color="primary" />
               <v-divider class="my-2"></v-divider>
+              <!--
               <v-list-item prepend-icon="mdi-cookie-settings-outline" :title="t().navigation.cookies" value="cookies"
                 @click="activeTab = 'cookies'" rounded="lg" :active="activeTab === 'cookies'" color="primary" />
+              -->
               <v-list-item prepend-icon="mdi-delete-outline" :title="t().navigation.dataPrivacy" value="privacy"
                 @click="activeTab = 'privacy'" rounded="lg" :active="activeTab === 'privacy'" color="primary" />
             </v-list>
@@ -259,6 +261,7 @@
               </v-card-text>
             </div>
 
+            <!----
             <div v-if="activeTab === 'cookies'">
               <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
                 <v-icon color="white" class="mr-2">mdi-cookie-settings-outline</v-icon>
@@ -333,6 +336,7 @@
                 </div>
               </v-card-text>
             </div>
+            -->
 
             <div v-if="activeTab === 'privacy'">
               <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">

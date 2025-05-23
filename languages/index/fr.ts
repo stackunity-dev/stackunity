@@ -6,9 +6,9 @@ export default {
   },
   hero: {
     tagline: "OPTIMIZE YOUR WORKFLOW",
-    title: "Superchargez votre flux de développement de l'idée à la mise en ligne.",
-    description: "Utilisez notre outil tout-en-un pour construire, gérer et optimiser vos projets plus rapidement. Profitez d'un flux de travail fluide, d'une performance optimale et de code SEO-ready — tout cela en quelques clics.",
-    features: ["Analytics", "Website analysis", "Studio components", "Accessibility & API testing"],
+    title: "Boostez votre flux de développement avec des analyses approfondies, des requêtes intelligentes et des audits complets.",
+    description: "Utilisez notre boîte à outils tout-en-un pour construire, gérer et optimiser vos projets plus rapidement. Profitez de flux de travail fluides, de performances améliorées et de code prêt pour le SEO — le tout en quelques clics.",
+    features: ["StackUnity Analytics", "StackQL", "StackAudit"],
     cta: "Simplifiez votre workflow maintenant",
     ctaMobile: "Essayez gratuitement",
     ctaMobileDescription: "Rejoignez notre communauté de développeurs et propulsez vos projets web vers de nouvelles horizons."
@@ -22,50 +22,38 @@ export default {
   badExperiences: {
     title: "Corrigez ce qui fait fuir les utilisateurs — avec Stackunity",
     description: "Identifiez et résolvez les 3 principales raisons pour lesquelles les utilisateurs quittent votre site — rapidement, avec nos outils intelligents.",
-    accessibility: {
-      title: "Manque d'accessibilité",
-      subtitle: "Plus de 8% de la population mondiale vit avec des déficiences visuelles.",
-      description: "De nombreux utilisateurs quittent votre site parce qu'ils ne peuvent pas le voir ou interagir correctement. Stackunity vous aide à résoudre ce problème avec notre vérificateur de contraste et simulateur de déficience visuelle — concevez pour tous."
+    analytics: {
+      title: "Comportement de l'utilisateur non clair",
+      subtitle: "Si vous ne savez pas pourquoi les utilisateurs quittent, vous ne pouvez pas le corriger.",
+      description: "StackUnity Analytics révèle les cartes de chaleur de session, les zones mortes, la profondeur de défilement et la qualité d'interaction. Comprenez l'engagement, identifiez les points de friction — et agissez rapidement."
     },
-    seo: {
-      title: "Faible performance SEO",
-      subtitle: "Votre site ne sera pas trouvé s'il est invisible pour les moteurs de recherche.",
-      description: "Si votre référencement n'est pas efficace, votre site est invisible. Stackunity combine l'analyse sémantique, l'audit des métadonnées et les insights d'engagement pour augmenter votre visibilité et votre portée."
+    queries: {
+      title: "Pas de façon intelligente de rechercher",
+      subtitle: "La déboguage des problèmes d'utilisateur ne devrait pas prendre des heures.",
+      description: "StackQL vous permet de consulter le comportement de l'utilisateur et les métriques techniques instantanément. Que ce soit trouver des pages de chargement lent, des chemins cassés ou des bloqueurs de UX — obtenez des réponses en secondes, pas en jours."
     },
-    design: {
-      title: "Design peu attrayant",
-      subtitle: "Les premières impressions comptent — et les utilisateurs jugent rapidement.",
-      description: "Un site peu attrayant repousse instantanément les utilisateurs. Stackunity vous donne accès à un studio de design, un vérificateur responsive et des outils d'audit de contenu pour créer des interfaces magnifiques et conviviales."
+    audits: {
+      title: "Dette technique et écarts d'accessibilité",
+      subtitle: "Les problèmes invisibles nuisent au SEO, à la confiance et à l'utilisabilité.",
+      description: "StackAudit exécute des vérifications automatiques sur l'accessibilité, les métadonnées et les performances. Assurez-vous que votre site est lisible, inclusif et optimisé — du contraste aux métriques principales."
     }
   },
   features: {
     title: "Des outils puissants pour vos projets",
     subtitle: "Fonctionnalités principales",
     description: "StackUnity rassemble tous les outils dont vous avez besoin pour développer des applications web modernes sur une seule plateforme.",
-    cta: "Commencez maintenant",
-    cssAnimations: {
-      title: "Animations CSS",
-      description: "Créez et gérez des animations CSS pour tous vos projets."
-    },
-    studio: {
-      title: "Studio",
-      description: "Créez des interfaces utilisateur modernes avec notre studio de design intégré."
-    },
+    cta: "Commencez la période d'essai",
     analytics: {
-      title: "Analyse",
-      description: "Analysez votre site web avec nos outils pour améliorer sa performance et son accessibilité."
+      title: "StackUnity Analytics",
+      description: "Comprenez le comportement utilisateur avec des cartes de chaleur, des analyses d'engagement et des zones d’abandon. Décidez avec des données visuelles."
     },
-    apiTesting: {
-      title: "Test d'API",
-      description: "Testez vos API pour détecter les vulnérabilités de sécurité et les problèmes de performance."
+    queries: {
+      title: "StackQL",
+      description: "Explorez vos données avec une syntaxe simple inspirée de SQL. Filtrez les sessions, croisez les métriques et exportez vos insights."
     },
-    websiteAnalysis: {
-      title: "Analyse de site web",
-      description: "Analysez votre site web avec nos outils pour améliorer sa performance et son accessibilité."
-    },
-    accessibility: {
-      title: "Accessibilité",
-      description: "Vérifiez et améliorez l'accessibilité de vos sites web pour tous les utilisateurs."
+    audits: {
+      title: "StackAudit",
+      description: "Auditez la performance, l'accessibilité, le design et le SEO de vos pages. Corrigez les faiblesses en quelques clics."
     }
   },
   howItWorks: {

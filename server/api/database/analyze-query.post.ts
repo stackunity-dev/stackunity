@@ -43,10 +43,8 @@ interface AnalysisResult {
   estimatedTime: number;
 }
 
-// Parseur SQL simple
 class SimpleSqlParser {
   parseQuery(query: string): any {
-    // Simplification: déterminer le type de requête
     const trimmedQuery = query.trim().toUpperCase();
     let queryType = '';
     if (trimmedQuery.startsWith('SELECT')) queryType = 'select';
@@ -58,13 +56,10 @@ class SimpleSqlParser {
     else if (trimmedQuery.startsWith('DROP')) queryType = 'drop';
     else queryType = 'unknown';
 
-    // Extraire les tables
     const tables = this.extractTables(query);
 
-    // Vérifier si la requête contient un WHERE
     const hasWhere = /\sWHERE\s/i.test(query);
 
-    // Renvoyer un objet représentant la requête analysée
     return {
       type: queryType,
       from: tables.map(table => ({ table })),
@@ -77,28 +72,25 @@ class SimpleSqlParser {
   extractTables(query: string): string[] {
     const tables: string[] = [];
 
-    // Extraire les tables après FROM
     const fromRegex = /\bFROM\s+([a-zA-Z0-9_]+)/gi;
     let fromMatch;
     while ((fromMatch = fromRegex.exec(query)) !== null) {
       tables.push(fromMatch[1]);
     }
 
-    // Extraire les tables de JOIN
     const joinRegex = /\bJOIN\s+([a-zA-Z0-9_]+)/gi;
     let joinMatch;
     while ((joinMatch = joinRegex.exec(query)) !== null) {
       tables.push(joinMatch[1]);
     }
 
-    // Extraire les tables après INTO ou UPDATE
     const intoRegex = /\b(INTO|UPDATE)\s+([a-zA-Z0-9_]+)/gi;
     let intoMatch;
     while ((intoMatch = intoRegex.exec(query)) !== null) {
       tables.push(intoMatch[2]);
     }
 
-    return [...new Set(tables)]; // Supprimer les doublons
+    return [...new Set(tables)];
   }
 
   extractLimit(query: string): number {
@@ -128,20 +120,15 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Utiliser notre parseur SQL simple
     const sqlParser = new SimpleSqlParser();
     let parsedQuery: any;
     let queryType = '';
 
     try {
-      // Tenter d'analyser la requête SQL
       parsedQuery = sqlParser.astify(query);
-
-      // Déterminer le type de requête
       queryType = parsedQuery.type.toUpperCase() || query.trim().split(' ')[0].toUpperCase();
 
     } catch (parseError: any) {
-      // Si l'analyse échoue, on retourne quand même le type de requête basé sur le premier mot
       queryType = query.trim().split(' ')[0].toUpperCase();
 
       const result: AnalysisResult = {
@@ -174,10 +161,8 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Traiter la requête analysée
     const singleQuery = Array.isArray(parsedQuery) ? parsedQuery[0] : parsedQuery;
 
-    // Extraire les tables affectées
     const affectedTables: string[] = [];
 
     if (singleQuery.from) {
@@ -188,81 +173,71 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Si aucune table n'a été détectée, utiliser notre fonction d'extraction de tables
     if (affectedTables.length === 0) {
       sqlParser.extractTables(query).forEach(table => {
         affectedTables.push(table);
       });
     }
 
-    // Récupérer les détails des tables (simulé pour l'instant)
     const tableDetails = affectedTables.map(table => ({
       name: table,
       columns: []
     }));
 
-    // Identifier les warnings potentiels
     const warnings: Warning[] = [];
 
-    // Warn if no WHERE clause in SELECT/UPDATE/DELETE
     if ((queryType === 'SELECT' || queryType === 'UPDATE' || queryType === 'DELETE') && !singleQuery.where) {
       warnings.push({
         icon: 'mdi-table',
-        title: 'Absence de clause WHERE',
-        description: `Cette requête ${queryType} s'exécute sans condition WHERE, ce qui peut affecter toutes les lignes de la table.`
+        title: 'Missing WHERE clause',
+        description: `This ${queryType} query executes without a WHERE condition, which can affect all rows of the table.`
       });
     }
 
-    // Warn for SELECT * 
     if (queryType === 'SELECT' && query.toUpperCase().includes('SELECT *')) {
       warnings.push({
         icon: 'mdi-star-circle',
-        title: 'Utilisation de SELECT *',
-        description: 'Sélectionner toutes les colonnes peut diminuer les performances. Spécifiez uniquement les colonnes nécessaires.'
+        title: 'Using SELECT *',
+        description: 'Selecting all columns can reduce performance. Specify only the columns you need.'
       });
     }
 
-    // Identifier les optimisations potentielles
     const optimizations: Optimization[] = [];
 
-    // Optimization for SELECT *
     if (query.toUpperCase().includes('SELECT *')) {
       optimizations.push({
         icon: 'mdi-select-search',
-        title: 'Sélectionner uniquement les colonnes nécessaires',
-        description: 'Évitez d\'utiliser SELECT * et spécifiez les colonnes dont vous avez réellement besoin.',
+        title: 'Select only required columns',
+        description: 'Avoid SELECT * and specify only the columns you need.',
         improvementPercent: 25,
         optimizedQuery: query.replace(/SELECT \*/i, 'SELECT id, name, created_at')
       });
     }
 
-    // Add LIMIT to large SELECTs
     if (queryType === 'SELECT' && !query.toUpperCase().includes('LIMIT')) {
       optimizations.push({
         icon: 'mdi-table-filter',
-        title: 'Ajouter une clause LIMIT',
-        description: 'Limitez le nombre de résultats pour améliorer les performances.',
+        title: 'Add a LIMIT clause',
+        description: 'Limit the number of results to improve performance.',
         improvementPercent: 40,
         optimizedQuery: `${query} LIMIT 100`
       });
     }
 
-    // Générer des suggestions d'index
     const indexSuggestions: IndexSuggestion[] = [];
 
-    // Extraire des colonnes dans WHERE pour suggestions d'index
     const whereColumns = extractWhereColumns(query);
     whereColumns.forEach(column => {
       if (column.includes('.')) {
         const [table, columnName] = column.split('.');
         indexSuggestions.push({
           sql: `CREATE INDEX idx_${table}_${columnName} ON ${table} (${columnName});`,
-          description: `Pour optimiser les filtres sur ${column}`
+          description: `To optimize filters on ${column}`
         });
       } else if (affectedTables.length === 1) {
         indexSuggestions.push({
           sql: `CREATE INDEX idx_${affectedTables[0]}_${column} ON ${affectedTables[0]} (${column});`,
-          description: `Pour optimiser les filtres sur ${column}`
+          description: `To optimize filters on ${column}`
         });
       }
     });
@@ -281,8 +256,8 @@ export default defineEventHandler(async (event) => {
       if (col && !whereColumns.includes(col)) {
         warnings.push({
           icon: 'mdi-sort',
-          title: 'ORDER BY/GROUP BY sans index',
-          description: `La colonne '${col}' utilisée dans ORDER BY ou GROUP BY n'est pas filtrée dans WHERE. Un index pourrait améliorer les performances.`
+          title: 'ORDER BY/GROUP BY without index',
+          description: `The column '${col}' used in ORDER BY or GROUP BY is not filtered in WHERE. An index could improve performance.`
         });
       }
     });
@@ -291,7 +266,7 @@ export default defineEventHandler(async (event) => {
       warnings.push({
         icon: 'mdi-link-variant',
         title: 'Jointure sans index',
-        description: `La requête utilise JOIN mais aucune colonne commune n'est filtrée dans WHERE. Cela peut entraîner des jointures coûteuses.`
+        description: `The query uses JOIN but no common column is filtered in WHERE. This can lead to expensive joins.`
       });
     }
 
@@ -302,7 +277,7 @@ export default defineEventHandler(async (event) => {
         if (!alreadySuggested.has(sql)) {
           indexSuggestions.push({
             sql,
-            description: `Pour optimiser les tris ou regroupements sur ${col}`
+            description: `To optimize sorts or groupings on ${col}`
           });
           alreadySuggested.add(sql);
         }
@@ -314,7 +289,7 @@ export default defineEventHandler(async (event) => {
         if (!alreadySuggested.has(sql)) {
           indexSuggestions.push({
             sql,
-            description: `Pour optimiser les jointures sur ${table}`
+            description: `To optimize joins on ${table}`
           });
           alreadySuggested.add(sql);
         }
@@ -324,8 +299,8 @@ export default defineEventHandler(async (event) => {
     if ((queryType === 'SELECT' || queryType === 'UPDATE' || queryType === 'DELETE') && !singleQuery.where) {
       optimizations.push({
         icon: 'mdi-filter-outline',
-        title: 'Ajouter une clause WHERE',
-        description: 'Ajoutez une condition WHERE pour limiter l\'impact de la requête.',
+        title: 'Add a WHERE clause',
+        description: 'Add a WHERE clause to limit the impact of the query.',
         improvementPercent: 30,
         optimizedQuery: query + ' WHERE 1=1'
       });
@@ -336,7 +311,7 @@ export default defineEventHandler(async (event) => {
       if (!alreadySuggested.has(sql)) {
         indexSuggestions.push({
           sql,
-          description: `Index composite pour optimiser les filtres sur (${whereColumns.join(', ')})`
+          description: `Composite index to optimize filters on (${whereColumns.join(', ')})`
         });
       }
     }
@@ -538,28 +513,39 @@ export default defineEventHandler(async (event) => {
   }
 });
 
-// Fonction pour extraire les colonnes des clauses WHERE
 function extractWhereColumns(query: string): string[] {
-  const columns: string[] = [];
+  const columns = new Set<string>();
 
-  // Recherche des colonnes dans les clauses WHERE
-  const whereClauseRegex = /\bWHERE\b(.*?)(?:\bGROUP BY\b|\bORDER BY\b|\bLIMIT\b|$)/is;
-  const whereMatch = query.match(whereClauseRegex);
+  // Extraction de la clause WHERE complète
+  const whereRegex = /WHERE\s+([^;]+?)(?=\s+(?:GROUP|ORDER|LIMIT|$)|$)/i;
+  const whereMatch = query.match(whereRegex);
 
-  if (whereMatch && whereMatch[1]) {
+  if (whereMatch) {
     const whereClause = whereMatch[1];
 
-    // Recherche des colonnes dans les comparaisons
-    const columnRegex = /\b([a-zA-Z0-9_.]+)\s*(?:=|!=|<>|>|<|>=|<=|LIKE|IN|IS|NOT|BETWEEN)\s*(?:'[^']*'|\d+|NULL|\(.*?\))/ig;
-    let columnMatch;
+    // Extraction des colonnes avec opérateurs de comparaison
+    const comparisonRegex = /([a-zA-Z0-9_\.]+)\s*(?:=|>|<|>=|<=|!=|LIKE|IN|BETWEEN|IS|NOT|EXISTS)/gi;
+    let match;
+    while ((match = comparisonRegex.exec(whereClause)) !== null) {
+      const column = match[1].split('.').pop() || match[1];
+      columns.add(column);
+    }
 
-    while ((columnMatch = columnRegex.exec(whereClause)) !== null) {
-      const column = columnMatch[1].trim();
-      if (!columns.includes(column)) {
-        columns.push(column);
-      }
+    // Extraction des colonnes dans les conditions AND/OR
+    const andOrRegex = /(?:AND|OR)\s+([a-zA-Z0-9_\.]+)\s*(?:=|>|<|>=|<=|!=|LIKE|IN|BETWEEN|IS|NOT|EXISTS)/gi;
+    while ((match = andOrRegex.exec(whereClause)) !== null) {
+      const column = match[1].split('.').pop() || match[1];
+      columns.add(column);
+    }
+
+    // Extraction des colonnes dans les sous-requêtes
+    const subqueryRegex = /\(\s*SELECT\s+.*?FROM\s+.*?WHERE\s+([^)]+?)(?=\s+(?:GROUP|ORDER|LIMIT|$)|$)/gi;
+    while ((match = subqueryRegex.exec(whereClause)) !== null) {
+      const subqueryWhere = match[1];
+      const subqueryColumns = extractWhereColumns(`WHERE ${subqueryWhere}`);
+      subqueryColumns.forEach(col => columns.add(col));
     }
   }
 
-  return columns;
+  return Array.from(columns);
 } 

@@ -4,8 +4,8 @@
       <v-row>
         <v-col cols="12" md="5" lg="5" class="mb-6 mb-md-0">
           <div class="d-flex align-center mb-4">
-            <img :src="`https://stackunity.tech/logo/stackunity-title.png`"
-              alt="StackUnity - developement hub all-in-one platform" width="180" loading="eager">
+            <img :src="`/images/stackunity-title.png`" alt="StackUnity - developement hub all-in-one platform"
+              width="180" loading="eager">
           </div>
           <p class="text-body-2 text-medium-emphasis mb-4">
             {{ t().footer.description }}

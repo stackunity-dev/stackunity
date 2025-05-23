@@ -3,7 +3,6 @@ import { EmailTemplates, WelcomeNewsletterEmailTemplate } from './EmailTemplates
 
 export const resend = new Resend(process.env.RESEND_API_KEY as string || "your_api_key_here");
 
-
 export class EmailService {
   static async sendWelcomeEmail(email: string, username: string): Promise<{ success: boolean; error?: string }> {
     try {

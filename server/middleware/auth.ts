@@ -64,6 +64,10 @@ export default defineEventHandler(async (event: H3Event) => {
       return true;
     }
 
+    if (url === '/api/notifications' || url.startsWith('/api/notifications/')) {
+      return false;
+    }
+
     const isPublic = publicRoutes.some(route => {
       if (route.endsWith('/')) {
         return url.startsWith(route);
@@ -86,7 +90,6 @@ export default defineEventHandler(async (event: H3Event) => {
       !premiumRoutes.some(route => url.includes(route))) {
       return;
     }
-    console.log('Authentification requise');
     throw createError({
       statusCode: 401,
       statusMessage: 'Authentification requise'

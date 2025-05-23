@@ -5,7 +5,7 @@
         <v-container class="d-flex align-center py-0 my-0">
           <NuxtLink to="/" class="text-decoration-none" aria-label="Go to homepage">
             <div class="d-flex align-center">
-              <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
+              <img src="/images/stackunity-title.png" alt="StackUnity title" width="150">
             </div>
           </NuxtLink>
           <v-spacer></v-spacer>
@@ -57,7 +57,7 @@
                 </p>
                 <ul class="mb-6" role="list">
                   <li v-for="(item, index) in t().privacy?.sections?.usage?.items || []" :key="index" class="mb-2">
-                    {{ item || '' }}
+                    {{ item.title || '' }} : {{ item.content || '' }}
                   </li>
                 </ul>
               </section>
@@ -72,7 +72,7 @@
                 </p>
                 <ul class="mb-6" role="list">
                   <li v-for="(item, index) in t().privacy?.sections?.sharing?.items || []" :key="index" class="mb-2">
-                    {{ item || '' }}
+                    {{ item.title || '' }} : {{ item.content || '' }}
                   </li>
                 </ul>
               </section>
@@ -99,7 +99,7 @@
                 </p>
                 <ul class="mb-6" role="list">
                   <li v-for="(item, index) in t().privacy?.sections?.rights?.items || []" :key="index" class="mb-2">
-                    {{ item || '' }}
+                    {{ item.title || '' }} : {{ item.content || '' }}
                   </li>
                 </ul>
               </section>

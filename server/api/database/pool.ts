@@ -240,7 +240,15 @@ export async function executeQuery(connectionId: string, query: string, params: 
     return { results, fields, affectedRows };
   } catch (error) {
     console.error(`Query execution error: ${error.message}`);
-    throw error;
+
+    const sqlError = {
+      message: error.message,
+      code: error.code || error.errno,
+      sqlState: error.sqlState,
+      sqlMessage: error.sqlMessage
+    };
+
+    throw sqlError;
   }
 }
 

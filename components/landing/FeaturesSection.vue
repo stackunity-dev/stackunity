@@ -14,17 +14,11 @@
       <v-row>
         <v-col v-for="(feature, index) in features" :key="index" cols="12" md="4" class="mb-8">
           <article class="feature-card h-100 rounded-lg" role="article" aria-labelledby="feature-title-{{ index }}">
-            <v-card class="feature-card h-100 rounded-lg" flat :class="{
-              'analytics-feature-card': feature.title === t().features.analytics.title || feature.title === t().features.websiteAnalysis.title,
-              'pulse-animation': feature.title === t().features.analytics.title
-            }"
-              :elevation="(feature.title === t().features.analytics.title || feature.title === t().features.websiteAnalysis.title) ? 4 : 0">
-              <div
-                v-if="feature.title === t().features.analytics.title || feature.title === t().features.websiteAnalysis.title"
-                class="analytics-badge">
-                <v-icon size="x-small" class="mr-1">mdi-star</v-icon>
-                <span>PREMIUM</span>
-              </div>
+            <v-card class="feature-card h-100 rounded-lg" flat :class="[
+              feature.badge?.variant === 'premium' ? 'analytics-feature-card pulse-animation' : '',
+              feature.badge?.variant === 'success' ? 'audit-feature-card' : '',
+              feature.badge?.variant === 'warning' ? 'stackql-feature-card' : ''
+            ]" :elevation="feature.badge?.variant === 'premium' ? 4 : 2">
 
               <div v-if="feature.title === t().features.analytics.title" class="analytics-mini-viz">
                 <div class="mini-bar" style="height: 60%;"></div>
@@ -34,50 +28,45 @@
                 <div class="mini-line"></div>
               </div>
 
-              <div v-if="feature.title === t().features.websiteAnalysis.title"
-                class="analytics-mini-viz website-mini-viz">
-                <div class="mini-dot" style="top: 20%; left: 20%"></div>
-                <div class="mini-dot" style="top: 40%; left: 60%"></div>
-                <div class="mini-dot" style="top: 70%; left: 30%"></div>
-                <div class="mini-dot" style="top: 50%; left: 80%"></div>
-                <div class="mini-line website-line"></div>
-              </div>
-
-              <div v-if="feature.title === t().features.cssAnimations.title"
-                class="analytics-mini-viz animations-mini-viz">
-                <div class="mini-square" style="top: 30%; left: 30%; animation-delay: 0s;"></div>
-                <div class="mini-square" style="top: 30%; left: 55%; animation-delay: 0.2s;"></div>
-                <div class="mini-square" style="top: 60%; left: 30%; animation-delay: 0.4s;"></div>
-                <div class="mini-square" style="top: 60%; left: 55%; animation-delay: 0.6s;"></div>
-              </div>
-
-              <div v-if="feature.title === t().features.studio.title" class="analytics-mini-viz studio-mini-viz">
-                <div class="mini-grid">
-                  <div v-for="(theme, index) in availableThemes" :key="index" class="grid-item"
-                    :style="{ backgroundColor: theme.color }" @click.stop="changeTheme(theme.name)" role="button"
-                    :aria-label="`Switch to ${theme.name} theme`" tabindex="0"></div>
+              <div v-if="feature.title === t().features.queries.title" class="stackql-mini-viz">
+                <div class="mini-db-schema">
+                  <div class="mini-table">
+                    <div class="mini-table-header"></div>
+                    <div class="mini-table-row"></div>
+                    <div class="mini-table-row"></div>
+                  </div>
+                  <div class="mini-table">
+                    <div class="mini-table-header"></div>
+                    <div class="mini-table-row"></div>
+                    <div class="mini-table-row"></div>
+                  </div>
+                  <div class="mini-relation"></div>
                 </div>
               </div>
 
-              <div v-if="feature.title === t().features.apiTesting.title" class="analytics-mini-viz api-mini-viz">
-                <div class="api-lines">
-                  <div class="api-line" style="width: 70%; animation-delay: 0s;"></div>
-                  <div class="api-line" style="width: 40%; animation-delay: 0.2s;"></div>
-                  <div class="api-line" style="width: 60%; animation-delay: 0.4s;"></div>
-                  <div class="api-line" style="width: 30%; animation-delay: 0.6s;"></div>
+              <div v-if="feature.title === t().features.audits.title" class="audit-mini-viz">
+                <div class="mini-radar">
+                  <div class="mini-radar-circle"></div>
+                  <div class="mini-radar-circle"></div>
+                  <div class="mini-radar-circle"></div>
+                  <div class="mini-radar-scan"></div>
+                  <div class="mini-radar-dot"></div>
                 </div>
-                <div class="api-status"></div>
               </div>
 
-              <div v-if="feature.title === t().features.accessibility.title"
-                class="analytics-mini-viz accessibility-mini-viz">
-                <div class="a11y-waves">
-                  <div class="a11y-wave"></div>
-                  <div class="a11y-wave"></div>
-                  <div class="a11y-wave"></div>
-                </div>
-                <div class="access-point"></div>
+              <div v-if="feature.badge" class="feature-badge" :class="feature.badge.variant">
+                <v-icon size="x-small" class="mr-1">mdi-star</v-icon>
+                <span>{{ feature.badge.label }}</span>
               </div>
+
+              <div v-if="feature.showViz" class="analytics-mini-viz">
+                <div class="mini-bar" style="height: 60%;"></div>
+                <div class="mini-bar" style="height: 80%;"></div>
+                <div class="mini-bar" style="height: 40%;"></div>
+                <div class="mini-bar" style="height: 90%;"></div>
+                <div class="mini-line"></div>
+              </div>
+
 
               <v-card-text class="pa-6">
                 <v-avatar :color="feature.color" size="56" class="mb-4" aria-hidden="true">
@@ -88,37 +77,6 @@
                   <h3 id="feature-title-{{ index }}" class="text-h5 font-weight-bold mb-3">
                     {{ feature.title }}
                   </h3>
-
-                  <div v-if="feature.title === t().features.accessibility.title" class="vision-filter-wrapper ml-2">
-                    <v-menu offset-y>
-                      <template v-slot:activator="{ props }">
-                        <v-btn icon density="comfortable" variant="text" v-bind="props"
-                          :color="selectedVisionType !== 'normal' ? 'primary' : feature.color"
-                          aria-label="Test vision impairments" size="small">
-                          <v-icon>{{ visionTypeIcon }}</v-icon>
-                          <v-tooltip activator="parent" location="top">
-                            Try different vision types
-                          </v-tooltip>
-                        </v-btn>
-                      </template>
-                      <v-list dense>
-                        <v-list-item v-for="type in visionTypes" :key="type.value"
-                          @click="selectedVisionType = type.value; applyVisionFilter()">
-                          <template v-slot:prepend>
-                            <v-icon :icon="type.icon"
-                              :color="selectedVisionType === type.value ? 'primary' : ''"></v-icon>
-                          </template>
-                          <v-list-item-title>{{ type.title }}</v-list-item-title>
-                        </v-list-item>
-                        <v-divider v-if="selectedVisionType !== 'normal'"></v-divider>
-                        <v-list-item v-if="selectedVisionType !== 'normal'">
-                          <v-slider v-model="filterIntensity" :min="0" :max="100" :step="1" label="Intensity"
-                            hide-details class="px-2 py-0" density="compact" @update:model-value="applyVisionFilter">
-                          </v-slider>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </div>
                 </div>
 
                 <p class="text-body-1 text-medium-emphasis">{{ feature.description }}</p>
@@ -140,71 +98,51 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import { useTheme } from 'vuetify';
+import { computed } from 'vue';
 import { useTranslations } from '../../languages/';
-import { applyVisionFilter, filterIntensity, selectedVisionType, visionTypeIcon, visionTypes } from '../../utils/filter';
 import { getElevation, setHoverOff, setHoverOn } from '../../utils/hover-state';
 // @ts-ignore
 import { useNuxtApp } from '#app';
 import './landing.css';
 
 const t = useTranslations('index')
-const vuetifyTheme = useTheme();
 
 const nuxtApp = useNuxtApp()
 const localePath = nuxtApp.$localePath
 
-const changeTheme = (themeName) => {
-  vuetifyTheme.global.name.value = themeName;
-}
-
 const features = computed(() => [
   {
-    title: t().features.cssAnimations.title,
-    description: t().features.cssAnimations.description,
-    icon: 'mdi-animation',
-    color: 'primary'
+    title: t().features.audits.title,
+    description: t().features.audits.description,
+    icon: 'mdi-magnify-scan',
+    color: 'primary',
+    badge: {
+      label: 'AUDIT',
+      variant: 'success'
+    }
   },
   {
-    title: t().features.studio.title,
-    description: t().features.studio.description,
-    icon: 'mdi-palette',
-    color: 'secondary'
+    title: t().features.queries.title,
+    description: t().features.queries.description,
+    icon: 'mdi-database-search',
+    color: 'secondary',
+    badge: {
+      label: 'STACKQL',
+      variant: 'warning'
+    }
   },
   {
     title: t().features.analytics.title,
     description: t().features.analytics.description,
     icon: 'mdi-chart-box',
-    color: 'tertiary'
-  },
-  {
-    title: t().features.apiTesting.title,
-    description: t().features.apiTesting.description,
-    icon: 'mdi-api',
-    color: 'info'
-  },
-  {
-    title: t().features.websiteAnalysis.title,
-    description: t().features.websiteAnalysis.description,
-    icon: 'mdi-magnify',
-    color: 'success'
-  },
-  {
-    title: t().features.accessibility.title,
-    description: t().features.accessibility.description,
-    icon: 'mdi-access-point',
-    color: 'warning'
+    color: 'tertiary',
+    badge: {
+      label: 'Analytics',
+      variant: 'premium'
+    },
+    showViz: true
   }
-]);
-
-const availableThemes = ref([
-  { name: 'dark', color: 'rgba(var(--v-theme-primary), 0.8)' },
-  { name: 'light', color: 'rgba(var(--v-theme-secondary), 0.8)' },
-  { name: 'greenAmbiance', color: 'rgba(var(--v-theme-success), 0.8)' },
-  { name: 'landingPage', color: 'rgba(var(--v-theme-error), 0.8)' }
-]);
-
+])
 </script>
 
 <style scoped>
@@ -263,11 +201,6 @@ const availableThemes = ref([
   z-index: 1;
   overflow: hidden;
 }
-
-.feature-card:hover .analytics-mini-viz {
-  opacity: 0.5;
-}
-
 .mini-bar {
   width: 15%;
   background-color: rgba(var(--v-theme-tertiary), 0.8);
@@ -282,275 +215,8 @@ const availableThemes = ref([
   bottom: 0;
   border-radius: 2px;
 }
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-tertiary), 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 15px rgba(var(--v-theme-tertiary), 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-tertiary), 0);
-  }
-}
-
-.pulse-animation {
-  animation: pulse 2s infinite;
-}
-
-.website-mini-viz {
-  align-items: center;
-  justify-content: center;
-}
-
-.mini-dot {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: rgba(var(--v-theme-success), 0.8);
-}
-
-.website-line {
-  background: linear-gradient(90deg, rgba(var(--v-theme-success), 0.1), rgba(var(--v-theme-success), 0.8));
-}
-
-.animations-mini-viz {
-  align-items: center;
-  justify-content: center;
-}
-
-.mini-square {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background-color: rgba(var(--v-theme-primary), 0.8);
-  animation: rotate-mini 3s infinite linear;
-}
-
-@keyframes rotate-mini {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) scale(0.8);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
-}
-
-.studio-mini-viz {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mini-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 3px;
-  width: 40px;
-  height: 40px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.grid-item {
-  border-radius: 2px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.grid-item:hover {
-  transform: scale(1.15) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 5;
-}
-
-.grid-item:active {
-  transform: scale(0.95) !important;
-}
-
-.grid-item::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.2);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.grid-item:hover::after {
-  opacity: 1;
-}
-
-.api-mini-viz {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.api-lines {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 60%;
-  height: 60%;
-  position: absolute;
-  top: 50%;
-  left: 35%;
-  transform: translateY(-50%);
-  gap: 6px;
-}
-
-.api-line {
-  height: 2px;
-  background: linear-gradient(to right, rgba(var(--v-theme-info), 0.8), rgba(var(--v-theme-info), 0.2));
-  border-radius: 1px;
-  animation: scan 2s infinite ease-in-out;
-}
-
-@keyframes scan {
-  0% {
-    transform: translateX(-5%);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translateX(10%);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(-5%);
-    opacity: 0.5;
-  }
-}
-
-.api-status {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: rgba(var(--v-theme-success), 0.8);
-  top: 50%;
-  left: 15%;
-  transform: translateY(-50%);
-  box-shadow: 0 0 8px rgba(var(--v-theme-success), 0.4);
-  animation: pulse-status 2s infinite;
-}
-
-@keyframes pulse-status {
-  0% {
-    transform: translateY(-50%) scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateY(-50%) scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-50%) scale(1);
-    opacity: 0.7;
-  }
-}
-
-.accessibility-mini-viz {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-}
-
-.a11y-waves {
-  position: absolute;
-  width: 80%;
-  height: 80%;
-  top: 10%;
-  left: 10%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.a11y-wave {
-  position: absolute;
-  border: 1px solid rgba(var(--v-theme-warning), 0.5);
-  border-radius: 50%;
-  opacity: 0;
-  animation: wave-out 2s infinite;
-}
-
-.a11y-wave:nth-child(1) {
-  width: 20px;
-  height: 20px;
-  animation-delay: 0s;
-}
-
-.a11y-wave:nth-child(2) {
-  width: 30px;
-  height: 30px;
-  animation-delay: 0.3s;
-}
-
-.a11y-wave:nth-child(3) {
-  width: 40px;
-  height: 40px;
-  animation-delay: 0.6s;
-}
-
-@keyframes wave-out {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.4;
-  }
-  100% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-}
-
-.access-point {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background-color: rgba(var(--v-theme-warning), 0.9);
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 10px rgba(var(--v-theme-warning), 0.6);
-  z-index: 2;
-  animation: pulse-access 2s infinite;
-}
-
-@keyframes pulse-access {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0.7);
-  }
-  70% {
-    transform: translate(-50%, -50%) scale(1.2);
-    box-shadow: 0 0 12px 5px rgba(var(--v-theme-warning), 0.3);
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0);
-  }
+.feature-card:hover .analytics-mini-viz {
+  opacity: 0.5;
 }
 
 .get-started-btn {
@@ -571,5 +237,212 @@ const availableThemes = ref([
 
 .get-started-btn:active {
   transform: translateY(1px) scale(0.98);
+}
+
+.feature-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border-bottom-left-radius: 8px;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.feature-badge.premium {
+  background: linear-gradient(135deg, rgba(var(--v-theme-tertiary), 1), rgba(var(--v-theme-primary), 0.8));
+}
+
+.feature-badge.success {
+  background: linear-gradient(135deg, rgba(var(--v-theme-success), 1), rgba(var(--v-theme-primary), 0.6));
+}
+
+.feature-badge.warning {
+  background: linear-gradient(135deg, rgba(var(--v-theme-warning), 1), rgba(var(--v-theme-secondary), 0.7));
+}
+
+.audit-feature-card {
+  border: 1px solid rgba(var(--v-theme-success), 0.3);
+  background: linear-gradient(135deg, rgba(var(--v-theme-success), 0.02), rgba(var(--v-theme-success), 0.06));
+}
+
+.stackql-feature-card {
+  border: 1px solid rgba(var(--v-theme-warning), 0.3);
+  background: linear-gradient(135deg, rgba(var(--v-theme-warning), 0.02), rgba(var(--v-theme-warning), 0.06));
+}
+
+.stackql-mini-viz {
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  width: 60px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.mini-db-schema {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5px;
+}
+
+.mini-table {
+  width: 20px;
+  height: 35px;
+  background: rgba(var(--v-theme-warning), 0.1);
+  border: 1px solid rgba(var(--v-theme-warning), 0.8);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+}
+
+.mini-table-header {
+  height: 4px;
+  background: rgba(var(--v-theme-warning), 0.8);
+  border-radius: 1px;
+  margin-bottom: 2px;
+}
+
+.mini-table-row {
+  height: 2px;
+  background: rgba(var(--v-theme-warning), 0.4);
+  border-radius: 1px;
+  margin-bottom: 2px;
+}
+
+.mini-relation {
+  position: absolute;
+  width: 15px;
+  height: 1px;
+  background: rgba(var(--v-theme-warning), 0.8);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.mini-relation::before,
+.mini-relation::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border: 1px solid rgba(var(--v-theme-warning), 0.8);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.mini-relation::before {
+  left: -2px;
+}
+
+.mini-relation::after {
+  right: -2px;
+}
+
+.audit-mini-viz {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  width: 60px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.mini-radar {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-radar-circle {
+  position: absolute;
+  border: 1px solid rgba(var(--v-theme-success), 0.8);
+  border-radius: 50%;
+}
+
+.mini-radar-circle:nth-child(1) {
+  width: 100%;
+  height: 100%;
+}
+
+.mini-radar-circle:nth-child(2) {
+  width: 70%;
+  height: 70%;
+}
+
+.mini-radar-circle:nth-child(3) {
+  width: 40%;
+  height: 40%;
+}
+
+.mini-radar-scan {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  background: linear-gradient(90deg,
+      rgba(var(--v-theme-success), 0),
+      rgba(var(--v-theme-success), 0.2));
+  transform-origin: bottom right;
+  animation: radar-scan 2s linear infinite;
+}
+
+.mini-radar-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(var(--v-theme-success), 1);
+  border-radius: 50%;
+  top: 30%;
+  left: 60%;
+  animation: radar-dot 2s linear infinite;
+}
+
+@keyframes radar-scan {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes radar-dot {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.feature-card:hover .stackql-mini-viz,
+.feature-card:hover .audit-mini-viz {
+  opacity: 0.5;
 }
 </style>

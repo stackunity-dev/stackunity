@@ -8,33 +8,13 @@
         <p class="text-subtitle-1 text-medium-emphasis mx-auto" style="max-width: 700px">
           {{ t().section.description }}
         </p>
-
-        <v-chip-group v-model="selectedCurrency" class="d-flex flex-wrap text-center justify-center text-center my-6"
-          aria-label="Select currency">
-          <v-chip v-for="currency in currencies" :key="currency.symbol" :value="currency.symbol" filter
-            aria-label="Currency">
-            {{ currency.symbol }} ({{ currency.code }})
-          </v-chip>
-        </v-chip-group>
       </div>
 
       <v-row justify="center" align="stretch">
-        <v-col cols="12" sm="6" md="5">
-          <price-card :plan="freePlan" :selected-currency="selectedCurrency" card-class="free-plan"
-            :btn-text="t().plans.free.cta" btn-color="primary" btn-to="/signup" />
-        </v-col>
-
-        <v-col cols="12" class="d-flex justify-center align-center d-sm-none py-4">
-          <v-chip color="warning" size="large" label variant="elevated" class="compare-chip">
-            <v-icon start>mdi-compare</v-icon>
-            {{ t().section.compare || 'Compare' }}
-          </v-chip>
-        </v-col>
-
-        <v-col cols="12" sm="6" md="5">
-          <price-card :plan="premiumPlan" :selected-currency="selectedCurrency" :is-popular="true"
-            card-class="premium-plan highlight-card" :btn-text="t().plans.premium.cta" btn-color="tertiary"
-            btn-to="/signup" btn-icon="mdi-arrow-right" />
+        <v-col cols="12" md="6" lg="5">
+          <price-card :plan="lifetimePlan" :selected-currency="selectedCurrency" :currencies="currencies"
+            @update:currency="selectedCurrency = $event" :is-popular="true" card-class="lifetime-plan highlight-card"
+            :btn-text="t().plans.lifetime.cta" btn-color="tertiary" btn-to="/signup" btn-icon="mdi-arrow-right" />
         </v-col>
       </v-row>
 
@@ -54,47 +34,6 @@
         </v-col>
       </v-row>
 
-      <v-row class="mt-10 justify-center">
-        <v-col cols="12" class="text-center">
-          <v-btn color="primary" size="large" variant="outlined" @click="showFeatureComparison = !showFeatureComparison"
-            class="compare-features-btn" aria-label="Show full feature comparison">
-            {{ showFeatureComparison ? t().comparison.hide : t().comparison.show }}
-            <v-icon end>{{ showFeatureComparison ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
-
-      <v-expand-transition>
-        <v-row v-if="showFeatureComparison" class="mt-6">
-          <v-col cols="12">
-            <v-card class="comparison-table-card">
-              <v-table>
-                <thead>
-                  <tr>
-                    <th class="text-left">{{ t().comparison.table.feature }}</th>
-                    <th class="text-center">{{ t().comparison.table.free }}</th>
-                    <th class="text-center">{{ t().comparison.table.premium }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="feature in comparisonFeatures" :key="feature.name">
-                    <td>{{ feature.name }}</td>
-                    <td class="text-center">
-                      <v-icon v-if="feature.free" color="success" size="large">mdi-check-circle</v-icon>
-                      <v-icon v-else color="error" size="small">mdi-close</v-icon>
-                    </td>
-                    <td class="text-center">
-                      <v-icon v-if="feature.premium" color="success" size="large">mdi-check-circle</v-icon>
-                      <v-icon v-else color="error" size="small">mdi-close</v-icon>
-                    </td>
-                  </tr>
-                </tbody>
-              </v-table>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-expand-transition>
-
     </v-container>
   </section>
 </template>
@@ -111,88 +50,63 @@ const showFeatureComparison = ref(false);
 const rating = ref(5);
 
 const currencies = ref([
+  { symbol: 'MAD', code: 'MAD' },
+  { symbol: 'SAR', code: 'SAR' },
+  { symbol: 'TND', code: 'TND' },
   { symbol: '€', code: 'EUR' },
+  { symbol: '£', code: 'GBP' },
   { symbol: '$', code: 'USD' },
-  { symbol: '£', code: 'GBP' }
+  { symbol: '¥', code: 'JPY' }
 ]);
 
-const freePlan = computed(() => ({
-  name: t().plans.free.name,
-  description: t().plans.free.description,
-  icon: 'mdi-rocket-launch-outline',
-  avatarColor: 'primary',
-  price: {
-    '€': '0',
-    '$': '0',
-    '£': '0',
-    duration: 'month'
-  },
-  hasDiscount: false,
-  freeTrialDays: 0,
-  features: [
-    t().features.cssPlayground,
-    t().features.simpleStudio,
-    t().features.apiTesting,
-    t().features.contrastChecker,
-    t().features.visualImpairment,
-  ]
-}));
+const basePrice = 249.99;
 
-const premiumPlan = ref({
-  name: t().plans.premium.name,
-  description: t().plans.premium.description,
+const conversionRates = {
+  'MAD': 10.38,
+  'SAR': 4.1,
+  'TND': 3.4,
+  '€': 1,
+  '£': 0.85,
+  '$': 1.1,
+  '¥': 160
+};
+
+const convertPrice = (price, rate, decimals = 2) => {
+  return (price * rate).toFixed(decimals);
+};
+
+const price = {
+  'MAD': convertPrice(basePrice, conversionRates['MAD']),
+  'SAR': convertPrice(basePrice, conversionRates['SAR']),
+  'TND': convertPrice(basePrice, conversionRates['TND']),
+  '€': basePrice.toFixed(2),
+  '£': convertPrice(basePrice, conversionRates['£']),
+  '$': convertPrice(basePrice, conversionRates['$']),
+  '¥': convertPrice(basePrice, conversionRates['¥'], 0),
+  duration: 'lifetime'
+};
+
+const lifetimePlan = computed(() => ({
+  name: t().plans.lifetime.name,
+  description: t().plans.lifetime.description,
   icon: 'mdi-crown',
   avatarColor: 'white',
-  price: {
-    '€': '249.99',
-    '$': (249.99 * 1.1).toFixed(2),
-    '£': (249.99 * 0.85).toFixed(2),
-    duration: 'lifetime'
-  },
+  price: price,
   hasDiscount: true,
-  freeTrialDays: 7,
   features: [
-    t().features.cssPlayground,
-    t().features.simpleStudio,
-    t().features.apiTesting,
-    t().features.contrastChecker,
-    t().features.visualImpairment,
-    t().features.performanceAnalysis,
-    t().features.contentAnalysis,
-    t().features.userEngagement,
-    t().features.semanticAnalysis,
-    t().features.securityAnalysis,
+    t().features.audit,
+    t().features.stackql,
     t().features.analytics,
-    t().features.futureUpdates
+    t().features.futureUpdates,
+    t().features.prioritySupport
   ]
-});
+}));
 
 const guarantee = ref({
   icon: 'mdi-shield-check',
   title: t().guarantee.title,
   description: t().guarantee.description,
 });
-
-const comparisonFeatures = ref([
-  { name: t().features.cssPlayground, free: true, premium: true },
-  { name: t().features.simpleStudio, free: true, premium: true },
-  { name: t().features.apiTesting, free: true, premium: true },
-  { name: t().features.contrastChecker, free: true, premium: true },
-  { name: t().features.visualImpairment, free: true, premium: true },
-  { name: t().features.completeVisualImpairment, free: false, premium: true },
-  { name: t().features.completeStudio, free: false, premium: true },
-  { name: t().features.databaseManagement, free: false, premium: true },
-  { name: t().features.robots, free: false, premium: true },
-  { name: t().features.performanceAnalysis, free: false, premium: true },
-  { name: t().features.contentAnalysis, free: false, premium: true },
-  { name: t().features.userEngagement, free: false, premium: true },
-  { name: t().features.semanticAnalysis, free: false, premium: true },
-  { name: t().features.securityAnalysis, free: false, premium: true },
-  { name: t().features.analytics, free: false, premium: true },
-  { name: t().features.futureUpdates, free: false, premium: true },
-  { name: t().features.unlimitedMembers, free: false, premium: true },
-  { name: t().features.prioritySupport, free: false, premium: true },
-]);
 </script>
 
 <style scoped>
@@ -217,13 +131,9 @@ const comparisonFeatures = ref([
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.premium-plan {
+.lifetime-plan {
   background: linear-gradient(135deg, rgba(var(--v-theme-tertiary), 0.1), rgba(var(--v-theme-warning), 0.2));
   border: 2px solid rgba(var(--v-theme-warning), 0.3);
-}
-
-.free-plan {
-  background-color: rgba(var(--v-theme-primary), 0.1);
 }
 
 .highlight-card {

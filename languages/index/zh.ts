@@ -8,7 +8,7 @@ export default {
     tagline: "优化您的开发工作流程",
     title: "从想法到上线的开发工作流程",
     description: "使用我们的工具加快开发速度并简化工作流程。构建、管理和优化您的项目，使网站更具可访问性、用户友好性和SEO友好性。",
-    features: ["Analytics", "Website analysis", "Studio components", "Accessibility & API testing"],
+    features: ["StackUnity Analytics", "StackQL", "StackAudit"],
     cta: "立即简化您的工作流程",
     ctaMobile: "免费试用",
     ctaMobileDescription: "加入我们的开发者社区，将您的Web项目推向新的高度。"
@@ -22,20 +22,20 @@ export default {
   badExperiences: {
     title: "修复导致用户流失的问题 — 使用Stackunity",
     description: "借助我们的智能工具，快速识别并解决导致用户离开您网站的三大主要原因。",
-    accessibility: {
-      title: "缺乏无障碍性",
-      subtitle: "全球超过8%的人口生活在视觉障碍中。",
-      description: "许多用户离开您的网站是因为他们无法正确地查看或与之交互。Stackunity通过我们的对比度检查器和视觉障碍模拟器帮助您解决这个问题 — 为所有人设计。"
+    analytics: {
+      title: "不清晰的用户行为",
+      subtitle: "如果您不知道用户为什么离开，就无法修复它。",
+      description: "StackUnity Analytics揭示了会话热图、死区、滚动深度和交互质量。理解参与度，确定摩擦点 — 并迅速采取行动。"
     },
-    seo: {
-      title: "SEO性能不佳",
-      subtitle: "如果您的网站对搜索引擎不可见，就不会被找到。",
-      description: "如果您的SEO不够有效，您的网站就是不可见的。Stackunity结合语义分析、元数据审核和参与度洞察，提升您的可见性和覆盖面。"
+    queries: {
+      title: "没有智能的调查方式",
+      subtitle: "调试用户问题不应该花费数小时。",
+      description: "StackQL让您可以即时查询用户行为和技术指标。无论是找到加载缓慢的页面、损坏的路径还是UX阻塞器 — 在几秒钟内而不是几天内获得答案。"
     },
-    design: {
-      title: "设计不吸引人",
-      subtitle: "第一印象很重要 — 用户判断速度很快。",
-      description: "不吸引人的网站会立即赶走用户。Stackunity为您提供设计工作室、响应式检查器和内容审核工具，以创建令人惊叹且用户友好的界面。"
+    audits: {
+      title: "技术债务和可访问性差距",
+      subtitle: "看不见的问题伤害SEO、信任和可用性。",
+      description: "StackAudit自动检查可访问性、元数据和性能。确保您的网站可读、包容且优化 — 从对比度到核心指标。"
     }
   },
   features: {
@@ -43,29 +43,17 @@ export default {
     subtitle: "主要功能",
     description: "StackUnity在一个平台上汇集了开发现代Web应用程序所需的所有工具。",
     cta: "立即开始",
-    cssAnimations: {
-      title: "CSS动画",
-      description: "为您的所有项目创建和管理CSS动画。"
-    },
-    studio: {
-      title: "工作室",
-      description: "使用我们集成的设计工作室创建现代用户界面。"
-    },
     analytics: {
-      title: "分析",
-      description: "使用我们的分析工具跟踪您的网站数据以提高其性能和可访问性。"
+      title: "StackUnity Analytics",
+      description: "理解用户行为，使用热图、参与度分析和放弃区域做出决策。"
     },
-    apiTesting: {
-      title: "API测试",
-      description: "测试您的API以检测安全漏洞和性能问题。"
+    queries: {
+      title: "StackQL",
+      description: "使用简单的SQL语法查询数据。过滤会话，交叉指标并导出见解。"
     },
-    websiteAnalysis: {
-      title: "网站分析",
-      description: "使用我们的工具分析您的网站以提高其性能和可访问性。"
-    },
-    accessibility: {
-      title: "无障碍性",
-      description: "检查并改善您网站对所有用户的可访问性。"
+    audits: {
+      title: "StackAudit",
+      description: "自动检查可访问性、元数据和性能。确保您的网站可读、包容且优化 — 从对比度到核心指标。"
     }
   },
   howItWorks: {

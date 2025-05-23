@@ -1,7 +1,7 @@
 <template>
   <div class="sql-result-visualizer">
     <v-card class="result-visualizer-card elevation-3 mb-4">
-      <v-card-title class="bg-tertiary text-white d-flex align-center">
+      <v-card-title class="bg-secondary text-white d-flex align-center">
         <v-icon class="mr-2">mdi-chart-box</v-icon>
         {{ t().sqlVisualizer.title }}
       </v-card-title>

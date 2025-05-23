@@ -107,7 +107,7 @@ export default {
       placeholder: "الاسم على البطاقة"
     },
     payButton: "دفع",
-    securePayment: "دفع آمن عبر Stripe",
+    securePayment: "دفع آمن عبر PayPal",
     refundGuarantee: "التأكيد المرجعي للاسترجاع 30 يوم"
   },
   messages: {

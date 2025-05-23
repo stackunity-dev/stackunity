@@ -1,3 +1,5 @@
+import { Database } from "sqlite";
+
 export default {
   meta: {
     title: 'Pricing Plans',
@@ -55,21 +57,30 @@ export default {
     }
   },
   features: {
-    cssPlayground: 'CSS playground',
-    simpleStudio: 'Simple Studio features',
-    apiTesting: 'Basic API testing',
-    contrastChecker: 'Contrast ratio checker',
-    visualImpairment: 'Visual impairment simulation',
-    completeVisualImpairment: 'Complete visual impairment simulation',
-    completeStudio: 'Complete Studio features',
-    databaseManagement: 'Database Management',
-    robots: 'Robots.txt and Schema.org Generator',
-    performanceAnalysis: 'Performance Analysis',
-    contentAnalysis: 'Content Analysis',
-    userEngagement: 'User Engagement tools',
-    semanticAnalysis: 'Semantic and ARIA analysis',
-    securityAnalysis: 'Security analysis',
-    analytics: 'Analytics',
+    stackql: 'StackQL',
+    stackqlDetails: {
+      workbench: 'StackUnity Workbench',
+      queryAnalysis: 'Query Analysis',
+      queryVisualization: 'Query Visualization',
+      databaseUsage: 'Database Usage'
+    },
+    audit: 'StackAudit',
+    auditDetails: {
+      performanceAnalysis: 'Performance Analysis',
+      contentAnalysis: 'Content Analysis',
+      userEngagement: 'User Engagement tools',
+      semanticAnalysis: 'Semantic and ARIA analysis',
+      securityAnalysis: 'Security analysis',
+    },
+    analytics: 'StackUnity Analytics',
+    analyticsDetails: {
+      pageviews: 'Pageviews',
+      sessions: 'Sessions',
+      location: 'Location',
+      browserAndDevice: 'Browser & Device',
+      interaction: 'Interaction',
+      deadzones: 'Deadzones'
+    },
     futureUpdates: 'Access to all future updates',
     unlimitedMembers: 'Unlimited team members',
     prioritySupport: 'Priority support'

@@ -2,197 +2,69 @@
   <v-app>
     <main class="main-content">
 
-      <v-dialog v-model="showSessionDialog" persistent max-width="400">
-        <v-card>
-          <v-card-title class="text-h5">
-            <v-icon color="warning" class="mr-2">mdi-clock-alert</v-icon>
-            {{ t().session.expired }}
-          </v-card-title>
-          <v-card-text>
-            <p>{{ t().session.expired }}</p>
-            <p class="mt-2">{{ t().session.continue }}</p>
-            <p class="text-center text-h5 mt-4">{{ sessionCountdown }}</p>
-            <v-progress-linear :value="(sessionCountdown / 60) * 100" color="warning" height="10"></v-progress-linear>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="error" text @click="handleSessionExpired">
-              {{ t().session.logout }}
-            </v-btn>
-            <v-btn color="primary" @click="continueSession">
-              {{ t().session.continueSession }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
       <div class="dashboard-container pa-6" :class="{ 'compact-mode': isCompactMode }">
         <div class="welcome-section text-center mb-8">
           <h1 class="text-h3 font-weight-bold text-gradient mb-2">
-            {{ t().hero.title }} {{ userStore.user?.username }}
+            Welcome {{ userStore.user?.username }}
           </h1>
           <p class="text-subtitle-1 text-medium-emphasis">
-            {{ t().hero.subtitle }}
+            What do you want to do today ?
           </p>
         </div>
 
-        <div class="action-buttons text-center mb-8 d-flex flex-wrap justify-center">
-          <v-tooltip location="bottom" :text="t().hero.actions.customize">
-            <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" color="primary" prepend-icon="mdi-cog" @click="showSettingsDialog = true"
-                class="mr-2">
-                {{ t().hero.actions.customize }}
-              </v-btn>
-            </template>
-          </v-tooltip>
-
-          <v-tooltip location="bottom" :text="t().hero.actions.themes">
-            <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" color="secondary" prepend-icon="mdi-palette" @click="showThemeDialog = true"
-                class="mr-2">
-                {{ t().hero.actions.themes }}
-              </v-btn>
-            </template>
-          </v-tooltip>
-
-          <v-tooltip location="bottom" :text="t().overview.compactMode">
-            <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" color="grey" icon="mdi-view-compact" @click="toggleCompactMode"
-                class="ml-auto d-md-none">
-              </v-btn>
-            </template>
-          </v-tooltip>
+        <div class="section-title mb-4">
+          <h2 class="text-h5 font-weight-bold">Main Features</h2>
         </div>
-
-        <div class="filters-section mb-6">
-          <v-chip-group v-model="selectedCategory" mandatory>
-            <v-chip filter value="all" color="primary" :class="{ 'v-chip--active': selectedCategory === 'all' }">{{
-              t().filters.all }}</v-chip>
-            <v-chip filter value="design" color="secondary"
-              :class="{ 'v-chip--active': selectedCategory === 'design' }">{{
-                t().filters.design }}</v-chip>
-            <v-chip filter value="development" color="tertiary"
-              :class="{ 'v-chip--active': selectedCategory === 'development' }">{{ t().filters.development }}</v-chip>
-            <v-chip filter value="testing" color="info" :class="{ 'v-chip--active': selectedCategory === 'testing' }">{{
-              t().filters.tests }}</v-chip>
-            <v-chip filter value="analysis" color="indigo"
-              :class="{ 'v-chip--active': selectedCategory === 'analysis' }">{{
-                t().filters.analysis }}</v-chip>
-          </v-chip-group>
-
-
-          <v-text-field v-model="searchQuery" prepend-inner-icon="mdi-magnify" :label="t().filters.searchPlaceholder"
-            variant="outlined" density="compact" hide-details class="mt-3" clearable></v-text-field>
-        </div>
-
-        <div class="launchpad-grid">
-          <div v-for="(element, index) in filteredItems" :key="element.title">
+        <v-row>
+          <v-col v-for="card in mainCards" :key="card.title" cols="12" md="4">
             <v-hover v-slot="{ isHovering, props }">
-              <v-card v-bind="props" :to="element.disabled ? undefined : element.route" :disabled="element.disabled"
-                height="345" :class="[
-                  'launchpad-card',
-                  `border-${element.color}`,
-                  `theme-${currentTheme}`,
-                  isHovering ? 'card-hover' : '',
-                  element.disabled ? 'disabled-card' : ''
-                ]" flat>
+              <v-card v-bind="props" :to="card.disabled ? undefined : localePath(card.route)" :disabled="card.disabled"
+                height="400" class="rounded-xl feature-card"
+                :class="[`border-${card.color}`, isHovering ? 'card-hover' : '', card.disabled ? 'disabled-card' : '']"
+                flat>
                 <div class="card-content">
-                  <v-icon size="64" :color="element.color" class="icon-pulse">{{ element.icon }}</v-icon>
-                  <h2 class="text-h5 font-weight-medium mt-6">{{ getItemTranslation(element.title, 'title') }}</h2>
-                  <p class="text-body-1 text-medium-emphasis mt-2">{{ getItemTranslation(element.title, 'description')
-                  }}</p>
+                  <div class="icon-wrapper mb-4">
+                    <v-icon size="64" :color="card.color" class="icon-pulse">{{ card.icon }}</v-icon>
+                  </div>
+                  <h2 class="text-h5 font-weight-bold mb-4">{{ card.title }}</h2>
+                  <p class="text-body-1 text-medium-emphasis mb-6">{{ card.description }}</p>
 
-                  <v-chip v-if="element.isNew" color="purple" size="small" class="feature-chip new-chip">
-                    <v-icon start size="small">mdi-new-box</v-icon>
-                    {{ t().tools.new }}
-                  </v-chip>
-
-                  <v-chip v-if="element.disabled && !userStore.user?.isPremium" color="amber" variant="flat"
-                    size="small" class="premium-chip">
+                  <v-chip v-if="card.disabled" color="amber" variant="flat" size="small" class="premium-chip mb-4">
                     <v-tooltip location="top" text="Available only for premium accounts">
                       <template v-slot:activator="{ props }">
                         <div v-bind="props" class="d-flex align-center">
                           <v-icon start size="small">mdi-crown</v-icon>
-                          {{ t().tools.premium }}
+                          Premium
                         </div>
                       </template>
                     </v-tooltip>
                   </v-chip>
 
-                  <v-btn :color="element.color" variant="text" :to="element.disabled ? undefined : element.route"
-                    :disabled="element.disabled" class="mt-4">
-                    {{ t().tools.explore }}
+                  <v-btn :color="card.color" variant="text" :to="card.disabled ? undefined : localePath(card.route)"
+                    :disabled="card.disabled" class="mt-auto explore-btn">
+                    Explore
                     <v-icon end>mdi-arrow-right</v-icon>
                   </v-btn>
                 </div>
               </v-card>
             </v-hover>
-          </div>
+          </v-col>
+        </v-row>
+
+        <div class="section-title mb-4 mt-8">
+          <h2 class="text-h5 font-weight-bold">Quick Actions</h2>
         </div>
+        <v-row>
+          <v-col v-for="action in quickActions" :key="action.title" cols="12" sm="6" md="3">
+            <v-card :to="action.route" class="quick-action-card" flat>
+              <v-card-text class="text-center">
+                <v-icon :color="action.color" size="32" class="mb-2">{{ action.icon }}</v-icon>
+                <div class="text-subtitle-1 font-weight-medium">{{ action.title }}</div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </div>
-
-      <v-dialog v-model="showSettingsDialog" max-width="500">
-        <v-card>
-          <v-card-title class="text-h5 d-flex align-center">
-            <v-icon color="primary" class="mr-2">mdi-cog</v-icon>
-            {{ t().overview.customize }}
-          </v-card-title>
-          <v-card-text>
-            <p class="text-subtitle-1 mb-2">{{ t().overview.visibility }}</p>
-            <v-checkbox v-for="(item, index) in allTools" :key="index" v-model="item.visible"
-              :label="getItemTranslation(item.title, 'title')" hide-details dense></v-checkbox>
-
-            <v-divider class="my-4"></v-divider>
-
-            <p class="text-subtitle-1 mb-2">{{ t().overview.displayOptions }}</p>
-            <v-switch v-model="isCompactMode" color="primary" :label="t().overview.compactMode"></v-switch>
-            <v-select v-model="cardsPerRow" :items="[
-              { title: t().overview.cardsPerRow.auto, value: 'auto' },
-              { title: t().overview.cardsPerRow.cards2, value: 2 },
-              { title: t().overview.cardsPerRow.cards3, value: 3 },
-              { title: t().overview.cardsPerRow.cards4, value: 4 },
-              { title: t().overview.cardsPerRow.cards5, value: 5 }
-            ]" label="Cards per row" item-title="title" item-value="value" variant="outlined" density="compact"
-              class="mt-4"></v-select>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="grey" text @click="showSettingsDialog = false">
-              {{ t().hero.actions.cancel }}
-            </v-btn>
-            <v-btn color="primary" @click="saveSettings">
-              {{ t().hero.actions.save }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="showThemeDialog" max-width="500">
-        <v-card>
-          <v-card-title class="text-h5 d-flex align-center">
-            <v-icon color="secondary" class="mr-2">mdi-palette</v-icon>
-            {{ t().theme.title }}
-          </v-card-title>
-          <v-card-text>
-            <v-radio-group v-model="currentTheme">
-              <v-radio value="default" :label="t().theme.default"></v-radio>
-              <v-radio value="dark" :label="t().theme.dark"></v-radio>
-              <v-radio value="vibrant" :label="t().theme.vibrant"></v-radio>
-              <v-radio value="minimal" :label="t().theme.minimal"></v-radio>
-              <v-radio value="elegant" :label="t().theme.elegant"></v-radio>
-            </v-radio-group>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="grey" text @click="showThemeDialog = false">
-              {{ t().hero.actions.cancel }}
-            </v-btn>
-            <v-btn color="secondary" @click="applyTheme">
-              {{ t().hero.actions.apply }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
 
       <snackBar v-model="showSnackbar" :text="snackBarText" :color="snackBarColor" :timeout="3000" />
     </main>
@@ -200,30 +72,28 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { useUserStore } from '../stores/userStore';
 // @ts-ignore
-import { definePageMeta, useHead, useRouter } from '#imports';
+import { definePageMeta, useHead, useNuxtApp } from '#imports';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import snackBar from '../components/snackbar.vue';
-import { useTranslations } from '../languages';
+import { useUserStore } from '../stores/userStore';
 import { TokenUtils } from '../utils/token';
 
 definePageMeta({
   layout: 'dashboard'
 });
 
-const t = useTranslations('dashboard');
-
 useHead({
-  title: t().meta.title,
+  title: 'Dashboard - StackUnity',
   meta: [
-    { name: 'description', content: t().meta.description },
-    { name: 'keywords', content: t().meta.keywords },
+    { name: 'description', content: 'StackUnity Dashboard - Your all-in-one web development platform' },
+    { name: 'keywords', content: 'web development, stackunity, dashboard' },
     { name: 'author', content: 'StackUnity' },
     { name: 'robots', content: 'index, follow' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-    { name: 'og:title', content: t().meta.title },
-    { name: 'og:description', content: t().meta.description },
+    { name: 'og:title', content: 'Dashboard - StackUnity' },
+    { name: 'og:description', content: 'StackUnity Dashboard - Your all-in-one web development platform' },
     { name: 'og:image', content: '/logo/stackunity-title.png' },
   ],
   link: [
@@ -234,319 +104,21 @@ useHead({
 const userStore = useUserStore();
 const router = useRouter();
 const isLoading = ref(true);
-const selectedCategory = ref('all');
-const searchQuery = ref('');
+const nuxtApp = useNuxtApp();
+const localePath = nuxtApp.$localePath
 
-const showSettingsDialog = ref(false);
-const showThemeDialog = ref(false);
-const currentTheme = ref('default');
-
-const sessionTimeout = ref<number | null>(null);
-const inactivityTimeout = 1 * 60 * 60 * 1000;
-const showSessionDialog = ref(false);
-const sessionCountdown = ref(60);
-const countdownInterval = ref<number | null>(null);
-
+const showNotificationDialog = ref(false);
 const showSnackbar = ref(false);
 const snackBarText = ref('');
 const snackBarColor = ref('');
 
 const isCompactMode = ref(false);
-const cardsPerRow = ref('auto');
 
 function applySnackbar(text: string, color: string) {
   snackBarText.value = text;
   snackBarColor.value = color;
   showSnackbar.value = true;
 }
-
-const resetSessionTimer = () => {
-  if (sessionTimeout.value !== null) {
-    clearTimeout(sessionTimeout.value);
-  }
-  sessionTimeout.value = window.setTimeout(() => {
-    showSessionWarning();
-  }, inactivityTimeout);
-};
-
-const showSessionWarning = () => {
-  showSessionDialog.value = true;
-  sessionCountdown.value = 60;
-
-  countdownInterval.value = window.setInterval(() => {
-    sessionCountdown.value--;
-    if (sessionCountdown.value <= 0) {
-      if (countdownInterval.value !== null) {
-        clearInterval(countdownInterval.value);
-      }
-      handleSessionExpired();
-    }
-  }, 1000);
-};
-
-const handleSessionExpired = async () => {
-  showSessionDialog.value = false;
-  if (countdownInterval.value !== null) {
-    clearInterval(countdownInterval.value);
-  }
-  await userStore.logout();
-  router.push('/login');
-  applySnackbar(t().notifications.sessionExpired, 'error');
-};
-
-const continueSession = () => {
-  showSessionDialog.value = false;
-  if (countdownInterval.value !== null) {
-    clearInterval(countdownInterval.value);
-  }
-  resetSessionTimer();
-  applySnackbar(t().notifications.sessionContinued, 'success');
-};
-
-const loadUserPreferences = () => {
-  try {
-    const savedTheme = localStorage.getItem('dashboardTheme');
-    const savedVisibility = localStorage.getItem('dashboardVisibility');
-    const savedCompactMode = localStorage.getItem('dashboardCompactMode');
-    const savedCardsPerRow = localStorage.getItem('dashboardCardsPerRow');
-
-    if (savedTheme) {
-      currentTheme.value = savedTheme;
-    }
-
-    if (savedVisibility) {
-      const visibilitySettings = JSON.parse(savedVisibility);
-      allTools.value.forEach(tool => {
-        if (visibilitySettings[tool.title] !== undefined) {
-          tool.visible = visibilitySettings[tool.title];
-        }
-      });
-    }
-
-    if (savedCompactMode) {
-      isCompactMode.value = savedCompactMode === 'true';
-    }
-
-    if (savedCardsPerRow) {
-      cardsPerRow.value = savedCardsPerRow;
-    }
-    applySnackbar(t().notifications.preferencesLoaded, 'success');
-  } catch (error) {
-    console.error('[Dashboard] Error loading preferences:', error);
-    applySnackbar(t().notifications.errorLoadingPreferences, 'error');
-  }
-};
-
-const applyTheme = () => {
-  localStorage.setItem('dashboardTheme', currentTheme.value);
-  showThemeDialog.value = false;
-};
-
-const saveSettings = () => {
-  const visibilitySettings = {};
-  allTools.value.forEach(tool => {
-    visibilitySettings[tool.title] = tool.visible;
-  });
-  localStorage.setItem('dashboardVisibility', JSON.stringify(visibilitySettings));
-
-  localStorage.setItem('dashboardCompactMode', isCompactMode.value.toString());
-  localStorage.setItem('dashboardCardsPerRow', cardsPerRow.value);
-
-  showSettingsDialog.value = false;
-  applySnackbar(t().notifications.settingsSaved, 'success');
-};
-
-interface ToolItem {
-  title: string;
-  description: string;
-  icon: string;
-  color: string;
-  route: string;
-  disabled: boolean;
-  category: string;
-  isNew: boolean;
-  visible: boolean;
-}
-
-const allTools = ref<ToolItem[]>([
-  {
-    title: 'cssAnimations',
-    description: 'Create and manage CSS animations for all your projects',
-    icon: 'mdi-animation',
-    color: 'primary',
-    route: '/animations',
-    disabled: false,
-    category: 'design',
-    isNew: false,
-    visible: true
-  },
-  {
-    title: 'studio',
-    description: 'Create components and visually user interfaces',
-    icon: 'mdi-palette',
-    color: 'secondary',
-    route: '/studio',
-    disabled: false,
-    category: 'design',
-    isNew: false,
-    visible: true
-  },
-  {
-    title: 'databaseManagement',
-    description: 'Generate and visualize complex SQL schemas in just a few clicks',
-    icon: 'mdi-database',
-    color: 'info',
-    route: '/database-management',
-    disabled: !userStore.user?.isStandard || !userStore.user?.isPremium,
-    category: 'development',
-    isNew: false,
-    visible: true
-  },
-  {
-    title: 'apiTesting',
-    description: 'Test and document your APIs easily',
-    icon: 'mdi-api',
-    color: 'success',
-    route: '/api-testing-hub',
-    disabled: false,
-    category: 'testing',
-    isNew: true,
-    visible: true
-  },
-  {
-    title: 'accessibility',
-    description: 'Make your website accessible to all users',
-    icon: 'mdi-access-point',
-    color: 'warning',
-    route: '/accessibility',
-    disabled: false,
-    category: 'analysis',
-    isNew: false,
-    visible: true
-  },
-  {
-    title: 'responsive',
-    description: 'Test the display of your site on different devices',
-    icon: 'mdi-responsive',
-    color: 'error',
-    route: '/responsive',
-    disabled: false,
-    category: 'testing',
-    isNew: false,
-    visible: true
-  },
-  {
-    title: 'performance',
-    description: 'Analyze the performance of your website',
-    icon: 'mdi-speedometer',
-    color: 'primary',
-    route: '/performance',
-    disabled: !userStore.user?.isPremium,
-    category: 'analysis',
-    isNew: true,
-    visible: true
-  },
-  {
-    title: 'structureAccessibility',
-    description: 'Check the semantic and ARIA attributes of your website',
-    icon: 'mdi-semantic-web',
-    color: 'tertiary',
-    route: '/semantic',
-    disabled: !userStore.user?.isPremium,
-    category: 'analysis',
-    isNew: false,
-    visible: true
-  },
-  {
-    title: 'content',
-    description: 'Check the content of your website',
-    icon: 'mdi-file-document-outline',
-    color: 'indigo',
-    route: '/content',
-    disabled: !userStore.user?.isPremium,
-    category: 'analysis',
-    isNew: false,
-    visible: true
-  },
-  {
-    title: 'userEngagement',
-    description: 'Analyze and optimize the user engagement of your website',
-    icon: 'mdi-account-group',
-    color: 'primary',
-    route: '/user-engagement',
-    disabled: !userStore.user?.isPremium,
-    category: 'analysis',
-    isNew: true,
-    visible: true
-  },
-  {
-    title: 'security',
-    description: 'Check the security of your website',
-    icon: 'mdi-security',
-    color: 'secondary',
-    route: '/security',
-    disabled: !userStore.user?.isPremium,
-    category: 'development',
-    isNew: false,
-    visible: true
-  }
-]);
-
-const getItemTranslation = (itemKey: string, property: 'title' | 'description') => {
-  try {
-    if (t().tools?.items && t().tools.items[itemKey] && t().tools.items[itemKey][property]) {
-      return t().tools.items[itemKey][property];
-    }
-
-    const tool = allTools.value.find(item => item.title === itemKey);
-    return tool ? tool[property] : itemKey;
-  } catch (error) {
-    console.error(`[Translation] Error getting translation for ${itemKey}.${property}:`, error);
-    return itemKey;
-  }
-};
-
-const filteredItems = computed(() => {
-  return allTools.value
-    .filter(item => {
-      const categoryMatch = selectedCategory.value === 'all' || item.category === selectedCategory.value;
-
-      const searchMatch = searchQuery.value === '' ||
-        item.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.value.toLowerCase());
-
-      const visibilityMatch = item.visible;
-
-      return categoryMatch && searchMatch && visibilityMatch;
-    });
-});
-
-const toggleCompactMode = () => {
-  isCompactMode.value = !isCompactMode.value;
-  localStorage.setItem('dashboardCompactMode', isCompactMode.value.toString());
-  applySnackbar(isCompactMode.value ? t().notifications.compactModeEnabled : t().notifications.compactModeDisabled, isCompactMode.value ? 'success' : 'error');
-};
-
-watch(cardsPerRow, (newValue) => {
-  const gridContainer = document.querySelector('.launchpad-grid') as HTMLElement;
-  if (!gridContainer) return;
-
-  if (newValue === 'auto') {
-    gridContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
-
-    if (window.matchMedia('(min-width: 1600px)').matches) {
-      gridContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
-    } else if (window.matchMedia('(max-width: 1200px)').matches) {
-      gridContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(260px, 1fr))';
-    } else if (window.matchMedia('(max-width: 960px) and (orientation: landscape)').matches) {
-      gridContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(240px, 1fr))';
-    } else if (window.matchMedia('(max-width: 600px)').matches) {
-      gridContainer.style.gridTemplateColumns = '1fr';
-    }
-  } else {
-    gridContainer.style.gridTemplateColumns = `repeat(${newValue}, 1fr)`;
-  }
-});
 
 const validateTokenIntegrity = (token: string): boolean => {
   try {
@@ -569,6 +141,218 @@ const validateTokenIntegrity = (token: string): boolean => {
   }
 };
 
+const mainCards = [
+  {
+    title: 'StackQL',
+    description: 'Query and analyze your website\'s data with SQL-like syntax',
+    icon: 'mdi-console',
+    color: 'primary',
+    route: '/stackql',
+    disabled: false
+  },
+  {
+    title: 'UX Analyzer',
+    description: 'Analyze and optimize your website\'s user experience',
+    icon: 'mdi-chart-box-outline',
+    color: 'secondary',
+    route: '/stackunity-analytics',
+    disabled: !userStore.user?.isPremium
+  },
+  {
+    title: 'StackAudit',
+    description: 'Comprehensive website analysis and optimization suite',
+    icon: 'mdi-magnify-scan',
+    color: 'tertiary',
+    route: '/website',
+    disabled: false
+  }
+];
+
+const quickActions = [
+  {
+    title: 'New Analysis',
+    icon: 'mdi-magnify-scan',
+    color: 'primary',
+    route: '/website'
+  },
+  {
+    title: 'Run SQL',
+    icon: 'mdi-play-circle',
+    color: 'secondary',
+    route: '/stackql'
+  },
+  {
+    title: 'View Analytics',
+    icon: 'mdi-chart-box-outline',
+    color: 'tertiary',
+    route: '/stackunity-analytics'
+  },
+  {
+    title: 'Settings',
+    icon: 'mdi-cog',
+    color: 'info',
+    route: '/settings'
+  }
+];
+
+interface Notification {
+  title: string;
+  message: string;
+  type: string;
+  priority: string;
+  tags: string[];
+  isSticky: boolean;
+  requiresAction: boolean;
+  actionText?: string;
+  icon?: string;
+  color?: string;
+  created_at?: string;
+  is_sticky?: boolean;
+}
+
+const notificationForm = ref();
+const isSubmitting = ref(false);
+const notifications = ref<Notification[]>([]);
+
+const newNotification = ref<Notification>({
+  title: '',
+  message: '',
+  type: 'info',
+  priority: 'normal',
+  tags: [],
+  isSticky: false,
+  requiresAction: false,
+  actionText: ''
+});
+
+const notificationTypes = [
+  { title: 'Information', value: 'info', icon: 'mdi-information', color: 'info' },
+  { title: 'Success', value: 'success', icon: 'mdi-check-circle', color: 'success' },
+  { title: 'Warning', value: 'warning', icon: 'mdi-alert', color: 'warning' },
+  { title: 'Error', value: 'error', icon: 'mdi-alert-circle', color: 'error' },
+  { title: 'Update', value: 'update', icon: 'mdi-update', color: 'primary' },
+  { title: 'Security', value: 'security', icon: 'mdi-shield', color: 'secondary' }
+];
+
+const notificationPriorities = [
+  { title: 'Low', value: 'low', color: 'grey' },
+  { title: 'Normal', value: 'normal', color: 'primary' },
+  { title: 'High', value: 'high', color: 'warning' },
+  { title: 'Critical', value: 'critical', color: 'error' }
+];
+
+const availableTags = [
+  'Performance',
+  'Security',
+  'Update',
+  'Maintenance',
+  'Feature',
+  'Bug',
+  'System',
+  'User'
+];
+
+const submitNotification = async () => {
+  const { valid } = await notificationForm.value.validate();
+
+  if (!valid) return;
+
+  isSubmitting.value = true;
+  try {
+
+    const response = await fetch('/api/notifications', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${userStore.token}`
+      },
+      body: JSON.stringify(newNotification.value)
+    });
+
+    if (!response.ok) {
+      console.error('Failed to send notification', response);
+      throw new Error('Failed to send notification');
+    }
+
+    const data = await response.json();
+
+    notifications.value.unshift(data);
+
+    showNotificationDialog.value = false;
+    applySnackbar('Notification sent successfully', 'success');
+
+    newNotification.value = {
+      title: '',
+      message: '',
+      type: 'info',
+      priority: 'normal',
+      tags: [],
+      isSticky: false,
+      requiresAction: false,
+      actionText: ''
+    };
+  } catch (error) {
+    console.error('Error sending notification:', error);
+    applySnackbar('Error sending notification', 'error');
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const fetchNotifications = async () => {
+  try {
+    const response = await fetch('/api/notifications', {
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error('Failed to fetch notifications', response);
+      throw new Error('Failed to fetch notifications');
+    }
+
+    const data = await response.json();
+    notifications.value = data.notifications || [];
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    notifications.value = [];
+  }
+}
+
+const getNotificationIcon = (type: string) => {
+  const icons = {
+    info: 'mdi-information',
+    success: 'mdi-check-circle',
+    warning: 'mdi-alert',
+    error: 'mdi-alert-circle',
+    update: 'mdi-update',
+    security: 'mdi-shield'
+  }
+  return icons[type as keyof typeof icons] || 'mdi-bell'
+}
+
+const getNotificationColor = (type: string) => {
+  const colors = {
+    info: 'info',
+    success: 'success',
+    warning: 'warning',
+    error: 'error',
+    update: 'primary',
+    security: 'secondary'
+  }
+  return colors[type as keyof typeof colors] || 'primary'
+}
+
+const getPriorityColor = (priority: string) => {
+  const colors = {
+    low: 'grey',
+    normal: 'primary',
+    high: 'warning',
+    critical: 'error'
+  }
+  return colors[priority as keyof typeof colors] || 'primary'
+}
 onMounted(async () => {
   isLoading.value = true;
   try {
@@ -591,8 +375,6 @@ onMounted(async () => {
         router.push('/login');
         return;
       }
-
-      resetSessionTimer();
 
     } catch (authError) {
       console.error('[Dashboard] Erreur d\'authentification:', authError);
@@ -620,25 +402,15 @@ onMounted(async () => {
       return;
     }
 
-    loadUserPreferences();
-
   } catch (error) {
     console.error('[Dashboard] Erreur d\'initialisation:', error);
     router.push('/login');
   } finally {
     isLoading.value = false;
   }
-});
 
-onBeforeUnmount(() => {
-  if (sessionTimeout.value !== null) {
-    clearTimeout(sessionTimeout.value);
-  }
-  if (countdownInterval.value !== null) {
-    clearInterval(countdownInterval.value);
-  }
+  fetchNotifications();
 });
-
 </script>
 
 <style scoped>
@@ -974,5 +746,186 @@ main {
 
 .theme-dark .v-btn {
   color: #90CAF9;
+}
+
+.feature-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(var(--v-theme-surface), 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--v-theme-primary), 0.1);
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+      rgba(var(--v-theme-primary), 0.8),
+      rgba(var(--v-theme-secondary), 0.8));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.card-content {
+  padding: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.icon-wrapper {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--v-theme-surface-variant), 0.1);
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.card-hover .icon-wrapper {
+  transform: scale(1.1);
+}
+
+.icon-pulse {
+  animation: pulse 4s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.explore-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.explore-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.explore-btn:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.disabled-card {
+  opacity: 0.7;
+  filter: grayscale(0.5);
+}
+
+.premium-chip {
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  color: #000;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.card-hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card {
+  background: rgba(var(--v-theme-surface), 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--v-theme-primary), 0.1);
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-4px);
+}
+
+.section-title {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(to bottom, var(--v-theme-primary), var(--v-theme-secondary));
+  border-radius: 2px;
+}
+
+.activity-card {
+  background: rgba(var(--v-theme-surface), 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--v-theme-primary), 0.1);
+  border-radius: 12px;
+  height: 100%;
+}
+
+.quick-action-card {
+  background: rgba(var(--v-theme-surface), 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--v-theme-primary), 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.quick-action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.notification-item {
+  border-left: 4px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+  background-color: rgba(var(--v-theme-surface-variant), 0.1);
+}
+
+.notification-item .v-list-item-title {
+  font-weight: 500;
+}
+
+.notification-item .v-list-item-subtitle {
+  margin-top: 4px;
+  opacity: 0.8;
 }
 </style>

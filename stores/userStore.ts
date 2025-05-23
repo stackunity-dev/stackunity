@@ -1074,79 +1074,6 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async checkout(cardholderName: string, countryCode: string = 'FR', isBusinessCustomer: boolean = false, vatNumber: string = '', promoCode: string = '', selectedPlan: string = ''): Promise<{
-      success: boolean;
-      clientSecret?: string;
-      error?: string;
-      taxDetails?: {
-        baseAmount: number;
-        taxAmount: number;
-        totalAmount: number;
-        taxPercentage: number;
-        isVatExempt?: boolean;
-        vatNumber?: string;
-        discountAmount?: number;
-        discountDescription?: string;
-        discountedBaseAmount?: number;
-        selectedPlan?: string;
-      }
-    }> {
-      const currency = 'eur';
-      try {
-        const response = await $fetch('/api/payment/create-intent', {
-          method: 'POST',
-          body: {
-            currency,
-            customer_name: cardholderName,
-            country_code: countryCode,
-            is_business: isBusinessCustomer,
-            vat_number: vatNumber,
-            promo_code: promoCode,
-            selected_plan: selectedPlan,
-            user_id: this.user.userId,
-            email: this.user.email,
-            name: this.user.username
-          }
-        });
-
-        if (response && typeof response === 'object' && 'success' in response) {
-          if (response.success && 'clientSecret' in response) {
-            const taxDetails = 'taxDetails' in response ? response.taxDetails : undefined;
-
-            return {
-              success: true,
-              clientSecret: response.clientSecret as string,
-              taxDetails: taxDetails as {
-                baseAmount: number;
-                taxAmount: number;
-                totalAmount: number;
-                taxPercentage: number;
-                isVatExempt?: boolean;
-                vatNumber?: string;
-                discountAmount?: number;
-                discountDescription?: string;
-                discountedBaseAmount?: number;
-                selectedPlan?: string;
-              } | undefined
-            };
-          }
-        }
-
-        return {
-          success: false,
-          error: (response && typeof response === 'object' && 'error' in response)
-            ? response.error as string
-            : 'Invalid server response'
-        };
-      } catch (error) {
-        console.error('Payment error:', error);
-        return {
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown payment error'
-        };
-      }
-    },
-
     async checkAuthentication() {
 
       try {
@@ -1330,6 +1257,58 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         console.error('Erreur lors de la soumission du feedback:', error);
         return null;
+      }
+    },
+
+    async createPayPalOrder(
+      username: string,
+      billingCountry: string,
+      isBusinessCustomer: boolean,
+      vatNumber: string,
+      promoCode: string,
+      selectedPlan: string
+    ) {
+      try {
+        const response = await $fetch('/api/payment/create-paypal-order', {
+          method: 'POST',
+          body: {
+            username,
+            billingCountry,
+            isBusinessCustomer,
+            vatNumber,
+            promoCode,
+            selectedPlan
+          }
+        });
+
+        return response;
+      } catch (error) {
+        console.error('Error creating PayPal order:', error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Une erreur est survenue'
+        };
+      }
+    },
+
+    async processPayPalPayment(orderId: string) {
+      try {
+        const response = await $fetch('/api/payment/capture-paypal-payment', {
+          method: 'POST',
+          body: { orderId }
+        });
+
+        if (response.success) {
+          await this.loadData();
+        }
+
+        return response;
+      } catch (error) {
+        console.error('Error processing PayPal payment:', error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Une erreur est survenue'
+        };
       }
     }
   },

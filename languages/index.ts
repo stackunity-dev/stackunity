@@ -42,18 +42,6 @@ import settingsEs from './settings/es';
 import settingsFr from './settings/fr';
 import settingsZh from './settings/zh';
 
-import animationAr from './animation/ar';
-import animationEn from './animation/en';
-import animationEs from './animation/es';
-import animationFr from './animation/fr';
-import animationZh from './animation/zh';
-
-import robotsAr from './robots/ar';
-import robotsEn from './robots/en';
-import robotsEs from './robots/es';
-import robotsFr from './robots/fr';
-import robotsZh from './robots/zh';
-
 import pricingAr from './pricing/ar';
 import pricingEn from './pricing/en';
 import pricingEs from './pricing/es';
@@ -71,12 +59,6 @@ import websiteEn from './website/en';
 import websiteEs from './website/es';
 import websiteFr from './website/fr';
 import websiteZh from './website/zh';
-
-import apiTestingHubAr from './api-testing-hub/ar';
-import apiTestingHubEn from './api-testing-hub/en';
-import apiTestingHubEs from './api-testing-hub/es';
-import apiTestingHubFr from './api-testing-hub/fr';
-import apiTestingHubZh from './api-testing-hub/zh';
 
 import databaseManagementAr from './database-designer/ar';
 import databaseManagementEn from './database-designer/en';
@@ -138,48 +120,6 @@ import securityEs from './security/es';
 import securityFr from './security/fr';
 import securityZh from './security/zh';
 
-import studioAr from './studio/ar';
-import studioEn from './studio/en';
-import studioEs from './studio/es';
-import studioFr from './studio/fr';
-import studioZh from './studio/zh';
-
-import studioCardTemplatesAr from './studio/card/ar';
-import studioCardTemplatesEn from './studio/card/en';
-import studioCardTemplatesEs from './studio/card/es';
-import studioCardTemplatesFr from './studio/card/fr';
-import studioCardTemplatesZh from './studio/card/zh';
-
-import studioNavTemplatesAr from './studio/nav/ar';
-import studioNavTemplatesEn from './studio/nav/en';
-import studioNavTemplatesEs from './studio/nav/es';
-import studioNavTemplatesFr from './studio/nav/fr';
-import studioNavTemplatesZh from './studio/nav/zh';
-
-import studioFormTemplatesAr from './studio/form/ar';
-import studioFormTemplatesEn from './studio/form/en';
-import studioFormTemplatesEs from './studio/form/es';
-import studioFormTemplatesFr from './studio/form/fr';
-import studioFormTemplatesZh from './studio/form/zh';
-
-import studioTimelineTemplatesAr from './studio/timeline/ar';
-import studioTimelineTemplatesEn from './studio/timeline/en';
-import studioTimelineTemplatesEs from './studio/timeline/es';
-import studioTimelineTemplatesFr from './studio/timeline/fr';
-import studioTimelineTemplatesZh from './studio/timeline/zh';
-
-import studioUtilsTemplatesAr from './studio/utils/ar';
-import studioUtilsTemplatesEn from './studio/utils/en';
-import studioUtilsTemplatesEs from './studio/utils/es';
-import studioUtilsTemplatesFr from './studio/utils/fr';
-import studioUtilsTemplatesZh from './studio/utils/zh';
-
-import cardTemplatesAr from './cardTemplates/ar';
-import cardTemplatesEn from './cardTemplates/en';
-import cardTemplatesEs from './cardTemplates/es';
-import cardTemplatesFr from './cardTemplates/fr';
-import cardTemplatesZh from './cardTemplates/zh';
-
 import analyticsAr from './analytics/ar';
 import analyticsEn from './analytics/en';
 import analyticsEs from './analytics/es';
@@ -197,12 +137,9 @@ export interface TranslationsStore {
   dashboard: typeof dashboardEn;
   layout: typeof layoutEn;
   settings: typeof settingsEn;
-  animation: typeof animationEn;
-  robots: typeof robotsEn;
   pricing: typeof pricingEn;
   faq: typeof faqEn;
   website: typeof websiteEn;
-  apiTestingHub: typeof apiTestingHubEn;
   databaseManagement: typeof databaseManagementEn;
   responsive: typeof responsiveEn;
   accessibility: typeof accessibilityEn;
@@ -212,13 +149,6 @@ export interface TranslationsStore {
   content: typeof contentEn;
   userEngagement: typeof userEngagementEn;
   security: typeof securityEn;
-  studio: typeof studioEn;
-  studioCardTemplates: typeof studioCardTemplatesEn;
-  studioNavTemplates: typeof studioNavTemplatesEn;
-  studioFormTemplates: typeof studioFormTemplatesEn;
-  studioTimelineTemplates: typeof studioTimelineTemplatesEn;
-  studioUtilsTemplates: typeof studioUtilsTemplatesEn;
-  cardTemplates: typeof cardTemplatesEn;
   privacy: typeof privacyEn;
   analytics: typeof analyticsEn;
 }
@@ -232,12 +162,9 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     dashboard: dashboardEn,
     layout: layoutEn,
     settings: settingsEn,
-    animation: animationEn,
-    robots: robotsEn,
     pricing: pricingEn,
     faq: faqEn,
     website: websiteEn,
-    apiTestingHub: apiTestingHubEn,
     databaseManagement: databaseManagementEn,
     responsive: responsiveEn,
     accessibility: accessibilityEn,
@@ -247,13 +174,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     content: contentEn,
     userEngagement: userEngagementEn,
     security: securityEn,
-    studioCardTemplates: studioCardTemplatesEn,
-    studioNavTemplates: studioNavTemplatesEn,
-    studioFormTemplates: studioFormTemplatesEn,
-    studioTimelineTemplates: studioTimelineTemplatesEn,
-    studioUtilsTemplates: studioUtilsTemplatesEn,
-    studio: studioEn,
-    cardTemplates: cardTemplatesEn,
     privacy: privacyEn,
     analytics: analyticsEn,
   },
@@ -265,12 +185,9 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     dashboard: dashboardFr,
     layout: layoutFr,
     settings: settingsFr,
-    animation: animationFr,
-    robots: robotsFr,
     pricing: pricingFr,
     faq: faqFr,
     website: websiteFr,
-    apiTestingHub: apiTestingHubFr,
     databaseManagement: databaseManagementFr,
     responsive: responsiveFr,
     accessibility: accessibilityFr,
@@ -280,13 +197,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     content: contentFr,
     userEngagement: userEngagementFr,
     security: securityFr,
-    studioCardTemplates: studioCardTemplatesFr,
-    studioNavTemplates: studioNavTemplatesFr,
-    studioFormTemplates: studioFormTemplatesFr,
-    studioTimelineTemplates: studioTimelineTemplatesFr,
-    studioUtilsTemplates: studioUtilsTemplatesFr,
-    studio: studioFr,
-    cardTemplates: cardTemplatesFr,
     privacy: privacyFr,
     analytics: analyticsFr,
   },
@@ -298,12 +208,9 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     dashboard: dashboardAr,
     layout: layoutAr,
     settings: settingsAr,
-    animation: animationAr,
-    robots: robotsAr,
     pricing: pricingAr,
     faq: faqAr,
     website: websiteAr,
-    apiTestingHub: apiTestingHubAr,
     databaseManagement: databaseManagementAr,
     responsive: responsiveAr,
     accessibility: accessibilityAr,
@@ -313,13 +220,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     content: contentAr,
     userEngagement: userEngagementAr,
     security: securityAr,
-    studioCardTemplates: studioCardTemplatesAr,
-    studioNavTemplates: studioNavTemplatesAr,
-    studioFormTemplates: studioFormTemplatesAr,
-    studioTimelineTemplates: studioTimelineTemplatesAr,
-    studioUtilsTemplates: studioUtilsTemplatesAr,
-    studio: studioAr,
-    cardTemplates: cardTemplatesAr,
     privacy: privacyAr,
     analytics: analyticsAr,
   },
@@ -331,12 +231,9 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     dashboard: dashboardEs,
     layout: layoutEs,
     settings: settingsEs,
-    animation: animationEs,
-    robots: robotsEs,
     pricing: pricingEs,
     faq: faqEs,
     website: websiteEs,
-    apiTestingHub: apiTestingHubEs,
     databaseManagement: databaseManagementEs,
     responsive: responsiveEs,
     accessibility: accessibilityEs,
@@ -346,13 +243,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     content: contentEs,
     userEngagement: userEngagementEs,
     security: securityEs,
-    studioCardTemplates: studioCardTemplatesEs,
-    studioNavTemplates: studioNavTemplatesEs,
-    studioFormTemplates: studioFormTemplatesEs,
-    studioTimelineTemplates: studioTimelineTemplatesEs,
-    studioUtilsTemplates: studioUtilsTemplatesEs,
-    studio: studioEs,
-    cardTemplates: cardTemplatesEs,
     privacy: privacyEs,
     analytics: analyticsEs,
   },
@@ -364,12 +254,9 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     dashboard: dashboardZh,
     layout: layoutZh,
     settings: settingsZh,
-    animation: animationZh,
-    robots: robotsZh,
     pricing: pricingZh,
     faq: faqZh,
     website: websiteZh,
-    apiTestingHub: apiTestingHubZh,
     databaseManagement: databaseManagementZh,
     responsive: responsiveZh,
     accessibility: accessibilityZh,
@@ -379,13 +266,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     content: contentZh,
     userEngagement: userEngagementZh,
     security: securityZh,
-    studioCardTemplates: studioCardTemplatesZh,
-    studioNavTemplates: studioNavTemplatesZh,
-    studioFormTemplates: studioFormTemplatesZh,
-    studioTimelineTemplates: studioTimelineTemplatesZh,
-    studioUtilsTemplates: studioUtilsTemplatesZh,
-    studio: studioZh,
-    cardTemplates: cardTemplatesZh,
     privacy: privacyZh,
     analytics: analyticsZh,
   },

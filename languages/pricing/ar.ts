@@ -53,25 +53,33 @@ export default {
       free: 'مجاني',
       premium: 'بريميوم'
     }
-  },
-  features: {
-    cssPlayground: 'ساحة تجارب CSS',
-    simpleStudio: 'ميزات الاستوديو البسيطة',
-    apiTesting: 'اختبار API الأساسي',
-    contrastChecker: 'فاحص نسبة التباين',
-    visualImpairment: 'محاكاة ضعف البصر',
-    completeVisualImpairment: 'محاكاة كاملة لضعف البصر',
-    completeStudio: 'ميزات الاستوديو الكاملة',
-    databaseManagement: 'إدارة قواعد البيانات',
-    robots: 'مولد Robots.txt و Schema.org',
-    performanceAnalysis: 'تحليل الأداء',
-    contentAnalysis: 'تحليل المحتوى',
-    userEngagement: 'أدوات تفاعل المستخدم',
-    semanticAnalysis: 'تحليل دلالي وARIA',
-    securityAnalysis: 'تحليل أمني',
+  }, features: {
+    stackql: 'StackQL',
+    stackqlDetails: {
+      workbench: 'StackUnity Workbench',
+      queryAnalysis: 'تحليل الاستعلامات',
+      queryVisualization: 'عرض الاستعلامات',
+      databaseUsage: 'استخدام القاعدة'
+    },
+    audit: 'StackAudit',
+    auditDetails: {
+      performanceAnalysis: 'تحليل الأداء',
+      contentAnalysis: 'تحليل المحتوى',
+      userEngagement: 'أدوات تفاعل المستخدم',
+      semanticAnalysis: 'تحليل دلالي وARIA',
+      securityAnalysis: 'تحليل أمني',
+    },
+    analytics: 'StackUnity Analytics',
+    analyticsDetails: {
+      pageviews: 'الصفحات',
+      sessions: 'الجلسات',
+      location: 'الموقع',
+      browserAndDevice: 'المتصفح والجهاز',
+      interaction: 'التفاعل',
+      deadzones: 'المناطق الميتة'
+    },
     futureUpdates: 'الوصول إلى جميع التحديثات المستقبلية',
     unlimitedMembers: 'أعضاء فريق غير محدودين',
-    prioritySupport: 'دعم ذو أولوية',
-    analytics: 'تحليلات'
+    prioritySupport: 'دعم ذو أولوية'
   }
 } 

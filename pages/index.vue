@@ -15,9 +15,9 @@
               <v-carousel hide-delimiters show-arrows="hover" cycle height="auto">
                 <v-carousel-item src="/images/preview/preview-timeline.avif" contain
                   class="bg-surface-variant floating-image"></v-carousel-item>
-                <v-carousel-item src="/images/preview/preview-website.avif" contain
+                <v-carousel-item src="/images/preview/preview-stackql.avif" contain
                   class="bg-surface-variant floating-image"></v-carousel-item>
-                <v-carousel-item src="/images/preview/preview-access.avif" contain
+                <v-carousel-item src="/images/preview/preview-website.avif" contain
                   class="bg-surface-variant floating-image"></v-carousel-item>
               </v-carousel>
             </div>
@@ -241,14 +241,6 @@ watch(() => currentLanguage.value, (newLang) => {
     }
   }
 });
-
-const getImageDiapora = computed(() => {
-  const image1 = '/images/preview/preview-timeline.avif';
-  const image2 = '/images/preview/preview-heatmap.avif';
-  const image3 = '/images/preview/preview-deadzones.avif';
-
-  return [image1, image2, image3];
-})
 </script>
 
 <style>

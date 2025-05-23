@@ -6,7 +6,7 @@
           <div class="left-content text-center">
             <header>
               <h1>
-                <img src="/logo/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
+                <img src="/images/stackunity.png" alt="StackUnity - Develop faster and better with StackUnity"
                   class="logo mb-8" width="350" />
                 <span class="sr-only">{{ t().hero.title }}</span>
               </h1>
@@ -28,7 +28,7 @@
         <v-col cols="12" md="6" class="right-panel-signup d-flex align-center justify-center">
           <v-card class="signup-card pa-md-8 pa-4 elevation-0" max-width="450" width="100%">
             <div class="d-flex justify-center d-md-none mb-6">
-              <img src="/logo/stackunity-title.png?v=1" alt="StackUnity Logo" width="240" />
+              <img src="/images/stackunity.png?v=1" alt="StackUnity Logo" width="240" />
             </div>
 
             <h2 class="text-h5 font-weight-bold mb-2">{{ t().form.title }}</h2>
@@ -154,17 +154,6 @@ onMounted(async () => {
     const response = await fetch('/api/auth/csrf');
     const data = await response.json();
     csrfToken.value = data.token;
-
-    // Force reload images with timestamp to prevent caching issues
-    setTimeout(() => {
-      const images = document.querySelectorAll('img');
-      images.forEach(img => {
-        if (img.complete && img.src) {
-          const currentSrc = img.src;
-          img.src = currentSrc + (currentSrc.includes('?') ? '&' : '?') + 'v=' + Date.now();
-        }
-      });
-    }, 100);
   } catch (error) {
     console.error('Error during CSRF token retrieval:', error);
   }
@@ -247,7 +236,7 @@ const togglePasswordVisibility = () => {
 }
 
 .right-panel-signup {
-  background-color: rgb(var(--v-theme-background));
+  background: radial-gradient(circle at 50% 30%, #0f172a, #0a0f1f);
   min-height: 100vh;
 }
 

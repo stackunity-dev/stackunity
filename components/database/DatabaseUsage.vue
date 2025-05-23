@@ -1,9 +1,5 @@
 <template>
   <v-card class="rounded-lg" elevation="2">
-    <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg d-flex align-center">
-      <v-icon color="white" class="mr-2">mdi-database-check</v-icon>
-      {{ t.databaseUsage.title }}
-    </v-card-title>
     <v-card-text class="py-4">
       <v-alert v-if="!activeConnection" color="info" variant="tonal" class="mb-4">
         <div class="d-flex align-center">
@@ -33,23 +29,28 @@
         </div>
 
         <div v-else>
-          <div class="d-flex justify-space-between align-center mb-4">
-            <div>
-              <div class="text-h6">{{ t.databaseUsage.totalSpace }}</div>
-              <div class="text-h4 font-weight-bold">{{ totalSizeMB.toFixed(2) }} MB</div>
-            </div>
-            <v-btn color="primary" variant="tonal" @click="fetchDatabaseUsage" :loading="refreshing">
+          <div class="usage-summary d-flex flex-wrap align-center mb-4">
+            <v-chip color="primary" class="mr-2 mb-2">Tables: {{ tablesCount }}</v-chip>
+            <v-chip color="success" class="mr-2 mb-2">Total: {{ totalSizeMB.toFixed(2) }} MB</v-chip>
+            <v-chip color="warning" class="mr-2 mb-2" v-if="biggestTable">More space: {{ biggestTable.table_name }} ({{
+              biggestTable.size_mb.toFixed(2) }} MB)</v-chip>
+            <v-chip color="info" class="mb-2" v-if="smallestTable">Less space: {{ smallestTable.table_name }} ({{
+              smallestTable.size_mb.toFixed(2) }} MB)</v-chip>
+            <v-btn color="primary" variant="tonal" @click="fetchDatabaseUsage" :loading="refreshing" class="ml-auto">
               <v-icon start>mdi-refresh</v-icon>
               {{ t.databaseUsage.refresh }}
             </v-btn>
           </div>
 
-          <v-chart class="chart" :option="chartOption" autoresize />
-
-          <v-divider class="my-4"></v-divider>
+          <div v-if="tablesCount > 1" class="mb-4">
+            <v-chart class="chart" :option="chartOption" autoresize />
+          </div>
+          <v-alert v-else type="info" variant="tonal" class="mb-4">
+            Not enough data for chart
+          </v-alert>
 
           <div class="text-h6 mb-2">{{ t.databaseUsage.topTables }}</div>
-          <v-table density="compact" class="table-rounded">
+          <v-table density="compact" class="table-rounded" aria-label="Database tables usage">
             <thead>
               <tr>
                 <th>{{ t.databaseUsage.table }}</th>
@@ -58,10 +59,18 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(table, index) in sortedTables.slice(0, 30)" :key="index">
-                <td>{{ table.table_name }}</td>
+              <tr v-for="(table, index) in sortedTables.slice(0, 30)" :key="index"
+                :class="{ 'highlight-row': table.table_name === biggestTable?.table_name }">
+                <td>
+                  <v-chip v-if="table.table_name === biggestTable?.table_name" color="warning" size="small"
+                    class="mr-1">Top</v-chip>
+                  <span>{{ table.table_name }}</span>
+                </td>
                 <td class="text-right">{{ table.size_mb.toFixed(2) }}</td>
                 <td class="text-right">{{ ((table.size_mb / totalSizeMB) * 100).toFixed(1) }}%</td>
+              </tr>
+              <tr v-if="sortedTables.length === 0">
+                <td colspan="3" class="text-center text-grey">No tables found</td>
               </tr>
             </tbody>
           </v-table>
@@ -79,9 +88,9 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { computed, ref, watch } from 'vue';
 import VChart from 'vue-echarts';
+import { useTranslations } from '../../languages';
 import { getColorByIndex } from '../../utils/database/function';
 import { TableSize } from '../../utils/database/types';
-import { useTranslations } from '../../languages';
 
 const t = useTranslations('databaseManagement')();
 
@@ -101,6 +110,10 @@ const sortedTables = computed(() => {
   return [...tableData.value].sort((a, b) => b.size_mb - a.size_mb);
 });
 
+const tablesCount = computed(() => tableData.value.length);
+const biggestTable = computed(() => sortedTables.value[0] || null);
+const smallestTable = computed(() => sortedTables.value.length > 0 ? sortedTables.value[sortedTables.value.length - 1] : null);
+
 const chartOption = computed(() => {
   const chartData = tableData.value.slice(0, 30).map((table, index) => ({
     name: table.table_name,
@@ -113,7 +126,7 @@ const chartOption = computed(() => {
   if (tableData.value.length > 30) {
     const otherTablesSize = tableData.value.slice(30).reduce((sum, table) => sum + table.size_mb, 0);
     chartData.push({
-      name: 'Autres tables',
+      name: 'Other tables',
       value: otherTablesSize,
       itemStyle: {
         color: '#9C27B0'
@@ -134,11 +147,15 @@ const chartOption = computed(() => {
       formatter: (name) => {
         const displayName = name.length > 20 ? name.substring(0, 20) + '...' : name;
         return displayName;
+      },
+      textStyle: {
+        color: '#fff',
+        fontSize: 14
       }
     },
     series: [
       {
-        name: 'Utilisation de l\'espace',
+        name: "Database space usage",
         type: 'pie',
         radius: ['40%', '70%'],
         center: ['40%', '50%'],
@@ -245,5 +262,13 @@ watch(() => props.activeConnection, (newVal) => {
 .chart {
   height: 300px;
   width: 100%;
+}
+
+.usage-summary {
+  gap: 8px;
+}
+
+.highlight-row {
+  background: #2d2d2d !important;
 }
 </style>

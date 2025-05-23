@@ -26,24 +26,20 @@
           data-plausible-feature="dashboard_menu">
         </v-list-item>
 
-        <v-list-item v-if="userStore.user?.isPremium" :to="localePath('/website')" prepend-icon="mdi-web"
-          :title="t().menu.website" rounded="lg" class="mb-1" color="primary" nuxt @click="closeDrawer"
-          data-plausible-feature="website_menu">
-        </v-list-item>
-
-        <PremiumFeature v-if="!userStore.user?.isPremium" type="list-item" :title="t().menu.website" icon="mdi-web"
-          feature-key="website" plan-type="premium" />
-
-        <v-list-item v-if="userStore.user?.isPremium" :to="localePath('/user-analytics')"
-          prepend-icon="mdi-chart-box-outline" :title="t().menu.uxAnalyzer" rounded="lg" class="mb-1" color="primary"
-          nuxt @click="closeDrawer" data-plausible-feature="ux_analyzer_menu">
-        </v-list-item>
-
         <PremiumFeature v-if="!userStore.user?.isPremium" type="list-item" :title="t().menu.uxAnalyzer"
           icon="mdi-chart-box-outline" feature-key="ux_analyzer" plan-type="premium" />
 
         <v-list-subheader class="mt-2 text-uppercase font-weight-bold text-caption">{{ t().menu.workflow
         }}</v-list-subheader>
+
+        <v-list-item v-if="userStore.user?.isPremium" :to="localePath('/stackunity-analytics')"
+          prepend-icon="mdi-chart-box-outline" :title="t().menu.uxAnalyzer" rounded="lg" class="mb-1" color="primary"
+          nuxt @click="closeDrawer" data-plausible-feature="ux_analyzer_menu">
+        </v-list-item>
+
+        <v-list-item :to="localePath('/stackql')" prepend-icon="mdi-console" :title="t().menu.stackQL" rounded="lg"
+          class="mb-1" color="primary" nuxt @click="closeDrawer">
+        </v-list-item>
 
         <v-list-group v-for="(item, index) in items" :key="index" :value="item.title" class="mb-1"
           :prepend-icon="item.prependIcon">
@@ -161,14 +157,16 @@
     </v-main>
 
     <LanguageChangeMonitor position="bottom-right" :duration="4000" />
+    <ShortcutsManager ref="shortcutsManagerRef" />
   </v-app>
 </template>
 
 <script lang="ts" setup>
-import { computed, markRaw, onMounted, ref, watch } from 'vue';
+import { computed, markRaw, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDisplay, useTheme } from 'vuetify';
 import premiumFeatures from '../components/PremiumFeature.vue';
+import ShortcutsManager from '../components/ShortcutsManager.vue';
 import Snackbar from '../components/snackbar.vue';
 import { currentLanguage, SupportedLanguage, useTranslations } from '../languages';
 import languageMonitorService from '../services/languageMonitorService';
@@ -204,19 +202,11 @@ const currentPageTitle = computed(() => {
     return t().menu.security;
   } else if (path.includes('/content')) {
     return t().menu.content;
-  } else if (path.includes('/studio')) {
-    return t().menu.studio;
-  } else if (path.includes('/responsive')) {
-    return t().menu.responsive;
-  } else if (path.includes('/accessibility')) {
-    return t().menu.accessibility;
-  } else if (path.includes('/robots')) {
-    return t().menu.robotsSchema;
   } else if (path.includes('/settings')) {
     return t().menu.settings;
   } else if (path.includes('/api-testing-hub')) {
     return t().menu.apiTestingHub;
-  } else if (path.includes('/user-analytics')) {
+  } else if (path.includes('/stackunity-analytics')) {
     return t().menu.uxAnalyzer;
   } else {
     return t().menu.dashboard;
@@ -333,7 +323,7 @@ const getCurrentPageIcon = () => {
     return 'mdi-robot';
   } else if (path.includes('/settings')) {
     return 'mdi-cog-outline';
-  } else if (path.includes('/user-analytics')) {
+  } else if (path.includes('/stackunity-analytics')) {
     return 'mdi-chart-box';
   } else {
     return 'mdi-application';
@@ -450,38 +440,11 @@ function createPremiumMenuItem(title: string, link: string, icon: string, featur
 
 const items = computed(() => [
   {
-    title: 'Frontend',
-    prependIcon: 'mdi-language-html5',
+    title: 'StackAudit',
+    prependIcon: 'mdi-magnify-scan',
     link: true,
     children: [
-      { title: t().features.cssPlayground, link: '/animations', icon: 'mdi-animation' },
-      { title: t().features.studio, link: '/studio', icon: 'mdi-palette' },
-      createPremiumMenuItem(t().features.robotsSchema, '/robots', 'mdi-robot', 'robots', 'standard')
-    ]
-  },
-  {
-    title: 'Backend',
-    prependIcon: 'mdi-database-outline',
-    link: true,
-    children: [
-      { title: t().features.stackQL, link: '/stackql', icon: 'mdi-database' },
-      { title: t().features.apiTestingHub, link: '/api-testing-hub', icon: 'mdi-api' }
-    ]
-  },
-  {
-    title: 'UI/UX',
-    prependIcon: 'mdi-palette',
-    link: true,
-    children: [
-      { title: t().features.responsive, link: '/responsive', icon: 'mdi-responsive' },
-      { title: t().features.accessibility, link: '/accessibility', icon: 'mdi-access-point' },
-    ]
-  },
-  {
-    title: t().categories.analyzer,
-    prependIcon: 'mdi-magnify',
-    link: true,
-    children: [
+      createPremiumMenuItem('Scan your website', '/website', 'mdi-web', 'stackAudit', 'premium'),
       createPremiumMenuItem(t().features.performance, '/performance', 'mdi-speedometer', 'performance', 'premium'),
       createPremiumMenuItem(t().features.structureAccessibility, '/semantic', 'mdi-semantic-web', 'semantic', 'premium'),
       createPremiumMenuItem(t().features.content, '/content', 'mdi-file-document-outline', 'content', 'premium'),
@@ -491,8 +454,22 @@ const items = computed(() => [
   }
 ]);
 
-const currentLocale = computed(() => {
-  return currentLanguage.value;
+
+const shortcutsManagerRef = ref();
+
+const handleGlobalKeyDown = (event: KeyboardEvent) => {
+  if (event.ctrlKey && event.shiftKey && event.key === 'K') {
+    event.preventDefault();
+    shortcutsManagerRef.value?.open();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleGlobalKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleGlobalKeyDown);
 });
 
 </script>

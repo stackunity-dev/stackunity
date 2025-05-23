@@ -5,7 +5,7 @@
         <v-container class="d-flex align-center py-0 my-0">
           <NuxtLink to="/" class="text-decoration-none" aria-label="Go to homepage">
             <div class="d-flex align-center">
-              <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
+              <img src="/images/stackunity-title.png" alt="StackUnity title" width="150">
             </div>
           </NuxtLink>
           <v-spacer></v-spacer>
@@ -69,7 +69,7 @@
       <v-container>
         <div class="d-flex flex-column flex-md-row justify-space-between align-center">
           <div class="mb-4 mb-md-0">
-            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="120">
+            <img src="/images/stackunity-title.png" alt="StackUnity title" width="120">
           </div>
           <div class="text-body-2 text-medium-emphasis">
             &copy; {{ new Date().getFullYear() }} {{ t().footer.copyright }}

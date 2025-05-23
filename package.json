@@ -26,10 +26,13 @@
     }
   },
   "dependencies": {
+    "@codemirror/highlight": "^0.19.8",
     "@codemirror/lang-sql": "^6.8.0",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@mdi/font": "^7.4.47",
     "@nuxtjs/i18n": "^9.5.4",
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "@paypal/paypal-js": "^7.1.1",
     "@pinia/nuxt": "^0.10.1",
     "@stripe/stripe-js": "^6.1.0",
     "@types/bcrypt": "^5.0.2",
@@ -66,6 +69,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.13.5",
+    "@types/paypal__paypal-js": "^2.1.0",
     "@types/uuid": "^10.0.0"
   }
 }

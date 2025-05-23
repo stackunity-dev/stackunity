@@ -55,23 +55,32 @@ export default {
     }
   },
   features: {
-    cssPlayground: 'CSS游乐场',
-    simpleStudio: '简单工作室功能',
-    apiTesting: '基本API测试',
-    contrastChecker: '对比度检查器',
-    visualImpairment: '视觉障碍模拟',
-    completeVisualImpairment: '完整视觉障碍模拟',
-    completeStudio: '完整工作室功能',
-    databaseManagement: '数据库管理',
-    robots: 'Robots.txt和Schema.org生成器',
-    performanceAnalysis: '性能分析',
-    contentAnalysis: '内容分析',
-    userEngagement: '用户参与工具',
-    semanticAnalysis: '语义和ARIA分析',
-    securityAnalysis: '安全分析',
+    stackql: 'StackQL',
+    stackqlDetails: {
+      workbench: 'StackUnity Workbench',
+      queryAnalysis: '查询分析',
+      queryVisualization: '查询可视化',
+      databaseUsage: '数据库使用'
+    },
+    audit: 'StackAudit',
+    auditDetails: {
+      performanceAnalysis: '性能分析',
+      contentAnalysis: '内容分析',
+      userEngagement: '用户参与工具',
+      semanticAnalysis: '语义和ARIA分析',
+      securityAnalysis: '安全分析',
+    },
+    analytics: 'StackUnity Analytics',
+    analyticsDetails: {
+      pageviews: '页面浏览量',
+      sessions: '会话',
+      location: '位置',
+      browserAndDevice: '浏览器和设备',
+      interaction: '交互',
+      deadzones: '死区'
+    },
     futureUpdates: '访问所有未来更新',
     unlimitedMembers: '无限团队成员',
-    prioritySupport: '优先支持',
-    analytics: '分析'
+    prioritySupport: '优先支持'
   }
 } 

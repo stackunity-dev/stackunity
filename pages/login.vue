@@ -6,8 +6,8 @@
           <div class="left-content text-center">
             <header>
               <h1>
-                <img src="https://stackunity.tech/logo/stackunity.png?v=1"
-                  alt="StackUnity - Develop faster and better with StackUnity" class="logo mb-8" width="350" />
+                <img src="/images/stackunity.png" alt="StackUnity - developement hub all-in-one platform"
+                  class="logo mb-8" width="350" />
                 <span class="sr-only">{{ t().hero.title }}</span>
               </h1>
             </header>
@@ -27,7 +27,7 @@
         <v-col cols="12" md="6" class="right-panel d-flex align-center justify-center">
           <v-card class="login-card pa-md-8 pa-4 elevation-0" max-width="450" width="100%">
             <div class="d-flex justify-center d-md-none mb-6">
-              <img src="/logo/stackunity-title.png?v=1" alt="StackUnity Logo" width="240" />
+              <img src="/images/stackunity.png?v=1" alt="StackUnity Logo" width="240" />
             </div>
 
             <h2 class="text-h5 font-weight-bold mb-2">{{ t().form.title }}</h2>
@@ -198,16 +198,6 @@ onMounted(async () => {
       await handleRedirection();
     }
 
-    // Force reload images with timestamp to prevent caching issues
-    setTimeout(() => {
-      const images = document.querySelectorAll('img');
-      images.forEach(img => {
-        if (img.complete && img.src) {
-          const currentSrc = img.src;
-          img.src = currentSrc + (currentSrc.includes('?') ? '&' : '?') + 'v=' + Date.now();
-        }
-      });
-    }, 100);
   } catch (err) {
     console.error('[LOGIN] Error during authentication verification:', err);
   }
@@ -287,14 +277,11 @@ async function handleRedirection() {
 
     if (redirectPath) {
       if (redirectPath.startsWith('/')) {
-        console.log('[Login] Redirection interne vers:', redirectPath);
         router.push(localePath(redirectPath));
       } else {
-        console.log('[Login] Redirection externe vers:', redirectPath);
         window.location.href = redirectPath;
       }
     } else {
-      console.log('[Login] Redirection vers le tableau de bord');
       router.push(localePath('/dashboard'));
     }
   }
@@ -332,7 +319,7 @@ async function handleRedirection() {
 }
 
 .right-panel {
-  background-color: rgb(var(--v-theme-background));
+  background: radial-gradient(circle at 50% 30%, #0f172a, #0a0f1f);
   min-height: 100vh;
 }
 

@@ -55,23 +55,32 @@ export default {
     }
   },
   features: {
-    cssPlayground: 'Bac à sable CSS',
-    simpleStudio: 'Fonctionnalités Studio de base',
-    apiTesting: 'Tests d\'API basiques',
-    contrastChecker: 'Vérificateur de ratio de contraste',
-    visualImpairment: 'Simulation de déficience visuelle',
-    completeVisualImpairment: 'Simulation complète de déficience visuelle',
-    completeStudio: 'Fonctionnalités Studio complètes',
-    databaseManagement: 'Gestion de base de données',
-    robots: 'Générateur de Robots.txt et Schema.org',
-    performanceAnalysis: 'Analyse de performance',
-    contentAnalysis: 'Analyse de contenu',
-    userEngagement: 'Outils d\'engagement utilisateur',
-    semanticAnalysis: 'Analyse sémantique et ARIA',
-    securityAnalysis: 'Analyse de sécurité',
+    stackql: 'StackQL',
+    stackqlDetails: {
+      workbench: 'StackUnity Workbench',
+      queryAnalysis: 'Analyse de requêtes',
+      queryVisualization: 'Visualisation de requêtes',
+      databaseUsage: 'Utilisation de la base de données'
+    },
+    audit: 'StackAudit',
+    auditDetails: {
+      performanceAnalysis: 'Analyse de performance',
+      contentAnalysis: 'Analyse de contenu',
+      userEngagement: 'Outils d\'engagement utilisateur',
+      semanticAnalysis: 'Analyse sémantique et ARIA',
+      securityAnalysis: 'Analyse de sécurité',
+    },
+    analytics: 'StackUnity Analytics',
+    analyticsDetails: {
+      pageviews: 'Page vues',
+      sessions: 'Sessions',
+      location: 'Emplacement',
+      browserAndDevice: 'Navigateur et appareil',
+      interaction: 'Interaction',
+      deadzones: 'Zones mortes'
+    },
     futureUpdates: 'Accès à toutes les mises à jour futures',
     unlimitedMembers: 'Membres d\'équipe illimités',
-    prioritySupport: 'Support prioritaire',
-    analytics: 'Analytics'
+    prioritySupport: 'Support prioritaire'
   }
 } 

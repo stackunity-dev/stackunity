@@ -4,8 +4,8 @@
     v-show="isDrawerOpen">
     <v-navigation-drawer v-model="drawerModel" location="right" temporary class="pa-6" role="dialog" aria-modal="true">
       <div class="drawer-header mb-8 d-flex justify-space-between align-center">
-        <img :src="`https://stackunity.tech/logo/stackunity-title.png`"
-          alt="StackUnity - developement hub all-in-one platform" width="120" loading="eager">
+        <img :src="`/images/stackunity-title.png`" alt="StackUnity - developement hub all-in-one platform" width="120"
+          loading="eager">
         <v-btn icon variant="text" aria-label="Close navigation menu" @click="closeDrawer()">
           <v-icon>mdi-close</v-icon>
         </v-btn>

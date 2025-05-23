@@ -278,7 +278,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
       const isLoggedIn = userStore.isUserAuthenticated;
 
-      // Log des tentatives d'accès non autorisées
       const logUnauthorizedAccess = async () => {
         try {
           await fetch('/api/auth/log-access', {

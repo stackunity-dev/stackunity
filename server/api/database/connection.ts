@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { createError, defineEventHandler, getMethod, H3Event, readBody } from 'h3';
 import { decryptSensitiveData, encryptSensitiveData, generateId, query } from '../../database/db';
+import { getUserId } from '../../utils/auth-utils';
 import { getConnectionPool } from './pool';
 
 export function decryptData(encryptedData: string): string {
@@ -83,9 +84,10 @@ export default defineEventHandler(async (event) => {
 async function handleCreateConnection(event: H3Event) {
   try {
     const body = await readBody(event);
-    const user = event.context.user || { id: 'demo-user' };
+    const userId = getUserId(event);
+    console.log(body);
 
-    if (!body.name || !body.type || !body.host || !body.database || !body.username || !body.password) {
+    if (!body.name || !body.type || !body.host || !body.username || !body.password) {
       throw createError({
         statusCode: 400,
         statusMessage: 'Bad Request',
@@ -98,7 +100,7 @@ async function handleCreateConnection(event: H3Event) {
       type: body.type,
       host: body.host,
       port: body.port || getDefaultPort(body.type),
-      database: body.database,
+      database: body.name,
       username: body.username,
       password: body.password
     });
@@ -113,8 +115,8 @@ async function handleCreateConnection(event: H3Event) {
          (id, user_id, name, type, host, port, database_name, username, password_encrypted) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          connectionId, user.id, body.name, body.type, body.host,
-          body.port || getDefaultPort(body.type), body.database,
+          connectionId, userId, body.name, body.type, body.host,
+          body.port || getDefaultPort(body.type), body.name,
           body.username, encryptedPassword
         ]
       );
@@ -131,7 +133,7 @@ async function handleCreateConnection(event: H3Event) {
           type: body.type,
           host: body.host,
           port: body.port || getDefaultPort(body.type),
-          database_name: body.database,
+          database_name: body.name,
           username: body.username
         }
       };
@@ -159,9 +161,10 @@ async function handleCreateConnection(event: H3Event) {
 async function handleUpdateConnection(event: H3Event) {
   try {
     const body = await readBody(event);
-    const user = event.context.user || { id: 'demo-user' };
 
-    // Validation des entrées
+    // Vérifier l'authentification
+    const userId = getUserId(event);
+
     if (!body.id || !body.name || !body.type || !body.host || !body.database || !body.username) {
       throw createError({
         statusCode: 400,
@@ -170,62 +173,80 @@ async function handleUpdateConnection(event: H3Event) {
       });
     }
 
-    // Vérifier si la connexion existe
-    const connections = await query<any[]>(
-      `SELECT id FROM database_info WHERE id = ? AND user_id = ?`,
-      [body.id, user.id]
-    );
+    // Vérifier si la connexion existe déjà pour cet utilisateur
+    if (body.id) {
+      const existingConnection = await query<any[]>(
+        'SELECT id FROM database_info WHERE id = ? AND user_id = ?',
+        [body.id, userId]
+      );
 
-    if (!connections || connections.length === 0) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Not Found',
-        message: 'Connection not found or you do not have permission to update it'
-      });
-    }
-
-    // Si un nouveau mot de passe est fourni, le chiffrer
-    let passwordUpdate = '';
-    let passwordParams: any[] = [];
-
-    if (body.password) {
-      const encryptedPassword = encryptSensitiveData(body.password);
-      passwordUpdate = ', password_encrypted = ?';
-      passwordParams = [encryptedPassword];
-    }
-
-    // Mettre à jour la connexion
-    await query(
-      `UPDATE database_info 
-       SET name = ?, type = ?, host = ?, port = ?, database_name = ?, 
-           username = ?${passwordUpdate}, updated_at = NOW() 
-       WHERE id = ? AND user_id = ?`,
-      [
-        body.name, body.type, body.host, body.port || getDefaultPort(body.type),
-        body.database, body.username, ...passwordParams, body.id, user.id
-      ]
-    );
-
-    return {
-      success: true,
-      message: 'Connection updated successfully',
-      connection: {
-        id: body.id,
-        name: body.name,
-        type: body.type,
-        host: body.host,
-        port: body.port || getDefaultPort(body.type),
-        database_name: body.database,
-        database: body.database,
-        username: body.username
+      if (!existingConnection || existingConnection.length === 0) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: 'Not Found',
+          message: 'Connection not found or you do not have access to it'
+        });
       }
-    };
+
+      // Mettre à jour la connexion existante
+      const passwordEncrypted = encryptSensitiveData(body.password);
+      await query(
+        `UPDATE database_info 
+         SET name = ?, type = ?, host = ?, port = ?, database_name = ?, 
+             username = ?, password_encrypted = ?, updated_at = NOW()
+         WHERE id = ? AND user_id = ?`,
+        [body.name, body.type, body.host, body.port || getDefaultPort(body.type),
+        body.name, body.username, passwordEncrypted, body.id, userId]
+      );
+
+      return {
+        success: true,
+        message: 'Connection updated successfully',
+        connection: {
+          id: body.id,
+          name: body.name,
+          type: body.type,
+          host: body.host,
+          port: body.port || getDefaultPort(body.type),
+          database_name: body.name,
+          database: body.name,
+          username: body.username
+        }
+      };
+    } else {
+      // Créer une nouvelle connexion
+      const passwordEncrypted = encryptSensitiveData(body.password);
+      const result = await query(
+        `INSERT INTO database_info 
+         (user_id, name, type, host, port, database_name, username, password_encrypted, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+        [userId, body.name, body.type, body.host, body.port || getDefaultPort(body.type),
+          body.name, body.username, passwordEncrypted]
+      );
+
+      const newId = (result as any).insertId;
+
+      return {
+        success: true,
+        message: 'Connection created successfully',
+        connection: {
+          id: newId,
+          name: body.name,
+          type: body.type,
+          host: body.host,
+          port: body.port || getDefaultPort(body.type),
+          database_name: body.name,
+          database: body.name,
+          username: body.username
+        }
+      };
+    }
   } catch (error: any) {
-    console.error('Error updating database connection:', error);
+    console.error('Error saving connection:', error);
     throw createError({
       statusCode: error.statusCode || 500,
       statusMessage: error.statusMessage || 'Internal Server Error',
-      message: error.message || 'Failed to update database connection'
+      message: error.message || 'Failed to save connection'
     });
   }
 }
@@ -300,14 +321,14 @@ async function handleTestConnection(event: H3Event) {
         type: body.type,
         host: body.host,
         port: body.port || getDefaultPort(body.type),
-        database: body.database,
+        database: body.name,
         username: body.username,
         password: body.password
       });
 
       return {
         success: true,
-        message: `Successfully connected to ${body.type} database "${body.database}"`
+        message: `Successfully connected to ${body.type} database "${body.name}"`
       };
     } catch (error) {
       console.error('Connection test failed:', error);

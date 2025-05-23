@@ -1,12 +1,12 @@
 import { createError, defineEventHandler, readBody } from 'h3';
 import { decryptSensitiveData, query } from '../../database/db';
+import { getUserId } from '../../utils/auth-utils';
 import { getConnectionPool, testConnection } from './pool';
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     const { connectionId } = body;
-    const user = event.context.user || { id: 'demo-user' };
 
     if (!connectionId) {
       throw createError({
@@ -16,12 +16,14 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    const userId = getUserId(event);
+
     const connections = await query<any[]>(
       `SELECT id, name, type, host, port, database_name, username, 
               password_encrypted, created_at, updated_at
        FROM database_info 
        WHERE id = ? AND user_id = ?`,
-      [connectionId, user.id]
+      [connectionId, userId]
     );
 
     if (!connections || connections.length === 0) {

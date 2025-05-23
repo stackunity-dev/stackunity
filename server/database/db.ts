@@ -5,7 +5,6 @@ import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { pool as poolApi } from '../api/db';
 
-// Utilisez directement le pool existant au lieu d'en créer un nouveau
 let pool: Pool | null = poolApi;
 
 export async function initDatabase() {

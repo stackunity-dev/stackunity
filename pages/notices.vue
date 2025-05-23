@@ -6,7 +6,7 @@
           <NuxtLink to="/" class="text-decoration-none" aria-label="Go to homepage"
             aria-roledescription="Go to homepage">
             <div class="d-flex align-center">
-              <img src="/logo/stackunity-title.png" alt="StackUnity title" width="150">
+              <img src="/images/stackunity-title.png" alt="StackUnity title" width="150">
             </div>
           </NuxtLink>
           <v-spacer></v-spacer>
@@ -20,7 +20,7 @@
         <v-container>
           <v-row justify="center">
             <v-col cols="12" md="10" lg="8" class="text-center">
-              <h1 id="page-title" class="text-h2 font-weight-bold mb-4 text-white">Legal Notices & Credits</h1>
+              <h1 id="page-title" class="text-h2 font-weight-bold text-white">Legal Notices & Credits</h1>
             </v-col>
           </v-row>
         </v-container>
@@ -235,7 +235,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       <v-container>
         <div class="d-flex flex-column flex-md-row justify-space-between align-center">
           <div class="mb-4 mb-md-0">
-            <img src="/logo/stackunity-title.png" alt="StackUnity title" width="120">
+            <img src="/images/stackunity-title.png" alt="StackUnity title" width="120">
           </div>
           <div class="text-body-2 text-medium-emphasis">
             &copy; {{ new Date().getFullYear() }} StackUnity. All rights reserved.
@@ -338,6 +338,14 @@ const libraries = [
     color: 'primary',
     icon: 'mdi-vuetify',
     url: 'https://github.com/vuetifyjs/vuetify'
+  },
+  {
+    name: 'CodeMirror',
+    description: 'In-browser code editor',
+    license: 'MIT',
+    color: 'secondary',
+    icon: 'mdi-pencil',
+    url: 'https://github.com/codemirror/codemirror'
   },
   {
     name: 'Cheerio',

@@ -1,7 +1,6 @@
 import { createError, defineEventHandler, readBody, setResponseHeader } from 'h3';
 import { executeQuery } from './pool';
 
-// Define interfaces for better type safety
 interface TableExport {
   name: string;
   structure: any[];
@@ -14,6 +13,7 @@ interface DatabaseExport {
   type: string;
   tables: TableExport[];
   exported_at: string;
+  totalTables?: number;
 }
 
 export default defineEventHandler(async (event) => {
@@ -29,20 +29,16 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Get database type from a query instead of using pool directly
     let dbType = 'unknown';
     try {
-      // Try to determine database type from connection
       const typeQuery = await executeQuery(connectionId, 'SELECT 1', []);
 
-      // Check connection type based on field structure
       if (typeQuery.fields) {
         if ('orgTable' in typeQuery.fields[0]) {
           dbType = 'mysql';
         } else if ('tableID' in typeQuery.fields[0]) {
           dbType = 'postgres';
         } else {
-          // For MSSQL and SQLite, we'll try specific queries
           try {
             await executeQuery(connectionId, 'SELECT @@version', []);
             dbType = 'mssql';
@@ -51,7 +47,6 @@ export default defineEventHandler(async (event) => {
               await executeQuery(connectionId, 'PRAGMA database_list', []);
               dbType = 'sqlite';
             } catch {
-              // Default to mysql if we can't determine
               dbType = 'mysql';
             }
           }
@@ -59,14 +54,12 @@ export default defineEventHandler(async (event) => {
       }
     } catch (error) {
       console.error('Error determining database type:', error);
-      // Default to MySQL if we can't determine the type
       dbType = 'mysql';
     }
 
     let dbName = 'database';
     let tables: string[] = [];
 
-    // Get database name based on database type
     try {
       let databaseInfo;
       if (dbType === 'mysql') {
@@ -83,10 +76,8 @@ export default defineEventHandler(async (event) => {
       }
     } catch (error) {
       console.error('Error getting database name:', error);
-      // Continue with default name if there's an error
     }
 
-    // Get list of tables based on database type
     let tablesResult;
     if (dbType === 'mysql') {
       tablesResult = await executeQuery(connectionId, 'SHOW TABLES', []);
@@ -116,7 +107,6 @@ export default defineEventHandler(async (event) => {
       throw new Error('Failed to retrieve tables');
     }
 
-    // Extract table names based on database type
     if (dbType === 'mysql') {
       tables = tablesResult.results.map(row => String(Object.values(row)[0]));
     } else if (dbType === 'postgres') {
@@ -131,13 +121,12 @@ export default defineEventHandler(async (event) => {
       database: dbName,
       type: dbType,
       tables: [],
-      exported_at: new Date().toISOString()
+      exported_at: new Date().toISOString(),
+      totalTables: tables.length
     };
 
-    // Process each table
     for (const tableName of tables) {
       try {
-        // Get table structure based on database type
         let structureQuery;
         let structureResult;
 
@@ -191,14 +180,12 @@ export default defineEventHandler(async (event) => {
           continue;
         }
 
-        // Get table data (limit to 1000 rows to prevent memory issues)
         const dataQuery = dbType === 'mysql' || dbType === 'sqlite'
           ? `SELECT * FROM \`${tableName}\` LIMIT 1000`
           : `SELECT * FROM "${tableName}" LIMIT 1000`;
 
         const dataResult = await executeQuery(connectionId, dataQuery, []);
 
-        // Add table info to export
         const tableExport: TableExport = {
           name: tableName,
           structure: structureResult.results,
@@ -208,7 +195,6 @@ export default defineEventHandler(async (event) => {
         databaseExport.tables.push(tableExport);
       } catch (error: any) {
         console.error(`Error processing table ${tableName}:`, error);
-        // Continue with next table if there's an error
         const errorTableExport: TableExport = {
           name: tableName,
           structure: [],
@@ -220,7 +206,6 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    // Set response headers for file download
     setResponseHeader(event, 'Content-Type', 'application/json');
     setResponseHeader(event, 'Content-Disposition', `attachment; filename="${dbName}_export.json"`);
 
