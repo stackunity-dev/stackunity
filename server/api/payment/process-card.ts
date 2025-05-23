@@ -123,7 +123,7 @@ export default defineEventHandler(async (event) => {
         }
       },
       application_context: {
-        return_url: 'https://stackunity.tech/api/payment/3ds-return',
+        return_url: 'https://stackunity.tech/payment/3ds-return',
         cancel_url: `https://stackunity.tech/payment/cancel`
       }
     });
@@ -131,12 +131,16 @@ export default defineEventHandler(async (event) => {
     const order = await paypal.execute(createRequest);
     const orderId = order.result.id;
 
-    let redirectUrl = null;
+    let redirectUrl: string | null = null;
 
     const payerActionLink = order.result.links.find(link => link.rel === 'payer-action');
+
     if (payerActionLink) {
-      redirectUrl = payerActionLink.href;
+      const url = new URL(payerActionLink.href);
+      url.searchParams.set('token', orderId);
+      redirectUrl = url.toString();
     }
+
 
     return {
       success: true,
