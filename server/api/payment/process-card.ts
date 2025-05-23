@@ -1,4 +1,4 @@
-import { OrdersCreateRequest, OrdersCaptureRequest } from '@paypal/checkout-server-sdk';
+import { OrdersCreateRequest, OrdersCaptureRequest } from "@paypal/checkout-server-sdk";
 import { defineEventHandler, readBody } from 'h3';
 import { RowDataPacket } from 'mysql2';
 import { getUserId } from '../../utils/auth-utils';
@@ -14,6 +14,7 @@ const formatExpiryDate = (expiry: string): string => {
 };
 
 const validateCardDetails = (cardDetails: any) => {
+  console.log('🔍 Validation des détails de la carte...');
   if (!cardDetails.name || !cardDetails.number || !cardDetails.cvv || !cardDetails.expiry) {
     throw new Error('Informations de carte incomplètes');
   }
@@ -32,21 +33,22 @@ const validateCardDetails = (cardDetails: any) => {
   }
 };
 
-async function retryCapture(orderId: string, retries = 3, delay = 3000, paypal: any) {
+async function retryCapture(orderId: string, retries = 3, delay = 3000, paypal: any): Promise<any> {
   const captureRequest = new OrdersCaptureRequest(orderId);
   captureRequest.requestBody({});
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
+      console.log(`📡 Tentative de capture n°${attempt} pour l'orderId ${orderId}`);
       const capture = await paypal.execute(captureRequest);
-      console.log(`📦 Tentative ${attempt}: Capture réussie`, JSON.stringify(capture.result, null, 2));
+      console.log(`✅ Capture réussie`, JSON.stringify(capture.result, null, 2));
       return capture;
-    } catch (error) {
-      console.warn(`⚠️ Tentative ${attempt} échouée:`, error?.message || error);
+    } catch (error: any) {
+      console.warn(`❌ Tentative ${attempt} échouée: ${error?.message || error}`);
       if (attempt < retries) {
-        console.log(`🔁 Nouvelle tentative dans ${delay / 1000}s...`);
+        console.log(`⏳ Nouvelle tentative dans ${delay / 1000}s...`);
         await new Promise(res => setTimeout(res, delay));
       } else {
-        console.error(`❌ Capture échouée après ${retries} tentatives.`);
+        console.error(`🛑 Échec définitif après ${retries} tentatives.`, error?.stack || error);
         throw error;
       }
     }
@@ -56,9 +58,15 @@ async function retryCapture(orderId: string, retries = 3, delay = 3000, paypal: 
 export default defineEventHandler(async (event) => {
   try {
     const userId = getUserId(event);
-    if (!userId) return { success: false, error: 'Non autorisé' };
+    if (!userId) {
+      console.warn('🔒 Utilisateur non authentifié');
+      return { success: false, error: 'Non autorisé' };
+    }
+    console.log(`🔐 Utilisateur ID: ${userId}`);
 
     const body = await readBody(event);
+    console.log('📥 Corps reçu:', JSON.stringify(body, null, 2));
+
     const {
       cardDetails, billingAddress, amount, currency,
       description, username, billingCountry
@@ -66,11 +74,16 @@ export default defineEventHandler(async (event) => {
 
     validateCardDetails(cardDetails);
 
+    console.log(`🔎 Recherche utilisateur dans la base: ${username}`);
     const [userRows] = await pool.query<RowDataPacket[]>('SELECT * FROM users WHERE username = ?', [username]);
-    if (!userRows || userRows.length === 0) return { success: false, error: 'Utilisateur non trouvé' };
+    if (!userRows || userRows.length === 0) {
+      console.warn(`👤 Utilisateur "${username}" non trouvé`);
+      return { success: false, error: 'Utilisateur non trouvé' };
+    }
 
     const paypal = await getPayPalClient();
     const requestId = `order-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    console.log(`🆔 Création de la commande PayPal [Request ID: ${requestId}]`);
 
     const createRequest = new OrdersCreateRequest();
     createRequest.prefer("return=representation");
@@ -111,10 +124,10 @@ export default defineEventHandler(async (event) => {
     });
 
     const order = await paypal.execute(createRequest);
+    console.log('📦 Commande PayPal créée:', JSON.stringify(order.result, null, 2));
     const orderId = order.result.id;
 
     const capture = await retryCapture(orderId, 3, 3000, paypal);
-    console.log('📦 Capture PayPal:', JSON.stringify(capture.result, null, 2));
 
     return {
       success: true,
@@ -123,7 +136,8 @@ export default defineEventHandler(async (event) => {
     };
 
   } catch (error: any) {
-    console.error('Error processing card payment:', error);
+    console.error('🔥 Erreur générale lors du traitement du paiement:');
+    console.error(error?.stack || error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Une erreur est survenue lors du traitement du paiement'
