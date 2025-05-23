@@ -1,8 +1,21 @@
 import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
+import { defineEventHandler, readBody } from "h3";
 import { getUserId } from "../../utils/auth-utils";
-import { readBody, defineEventHandler } from "h3";
 import { getPayPalClient } from "../../utils/paypal";
 import { pool } from "../db";
+
+async function waitForCompleted(paypal, orderId, retries = 5, delayMs = 2000) {
+  for (let i = 0; i < retries; i++) {
+    const orderRequest = new checkoutNodeJssdk.orders.OrdersGetRequest(orderId);
+    const order = await paypal.execute(orderRequest);
+    if (order.result.status === 'COMPLETED') {
+      return order;
+    }
+    await new Promise(res => setTimeout(res, delayMs));
+  }
+  throw new Error('La commande n\'est pas complétée après plusieurs tentatives');
+}
+
 
 export default defineEventHandler(async (event) => {
   try {
@@ -15,8 +28,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const paypal = await getPayPalClient();
-    const orderRequest = new checkoutNodeJssdk.orders.OrdersGetRequest(orderId);
-    const order = await paypal.execute(orderRequest);
+    const order = await waitForCompleted(paypal, orderId);
     console.log(order);
 
     if (order.result.status !== 'COMPLETED') {
