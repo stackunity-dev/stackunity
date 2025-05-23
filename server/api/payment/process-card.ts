@@ -108,23 +108,21 @@ export default defineEventHandler(async (event) => {
         custom_id: userId,
       }],
       application_context: {
-        return_url: `https://stackunity.tech/payment/3ds-return?token=${token}`,
+        return_url: `https://stackunity.tech/payment/3ds-return`,
         cancel_url: `https://stackunity.tech/payment/cancel`
       }
     });
 
     const order = await paypal.execute(createRequest);
     const orderId = order.result.id;
-
     const approveLink = order.result.links.find(link => link.rel === 'approve');
+
     return {
       success: true,
       orderId,
       token,
       redirectUrl: approveLink?.href || null,
-      needs3ds: !!approveLink
     };
-
   } catch (error: any) {
     console.error('🔥 Erreur générale lors du traitement du paiement:');
     console.error(error?.stack || error);

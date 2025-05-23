@@ -6,6 +6,9 @@ import { orderTokensMap } from './process-card';
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const token = query.token as string;
+  console.log('Token reçu en retour 3DS:', token);
+  console.log('Tokens actuels:', Object.keys(orderTokensMap));
+
 
   if (!token) return { success: false, error: 'Token de commande manquant' };
 
