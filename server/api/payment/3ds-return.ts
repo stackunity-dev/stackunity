@@ -6,11 +6,10 @@ import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
-  const token = query.token as string;
 
-  if (!token) return { success: false, error: 'Token de commande manquant' };
+  const { token: orderIdFromUrl } = getQuery(event);
+  const [rows] = await pool.query<RowDataPacket[]>('SELECT * FROM paypal_tokens WHERE token = ? AND expires_at > NOW()', [orderIdFromUrl]);
 
-  const [rows] = await pool.query<RowDataPacket[]>('SELECT order_id FROM paypal_tokens WHERE token = ? AND expires_at > NOW()', [token]);
   if (rows.length === 0) return { success: false, error: 'Token invalide ou expiré' };
   const orderId = rows[0].order_id;
 

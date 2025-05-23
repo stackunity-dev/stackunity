@@ -66,7 +66,10 @@ export default defineEventHandler(async (event) => {
     const orderId = order.result.id;
     const approveLink = order.result.links.find(link => link.rel === 'approve');
 
-    await pool.query('INSERT INTO paypal_tokens (token, order_id, user_id, expires_at) VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))', [token, orderId, userId]);
+    await pool.query(
+      'INSERT INTO paypal_tokens (token, order_id, user_id, expires_at) VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))',
+      [orderId, orderId, userId]
+    );
 
     return {
       success: true,
