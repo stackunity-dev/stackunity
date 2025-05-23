@@ -123,7 +123,7 @@ export default defineEventHandler(async (event) => {
         }
       },
       application_context: {
-        return_url: 'https://stackunity.tech/api/payment/3ds-return',
+        return_url: 'https://stackunity.tech/api/payment/3ds-return?token={checkout_order_id}',
         cancel_url: `https://stackunity.tech/payment/cancel`
       }
     });
