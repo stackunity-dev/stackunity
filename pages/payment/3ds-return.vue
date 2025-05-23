@@ -32,6 +32,7 @@ const userStore = useUserStore();
 
 onMounted(async () => {
   const token = route.query.token as string;
+  console.log('Token:', token);
   if (!token) {
     error.value = 'Token manquant dans l’URL de retour';
     loading.value = false;
