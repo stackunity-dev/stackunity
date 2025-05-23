@@ -107,21 +107,6 @@ export default defineEventHandler(async (event) => {
         description,
         custom_id: userId,
       }],
-      payment_source: {
-        card: {
-          number: cardDetails.number,
-          expiry: formatExpiryDate(cardDetails.expiry),
-          security_code: cardDetails.cvv,
-          name: cardDetails.name,
-          billing_address: {
-            address_line_1: billingAddress.line1,
-            admin_area_2: billingAddress.city,
-            admin_area_1: billingAddress.state,
-            postal_code: billingAddress.zip,
-            country_code: billingCountry
-          }
-        }
-      },
       application_context: {
         return_url: `https://stackunity.tech/payment/3ds-return?token=${token}`,
         cancel_url: `https://stackunity.tech/payment/cancel`
@@ -130,17 +115,14 @@ export default defineEventHandler(async (event) => {
 
     const order = await paypal.execute(createRequest);
     const orderId = order.result.id;
-    console.log('orderId', orderId);
 
-    orderTokensMap[token] = orderId;
-    console.log('orderTokensMap', orderTokensMap);
-
+    const approveLink = order.result.links.find(link => link.rel === 'approve');
     return {
       success: true,
       orderId,
       token,
-      needs3ds: !!order.result.links.find(link => link.rel === 'payer-action'),
-      redirectUrl: order.result.links.find(link => link.rel === 'payer-action')?.href || null
+      redirectUrl: approveLink?.href || null,
+      needs3ds: !!approveLink
     };
 
   } catch (error: any) {
