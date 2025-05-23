@@ -3,8 +3,11 @@ import { RowDataPacket } from 'mysql2';
 import { getUserId } from '../../utils/auth-utils';
 import { getPayPalClient } from '../../utils/paypal';
 import { pool } from '../db';
-import paypalSdk from '@paypal/checkout-server-sdk';
-const { OrdersCreateRequest, OrdersCaptureRequest } = paypalSdk;
+import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
+
+const OrdersCreateRequest = checkoutNodeJssdk.orders.OrdersCreateRequest;
+const OrdersCaptureRequest = checkoutNodeJssdk.orders.OrdersCaptureRequest;
+
 
 const formatAmount = (amount: number): string => amount.toFixed(2);
 
