@@ -1,9 +1,10 @@
-import { OrdersCreateRequest, OrdersCaptureRequest } from "@paypal/checkout-server-sdk";
 import { defineEventHandler, readBody } from 'h3';
 import { RowDataPacket } from 'mysql2';
 import { getUserId } from '../../utils/auth-utils';
 import { getPayPalClient } from '../../utils/paypal';
 import { pool } from '../db';
+import paypalSdk from '@paypal/checkout-server-sdk';
+const { OrdersCreateRequest, OrdersCaptureRequest } = paypalSdk;
 
 const formatAmount = (amount: number): string => amount.toFixed(2);
 
