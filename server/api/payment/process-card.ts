@@ -38,7 +38,7 @@ const validateCardDetails = (cardDetails: any) => {
   }
 };
 
-async function retryCapture(orderId: string, retries = 3, delay = 3000, paypal: any): Promise<any> {
+export async function retryCapture(orderId: string, retries = 3, delay = 3000, paypal: any): Promise<any> {
   const captureRequest = new OrdersCaptureRequest(orderId);
   captureRequest.requestBody({});
   for (let attempt = 1; attempt <= retries; attempt++) {
