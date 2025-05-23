@@ -84,12 +84,9 @@ export default defineEventHandler(async (event) => {
     }
 
     const paypal = await getPayPalClient();
-    console.log('✅ Client PayPal initialisé');
 
-    // Générer un identifiant unique pour cette requête PayPal
     const requestId = `order-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
-    // Étape 1: Créer la commande
     const createRequest = new checkoutNodeJssdk.orders.OrdersCreateRequest();
     createRequest.prefer("return=representation");
     createRequest.headers = {
@@ -132,12 +129,19 @@ export default defineEventHandler(async (event) => {
     const order = await paypal.execute(createRequest);
     const orderId = order.result.id;
 
+    const captureRequest = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
+    captureRequest.requestBody({});
+    const capture = await paypal.execute(captureRequest);
+    console.log('📦 Capture PayPal:', JSON.stringify(capture.result, null, 2));
+
+
     return {
       success: true,
-      orderId
+      orderId,
+      captureId: capture.result.purchase_units[0].payments.captures[0].id
     };
-  }
-  catch (error: any) {
+
+  } catch (error: any) {
     console.error('Error processing card payment:', error);
     return {
       success: false,
