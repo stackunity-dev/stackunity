@@ -4,7 +4,9 @@ import { getPayPalClient } from '../../utils/paypal';
 import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
-  const { token } = getQuery(event);
+  const query = getQuery(event);
+  console.log('Query:', query);
+  const token = query.token as string;
   if (!token) return { success: false, error: 'Token de commande manquant' };
 
   try {
