@@ -38,8 +38,9 @@ const success = ref('');
 
 onMounted(async () => {
   try {
-    const orderId = route.query.token as string;
-    if (!orderId) {
+    console.log('🔍 Route:', route.query);
+    const token = route.query.token || route.query.code || route.query.paymentId;
+    if (!token) {
       throw new Error('Aucun ID de commande trouvé');
     }
 
@@ -49,7 +50,7 @@ onMounted(async () => {
         'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ orderId })
+      body: JSON.stringify({ token })
     });
 
     const data = await response.json();

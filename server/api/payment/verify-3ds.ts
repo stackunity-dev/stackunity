@@ -8,13 +8,13 @@ export default defineEventHandler(async (event) => {
 
   try {
     const body = await readBody(event);
-    const orderId = body.orderId as string;
+    const token = body.token as string;
     const userId = getUserId(event);
 
-    console.log('📝 Paramètres reçus:', { orderId, userId });
+    console.log('📝 Paramètres reçus:', { token, userId });
 
-    if (!orderId || !userId) {
-      console.error('❌ Paramètres manquants:', { orderId, userId });
+    if (!token || !userId) {
+      console.error('❌ Paramètres manquants:', { token, userId });
       return {
         success: false,
         error: 'Paramètres manquants'
@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
 
     const paypal = await getPayPalClient();
 
-    const orderRequest = new checkoutNodeJssdk.orders.OrdersGetRequest(orderId);
+    const orderRequest = new checkoutNodeJssdk.orders.OrdersGetRequest(token);
     const order = await paypal.execute(orderRequest);
 
     if (order.result.status !== 'COMPLETED') {
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
 
     // Capturer le paiement
     console.log('🔄 Début de la capture du paiement...');
-    const captureRequest = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
+    const captureRequest = new checkoutNodeJssdk.orders.OrdersCaptureRequest(token);
     const capture = await paypal.execute(captureRequest);
     console.log('📊 Résultat de la capture:', capture.result);
 
@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
         'INSERT INTO transactions (user_id, order_id, amount, status, payment_method, created_at) VALUES (?, ?, ?, ?, ?, NOW())',
         [
           userId,
-          orderId,
+          token,
           capture.result.purchase_units[0].amount.value,
           'COMPLETED',
           'CARD'
