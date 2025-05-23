@@ -25,10 +25,11 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '../../stores/userStore';
 
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 
 const loading = ref(true);
@@ -37,7 +38,7 @@ const success = ref('');
 
 onMounted(async () => {
   try {
-    const orderId = localStorage.getItem('pendingOrderId');
+    const orderId = route.query.token as string;
     if (!orderId) {
       throw new Error('Aucun ID de commande trouvé');
     }
@@ -59,7 +60,6 @@ onMounted(async () => {
 
     if (data.success) {
       success.value = 'Paiement confirmé avec succès !';
-      localStorage.removeItem('pendingOrderId');
       setTimeout(() => {
         router.push('/payment/success');
       }, 2000);
