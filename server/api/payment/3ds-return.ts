@@ -1,18 +1,18 @@
 import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
 import { defineEventHandler, getQuery } from 'h3';
+import { RowDataPacket } from 'mysql2';
 import { getPayPalClient } from '../../utils/paypal';
-import { orderTokensMap } from './process-card';
+import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const token = query.token as string;
-  console.log('Token reçu en retour 3DS:', token);
-  console.log('Tokens actuels:', Object.keys(orderTokensMap));
-
 
   if (!token) return { success: false, error: 'Token de commande manquant' };
 
-  const orderId = orderTokensMap[token];
+  const [rows] = await pool.query<RowDataPacket[]>('SELECT order_id FROM paypal_tokens WHERE token = ? AND expires_at > NOW()', [token]);
+  if (rows.length === 0) return { success: false, error: 'Token invalide ou expiré' };
+  const orderId = rows[0].order_id;
 
   if (!orderId) {
     return { success: false, error: 'Token invalide ou expiré' };
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
   try {
     const paypal = await getPayPalClient();
 
-    // Vérifie la commande avec l’orderId réel
+    // Vérifie la commande avec l'orderId réel
     const orderRequest = new checkoutNodeJssdk.orders.OrdersGetRequest(orderId);
     const order = await paypal.execute(orderRequest);
 
@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
       return { success: false, error: `Commande non approuvée: ${order.result.status}` };
     }
 
-    // Capture la commande avec l’orderId réel
+    // Capture la commande avec l'orderId réel
     const captureRequest = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
     captureRequest.requestBody({});
     const capture = await paypal.execute(captureRequest);
