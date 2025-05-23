@@ -331,7 +331,6 @@ const loading = ref(false);
 const showSnackbar = ref(false);
 const snackbarColor = ref('success');
 const snackbarText = ref('');
-const orderId = ref('');
 
 const billingCountry = ref('FR');
 const isBusinessCustomer = ref(false);
@@ -520,10 +519,10 @@ const applyPromoCode = async () => {
   }
 };
 
-const processPayment = async (orderId: string) => {
+const processPayment = async (event: any) => {
   loading.value = true;
   try {
-    const response = await userStore.processPayPalPayment(orderId);
+    const response = await userStore.processPayPalPayment(event.orderID);
 
     if (response.success) {
       showSnackbar.value = true;
@@ -536,7 +535,7 @@ const processPayment = async (orderId: string) => {
     } else if (response.error && response.error.name === 'UNPROCESSABLE_ENTITY') {
       const payerActionLink = response.error.links?.find(link => link.rel === 'payer-action')?.href;
       if (payerActionLink) {
-        localStorage.setItem('pendingOrderId', orderId);
+        localStorage.setItem('pendingOrderId', event.orderID);
         window.location.href = payerActionLink;
         return;
       } else {
@@ -554,7 +553,6 @@ const processPayment = async (orderId: string) => {
     loading.value = false;
   }
 };
-
 
 const isInEU = (countryCode: string): boolean => {
   return countryCode.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/) !== null;
@@ -750,6 +748,7 @@ onMounted(async () => {
 
 const submitCardPayment = async () => {
   try {
+    loading.value = true;
     const response = await fetch('/api/payment/process-card', {
       method: 'POST',
       headers: {
@@ -776,7 +775,6 @@ const submitCardPayment = async () => {
     });
 
     const data = await response.json();
-    console.log('🔄 Données reçues du serveur:', data);
 
     if (data.success) {
       const payerActionLink = data.order?.links?.find((link: any) => link.rel === 'payer-action');
@@ -791,6 +789,7 @@ const submitCardPayment = async () => {
       snackbarColor.value = 'success';
       snackbarText.value = 'Commande créée, aucun 3DS requis.';
       showSnackbar.value = true;
+      loading.value = false;
     } else {
       throw new Error(data.error || 'Échec de création de commande');
     }

@@ -7,12 +7,10 @@ export async function getPayPalClient(): Promise<checkoutNodeJssdk.core.PayPalHt
     return paypalClient;
   }
 
-  const clientId = 'ASBf0oA-RI0eCLn5QRyo9GHGLe9KgfdfrkAHT6SAqk0m8AWPzVvIUbbxazk4fjZfGEiWVnucG9dtHMLf';
-  const clientSecret = 'ED3O7Bl9MU-pBGtVv9QI2Zmv_YH93wSPNkpZMtDDBFIZba5DBozM7kp5NXdVaNju7Xx_7RoQayRTQCWr';
+  const clientId = process.env.PAYPAL_CLIENT_ID;
+  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
-  const environment = process.env.NODE_ENV === 'production'
-    ? new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret)
-    : new checkoutNodeJssdk.core.SandboxEnvironment(clientId, clientSecret);
+  const environment = new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret)
 
   paypalClient = new checkoutNodeJssdk.core.PayPalHttpClient(environment);
   return paypalClient;
