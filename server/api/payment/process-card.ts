@@ -1,9 +1,9 @@
+import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
 import { defineEventHandler, readBody } from 'h3';
 import { RowDataPacket } from 'mysql2';
 import { getUserId } from '../../utils/auth-utils';
 import { getPayPalClient } from '../../utils/paypal';
 import { pool } from '../db';
-import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
 
 const OrdersCreateRequest = checkoutNodeJssdk.orders.OrdersCreateRequest;
 const OrdersCaptureRequest = checkoutNodeJssdk.orders.OrdersCaptureRequest;

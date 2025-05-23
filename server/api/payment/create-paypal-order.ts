@@ -5,9 +5,7 @@ import { getPayPalClient } from '../../utils/paypal';
 import { calculateTax } from '../../utils/taxCalculator';
 import { pool } from '../db';
 
-const isDev = process.env.NODE_ENV === 'development';
-
-const BASE_URL = process.env.NUXT_PUBLIC_APP_URL || isDev ? 'http://localhost:3000' : 'https://stackunity.tech';
+const BASE_URL = process.env.NUXT_PUBLIC_APP_URL || 'https://stackunity.tech';
 
 const formatAmount = (amount: number): string => {
   return amount.toFixed(2);
@@ -65,7 +63,7 @@ export default defineEventHandler(async (event) => {
     const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
     request.prefer("return=representation");
     request.requestBody({
-      intent: 'AUTHORIZE',
+      intent: 'CAPTURE',
       purchase_units: [{
         amount: {
           currency_code: 'EUR',

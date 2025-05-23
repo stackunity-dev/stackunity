@@ -44,30 +44,7 @@ export default defineEventHandler(async (event) => {
 
     await pool.query('UPDATE users SET isPremium = true WHERE id = ?', [customId]);
 
-    // Enregistrement du paiement
-    await pool.query('INSERT INTO payments (user_id, amount, currency, status, payment_method, payment_id, invoice_id, metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
-      userId,
-      parseFloat(purchaseUnit.amount.value),
-      purchaseUnit.amount.currency_code,
-      'completed',
-      'paypal',
-      capture.result.id,
-      invoiceId,
-      JSON.stringify({
-        captureId: capture.result.id,
-        orderId: orderId,
-        payerId: capture.result.payer.payer_id,
-        paymentMethod: 'paypal',
-        paymentId: capture.result.id,
-        invoiceId: invoiceId,
-        metadata: {
-          captureId: capture.result.id,
-          orderId: orderId,
-          payerId: capture.result.payer.payer_id,
-          payerEmail: capture.result.payer.email_address
-        }
-      })
-    ]);
+
 
     /* Génération de la facture
     const invoice = await generateInvoice({
