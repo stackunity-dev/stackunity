@@ -46,7 +46,16 @@ onMounted(async () => {
       throw new Error(data.error || 'Erreur lors du retour 3DS');
     }
 
-    success.value = 'Paiement validé avec succès !';
+    if (data.success) {
+      await fetch('/api/payment/verify-3ds', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userStore.token}`
+        }
+      });
+    }
+
     setTimeout(() => {
       router.push('/payment/success');
     }, 2000);
