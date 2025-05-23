@@ -25,10 +25,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useUserStore } from '../../stores/userStore';
 
-const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
@@ -43,8 +42,7 @@ onMounted(async () => {
       throw new Error('Aucun ID de commande trouvé');
     }
 
-    // Appeler l'API pour finaliser le paiement
-    const response = await fetch('/api/payment/capture-after-3ds', {
+    const response = await fetch('/api/payment/verify-3ds', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${userStore.token}`,
@@ -61,9 +59,7 @@ onMounted(async () => {
 
     if (data.success) {
       success.value = 'Paiement confirmé avec succès !';
-      // Nettoyer le localStorage
       localStorage.removeItem('pendingOrderId');
-      // Rediriger vers la page de succès après 2 secondes
       setTimeout(() => {
         router.push('/payment/success');
       }, 2000);

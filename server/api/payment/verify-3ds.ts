@@ -1,5 +1,5 @@
 import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
-import { defineEventHandler, getQuery } from 'h3';
+import { defineEventHandler, readBody } from 'h3';
 import { getUserId } from '../../utils/auth-utils';
 import { getPayPalClient } from '../../utils/paypal';
 import { pool } from '../db';
@@ -7,8 +7,8 @@ import { pool } from '../db';
 export default defineEventHandler(async (event) => {
 
   try {
-    const query = getQuery(event);
-    const orderId = query.orderId as string;
+    const body = await readBody(event);
+    const orderId = body.orderId as string;
     const userId = getUserId(event);
 
     console.log('📝 Paramètres reçus:', { orderId, userId });
