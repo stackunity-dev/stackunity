@@ -8,6 +8,7 @@ import { pool } from '../db';
 const OrdersCreateRequest = checkoutNodeJssdk.orders.OrdersCreateRequest;
 const OrdersCaptureRequest = checkoutNodeJssdk.orders.OrdersCaptureRequest;
 
+let orderTokensMap: Record<string, string> = {};
 
 const formatAmount = (amount: number): string => amount.toFixed(2);
 
@@ -86,9 +87,8 @@ export default defineEventHandler(async (event) => {
     }
 
     const paypal = await getPayPalClient();
-    console.log('🔁 PayPal client:', paypal);
     const requestId = `order-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-    console.log(`🆔 Création de la commande PayPal [Request ID: ${requestId}]`);
+    const token = `token-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
     const createRequest = new OrdersCreateRequest();
     createRequest.prefer("return=representation");
@@ -123,7 +123,7 @@ export default defineEventHandler(async (event) => {
         }
       },
       application_context: {
-        return_url: 'https://stackunity.tech/payment/3ds-return',
+        return_url: `https://stackunity.tech/payment/3ds-return?token=${token}`,
         cancel_url: `https://stackunity.tech/payment/cancel`
       }
     });
@@ -131,22 +131,14 @@ export default defineEventHandler(async (event) => {
     const order = await paypal.execute(createRequest);
     const orderId = order.result.id;
 
-    let redirectUrl: string | null = null;
-
-    const payerActionLink = order.result.links.find(link => link.rel === 'payer-action');
-
-    if (payerActionLink) {
-      const url = new URL(payerActionLink.href);
-      url.searchParams.set('token', orderId);
-      redirectUrl = url.toString();
-    }
-
+    orderTokensMap[token] = orderId;
 
     return {
       success: true,
       orderId,
-      needs3ds: !!redirectUrl,
-      redirectUrl
+      token,
+      needs3ds: !!order.result.links.find(link => link.rel === 'payer-action'),
+      redirectUrl: order.result.links.find(link => link.rel === 'payer-action')?.href || null
     };
 
   } catch (error: any) {
