@@ -10,6 +10,10 @@ export async function getPayPalClient(): Promise<checkoutNodeJssdk.core.PayPalHt
   const clientId = process.env.PAYPAL_CLIENT_ID;
   const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
+  if (!clientId || !clientSecret) {
+    throw new Error('PayPal credentials are not configured. Please check your environment variables.');
+  }
+
   let environment;
   if (process.env.NODE_ENV === 'production') {
     environment = new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret);
