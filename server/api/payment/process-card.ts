@@ -8,7 +8,7 @@ import { pool } from '../db';
 const OrdersCreateRequest = checkoutNodeJssdk.orders.OrdersCreateRequest;
 const OrdersCaptureRequest = checkoutNodeJssdk.orders.OrdersCaptureRequest;
 
-let orderTokensMap: Record<string, string> = {};
+export let orderTokensMap: Record<string, string> = {};
 
 const formatAmount = (amount: number): string => amount.toFixed(2);
 
