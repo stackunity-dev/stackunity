@@ -10,7 +10,12 @@ export async function getPayPalClient(): Promise<checkoutNodeJssdk.core.PayPalHt
   const clientId = process.env.PAYPAL_CLIENT_ID;
   const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
-  const environment = new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret)
+  let environment;
+  if (process.env.NODE_ENV === 'production') {
+    environment = new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret);
+  } else {
+    environment = new checkoutNodeJssdk.core.SandboxEnvironment(clientId, clientSecret);
+  }
 
   paypalClient = new checkoutNodeJssdk.core.PayPalHttpClient(environment);
   return paypalClient;
