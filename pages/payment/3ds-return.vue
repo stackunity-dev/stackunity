@@ -21,12 +21,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '../../stores/userStore';
 
 const route = useRoute();
 const router = useRouter();
 const loading = ref(true);
 const error = ref('');
 const success = ref('');
+const userStore = useUserStore();
 
 onMounted(async () => {
   const token = route.query.token as string;
@@ -37,7 +39,13 @@ onMounted(async () => {
   }
 
   try {
-    const response = await fetch(`/api/payment/3ds-return?token=${token}`);
+    const response = await fetch(`/api/payment/3ds-return?token=${token}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    });
     const data = await response.json();
 
     if (!response.ok || !data.success) {
