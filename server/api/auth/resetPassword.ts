@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { createError, defineEventHandler, getRequestHeaders, readBody } from 'h3';
-import { ServerTokenManager } from '../../utils/serverTokenManager';
+import { ServerTokenManager } from '../../utils/ServerTokenManager';
 import { pool } from '../db';
 
 export default defineEventHandler(async (event) => {
