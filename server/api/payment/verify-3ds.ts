@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
     const paypal = await getPayPalClient();
     const orderRequest = new checkoutNodeJssdk.orders.OrdersGetRequest(orderId);
     const order = await paypal.execute(orderRequest);
+    console.log(order);
 
     if (order.result.status !== 'COMPLETED') {
       return { success: false, error: 'La commande n\'est pas complétée' };

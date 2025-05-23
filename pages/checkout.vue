@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                        }}€</span>
+                          }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -215,11 +215,11 @@
                               density="comfortable" class="mb-4"></v-text-field>
                             <v-text-field v-model="billingAddress.line2" label="Address Line 2 (Optional)"
                               variant="outlined" density="comfortable" class="mb-4"></v-text-field>
+                            <v-text-field v-model="billingAddress.adminArea2" label="State" variant="outlined"
+                              density="comfortable" class="mb-4"></v-text-field>
                             <v-row>
                               <v-col cols="6">
                                 <v-text-field v-model="billingAddress.adminArea1" label="City" variant="outlined"
-                                  density="comfortable" class="mb-4"></v-text-field>
-                                <v-text-field v-model="billingAddress.adminArea2" label="State" variant="outlined"
                                   density="comfortable" class="mb-4"></v-text-field>
                               </v-col>
                               <v-col cols="6">
