@@ -406,7 +406,7 @@ import { useTranslations } from '../languages';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 import axios from 'axios';
-import SQLQueryAnalyzer from '../components/database/SQLQueryAnalyzer.vue';
+import SQLQueryAnalyzer from '../components/database/SqlQueryAnalyzer.vue';
 import SQLResultVisualizer from '../components/database/SqlResultVisualizer.vue';
 import { useUserStore } from '../stores/userStore';
 import { SQL_SNIPPETS } from '../utils/database/command';
