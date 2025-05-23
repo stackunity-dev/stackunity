@@ -130,17 +130,18 @@ export default defineEventHandler(async (event) => {
 
     const order = await paypal.execute(createRequest);
 
-    console.log('📦 Commande PayPal créée:', JSON.stringify(order.result, null, 2));
+    let redirectUrl = null;
 
-    const needs3ds = order.result.payment_source?.card?.payer_action?.url;
-
-    console.log('🔁 Redirection 3DS:', needs3ds);
+    const payerActionLink = order.result.links.find(link => link.rel === 'payer-action');
+    if (payerActionLink) {
+      redirectUrl = payerActionLink.href;
+    }
 
     return {
       success: true,
       orderId: order.result.id,
-      needs3ds: !!needs3ds,
-      redirectUrl: needs3ds || null
+      needs3ds: !!redirectUrl,
+      redirectUrl: redirectUrl || null
     };
 
   } catch (error: any) {
