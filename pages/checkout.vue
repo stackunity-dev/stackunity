@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                          }}€</span>
+                        }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -754,7 +754,7 @@ const submitCardPayment = async () => {
     const response = await fetch('/api/payment/process-card', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${userStore.token}`,
+        'Authorization': `Bearer ${userStore.token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -792,21 +792,12 @@ const submitCardPayment = async () => {
       snackbarText.value = 'Commande créée, aucun 3DS requis.';
       showSnackbar.value = true;
       loading.value = false;
-    } else {
-      throw new Error(data.error || 'Échec de création de commande');
-    }
-
-
-    if (data.success) {
-      snackbarColor.value = 'success';
-      snackbarText.value = 'Paiement effectué avec succès !';
-      showSnackbar.value = true;
 
       setTimeout(() => {
         navigateTo('/login');
       }, 2000);
     } else {
-      throw new Error(data.error || 'Échec du paiement');
+      throw new Error(data.error || 'Échec de création de commande');
     }
 
   } catch (error: any) {
