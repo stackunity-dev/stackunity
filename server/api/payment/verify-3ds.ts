@@ -4,10 +4,11 @@ import { getUserId } from "../../utils/auth-utils";
 import { getPayPalClient } from "../../utils/paypal";
 import { pool } from "../db";
 
-async function waitForCompleted(paypal, orderId, retries = 5, delayMs = 2000) {
+async function waitForCompleted(paypal, orderId, retries = 10, delayMs = 2000) {
   for (let i = 0; i < retries; i++) {
     const orderRequest = new checkoutNodeJssdk.orders.OrdersGetRequest(orderId);
     const order = await paypal.execute(orderRequest);
+    console.log(`Tentative ${i + 1}: statut commande = ${order.result.status}`);
     if (order.result.status === 'COMPLETED') {
       return order;
     }
@@ -15,6 +16,7 @@ async function waitForCompleted(paypal, orderId, retries = 5, delayMs = 2000) {
   }
   throw new Error('La commande n\'est pas complétée après plusieurs tentatives');
 }
+
 
 
 export default defineEventHandler(async (event) => {

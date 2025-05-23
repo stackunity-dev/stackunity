@@ -20,6 +20,8 @@ export default defineEventHandler(async (event) => {
     const captureRequest = new checkoutNodeJssdk.orders.OrdersCaptureRequest(token);
     captureRequest.requestBody({});
     const capture = await paypal.execute(captureRequest);
+    console.log('Capture response:', capture);
+
 
     if (capture.result.status === 'COMPLETED') {
       return { success: true, message: 'Paiement capturé avec succès après 3DS' };
