@@ -38,7 +38,7 @@ const validateCardDetails = (cardDetails: any) => {
   }
 };
 
-export async function retryCapture(orderId: string, retries = 3, delay = 3000, paypal: any): Promise<any> {
+async function retryCapture(orderId: string, retries = 3, delay = 3000, paypal: any): Promise<any> {
   const captureRequest = new OrdersCaptureRequest(orderId);
   captureRequest.requestBody({});
   for (let attempt = 1; attempt <= retries; attempt++) {
@@ -130,8 +130,10 @@ export default defineEventHandler(async (event) => {
 
     const order = await paypal.execute(createRequest);
     const orderId = order.result.id;
+    console.log('orderId', orderId);
 
     orderTokensMap[token] = orderId;
+    console.log('orderTokensMap', orderTokensMap);
 
     return {
       success: true,

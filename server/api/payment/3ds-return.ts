@@ -2,7 +2,6 @@ import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
 import { defineEventHandler, getQuery } from 'h3';
 import { getPayPalClient } from '../../utils/paypal';
 import { orderTokensMap } from './process-card';
-import retryCapture from './process-card';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
