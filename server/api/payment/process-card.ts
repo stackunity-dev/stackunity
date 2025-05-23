@@ -128,15 +128,16 @@ export default defineEventHandler(async (event) => {
     });
 
     const order = await paypal.execute(createRequest);
-    console.log('📦 Commande PayPal créée:', JSON.stringify(order.result, null, 2));
-    const orderId = order.result.id;
 
-    const capture = await retryCapture(orderId, 3, 3000, paypal);
+    console.log('📦 Commande PayPal créée:', JSON.stringify(order.result, null, 2));
+
+    const needs3ds = order.result.payment_source?.card?.payer_action?.url;
 
     return {
       success: true,
-      orderId,
-      captureId: capture.result.purchase_units[0].payments.captures[0].id
+      orderId: order.result.id,
+      needs3ds: !!needs3ds,
+      redirectUrl: needs3ds || null
     };
 
   } catch (error: any) {

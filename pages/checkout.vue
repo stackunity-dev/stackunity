@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                        }}€</span>
+                          }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -779,26 +779,23 @@ const submitCardPayment = async () => {
     const data = await response.json();
 
     if (data.success) {
-      const payerActionLink = data.order?.links?.find((link: any) => link.rel === 'payer-action');
-
-      if (payerActionLink?.href) {
-        // Redirection vers 3D Secure
-        console.log('🔁 Redirection 3DS:', payerActionLink.href);
-        window.location.href = payerActionLink.href;
+      if (data.needs3ds && data.redirectUrl) {
+        console.log('🔁 Redirection 3DS:', data.redirectUrl);
+        window.location.href = data.redirectUrl;
         return;
       }
-
+      // Sinon
       snackbarColor.value = 'success';
       snackbarText.value = 'Commande créée, aucun 3DS requis.';
       showSnackbar.value = true;
       loading.value = false;
-
       setTimeout(() => {
         navigateTo('/login');
       }, 2000);
     } else {
       throw new Error(data.error || 'Échec de création de commande');
     }
+
 
   } catch (error: any) {
     console.error('Erreur lors du paiement:', error);
