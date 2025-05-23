@@ -8,14 +8,9 @@
             Vérification 3D Secure
           </v-card-title>
           <v-card-text class="text-center">
-            <v-progress-circular v-if="loading" indeterminate color="primary" size="64"
-              class="my-4"></v-progress-circular>
-            <div v-else-if="error" class="text-error mt-4">
-              {{ error }}
-            </div>
-            <div v-else-if="success" class="text-success mt-4">
-              {{ success }}
-            </div>
+            <v-progress-circular v-if="loading" indeterminate color="primary" size="64" class="my-4" />
+            <div v-else-if="error" class="text-error mt-4">{{ error }}</div>
+            <div v-else-if="success" class="text-success mt-4">{{ success }}</div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -26,69 +21,37 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useUserStore } from '../../stores/userStore';
 
-const router = useRouter();
 const route = useRoute();
-const userStore = useUserStore();
-
+const router = useRouter();
 const loading = ref(true);
 const error = ref('');
 const success = ref('');
 
 onMounted(async () => {
+  const token = route.query.token as string;
+  if (!token) {
+    error.value = 'Token manquant dans l’URL de retour';
+    loading.value = false;
+    return;
+  }
+
   try {
-    const orderId = localStorage.getItem('pendingOrderId');
-    if (!orderId) {
-      throw new Error('Aucun ID de commande trouvé');
-    }
-
-    const response = await fetch('/api/payment/verify-3ds', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${userStore.token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ orderId })
-    });
-
+    const response = await fetch(`/api/payment/3ds-return?token=${token}`);
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Erreur lors de la finalisation du paiement');
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || 'Erreur lors du retour 3DS');
     }
 
-    if (data.success) {
-      success.value = 'Paiement confirmé avec succès !';
-      setTimeout(() => {
-        router.push('/payment/success');
-      }, 2000);
-    } else {
-      throw new Error(data.error || 'Échec de la finalisation du paiement');
-    }
+    success.value = 'Paiement validé avec succès !';
+    setTimeout(() => {
+      router.push('/payment/success');
+    }, 2000);
   } catch (err: any) {
-    error.value = err.message || 'Une erreur est survenue';
+    error.value = err.message;
   } finally {
     loading.value = false;
   }
 });
 </script>
-
-<style scoped>
-.v-card {
-  background: #1e1e2f !important;
-  color: #e0e0e0 !important;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.v-card-title {
-  color: #e0e0e0 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 16px;
-}
-
-.v-card-text {
-  padding: 24px;
-}
-</style>
