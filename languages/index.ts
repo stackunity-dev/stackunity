@@ -66,18 +66,6 @@ import databaseManagementEs from './database-designer/es';
 import databaseManagementFr from './database-designer/fr';
 import databaseManagementZh from './database-designer/zh';
 
-import responsiveAr from './responsive/ar';
-import responsiveEn from './responsive/en';
-import responsiveEs from './responsive/es';
-import responsiveFr from './responsive/fr';
-import responsiveZh from './responsive/zh';
-
-import accessibilityAr from './accessibility/ar';
-import accessibilityEn from './accessibility/en';
-import accessibilityEs from './accessibility/es';
-import accessibilityFr from './accessibility/fr';
-import accessibilityZh from './accessibility/zh';
-
 import aboutAr from './about/ar';
 import aboutEn from './about/en';
 import aboutEs from './about/es';
@@ -141,8 +129,6 @@ export interface TranslationsStore {
   faq: typeof faqEn;
   website: typeof websiteEn;
   databaseManagement: typeof databaseManagementEn;
-  responsive: typeof responsiveEn;
-  accessibility: typeof accessibilityEn;
   about: typeof aboutEn;
   semantic: typeof semanticEn;
   performance: typeof performanceEn;
@@ -166,8 +152,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqEn,
     website: websiteEn,
     databaseManagement: databaseManagementEn,
-    responsive: responsiveEn,
-    accessibility: accessibilityEn,
     about: aboutEn,
     semantic: semanticEn,
     performance: performanceEn,
@@ -189,8 +173,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqFr,
     website: websiteFr,
     databaseManagement: databaseManagementFr,
-    responsive: responsiveFr,
-    accessibility: accessibilityFr,
     about: aboutFr,
     semantic: semanticFr,
     performance: performanceFr,
@@ -212,8 +194,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqAr,
     website: websiteAr,
     databaseManagement: databaseManagementAr,
-    responsive: responsiveAr,
-    accessibility: accessibilityAr,
     about: aboutAr,
     semantic: semanticAr,
     performance: performanceAr,
@@ -235,8 +215,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqEs,
     website: websiteEs,
     databaseManagement: databaseManagementEs,
-    responsive: responsiveEs,
-    accessibility: accessibilityEs,
     about: aboutEs,
     semantic: semanticEs,
     performance: performanceEs,
@@ -258,8 +236,6 @@ const translations: Record<SupportedLanguage, TranslationsStore> = {
     faq: faqZh,
     website: websiteZh,
     databaseManagement: databaseManagementZh,
-    responsive: responsiveZh,
-    accessibility: accessibilityZh,
     about: aboutZh,
     semantic: semanticZh,
     performance: performanceZh,

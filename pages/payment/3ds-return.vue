@@ -39,13 +39,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await fetch(`/api/payment/3ds-return?token=${token}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userStore.token}`
-      }
-    });
+    const response = await fetch(`/api/payment/3ds-return?token=${token}`);
     const data = await response.json();
 
     if (!response.ok || !data.success) {

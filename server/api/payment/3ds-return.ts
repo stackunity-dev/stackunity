@@ -2,11 +2,9 @@ import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
 import { defineEventHandler, getQuery } from 'h3';
 import { getPayPalClient } from '../../utils/paypal';
 import { pool } from '../db';
-import { getUserId } from '../../utils/auth-utils';
 
 export default defineEventHandler(async (event) => {
   const { token } = getQuery(event);
-  const userId = getUserId(event);
   if (!token) return { success: false, error: 'Token de commande manquant' };
 
   try {
@@ -26,10 +24,6 @@ export default defineEventHandler(async (event) => {
 
 
     if (capture.result.status === 'COMPLETED') {
-      await pool.query(
-        'UPDATE users SET is_premium = 1, premium_since = NOW() WHERE id = ?',
-        [userId]
-      );
       return { success: true, message: 'Paiement capturé avec succès après 3DS' };
     } else {
       return { success: false, error: `Capture échouée : ${capture.result.status}` };
