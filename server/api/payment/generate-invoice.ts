@@ -94,131 +94,231 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
       const chunks: Buffer[] = [];
-      const doc = new PDFDocument({ margin: 50 });
+      const doc = new PDFDocument({
+        margin: 50,
+        size: 'A4',
+        info: {
+          Title: 'Facture StackUnity',
+          Author: 'StackUnity SAS'
+        }
+      });
 
       doc.on('data', (chunk) => chunks.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(chunks)));
       doc.on('error', reject);
 
-      doc.fontSize(20).font('Helvetica-Bold').text('FACTURE', { align: 'center' });
-      doc.moveDown();
+      // En-tête avec logo et dégradé
+      doc.rect(0, 0, 595.28, 100)
+        .fillColor('#1a237e')
+        .fill();
 
-      doc.fontSize(12).font('Helvetica-Bold').text('StackUnity SAS', { align: 'left' });
-      doc.text('86000 Poitiers, France');
-      doc.text('Email: support@stackunity.tech');
-      doc.text('SIRET: 93872035600014 ');
-      doc.text('TVA Intracommunautaire: FR44938720356');
+      doc.fontSize(30)
+        .fillColor('#ffffff')
+        .font('Helvetica-Bold')
+        .text('FACTURE', 50, 50, { align: 'center' });
+
+      // Informations de l'entreprise
       doc.moveDown(2);
+      doc.fillColor('#1a237e')
+        .fontSize(14)
+        .font('Helvetica-Bold')
+        .text('StackUnity', 50, 150);
 
-      doc.fontSize(12).font('Helvetica-Bold').text('Factured to:', { align: 'left' });
-      doc.fontSize(10).font('Helvetica').text(invoiceData.customerName);
+      doc.fillColor('#424242')
+        .fontSize(10)
+        .font('Helvetica')
+        .text('86000 Poitiers, France', 50, 170)
+        .text('Email: support@stackunity.tech', 50, 185)
+        .text('SIRET: 93872035600014', 50, 200)
+        .text('TVA Intracommunautaire: FR44938720356', 50, 215);
+
+      // Informations du client
+      doc.moveDown(2);
+      doc.fillColor('#1a237e')
+        .fontSize(14)
+        .font('Helvetica-Bold')
+        .text('Billed to:', 50, 270);
+
+      doc.fillColor('#424242')
+        .fontSize(10)
+        .font('Helvetica')
+        .text(invoiceData.customerName, 50, 290);
+
       if (invoiceData.isBusinessCustomer && invoiceData.vatNumber) {
-        doc.text(`TVA: ${invoiceData.vatNumber}`);
+        doc.text(`TVA: ${invoiceData.vatNumber}`, 50, 305);
       }
-      doc.text(`Pays: ${getCountryName(invoiceData.country)}`);
-      doc.text(`Email: ${invoiceData.customerEmail}`);
-      doc.moveDown(2);
+      doc.text(`Country: ${getCountryName(invoiceData.country)}`, 50, 320)
+        .text(`Email: ${invoiceData.customerEmail}`, 50, 335);
 
-      doc.fontSize(12).font('Helvetica-Bold').text('Invoice details:', { align: 'left' });
-      doc.fontSize(10).font('Helvetica').text(`Invoice number: INV-${Date.now()}`);
-      doc.text(`Date: ${invoiceData.date || new Date().toLocaleDateString('fr-FR')}`);
-      doc.text(`Payment ID: ${invoiceData.paymentId}`);
+      // Détails de la facture
       doc.moveDown(2);
+      doc.fillColor('#1a237e')
+        .fontSize(14)
+        .font('Helvetica-Bold')
+        .text('Facture details:', 50, 380);
 
-      doc.fontSize(12).font('Helvetica-Bold');
-      const tableTop = doc.y;
-      const tableHeaders = ['Description', 'Price HT', 'VAT', 'Total'];
+      doc.fillColor('#424242')
+        .fontSize(10)
+        .font('Helvetica')
+        .text(`Invoice number: INV-${Date.now()}`, 50, 400)
+        .text(`Date: ${invoiceData.date || new Date().toLocaleDateString('fr-FR')}`, 50, 415)
+        .text(`Payment ID: ${invoiceData.paymentId}`, 50, 430);
+
+      // Tableau des produits
+      doc.moveDown(2);
+      const tableTop = 480;
+      const tableHeaders = ['Description', 'Prix HT', 'TVA', 'Total'];
       const tableWidths = [250, 100, 100, 100];
-      const tableX = 50;
+      const tableX = 25;
       let currentY = tableTop;
 
-      doc.font('Helvetica-Bold');
-      tableHeaders.forEach((header, i) => {
-        doc.text(header, tableX + tableWidths.slice(0, i).reduce((a, b) => a + b, 0), currentY, {
-          width: tableWidths[i],
-          align: 'left'
-        });
-      });
-      currentY += 20;
-      doc.moveTo(tableX, currentY).lineTo(tableX + tableWidths.reduce((a, b) => a + b, 0), currentY).stroke();
-      currentY += 10;
+      // En-tête du tableau
+      doc.fillColor('#1a237e')
+        .font('Helvetica-Bold')
+        .fontSize(10);
 
-      doc.font('Helvetica');
+      // Dessiner les en-têtes avec alignement
+      doc.text('Description', tableX, currentY, { width: tableWidths[0] });
+      doc.text('Prix HT', tableX + tableWidths[0], currentY, { width: tableWidths[1], align: 'right' });
+      doc.text('TVA', tableX + tableWidths[0] + tableWidths[1], currentY, { width: tableWidths[2], align: 'right' });
+      doc.text('Total', tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, { width: tableWidths[3], align: 'right' });
+
+      currentY += 20;
+      doc.strokeColor('#1a237e')
+        .lineWidth(1)
+        .moveTo(tableX, currentY)
+        .lineTo(tableX + tableWidths.reduce((a, b) => a + b, 0), currentY)
+        .stroke();
+
+      // Contenu du tableau
+      currentY += 10;
+      doc.fillColor('#424242')
+        .font('Helvetica')
+        .fontSize(10);
+
+      // Description
       doc.text(`${invoiceData.selectedPlan} StackUnity subscription (lifetime)`, tableX, currentY, {
-        width: tableWidths[0],
-        align: 'left'
+        width: tableWidths[0]
       });
+
+      // Prix HT
       doc.text(`${invoiceData.baseAmount.toFixed(2)}€`, tableX + tableWidths[0], currentY, {
         width: tableWidths[1],
-        align: 'left'
-      });
-
-      if (invoiceData.isVatExempt) {
-        doc.text('Exempted', tableX + tableWidths[0] + tableWidths[1], currentY, {
-          width: tableWidths[2],
-          align: 'left'
-        });
-      } else {
-        doc.text(`${invoiceData.taxAmount.toFixed(2)}€ (${invoiceData.taxPercentage}%)`, tableX + tableWidths[0] + tableWidths[1], currentY, {
-          width: tableWidths[2],
-          align: 'left'
-        });
-      }
-
-      doc.text(`${invoiceData.totalAmount.toFixed(2)}€`, tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, {
-        width: tableWidths[3],
-        align: 'left'
-      });
-
-      currentY += 30;
-      doc.moveTo(tableX, currentY).lineTo(tableX + tableWidths.reduce((a, b) => a + b, 0), currentY).stroke();
-      currentY += 10;
-
-      doc.font('Helvetica-Bold');
-      doc.text('Total HT:', tableX + tableWidths[0], currentY, {
-        width: tableWidths[1] + tableWidths[2],
         align: 'right'
       });
-      doc.text(`${invoiceData.baseAmount.toFixed(2)}€`, tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, {
-        width: tableWidths[3],
-        align: 'left'
-      });
-      currentY += 20;
 
-      if (!invoiceData.isVatExempt) {
-        doc.text(`TVA (${invoiceData.taxPercentage}%):`, tableX + tableWidths[0], currentY, {
-          width: tableWidths[1] + tableWidths[2],
+      // TVA
+      if (invoiceData.isVatExempt) {
+        doc.text('Exempté', tableX + tableWidths[0] + tableWidths[1], currentY, {
+          width: tableWidths[2],
           align: 'right'
         });
-        doc.text(`${invoiceData.taxAmount.toFixed(2)}€`, tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, {
-          width: tableWidths[3],
-          align: 'left'
+      } else {
+        doc.text(`${invoiceData.taxAmount.toFixed(2)}€ (${invoiceData.taxPercentage}%)`,
+          tableX + tableWidths[0] + tableWidths[1], currentY, {
+          width: tableWidths[2],
+          align: 'right'
         });
-        currentY += 20;
       }
 
-      doc.text('Total:', tableX + tableWidths[0], currentY, {
-        width: tableWidths[1] + tableWidths[2],
+      // Total
+      doc.text(`${invoiceData.totalAmount.toFixed(2)}€`,
+        tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, {
+        width: tableWidths[3],
         align: 'right'
       });
-      doc.text(`${invoiceData.totalAmount.toFixed(2)}€`, tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, {
-        width: tableWidths[3],
-        align: 'left'
-      });
-      currentY += 40;
 
-      doc.fontSize(10).font('Helvetica');
-      if (invoiceData.isVatExempt && invoiceData.isBusinessCustomer) {
-        doc.text('VAT not applicable, Art. 283-2 du CGI - Autoliquidation of VAT', { align: 'center' });
-      } else if (!isInEU(invoiceData.country)) {
-        doc.text('Exportation outside the EU - VAT not applicable', { align: 'center' });
+      // Ligne de séparation
+      currentY += 30;
+      doc.strokeColor('#1a237e')
+        .lineWidth(1)
+        .moveTo(tableX, currentY)
+        .lineTo(tableX + tableWidths.reduce((a, b) => a + b, 0), currentY)
+        .stroke();
+
+      // Totaux
+      currentY += 20;
+      const totalX = tableX + tableWidths[0];
+      const totalWidth = tableWidths[1] + tableWidths[2] + tableWidths[3];
+      const totalLabelWidth = 150;
+      const totalAmountWidth = 100;
+
+      // Total HT
+      doc.fillColor('#1a237e')
+        .font('Helvetica-Bold')
+        .text('Total HT:', totalX, currentY, {
+          width: totalWidth - totalAmountWidth,
+          align: 'right'
+        });
+      doc.text(`${invoiceData.baseAmount.toFixed(2)}€`, totalX + totalWidth - totalAmountWidth, currentY, {
+        width: totalAmountWidth,
+        align: 'right'
+      });
+
+      // TVA
+      if (!invoiceData.isVatExempt) {
+        currentY += 20;
+        doc.text(`TVA (${invoiceData.taxPercentage}%):`, totalX, currentY, {
+          width: totalWidth - totalAmountWidth,
+          align: 'right'
+        });
+        doc.text(`${invoiceData.taxAmount.toFixed(2)}€`, totalX + totalWidth - totalAmountWidth, currentY, {
+          width: totalAmountWidth,
+          align: 'right'
+        });
       }
 
-      doc.moveDown(2);
-      doc.fontSize(8).text('StackUnity SAS - Capital social: 1 000€ - SIRET: 123 456 789 00012 - RCS Paris - TVA Intracommunautaire: FR12345678900', { align: 'center' });
-      doc.text('Payment made by credit card via Stripe', { align: 'center' });
-      doc.moveDown();
-      doc.text(`Facture générée le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, { align: 'center' });
+      // Total TTC
+      currentY += 20;
+      doc.fillColor('#1a237e')
+        .font('Helvetica-Bold')
+        .text('Total TTC:', totalX, currentY, {
+          width: totalWidth - totalAmountWidth,
+          align: 'right'
+        });
+      doc.text(`${invoiceData.totalAmount.toFixed(2)}€`, totalX + totalWidth - totalAmountWidth, currentY, {
+        width: totalAmountWidth,
+        align: 'right'
+      });
+
+      // Pied de page
+      currentY += 60;
+      const footerX = 50;
+      const footerWidth = 495.28; // Largeur A4 - marges
+
+      doc.fillColor('#424242')
+        .fontSize(8)
+        .font('Helvetica');
+
+      if (invoiceData.isVatExempt && invoiceData.isBusinessCustomer) {
+        doc.text('VAT not applicable, Art. 283-2 du CGI - Autoliquidation of VAT', footerX, currentY, {
+          width: footerWidth,
+          align: 'center'
+        });
+      } else if (!isInEU(invoiceData.country)) {
+        doc.text('Exportation outside EU - VAT not applicable', footerX, currentY, {
+          width: footerWidth,
+          align: 'center'
+        });
+      }
+
+      currentY += 15;
+      doc.text('StackUnity - SIRET: 93872035600014 - RCS Poitiers', footerX, currentY, {
+        width: footerWidth,
+        align: 'center'
+      });
+
+      currentY += 15;
+      doc.text('Payment made by credit card via Stripe', footerX, currentY, {
+        width: footerWidth,
+        align: 'center'
+      });
+
+      currentY += 15;
+      doc.text(`Invoice generated on ${new Date().toLocaleDateString('fr-FR')} at ${new Date().toLocaleTimeString('fr-FR')}`, footerX, currentY, {
+        width: footerWidth,
+        align: 'center'
+      });
 
       doc.end();
     } catch (error) {

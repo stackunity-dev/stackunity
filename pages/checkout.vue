@@ -647,13 +647,6 @@ const isInEU = (countryCode: string): boolean => {
   return countryCode.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/) !== null;
 };
 
-const customFilter = (item: any, query: string, itemText: string) => {
-  const text = itemText.toString().toLowerCase();
-  const queryText = query.toString().toLowerCase();
-
-  return text.indexOf(queryText) > -1;
-};
-
 const applyPromoCode = async () => {
   if (!promoCode.value) {
     promoCodeMessage.value = '';
