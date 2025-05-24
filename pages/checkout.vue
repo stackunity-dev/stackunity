@@ -71,29 +71,33 @@
 
                   <v-divider class="mb-4"></v-divider>
 
+                  <div class="premium-features mb-4">
+                    <div v-for="(feature, index) in features" :key="index" class="d-flex align-center mb-2">
+                      <v-icon color="success" class="mr-2">mdi-check-circle</v-icon>
+                      <span class="text-body-2">{{ feature.title }}</span>
+                    </div>
+                  </div>
+
                   <div class="price-details">
                     <div class="d-flex justify-space-between align-center mb-2">
                       <span class="text-body-1">{{ t().pricing.htPrice }}</span>
-                      <span :class="{ 'text-decoration-line-through': (taxDetails.discountAmount ?? 0) > 0 }"
+                      <span :class="{ 'text-decoration-line-through': taxDetails.discountAmount > 0 }"
                         class="text-h6 font-weight-bold">
-                        {{ taxDetails.baseAmount.toFixed(2) }}€
+                        {{ taxDetails.baseAmount }}€
                       </span>
                     </div>
-                    <div v-if="(taxDetails.discountAmount ?? 0) > 0"
-                      class="d-flex justify-space-between align-center mb-2">
+                    <div v-if="taxDetails.discountAmount > 0" class="d-flex justify-space-between align-center mb-2">
                       <span class="text-body-1 success--text">{{ taxDetails.discountDescription }}</span>
-                      <span class="text-h6 success--text">-{{ (taxDetails.discountAmount ?? 0).toFixed(2) }}€</span>
+                      <span class="text-h6 success--text">-{{ taxDetails.discountAmount }}€</span>
                     </div>
-                    <div v-if="(taxDetails.discountAmount ?? 0) > 0"
-                      class="d-flex justify-space-between align-center mb-2">
+                    <div v-if="taxDetails.discountAmount > 0" class="d-flex justify-space-between align-center mb-2">
                       <span class="text-body-1">{{ t().pricing.htPriceAfterDiscount }}</span>
-                      <span class="text-h6 font-weight-bold">{{ (taxDetails.discountedBaseAmount ??
-                        taxDetails.baseAmount).toFixed(2) }}€</span>
+                      <span class="text-h6 font-weight-bold">{{ taxDetails.discountedBaseAmount }}€</span>
                     </div>
                     <div v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0"
                       class="d-flex justify-space-between align-center mb-2">
                       <span class="text-body-1">{{ t().pricing.vat }} ({{ taxDetails.taxPercentage }}%)</span>
-                      <span class="text-h6">{{ taxDetails.taxAmount.toFixed(2) }}€</span>
+                      <span class="text-h6">{{ taxDetails.taxAmount }}€</span>
                     </div>
                     <v-divider class="my-3"></v-divider>
                     <div class="d-flex justify-space-between align-center">
@@ -102,11 +106,10 @@
                         <div class="text-caption text-medium-emphasis">{{ t().pricing.oneTimePayment }}</div>
                       </div>
                       <div class="text-right">
-                        <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                        }}€</span>
-                        <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
-                          {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
-                            taxDetails.baseAmount * 100) }}%
+                        <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount }}€</span>
+                        <div v-if="taxDetails.discountAmount > 0" class="text-caption success--text">
+                          {{ t().pricing.youSave }} {{ Math.round(taxDetails.discountAmount / taxDetails.baseAmount *
+                            100) }}%
                         </div>
                         <div v-else class="text-caption success--text">{{ t().pricing.saveVsMonthly }}</div>
                       </div>
@@ -127,13 +130,26 @@
             </div>
 
             <v-form @submit.prevent="processPayment">
-              <div class="payment-container mb-6">
+              <div class="credit-card-container mb-6">
                 <div class="payment-section-title d-flex align-center mb-4">
                   <v-icon icon="mdi-credit-card-outline" class="mr-2" color="primary"></v-icon>
                   <h3 class="text-h6 font-weight-bold">{{ t().payment.paymentInformation }}</h3>
                 </div>
 
-                <div class="payment-wrapper">
+                <div class="credit-card-wrapper">
+                  <div class="credit-card-header d-flex justify-space-between align-center mb-4">
+                    <div class="credit-card-chip"></div>
+                    <div class="d-flex">
+                      <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons/flat/visa.svg"
+                        class="credit-card-brand-icon" alt="Visa" />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons/flat/mastercard.svg"
+                        class="credit-card-brand-icon" alt="Mastercard" />
+                      <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons/flat/amex.svg"
+                        class="credit-card-brand-icon" alt="American Express" />
+                    </div>
+                  </div>
+
                   <v-row dense>
                     <v-col cols="12">
                       <v-autocomplete v-model="billingCountry" :items="countries" item-title="name" item-value="code"
@@ -177,15 +193,29 @@
                     </v-col>
                   </v-row>
 
-                  <div class="payment-methods">
-                    <v-btn color="secondary" block class="mt-6" :loading="loading" @click="submitCardPayment"
-                      size="large" elevation="2">
-                      Pay Now
-                      <v-icon end>mdi-credit-card</v-icon>
-                    </v-btn>
-                  </div>
+                  <v-row dense class="mb-4">
+                    <v-col cols="12">
+                      <v-text-field v-model="cardholderName" :label="t().payment.cardholderName.label"
+                        variant="outlined" :placeholder="t().payment.cardholderName.placeholder" required
+                        autofocus></v-text-field>
+                    </v-col>
+                  </v-row>
+
+                  <div ref="cardElement" class="stripe-card-element mb-2"></div>
+                  <div v-if="cardError" class="text-error mb-4 text-body-2">{{ cardError }}</div>
                 </div>
               </div>
+
+              <v-btn block color="primary" type="submit" :loading="loading" min-height="52"
+                class="pay-button text-none font-weight-medium rounded-lg">
+                <v-icon start class="mr-2">mdi-credit-card-check-outline</v-icon>
+                {{ t().payment.payButton }} {{ taxDetails.totalAmount }}€
+                <template v-if="!taxDetails.isVatExempt && taxDetails.taxPercentage > 0">TTC</template>
+                <template v-else>HT</template>
+                <template v-slot:loader>
+                  <v-progress-circular indeterminate></v-progress-circular>
+                </template>
+              </v-btn>
 
               <div class="garanties-section mt-5">
                 <div class="d-flex align-center justify-center mb-2">
@@ -223,56 +253,53 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="showCardDialog" max-width="500">
-      <v-card class="card-dialog">
-        <v-card-title class="d-flex align-center">
-          <v-icon class="mr-2">mdi-credit-card</v-icon>
-          Informations de paiement
-          <v-spacer></v-spacer>
-          <v-btn icon @click="showCardDialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-card-text>
-          <div class="card-details">
-            <div class="card-info">
-              <v-icon color="primary" size="large">mdi-shield-check</v-icon>
-              <div class="text-body-1 mt-2">Paiement sécurisé</div>
-              <div class="text-caption text-medium-emphasis">Vos informations sont cryptées et sécurisées</div>
-            </div>
-            <v-divider class="my-4"></v-divider>
-            <div class="payment-methods">
-              <div class="text-subtitle-1 mb-2">Méthodes de paiement acceptées</div>
-              <div class="d-flex align-center flex-wrap gap-2">
-                <v-icon>mdi-credit-card</v-icon>
-                <v-icon>mdi-credit-card-multiple</v-icon>
-                <v-icon>mdi-bank</v-icon>
-              </div>
-            </div>
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+    <snackBar v-model="showSnackbar" :color="snackbarColor" :text="snackbarText" :timeout="3000" />
   </section>
 </template>
 
 <script setup lang="ts">
-// @ts-ignore
-import { navigateTo } from '#imports';
-// @ts-ignore
-import { loadScript } from '@paypal/paypal-js';
-import { nextTick, onMounted, ref } from 'vue';
+import { loadStripe } from '@stripe/stripe-js';
+import { computed, onMounted, ref } from 'vue';
+import snackBar from '../components/snackbar.vue';
 import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
+// @ts-ignore
+import { definePageMeta, navigateTo, useHead } from '#imports';
 
 const t = useTranslations('checkout');
+
+definePageMeta({
+  layout: 'empty'
+});
+
+useHead({
+  title: computed(() => t().meta.title),
+  meta: [
+    { name: 'author', content: 'Nûr' },
+    { name: 'description', content: computed(() => t().meta.description) },
+    { name: 'keywords', content: computed(() => t().meta.keywords) },
+    { name: 'robots', content: 'nofollow, noindex' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
+    { property: 'og:title', content: computed(() => t().meta.title) },
+    { property: 'og:description', content: computed(() => t().meta.description) },
+    { property: 'og:image', content: '/logo/stackunity-title.png' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://stackunity.tech/checkout' }
+  ]
+})
+
 const userStore = useUserStore();
 
+const cardholderName = ref('');
+const cardElement = ref<HTMLDivElement | null>(null);
+const stripe = ref<any>(null);
+const elements = ref<any>(null);
 const loading = ref(false);
+const cardError = ref('');
 const showSnackbar = ref(false);
-const snackbarColor = ref('success');
+const snackbarColor = ref('');
 const snackbarText = ref('');
-
 const billingCountry = ref('FR');
 const isBusinessCustomer = ref(false);
 const vatNumber = ref('');
@@ -280,103 +307,127 @@ const promoCode = ref('');
 const promoCodeMessage = ref('');
 const promoCodeSuccess = ref(false);
 const selectedPlan = ref('premium');
-const taxDetails = ref<{
-  baseAmount: number;
-  discountAmount?: number;
-  discountDescription?: string;
-  discountedBaseAmount?: number;
-  taxAmount: number;
-  taxPercentage: number;
-  totalAmount: number;
-  isVatExempt?: boolean;
-  vatNumber?: string;
-}>({
-  baseAmount: 249.99,
-  discountAmount: 0,
-  discountDescription: '',
-  discountedBaseAmount: 249.99,
-  taxAmount: 0,
-  taxPercentage: 0,
-  totalAmount: 249.99,
-  isVatExempt: false,
-  vatNumber: ''
-});
 
 const countries = [
-  { name: 'France', code: 'FR' },
-  { name: 'Belgium', code: 'BE' },
-  { name: 'Switzerland', code: 'CH' },
-  { name: 'Luxembourg', code: 'LU' },
-  { name: 'Germany', code: 'DE' },
-  { name: 'Spain', code: 'ES' },
-  { name: 'Italy', code: 'IT' },
-  { name: 'Netherlands', code: 'NL' },
-  { name: 'Portugal', code: 'PT' },
-  { name: 'Austria', code: 'AT' },
-  { name: 'Denmark', code: 'DK' },
-  { name: 'Sweden', code: 'SE' },
-  { name: 'Norway', code: 'NO' },
-  { name: 'Finland', code: 'FI' },
-  { name: 'Poland', code: 'PL' },
-  { name: 'Romania', code: 'RO' },
-  { name: 'Slovakia', code: 'SK' },
-  { name: 'Slovenia', code: 'SI' }
+  { code: 'FR', name: 'France' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'ES', name: 'Spain' },
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'US', name: 'United States' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'BE', name: 'Belgium' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'LU', name: 'Luxembourg' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'PT', name: 'Portugal' },
+  { code: 'AT', name: 'Austria' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'IE', name: 'Ireland' },
+  { code: 'PL', name: 'Poland' },
+  { code: 'CZ', name: 'Czech Republic' },
+  { code: 'GR', name: 'Greece' },
+  { code: 'RO', name: 'Romania' },
+  { code: 'HU', name: 'Hungary' },
+  { code: 'BG', name: 'Bulgaria' },
+  { code: 'HR', name: 'Croatia' },
+  { code: 'SK', name: 'Slovakia' },
+  { code: 'SI', name: 'Slovenia' },
+  { code: 'LT', name: 'Lithuania' },
+  { code: 'LV', name: 'Latvia' },
+  { code: 'EE', name: 'Estonia' },
+  { code: 'CY', name: 'Cyprus' },
+  { code: 'MT', name: 'Malta' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'NZ', name: 'New Zealand' },
+  { code: 'JP', name: 'Japan' },
+  { code: 'KR', name: 'South Korea' },
+  { code: 'SG', name: 'Singapore' },
+  { code: 'IN', name: 'India' },
+  { code: 'BR', name: 'Brazil' },
+  { code: 'MX', name: 'Mexico' },
+  { code: 'ZA', name: 'South Africa' },
+  { code: 'AE', name: 'United Arab Emirates' },
+  { code: 'TR', name: 'Turkey' },
 ];
 
-const features = ref([
-  {
-    icon: 'mdi-rocket-launch',
-    title: t().features.advancedTools.title,
-    description: t().features.advancedTools.description
-  },
-  {
-    icon: 'mdi-chart-box',
-    title: t().features.analytics.title,
-    description: t().features.analytics.description
-  },
-  {
-    icon: 'mdi-shield-check',
-    title: t().features.prioritySupport.title,
-    description: t().features.prioritySupport.description
-  },
-  {
-    icon: 'mdi-update',
-    title: t().features.regularUpdates.title,
-    description: t().features.regularUpdates.description
-  }
-]);
+const taxDetails = ref({
+  baseAmount: 1,
+  taxAmount: 0,
+  totalAmount: 1,
+  taxPercentage: 0,
+  isVatExempt: false,
+  vatNumber: '',
+  discountAmount: 0,
+  discountDescription: '',
+  discountedBaseAmount: 1
+});
 
-const showCardDialog = ref(false);
-const promoCodes = ref<Array<{ code: string; discount: number }>>([]);
-
+const features = computed(() => {
+  return [
+    {
+      icon: 'mdi-rocket-launch',
+      title: t().features.advancedTools.title,
+      description: t().features.advancedTools.description
+    },
+    {
+      icon: 'mdi-chart-box',
+      title: t().features.analytics.title,
+      description: t().features.analytics.description
+    },
+    {
+      icon: 'mdi-shield-check',
+      title: t().features.prioritySupport.title,
+      description: t().features.prioritySupport.description
+    },
+    {
+      icon: 'mdi-update',
+      title: t().features.regularUpdates.title,
+      description: t().features.regularUpdates.description
+    }
+  ];
+});
 
 const updateTaxRates = async () => {
+  if (loading.value) return;
   loading.value = true;
+
   try {
-    const response = await fetch('/api/payment/calculate-tax', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        baseAmount: 249.99,
-        billingCountry: billingCountry.value,
-        isBusinessCustomer: isBusinessCustomer.value,
-        vatNumber: vatNumber.value
-      })
-    });
+    const response = await userStore.checkout(
+      cardholderName.value,
+      billingCountry.value,
+      isBusinessCustomer.value,
+      vatNumber.value,
+      promoCode.value,
+      selectedPlan.value
+    );
 
-    const data = await response.json();
+    if (response.success && response.taxDetails) {
+      taxDetails.value = {
+        baseAmount: response.taxDetails.baseAmount,
+        taxAmount: response.taxDetails.taxAmount,
+        totalAmount: response.taxDetails.totalAmount,
+        taxPercentage: response.taxDetails.taxPercentage,
+        isVatExempt: response.taxDetails.isVatExempt || false,
+        vatNumber: response.taxDetails.vatNumber || '',
+        discountAmount: response.taxDetails.discountAmount || 0,
+        discountDescription: response.taxDetails.discountDescription || '',
+        discountedBaseAmount: response.taxDetails.discountedBaseAmount || response.taxDetails.baseAmount
+      };
 
-    if (data.success && data.taxDetails) {
-      taxDetails.value = data.taxDetails;
-      promoCodes.value = data.promoCode || [];
-    }
-    else {
-      console.error('Failed to update tax rates:', data.error);
+      if (taxDetails.value.isVatExempt) {
+        showSnackbar.value = true;
+        snackbarColor.value = 'success';
+        snackbarText.value = t().messages.vatReverseCharge;
+      }
+    } else {
+      console.error('Failed to update tax rates:', response.error);
       showSnackbar.value = true;
       snackbarColor.value = 'error';
-      snackbarText.value = data.error || t().messages.taxCalculationError;
+      snackbarText.value = response.error || t().messages.taxCalculationError;
     }
   } catch (error) {
     console.error('Error updating tax rates:', error);
@@ -388,63 +439,205 @@ const updateTaxRates = async () => {
   }
 };
 
-const applyPromoCode = () => {
-  const promo = promoCodes.value.find(p => p.code.toUpperCase() === promoCode.value.toUpperCase());
-  if (!promo) {
-    promoCodeMessage.value = t().payment.promoCode.error;
-    promoCodeSuccess.value = false;
-    return;
-  }
-
-  if (taxDetails.value.discountAmount) {
-    promoCodeMessage.value = 'A promo code is already applied';
-    promoCodeSuccess.value = false;
-    return;
-  }
-
-  const discountAmount = taxDetails.value.baseAmount * promo.discount;
-
-  const round = (n: number) => Math.round(n * 100) / 100;
-
-  taxDetails.value = {
-    ...taxDetails.value,
-    discountAmount: round(discountAmount),
-    discountDescription: `${promo.discount * 100}% reduction applied`,
-    discountedBaseAmount: round(taxDetails.value.baseAmount - discountAmount),
-    taxAmount: round((taxDetails.value.baseAmount - discountAmount) * (taxDetails.value.taxPercentage / 100)),
-    totalAmount: round((taxDetails.value.baseAmount - discountAmount) * (1 + taxDetails.value.taxPercentage / 100))
-  };
-
-
-  promoCodeMessage.value = `Code promo applied : ${promo.code}`;
-  promoCodeSuccess.value = true;
-};
-
-
-const processPayment = async (event: any) => {
-  loading.value = true;
+onMounted(async () => {
   try {
-    const response = await userStore.processPayPalPayment(event.orderID);
+    if (window.location.protocol !== 'https:' && process.env.NODE_ENV === 'production') {
+      console.warn('Warning: Stripe requires HTTPS for live integrations. Please use a secure connection.');
+    }
 
-    if (response.success) {
+    try {
+      const userLanguage = navigator.language || navigator.languages[0] || 'en-US';
+      const countryCode = userLanguage.split('-')[1] || userLanguage.split('_')[1] || 'FR';
+
+      const foundCountry = countries.find(country => country.code === countryCode);
+      if (foundCountry) {
+        billingCountry.value = foundCountry.code;
+      }
+    } catch (localeError) {
+      console.warn('Could not determine user location:', localeError);
+    }
+
+    await updateTaxRates();
+
+    const stripePublicKey = 'pk_live_51R8HEwL1ZwIYz99yojPngr0GNrqqLUQtGy1cYUWXVvjgeP7zKXCRwpKkCktaIQFOEskA3XnNbVuX60l2UwLP0SHv00o1udOfFO';
+
+    if (!stripePublicKey) {
+      console.error('Stripe public key is missing');
       showSnackbar.value = true;
-      snackbarColor.value = 'success';
-      snackbarText.value = t().messages.paymentSuccess;
+      snackbarColor.value = 'error';
+      snackbarText.value = t().messages.paymentConfigError;
+      return;
+    }
 
-      setTimeout(() => {
-        navigateTo('/login');
-      }, 2000);
-    } else if (response.error && response.error.name === 'UNPROCESSABLE_ENTITY') {
-      const payerActionLink = response.error.links?.find(link => link.rel === 'payer-action')?.href;
-      if (payerActionLink) {
-        localStorage.setItem('pendingOrderId', event.orderID);
-        window.location.href = payerActionLink;
-        return;
-      } else {
-        throw new Error('Lien de vérification 3D Secure non trouvé');
+    stripe.value = await loadStripe(stripePublicKey);
+
+    if (stripe.value) {
+      elements.value = stripe.value.elements();
+
+      const cardElementInstance = elements.value.create('card', {
+        style: {
+          base: {
+            color: '#e0e0e0',
+            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+            fontSmoothing: 'antialiased',
+            fontSize: '16px',
+            fontWeight: '400',
+            lineHeight: '1.5',
+            '::placeholder': {
+              color: '#a0a0a0',
+            },
+          },
+          invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a',
+          },
+        },
+      });
+
+      cardElementInstance.mount(cardElement.value!);
+      cardElementInstance.on('change', (event: any) => {
+        if (event.error) {
+          cardError.value = event.error.message;
+        } else {
+          cardError.value = '';
+        }
+      });
+    } else {
+      console.error('Failed to initialize Stripe');
+      showSnackbar.value = true;
+      snackbarColor.value = 'error';
+      snackbarText.value = t().messages.stripeUnavailable;
+    }
+  } catch (error) {
+    console.error('Error initializing payment form:', error);
+    showSnackbar.value = true;
+    snackbarColor.value = 'error';
+    snackbarText.value = t().messages.initError;
+  }
+});
+
+const processPayment = async () => {
+  if (!stripe.value || !elements.value) {
+    showSnackbar.value = true;
+    snackbarColor.value = 'error';
+    snackbarText.value = t().messages.stripeConnectionError;
+    return;
+  }
+
+  loading.value = true;
+
+  try {
+    const result = await userStore.checkout(
+      cardholderName.value,
+      billingCountry.value,
+      isBusinessCustomer.value,
+      vatNumber.value,
+      promoCode.value,
+      selectedPlan.value
+    );
+
+    if (!result.success || !result.clientSecret) {
+      throw new Error(result.error || 'Error creating payment intent');
+    }
+
+    if (result.taxDetails) {
+      taxDetails.value = {
+        baseAmount: result.taxDetails.baseAmount,
+        taxAmount: result.taxDetails.taxAmount,
+        totalAmount: result.taxDetails.totalAmount,
+        taxPercentage: result.taxDetails.taxPercentage,
+        isVatExempt: result.taxDetails.isVatExempt || false,
+        vatNumber: result.taxDetails.vatNumber || '',
+        discountAmount: result.taxDetails.discountAmount || 0,
+        discountDescription: result.taxDetails.discountDescription || '',
+        discountedBaseAmount: result.taxDetails.discountedBaseAmount || result.taxDetails.baseAmount
+      };
+    }
+
+    const { error, paymentIntent } = await stripe.value.confirmCardPayment(
+      result.clientSecret,
+      {
+        payment_method: {
+          card: elements.value.getElement('card'),
+          billing_details: {
+            name: cardholderName.value,
+            address: {
+              country: billingCountry.value
+            }
+          }
+        }
+      }
+    );
+
+    if (error) {
+      throw new Error(error.message || 'Error confirming payment');
+    }
+
+    if (paymentIntent.status === 'succeeded') {
+      try {
+        const updateResult = await userStore.updatePremiumStatus();
+        if (!updateResult.success) {
+          console.error('Erreur lors de la mise à jour du statut premium:', updateResult.error);
+          showSnackbar.value = true;
+          snackbarColor.value = 'warning';
+          snackbarText.value = t().messages.premiumUpdateError;
+        }
+
+        if (updateResult.requireRelogin) {
+          showSnackbar.value = true;
+          snackbarColor.value = 'info';
+          snackbarText.value = t().messages.reloginRequired;
+
+          setTimeout(() => {
+            userStore.logout();
+            window.location.href = '/login';
+          }, 2000);
+          return;
+        }
+
+        await userStore.loadData();
+
+        const response = await userStore.generateInvoice(
+          paymentIntent.id,
+          cardholderName.value,
+          userStore.user?.email || '',
+          vatNumber.value,
+          billingCountry.value,
+          isBusinessCustomer.value,
+          taxDetails.value.baseAmount,
+          taxDetails.value.taxAmount,
+          taxDetails.value.totalAmount,
+          taxDetails.value.taxPercentage,
+          taxDetails.value.isVatExempt,
+          selectedPlan.value
+        );
+
+        if (response.success) {
+          showSnackbar.value = true;
+          snackbarColor.value = 'success';
+          snackbarText.value = t().messages.paymentSuccess;
+        } else {
+          showSnackbar.value = true;
+          snackbarColor.value = 'warning';
+          snackbarText.value = t().messages.invoiceError;
+          console.error('Invoice generation error:', response.error);
+        }
+
+        setTimeout(() => {
+          navigateTo('/login');
+        }, 2000);
+      } catch (error) {
+        console.error('Error in post-payment process:', error);
+        showSnackbar.value = true;
+        snackbarColor.value = 'warning';
+        snackbarText.value = t().messages.postPaymentError;
+
+        setTimeout(() => {
+          navigateTo('/login');
+        }, 2000);
       }
     } else {
-      throw new Error(response.error || 'Payment failed');
+      throw new Error('Payment was not completed');
     }
   } catch (error) {
     console.error('Error processing payment:', error);
@@ -460,136 +653,60 @@ const isInEU = (countryCode: string): boolean => {
   return countryCode.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/) !== null;
 };
 
-onMounted(async () => {
-  try {
-    const userLanguage = navigator.language || navigator.languages[0] || 'en-US';
-    const countryCode = userLanguage.split('-')[1] || userLanguage.split('_')[1] || 'FR';
+const customFilter = (item: any, query: string, itemText: string) => {
+  const text = itemText.toString().toLowerCase();
+  const queryText = query.toString().toLowerCase();
 
-    const foundCountry = countries.find(country => country.code === countryCode);
-    if (foundCountry) {
-      billingCountry.value = foundCountry.code;
-    }
+  return text.indexOf(queryText) > -1;
+};
 
-    await updateTaxRates();
-    await nextTick();
-
-    const paypalContainer = document.getElementById('paypal-button-container');
-    if (!paypalContainer) return;
-
-    const paypal = await loadScript({
-      clientId: 'ASBf0oA-RI0eCLn5QRyo9GHGLe9KgfdfrkAHT6SAqk0m8AWPzVvIUbbxazk4fjZfGEiWVnucG9dtHMLf',
-      currency: "EUR",
-      intent: "capture",
-      components: "buttons",
-      disableFunding: "card,paylater,credit"
-    });
-
-    if (paypal) {
-      paypal.Buttons({
-        style: {
-          layout: 'vertical',
-          color: 'gold',
-          shape: 'rect',
-          label: 'pay'
-        },
-        createOrder: async () => {
-          const response = await userStore.createPayPalOrder(
-            userStore.user?.username || '',
-            billingCountry.value,
-            isBusinessCustomer.value,
-            vatNumber.value,
-            promoCode.value,
-            selectedPlan.value
-          );
-
-          if (response.success && response.orderId) {
-            return response.orderId;
-          } else {
-            throw new Error(response.error || 'Failed to create order');
-          }
-        },
-        onApprove: async (data: any) => {
-          try {
-            const response = await userStore.processPayPalPayment(data.orderID);
-            if (response.success) {
-              showSnackbar.value = true;
-              snackbarColor.value = 'success';
-              snackbarText.value = t().messages.paymentSuccess;
-              setTimeout(() => {
-                navigateTo('/login');
-              }, 2000);
-            } else {
-              throw new Error(response.error || 'Payment failed');
-            }
-          } catch (error) {
-            console.error('Error processing payment:', error);
-            showSnackbar.value = true;
-            snackbarColor.value = 'error';
-            snackbarText.value = error instanceof Error ? error.message : 'An error occurred while processing payment.';
-          }
-        },
-        onError: (err: any) => {
-          console.error('PayPal Error:', err);
-          showSnackbar.value = true;
-          snackbarColor.value = 'error';
-          snackbarText.value = 'An error occurred with PayPal. Please try again.';
-        }
-      }).render('#paypal-button-container');
-    }
-  } catch (error) {
-    console.error('Error initializing payment form:', error);
-    showSnackbar.value = true;
-    snackbarColor.value = 'error';
-    snackbarText.value = t().messages.initError;
+const applyPromoCode = async () => {
+  if (!promoCode.value) {
+    promoCodeMessage.value = '';
+    return;
   }
-});
 
-const submitCardPayment = async () => {
   try {
     loading.value = true;
-    const response = await fetch('/api/payment/process-card', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${userStore.token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        amount: taxDetails.value.totalAmount,
-        currency: 'EUR',
-        description: `StackUnity Premium - ${selectedPlan.value}`,
-        username: userStore.user?.username,
-        promoCode: promoCode.value || null
-      })
-    });
+    const response = await userStore.checkout(
+      cardholderName.value,
+      billingCountry.value,
+      isBusinessCustomer.value,
+      vatNumber.value,
+      promoCode.value,
+      selectedPlan.value
+    );
 
-    const data = await response.json();
+    if (response.success && response.taxDetails) {
+      taxDetails.value = {
+        baseAmount: response.taxDetails.baseAmount,
+        taxAmount: response.taxDetails.taxAmount,
+        totalAmount: response.taxDetails.totalAmount,
+        taxPercentage: response.taxDetails.taxPercentage,
+        isVatExempt: response.taxDetails.isVatExempt || false,
+        vatNumber: response.taxDetails.vatNumber || '',
+        discountAmount: response.taxDetails.discountAmount || 0,
+        discountDescription: response.taxDetails.discountDescription || '',
+        discountedBaseAmount: response.taxDetails.discountedBaseAmount || response.taxDetails.baseAmount
+      };
 
-    if (data.success) {
-      if (data.orderId) {
-        localStorage.setItem('pendingOrderId', data.orderId);
+      if (response.taxDetails.discountAmount && response.taxDetails.discountAmount > 0) {
+        promoCodeSuccess.value = true;
+        promoCodeMessage.value = t().payment.promoCode.success + ` : ${response.taxDetails.discountDescription}`;
+      } else {
+        promoCodeSuccess.value = false;
+        promoCodeMessage.value = t().payment.promoCode.error;
       }
-      if (data.redirectUrl) {
-        console.log('🔁 Redirection 3DS:', data.redirectUrl);
-        window.location.href = data.redirectUrl;
-        return;
-      }
-      snackbarColor.value = 'success';
-      snackbarText.value = 'Commande créée, aucun 3DS requis.';
-      showSnackbar.value = true;
-      loading.value = false;
-      setTimeout(() => {
-        navigateTo('/login');
-      }, 2000);
     } else {
-      throw new Error(data.error || 'Échec de création de commande');
+      promoCodeSuccess.value = false;
+      promoCodeMessage.value = response.error || t().payment.promoCode.error;
     }
-
-
-  } catch (error: any) {
-    console.error('Erreur lors du paiement:', error);
-    snackbarColor.value = 'error';
-    snackbarText.value = error.message || 'Échec du paiement';
-    showSnackbar.value = true;
+  } catch (error) {
+    console.error('Error applying promo code:', error);
+    promoCodeSuccess.value = false;
+    promoCodeMessage.value = t().payment.promoCode.error;
+  } finally {
+    loading.value = false;
   }
 };
 </script>
@@ -649,61 +766,70 @@ const submitCardPayment = async () => {
   border: 0;
 }
 
-.payment-container {
-  background: #1e1e2f;
-  border-radius: 8px;
+.credit-card-container {
+  position: relative;
+}
+
+.credit-card-wrapper {
+  position: relative;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 0;
+  background: linear-gradient(135deg, rgba(40, 40, 40, 0.8), rgba(30, 30, 30, 0.6));
+  border-radius: 12px;
+  border: 1px solid rgba(187, 134, 252, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
-.payment-wrapper {
-  background: #232323;
-  border-radius: 8px;
+.credit-card-wrapper:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.credit-card-chip {
+  width: 40px;
+  height: 30px;
+  background: linear-gradient(45deg, #deb887, #ffd700);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.credit-card-chip::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  background: linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.2) 25%,
+      rgba(255, 255, 255, 0.2) 50%, transparent 50%,
+      transparent 75%, rgba(255, 255, 255, 0.2) 75%);
+  background-size: 10px 10px;
+}
+
+.credit-card-brand-icon {
+  width: 36px;
+  height: 24px;
+  margin-left: 8px;
+  object-fit: contain;
+}
+
+.stripe-card-element {
   padding: 16px;
-  margin-bottom: 0;
+  border: 1px solid rgba(187, 134, 252, 0.3);
+  border-radius: 6px;
+  background-color: rgba(30, 30, 30, 0.8) !important;
+  transition: all 0.3s ease;
 }
 
-#paypal-button-container {
-  min-height: auto;
-  padding: 0;
-  margin: 0;
-  border-radius: 8px;
+.stripe-card-element:hover {
+  border-color: rgba(187, 134, 252, 0.7);
 }
 
-:deep(.paypal-button) {
-  background-color: transparent !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-:deep(.paypal-button-text) {
-  color: #000 !important;
-}
-
-:deep(.paypal-button-container) {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-:deep(.paypal-button-row) {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-:deep(.paypal-button-logo) {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-:deep(.paypal-button-card) {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-:deep(.paypal-button-card-details) {
-  margin: 0 !important;
-  padding: 0 !important;
+@media (max-width: 959px) {
+  .right-panel-checkout {
+    padding: 2rem 1rem;
+  }
 }
 
 .price-card {
@@ -878,150 +1004,5 @@ const submitCardPayment = async () => {
 
 .pay-button {
   animation: pulse 2s infinite;
-}
-
-.card-dialog {
-  background: #1e1e2f !important;
-  color: #e0e0e0 !important;
-}
-
-.card-dialog :deep(.v-card-title) {
-  color: #e0e0e0 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 16px;
-}
-
-.card-dialog :deep(.v-card-text) {
-  padding: 24px;
-}
-
-.card-details {
-  text-align: center;
-}
-
-.card-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px;
-}
-
-.payment-methods {
-  text-align: center;
-}
-
-.gap-2 {
-  gap: 8px;
-}
-
-#paypal-button-container {
-  min-height: auto;
-  padding: 0;
-  margin: 0;
-}
-
-:deep(.paypal-button) {
-  background-color: transparent !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-:deep(.paypal-button-text) {
-  color: #000 !important;
-}
-
-.card_container {
-  background: #1e1e2f;
-  border-radius: 16px;
-  padding: 32px;
-  margin-bottom: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
-
-.card_container:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-}
-
-.card_container :deep(.v-field) {
-  background: #232323 !important;
-  border-radius: 8px !important;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.card_container :deep(.v-field:hover) {
-  border-color: rgba(var(--v-theme-primary), 0.5) !important;
-}
-
-.card_container :deep(.v-field--focused) {
-  border-color: rgb(var(--v-theme-primary)) !important;
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.1) !important;
-}
-
-.card_container :deep(.v-field__input) {
-  color: #ffffff !important;
-  font-size: 16px !important;
-  padding: 12px 16px !important;
-}
-
-.card_container :deep(.v-label) {
-  color: rgba(255, 255, 255, 0.7) !important;
-  font-size: 14px !important;
-  font-weight: 500;
-}
-
-.card_container :deep(.v-field--error) {
-  border-color: #ff5252 !important;
-}
-
-.billing-address {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 32px;
-  margin-top: 32px;
-}
-
-.card_container :deep(.v-btn) {
-  background: rgb(var(--v-theme-secondary));
-  color: white !important;
-  border-radius: 8px;
-  height: 48px;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-secondary), 0.3);
-}
-
-.card_container :deep(.v-btn:hover) {
-  background: rgb(var(--v-theme-secondary)) !important;
-  opacity: 0.9;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(var(--v-theme-secondary), 0.4);
-}
-
-.card_container :deep(.v-btn:active) {
-  transform: translateY(1px);
-}
-
-.card_container :deep(.v-btn--disabled) {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: rgba(255, 255, 255, 0.5) !important;
-  box-shadow: none !important;
-}
-
-.payment-section-title {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.payment-section-title h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: rgb(var(--v-theme-primary));
 }
 </style>

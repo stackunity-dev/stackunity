@@ -107,7 +107,7 @@ export default {
       placeholder: "卡上的姓名"
     },
     payButton: "支付",
-    securePayment: "通过PayPal安全支付",
+    securePayment: "通过Stripe安全支付",
     refundGuarantee: "30天退款保证"
   },
   messages: {

@@ -107,7 +107,7 @@ export default {
       placeholder: "Name on card"
     },
     payButton: "Pay",
-    securePayment: "Secure payment via PayPal",
+    securePayment: "Secure payment via Stripe",
     refundGuarantee: "30-day refund guarantee"
   },
   messages: {
