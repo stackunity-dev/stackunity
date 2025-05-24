@@ -15,23 +15,18 @@ export default defineEventHandler(async (event) => {
   try {
     const userId = getUserId(event);
     if (!userId) {
-      console.warn('🔒 Utilisateur non authentifié');
       return { success: false, error: 'Non autorisé' };
     }
-    console.log(`🔐 Utilisateur ID: ${userId}`);
 
     const body = await readBody(event);
-    console.log('📥 Corps reçu:', JSON.stringify(body, null, 2));
 
     const {
       amount, currency,
       description, username
     } = body;
 
-    console.log(`🔎 Recherche utilisateur dans la base: ${username}`);
     const [userRows] = await pool.query<RowDataPacket[]>('SELECT * FROM users WHERE username = ?', [username]);
     if (!userRows || userRows.length === 0) {
-      console.warn(`👤 Utilisateur "${username}" non trouvé`);
       return { success: false, error: 'Utilisateur non trouvé' };
     }
 
@@ -68,7 +63,7 @@ export default defineEventHandler(async (event) => {
 
     await pool.query(
       'INSERT INTO paypal_tokens (token, order_id, user_id, expires_at) VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))',
-      [orderId, orderId, userId]
+      [token, orderId, userId]
     );
 
     return {

@@ -1,5 +1,5 @@
-export const ACCESS_TOKEN_EXPIRY_DEFAULT = '12h';
-export const ACCESS_TOKEN_EXPIRY_REMEMBER = '48h';
+export const ACCESS_TOKEN_EXPIRY_DEFAULT = '24h';
+export const ACCESS_TOKEN_EXPIRY_REMEMBER = '72h';
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "secret";
 
 export const REFRESH_TOKEN_EXPIRY = '30d';
@@ -15,4 +15,4 @@ export const REFRESH_TOKEN_COOKIE_OPTIONS = {
 };
 
 export const AUTO_REFRESH_THRESHOLD = 30 * 60;
-export const SESSION_MAX_AGE = 12 * 60 * 60;
+export const SESSION_MAX_AGE = 24 * 60 * 60;

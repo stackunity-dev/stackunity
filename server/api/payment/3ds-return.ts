@@ -3,9 +3,13 @@ import { defineEventHandler, getQuery } from 'h3';
 import { RowDataPacket } from 'mysql2';
 import { getPayPalClient } from '../../utils/paypal';
 import { pool } from '../db';
+import { getUserId } from '../../utils/auth-utils';
 
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event);
+  const userId = getUserId(event);
+  if (!userId) {
+    return { success: false, error: 'Utilisateur non authentifié' };
+  }
 
   const { token: orderIdFromUrl } = getQuery(event);
   const [rows] = await pool.query<RowDataPacket[]>('SELECT * FROM paypal_tokens WHERE token = ? AND expires_at > NOW()', [orderIdFromUrl]);
@@ -33,11 +37,40 @@ export default defineEventHandler(async (event) => {
     captureRequest.requestBody({});
     const capture = await paypal.execute(captureRequest);
 
-    console.log('Capture response:', capture);
 
     if (capture.result.status === 'COMPLETED') {
+      const captureDetails = capture.result.purchase_units?.[0]?.payments?.captures?.[0];
+      if (!captureDetails) {
+        return { success: false, error: 'Détails de capture non trouvés' };
+      }
+
+      const [userRows] = await pool.execute<RowDataPacket[]>(
+        'SELECT username, email FROM users WHERE id = ?',
+        [userId]
+      );
+      const username = userRows.length > 0 ? userRows[0].username : 'StackUnity client';
+      const userEmail = userRows.length > 0 ? userRows[0].email : '';
+      const planName = 'StackUnity subscription (lifetime)'; // Remplacer par ta logique
+
+      await pool.query(
+        `INSERT INTO payments 
+          (customer_name, customer_email, paypal_order_id, user_id, amount, currency, status, plan_name, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+        [
+          username,
+          userEmail,
+          orderId,
+          userId,
+          parseFloat(captureDetails.amount.value),
+          captureDetails.amount.currency_code,
+          capture.result.status,
+          planName
+        ]
+      );
+
       return { success: true, message: 'Paiement capturé avec succès après 3DS' };
-    } else {
+    }
+    else {
       return { success: false, error: `Capture échouée : ${capture.result.status}` };
     }
   } catch (error: any) {

@@ -95,14 +95,6 @@ export const pool = mysql.createPool({
                 'resend = new Resend(process.env.RESEND_API_KEY as string || "your_api_key_here")');
       return sanitizedContent;
     }
-  },
-  {
-    path: 'server/api/payment-webhook/index.ts',
-    sanitize: (content) => {
-      return content
-        .replace(/const\s+stripe\s*=\s*new\s*Stripe\(.*?\)(\s*),\s*\{/g, 
-                'const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string || "sk_test_example"$1, {');
-    }
   }
 ];
 

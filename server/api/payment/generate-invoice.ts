@@ -2,28 +2,23 @@ import { defineEventHandler, readBody } from 'h3';
 import { RowDataPacket } from 'mysql2/promise';
 import PDFDocument from 'pdfkit';
 import { Resend } from 'resend';
+import { getUserId } from '../../utils/auth-utils';
 import { pool } from '../db';
 
 interface InvoiceData {
   paymentId: string;
   customerName: string;
   customerEmail: string;
-  vatNumber?: string;
-  country: string;
-  isBusinessCustomer: boolean;
   baseAmount: number;
-  taxAmount: number;
-  totalAmount: number;
-  taxPercentage: number;
-  isVatExempt: boolean;
+  currency: string;
+  status: string;
   selectedPlan: string;
   date: string;
 }
 
 export default defineEventHandler(async (event) => {
   try {
-    const user = event.context.user;
-    let userId = user?.userId;
+    const userId = getUserId(event);
 
     const body = await readBody(event);
     let invoiceData: InvoiceData = body;
@@ -37,7 +32,7 @@ export default defineEventHandler(async (event) => {
 
         if (rows.length > 0) {
           if (!invoiceData.customerName || invoiceData.customerName.trim() === '') {
-            invoiceData.customerName = rows[0].username || 'Client StackUnity';
+            invoiceData.customerName = rows[0].username || 'StackUnity client';
           }
 
           if (!invoiceData.customerEmail || invoiceData.customerEmail.trim() === '') {
@@ -107,15 +102,11 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
       doc.text('86000 Poitiers, France');
       doc.text('Email: support@stackunity.tech');
       doc.text('SIRET: 93872035600014 ');
-      doc.text('TVA Intracommunautaire: FR44938720356');
+      doc.text('VAT Intracommunautaire: FR44938720356');
       doc.moveDown(2);
 
       doc.fontSize(12).font('Helvetica-Bold').text('Factured to:', { align: 'left' });
       doc.fontSize(10).font('Helvetica').text(invoiceData.customerName);
-      if (invoiceData.isBusinessCustomer && invoiceData.vatNumber) {
-        doc.text(`TVA: ${invoiceData.vatNumber}`);
-      }
-      doc.text(`Pays: ${getCountryName(invoiceData.country)}`);
       doc.text(`Email: ${invoiceData.customerEmail}`);
       doc.moveDown(2);
 
@@ -127,8 +118,8 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
 
       doc.fontSize(12).font('Helvetica-Bold');
       const tableTop = doc.y;
-      const tableHeaders = ['Description', 'Price HT', 'VAT', 'Total'];
-      const tableWidths = [250, 100, 100, 100];
+      const tableHeaders = ['Description', 'Amount'];
+      const tableWidths = [350, 150];
       const tableX = 50;
       let currentY = tableTop;
 
@@ -144,29 +135,12 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
       currentY += 10;
 
       doc.font('Helvetica');
-      doc.text(`${invoiceData.selectedPlan} StackUnity subscription (lifetime)`, tableX, currentY, {
+      doc.text(`${invoiceData.selectedPlan} StackUnity subscription`, tableX, currentY, {
         width: tableWidths[0],
         align: 'left'
       });
-      doc.text(`${invoiceData.baseAmount.toFixed(2)}€`, tableX + tableWidths[0], currentY, {
+      doc.text(`${invoiceData.baseAmount.toFixed(2)} ${invoiceData.currency}`, tableX + tableWidths[0], currentY, {
         width: tableWidths[1],
-        align: 'left'
-      });
-
-      if (invoiceData.isVatExempt) {
-        doc.text('Exempted', tableX + tableWidths[0] + tableWidths[1], currentY, {
-          width: tableWidths[2],
-          align: 'left'
-        });
-      } else {
-        doc.text(`${invoiceData.taxAmount.toFixed(2)}€ (${invoiceData.taxPercentage}%)`, tableX + tableWidths[0] + tableWidths[1], currentY, {
-          width: tableWidths[2],
-          align: 'left'
-        });
-      }
-
-      doc.text(`${invoiceData.totalAmount.toFixed(2)}€`, tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, {
-        width: tableWidths[3],
         align: 'left'
       });
 
@@ -175,50 +149,14 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
       currentY += 10;
 
       doc.font('Helvetica-Bold');
-      doc.text('Total HT:', tableX + tableWidths[0], currentY, {
-        width: tableWidths[1] + tableWidths[2],
-        align: 'right'
-      });
-      doc.text(`${invoiceData.baseAmount.toFixed(2)}€`, tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, {
-        width: tableWidths[3],
-        align: 'left'
-      });
-      currentY += 20;
-
-      if (!invoiceData.isVatExempt) {
-        doc.text(`TVA (${invoiceData.taxPercentage}%):`, tableX + tableWidths[0], currentY, {
-          width: tableWidths[1] + tableWidths[2],
-          align: 'right'
-        });
-        doc.text(`${invoiceData.taxAmount.toFixed(2)}€`, tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, {
-          width: tableWidths[3],
-          align: 'left'
-        });
-        currentY += 20;
-      }
-
       doc.text('Total:', tableX + tableWidths[0], currentY, {
-        width: tableWidths[1] + tableWidths[2],
+        width: tableWidths[1],
         align: 'right'
       });
-      doc.text(`${invoiceData.totalAmount.toFixed(2)}€`, tableX + tableWidths[0] + tableWidths[1] + tableWidths[2], currentY, {
-        width: tableWidths[3],
+      doc.text(`${invoiceData.baseAmount.toFixed(2)} ${invoiceData.currency}`, tableX + tableWidths[0], currentY, {
+        width: tableWidths[1],
         align: 'left'
       });
-      currentY += 40;
-
-      doc.fontSize(10).font('Helvetica');
-      if (invoiceData.isVatExempt && invoiceData.isBusinessCustomer) {
-        doc.text('VAT not applicable, Art. 283-2 du CGI - Autoliquidation of VAT', { align: 'center' });
-      } else if (!isInEU(invoiceData.country)) {
-        doc.text('Exportation outside the EU - VAT not applicable', { align: 'center' });
-      }
-
-      doc.moveDown(2);
-      doc.fontSize(8).text('StackUnity SAS - Capital social: 1 000€ - SIRET: 123 456 789 00012 - RCS Paris - TVA Intracommunautaire: FR12345678900', { align: 'center' });
-      doc.text('Payment made by credit card via Stripe', { align: 'center' });
-      doc.moveDown();
-      doc.text(`Facture générée le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, { align: 'center' });
 
       doc.end();
     } catch (error) {
@@ -229,72 +167,39 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
 
 async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Promise<boolean | { success: boolean, emailId?: string }> {
   try {
-    const resendApiKey = process.env.RESEND_API_KEY;
-    if (!resendApiKey) {
-      console.error('Resend API key missing');
-      return { success: false };
-    }
-
-    const resend = new Resend(resendApiKey);
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'StackUnity <factures@stackunity.tech>',
+      from: 'StackUnity <support@stackunity.tech>',
       to: invoiceData.customerEmail,
-      subject: 'Your StackUnity invoice',
+      subject: `Your StackUnity Invoice - ${invoiceData.selectedPlan}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://stackunity.tech/logo/stackunity-title.png" alt="StackUnity Logo" style="max-width: 200px;" />
-          </div>
-          
-          <h2 style="color: #333;">Thank you for your purchase!</h2>
-          
-          <p>Hello ${invoiceData.customerName},</p>
-          
-          <p>Thank you for your purchase of the lifetime Premium StackUnity subscription. You will find attached your invoice.</p>
-          
-          <div style="background-color: #f5f5f5; border-radius: 5px; padding: 15px; margin: 20px 0;">
-            <p><strong>Montant total:</strong> ${invoiceData.totalAmount.toFixed(2)}€ ${!invoiceData.isVatExempt && invoiceData.taxPercentage > 0 ? 'TTC' : 'HT'}</p>
-            <p><strong>Date:</strong> ${new Date().toLocaleDateString('fr-FR')}</p>
-          </div>
-          
-          <p>You can now enjoy all the premium features of StackUnity:</p>
-          <ul>
-            <li>Database Designer</li>
-            <li>SEO Audit</li>
-            <li>Robots & Schema</li>
-            <li>Premium Components</li>
-            <li>Semantic and ARIA analysis</li>
-          </ul>
-          
-          <p>If you have any questions regarding your invoice or your subscription, please contact our support team at <a href="mailto:support@stackunity.tech">support@stackunity.tech</a>.</p>
-          
-          <p>Best regards,<br />The StackUnity team</p>
-          
-          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #777; text-align: center;">
-            <p>StackUnity SAS - 86000 Poitiers, France</p>
-            <p>SIRET: 93872035600014 - TVA Intracommunautaire: FR44938720356</p>
-          </div>
-        </div>
+        <h1>Thank you for your purchase!</h1>
+        <p>Please find attached your invoice for your ${invoiceData.selectedPlan} subscription.</p>
+        <p>Amount: ${invoiceData.baseAmount.toFixed(2)} ${invoiceData.currency}</p>
+        <p>Payment Status: ${invoiceData.status}</p>
+        <p>If you have any questions, please don't hesitate to contact us.</p>
       `,
       attachments: [
         {
-          filename: `facture-stackunity-${new Date().toISOString().split('T')[0]}.pdf`,
-          content: pdfBuffer.toString('base64')
+          filename: `invoice-${invoiceData.paymentId}.pdf`,
+          content: pdfBuffer
         }
       ]
     });
 
     if (error) {
-      console.error('Erreur Resend:', error);
-      return { success: false };
+      console.error('Error sending email:', error);
+      return false;
     }
 
-    console.log('Email envoyé avec Resend, ID:', data?.id);
-    return { success: true, emailId: data?.id };
+    return {
+      success: true,
+      emailId: data?.id
+    };
   } catch (error) {
-    console.error('Erreur lors de l\'envoi de l\'email:', error);
-    return { success: false };
+    console.error('Error in sendInvoiceEmail:', error);
+    return false;
   }
 }
 
