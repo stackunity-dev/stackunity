@@ -355,15 +355,15 @@ const countries = [
 ];
 
 const taxDetails = ref({
-  baseAmount: 1,
+  baseAmount: 300,
   taxAmount: 0,
-  totalAmount: 1,
+  totalAmount: 300,
   taxPercentage: 0,
   isVatExempt: false,
   vatNumber: '',
   discountAmount: 0,
   discountDescription: '',
-  discountedBaseAmount: 1
+  discountedBaseAmount: 300
 });
 
 const features = computed(() => {

@@ -2,6 +2,7 @@ import { defineEventHandler, readBody } from 'h3';
 import { RowDataPacket } from 'mysql2/promise';
 import PDFDocument from 'pdfkit';
 import { Resend } from 'resend';
+import { EmailService } from '../../utils/EmailService';
 import { pool } from '../db';
 
 interface InvoiceData {
@@ -237,61 +238,20 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
 
     const resend = new Resend(resendApiKey);
 
-    const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'StackUnity <factures@stackunity.tech>',
-      to: invoiceData.customerEmail,
-      subject: 'Your StackUnity invoice',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://stackunity.tech/logo/stackunity-title.png" alt="StackUnity Logo" style="max-width: 200px;" />
-          </div>
-          
-          <h2 style="color: #333;">Thank you for your purchase!</h2>
-          
-          <p>Hello ${invoiceData.customerName},</p>
-          
-          <p>Thank you for your purchase of the lifetime Premium StackUnity subscription. You will find attached your invoice.</p>
-          
-          <div style="background-color: #f5f5f5; border-radius: 5px; padding: 15px; margin: 20px 0;">
-            <p><strong>Montant total:</strong> ${invoiceData.totalAmount.toFixed(2)}€ ${!invoiceData.isVatExempt && invoiceData.taxPercentage > 0 ? 'TTC' : 'HT'}</p>
-            <p><strong>Date:</strong> ${new Date().toLocaleDateString('fr-FR')}</p>
-          </div>
-          
-          <p>You can now enjoy all the premium features of StackUnity:</p>
-          <ul>
-            <li>Database Designer</li>
-            <li>SEO Audit</li>
-            <li>Robots & Schema</li>
-            <li>Premium Components</li>
-            <li>Semantic and ARIA analysis</li>
-          </ul>
-          
-          <p>If you have any questions regarding your invoice or your subscription, please contact our support team at <a href="mailto:support@stackunity.tech">support@stackunity.tech</a>.</p>
-          
-          <p>Best regards,<br />The StackUnity team</p>
-          
-          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #777; text-align: center;">
-            <p>StackUnity SAS - 86000 Poitiers, France</p>
-            <p>SIRET: 93872035600014 - TVA Intracommunautaire: FR44938720356</p>
-          </div>
-        </div>
-      `,
-      attachments: [
-        {
-          filename: `facture-stackunity-${new Date().toISOString().split('T')[0]}.pdf`,
-          content: pdfBuffer.toString('base64')
-        }
-      ]
-    });
+    const emailResult = await EmailService.sendPaymentConfirmationEmail(
+      invoiceData.customerEmail,
+      invoiceData.customerName,
+      invoiceData.selectedPlan,
+      invoiceData.totalAmount.toString(),
+      { filename: 'invoice.pdf', content: pdfBuffer }
+    );
 
-    if (error) {
-      console.error('Erreur Resend:', error);
+    if (emailResult.error) {
+      console.error('Erreur Resend:', emailResult.error);
       return { success: false };
     }
 
-    console.log('Email envoyé avec Resend, ID:', data?.id);
-    return { success: true, emailId: data?.id };
+    return { success: true };
   } catch (error) {
     console.error('Erreur lors de l\'envoi de l\'email:', error);
     return { success: false };
