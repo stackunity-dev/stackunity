@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                        }}€</span>
+                          }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -370,32 +370,6 @@ const cardDetails = ref({
   expireYear: ''
 });
 
-const isFormValid = computed(() => {
-  return cardDetails.value.name &&
-    cardDetails.value.number &&
-    cardDetails.value.cvv &&
-    cardDetails.value.expiry &&
-    billingAddress.value.line1 &&
-    billingAddress.value.adminArea1 &&
-    billingAddress.value.postalCode;
-});
-
-const formatCardNumber = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  let value = input.value.replace(/\D/g, '');
-  value = value.replace(/(\d{4})/g, '$1 ').trim();
-  cardDetails.value.number = value;
-};
-
-const formatExpiryDate = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  let value = input.value.replace(/\D/g, '');
-  if (value.length >= 2) {
-    value = value.slice(0, 2) + '/' + value.slice(2);
-  }
-  cardDetails.value.expiry = value;
-};
-
 const updateTaxRates = async () => {
   loading.value = true;
   try {
@@ -501,38 +475,6 @@ const processPayment = async (event: any) => {
 const isInEU = (countryCode: string): boolean => {
   return countryCode.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/) !== null;
 };
-
-const cardStyle = {
-  layout: 'vertical',
-  style: {
-    input: {
-      fontSize: '16px',
-      fontFamily: 'inherit',
-      color: '#e0e0e0',
-      backgroundColor: '#232323',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      borderRadius: '8px',
-      padding: '12px 16px',
-      transition: 'all 0.3s ease'
-    },
-    '.invalid': {
-      borderColor: '#ff5252',
-      color: '#ff5252'
-    },
-    '.valid': {
-      borderColor: '#4caf50',
-      color: '#4caf50'
-    },
-    ':focus': {
-      borderColor: 'rgb(var(--v-theme-primary))',
-      boxShadow: '0 0 0 2px rgba(var(--v-theme-primary), 0.2)'
-    },
-    '::placeholder': {
-      color: 'rgba(255, 255, 255, 0.5)'
-    }
-  }
-};
-
 const activePaymentMethod = ref('card');
 
 watch(activePaymentMethod, async (newValue) => {
@@ -545,7 +487,7 @@ watch(activePaymentMethod, async (newValue) => {
         currency: "EUR",
         intent: "capture",
         components: "buttons",
-        disableFunding: "card"
+        disableFunding: "card,paylater"
       });
 
       if (paypal) {
@@ -625,7 +567,7 @@ onMounted(async () => {
       currency: "EUR",
       intent: "capture",
       components: "buttons",
-      disableFunding: "card"
+      disableFunding: "card,paylater"
     });
 
     if (paypal) {
