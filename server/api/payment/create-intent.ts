@@ -65,10 +65,10 @@ export default defineEventHandler(async (event) => {
 
         if (promoInfo.type === 'percentage') {
           discountAmount = Math.round(baseAmount * (promoInfo.value / 100));
-          discountDescription = `${promoInfo.value}% de réduction`;
+          discountDescription = `${promoInfo.value}% off`;
         } else if (promoInfo.type === 'fixed') {
           discountAmount = promoInfo.value * 100;
-          discountDescription = `${promoInfo.value}€ de réduction`;
+          discountDescription = `${promoInfo.value}€ off`;
         }
 
         discountAmount = Math.min(discountAmount, baseAmount - 1);
