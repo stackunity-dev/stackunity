@@ -126,7 +126,7 @@ export class EmailTemplates {
         <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
           <h1 style="color: #6200ea; margin-bottom: 20px;">Thank you for your subscription, ${username} !</h1>
           
-          <p style="margin-bottom: 15px; line-height: 1.5;">We confirm that your payment of <strong>${amount}</strong> for the <strong>${planName}</strong> subscription has been received.</p>
+          <p style="margin-bottom: 15px; line-height: 1.5;">We confirm that your payment of <strong>${amount}€</strong> for the <strong>${planName}</strong> subscription has been received.</p>
           
           <div style="background-color: #e8f5e9; border-radius: 8px; padding: 15px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
             <p style="margin: 0; color: #2e7d32;"><strong>Payment status:</strong> Confirmed</p>

@@ -261,7 +261,7 @@
 import { navigateTo } from '#imports';
 // @ts-ignore
 import { loadScript } from '@paypal/paypal-js';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
 
@@ -291,13 +291,13 @@ const taxDetails = ref<{
   isVatExempt?: boolean;
   vatNumber?: string;
 }>({
-  baseAmount: 0.99,
+  baseAmount: 249.99,
   discountAmount: 0,
   discountDescription: '',
-  discountedBaseAmount: 0.99,
+  discountedBaseAmount: 249.99,
   taxAmount: 0,
   taxPercentage: 0,
-  totalAmount: 0.99,
+  totalAmount: 249.99,
   isVatExempt: false,
   vatNumber: ''
 });
@@ -359,7 +359,7 @@ const updateTaxRates = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        baseAmount: 0.99,
+        baseAmount: 249.99,
         billingCountry: billingCountry.value,
         isBusinessCustomer: isBusinessCustomer.value,
         vatNumber: vatNumber.value

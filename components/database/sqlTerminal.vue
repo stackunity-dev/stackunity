@@ -276,7 +276,7 @@
             </div>
           </div>
         </div>
-        <div v-if="sqlError" class="sql-error-container pa-4">
+        <div v-if="sqlError && hasIntentionalError" class="sql-error-container pa-4">
           <v-alert type="error" variant="tonal" class="mb-0">
             <template v-slot:prepend>
               <v-icon>mdi-alert-circle</v-icon>
@@ -628,6 +628,9 @@ const sqlError = ref<{
   sqlState?: string;
 } | null>(null);
 
+// Ajout d'une variable pour suivre si une erreur a été intentionnellement déclenchée
+const hasIntentionalError = ref(false);
+
 const queryCounter = ref(1);
 
 const realTimeTableAnalysis = ref(localStorage.getItem('realTimeTableAnalysis') === 'true');
@@ -716,6 +719,7 @@ const executeCommand = async () => {
   isExecuting.value = true;
   lastExecutedQuery.value = sqlCommand.value;
   sqlError.value = null;
+  hasIntentionalError.value = false;
 
   try {
     const command = sqlCommand.value.toLowerCase().trim();
@@ -771,6 +775,7 @@ const executeCommand = async () => {
 
   } catch (error: any) {
     console.error('Query execution error:', error);
+    hasIntentionalError.value = true;
     sqlError.value = {
       message: error.response?.data?.message || error.message || 'Une erreur est survenue lors de l\'exécution de la requête',
       code: error.response?.data?.code,

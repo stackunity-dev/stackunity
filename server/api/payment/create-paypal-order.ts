@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
     let discountAmount = 0;
     let discountDescription = '';
 
-    const baseAmount = 0.99;
+    const baseAmount = 249.99;
     const discountedBaseAmount = baseAmount - discountAmount;
 
     const taxDetails = await calculateTax(
