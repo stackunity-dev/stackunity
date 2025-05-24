@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
     }
 
 
-    let baseAmount = 100;
+    let baseAmount = 24999;
 
     let discountAmount = 0;
     let discountDescription = '';
