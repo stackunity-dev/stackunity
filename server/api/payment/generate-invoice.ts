@@ -1,7 +1,6 @@
 import { defineEventHandler, readBody } from 'h3';
 import { RowDataPacket } from 'mysql2/promise';
 import PDFDocument from 'pdfkit';
-import { Resend } from 'resend';
 import { EmailService } from '../../utils/EmailService';
 import { pool } from '../db';
 
@@ -230,13 +229,7 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
 
 async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Promise<boolean | { success: boolean, emailId?: string }> {
   try {
-    const resendApiKey = process.env.RESEND_API_KEY;
-    if (!resendApiKey) {
-      console.error('Resend API key missing');
-      return { success: false };
-    }
-
-    const resend = new Resend(resendApiKey);
+    console.log('Tentative d\'envoi d\'email à:', invoiceData.customerEmail);
 
     const emailResult = await EmailService.sendPaymentConfirmationEmail(
       invoiceData.customerEmail,
@@ -245,6 +238,8 @@ async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Pr
       invoiceData.totalAmount.toString(),
       { filename: 'invoice.pdf', content: pdfBuffer }
     );
+
+    console.log('Résultat de l\'envoi d\'email:', emailResult);
 
     if (emailResult.error) {
       console.error('Erreur Resend:', emailResult.error);
