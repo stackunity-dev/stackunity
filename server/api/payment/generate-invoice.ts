@@ -16,6 +16,16 @@ export interface InvoiceData {
 
 export async function generateInvoice(invoiceData: InvoiceData, userId?: string) {
   try {
+    if (typeof invoiceData.baseAmount !== 'number' || isNaN(invoiceData.baseAmount)) {
+      invoiceData.baseAmount = Number(invoiceData.baseAmount);
+      if (isNaN(invoiceData.baseAmount)) {
+        return {
+          success: false,
+          error: 'Invalid amount value'
+        };
+      }
+    }
+
     if (userId) {
       try {
         const [rows] = await pool.execute<RowDataPacket[]>(

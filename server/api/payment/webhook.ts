@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
       paymentId: payment.id,
       customerName: payment.customer_name || username,
       customerEmail: payment.customer_email || userEmail,
-      baseAmount: payment.amount,
+      baseAmount: Number(payment.amount),
       currency: payment.currency,
       status: payment.status,
       selectedPlan: payment.plan_name,
