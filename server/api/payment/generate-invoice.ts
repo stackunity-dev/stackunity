@@ -1,11 +1,9 @@
-import { defineEventHandler, readBody } from 'h3';
 import { RowDataPacket } from 'mysql2/promise';
 import PDFDocument from 'pdfkit';
-import { Resend } from 'resend';
-import { getUserId } from '../../utils/auth-utils';
+import { EmailService } from '../../utils/EmailService';
 import { pool } from '../db';
 
-interface InvoiceData {
+export interface InvoiceData {
   paymentId: string;
   customerName: string;
   customerEmail: string;
@@ -16,13 +14,8 @@ interface InvoiceData {
   date: string;
 }
 
-export default defineEventHandler(async (event) => {
+export async function generateInvoice(invoiceData: InvoiceData, userId?: string) {
   try {
-    const userId = getUserId(event);
-
-    const body = await readBody(event);
-    let invoiceData: InvoiceData = body;
-
     if (userId) {
       try {
         const [rows] = await pool.execute<RowDataPacket[]>(
@@ -52,17 +45,9 @@ export default defineEventHandler(async (event) => {
     }
 
     const pdfBuffer = await generateInvoicePDF(invoiceData);
-
     const emailResult = await sendInvoiceEmail(invoiceData, pdfBuffer);
 
-    if (typeof emailResult === 'boolean') {
-      if (!emailResult) {
-        return {
-          success: false,
-          error: 'Error while sending the invoice email'
-        };
-      }
-    } else if (!emailResult.success) {
+    if (!emailResult.success) {
       return {
         success: false,
         error: 'Error while sending the invoice email'
@@ -73,7 +58,6 @@ export default defineEventHandler(async (event) => {
       success: true,
       message: 'Invoice generated and sent successfully',
       emailSent: true,
-      emailId: typeof emailResult === 'object' ? emailResult.emailId : undefined,
       emailRecipient: invoiceData.customerEmail
     };
   } catch (error) {
@@ -83,9 +67,9 @@ export default defineEventHandler(async (event) => {
       error: error instanceof Error ? error.message : 'Error while generating the invoice'
     };
   }
-});
+}
 
-async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
+export async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
       const chunks: Buffer[] = [];
@@ -165,78 +149,22 @@ async function generateInvoicePDF(invoiceData: InvoiceData): Promise<Buffer> {
   });
 }
 
-async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Promise<boolean | { success: boolean, emailId?: string }> {
+export async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buffer): Promise<{ success: boolean }> {
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
-
-    const { data, error } = await resend.emails.send({
-      from: 'StackUnity <support@stackunity.tech>',
-      to: invoiceData.customerEmail,
-      subject: `Your StackUnity Invoice - ${invoiceData.selectedPlan}`,
-      html: `
-        <h1>Thank you for your purchase!</h1>
-        <p>Please find attached your invoice for your ${invoiceData.selectedPlan} subscription.</p>
-        <p>Amount: ${invoiceData.baseAmount.toFixed(2)} ${invoiceData.currency}</p>
-        <p>Payment Status: ${invoiceData.status}</p>
-        <p>If you have any questions, please don't hesitate to contact us.</p>
-      `,
-      attachments: [
-        {
-          filename: `invoice-${invoiceData.paymentId}.pdf`,
-          content: pdfBuffer
-        }
-      ]
-    });
-
-    if (error) {
-      console.error('Error sending email:', error);
-      return false;
-    }
+    await EmailService.sendPaymentConfirmationEmail(
+      invoiceData.customerEmail,
+      invoiceData.customerName,
+      invoiceData.selectedPlan,
+      invoiceData.baseAmount.toFixed(2)
+    );
 
     return {
-      success: true,
-      emailId: data?.id
+      success: true
     };
   } catch (error) {
     console.error('Error in sendInvoiceEmail:', error);
-    return false;
+    return {
+      success: false
+    };
   }
 }
-
-function getCountryName(countryCode: string): string {
-  const countries: Record<string, string> = {
-    'FR': 'France',
-    'DE': 'Allemagne',
-    'IT': 'Italie',
-    'ES': 'Espagne',
-    'GB': 'Royaume-Uni',
-    'US': 'États-Unis',
-    'CA': 'Canada',
-    'BE': 'Belgique',
-    'CH': 'Suisse',
-    'LU': 'Luxembourg',
-    'NL': 'Pays-Bas',
-    'PT': 'Portugal',
-    'AT': 'Autriche',
-    'DK': 'Danemark',
-    'SE': 'Suède',
-    'NO': 'Norvège',
-    'FI': 'Finlande',
-    'PL': 'Pologne',
-    'RO': 'Roumanie',
-    'SK': 'Slovaquie',
-    'SI': 'Slovénie',
-    'CZ': 'République tchèque',
-    'HU': 'Hongrie',
-    'IE': 'Irlande',
-    'LV': 'Lettonie',
-    'LT': 'Lituanie',
-    'MT': 'Malte'
-  };
-
-  return countries[countryCode] || countryCode;
-}
-
-function isInEU(countryCode: string): boolean {
-  return countryCode.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE|CH|GB|US|CA|BE|CH|LU|NL|PT|AT|DK|SE|NO|FI|PL|RO|SK|SI)$/) !== null;
-} 
