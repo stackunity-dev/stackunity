@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
 
     await pool.query(
       'INSERT INTO paypal_tokens (token, order_id, user_id, expires_at) VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))',
-      [token, orderId, userId]
+      [orderId, orderId, userId]
     );
 
     return {

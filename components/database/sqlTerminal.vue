@@ -12,8 +12,11 @@
             {{ t().sqlTerminal.exportDatabase }}
           </v-tooltip>
         </v-btn>
-        <v-btn icon @click="toggleConnectionPanel" :color="showConnections ? 'surface' : 'white'" variant="text">
-          <v-icon>{{ showConnections ? 'mdi-close' : 'mdi-database-cog' }}</v-icon>
+        <v-btn icon @click="showNewConnectionDialog = true" color="white" variant="text" class="add-connection-btn">
+          <v-icon>mdi-plus</v-icon>
+          <v-tooltip activator="parent" location="bottom">
+            {{ t().sqlTerminal.new }}
+          </v-tooltip>
         </v-btn>
       </v-card-title>
 
@@ -27,92 +30,92 @@
         </div>
       </v-slide-y-transition>
 
-      <v-slide-x-transition>
-        <div v-if="showConnections" class="pa-4">
-          <div class="d-flex align-center">
-            <v-spacer></v-spacer>
-            <v-btn color="secondary" size="small" prepend-icon="mdi-plus" @click="showNewConnectionDialog = true">
-              {{ t().sqlTerminal.new }}
-            </v-btn>
+      <v-card-text class="pa-0">
+        <div v-if="!isConnected" class="connection-grid pa-6">
+          <div class="connection-header mb-6">
+            <h2 class="text-h4 font-weight-bold mb-2">Database connections</h2>
+            <p class="text-subtitle-1 text-grey">Select a connection to start working</p>
           </div>
 
-          <v-row v-if="savedConnections.length > 0">
-            <v-col v-for="connection in savedConnections" :key="connection.id" cols="12" sm="6" md="4">
+          <v-row>
+            <v-col v-for="connection in savedConnections" :key="connection.id" cols="12" sm="6" md="4" lg="4">
               <v-card
                 :class="['connection-card', selectedConnection?.id === connection.id ? 'selected-connection' : '']"
                 elevation="3" @click="selectConnection(connection)" hover>
                 <div class="connection-card-header" :class="`bg-${getConnectionTypeColor(connection.type)}`">
-                  <v-avatar color="white" size="42" variant="tonal" class="connection-avatar">
-                    <v-icon size="small" color="secondary">{{ getConnectionTypeIcon(connection.type) }}</v-icon>
-                  </v-avatar>
-                  <div class="d-flex justify-space-between align-center w-100">
-                    <h4 class="text-h6 text-white ml-2">{{ connection.name }}</h4>
-                    <div>
-                      <v-tooltip location="top">
-                        <template v-slot:activator="{ props }">
-                          <v-btn icon size="small" color="white" variant="text" v-bind="props"
-                            @click.stop="editConnection(connection)">
-                            <v-icon size="small">mdi-pencil</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>{{ t().sqlTerminal.edit }}</span>
-                      </v-tooltip>
-                      <v-tooltip location="top">
-                        <template v-slot:activator="{ props }">
-                          <v-btn icon size="small" color="white" variant="text" v-bind="props"
-                            @click.stop="confirmDeleteConnection(connection)">
-                            <v-icon size="small">mdi-delete</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>{{ t().sqlTerminal.delete }}</span>
-                      </v-tooltip>
-                    </div>
+                  <div class="connection-type-indicator">
+                    <v-icon size="large" color="white">{{ getConnectionTypeIcon(connection.type) }}</v-icon>
+                  </div>
+                  <div class="connection-title">
+                    <h3 class="text-h6 text-white font-weight-bold">{{ connection.name }}</h3>
+                    <span class="text-caption text-white">{{ connection.type.toUpperCase() }}</span>
+                  </div>
+                  <div class="connection-actions">
+                    <v-tooltip location="top">
+                      <template v-slot:activator="{ props }">
+                        <v-btn icon size="small" color="white" variant="text" v-bind="props"
+                          @click.stop="editConnection(connection)">
+                          <v-icon size="small">mdi-pencil</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>{{ t().sqlTerminal.edit }}</span>
+                    </v-tooltip>
+                    <v-tooltip location="top">
+                      <template v-slot:activator="{ props }">
+                        <v-btn icon size="small" color="white" variant="text" v-bind="props"
+                          @click.stop="confirmDeleteConnection(connection)">
+                          <v-icon size="small">mdi-delete</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>{{ t().sqlTerminal.delete }}</span>
+                    </v-tooltip>
                   </div>
                 </div>
                 <v-card-text class="connection-card-content">
                   <div class="connection-details">
                     <div class="connection-detail-item">
                       <v-icon size="small" color="primary" class="mr-2">mdi-server</v-icon>
-                      <span class="text-body-2">{{ connection.host }}:{{ connection.port }}</span>
+                      <div class="detail-content">
+                        <span class="text-caption text-grey">Server</span>
+                        <span class="text-body-2">{{ connection.host }}:{{ connection.port }}</span>
+                      </div>
                     </div>
                     <div class="connection-detail-item">
                       <v-icon size="small" color="primary" class="mr-2">mdi-database</v-icon>
-                      <span class="text-body-2">{{ connection.database || connection.name }}</span>
+                      <div class="detail-content">
+                        <span class="text-caption text-grey">Database</span>
+                        <span class="text-body-2">{{ connection.database || connection.name }}</span>
+                      </div>
                     </div>
                     <div class="connection-detail-item">
                       <v-icon size="small" color="primary" class="mr-2">mdi-account</v-icon>
-                      <span class="text-body-2">{{ connection.username }}</span>
+                      <div class="detail-content">
+                        <span class="text-caption text-grey">Username</span>
+                        <span class="text-body-2">{{ connection.username }}</span>
+                      </div>
                     </div>
                   </div>
-                  <v-divider class="my-2"></v-divider>
+                  <v-divider class="my-3"></v-divider>
                   <div class="d-flex justify-space-between align-center">
                     <v-chip :color="selectedConnection?.id === connection.id ? 'success' : 'secondary'" size="small"
-                      :variant="selectedConnection?.id === connection.id ? 'flat' : 'tonal'">
-                      {{ selectedConnection?.id === connection.id ? t().sqlTerminal.connected : 'Disponible' }}
+                      :variant="selectedConnection?.id === connection.id ? 'flat' : 'tonal'" class="status-chip">
+                      <v-icon size="x-small" start>{{ selectedConnection?.id === connection.id ? 'mdi-check-circle' :
+                        'mdi-circle' }}</v-icon>
+                      {{ selectedConnection?.id === connection.id ? t().sqlTerminal.connected : 'Available' }}
                     </v-chip>
-                    <v-btn color="secondary" size="small" variant="tonal" @click.stop="selectConnection(connection)">
+                    <v-btn color="secondary" size="small" variant="tonal" @click.stop="selectConnection(connection)"
+                      class="connect-btn">
                       <v-icon start size="small">mdi-connection</v-icon>
-                      {{ selectedConnection?.id === connection.id ? 'Reconnexion' : 'Connexion' }}
+                      {{ selectedConnection?.id === connection.id ? 'Reconnect' : 'Connect' }}
                     </v-btn>
                   </div>
                 </v-card-text>
               </v-card>
             </v-col>
           </v-row>
-          <v-alert v-else type="info" variant="tonal" class="mt-3">
+          <v-alert v-if="savedConnections.length === 0" type="info" variant="tonal" class="mt-3">
             {{ t().sqlTerminal.empty }}
           </v-alert>
-        </div>
-      </v-slide-x-transition>
-
-      <v-card-text class="pa-0">
-        <div v-if="!isConnected" class="connection-status pa-6 text-center">
-          <v-icon size="64" color="grey-lighten-1" class="mb-3">mdi-database-off</v-icon>
-          <h3 class="text-h6 mb-2">{{ t().sqlTerminal.notConnected }}</h3>
-          <p class="text-body-2 mb-4">{{ t().sqlTerminal.connectPrompt }}</p>
-          <v-btn color="secondary" prepend-icon="mdi-database-cog" @click="showConnections = true">
-            {{ t().sqlTerminal.connect }}
-          </v-btn>
         </div>
         <div v-else class="terminal-content">
           <div class="terminal-layout">
@@ -1980,11 +1983,14 @@ const extensions = [
 }
 
 .connection-card {
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   height: 100%;
+  background: #232323;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 200px;
 }
 
 .connection-card:hover {
@@ -2360,5 +2366,110 @@ const extensions = [
 
 :deep(.v-alert__prepend) {
   color: #ff5252;
+}
+
+.connection-grid {
+  background: #1e1e2f;
+  min-height: 400px;
+}
+
+.connection-header {
+  text-align: center;
+  color: #e0e0e0;
+}
+
+.connection-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100%;
+  background: #232323;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 200px;
+}
+
+.connection-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.connection-card.selected-connection {
+  border: 2px solid #4CAF50;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+}
+
+.connection-card-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  min-height: 100px;
+  background: linear-gradient(45deg, var(--v-primary-base), var(--v-secondary-base));
+}
+
+.connection-type-indicator {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  margin-right: 16px;
+}
+
+.connection-title {
+  flex-grow: 1;
+}
+
+.connection-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.connection-card:hover .connection-actions {
+  opacity: 1;
+}
+
+.connection-card-content {
+  padding: 20px !important;
+  background: #232323;
+}
+
+.connection-details {
+  margin-bottom: 16px;
+}
+
+.connection-detail-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  color: #e0e0e0;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  margin-left: 8px;
+}
+
+.status-chip {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.connect-btn {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: none;
+}
+
+.add-connection-btn {
+  transition: transform 0.3s ease;
+}
+
+.add-connection-btn:hover {
+  transform: rotate(90deg);
 }
 </style>
