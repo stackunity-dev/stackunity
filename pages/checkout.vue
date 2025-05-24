@@ -587,12 +587,6 @@ const processPayment = async () => {
           showSnackbar.value = true;
           snackbarColor.value = 'info';
           snackbarText.value = t().messages.reloginRequired;
-
-          setTimeout(() => {
-            userStore.logout();
-            window.location.href = '/login';
-          }, 2000);
-          return;
         }
 
         await userStore.loadData();
