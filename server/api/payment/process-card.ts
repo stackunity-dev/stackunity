@@ -53,7 +53,10 @@ export default defineEventHandler(async (event) => {
       }],
       application_context: {
         return_url: `https://stackunity.tech/payment/3ds-return`,
-        cancel_url: `https://stackunity.tech/payment/cancel`
+        cancel_url: `https://stackunity.tech/payment/cancel`,
+        payment_method: {
+          payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
+        }
       }
     });
 

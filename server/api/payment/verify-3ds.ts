@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     await pool.query(
-      'UPDATE users SET is_premium = 1, premium_since = NOW() WHERE id = ?',
+      'UPDATE users SET isPremium = 1, isBuying = 1 WHERE id = ?',
       [userId]
     );
   } catch (error) {

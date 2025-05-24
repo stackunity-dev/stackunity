@@ -51,6 +51,7 @@ const userStore = useUserStore();
 
 const generateInvoice = async () => {
   generatingInvoice.value = true;
+  console.log(route.query.paymentId);
   try {
     const response = await fetch('/api/payment/webhook', {
       method: 'POST',
@@ -65,6 +66,7 @@ const generateInvoice = async () => {
     });
 
     if (!response.ok) {
+      console.error('Error generating invoice:', response);
       throw new Error('Error generating invoice');
     }
 

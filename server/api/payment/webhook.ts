@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
+  console.log(body);
   const { type, paymentId } = body;
 
   if (!type || !paymentId || type !== 'generate_invoice') {
@@ -19,7 +20,6 @@ export default defineEventHandler(async (event) => {
     return { success: false, error: 'Invalid request' };
   }
 
-  // On récupère juste les colonnes existantes dans la table payments
   const [paymentRows] = await pool.execute<RowDataPacket[]>(
     `SELECT id, customer_name, customer_email, amount, currency, status, plan_name 
      FROM payments WHERE id = ?`,

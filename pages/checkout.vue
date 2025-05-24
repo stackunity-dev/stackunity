@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                          }}€</span>
+                        }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -180,7 +180,6 @@
                   <div class="payment-methods">
                     <v-btn color="secondary" block class="mt-6" :loading="loading" @click="submitCardPayment"
                       size="large" elevation="2">
-
                       Pay Now
                       <v-icon end>mdi-credit-card</v-icon>
                     </v-btn>
