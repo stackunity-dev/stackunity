@@ -11,19 +11,10 @@ export default defineEventHandler(async (event) => {
     return { success: false, error: 'Unauthorized' };
   }
 
-  const body = await readBody(event);
-  console.log(body);
-  const { type, paymentId } = body;
-
-  if (!type || !paymentId || type !== 'generate_invoice') {
-    event.node.res.statusCode = 400;
-    return { success: false, error: 'Invalid request' };
-  }
-
   const [paymentRows] = await pool.execute<RowDataPacket[]>(
     `SELECT id, customer_name, customer_email, amount, currency, status, plan_name 
-     FROM payments WHERE id = ?`,
-    [paymentId]
+     FROM payments WHERE user_id = ?`,
+    [userId]
   );
   if (paymentRows.length === 0) {
     event.node.res.statusCode = 404;
@@ -42,7 +33,6 @@ export default defineEventHandler(async (event) => {
     paymentId: payment.id,
     customerName: payment.customer_name || username,
     customerEmail: payment.customer_email || userEmail,
-    // on enlève les données non stockées
     baseAmount: payment.amount,
     currency: payment.currency,
     status: payment.status,

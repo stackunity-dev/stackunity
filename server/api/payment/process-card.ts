@@ -22,7 +22,8 @@ export default defineEventHandler(async (event) => {
 
     const {
       amount, currency,
-      description, username
+      description, username,
+      promoCode
     } = body;
 
     const [userRows] = await pool.query<RowDataPacket[]>('SELECT * FROM users WHERE username = ?', [username]);

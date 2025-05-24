@@ -35,15 +35,46 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../../stores/userStore';
 
 const router = useRouter();
 const countdown = ref(5);
+const generatingInvoice = ref(false);
+const userStore = useUserStore();
+
+const generateInvoice = async () => {
+  generatingInvoice.value = true;
+  try {
+    const response = await fetch('/api/payment/webhook', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${userStore.token}`
+      },
+      body: JSON.stringify({
+        type: 'generate_invoice'
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Error generating invoice:', response);
+      throw new Error('Error generating invoice');
+    }
+
+    const data = await response.json();
+  } catch (error) {
+    console.error('Error generating invoice:', error);
+  } finally {
+    generatingInvoice.value = false;
+  }
+};
 
 const goToLogin = () => {
   router.push('/login');
 };
 
 onMounted(async () => {
+  await generateInvoice();
   const timer = setInterval(() => {
     countdown.value--;
     if (countdown.value <= 0) {

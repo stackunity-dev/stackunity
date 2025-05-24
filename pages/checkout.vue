@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                          }}€</span>
+                        }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -348,25 +348,6 @@ const features = ref([
 
 const showCardDialog = ref(false);
 
-const billingAddress = ref({
-  line1: '',
-  line2: '',
-  adminArea1: '',
-  adminArea2: '',
-  countryCode: 'FR',
-  postalCode: ''
-});
-
-const cardDetails = ref({
-  name: '',
-  number: '',
-  cvv: '',
-  expiry: '',
-  type: '',
-  expireMonth: '',
-  expireYear: ''
-});
-
 const updateTaxRates = async () => {
   loading.value = true;
   try {
@@ -472,37 +453,6 @@ const processPayment = async (event: any) => {
 const isInEU = (countryCode: string): boolean => {
   return countryCode.match(/^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE)$/) !== null;
 };
-const activePaymentMethod = ref('card');
-
-const generatingInvoice = ref(false);
-
-const generateInvoice = async (paymentId: string) => {
-  generatingInvoice.value = true;
-  try {
-    const response = await fetch('/api/payment/webhook', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userStore.token}`
-      },
-      body: JSON.stringify({
-        type: 'generate_invoice',
-        paymentId: paymentId
-      })
-    });
-
-    if (!response.ok) {
-      console.error('Error generating invoice:', response);
-      throw new Error('Error generating invoice');
-    }
-
-    const data = await response.json();
-  } catch (error) {
-    console.error('Error generating invoice:', error);
-  } finally {
-    generatingInvoice.value = false;
-  }
-};
 
 onMounted(async () => {
   try {
@@ -556,7 +506,6 @@ onMounted(async () => {
           try {
             const response = await userStore.processPayPalPayment(data.orderID);
             if (response.success) {
-              await generateInvoice(data.orderID);
               showSnackbar.value = true;
               snackbarColor.value = 'success';
               snackbarText.value = t().messages.paymentSuccess;
@@ -599,21 +548,11 @@ const submitCardPayment = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        cardDetails: {
-          name: cardDetails.value.name,
-          number: cardDetails.value.number.replace(/\s/g, ''),
-          cvv: cardDetails.value.cvv,
-          expiry: cardDetails.value.expiry
-        },
-        billingAddress: billingAddress.value,
         amount: taxDetails.value.totalAmount,
         currency: 'EUR',
         description: `StackUnity Premium - ${selectedPlan.value}`,
         username: userStore.user?.username,
-        billingCountry: billingCountry.value,
-        isBusinessCustomer: isBusinessCustomer.value,
-        vatNumber: vatNumber.value,
-        promoCode: promoCode.value
+        promoCode: promoCode.value || null
       })
     });
 
@@ -621,7 +560,6 @@ const submitCardPayment = async () => {
 
     if (data.success) {
       if (data.orderId) {
-        await generateInvoice(data.orderId);
         localStorage.setItem('pendingOrderId', data.orderId);
       }
       if (data.redirectUrl) {
