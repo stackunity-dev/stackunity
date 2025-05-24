@@ -183,9 +183,6 @@
                       Pay Now
                       <v-icon end>mdi-credit-card</v-icon>
                     </v-btn>
-                    <div class="paypal-container">
-                      <div id="paypal-button-container" class="mt-4" style="min-height: 150px;"></div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -477,74 +474,35 @@ const isInEU = (countryCode: string): boolean => {
 };
 const activePaymentMethod = ref('card');
 
-watch(activePaymentMethod, async (newValue) => {
-  if (newValue === 'paypal') {
-    await nextTick();
-    const paypalContainer = document.getElementById('paypal-button-container');
-    if (paypalContainer) {
-      const paypal = await loadScript({
-        clientId: 'ASBf0oA-RI0eCLn5QRyo9GHGLe9KgfdfrkAHT6SAqk0m8AWPzVvIUbbxazk4fjZfGEiWVnucG9dtHMLf',
-        currency: "EUR",
-        intent: "capture",
-        components: "buttons",
-        disableFunding: "card,paylater"
-      });
+const generatingInvoice = ref(false);
 
-      if (paypal) {
-        paypal.Buttons({
-          style: {
-            layout: 'vertical',
-            color: 'gold',
-            shape: 'rect',
-            label: 'pay'
-          },
-          createOrder: async () => {
-            const response = await userStore.createPayPalOrder(
-              userStore.user?.username || '',
-              billingCountry.value,
-              isBusinessCustomer.value,
-              vatNumber.value,
-              promoCode.value,
-              selectedPlan.value
-            );
+const generateInvoice = async (paymentId: string) => {
+  generatingInvoice.value = true;
+  try {
+    const response = await fetch('/api/payment/webhook', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${userStore.token}`
+      },
+      body: JSON.stringify({
+        type: 'generate_invoice',
+        paymentId: paymentId
+      })
+    });
 
-            if (response.success && response.orderId) {
-              return response.orderId;
-            } else {
-              throw new Error(response.error || 'Failed to create order');
-            }
-          },
-          onApprove: async (data: any) => {
-            try {
-              const response = await userStore.processPayPalPayment(data.orderID);
-              if (response.success) {
-                showSnackbar.value = true;
-                snackbarColor.value = 'success';
-                snackbarText.value = t().messages.paymentSuccess;
-                setTimeout(() => {
-                  navigateTo('/login');
-                }, 2000);
-              } else {
-                throw new Error(response.error || 'Payment failed');
-              }
-            } catch (error) {
-              console.error('Error processing payment:', error);
-              showSnackbar.value = true;
-              snackbarColor.value = 'error';
-              snackbarText.value = error instanceof Error ? error.message : 'An error occurred while processing payment.';
-            }
-          },
-          onError: (err: any) => {
-            console.error('PayPal Error:', err);
-            showSnackbar.value = true;
-            snackbarColor.value = 'error';
-            snackbarText.value = 'An error occurred with PayPal. Please try again.';
-          }
-        }).render('#paypal-button-container');
-      }
+    if (!response.ok) {
+      console.error('Error generating invoice:', response);
+      throw new Error('Error generating invoice');
     }
+
+    const data = await response.json();
+  } catch (error) {
+    console.error('Error generating invoice:', error);
+  } finally {
+    generatingInvoice.value = false;
   }
-});
+};
 
 onMounted(async () => {
   try {
@@ -598,6 +556,7 @@ onMounted(async () => {
           try {
             const response = await userStore.processPayPalPayment(data.orderID);
             if (response.success) {
+              await generateInvoice(data.orderID);
               showSnackbar.value = true;
               snackbarColor.value = 'success';
               snackbarText.value = t().messages.paymentSuccess;
@@ -659,10 +618,10 @@ const submitCardPayment = async () => {
     });
 
     const data = await response.json();
-    console.log(data);
 
     if (data.success) {
       if (data.orderId) {
+        await generateInvoice(data.orderId);
         localStorage.setItem('pendingOrderId', data.orderId);
       }
       if (data.redirectUrl) {

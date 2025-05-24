@@ -17,11 +17,7 @@
               Your payment has been processed successfully. An email confirmation has been sent to you.
             </p>
             <v-divider class="mb-6"></v-divider>
-            <div class="d-flex justify-space-between align-center mb-6">
-              <v-btn color="secondary" variant="outlined" prepend-icon="mdi-email" @click="generateInvoice"
-                :loading="sendingEmail" class="mr-4">
-                Resend email
-              </v-btn>
+            <div class="d-flex justify-center align-center mb-6">
               <v-btn color="secondary" prepend-icon="mdi-login" @click="goToLogin">
                 Back to login
               </v-btn>
@@ -38,53 +34,16 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useUserStore } from '../../stores/userStore';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const route = useRoute();
 const countdown = ref(5);
-const sendingEmail = ref(false);
-const generatingInvoice = ref(false);
-
-const userStore = useUserStore();
-
-const generateInvoice = async () => {
-  generatingInvoice.value = true;
-  console.log(route.query.paymentId);
-  try {
-    const response = await fetch('/api/payment/webhook', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userStore.token}`
-      },
-      body: JSON.stringify({
-        type: 'generate_invoice',
-        paymentId: route.query.paymentId,
-      })
-    });
-
-    if (!response.ok) {
-      console.error('Error generating invoice:', response);
-      throw new Error('Error generating invoice');
-    }
-
-    const data = await response.json();
-  } catch (error) {
-    console.error('Error generating invoice:', error);
-  } finally {
-    generatingInvoice.value = false;
-  }
-};
 
 const goToLogin = () => {
   router.push('/login');
 };
 
 onMounted(async () => {
-  await generateInvoice();
-
   const timer = setInterval(() => {
     countdown.value--;
     if (countdown.value <= 0) {
