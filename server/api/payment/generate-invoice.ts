@@ -165,7 +165,11 @@ export async function sendInvoiceEmail(invoiceData: InvoiceData, pdfBuffer: Buff
       invoiceData.customerEmail,
       invoiceData.customerName,
       invoiceData.selectedPlan,
-      invoiceData.baseAmount.toFixed(2)
+      invoiceData.baseAmount.toFixed(2),
+      {
+        filename: `facture-${invoiceData.paymentId}.pdf`,
+        content: pdfBuffer
+      }
     );
 
     return {

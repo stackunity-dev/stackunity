@@ -77,7 +77,7 @@ export class EmailTemplates {
     return `
       <div style="font-family: 'Figtree', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <header style="text-align: center; margin-bottom: 20px;">
-          <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
+          <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
         </header>
         
         <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -120,7 +120,7 @@ export class EmailTemplates {
     return `
       <div style="font-family: 'Figtree', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <header style="text-align: center; margin-bottom: 20px;">
-          <img src="https://stackunity.tech/logo/stackunity-logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
+          <img src="https://stackunity.tech/images/logo.png" alt="StackUnity Logo" style="width: 80px; height: 80px; object-fit: contain;">
         </header>
         
         <main style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">

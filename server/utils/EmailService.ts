@@ -46,13 +46,23 @@ export class EmailService {
     }
   }
 
-  static async sendPaymentConfirmationEmail(email: string, username: string, planName: string, amount: string): Promise<{ success: boolean; error?: string }> {
+  static async sendPaymentConfirmationEmail(
+    email: string,
+    username: string,
+    planName: string,
+    amount: string,
+    attachment?: { filename: string; content: Buffer }
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       const { data, error } = await resend.emails.send({
         from: 'StackUnity <noreply@stackunity.tech>',
         to: email,
-        subject: 'Confirmation de votre abonnement StackUnity',
+        subject: 'Confirmation of your StackUnity subscription',
         html: EmailTemplates.paymentConfirmationEmailTemplate(username, planName, amount, email),
+        attachments: attachment ? [{
+          filename: attachment.filename,
+          content: attachment.content
+        }] : undefined
       });
 
       if (error) {
