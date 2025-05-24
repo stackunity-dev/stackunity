@@ -1202,6 +1202,9 @@ export const useUserStore = defineStore('user', {
       try {
         const response = await $fetch('/api/payment/generate-invoice', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          },
           body: {
             paymentId,
             customerName,
@@ -1209,9 +1212,9 @@ export const useUserStore = defineStore('user', {
             vatNumber,
             country,
             isBusinessCustomer,
-            baseAmount,
-            taxAmount,
-            totalAmount,
+            baseAmount: baseAmount * 100,
+            taxAmount: taxAmount * 100,
+            totalAmount: totalAmount * 100,
             taxPercentage,
             isVatExempt,
             selectedPlan,
