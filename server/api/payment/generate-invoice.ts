@@ -22,10 +22,13 @@ interface InvoiceData {
 
 export default defineEventHandler(async (event) => {
   try {
+    console.log('Début de la génération de facture');
     const user = event.context.user;
     let userId = user?.userId;
+    console.log('User ID:', userId);
 
     const body = await readBody(event);
+    console.log('Données reçues:', body);
     let invoiceData: InvoiceData = body;
 
     if (userId) {
@@ -50,15 +53,20 @@ export default defineEventHandler(async (event) => {
     }
 
     if (!invoiceData.customerEmail || !invoiceData.customerName) {
+      console.error('Données client incomplètes:', invoiceData);
       return {
         success: false,
         error: 'Customer data is incomplete'
       };
     }
 
+    console.log('Génération du PDF...');
     const pdfBuffer = await generateInvoicePDF(invoiceData);
+    console.log('PDF généré avec succès');
 
+    console.log('Envoi de l\'email...');
     const emailResult = await sendInvoiceEmail(invoiceData, pdfBuffer);
+    console.log('Résultat de l\'envoi d\'email:', emailResult);
 
     if (typeof emailResult === 'boolean') {
       if (!emailResult) {
