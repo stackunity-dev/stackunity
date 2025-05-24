@@ -25,9 +25,21 @@ export default defineEventHandler(async (event) => {
       vatNumber
     );
 
+    const promoCode = [
+      {
+        code: 'STACKUNITY10',
+        discount: 0.1
+      },
+      {
+        code: 'STACKUNITY20',
+        discount: 0.2
+      },
+    ]
+
     return {
       success: true,
-      taxDetails
+      taxDetails,
+      promoCode
     };
   } catch (error) {
     console.error('Error calculating tax:', error);

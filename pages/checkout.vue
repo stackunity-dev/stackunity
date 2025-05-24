@@ -103,7 +103,7 @@
                       </div>
                       <div class="text-right">
                         <span class="text-h4 font-weight-bold primary--text">{{ taxDetails.totalAmount.toFixed(2)
-                        }}€</span>
+                          }}€</span>
                         <div v-if="(taxDetails.discountAmount ?? 0) > 0" class="text-caption success--text">
                           {{ t().pricing.youSave }} {{ Math.round((taxDetails.discountAmount ?? 0) /
                             taxDetails.baseAmount * 100) }}%
@@ -347,6 +347,8 @@ const features = ref([
 ]);
 
 const showCardDialog = ref(false);
+const promoCodes = ref<Array<{ code: string; discount: number }>>([]);
+
 
 const updateTaxRates = async () => {
   loading.value = true;
@@ -368,7 +370,9 @@ const updateTaxRates = async () => {
 
     if (data.success && data.taxDetails) {
       taxDetails.value = data.taxDetails;
-    } else {
+      promoCodes.value = data.promoCode || [];
+    }
+    else {
       console.error('Failed to update tax rates:', data.error);
       showSnackbar.value = true;
       snackbarColor.value = 'error';
@@ -384,36 +388,38 @@ const updateTaxRates = async () => {
   }
 };
 
-const applyPromoCode = async () => {
-  if (!promoCode.value) return;
-
-  loading.value = true;
-  try {
-    const response = await userStore.checkout(
-      userStore.user?.username || '',
-      billingCountry.value,
-      isBusinessCustomer.value,
-      vatNumber.value,
-      promoCode.value,
-      selectedPlan.value
-    );
-
-    if (response.success && response.taxDetails) {
-      taxDetails.value = response.taxDetails;
-      promoCodeSuccess.value = true;
-      promoCodeMessage.value = t().payment.promoCode.success;
-    } else {
-      promoCodeSuccess.value = false;
-      promoCodeMessage.value = t().payment.promoCode.error;
-    }
-  } catch (error) {
-    console.error('Error applying promo code:', error);
-    promoCodeSuccess.value = false;
+const applyPromoCode = () => {
+  const promo = promoCodes.value.find(p => p.code.toUpperCase() === promoCode.value.toUpperCase());
+  if (!promo) {
     promoCodeMessage.value = t().payment.promoCode.error;
-  } finally {
-    loading.value = false;
+    promoCodeSuccess.value = false;
+    return;
   }
+
+  if (taxDetails.value.discountAmount) {
+    promoCodeMessage.value = 'A promo code is already applied';
+    promoCodeSuccess.value = false;
+    return;
+  }
+
+  const discountAmount = taxDetails.value.baseAmount * promo.discount;
+
+  const round = (n: number) => Math.round(n * 100) / 100;
+
+  taxDetails.value = {
+    ...taxDetails.value,
+    discountAmount: round(discountAmount),
+    discountDescription: `${promo.discount * 100}% reduction applied`,
+    discountedBaseAmount: round(taxDetails.value.baseAmount - discountAmount),
+    taxAmount: round((taxDetails.value.baseAmount - discountAmount) * (taxDetails.value.taxPercentage / 100)),
+    totalAmount: round((taxDetails.value.baseAmount - discountAmount) * (1 + taxDetails.value.taxPercentage / 100))
+  };
+
+
+  promoCodeMessage.value = `Code promo applied : ${promo.code}`;
+  promoCodeSuccess.value = true;
 };
+
 
 const processPayment = async (event: any) => {
   loading.value = true;
