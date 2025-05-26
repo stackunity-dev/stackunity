@@ -82,15 +82,6 @@ export const sqlLinter = (view: any) => {
       });
     }
 
-    if (upperLine.includes('INSERT INTO') && !upperLine.match(/INSERT INTO\s+[A-Za-z0-9_]+\s+(VALUES|SELECT)/)) {
-      diagnostics.push({
-        from,
-        to,
-        severity: 'error' as const,
-        message: 'Missing VALUES or SELECT after INSERT INTO'
-      });
-    }
-
     if (upperLine.includes('UPDATE') && !upperLine.includes('SET')) {
       diagnostics.push({
         from,

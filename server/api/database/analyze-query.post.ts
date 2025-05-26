@@ -369,7 +369,7 @@ export default defineEventHandler(async (event) => {
       warnings.push({
         icon: 'mdi-sort-variant-remove',
         title: 'No ORDER BY clause',
-        description: 'Results are not ordered. Add ORDER BY for predictable output.'
+        description: 'Results are not ordered. Add ORDER BY for ordered output.'
       });
     }
 

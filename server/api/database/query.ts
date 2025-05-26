@@ -39,9 +39,6 @@ export default defineEventHandler(async (event) => {
 
     validateQuery(query);
 
-    console.log(`Executing ${queryType} query on connection ${connectionId}`);
-    console.log(`Query: ${maskSensitiveData(query)}`);
-
     try {
       const result = await executeQuery(connectionId, query, params || []);
 

@@ -143,20 +143,20 @@ const validateTokenIntegrity = (token: string): boolean => {
 
 const mainCards = [
   {
+    title: 'StackUnity Analytics',
+    description: 'Analyze and optimize your website\'s user experience',
+    icon: 'mdi-chart-box-outline',
+    color: 'primary',
+    route: '/stackunity-analytics',
+    disabled: !userStore.user?.isPremium
+  },
+  {
     title: 'StackQL',
     description: 'Query and analyze your website\'s data with SQL-like syntax',
     icon: 'mdi-console',
-    color: 'primary',
+    color: 'secondary',
     route: '/stackql',
     disabled: false
-  },
-  {
-    title: 'UX Analyzer',
-    description: 'Analyze and optimize your website\'s user experience',
-    icon: 'mdi-chart-box-outline',
-    color: 'secondary',
-    route: '/stackunity-analytics',
-    disabled: !userStore.user?.isPremium
   },
   {
     title: 'StackAudit',

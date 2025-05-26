@@ -645,3 +645,10 @@ html.v-theme--dark .main-content {
     background-position: -200% 0;
   }
 }
+
+.page-column {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

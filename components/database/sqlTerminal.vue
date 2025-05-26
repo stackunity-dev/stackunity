@@ -175,7 +175,7 @@
                       <v-list-item v-for="query in savedQueries" :key="query.id" :title="query.name"
                         :subtitle="query.description" class="mb-2">
                         <template v-slot:prepend>
-                          <v-icon :icon="getQueryIcon(query.query)" color="primary" size="small"></v-icon>
+                          <v-icon :icon="getQueryIcon(query.query_text)" color="primary" size="small"></v-icon>
                         </template>
 
                         <template v-slot:append>
@@ -203,12 +203,16 @@
               <Codemirror v-model="sqlCommand" :extensions="[
                 sql({
                   upperCaseKeywords: true,
-                  dialect: MySQL
+                  dialect: getSQLDialect(selectedConnection?.type)
                 }),
                 lineNumbers(),
                 lintGutter(),
                 linter(sqlLinter),
-                autocompletion({ override: [sqlCompletions] }),
+                autocompletion({
+                  override: [sqlCompletions, customCompletions],
+                  activateOnTyping: true,
+                  defaultKeymap: true
+                }),
                 EditorView.theme({
                   '.cm-tooltip': {
                     backgroundColor: '#1e1e2f',
@@ -231,7 +235,7 @@
                   }
                 }),
                 myTheme,
-                syntaxHighlighting(mySQLHighlightStyle),
+                syntaxHighlighting(getSQLHighlightStyle(selectedConnection?.type)),
                 keymap.of([
                   {
                     key: 'Enter',
@@ -256,12 +260,7 @@
                       return false;
                     }
                   }
-                ]),
-                EditorView.updateListener.of(update => {
-                  if (update.selectionSet) {
-                    handleCursorChange(update.view);
-                  }
-                })
+                ])
               ]" :style="{
                 height: '400px',
                 fontSize: editorFontSize + 'px',
@@ -410,6 +409,7 @@
               :rules="[v => !!v || 'The query is required']"></v-textarea>
             <v-text-field v-model="newQuery.description" label="Description (optional)"
               variant="outlined"></v-text-field>
+            <v-text-field v-model="newQuery.shortcut" label="Shortcut (optional)" variant="outlined"></v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions class="pa-4 pt-0">
@@ -456,7 +456,7 @@
 
 <script setup lang="ts">
 // @ts-ignore
-import { MySQL, sql } from '@codemirror/lang-sql';
+import { MySQL, PostgreSQL, sql } from '@codemirror/lang-sql';
 // @ts-ignore
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorView, keymap, lineNumbers } from '@codemirror/view';
@@ -467,13 +467,13 @@ import json from 'highlight.js/lib/languages/json';
 import 'highlight.js/styles/github-dark.css';
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 // @ts-ignore
-import { autocompletion } from '@codemirror/autocomplete';
+import { autocompletion, CompletionContext } from '@codemirror/autocomplete';
 import { linter, lintGutter } from '@codemirror/lint';
 import { Codemirror } from 'vue-codemirror';
 import { useTranslations } from '../../languages';
 import { useShortcutsStore } from '../../stores/shortcutsStore';
 import { useUserStore } from '../../stores/userStore';
-import { SQL_SNIPPETS, sqlCompletions, updateDatabaseTables } from '../../utils/database/command';
+import { SQL_SNIPPETS, sqlCompletions, updateCurrentDbType, updateDatabaseTables } from '../../utils/database/command';
 import { sqlLinter } from '../../utils/database/error';
 import { DatabaseConnection } from '../../utils/database/types';
 
@@ -507,15 +507,63 @@ const isSavingQuery = ref(false);
 const editingConnection = ref(false);
 const connectionToDelete = ref<DatabaseConnection | null>(null);
 const currentDatabase = ref('');
+const customCompletions = (context: CompletionContext) => {
+  const word = context.matchBefore(/\w*/);
+  if (!word || word.from == word.to) return null;
+  return {
+    from: word.from,
+    options: [
+      { label: 'INT', type: 'keyword', info: 'Integer number' },
+      { label: 'TINYINT', type: 'keyword', info: 'Small integer' },
+      { label: 'SMALLINT', type: 'keyword', info: 'Small integer' },
+      { label: 'MEDIUMINT', type: 'keyword', info: 'Medium integer' },
+      { label: 'BIGINT', type: 'keyword', info: 'Large integer' },
+      { label: 'VARCHAR', type: 'keyword', info: 'Character string' },
+      { label: 'TEXT', type: 'keyword', info: 'Long text' },
+      { label: 'MEDIUMTEXT', type: 'keyword', info: 'Medium text' },
+      { label: 'LONGTEXT', type: 'keyword', info: 'Long text' },
+      { label: 'DATE', type: 'keyword', info: 'Date' },
+      { label: 'DATETIME', type: 'keyword', info: 'Date and time' },
+      { label: 'BOOLEAN', type: 'keyword', info: 'Boolean value' },
+      { label: 'DECIMAL', type: 'keyword', info: 'Decimal number' },
+      { label: 'FLOAT', type: 'keyword', info: 'Floating point number' },
+      { label: 'JSON', type: 'keyword', info: 'JSON data' },
+      { label: 'BLOB', type: 'keyword', info: 'Binary data' },
+    ],
+  };
+};
+
+const getSQLDialect = (connectionType) => {
+  switch (connectionType?.toLowerCase()) {
+    case 'postgres':
+    case 'postgresql':
+      return PostgreSQL;
+    case 'mysql':
+    default:
+      return MySQL;
+  }
+};
+
+const getSQLHighlightStyle = (dbType) => {
+  return HighlightStyle.define([
+    { tag: tags.keyword, color: '#7dd0ff', fontWeight: 'bold' },
+    { tag: tags.string, color: '#f1fa8c' },
+    { tag: tags.number, color: '#ffb300' },
+    { tag: tags.operator, color: '#7dd0ff' },
+    { tag: tags.punctuation, color: '#f8f8f2' },
+    { tag: tags.bracket, color: '#f8f8f2' },
+    { tag: tags.comment, color: '#6272a4', fontStyle: 'italic' },
+    { tag: tags.function(tags.variableName), color: '#50fa7b' },
+    { tag: tags.typeName, color: '#8be9fd' },
+    { tag: tags.className, color: '#ffb86c' }
+  ]);
+};
 
 const sqlCommand = ref('');
 
-
 const connectionTypes = [
   { title: 'MySQL', value: 'mysql' },
-  { title: 'PostgreSQL', value: 'postgres' },
-  { title: 'SQLite', value: 'sqlite' },
-  { title: 'SQL Server', value: 'mssql' }
+  { title: 'PostgreSQL', value: 'postgres' }
 ];
 
 const newConnection = ref<DatabaseConnection>({
@@ -529,8 +577,18 @@ const newConnection = ref<DatabaseConnection>({
   password: ''
 });
 
-const savedQueries = ref<{ id: string; name: string; query: string; description?: string }[]>([]);
-const newQuery = ref<{ id?: string; name: string; query: string; description: string }>({ name: '', query: '', description: '' });
+const savedQueries = ref<{
+  id: string;
+  name: string;
+  query_text: string;
+  description: string;
+  query_shortcut: string;
+  connection_id: string | null;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+}[]>([]);
+const newQuery = ref<{ id?: string; name: string; query: string; description: string; shortcut: string }>({ name: '', query: '', description: '', shortcut: '' });
 const saveQueryForm = ref<any>(null);
 
 const userStore = useUserStore();
@@ -562,40 +620,6 @@ const analysisResults = ref({
 const showJsonDialog = ref(false);
 const jsonDialogContent = ref('');
 const jsonDialogTitle = ref('JSON value');
-
-const mySQLHighlightStyle = HighlightStyle.define([
-  {
-    tag: tags.keyword,
-    color: '#7dd0ff',
-    fontWeight: 'bold'
-  },
-  {
-    tag: tags.string,
-    color: '#8ae234'
-  },
-  {
-    tag: tags.comment,
-    color: '#888',
-    fontStyle: 'italic'
-  },
-  {
-    tag: tags.number,
-    color: '#ffb300'
-  },
-  {
-    tag: tags.operator,
-    color: '#ff5370'
-  },
-  {
-    tag: tags.function(tags.variableName),
-    color: '#82aaff'
-  },
-  {
-    tag: tags.definition(tags.variableName),
-    color: '#7dd0ff',
-    fontWeight: 'bold'
-  }
-]);
 
 const myTheme = EditorView.theme({
   '&': {
@@ -638,7 +662,6 @@ watch(realTimeTableAnalysis, v => localStorage.setItem('realTimeTableAnalysis', 
 
 const tableStructure = ref<any>(null);
 const showTableStructure = ref(false);
-const tooltipPosition = ref({ x: 0, y: 0 });
 
 watch(() => props.initialConnection, (newConnection) => {
   if (newConnection && !isConnected.value) {
@@ -649,13 +672,9 @@ watch(() => props.initialConnection, (newConnection) => {
   }
 }, { immediate: true });
 
-const toggleConnectionPanel = () => {
-  showConnections.value = !showConnections.value;
-};
 
 const selectConnection = async (connection: DatabaseConnection) => {
   try {
-
     isConnected.value = false;
     selectedConnection.value = connection;
 
@@ -663,7 +682,6 @@ const selectConnection = async (connection: DatabaseConnection) => {
       showConnections.value = false;
       return;
     }
-
 
     const response = await axios.post('/api/database/connect',
       { connectionId: connection.id },
@@ -679,8 +697,8 @@ const selectConnection = async (connection: DatabaseConnection) => {
       showConnections.value = false;
       currentDatabase.value = connection.database_name || connection.database;
 
+      updateCurrentDbType(connection.type);
       await updateDatabaseTables(connection.id);
-
 
       emit('connection-change', connection);
     } else {
@@ -771,6 +789,11 @@ const executeCommand = async () => {
     if (dataTableHeaders.value.length > 0) {
       columns.value = queryColumns;
       results.value = dataTableItems.value;
+    }
+
+    if (dataTableHeaders.value.length === 0 && dataTableItems.value.length === 0) {
+      dataTableHeaders.value = [{ title: 'Message', key: 'message' }];
+      dataTableItems.value = [{ message: 'No results found' }];
     }
 
   } catch (error: any) {
@@ -1184,33 +1207,43 @@ const saveQuery = async () => {
       ? `/api/database/saved-queries?id=${newQuery.value.id}`
       : '/api/database/saved-queries';
 
-    const response = await axios({
+    const queryData = {
+      id: newQuery.value.id,
+      name: newQuery.value.name,
+      query: newQuery.value.query,
+      description: newQuery.value.description,
+      shortcut: newQuery.value.shortcut,
+      connection_id: selectedConnection.value?.id || null,
+      user_id: userStore.user?.id || userStore.user?.userId
+    };
+
+    const response = await fetch(url, {
       method,
-      url,
-      data: {
-        name: newQuery.value.name,
-        query: newQuery.value.query || sqlCommand.value,
-        description: newQuery.value.description
-      },
+      body: JSON.stringify(queryData),
       headers: {
-        'Authorization': `Bearer ${userStore.token}`
+        'Authorization': `Bearer ${userStore.token}`,
+        'Content-Type': 'application/json'
       }
     });
 
-    if (response.data.success) {
+    if (response.ok) {
+      const data = await response.json();
       if (newQuery.value.id) {
         const index = savedQueries.value.findIndex(q => q.id === newQuery.value.id);
         if (index !== -1) {
-          savedQueries.value[index] = response.data.query;
+          savedQueries.value[index] = data.query;
         }
       } else {
-        savedQueries.value.push(response.data.query);
+        savedQueries.value.push(data.query);
       }
       showSaveQueryDialog.value = false;
-      newQuery.value = { name: '', query: '', description: '' };
+      newQuery.value = { name: '', query: '', description: '', shortcut: '' };
     }
   } catch (error) {
     console.error('Error saving query:', error);
+    if (error.response?.data?.message) {
+      console.error('Server error message:', error.response.data.message);
+    }
   } finally {
     isSavingQuery.value = false;
   }
@@ -1381,12 +1414,19 @@ const updateQuery = (query: string) => {
   sqlCommand.value = query;
 };
 
-function isShortcut(event: KeyboardEvent, shortcut: string) {
+function isShortcut(event: KeyboardEvent, shortcut: string | undefined) {
+  if (!shortcut) return false;
+
+  if (!shortcut.includes('+')) {
+    return event.key.toLowerCase() === shortcut.toLowerCase();
+  }
+
   const parts = shortcut.toLowerCase().split('+');
   const key = parts.pop();
   const ctrl = parts.includes('ctrl');
   const shift = parts.includes('shift');
   const alt = parts.includes('alt');
+
   return (
     event.key.toLowerCase() === key &&
     event.ctrlKey === ctrl &&
@@ -1398,21 +1438,22 @@ function isShortcut(event: KeyboardEvent, shortcut: string) {
 const handleKeyDown = (event: KeyboardEvent) => {
   const shortcuts = shortcutsStore.shortcuts;
 
-  // Gestion des raccourcis directs
+  // Vérifier les raccourcis des requêtes sauvegardées
   const currentText = sqlCommand.value;
-
-  // Vérifier si le texte actuel correspond à un raccourci
-  const matchingSnippet = SQL_SNIPPETS.find(snippet =>
-    snippet.shortcut && currentText.toLowerCase() === snippet.shortcut.toLowerCase()
+  const matchingQuery = savedQueries.value.find(query =>
+    query.query_shortcut &&
+    (query.query_shortcut.includes('+') ?
+      isShortcut(event, query.query_shortcut) :
+      currentText.toLowerCase() === query.query_shortcut.toLowerCase())
   );
 
-  if (matchingSnippet) {
+  if (matchingQuery) {
     event.preventDefault();
-    // Remplacer le raccourci par le snippet
-    sqlCommand.value = matchingSnippet.snippet;
+    sqlCommand.value = matchingQuery.query_text;
     return;
   }
 
+  // Gestion des raccourcis directs
   if (isShortcut(event, shortcuts.run.value)) {
     event.preventDefault();
     showTableStructure.value = false;
@@ -1445,67 +1486,12 @@ const handleKeyDown = (event: KeyboardEvent) => {
     }
   }
 
-  if (isShortcut(event, 'Ctrl+/')) {
-    event.preventDefault();
-    // Commenter/décommenter la ligne
-    const lines = sqlCommand.value.split('\n');
-    const cursorLine = getCursorLine();
-    if (cursorLine >= 0 && cursorLine < lines.length) {
-      const line = lines[cursorLine];
-      if (line.trim().startsWith('--')) {
-        lines[cursorLine] = line.replace(/^--\s*/, '');
-      } else {
-        lines[cursorLine] = '-- ' + line;
-      }
-      sqlCommand.value = lines.join('\n');
-    }
-  }
-
-  if (isShortcut(event, 'Ctrl+D')) {
-    event.preventDefault();
-    // Dupliquer la ligne
-    const lines = sqlCommand.value.split('\n');
-    const cursorLine = getCursorLine();
-    if (cursorLine >= 0 && cursorLine < lines.length) {
-      lines.splice(cursorLine + 1, 0, lines[cursorLine]);
-      sqlCommand.value = lines.join('\n');
-    }
-  }
-
-  if (isShortcut(event, 'Ctrl+Shift+K')) {
-    event.preventDefault();
-    // Supprimer la ligne
-    const lines = sqlCommand.value.split('\n');
-    const cursorLine = getCursorLine();
-    if (cursorLine >= 0 && cursorLine < lines.length) {
-      lines.splice(cursorLine, 1);
-      sqlCommand.value = lines.join('\n');
-    }
-  }
-
   if (isShortcut(event, 'Ctrl+Enter')) {
     event.preventDefault();
     executeCommand();
   }
-
-  if (isShortcut(event, 'Ctrl+Shift+L')) {
-    event.preventDefault();
-    // Sélectionner toutes les occurrences du mot sélectionné
-    const editor = document.querySelector('.cm-editor');
-    if (editor) {
-      const keyboardEvent = new KeyboardEvent('keydown', {
-        key: 'l',
-        code: 'KeyL',
-        ctrlKey: true,
-        shiftKey: true,
-        bubbles: true
-      });
-      editor.dispatchEvent(keyboardEvent);
-    }
-  }
 };
 
-// Fonction pour obtenir la ligne du curseur
 const getCursorLine = () => {
   const editor = document.querySelector('.cm-editor');
   if (editor) {
@@ -1586,14 +1572,15 @@ const editSavedQuery = (query: any) => {
   newQuery.value = {
     id: query.id,
     name: query.name,
-    query: query.query_text || query.query,
-    description: query.description
+    query: query.query_text,
+    description: query.description,
+    shortcut: query.query_shortcut
   };
   showSaveQueryDialog.value = true;
 };
 
 const confirmDeleteQuery = async (query: any) => {
-  if (confirm(`Voulez-vous vraiment supprimer la requête "${query.name}" ?`)) {
+  if (confirm(`Really delete query "${query.name}" ?`)) {
     try {
       await fetch(`/api/database/saved-queries?id=${query.id}`, {
         method: 'DELETE',
@@ -1634,15 +1621,6 @@ const analyzeQueryForTables = async (query: string) => {
     }
   } catch (error) {
     console.error('Error getting table structure:', error);
-  }
-};
-
-const updateTooltipPosition = (event: MouseEvent) => {
-  if (showTableStructure.value) {
-    tooltipPosition.value = {
-      x: event.clientX + 20,
-      y: event.clientY
-    };
   }
 };
 
@@ -1801,8 +1779,13 @@ const handleShowRelations = async () => {
   }
 };
 
+const executeQuery = (query: string) => {
+  sqlCommand.value = query;
+  executeCommand();
+};
+
 defineExpose({
-  updateQuery
+  executeQuery
 });
 
 onMounted(() => {
@@ -1835,7 +1818,6 @@ async function handleShowUnusedTables() {
     });
 
     const data = await response.json();
-    console.log(data);
 
     if (data.success) {
       if (!data.headers || !data.results) {
@@ -1861,44 +1843,6 @@ async function handleShowUnusedTables() {
     };
   }
 }
-
-const handleCursorChange = (view: any) => {
-  const pos = view.state.selection.main.from;
-  const line = view.state.doc.lineAt(pos);
-  const text = line.text;
-
-  // Vérifier si nous sommes sur un placeholder [table]
-  const tableRegex = /\[table\d*\]/g;
-  let match;
-  while ((match = tableRegex.exec(text)) !== null) {
-    const start = line.from + match.index;
-    const end = start + match[0].length;
-    if (pos >= start && pos <= end) {
-      // Forcer l'ouverture de l'autocomplétion
-      const completion = view.state.facets.find(f => f.type === 'autocomplete');
-      if (completion) {
-        completion.open(view);
-      }
-      break;
-    }
-  }
-};
-
-const extensions = [
-  sql({
-    upperCaseKeywords: true,
-    dialect: MySQL
-  }),
-  lineNumbers(),
-  lintGutter(),
-  linter(sqlLinter),
-  autocompletion({ override: [sqlCompletions] }),
-  EditorView.updateListener.of(update => {
-    if (update.selectionSet) {
-      handleCursorChange(update.view);
-    }
-  }),
-];
 </script>
 
 <style scoped>
@@ -2476,5 +2420,32 @@ const extensions = [
 
 .add-connection-btn:hover {
   transform: rotate(90deg);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+}
+
+.loading-icon {
+  animation: pulse 2s infinite;
+  color: rgb(var(--v-theme-secondary));
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>

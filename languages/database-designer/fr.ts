@@ -10,9 +10,8 @@ export default {
   },
   tabs: {
     terminal: 'SQL Terminal',
-    analyzer: 'SQL Analyzer',
-    visualizer: 'Visualizer',
-    config: 'Configuration'
+    config: 'Configuration',
+    explorer: 'Explorateur'
   },
   database: {
     description: 'Gérez vos connexions à la base de données',

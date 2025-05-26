@@ -52,7 +52,7 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     { name: 'og:title', content: 'StackUnity - The all-in-one platform for developers' },
     { name: 'og:description', content: 'StackUnity is the all-in-one platform for developers who want to create, manage and optimize their web projects.' },
-    { name: 'og:image', content: '/images/StackUnity-analytics.avif' },
+    { name: 'og:image', content: '/images/preview-stackunity.avif' },
     { rel: 'canonical', href: 'https://stackunity.tech/' },
     { rel: 'icon', type: 'image/png', href: '/images/preview.png' }
   ],

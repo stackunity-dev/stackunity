@@ -28,8 +28,7 @@
     <div v-else>
       <div class="analytics-filters d-flex flex-wrap align-center mb-4">
         <v-select v-model="selectedUrl" :items="uniqueUrls" :label="t.deadZoneViewer.selectPage" density="comfortable"
-          variant="outlined" hide-details class="filter-select mr-3"
-          aria-label="Sélectionner une page à analyser"></v-select>
+          variant="outlined" hide-details class="filter-select mr-3" aria-label="Select a page to analyze"></v-select>
       </div>
 
       <v-card variant="outlined" class="mb-6">
@@ -356,7 +355,7 @@ const heatmapOption = computed(() => {
                   Section ${params.data[1] + 1} (${segment?.start}%-${segment?.end}%)
                 </div>
                 <div style="padding: 5px;">
-                  <b>${params.data[2]}%</b> d'activité<br/>
+                  <b>${params.data[2]}%</b> of activity<br/>
                   ${segment?.clicks || 0} ${t.deadZoneViewer.clicks}<br/>
                   ${segment?.scrolls || 0} ${t.deadZoneViewer.scrolls}
                 </div>`;

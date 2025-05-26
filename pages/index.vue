@@ -14,11 +14,38 @@
             <div style="width: 90%;">
               <v-carousel hide-delimiters show-arrows="hover" cycle height="auto">
                 <v-carousel-item src="/images/preview/preview-timeline.avif" contain
-                  class="bg-surface-variant floating-image"></v-carousel-item>
+                  class="bg-surface-variant floating-image">
+                  <div class="custom-caption">
+                    <h3><span class="accent"><v-icon>mdi-chart-box</v-icon> StackUnity Analytics</span></h3>
+                    <p class="tagline">Your data, revealed.</p>
+                    <p class="short-desc">
+                      Get powerful insights: sessions, retention, interactions. Readable dashboards for real decisions.
+                    </p>
+                  </div>
+                </v-carousel-item>
+
                 <v-carousel-item src="/images/preview/preview-stackql.avif" contain
-                  class="bg-surface-variant floating-image"></v-carousel-item>
+                  class="bg-surface-variant floating-image">
+                  <div class="custom-caption">
+                    <h3><span class="accent"><v-icon>mdi-database</v-icon> StackQL</span></h3>
+                    <p class="tagline">Unlimited data control</p>
+                    <p class="short-desc">
+                      Explore your data with powerful, intuitive and innovative SQL syntax to access your data in a
+                      simple and efficient way
+                    </p>
+                  </div>
+                </v-carousel-item>
+
                 <v-carousel-item src="/images/preview/preview-website.avif" contain
-                  class="bg-surface-variant floating-image"></v-carousel-item>
+                  class="bg-surface-variant floating-image">
+                  <div class="custom-caption">
+                    <h3><span class="accent"><v-icon>mdi-shield-check</v-icon> StackAudit</span></h3>
+                    <p class="tagline">Build and audit your website for every metric</p>
+                    <p class="short-desc">
+                      Audit your website and check the essential metrics to improve your website
+                    </p>
+                  </div>
+                </v-carousel-item>
               </v-carousel>
             </div>
           </section>
@@ -190,13 +217,13 @@ useHead({
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: 'Preview StackUnity' },
-    { property: 'og:image:secure_url', content: computed(() => `https://stackunity.tech/images/StackUnity-analytics.avif`) },
+    { property: 'og:image:secure_url', content: computed(() => `https://stackunity.tech/images/preview-stackunity.avif`) },
     { property: 'og:locale', content: computed(() => currentLanguage.value === 'en' ? 'en_US' : currentLanguage.value === 'fr' ? 'fr_FR' : currentLanguage.value === 'es' ? 'es_ES' : currentLanguage.value === 'ar' ? 'ar_SA' : 'zh_CN') },
     { property: 'og:locale:alternate', content: 'fr_FR' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: computed(() => t().meta.title) },
     { name: 'twitter:description', content: computed(() => t().meta.description) },
-    { name: 'twitter:image', content: computed(() => `https://stackunity.tech/images/StackUnity-analytics.avif`) },
+    { name: 'twitter:image', content: computed(() => `https://stackunity.tech/images/preview-stackunity.avif`) },
     { name: 'twitter:creator', content: '@stackunity' },
     { name: 'twitter:site', content: '@stackunity' }
   ],
@@ -280,5 +307,43 @@ watch(() => currentLanguage.value, (newLang) => {
 
 :deep(.v-carousel .v-window__container) {
   transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+
+.custom-caption {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 320px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  text-align: left;
+}
+
+.custom-caption h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.custom-caption .accent {
+  color: #90caf9;
+  /* bleu clair */
+}
+
+.custom-caption .tagline {
+  font-size: 0.95rem;
+  font-style: italic;
+  margin: 6px 0;
+  color: #ffeb3b;
+}
+
+.custom-caption .short-desc {
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 </style>

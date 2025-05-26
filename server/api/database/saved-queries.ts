@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
 
   if (method === 'POST') {
     const body = await readBody(event);
-    const { name, query, description, connectionId } = body;
+    const { name, query, description, connectionId, shortcut } = body;
 
     if (!name || !query) {
       throw createError({
@@ -38,8 +38,8 @@ export default defineEventHandler(async (event) => {
     try {
       const uuid = crypto.randomUUID();
       const [result] = await pool.query(
-        'INSERT INTO saved_queries (id, user_id, connection_id, name, description, query_text) VALUES (?, ?, ?, ?, ?, ?)',
-        [uuid, userId, connectionId, name, description, query]
+        'INSERT INTO saved_queries (id, user_id, connection_id, name, description, query_text, query_shortcut) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [uuid, userId, connectionId, name, description, query, shortcut]
       );
 
       const [newQuery] = await pool.query(
@@ -62,7 +62,7 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const body = await readBody(event);
     const { id } = query;
-    const { name, query: queryText, description, connectionId } = body;
+    const { name, query: queryText, description, connectionId, shortcut } = body;
 
     if (!id || !name || !queryText) {
       throw createError({
@@ -73,8 +73,8 @@ export default defineEventHandler(async (event) => {
 
     try {
       await pool.query(
-        'UPDATE saved_queries SET name = ?, description = ?, query_text = ?, connection_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?',
-        [name, description, queryText, connectionId, id, userId]
+        'UPDATE saved_queries SET name = ?, description = ?, query_text = ?, connection_id = ?, query_shortcut = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?',
+        [name, description, queryText, connectionId, shortcut, id, userId]
       );
 
       const [updatedQuery] = await pool.query(

@@ -6,6 +6,8 @@ export interface SQLCompletion {
   type: string;
   info: string;
   render?: (el: HTMLElement) => void;
+  dbType?: string[];
+  apply?: string;
 }
 
 export const SQL_KEYWORDS: SQLCompletion[] = [
@@ -140,10 +142,20 @@ export const SQL_KEYWORDS: SQLCompletion[] = [
   {
     label: 'AUTO_INCREMENT',
     type: 'keyword',
-    info: 'Auto-incrementing column',
+    info: 'Auto-incrementing column (MySQL)',
     render: (el: HTMLElement) => {
       el.innerHTML = `<span style="color:#7dd0ff;">${el.textContent}</span> <small style="margin-left:8px;color:#888;">${el.getAttribute('data-info')}</small>`;
-    }
+    },
+    dbType: ['mysql']
+  },
+  {
+    label: 'SERIAL',
+    type: 'keyword',
+    info: 'Auto-incrementing column (PostgreSQL)',
+    render: (el: HTMLElement) => {
+      el.innerHTML = `<span style="color:#7dd0ff;">${el.textContent}</span> <small style="margin-left:8px;color:#888;">${el.getAttribute('data-info')}</small>`;
+    },
+    dbType: ['postgres']
   },
   {
     label: 'REFERENCES',
@@ -234,7 +246,8 @@ export const SQL_FUNCTIONS: SQLCompletion[] = [
     info: 'Return a specified value if expression is NULL',
     render: (el: HTMLElement) => {
       el.innerHTML = `<span style="color:#82aaff;">${el.textContent}</span> <small style="margin-left:8px;color:#888;">${el.getAttribute('data-info')}</small>`;
-    }
+    },
+    dbType: ['mysql']
   },
   {
     label: 'CONCAT',
@@ -282,7 +295,17 @@ export const SQL_FUNCTIONS: SQLCompletion[] = [
     info: 'Format a date value',
     render: (el: HTMLElement) => {
       el.innerHTML = `<span style="color:#82aaff;">${el.textContent}</span> <small style="margin-left:8px;color:#888;">${el.getAttribute('data-info')}</small>`;
-    }
+    },
+    dbType: ['mysql']
+  },
+  {
+    label: 'TO_CHAR',
+    type: 'function',
+    info: 'Format a date value (PostgreSQL)',
+    render: (el: HTMLElement) => {
+      el.innerHTML = `<span style="color:#82aaff;">${el.textContent}</span> <small style="margin-left:8px;color:#888;">${el.getAttribute('data-info')}</small>`;
+    },
+    dbType: ['postgres']
   },
   {
     label: 'NOW',
@@ -314,7 +337,17 @@ export const SQL_FUNCTIONS: SQLCompletion[] = [
     info: 'Calculate difference between dates',
     render: (el: HTMLElement) => {
       el.innerHTML = `<span style="color:#82aaff;">${el.textContent}</span> <small style="margin-left:8px;color:#888;">${el.getAttribute('data-info')}</small>`;
-    }
+    },
+    dbType: ['mysql']
+  },
+  {
+    label: 'AGE',
+    type: 'function',
+    info: 'Calculate difference between dates (PostgreSQL)',
+    render: (el: HTMLElement) => {
+      el.innerHTML = `<span style="color:#82aaff;">${el.textContent}</span> <small style="margin-left:8px;color:#888;">${el.getAttribute('data-info')}</small>`;
+    },
+    dbType: ['postgres']
   },
   {
     label: 'ROUND',
@@ -390,6 +423,7 @@ export interface SQLSnippet {
   snippet: string;
   description: string;
   shortcut?: string;
+  dbType?: string[];
 }
 
 export const SQL_SNIPPETS: SQLSnippet[] = [
@@ -440,22 +474,77 @@ export const SQL_SNIPPETS: SQLSnippet[] = [
     snippet: 'CREATE TABLE [table_name] (\n  id INT PRIMARY KEY AUTO_INCREMENT,\n  [column_name] VARCHAR(255) NOT NULL,\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)',
     description: 'Create a new table with basic structure',
     shortcut: 't*',
+    dbType: ['mysql']
+  },
+  {
+    label: 'alter-table',
+    snippet: 'ALTER TABLE [table_name] ADD COLUMN [column_name] [data_type]',
+    description: 'Add a new column to a table',
+    shortcut: 'a*',
+    dbType: ['mysql']
+  },
+  {
+    label: 'show-tables',
+    snippet: 'SHOW TABLES',
+    description: 'Show all tables in the database',
+    shortcut: 'tt*',
+    dbType: ['mysql']
   },
   {
     label: 'show-tables-by-space',
     snippet: 'SHOW TABLES BY SPACE USED DESC',
     description: 'Show tables sorted by space used',
     shortcut: 's*',
+    dbType: ['mysql']
   },
   {
     label: 'show-relations',
     snippet: 'SHOW RELATIONS',
     description: 'Show table relationships and foreign keys',
     shortcut: 'r*',
+    dbType: ['mysql']
+  },
+  {
+    label: 'MEDIAN',
+    snippet: 'SELECT MEDIAN(column_name) FROM',
+    description: 'Calculate the median value of a column',
+    shortcut: 'm*',
+    dbType: ['mysql']
+  },
+  {
+    label: 'MODE',
+    snippet: 'SELECT MODE(column_name) FROM',
+    description: 'Calculate the mode value of a column',
+    shortcut: 'crtl+m',
+    dbType: ['mysql']
+  },
+  {
+    label: 'SUMMARY',
+    snippet: 'SELECT SUMMARY(column_name) FROM',
+    description: 'Calculate the summary of a column',
+    shortcut: 'shift+s',
+    dbType: ['mysql']
+  },
+  {
+    label: 'describe_table',
+    snippet: `SELECT 
+    column_name, 
+    data_type, 
+    character_maximum_length,
+    column_default,
+    is_nullable
+FROM 
+    information_schema.columns
+WHERE 
+    table_name = '$1';`,
+    description: 'Describe the structure of a table',
+    shortcut: 'd*',
+    dbType: ['postgres']
   }
 ];
 
 let databaseTables: string[] = [];
+let currentDbType: string = '';
 
 export const updateDatabaseTables = async (connectionId: string) => {
   try {
@@ -472,6 +561,10 @@ export const updateDatabaseTables = async (connectionId: string) => {
   }
 };
 
+export const updateCurrentDbType = (dbType: string) => {
+  currentDbType = dbType.toLowerCase();
+};
+
 export const sqlCompletions = (context: CompletionContext) => {
   const word = context.matchBefore(/[\w\*\[\]]*/);
   if (!word) return null;
@@ -482,6 +575,9 @@ export const sqlCompletions = (context: CompletionContext) => {
 
   const matchingSnippet = SQL_SNIPPETS.find(snippet => {
     const shortcut = localStorage.getItem(`sqlSnippetShortcut_${snippet.label}`) || snippet.shortcut;
+    if (snippet.dbType && !snippet.dbType.includes(currentDbType)) {
+      return false;
+    }
     return currentWord === shortcut;
   });
 
@@ -497,38 +593,27 @@ export const sqlCompletions = (context: CompletionContext) => {
     };
   }
 
-  // Vérifier si nous sommes sur un placeholder [table]
-  const tableRegex = /\[table\d*\]/g;
-  let match;
-  while ((match = tableRegex.exec(text)) !== null) {
-    const start = line.from + match.index;
-    const end = start + match[0].length;
-    if (context.pos >= start && context.pos <= end) {
-      return {
-        from: start,
-        to: end,
-        options: databaseTables.map(table => ({
-          label: table,
-          type: 'table',
-          info: `Table ${table}`
-        }))
-      };
-    }
-  }
-
   // Retourner les suggestions par défaut
   return {
     from: word.from,
     to: word.to,
     options: [
-      ...SQL_KEYWORDS,
-      ...SQL_FUNCTIONS,
+      ...SQL_KEYWORDS.filter(keyword => !keyword.dbType || keyword.dbType.includes(currentDbType)),
+      ...SQL_FUNCTIONS.filter(func => !func.dbType || func.dbType.includes(currentDbType)),
       ...SQL_OPERATORS,
       ...databaseTables.map(table => ({
         label: table,
         type: 'table',
         info: `Table ${table}`
-      }))
+      })),
+      ...SQL_SNIPPETS
+        .filter(snippet => !snippet.dbType || snippet.dbType.includes(currentDbType))
+        .map(snippet => ({
+          label: snippet.label,
+          type: 'snippet',
+          info: snippet.description,
+          apply: snippet.snippet
+        }))
     ]
   };
 }; 

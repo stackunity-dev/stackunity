@@ -8,13 +8,9 @@
               <v-icon start>mdi-console</v-icon>
               {{ t().tabs.terminal || 'SQL Terminal' }}
             </v-tab>
-            <v-tab value="analyzer" class="text-subtitle-1">
-              <v-icon start>mdi-code-braces</v-icon>
-              {{ t().tabs.analyzer || 'SQL Analyzer' }}
-            </v-tab>
-            <v-tab value="visualizer" class="text-subtitle-1">
-              <v-icon start>mdi-chart-line</v-icon>
-              {{ t().tabs.visualizer || 'SQL Visualizer' }}
+            <v-tab value="explorer" class="text-subtitle-1">
+              <v-icon start>mdi-database</v-icon>
+              {{ t().tabs.explorer || 'Database Explorer' }}
             </v-tab>
             <v-tab value="config" class="text-subtitle-1">
               <v-icon start>mdi-cogs</v-icon>
@@ -33,21 +29,12 @@
               </v-row>
             </v-window-item>
 
-            <v-window-item value="analyzer">
+            <v-window-item value="explorer">
               <v-row class="pa-4">
                 <v-col cols="12">
-                  <SQLQueryAnalyzer :key="(activeConnection?.id || '') + '-' + lastExecutedQuery"
-                    :query="lastExecutedQuery" :database-type="activeConnection?.type || 'mysql'"
-                    :analysis-results="analysisResults" :connection-id="activeConnection?.id || ''"
-                    :active-connection="activeConnection || {}" @apply-optimization="applyOptimization" />
-                </v-col>
-              </v-row>
-            </v-window-item>
-
-            <v-window-item value="visualizer">
-              <v-row class="pa-4">
-                <v-col cols="12">
-                  <SQLResultVisualizer :results="results" :columns="columns" :loading="isExecuting" />
+                  <DatabaseExplorer :connection-id="activeConnection?.id || ''"
+                    :active-connection="activeConnection ? { database: activeConnection.database, database_name: activeConnection.database_name || activeConnection.database } : undefined"
+                    @apply-query="handleExplorerQuery" />
                 </v-col>
               </v-row>
             </v-window-item>
@@ -236,10 +223,6 @@
               variant="outlined" class="mb-2"
               :rules="[v => !!v || t().validation.required || 'Required']"></v-text-field>
 
-            <v-text-field v-model="newConnection.database" :label="t().database.database || 'Database Name'"
-              variant="outlined" class="mb-2"
-              :rules="[v => !!v || t().validation.required || 'Required']"></v-text-field>
-
             <v-text-field v-model="newConnection.username" :label="t().database.username || 'Username'"
               variant="outlined" class="mb-2"
               :rules="[v => !!v || t().validation.required || 'Required']"></v-text-field>
@@ -279,79 +262,6 @@
           </v-btn>
           <v-btn color="error" @click="confirmDelete" :loading="deleting">
             {{ t().actions.delete || 'Delete' }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="showInfoPanel" max-width="700px">
-      <v-card>
-        <v-card-title class="bg-secondary text-white">
-          {{ t().database.help || 'SQL Database Studio Help' }}
-        </v-card-title>
-        <v-card-text class="pa-4">
-          <h3 class="text-h6 mb-2">{{ t().database.about || 'About SQL Database Studio' }}</h3>
-          <p class="mb-4">
-            {{ t().database.aboutText ||
-              'SQL Database Studio allows you to connect to various SQL databases, execute ' +
-              'queries, and manage your database connections securely.' }}
-          </p>
-
-          <h3 class="text-h6 mb-2">{{ t().database.quickStart || 'Quick Start Guide' }}</h3>
-          <v-list>
-            <v-list-item>
-              <template v-slot:prepend>
-                <v-avatar color="primary" size="32" variant="tonal">
-                  <span class="text-body-1">1</span>
-                </v-avatar>
-              </template>
-              <v-list-item-title>{{ t().database.step1Title || 'Add a Database Connection' }}</v-list-item-title>
-              <v-list-item-subtitle>{{ t().database.step1Text ||
-                'Go to Configuration tab and add your database details'
-                }}</v-list-item-subtitle>
-            </v-list-item>
-            <v-list-item>
-              <template v-slot:prepend>
-                <v-avatar color="primary" size="32" variant="tonal">
-                  <span class="text-body-1">2</span>
-                </v-avatar>
-              </template>
-              <v-list-item-title>{{ t().database.step2Title || 'Connect to Your Database' }}</v-list-item-title>
-              <v-list-item-subtitle>{{ t().database.step2Text || 'Click the connect icon next to your database'
-                }}</v-list-item-subtitle>
-            </v-list-item>
-            <v-list-item>
-              <template v-slot:prepend>
-                <v-avatar color="primary" size="32" variant="tonal">
-                  <span class="text-body-1">3</span>
-                </v-avatar>
-              </template>
-              <v-list-item-title>{{ t().database.step3Title || 'Run SQL Queries' }}</v-list-item-title>
-              <v-list-item-subtitle>{{ t().database.step3Text || 'Use the SQL Terminal or Editor to execute commands'
-                }}</v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-
-          <v-divider class="my-4"></v-divider>
-
-          <h3 class="text-h6 mb-2">{{ t().database.supportedDatabases || 'Supported Databases' }}</h3>
-          <div class="d-flex flex-wrap mb-4">
-            <v-chip class="ma-1" color="primary" variant="tonal">MySQL</v-chip>
-            <v-chip class="ma-1" color="primary" variant="tonal">PostgreSQL</v-chip>
-            <v-chip class="ma-1" color="primary" variant="tonal">SQLite</v-chip>
-            <v-chip class="ma-1" color="primary" variant="tonal">SQL Server</v-chip>
-          </div>
-
-          <v-alert color="info" variant="tonal">
-            {{ t().database.securityMessage ||
-              'Your database credentials are encrypted and stored locally on your ' +
-              'device for security.' }}
-          </v-alert>
-        </v-card-text>
-        <v-card-actions class="pa-4">
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="showInfoPanel = false">
-            {{ t().actions.close || 'Close' }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -406,8 +316,7 @@ import { useTranslations } from '../languages';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 import axios from 'axios';
-import SQLQueryAnalyzer from '../components/database/SqlQueryAnalyzer.vue';
-import SQLResultVisualizer from '../components/database/SqlResultVisualizer.vue';
+import DatabaseExplorer from '../components/database/DatabaseExplorer.vue';
 import { useUserStore } from '../stores/userStore';
 import { SQL_SNIPPETS } from '../utils/database/command';
 
@@ -604,21 +513,6 @@ const confirmDelete = async () => {
   }
 };
 
-const showAddConnectionDialog = () => {
-  editMode.value = false;
-  newConnection.value = {
-    id: '',
-    name: '',
-    type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    database: '',
-    username: '',
-    password: ''
-  };
-  showConnectionDialog.value = true;
-};
-
 const connectToDatabase = async (connection: DatabaseConnection) => {
   try {
     const response = await axios.post('/api/database/connect', {
@@ -657,9 +551,14 @@ const applyOptimization = (optimizedQuery: string) => {
   }
 };
 
-const handleQueryResults = (data: { query: string, results: any[], columns: string[] }) => {
-  results.value = data.results;
-  columns.value = data.columns;
+const handleQueryResults = (data: { query: string, results: any[], columns: string[], message?: string }) => {
+  if (data.message) {
+    results.value = [{ message: data.message }];
+    columns.value = ['message'];
+  } else {
+    results.value = data.results;
+    columns.value = data.columns;
+  }
   lastExecutedQuery.value = data.query;
 };
 
@@ -688,6 +587,12 @@ const resetAllSnippetShortcuts = () => {
     shortcut: snippet.shortcut
   }));
   localStorage.clear();
+};
+
+const handleExplorerQuery = (query: string) => {
+  if (sqlTerminalRef.value) {
+    sqlTerminalRef.value.executeQuery(query);
+  }
 };
 </script>
 

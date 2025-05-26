@@ -12,9 +12,8 @@ export default {
   },
   tabs: {
     terminal: 'SQL Terminal',
-    analyzer: 'SQL Analyzer',
-    visualizer: 'Visualizer',
-    config: 'Configuration'
+    config: 'Configuration',
+    explorer: 'Explorer'
   },
   database: {
     description: 'Manage your database connections',

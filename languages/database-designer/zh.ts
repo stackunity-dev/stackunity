@@ -10,9 +10,8 @@ export default {
   },
   tabs: {
     terminal: 'SQL 终端',
-    visualizer: '可视化器',
-    analyzer: 'SQL 分析器',
-    config: '配置'
+    config: '配置',
+    explorer: '探索者'
   },
   database: {
     description: '管理您的数据库连接',

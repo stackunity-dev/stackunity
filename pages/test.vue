@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const sqlText = ref('SELECT * FROM users WHERE status = "active";')
 const colorizedSql = ref('')

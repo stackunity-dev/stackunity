@@ -32,7 +32,7 @@
 
     <div v-if="isLoading" class="text-center py-8">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
-      <div class="mt-2">{{ 'Chargement...' }}</div>
+      <div class="mt-2">{{ 'Loading...' }}</div>
     </div>
 
     <div v-else-if="!haveData" class="text-center py-8">
@@ -131,7 +131,10 @@
                   </div>
                 </template>
                 <template v-slot:item.coordinates="{ item }">
-                  <span class="text-caption">{{ item.latitude.toFixed(4) }}, {{ item.longitude.toFixed(4) }}</span>
+                  <span class="text-caption">
+                    {{ typeof item.latitude === 'number' ? item.latitude.toFixed(4) : 'N/A' }},
+                    {{ typeof item.longitude === 'number' ? item.longitude.toFixed(4) : 'N/A' }}
+                  </span>
                 </template>
                 <template v-slot:item.visitors="{ item }">
                   <v-chip size="small" :color="getColorByPercentage(item.percentage)" variant="tonal">
@@ -289,8 +292,6 @@ import { computed, onMounted, ref, watch } from 'vue';
 import VChart from 'vue-echarts';
 import { useTranslations } from '../../languages';
 
-// Nous allons utiliser une URL externe pour la carte du monde
-
 use([
   CanvasRenderer,
   MapChart,
@@ -316,8 +317,6 @@ const mapView = ref('map');
 const searchCountry = ref('');
 const searchCity = ref('');
 
-// Pour l'exemple nous utilisons des données fictives
-// Dans une vraie implémentation, elles proviendraient d'un API
 const haveData = ref(true);
 
 interface CountryData {
@@ -353,23 +352,20 @@ const totalVisitors = ref(0);
 const maxVisitors = ref(3000);
 const growthRate = ref(12.5);
 
-// Définir les en-têtes pour le tableau des pays
 const countryHeaders = [
-  { title: 'Pays', key: 'name', sortable: true },
-  { title: 'Visites', key: 'value', sortable: true, align: 'center' as const },
-  { title: 'Pourcentage', key: 'percentage', sortable: true, align: 'center' as const }
+  { title: 'Countries', key: 'name', sortable: true },
+  { title: 'Views', key: 'value', sortable: true, align: 'center' as const },
+  { title: 'Value', key: 'percentage', sortable: true, align: 'center' as const }
 ];
 
-// Définir les en-têtes pour le tableau des villes
 const cityHeaders = [
-  { title: 'Ville', key: 'name', sortable: true },
-  { title: 'Pays', key: 'country', sortable: true },
-  { title: 'Coordonnées', key: 'coordinates', sortable: false },
-  { title: 'Visites', key: 'visitors', sortable: true, align: 'center' as const },
-  { title: 'Pourcentage', key: 'percentage', sortable: true, align: 'center' as const }
+  { title: 'City', key: 'name', sortable: true },
+  { title: 'Countries', key: 'country', sortable: true },
+  { title: 'Data', key: 'coordinates', sortable: false },
+  { title: 'Views', key: 'visitors', sortable: true, align: 'center' as const },
+  { title: 'Value', key: 'percentage', sortable: true, align: 'center' as const }
 ];
 
-// Calculer la région principale
 const topRegion = computed(() => {
   if (regions.value.length === 0) {
     return { name: 'Europe', percentage: 0 };
@@ -521,7 +517,6 @@ async function fetchMapData() {
   isLoading.value = true;
 
   try {
-    // Utiliser l'API pour récupérer les données de géolocalisation
     const periodParam = props.period ? `period=${props.period}` : '';
     const response = await fetch(`/api/analytics/website/${props.websiteId}/geography?${periodParam}`);
 
@@ -531,14 +526,12 @@ async function fetchMapData() {
 
     const result = await response.json();
 
-    // Chargement de la carte du monde depuis une URL externe
     try {
       const echarts = await import('echarts');
       const worldJson = await fetch('https://s3-us-west-2.amazonaws.com/s.cdpn.io/95368/world.json').then(res => res.json());
       echarts.registerMap('world', worldJson);
 
       if (result.success && result.data && result.data.countries) {
-        // Utiliser les données réelles
         mapData.value = result.data.countries.map(country => ({
           name: country.name,
           value: country.visitors,
@@ -553,7 +546,6 @@ async function fetchMapData() {
         totalVisitors.value = result.data.totalVisitors || mapData.value.reduce((sum, country) => sum + country.value, 0);
         maxVisitors.value = Math.max(...mapData.value.map(country => country.value));
 
-        // Traitement des données des villes si disponibles
         if (result.data.cities && Array.isArray(result.data.cities)) {
           cities.value = result.data.cities.map(city => ({
             name: city.name,
@@ -565,11 +557,8 @@ async function fetchMapData() {
             percentage: city.percentage
           }));
         } else {
-          // Données fictives de villes en cas d'absence
-          generateDummyCities();
         }
 
-        // Calculer les données par région
         const regionMap = new Map<string, number>();
         mapData.value.forEach(country => {
           if (country.region) {
@@ -601,41 +590,6 @@ async function fetchMapData() {
   } finally {
     isLoading.value = false;
   }
-}
-
-function generateDummyCities() {
-  // Génère des données fictives de villes en cas d'absence de données réelles
-  const dummyCities: CityData[] = [];
-
-  // Utiliser les pays disponibles pour générer des villes fictives
-  allCountries.value.forEach(country => {
-    // Générer 1 à 3 villes par pays selon le nombre de visiteurs
-    const cityCount = Math.max(1, Math.min(3, Math.floor(country.value / 10)));
-
-    for (let i = 0; i < cityCount; i++) {
-      // Noms fictifs basés sur le pays
-      const cityName = `Ville ${i + 1} (${country.name})`;
-
-      // Coordonnées légèrement décalées pour simuler différentes villes
-      const latOffset = (Math.random() - 0.5) * 3;
-      const lonOffset = (Math.random() - 0.5) * 3;
-
-      // Estimer un nombre de visiteurs par ville
-      const visitors = Math.floor(country.value / cityCount * (0.7 + Math.random() * 0.6));
-
-      dummyCities.push({
-        name: cityName,
-        country: country.name,
-        countryCode: country.code,
-        latitude: 45 + latOffset, // Latitude approximative
-        longitude: 5 + lonOffset, // Longitude approximative
-        visitors: visitors,
-        percentage: (visitors / totalVisitors.value) * 100
-      });
-    }
-  });
-
-  cities.value = dummyCities;
 }
 
 async function refreshMap() {

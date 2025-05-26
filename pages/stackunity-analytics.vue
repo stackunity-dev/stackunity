@@ -99,7 +99,7 @@
                           <v-divider vertical class="mx-2"></v-divider>
                           <div class="stat-item text-center">
                             <div class="text-caption text-medium-emphasis">{{ t.analytics.interactions || 'Interactions'
-                            }}</div>
+                              }}</div>
                             <div class="text-subtitle-1 font-weight-bold">
                               {{ site.stats && site.stats.totalInteractions || '0' }}
                             </div>
@@ -125,7 +125,7 @@
                     </div>
                     <h3 class="text-h5 font-weight-bold mb-3">{{ t.welcome.few.title }}</h3>
                     <p class="text-body-2 mb-6 mx-auto" style="max-width: 300px;">{{ t.welcome.few.description
-                    }}</p>
+                      }}</p>
                     <v-btn color="primary" prepend-icon="mdi-plus" size="large" class="px-6 elevation-2 scale-on-hover"
                       @click="showAddSiteDialog = true">
                       {{ t.welcome.few.action }}
@@ -277,7 +277,7 @@
                 <v-divider></v-divider>
                 <v-list-item prepend-icon="mdi-chart-timeline-variant" @click="showExportDialog = true">
                   <v-list-item-title>{{ t.analytics.exportAllData || 'Exporter toutes les données'
-                  }}</v-list-item-title>
+                    }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -372,13 +372,13 @@
                   </div>
 
                   <v-data-table v-else :headers="pageHeaders" :items="filteredPages" :items-per-page="10"
-                    :search="pageSearch" density="comfortable" class="page-data-table">
+                    :search="pageSearch" density="comfortable" class="" style="min-width: 100%; table-layout: fixed;">
                     <template v-slot:item.page="{ item }">
-                      <div class="d-flex align-center">
+                      <div class="d-flex align-center page-column">
                         <v-icon size="small" class="mr-2" :color="getItemColor(item)">
                           {{ item.isHome ? 'mdi-home' : 'mdi-file-document-outline' }}
                         </v-icon>
-                        <div class="text-truncate" style="max-width: 300px;">
+                        <div class="text-truncate" style="width: 100%; max-width: 300px;">
                           <v-tooltip activator="parent" :text="item.page" location="top" max-width="400"></v-tooltip>
                           {{ formatPagePath(item.page, item.cleanPath, item.isHome) }}
                         </div>
@@ -386,31 +386,14 @@
                     </template>
 
                     <template v-slot:item.views="{ item }">
-                      <div class="d-flex align-center">
-                        <span class="font-weight-medium mr-2">{{ item.views }}</span>
+                      <div style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+                        <span class="font-weight-medium" style="flex-shrink: 0;">{{ item.views }}</span>
                         <v-progress-linear :model-value="getPageViewPercentage(item.views)"
                           :color="getItemColor(item, true)" height="6" rounded class="views-progress"
-                          style="width: 80px;"></v-progress-linear>
+                          style="width: 80px; flex-shrink: 0;" />
                       </div>
                     </template>
 
-                    <template v-slot:item.avgTime="{ item }">
-                      <div class="d-flex align-center">
-                        <v-icon size="small" class="mr-2" :color="getTimeColor(item)">mdi-clock-outline</v-icon>
-                        <span :class="{ 'text-grey': !item.hasDuration }">
-                          {{ item.avgTime }}
-                        </span>
-                      </div>
-                    </template>
-
-                    <template v-slot:bottom>
-                      <div class="text-center pt-2 pb-2">
-                        <v-btn v-if="pageViews.length > 10" color="primary" variant="text" @click="exportPageData">
-                          {{ t.analytics.exportData || 'Exporter les données' }}
-                          <v-icon end>mdi-download</v-icon>
-                        </v-btn>
-                      </div>
-                    </template>
                   </v-data-table>
 
                   <div v-if="isPageDistributionLoading" class="mt-4">
@@ -429,12 +412,12 @@
                         <v-btn value="pie" size="small">
                           <v-icon>mdi-chart-pie</v-icon>
                           <v-tooltip activator="parent">{{ t.analytics.chart.chartPie || 'Graphique circulaire'
-                          }}</v-tooltip>
+                            }}</v-tooltip>
                         </v-btn>
                         <v-btn value="donut" size="small">
                           <v-icon>mdi-chart-donut</v-icon>
                           <v-tooltip activator="parent">{{ t.analytics.chart.chartDonut || 'Graphique annulaire'
-                          }}</v-tooltip>
+                            }}</v-tooltip>
                         </v-btn>
                       </v-btn-toggle>
                     </div>
@@ -612,7 +595,7 @@
                       {{ t.interactionsTab || 'Interactions utilisateur' }}
                     </v-tab>
                     <v-tab value="dead-zones">
-                      <v-icon class="mr-2">mdi-eye-off-outline</v-icon>
+                      <v-icon class="mr-2">mdi-wifi-off</v-icon>
                       {{ t.deadZoneViewer.title || 'Zones mortes' }}
                     </v-tab>
                   </v-tabs>
@@ -667,7 +650,7 @@
                               <v-icon size="small" color="error" class="mr-2">mdi-file-alert</v-icon>
                               <span class="text-body-2 text-truncate" style="max-width: 150px;" :title="error.page">{{
                                 error.page
-                              }}</span>
+                                }}</span>
                             </div>
                           </td>
                           <td>
@@ -838,7 +821,7 @@
             <p class="mb-2">{{ t.analytics.deleteDescription ||
               'Cette action supprimera définitivement toutes les données analytiques pour ce site.' +
               ' Cette opération est irréversible.'
-            }}</p>
+              }}</p>
             <v-alert type="warning" variant="tonal" class="mb-3">
               <strong>{{ t.engagement.purge.warning }}</strong> {{ t.analytics.deleteWarning ||
                 'Toutes les statistiques et les événements seront perdus.' }}
@@ -961,7 +944,7 @@
               <v-list-item v-if="visitorExclusions.length === 0">
                 <v-list-item-title class="text-medium-emphasis">{{ t.analytics.noExclusions ||
                   'Aucune exclusion configurée'
-                  }}</v-list-item-title>
+                }}</v-list-item-title>
               </v-list-item>
             </v-list>
 
@@ -1021,7 +1004,6 @@ import { CanvasRenderer } from 'echarts/renderers';
 import highlight from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { THEME_KEY } from 'vue-echarts';
-import EngagementAnalytics from '../components/analytics/EngagementAnalytics.vue';
 import '../css/analytics.css';
 import { useTranslations } from '../languages';
 import { useUserStore } from '../stores/userStore';
@@ -1162,11 +1144,9 @@ const pageSearch = ref('');
 const filteredPages = ref<PageView[]>([]);
 
 const pageHeaders = [
-  { title: t.page || 'Page', key: 'page', sortable: true, width: '40%' },
-  { title: t.views || 'Vues', key: 'views', sortable: true, align: 'center' as const },
-  { title: t.avgTime || 'Temps moyen', key: 'avgTime', sortable: true, align: 'center' as const },
-  { title: '', key: 'actions', sortable: false, align: 'end' as const, width: '50px' }
-];
+  { title: 'Pages', key: 'page', sortable: true, width: '60%' },
+  { title: 'Views', key: 'views', sortable: true, align: 'center' as const, width: '40%' }
+]
 
 const securityQuestion = computed(() => {
   return t.engagement.purge.security.question

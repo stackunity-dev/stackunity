@@ -196,15 +196,43 @@ export async function executeQuery(connectionId: string, query: string, params: 
           const [rows, fieldInfo] = await pool.query(query);
           results = rows;
           fields = fieldInfo;
+        } else if (query.toUpperCase().includes('MEDIAN(')) {
+          const match = query.match(/SELECT\s+MEDIAN\((\w+)\)\s+FROM\s+(\w+)/i);
+          if (!match) throw new Error("Unsupported MEDIAN() usage format. Use: SELECT MEDIAN(column) FROM table;");
+          const [_, column, table] = match;
+          query = await transformMedianQuery(pool, column, table);
+
+          const [rows, fieldInfo] = await pool.query(query);
+          results = rows;
+          fields = fieldInfo;
+        } else if (query.toUpperCase().includes('MODE(')) {
+          const match = query.match(/SELECT\s+MODE\((\w+)\)\s+FROM\s+(\w+)/i);
+          if (!match) throw new Error("Unsupported MODE() usage format. Use: SELECT MODE(column) FROM table;");
+          const [_, column, table] = match;
+          query = await transformModeQuery(pool, column, table);
+
+          const [rows, fieldInfo] = await pool.query(query);
+          results = rows;
+          fields = fieldInfo;
+        } else if (query.toUpperCase().includes('SUMMARY(')) {
+          const match = query.match(/SELECT\s+SUMMARY\((\w+)\)\s+FROM\s+(\w+)/i);
+          if (!match) throw new Error("Unsupported SUMMARY() usage format. Use: SELECT SUMMARY(column) FROM table;");
+          const [_, column, table] = match;
+          query = await transformSummaryQuery(pool, column, table);
+
+          const [rows, fieldInfo] = await pool.query(query);
+          results = rows;
+          fields = fieldInfo;
         } else {
           const [rows, fieldInfo] = await pool.execute(query, params);
           results = rows;
           fields = fieldInfo;
         }
 
-        if (!Array.isArray(results) && 'affectedRows' in results) {
+        if (results && typeof results === 'object' && 'affectedRows' in results) {
           affectedRows = results.affectedRows;
         }
+
         break;
       }
 
@@ -305,4 +333,66 @@ if (typeof setInterval !== 'undefined') {
       console.error('Error during idle pool cleanup:', err);
     });
   }, 15 * 60 * 1000);
-} 
+}
+
+async function transformMedianQuery(pool: any, column: string, table: string): Promise<string> {
+  const [[{ total }]] = await pool.query(`SELECT COUNT(*) as total FROM ${table} WHERE ${column} IS NOT NULL`);
+  const offset = total % 2 === 0 ? (total / 2) - 1 : Math.floor(total / 2);
+  const limit = 2 - (total % 2);
+
+  return `
+    SELECT AVG(${column}) AS median FROM (
+      SELECT ${column}
+      FROM ${table}
+      WHERE ${column} IS NOT NULL
+      ORDER BY ${column}
+      LIMIT ${limit} OFFSET ${offset}
+    ) AS sub;
+  `;
+}
+
+async function transformModeQuery(pool: any, column: string, table: string): Promise<string> {
+  return `
+    SELECT ${column}
+    FROM (
+      SELECT ${column}, COUNT(*) AS freq
+      FROM ${table}
+      WHERE ${column} IS NOT NULL
+      GROUP BY ${column}
+      ORDER BY freq DESC
+      LIMIT 1
+    ) AS sub;
+  `;
+}
+
+async function transformSummaryQuery(pool: any, column: string, table: string): Promise<string> {
+  const [[{ total }]] = await pool.query(`SELECT COUNT(*) as total FROM ${table} WHERE ${column} IS NOT NULL`);
+
+  const offset = Math.floor((total - 1) / 2);
+  const limit = total % 2 === 0 ? 2 : 1;
+
+  return `
+    SELECT
+      COUNT(${column}) AS count_value,
+      MIN(${column}) AS min_value,
+      MAX(${column}) AS max_value,
+      AVG(${column}) AS avg_value,
+      (
+        SELECT AVG(sub.${column}) FROM (
+          SELECT ${column} FROM ${table}
+          WHERE ${column} IS NOT NULL
+          ORDER BY ${column}
+          LIMIT ${limit} OFFSET ${offset}
+        ) AS sub
+      ) AS median_value,
+      (
+        SELECT ${column} FROM ${table}
+        WHERE ${column} IS NOT NULL
+        GROUP BY ${column}
+        ORDER BY COUNT(*) DESC
+        LIMIT 1
+      ) AS mode_value
+    FROM ${table}
+    WHERE ${column} IS NOT NULL
+  `;
+}

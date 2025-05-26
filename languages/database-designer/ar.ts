@@ -10,9 +10,8 @@ export default {
   },
   tabs: {
     terminal: 'محطة البيانات الخاصة بك',
-    analyzer: 'محلل البيانات الخاصة بك',
-    visualizer: 'المرء',
     config: 'التكوين',
+    explorer: 'المستكشف',
   },
   database: {
     description: 'إدارة الاتصالات بقاعدة البيانات الخاصة بك',
