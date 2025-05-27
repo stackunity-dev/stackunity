@@ -226,7 +226,7 @@
                                     </template>
                                     <v-list-item-title>{{ t().results.aria.missingAriaCount }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingAriaCount
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -238,7 +238,7 @@
                                     </template>
                                     <v-list-item-title>{{ t().results.aria.missingLabels }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.missingLabels
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -251,7 +251,7 @@
                                     </template>
                                     <v-list-item-title>{{ t().results.aria.formElementsWithLabels }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.formElementsWithLabelsPercent
-                                    }}%</v-list-item-subtitle>
+                                      }}%</v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -268,7 +268,7 @@
                                     </template>
                                     <v-list-item-title>{{ t().results.aria.invalidAriaCount }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.invalidAriaCount
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -280,10 +280,10 @@
                                           : 'mdi-check-circle' }} </v-icon>
                                     </template>
                                     <v-list-item-title>{{ t().results.aria.interactiveElementsWithAria
-                                      }}</v-list-item-title>
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle>{{
                                       result.accessibility.interactiveElementsWithAriaPercent.toFixed(2)
-                                    }}%</v-list-item-subtitle>
+                                      }}%</v-list-item-subtitle>
                                   </v-list-item>
 
                                   <v-list-item>
@@ -291,9 +291,9 @@
                                       <v-icon color="info" aria-hidden="true">mdi-counter</v-icon>
                                     </template>
                                     <v-list-item-title>{{ t().results.aria.totalInteractiveElements
-                                      }}</v-list-item-title>
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle>{{ result.accessibility.interactiveElementsCount
-                                    }}</v-list-item-subtitle>
+                                      }}</v-list-item-subtitle>
                                   </v-list-item>
                                 </v-list>
                               </v-col>
@@ -374,7 +374,7 @@
                                         </template>
                                         <v-list-item-title>{{ t().results.meta.essentialTags }}</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.essential
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -386,7 +386,7 @@
                                         </template>
                                         <v-list-item-title>{{ t().results.meta.socialTags }}</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.social
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -398,7 +398,7 @@
                                         </template>
                                         <v-list-item-title>{{ t().results.meta.technicalTags }}</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.technical
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
 
                                       <v-list-item>
@@ -410,7 +410,7 @@
                                         </template>
                                         <v-list-item-title>{{ t().results.meta.contentTags }}</v-list-item-title>
                                         <v-list-item-subtitle>{{ result.metaTags.detailedScore.content
-                                        }}%</v-list-item-subtitle>
+                                          }}%</v-list-item-subtitle>
                                       </v-list-item>
                                     </v-list>
                                   </v-card-text>
@@ -459,7 +459,7 @@
                                               </template>
                                               <v-list-item-title>{{ tag.name }}</v-list-item-title>
                                               <v-list-item-subtitle>{{ tag.content || 'Non défini'
-                                              }}</v-list-item-subtitle>
+                                                }}</v-list-item-subtitle>
                                             </v-list-item>
                                           </v-list>
                                         </v-col>
@@ -475,7 +475,7 @@
                                               </template>
                                               <v-list-item-title>{{ tag.name }}</v-list-item-title>
                                               <v-list-item-subtitle>{{ tag.content || 'Non défini'
-                                              }}</v-list-item-subtitle>
+                                                }}</v-list-item-subtitle>
                                             </v-list-item>
                                           </v-list>
                                         </v-col>
@@ -548,11 +548,11 @@
 import { nextTick, ref, watch, computed } from 'vue';
 // @ts-ignore 
 import { definePageMeta, useHead } from '#imports';
-import { useUserStore } from '../stores/userStore';
+import { useUserStore } from '../../stores/userStore';
 import hljs from 'highlight.js/lib/core';
 import xml from 'highlight.js/lib/languages/xml';
 import 'highlight.js/styles/atom-one-dark.css';
-import { useTranslations } from '../languages';
+import { useTranslations } from '../../languages';
 
 const t = useTranslations('semantic');
 

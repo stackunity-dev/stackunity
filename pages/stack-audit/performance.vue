@@ -376,11 +376,11 @@ import { computed, onMounted, ref, watch } from 'vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 import { Chart, registerables } from 'chart.js';
-import snackBar from '../components/snackbar.vue';
-import '../css/utils.css';
-import { useTranslations } from '../languages';
-import { useUserStore } from '../stores/userStore';
-import { PerformanceData, PerformanceMetrics, sendPerformanceScoreToWebsitePage } from '../utils/performance-utils';
+import snackBar from '../../components/snackbar.vue';
+import '../../css/utils.css';
+import { useTranslations } from '../../languages';
+import { useUserStore } from '../../stores/userStore';
+import { PerformanceData, PerformanceMetrics, sendPerformanceScoreToWebsitePage } from '../../utils/performance-utils';
 
 Chart.register(...registerables);
 

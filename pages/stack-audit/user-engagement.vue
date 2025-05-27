@@ -243,7 +243,7 @@
                                 <v-expansion-panel-text>
                                   <p><strong>{{ t.issues.description }}</strong> {{ issue.description }}</p>
                                   <p class="mt-2"><strong>{{ t.issues.recommendation }}</strong> {{ issue.recommendation
-                                    }}</p>
+                                  }}</p>
                                 </v-expansion-panel-text>
                               </v-expansion-panel>
                             </v-expansion-panels>
@@ -430,8 +430,8 @@
 import { computed, ref } from 'vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
-import { useTranslations } from '../languages';
-import { useUserStore } from '../stores/userStore';
+import { useTranslations } from '../../languages';
+import { useUserStore } from '../../stores/userStore';
 
 definePageMeta({
   layout: 'dashboard',

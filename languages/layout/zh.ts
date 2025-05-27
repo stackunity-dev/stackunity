@@ -42,10 +42,10 @@ export default {
     performance: "性能",
     structureAccessibility: "结构和可访问性",
     content: "内容",
-    userEngagement: "用户参与",
     security: "安全",
     visual: "可视化",
-    uxAnalyzer: "Analytics"
+    uxAnalyzer: "Analytics",
+    engagement: "Engagement"
   },
   premiumLabel: {
     standard: "标准版",

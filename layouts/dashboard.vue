@@ -49,10 +49,9 @@
 
           <template v-for="(child, idx) in item.children" :key="idx">
             <component v-if="child.component" :is="child.component.component" v-bind="child.component.props"
-              class="ml-4 my-1 premium-menu-item" />
+              class="my-1 premium-menu-item" />
             <v-list-item v-else :to="localePath(child.link)" :title="child.title"
-              :prepend-icon="child.icon || 'mdi-circle-small'" class="ml-4" rounded="lg" color="primary" nuxt
-              @click="closeDrawer" />
+              :prepend-icon="child.icon || 'mdi-circle-small'" rounded="lg" color="primary" nuxt @click="closeDrawer" />
           </template>
         </v-list-group>
 
@@ -190,24 +189,22 @@ const currentPageTitle = computed(() => {
     return t().menu.dashboard;
   } else if (path.includes('/website')) {
     return t().menu.website;
-  } else if (path.includes('/performance')) {
+  } else if (path.includes('/stack-audit/performance')) {
     return t().menu.performance;
-  } else if (path.includes('/animations')) {
+  } else if (path.includes('/stack-audit/semantic')) {
     return t().menu.cssPlayground;
-  } else if (path.includes('/stackql')) {
-    return t().menu.stackQL;
-  } else if (path.includes('/semantic')) {
-    return t().menu.structureAccessibility;
-  } else if (path.includes('/security')) {
-    return t().menu.security;
-  } else if (path.includes('/content')) {
+  } else if (path.includes('/stack-audit/content')) {
     return t().menu.content;
+  } else if (path.includes('/stack-audit/user-engagement')) {
+    return t().menu.userEngagement;
+  } else if (path.includes('/stack-audit/security')) {
+    return t().menu.security;
   } else if (path.includes('/settings')) {
     return t().menu.settings;
-  } else if (path.includes('/api-testing-hub')) {
-    return t().menu.apiTestingHub;
   } else if (path.includes('/stackunity-analytics')) {
     return t().menu.uxAnalyzer;
+  } else if (path.includes('/stackql')) {
+    return t().menu.stackQL;
   } else {
     return t().menu.dashboard;
   }
@@ -295,32 +292,22 @@ const getCurrentPageIcon = () => {
 
   if (path.includes('/dashboard')) {
     return 'mdi-view-dashboard-outline';
-  } else if (path.includes('/website')) {
-    return 'mdi-web';
-  } else if (path.includes('/performance')) {
+  } else if (path.includes('/stack-audit/website')) {
+    return 'mdi-cube-scan';
+  } else if (path.includes('/stack-audit/performance')) {
     return 'mdi-speedometer';
-  } else if (path.includes('/animations')) {
-    return 'mdi-animation';
+  } else if (path.includes('/stack-audit/semantic')) {
+    return 'mdi-semantic-web';
   } else if (path.includes('/stackql')) {
     return 'mdi-database-cog';
-  } else if (path.includes('/api-testing-hub')) {
-    return 'mdi-api';
-  } else if (path.includes('/semantic')) {
-    return 'mdi-semantic-web';
-  } else if (path.includes('/security')) {
+  } else if (path.includes('/stack-audit/security')) {
     return 'mdi-security';
   } else if (path.includes('/studio')) {
     return 'mdi-palette';
-  } else if (path.includes('/responsive')) {
-    return 'mdi-responsive';
-  } else if (path.includes('/accessibility')) {
-    return 'mdi-access-point';
-  } else if (path.includes('/content')) {
+  } else if (path.includes('/stack-audit/content')) {
     return 'mdi-file-document-outline';
-  } else if (path.includes('/user-engagement')) {
+  } else if (path.includes('/stack-audit/user-engagement')) {
     return 'mdi-account-group';
-  } else if (path.includes('/robots')) {
-    return 'mdi-robot';
   } else if (path.includes('/settings')) {
     return 'mdi-cog-outline';
   } else if (path.includes('/stackunity-analytics')) {
@@ -444,12 +431,12 @@ const items = computed(() => [
     prependIcon: 'mdi-magnify-scan',
     link: true,
     children: [
-      createPremiumMenuItem('Scan your website', '/website', 'mdi-web', 'stackAudit', 'premium'),
-      createPremiumMenuItem(t().features.performance, '/performance', 'mdi-speedometer', 'performance', 'premium'),
-      createPremiumMenuItem(t().features.structureAccessibility, '/semantic', 'mdi-semantic-web', 'semantic', 'premium'),
-      createPremiumMenuItem(t().features.content, '/content', 'mdi-file-document-outline', 'content', 'premium'),
-      createPremiumMenuItem(t().features.userEngagement, '/user-engagement', 'mdi-account-group', 'userEngagement', 'premium'),
-      createPremiumMenuItem(t().features.security, '/security', 'mdi-security', 'security', 'premium')
+      createPremiumMenuItem('Scanner', '/stack-audit/website', 'mdi-cube-scan', 'stackAudit', 'premium'),
+      createPremiumMenuItem(t().features.performance, '/stack-audit/performance', 'mdi-speedometer', 'performance', 'premium'),
+      createPremiumMenuItem(t().features.accessibility, '/stack-audit/semantic', 'mdi-semantic-web', 'semantic', 'premium'),
+      createPremiumMenuItem(t().features.content, '/stack-audit/content', 'mdi-file-document-outline', 'content', 'premium'),
+      createPremiumMenuItem(t().features.engagement, '/stack-audit/user-engagement', 'mdi-account-group', 'engagement', 'premium'),
+      createPremiumMenuItem(t().features.security, '/stack-audit/security', 'mdi-security', 'security', 'premium')
     ]
   }
 ]);

@@ -18,13 +18,13 @@
               <template v-slot:default="{ value }">
                 <span class="text-caption text-grey-darken-1">{{ t().loading.progress.replace('{value}',
                   Math.ceil(value).toString())
-                }}</span>
+                  }}</span>
               </template>
             </v-progress-linear>
           </v-fade-transition>
 
           <v-card class="mb-4 rounded-lg elevation-2">
-            <v-card-title class="bg-primary text-white py-3 px-4 rounded-t-lg">
+            <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg">
               <v-icon color="white" class="mr-2">mdi-web</v-icon>
               {{ t().cards.websiteData.title }}
             </v-card-title>
@@ -100,7 +100,7 @@
                           <v-card-text class="pa-3">
                             <p class="text-caption text-grey mb-1">{{ socialMetaPreview.url }}</p>
                             <h3 class="text-subtitle-1 font-weight-bold mb-2 text-truncate">{{ socialMetaPreview.ogTitle
-                            }}</h3>
+                              }}</h3>
                             <p class="text-body-2 social-description">{{ socialMetaPreview.ogDescription }}</p>
                           </v-card-text>
                         </v-card>
@@ -137,7 +137,7 @@
                       <v-card class="mb-4 rounded-lg elevation-2">
                         <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg">
                           <v-icon color="white" class="mr-2">mdi-chart-donut</v-icon>
-                          SSUC metrics
+                          SSCUP metrics
                         </v-card-title>
                         <v-card-text class="pa-4">
                           <v-row>
@@ -376,7 +376,8 @@
 
       <v-dialog v-model="showContentDialog" max-width="800px">
         <v-card>
-          <v-card-title class="d-flex justify-space-between align-center">
+          <v-card-title
+            class="d-flex bg-secondary text-white py-3 px-4 rounded-t-lg justify-space-between align-center">
             <span>{{ dialogTitle }}</span>
             <v-btn icon @click="showContentDialog = false">
               <v-icon>mdi-close</v-icon>
@@ -407,9 +408,9 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import snackBar from '../components/snackbar.vue';
-import { useTranslations } from '../languages';
-import { useUserStore } from '../stores/userStore';
+import snackBar from '../../components/snackbar.vue';
+import { useTranslations } from '../../languages';
+import { useUserStore } from '../../stores/userStore';
 
 const t = useTranslations('website');
 
@@ -871,7 +872,6 @@ async function analyzeWebsite() {
       if (engagementResults && Array.isArray(engagementResults)) {
         engagementData.value = engagementResults;
 
-        // Calculate engagement score from all URLs
         const engagementScores = engagementResults.map(result => {
           if (result && typeof result.score === 'number') {
             return result.score;
@@ -896,7 +896,6 @@ async function analyzeWebsite() {
     }
     loadingProgress.value = 85;
 
-    // Mark as analyzed
     hasAnalyzed.value = true;
     loadingProgress.value = 100;
   } catch (error) {

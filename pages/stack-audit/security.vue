@@ -356,7 +356,7 @@
                                     issue.content }}
                                   </p>
                                   <p v-if="issue.impact" class="mt-3"><strong>{{ t.vulnerabilities.details.impact
-                                  }}:</strong> <span class="red--text text--darken-1">{{
+                                      }}:</strong> <span class="red--text text--darken-1">{{
                                         issue.impact }}</span></p>
                                   <p v-if="issue.evidence" class="mt-2 grey--text text--darken-2"><strong>Evidence
                                       :</strong> {{
@@ -396,9 +396,9 @@
 import { computed, ref } from 'vue';
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
-import { useTranslations } from '../languages';
-import { useUserStore } from '../stores/userStore';
-import { SecurityAnalysisResult } from '../utils/analyzer/types';
+import { useTranslations } from '../../languages';
+import { useUserStore } from '../../stores/userStore';
+import { SecurityAnalysisResult } from '../../utils/analyzer/types';
 
 definePageMeta({
   layout: 'dashboard',

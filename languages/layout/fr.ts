@@ -42,10 +42,10 @@ export default {
     performance: "Performance",
     structureAccessibility: "Structure & Accessibilité",
     content: "Contenu",
-    userEngagement: "Engagement utilisateur",
     security: "Sécurité",
     visual: "Visualizer",
-    uxAnalyzer: "Analytics"
+    uxAnalyzer: "Analytics",
+    engagement: "Engagement"
   },
   premiumLabel: {
     standard: "Standard",

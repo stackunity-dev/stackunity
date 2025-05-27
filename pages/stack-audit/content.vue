@@ -278,7 +278,7 @@
                               class="flex-grow-1">
                             </v-progress-linear>
                             <span class="text-subtitle-1 font-weight-bold ml-3">{{ calculateContentScore(result)
-                              }}%</span>
+                            }}%</span>
                           </div>
 
                           <v-alert v-if="calculateContentScore(result) >= 90" color="success" variant="tonal"
@@ -314,7 +314,7 @@
                                     v-if="!result?.headingStructure?.h1 || !result.headingStructure.h1.length">
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.improveContent.addH1.title
-                                      }}</v-list-item-title>
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.improveContent.addH1.description }}
                                     </v-list-item-subtitle>
@@ -333,7 +333,7 @@
                                     v-if="!result?.headingStructure?.h2 || !result.headingStructure.h2.length">
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.improveContent.addH2.title
-                                      }}</v-list-item-title>
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.improveContent.addH2.description }}
                                     </v-list-item-subtitle>
@@ -381,7 +381,7 @@
                                     v-if="getContentIssues(result).length === 0 && calculateContentScore(result) < 90">
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.improveContent.generalImprovements.title
-                                      }}</v-list-item-title>
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.improveContent.generalImprovements.description }}
                                     </v-list-item-subtitle>
@@ -402,7 +402,7 @@
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.seoTips.useKeywords.title
-                                      }}</v-list-item-title>
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.seoTips.useKeywords.description }}
                                     </v-list-item-subtitle>
@@ -411,7 +411,7 @@
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.seoTips.optimizeMeta.title
-                                      }}</v-list-item-title>
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.seoTips.optimizeMeta.description }}
                                     </v-list-item-subtitle>
@@ -420,7 +420,7 @@
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.seoTips.improveSpeed.title
-                                      }}</v-list-item-title>
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.seoTips.improveSpeed.description }}
                                     </v-list-item-subtitle>
@@ -437,7 +437,7 @@
                                   <v-list-item>
                                     <v-list-item-title class="font-weight-bold">{{
                                       t().recommendations.seoTips.useSchema.title
-                                      }}</v-list-item-title>
+                                    }}</v-list-item-title>
                                     <v-list-item-subtitle class="wrap-text">
                                       {{ t().recommendations.seoTips.useSchema.description }}
                                     </v-list-item-subtitle>
@@ -547,8 +547,8 @@
 // @ts-ignore
 import { definePageMeta, useHead } from '#imports';
 import { computed, onMounted, ref } from 'vue';
-import { useTranslations } from '../languages';
-import { useUserStore } from '../stores/userStore';
+import { useTranslations } from '../../languages';
+import { useUserStore } from '../../stores/userStore';
 import {
   calculateContentScore,
   checkContentBestPractices,
@@ -563,8 +563,8 @@ import {
   getWordCountRating,
   truncateText,
   truncateUrl
-} from '../utils/seo/content-view';
-import { SEOResult } from '../utils/seo/types';
+} from '../../utils/seo/content-view';
+import { SEOResult } from '../../utils/seo/types';
 
 const t = useTranslations('content');
 

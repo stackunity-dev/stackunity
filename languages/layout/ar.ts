@@ -42,10 +42,10 @@ export default {
     performance: "الأداء",
     structureAccessibility: "الهيكلة والوصولية",
     content: "المحتوى",
-    userEngagement: "المستخدمين المستوعبين",
     security: "الأمان",
     visual: "المرء",
-    uxAnalyzer: "التحليلات"
+    uxAnalyzer: "التحليلات",
+    engagement: "المستوعبين"
   },
   premiumLabel: {
     standard: "المعيارية",
