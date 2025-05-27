@@ -28,13 +28,16 @@ export const sqlLinter = (view: any) => {
       return;
     }
 
-    if (upperLine.includes('FROM') && !upperLine.match(/FROM\s+[A-Za-z0-9_]+/)) {
-      diagnostics.push({
-        from,
-        to,
-        severity: 'error' as const,
-        message: 'Missing table name after FROM clause'
-      });
+    if (upperLine.includes('FROM')) {
+      const nextLine = lines[i + 1]?.toUpperCase().trim() || '';
+      if (!upperLine.match(/FROM\s+[A-Za-z0-9_]+/) && !nextLine.match(/^[A-Za-z0-9_]+/)) {
+        diagnostics.push({
+          from,
+          to,
+          severity: 'error' as const,
+          message: 'Missing table name after FROM clause'
+        });
+      }
     }
 
     if (upperLine.includes('JOIN') && !upperLine.includes('ON')) {
@@ -46,31 +49,40 @@ export const sqlLinter = (view: any) => {
       });
     }
 
-    if (upperLine.includes('WHERE') && !upperLine.match(/WHERE\s+.+/)) {
-      diagnostics.push({
-        from,
-        to,
-        severity: 'error' as const,
-        message: 'Missing condition after WHERE clause'
-      });
+    if (upperLine.includes('WHERE')) {
+      const nextLine = lines[i + 1]?.toUpperCase().trim() || '';
+      if (!upperLine.match(/WHERE\s+.+/) && !nextLine.match(/^[A-Za-z0-9_]+/)) {
+        diagnostics.push({
+          from,
+          to,
+          severity: 'error' as const,
+          message: 'Missing condition after WHERE clause'
+        });
+      }
     }
 
-    if (upperLine.includes('GROUP BY') && !upperLine.match(/GROUP BY\s+.+/)) {
-      diagnostics.push({
-        from,
-        to,
-        severity: 'error' as const,
-        message: 'Missing columns after GROUP BY clause'
-      });
+    if (upperLine.includes('GROUP BY')) {
+      const nextLine = lines[i + 1]?.toUpperCase().trim() || '';
+      if (!upperLine.match(/GROUP BY\s+.+/) && !nextLine.match(/^[A-Za-z0-9_]+/)) {
+        diagnostics.push({
+          from,
+          to,
+          severity: 'error' as const,
+          message: 'Missing columns after GROUP BY clause'
+        });
+      }
     }
 
-    if (upperLine.includes('ORDER BY') && !upperLine.match(/ORDER BY\s+.+/)) {
-      diagnostics.push({
-        from,
-        to,
-        severity: 'error' as const,
-        message: 'Missing columns after ORDER BY clause'
-      });
+    if (upperLine.includes('ORDER BY')) {
+      const nextLine = lines[i + 1]?.toUpperCase().trim() || '';
+      if (!upperLine.match(/ORDER BY\s+.+/) && !nextLine.match(/^[A-Za-z0-9_]+/)) {
+        diagnostics.push({
+          from,
+          to,
+          severity: 'error' as const,
+          message: 'Missing columns after ORDER BY clause'
+        });
+      }
     }
 
     if (upperLine.includes('CREATE TABLE') && !upperLine.match(/CREATE TABLE\s+[A-Za-z0-9_]+\s*\(/)) {

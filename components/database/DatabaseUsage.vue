@@ -24,14 +24,18 @@
         <div v-else-if="error" class="text-center py-4">
           <v-icon color="error" size="48" class="mb-2">mdi-alert-circle</v-icon>
           <div class="text-h6 text-error">{{ t.databaseUsage.errorLoadingData }}</div>
-          <div class="text-body-2 mb-4">{{ error }}</div>
-          <v-btn color="primary" @click="fetchDatabaseUsage">{{ t.databaseUsage.retry }}</v-btn>
+          <div class="text-body-2 mb-4">An error occurred while loading the data</div>
+          <v-btn color="secondary" @click="fetchDatabaseUsage">
+            <v-icon start>mdi-refresh</v-icon>
+            {{ t.databaseUsage.retry }}
+          </v-btn>
         </div>
 
         <div v-else>
           <div class="usage-summary d-flex flex-wrap align-center mb-4">
             <v-chip color="primary" class="mr-2 mb-2">Tables: {{ tablesCount }}</v-chip>
             <v-chip color="success" class="mr-2 mb-2">Total: {{ totalSizeMB.toFixed(2) }} MB</v-chip>
+            <v-chip color="info" class="mr-2 mb-2">Rows: {{ formatNumber(totalRows) }}</v-chip>
             <v-chip color="warning" class="mr-2 mb-2" v-if="biggestTable">More space: {{ biggestTable.table_name }} ({{
               biggestTable.size_mb.toFixed(2) }} MB)</v-chip>
             <v-chip color="info" class="mb-2" v-if="smallestTable">Less space: {{ smallestTable.table_name }} ({{
@@ -49,7 +53,6 @@
             Not enough data for chart
           </v-alert>
 
-          <div class="text-h6 mb-2">{{ t.databaseUsage.topTables }}</div>
           <v-table density="compact" class="table-rounded" aria-label="Database tables usage">
             <thead>
               <tr>
@@ -97,7 +100,13 @@ const t = useTranslations('databaseManagement')();
 use([PieChart, TooltipComponent, LegendComponent, TitleComponent, CanvasRenderer]);
 
 const props = defineProps<{
-  activeConnection: any | null;
+  connectionId: string;
+  activeConnection?: {
+    id: string;
+    database: string;
+    database_name: string;
+    type: string;
+  } | null;
 }>();
 
 const loading = ref(false);
@@ -105,6 +114,7 @@ const refreshing = ref(false);
 const error = ref<string | null>(null);
 const tableData = ref<TableSize[]>([]);
 const totalSizeMB = ref(0);
+const totalRows = ref(0);
 
 const sortedTables = computed(() => {
   return [...tableData.value].sort((a, b) => b.size_mb - a.size_mb);
@@ -189,38 +199,43 @@ const fetchDatabaseUsage = async () => {
     const sizeQuery = props.activeConnection.type === 'mysql'
       ? `SELECT 
           TABLE_NAME AS table_name,
-          ROUND(((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024), 2) AS size_mb
+          ROUND(((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024), 2) AS size_mb,
+          TABLE_ROWS as \`rows\`
         FROM information_schema.TABLES 
         WHERE TABLE_SCHEMA = DATABASE()
         ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC`
       : props.activeConnection.type === 'postgres'
         ? `SELECT
             table_name,
-            pg_table_size(quote_ident(table_name)) / 1024.0 / 1024.0 AS size_mb
-          FROM information_schema.tables
+            pg_table_size(quote_ident(table_name)) / 1024.0 / 1024.0 AS size_mb,
+            n_live_tup as rows
+          FROM information_schema.tables t
+          JOIN pg_stat_user_tables s ON t.table_name = s.relname
           WHERE table_schema = 'public'
           ORDER BY size_mb DESC`
         : '';
 
     if (!sizeQuery) {
-      error.value = "Type de base de données non supporté pour l'analyse d'espace";
+      error.value = "Database type not supported for space analysis";
       loading.value = false;
       refreshing.value = false;
       return;
     }
 
     const sizeResponse = await axios.post('/api/database/query', {
-      connectionId: props.activeConnection.id,
+      connectionId: props.connectionId,
       query: sizeQuery
     });
 
     if (sizeResponse.data.success && Array.isArray(sizeResponse.data.results)) {
       tableData.value = sizeResponse.data.results.map((row: any) => ({
         table_name: row.table_name,
-        size_mb: parseFloat(row.size_mb) || 0
+        size_mb: parseFloat(row.size_mb) || 0,
+        rows: parseInt(row.rows) || 0
       }));
 
       totalSizeMB.value = tableData.value.reduce((sum, table) => sum + table.size_mb, 0);
+      totalRows.value = tableData.value.reduce((sum, table) => sum + table.rows, 0);
 
       if (totalSizeMB.value === 0) {
         tableData.value = tableData.value.map((table) => ({
@@ -240,6 +255,10 @@ const fetchDatabaseUsage = async () => {
     loading.value = false;
     refreshing.value = false;
   }
+};
+
+const formatNumber = (num: number) => {
+  return new Intl.NumberFormat().format(num);
 };
 
 watch(() => props.activeConnection, (newVal) => {

@@ -19,4 +19,5 @@ export interface TerminalLine {
 export interface TableSize {
   table_name: string;
   size_mb: number;
+  rows: number;
 }

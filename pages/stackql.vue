@@ -32,9 +32,12 @@
             <v-window-item value="explorer">
               <v-row class="pa-4">
                 <v-col cols="12">
-                  <DatabaseExplorer :connection-id="activeConnection?.id || ''"
-                    :active-connection="activeConnection ? { database: activeConnection.database, database_name: activeConnection.database_name || activeConnection.database } : undefined"
-                    @apply-query="handleExplorerQuery" />
+                  <DatabaseExplorer :connection-id="activeConnection?.id || ''" :active-connection="activeConnection ? {
+                    id: activeConnection.id,
+                    database: activeConnection.database,
+                    database_name: activeConnection.database_name || activeConnection.database,
+                    type: activeConnection.type
+                  } : undefined" @apply-query="handleExplorerQuery" />
                 </v-col>
               </v-row>
             </v-window-item>
@@ -44,7 +47,7 @@
                 <v-col cols="12" md="6">
                   <v-card class="rounded-lg" elevation="2">
                     <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
-                      <v-icon color="white" class="mr-2">mdi-database-cog</v-icon>
+                      <v-icon class="mr-2">mdi-database-cog</v-icon>
                       {{ t().database.connections || 'Database Connections' }}
                     </v-card-title>
                     <v-card-text class="py-4">
@@ -128,7 +131,7 @@
                 <v-col cols="12" md="6">
                   <v-card class="rounded-lg" elevation="2">
                     <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
-                      <v-icon color="white" class="mr-2">mdi-cog</v-icon>
+                      <v-icon class="mr-2">mdi-cog</v-icon>
                       Editor Preferences
                     </v-card-title>
                     <v-card-text class="py-4">

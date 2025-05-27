@@ -114,8 +114,8 @@
                             <v-table density="compact">
                               <thead>
                                 <tr>
-                                  <th>Name</th>
-                                  <th>Columns</th>
+                                  <th>Nom</th>
+                                  <th>Colonnes</th>
                                   <th>Type</th>
                                 </tr>
                               </thead>
@@ -127,8 +127,8 @@
                                       {{ index.name }}
                                     </div>
                                   </td>
-                                  <td>{{ index.columns.join(', ') }}</td>
-                                  <td>{{ index.type }}</td>
+                                  <td>{{ Array.isArray(index.columns) ? index.columns.join(', ') : index.columns }}</td>
+                                  <td>{{ index.type || 'INDEX' }}</td>
                                 </tr>
                               </tbody>
                             </v-table>
@@ -224,8 +224,10 @@ interface PreviewData {
 const props = defineProps<{
   connectionId: string;
   activeConnection?: {
+    id: string;
     database: string;
     database_name: string;
+    type: string;
   };
 }>();
 
@@ -304,7 +306,6 @@ const loadTablePreview = async () => {
       })
     });
     const data = await response.json();
-    console.log(data);
     if (data.success) {
       previewData.value = data.data;
     }
@@ -364,7 +365,22 @@ const loadDatabaseStructure = async () => {
     });
     const data = await response.json();
     if (data.success) {
-      databaseStructure.value = data.structure;
+      const tables = data.structure.filter((item: DatabaseNode) => item.type === 'table');
+      const indexes = data.structure.filter((item: DatabaseNode) => item.type === 'index');
+
+      tables.forEach((table: DatabaseNode) => {
+        table.indexes = indexes
+          .filter((index: DatabaseNode) => index.table === table.name)
+          .map((index: DatabaseNode) => ({
+            name: index.name,
+            columns: Array.isArray(index.columns)
+              ? index.columns.map(col => typeof col === 'object' ? col.name : col)
+              : [],
+            type: index.type || 'INDEX'
+          }));
+      });
+
+      databaseStructure.value = tables;
     }
   } catch (error) {
     console.error('Erreur lors du chargement de la structure:', error);
@@ -382,10 +398,6 @@ watch(() => props.connectionId, (newId) => {
     previewData.value = { columns: [], rows: [] };
   }
 }, { immediate: true });
-
-const toggleExplorer = () => {
-  isExpanded.value = !isExpanded.value;
-};
 
 const handleConnectionChange = (connection: any) => {
   if (connection) {

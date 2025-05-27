@@ -270,7 +270,7 @@
                 background: '#232323',
                 color: '#e0e0e0',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-              }" placeholder="Enter your SQL query here... (Ctrl+Enter to execute)" />
+              }" placeholder="Enter your SQL query here... (type 'help' for help and ctrl+enter to execute)" />
 
             </div>
           </div>
@@ -473,7 +473,7 @@ import { Codemirror } from 'vue-codemirror';
 import { useTranslations } from '../../languages';
 import { useShortcutsStore } from '../../stores/shortcutsStore';
 import { useUserStore } from '../../stores/userStore';
-import { SQL_SNIPPETS, sqlCompletions, updateCurrentDbType, updateDatabaseTables } from '../../utils/database/command';
+import { SQL_FUNCTIONS, SQL_SNIPPETS, sqlCompletions, updateCurrentDbType, updateDatabaseTables } from '../../utils/database/command';
 import { sqlLinter } from '../../utils/database/error';
 import { DatabaseConnection } from '../../utils/database/types';
 
@@ -742,7 +742,7 @@ const executeCommand = async () => {
   try {
     const command = sqlCommand.value.toLowerCase().trim();
 
-    if (command === 'help') {
+    if (command === 'help' || command === 'help -function' || command === 'help -data' || command === 'help -snippet') {
       displayHelp();
       isExecuting.value = false;
       return;
@@ -1021,27 +1021,84 @@ const executeComplexQuery = async (query: string) => {
 };
 
 const displayHelp = () => {
-  dataTableHeaders.value = [
-    { title: 'Command', key: 'command' },
-    { title: 'Description', key: 'description' }
-  ];
+  const command = sqlCommand.value.toLowerCase().trim();
 
-  dataTableItems.value = [
-    { command: 'SELECT', description: 'Query data from tables' },
-    { command: 'INSERT', description: 'Add new records' },
-    { command: 'UPDATE', description: 'Modify existing records' },
-    { command: 'DELETE', description: 'Remove records' },
-    { command: 'CREATE', description: 'Create new database objects' },
-    { command: 'ALTER', description: 'Modify database objects' },
-    { command: 'DROP', description: 'Delete database objects' },
-    { command: 'SHOW DATABASES', description: 'List available databases' },
-    { command: 'SHOW TABLES', description: 'List tables in current database' },
-    { command: 'SHOW TABLES BY SPACE USED', description: 'List tables ordered by size' },
-    { command: 'SHOW RELATIONS', description: 'Display table relationships and foreign keys' },
-    { command: 'USE [database]', description: 'Switch to another database' },
-    { command: 'CLEAR', description: 'Clear terminal output' },
-    { command: 'HELP', description: 'Display this help message' }
-  ];
+  if (command === 'help -function') {
+    dataTableHeaders.value = [
+      { title: 'Function', key: 'function' },
+      { title: 'Description', key: 'description' }
+    ];
+
+    dataTableItems.value = SQL_FUNCTIONS.map(func => ({
+      function: func.label,
+      description: func.info
+    })).sort((a, b) => a.function.localeCompare(b.function));
+  } else if (command === 'help -data') {
+    dataTableHeaders.value = [
+      { title: 'Type', key: 'type' },
+      { title: 'Description', key: 'description' }
+    ];
+    dataTableItems.value = [
+      { type: 'INT', description: 'Integer' },
+      { type: 'TINYINT', description: 'little integer (-128 to 127)' },
+      { type: 'SMALLINT', description: 'small integer (-32768 to 32767)' },
+      { type: 'MEDIUMINT', description: 'medium integer (-8388608 to 8388607)' },
+      { type: 'BIGINT', description: 'big integer' },
+      { type: 'FLOAT', description: 'Single precision floating point number' },
+      { type: 'DOUBLE', description: 'Double precision floating point number' },
+      { type: 'DECIMAL', description: 'Exact decimal number' },
+      { type: 'VARCHAR', description: 'Variable length character string' },
+      { type: 'TEXT', description: 'Variable length text' },
+      { type: 'MEDIUMTEXT', description: 'Medium length text' },
+      { type: 'LONGTEXT', description: 'Long length text' },
+      { type: 'DATE', description: 'Date (YYYY-MM-DD)' },
+      { type: 'DATETIME', description: 'Date and time (YYYY-MM-DD HH:MM:SS)' },
+      { type: 'TIMESTAMP', description: 'Timestamp' },
+      { type: 'BOOLEAN', description: 'Boolean value (TRUE/FALSE)' },
+      { type: 'JSON', description: 'JSON format data' },
+      { type: 'BLOB', description: 'Binary data' }
+    ].sort((a, b) => a.type.localeCompare(b.type));
+  } else if (command === 'help -snippet') {
+    dataTableHeaders.value = [
+      { title: 'Snippet', key: 'snippet' },
+      { title: 'Description', key: 'description' },
+      { title: 'Shortcut', key: 'shortcut' }
+    ];
+
+    dataTableItems.value = SQL_SNIPPETS
+      .filter(snippet => !snippet.dbType || snippet.dbType.includes(selectedConnection.value?.type || ''))
+      .map(snippet => ({
+        snippet: snippet.label,
+        description: snippet.description,
+        shortcut: snippet.shortcut || '-'
+      }))
+      .sort((a, b) => a.snippet.localeCompare(b.snippet));
+  } else {
+    dataTableHeaders.value = [
+      { title: 'Commands', key: 'command' },
+      { title: 'Description', key: 'description' }
+    ];
+
+    dataTableItems.value = [
+      { command: 'SELECT', description: 'Query data from tables' },
+      { command: 'INSERT', description: 'Add new records' },
+      { command: 'UPDATE', description: 'Modify existing records' },
+      { command: 'DELETE', description: 'Delete records' },
+      { command: 'CREATE', description: 'Create new database objects' },
+      { command: 'ALTER', description: 'Modify database objects' },
+      { command: 'DROP', description: 'Delete database objects' },
+      { command: 'SHOW DATABASES', description: 'List available databases' },
+      { command: 'SHOW TABLES', description: 'List tables in current database' },
+      { command: 'SHOW TABLES BY SPACE USED', description: 'List tables by size' },
+      { command: 'SHOW RELATIONS', description: 'Show relationships between tables' },
+      { command: 'USE [database]', description: 'Switch database' },
+      { command: 'CLEAR', description: 'Clear terminal output' },
+      { command: 'HELP', description: 'Show this help message' },
+      { command: 'HELP -FUNCTION', description: 'Show list of available SQL functions' },
+      { command: 'HELP -DATA', description: 'Show list of SQL data types' },
+      { command: 'HELP -SNIPPET', description: 'Show list of available SQL snippets' }
+    ].sort((a, b) => a.command.localeCompare(b.command));
+  }
 };
 
 const saveConnection = async () => {
