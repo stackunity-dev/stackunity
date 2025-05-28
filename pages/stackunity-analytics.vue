@@ -394,6 +394,13 @@
                       </div>
                     </template>
 
+                    <template v-slot:item.avgTime="{ item }">
+                      <div style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+                        <v-icon size="small" class="mr-2" :color="getItemColor(item)">mdi-clock-outline</v-icon>
+                        <span class="font-weight-medium" style="flex-shrink: 0;">{{ item.avgTime }}s</span>
+                      </div>
+                    </template>
+
                   </v-data-table>
 
                   <div v-if="isPageDistributionLoading" class="mt-4">
@@ -1144,8 +1151,9 @@ const pageSearch = ref('');
 const filteredPages = ref<PageView[]>([]);
 
 const pageHeaders = [
-  { title: 'Pages', key: 'page', sortable: true, width: '60%' },
-  { title: 'Views', key: 'views', sortable: true, align: 'center' as const, width: '40%' }
+  { title: 'Pages', key: 'page', sortable: true, width: '40%' },
+  { title: 'Views', key: 'views', sortable: true, align: 'center' as const, width: '30%' },
+  { title: 'Avg Time', key: 'avgTime', sortable: true, align: 'center' as const, width: '30%' }
 ]
 
 const securityQuestion = computed(() => {
@@ -2403,10 +2411,13 @@ async function loadPageDistribution() {
   try {
     const response = await fetch(`/api/analytics/website/${currentSite.value.id}/page-distribution?period=${selectedPeriod.value}&limit=20`);
     const result = await response.json();
+    console.log(result);
 
     if (result.success && result.data) {
       // Créer un Map pour agréger les vues par URL normalisée
       const pageMap = new Map();
+      let totalDuration = 0;
+      let totalPages = 0;
 
       result.data.pages.forEach(page => {
         const normalizedUrl = normalizeUrl(page.page);
@@ -2415,16 +2426,25 @@ async function loadPageDistribution() {
         if (existingPage) {
           existingPage.views += page.views;
           existingPage.percentage = (existingPage.views / result.data.totalViews) * 100;
+          existingPage.avgTime = page.avgTime;
+          totalDuration += page.avgTime;
+          totalPages++;
         } else {
           pageMap.set(normalizedUrl, {
             page: normalizedUrl,
             views: page.views,
             percentage: page.percentage,
             cleanPath: page.cleanPath,
-            isHome: page.isHome
+            isHome: page.isHome,
+            avgTime: page.avgTime
           });
+          totalDuration += page.avgTime;
+          totalPages++;
         }
       });
+
+      // Calculer la moyenne globale
+      const averageDuration = totalPages > 0 ? Math.round(totalDuration / totalPages) : 0;
 
       // Convertir le Map en tableau et trier par nombre de vues
       const pages = Array.from(pageMap.values())
@@ -2432,7 +2452,7 @@ async function loadPageDistribution() {
         .map(page => ({
           page: page.page,
           views: page.views,
-          avgTime: '',
+          avgTime: page.avgTime,
           cleanPath: page.cleanPath,
           isHome: page.isHome,
           percentage: page.percentage
@@ -2440,6 +2460,16 @@ async function loadPageDistribution() {
 
       pageViews.value = pages;
       filteredPages.value = [...pages];
+
+      metrics.value = metrics.value.map(metric => {
+        if (metric.label === t.analytics.avgPageTime || metric.label === 'Temps moyen / page') {
+          return {
+            ...metric,
+            value: `${averageDuration}s`
+          };
+        }
+        return metric;
+      });
 
       snackbarText.value = t.analytics.dataLoaded || 'Données de distribution de pages chargées';
       snackbarColor.value = 'success';

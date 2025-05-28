@@ -2204,6 +2204,7 @@ async function handleShowUnusedTables() {
   transition: all 0.3s ease;
   position: relative;
   min-height: 100px;
+  width: 100%;
 }
 
 .sql-results-container.has-results {
@@ -2221,6 +2222,7 @@ async function handleShowUnusedTables() {
   background: #1e1e2f;
   color: #e0e0e0;
   overflow: auto;
+  white-space: nowrap;
 }
 
 .terminal-table th,

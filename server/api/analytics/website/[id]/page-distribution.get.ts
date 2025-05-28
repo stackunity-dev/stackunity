@@ -8,6 +8,7 @@ interface PageDistributionRow extends RowDataPacket {
   percentage: number;
   isHome: boolean;
   rawUrl: string;
+  avgTime: number;
 }
 
 export default defineEventHandler(async (event) => {
@@ -65,13 +66,24 @@ export default defineEventHandler(async (event) => {
     const totalViews = totalViewsRows[0].totalViews || 0;
 
     const [pageDistRows] = await pool.query<RowDataPacket[]>(
-      `SELECT 
-        page_url as page, 
+      `WITH normalized_pages AS (
+        SELECT 
+          page_url,
+          CASE 
+            WHEN page_url LIKE '%#%' THEN SUBSTRING_INDEX(page_url, '#', 1)
+            ELSE page_url
+          END as normalized_url,
+          duration
+        FROM analytics_pageviews
+        WHERE website_id = ? ${dateCondition}
+      )
+      SELECT 
+        normalized_url as page,
         COUNT(*) as views,
-        ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM analytics_pageviews WHERE website_id = ?), 2) as percentage
-      FROM analytics_pageviews
-      WHERE website_id = ? ${dateCondition}
-      GROUP BY page_url
+        ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM analytics_pageviews WHERE website_id = ?), 2) as percentage,
+        SUM(duration) as avgTime
+      FROM normalized_pages
+      GROUP BY normalized_url
       ORDER BY views DESC
       LIMIT ?`,
       [dbWebsiteId, dbWebsiteId, limit]
@@ -102,7 +114,6 @@ export default defineEventHandler(async (event) => {
           ? Number(row.percentage.toFixed(2))
           : Number(parseFloat(String(row.percentage)).toFixed(2));
 
-        // Si c'est NaN, utiliser 0
         if (isNaN(percentage)) {
           percentage = 0;
         }
@@ -117,7 +128,8 @@ export default defineEventHandler(async (event) => {
         views: row.views,
         percentage,
         cleanPath,
-        isHome
+        isHome,
+        avgTime: Number(row.avgTime) || 0
       };
     });
 

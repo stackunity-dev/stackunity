@@ -569,7 +569,7 @@ export default defineEventHandler(async (event) => {
             views: page.views || 0,
             viewsWithDuration: viewsWithDuration,
             durationDataQuality: durationDataQuality,
-            avgTime: hasValidTime ? page.avgTime : '0m 0s',
+            avgTime: '0m 0s',
             avgTimeSeconds: Math.round(avgTimeSec || 0),
             hasDuration: hasValidTime
           };
