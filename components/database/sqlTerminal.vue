@@ -125,7 +125,7 @@
               </v-avatar>
               <div>
                 <div class="text-subtitle-2">{{ selectedConnection?.name }}</div>
-                <div class="text-caption">{{ selectedConnection?.database }} @ {{ selectedConnection?.host }}</div>
+                <div class="text-caption">{{ selectedConnection?.host }}</div>
               </div>
               <v-spacer></v-spacer>
               <v-chip color="success" size="small" class="px-2">
