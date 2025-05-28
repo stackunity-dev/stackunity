@@ -186,86 +186,103 @@ export async function executeQuery(connectionId: string, query: string, params: 
   poolInfo.lastUsed = Date.now();
 
   try {
-    let results;
-    let fields;
-    let affectedRows;
+    const queries = query.split(';').filter(q => q.trim());
+    const allResults: any[] = [];
+    const allFields: any[] = [];
+    let totalAffectedRows = 0;
 
-    switch (type) {
-      case 'mysql': {
-        if (query.trim().toUpperCase().startsWith('USE')) {
-          const [rows, fieldInfo] = await pool.query(query);
-          results = rows;
-          fields = fieldInfo;
-        } else if (query.toUpperCase().includes('MEDIAN(')) {
-          const match = query.match(/SELECT\s+MEDIAN\((\w+)\)\s+FROM\s+(\w+)/i);
-          if (!match) throw new Error("Unsupported MEDIAN() usage format. Use: SELECT MEDIAN(column) FROM table;");
-          const [_, column, table] = match;
-          query = await transformMedianQuery(pool, column, table);
+    for (const singleQuery of queries) {
+      if (!singleQuery.trim()) continue;
 
-          const [rows, fieldInfo] = await pool.query(query);
-          results = rows;
-          fields = fieldInfo;
-        } else if (query.toUpperCase().includes('MODE(')) {
-          const match = query.match(/SELECT\s+MODE\((\w+)\)\s+FROM\s+(\w+)/i);
-          if (!match) throw new Error("Unsupported MODE() usage format. Use: SELECT MODE(column) FROM table;");
-          const [_, column, table] = match;
-          query = await transformModeQuery(pool, column, table);
+      let results;
+      let fields;
+      let affectedRows;
 
-          const [rows, fieldInfo] = await pool.query(query);
-          results = rows;
-          fields = fieldInfo;
-        } else if (query.toUpperCase().includes('SUMMARY(')) {
-          const match = query.match(/SELECT\s+SUMMARY\((\w+)\)\s+FROM\s+(\w+)/i);
-          if (!match) throw new Error("Unsupported SUMMARY() usage format. Use: SELECT SUMMARY(column) FROM table;");
-          const [_, column, table] = match;
-          query = await transformSummaryQuery(pool, column, table);
+      switch (type) {
+        case 'mysql': {
+          if (singleQuery.trim().toUpperCase().startsWith('USE')) {
+            const [rows, fieldInfo] = await pool.query(singleQuery);
+            results = rows;
+            fields = fieldInfo;
+          } else if (singleQuery.toUpperCase().includes('MEDIAN(')) {
+            const match = singleQuery.match(/SELECT\s+MEDIAN\((\w+)\)\s+FROM\s+(\w+)/i);
+            if (!match) throw new Error("Unsupported MEDIAN() usage format. Use: SELECT MEDIAN(column) FROM table;");
+            const [_, column, table] = match;
+            const transformedQuery = await transformMedianQuery(pool, column, table);
 
-          const [rows, fieldInfo] = await pool.query(query);
-          results = rows;
-          fields = fieldInfo;
-        } else {
-          const [rows, fieldInfo] = await pool.execute(query, params);
-          results = rows;
-          fields = fieldInfo;
+            const [rows, fieldInfo] = await pool.query(transformedQuery);
+            results = rows;
+            fields = fieldInfo;
+          } else if (singleQuery.toUpperCase().includes('MODE(')) {
+            const match = singleQuery.match(/SELECT\s+MODE\((\w+)\)\s+FROM\s+(\w+)/i);
+            if (!match) throw new Error("Unsupported MODE() usage format. Use: SELECT MODE(column) FROM table;");
+            const [_, column, table] = match;
+            const transformedQuery = await transformModeQuery(pool, column, table);
+
+            const [rows, fieldInfo] = await pool.query(transformedQuery);
+            results = rows;
+            fields = fieldInfo;
+          } else if (singleQuery.toUpperCase().includes('SUMMARY(')) {
+            const match = singleQuery.match(/SELECT\s+SUMMARY\((\w+)\)\s+FROM\s+(\w+)/i);
+            if (!match) throw new Error("Unsupported SUMMARY() usage format. Use: SELECT SUMMARY(column) FROM table;");
+            const [_, column, table] = match;
+            const transformedQuery = await transformSummaryQuery(pool, column, table);
+
+            const [rows, fieldInfo] = await pool.query(transformedQuery);
+            results = rows;
+            fields = fieldInfo;
+          } else {
+            const [rows, fieldInfo] = await pool.execute(singleQuery, params);
+            results = rows;
+            fields = fieldInfo;
+          }
+
+          if (results && typeof results === 'object' && 'affectedRows' in results) {
+            affectedRows = results.affectedRows;
+          }
+
+          break;
         }
 
-        if (results && typeof results === 'object' && 'affectedRows' in results) {
-          affectedRows = results.affectedRows;
+        case 'postgres': {
+          const result = await pool.query(singleQuery, params);
+          results = result.rows;
+          fields = result.fields;
+          affectedRows = result.rowCount;
+          break;
         }
 
-        break;
-      }
-
-      case 'postgres': {
-        const result = await pool.query(query, params);
-        results = result.rows;
-        fields = result.fields;
-        affectedRows = result.rowCount;
-        break;
-      }
-
-      case 'mssql': {
-        const result = await pool.request()
-          .input('params', mssql.TVP, params)
-          .query(query);
-        results = result.recordset;
-        fields = result.recordset?.columns;
-        affectedRows = result.rowsAffected[0];
-        break;
-      }
-
-      case 'sqlite': {
-        if (query.trim().toUpperCase().startsWith('SELECT')) {
-          results = await pool.all(query, params);
-        } else {
-          const result = await pool.run(query, params);
-          affectedRows = result.changes;
+        case 'mssql': {
+          const result = await pool.request()
+            .input('params', mssql.TVP, params)
+            .query(singleQuery);
+          results = result.recordset;
+          fields = result.recordset?.columns;
+          affectedRows = result.rowsAffected[0];
+          break;
         }
-        break;
+
+        case 'sqlite': {
+          if (singleQuery.trim().toUpperCase().startsWith('SELECT')) {
+            results = await pool.all(singleQuery, params);
+          } else {
+            const result = await pool.run(singleQuery, params);
+            affectedRows = result.changes;
+          }
+          break;
+        }
       }
+
+      allResults.push(results);
+      allFields.push(fields);
+      totalAffectedRows += affectedRows || 0;
     }
 
-    return { results, fields, affectedRows };
+    return {
+      results: allResults.flat(),
+      fields: allFields.flat(),
+      affectedRows: totalAffectedRows
+    };
   } catch (error) {
     console.error(`Query execution error: ${error.message}`);
 

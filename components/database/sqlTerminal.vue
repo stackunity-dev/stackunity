@@ -292,28 +292,44 @@
             </div>
           </v-alert>
         </div>
+        <div v-else-if="isExecuting" class="sql-results-container has-results">
+          <div class="d-flex align-center pa-2 bg-grey-darken-4">
+            <v-icon size="small" color="primary" class="mr-2">mdi-loading mdi-spin</v-icon>
+            <span class="text-caption">Executing query...</span>
+          </div>
+        </div>
         <div v-else-if="dataTableHeaders.length > 0 && dataTableItems.length > 0"
           class="sql-results-container has-results" tabindex="0" aria-label="SQL results table">
           <div class="d-flex align-center pa-2 bg-grey-darken-4">
             <v-icon size="small" color="primary" class="mr-2">mdi-table</v-icon>
-            <span class="text-caption">{{ dataTableItems.length }} {{ dataTableItems.length > 1 ? 'rows' : 'row' }}
+            <span class="text-caption">{{queryResults.reduce((total, result) => total + result.items.length, 0)}} {{
+              queryResults.reduce((total, result) => total + result.items.length, 0) > 1 ? 'rows' : 'row'}}
               returned</span>
+            <v-divider vertical class="mx-4"></v-divider>
+            <span class="text-caption text-grey">{{ queryResults[0].query }}</span>
           </div>
-          <table class="terminal-table">
-            <thead>
-              <tr>
-                <th v-for="header in dataTableHeaders" :key="header.key" scope="col">{{ header.title }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(row, rowIndex) in dataTableItems" :key="rowIndex">
-                <td v-for="header in dataTableHeaders" :key="header.key"
-                  @click="showCellContent(row[header.key], header.title)" class="clickable-cell">
-                  {{ typeof row[header.key] === 'object' ? JSON.stringify(row[header.key]) : row[header.key] }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="query-results-grid" :class="{ 'single-query': queryResults.length === 1 }">
+            <div v-for="(result, index) in queryResults" :key="index" class="query-result-section">
+              <div v-if="queryResults.length > 1" class="d-flex align-center pa-2 bg-grey-darken-3">
+                <span class="text-caption text-grey">{{ result.query }}</span>
+              </div>
+              <table class="terminal-table">
+                <thead>
+                  <tr>
+                    <th v-for="header in result.headers" :key="header.key" scope="col">{{ header.title }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, rowIndex) in result.items" :key="rowIndex">
+                    <td v-for="header in result.headers" :key="header.key"
+                      @click="showCellContent(row[header.key], header.title)" class="clickable-cell">
+                      {{ typeof row[header.key] === 'object' ? JSON.stringify(row[header.key]) : row[header.key] }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </v-card-text>
     </v-card>
@@ -594,6 +610,11 @@ const saveQueryForm = ref<any>(null);
 const userStore = useUserStore();
 const dataTableHeaders = ref<{ title: string; key: string; align?: "start" | "end" | "center" }[]>([]);
 const dataTableItems = ref<any[]>([]);
+const queryResults = ref<Array<{
+  query: string;
+  headers: { title: string; key: string; align?: "start" | "end" | "center" }[];
+  items: any[];
+}>>([]);
 
 const isExporting = ref(false);
 const exportProgress = ref(0);
@@ -738,6 +759,7 @@ const executeCommand = async () => {
   lastExecutedQuery.value = sqlCommand.value;
   sqlError.value = null;
   hasIntentionalError.value = false;
+  queryResults.value = [];
 
   try {
     const command = sqlCommand.value.toLowerCase().trim();
@@ -754,46 +776,62 @@ const executeCommand = async () => {
       return;
     }
 
-    if (command.startsWith('use ')) {
-      const dbName = sqlCommand.value.substring(4).trim();
-      await handleUseDatabase(dbName);
-    } else if (command === 'show databases') {
-      await handleShowDatabases();
-    } else if (command === 'show tables') {
-      await handleShowTables();
-    } else if (command.startsWith('show tables by space used')) {
-      await handleShowTablesBySpace(sqlCommand.value);
-    } else if (command === 'show relations') {
-      await handleShowRelations();
-    } else if (command === 'show unused tables') {
-      await handleShowUnusedTables();
-    } else {
-      await executeComplexQuery(sqlCommand.value);
+    // Séparer les requêtes par point-virgule
+    const queries = sqlCommand.value.split(';').filter(q => q.trim());
+    const results: Array<{
+      query: string;
+      headers: { title: string; key: string; align?: "start" | "end" | "center" }[];
+      items: any[];
+    }> = [];
+
+    for (const query of queries) {
+      if (!query.trim()) continue;
+
+      if (query.toLowerCase().trim().startsWith('use ')) {
+        const dbName = query.substring(4).trim();
+        await handleUseDatabase(dbName);
+      } else if (query.toLowerCase().trim() === 'show databases') {
+        await handleShowDatabases();
+      } else if (query.toLowerCase().trim() === 'show tables') {
+        await handleShowTables();
+      } else if (query.toLowerCase().trim().startsWith('show tables by space used')) {
+        await handleShowTablesBySpace(query);
+      } else if (query.toLowerCase().trim() === 'show relations') {
+        await handleShowRelations();
+      } else if (query.toLowerCase().trim() === 'show unused tables') {
+        await handleShowUnusedTables();
+      } else {
+        await executeComplexQuery(query);
+      }
+
+      console.log(results);
+
+      // Stocker les résultats de chaque requête
+      results.push({
+        query: query.trim(),
+        headers: [...dataTableHeaders.value],
+        items: [...dataTableItems.value]
+      });
     }
 
-    const queryColumns = dataTableHeaders.value.length > 0
-      ? dataTableHeaders.value.map(header => header.title)
-      : (results.value.length > 0 ? Object.keys(results.value[0]) : []);
-    const data = dataTableItems.value.length > 0
-      ? dataTableItems.value
-      : results.value;
+    // Mettre à jour les résultats
+    queryResults.value = results;
 
-    emit('query-results', {
-      query: lastExecutedQuery.value,
-      results: data,
-      columns: queryColumns
-    });
+    // Afficher les résultats de toutes les requêtes
+    if (results.length > 0) {
+      dataTableHeaders.value = results[0].headers;
+      dataTableItems.value = results[0].items;
 
-    analyzeQuery(lastExecutedQuery.value);
+      // Émettre les résultats pour chaque requête
+      for (const result of results) {
+        emit('query-results', {
+          query: result.query,
+          results: result.items,
+          columns: result.headers.map(header => header.title)
+        });
+      }
 
-    if (dataTableHeaders.value.length > 0) {
-      columns.value = queryColumns;
-      results.value = dataTableItems.value;
-    }
-
-    if (dataTableHeaders.value.length === 0 && dataTableItems.value.length === 0) {
-      dataTableHeaders.value = [{ title: 'Message', key: 'message' }];
-      dataTableItems.value = [{ message: 'No results found' }];
+      analyzeQuery(lastExecutedQuery.value);
     }
 
   } catch (error: any) {
@@ -2165,6 +2203,7 @@ async function handleShowUnusedTables() {
   background: transparent;
   transition: all 0.3s ease;
   position: relative;
+  min-height: 100px;
 }
 
 .sql-results-container.has-results {
@@ -2504,5 +2543,86 @@ async function handleShowUnusedTables() {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.query-result-section {
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e1e2f;
+}
+
+.query-result-section:last-child {
+  margin-bottom: 0;
+}
+
+.query-result-section .terminal-table {
+  margin: 0;
+}
+
+.query-result-section .d-flex {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.query-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.query-results-grid.single-query {
+  grid-template-columns: 1fr;
+  padding: 0;
+}
+
+.query-result-section {
+  background: #1e1e2f;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.query-result-section .terminal-table {
+  width: 100%;
+  margin: 0;
+}
+
+.query-result-section .d-flex {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.terminal-table th,
+.terminal-table td {
+  padding: 8px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.bg-grey-darken-4 {
+  background: #1e1e2f !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-caption {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mdi-spin {
+  animation: spin 1s linear infinite;
 }
 </style>
