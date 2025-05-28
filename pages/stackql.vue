@@ -46,7 +46,7 @@
               <v-row class="pa-4">
                 <v-col cols="12" md="6">
                   <v-card class="rounded-lg" elevation="2">
-                    <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
+                    <v-card-title class="bg-secondary py-3 px-4 rounded-t-lg d-flex align-center">
                       <v-icon class="mr-2">mdi-database-cog</v-icon>
                       {{ t().database.connections || 'Database Connections' }}
                     </v-card-title>
@@ -130,7 +130,7 @@
 
                 <v-col cols="12" md="6">
                   <v-card class="rounded-lg" elevation="2">
-                    <v-card-title class="bg-secondary text-white py-3 px-4 rounded-t-lg d-flex align-center">
+                    <v-card-title class="bg-secondary py-3 px-4 rounded-t-lg d-flex align-center">
                       <v-icon class="mr-2">mdi-cog</v-icon>
                       Editor Preferences
                     </v-card-title>

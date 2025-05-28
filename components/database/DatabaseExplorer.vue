@@ -1,7 +1,7 @@
 <template>
   <div class="database-explorer">
     <v-card class="explorer-card elevation-3 mb-4">
-      <v-card-title class="bg-secondary text-white d-flex align-center">
+      <v-card-title class="bg-secondary d-flex align-center">
         <v-icon class="mr-2">mdi-database-search</v-icon>
         {{ isExplorer ? 'Database Explorer' : 'Database Usage' }}
         <v-spacer></v-spacer>

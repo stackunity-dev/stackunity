@@ -1,7 +1,7 @@
 <template>
   <v-container class="sql-terminal" fluid>
     <v-card class="sql-terminal-card elevation-3">
-      <v-card-title class="bg-secondary text-white d-flex align-center">
+      <v-card-title class="bg-secondary d-flex align-center">
         <v-icon class="mr-2">mdi-database-search</v-icon>
         {{ t().sqlTerminal.title }}
         <v-spacer></v-spacer>
@@ -149,7 +149,7 @@
                 <v-btn icon variant="text" color="primary" @click="executeCommand" :loading="isExecuting"
                   :disabled="!sqlCommand || isExecuting" class="mr-1">
                   <v-icon>mdi-play</v-icon>
-                  <v-tooltip activator="parent" location="top">Exécuter</v-tooltip>
+                  <v-tooltip activator="parent" location="top">Execute</v-tooltip>
                 </v-btn>
                 <v-btn icon variant="text" size="small" color="secondary"
                   @click="showSaveQueryDialog = true; newQuery.query = sqlCommand; newQuery.name = generateQueryName(sqlCommand)">
