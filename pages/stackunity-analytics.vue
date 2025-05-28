@@ -1852,6 +1852,8 @@ function updateAnalyticsData(data: any) {
         urlForNormalization = 'http://' + urlObj.host + urlObj.pathname;
       }
 
+      urlForNormalization = urlForNormalization.split('#')[0];
+
       return normalizeUrl(urlForNormalization);
     } catch (e) {
       console.error('Erreur normalisation URL:', e);
@@ -2002,32 +2004,6 @@ const getItemColor = (item: PageView, isViews: boolean = false) => {
   if (percentage < 80) return 'warning';
   return 'error';
 };
-
-function exportPageData() {
-  const headers = ['Page', 'Vues', 'Temps moyen'];
-  const csvRows = [headers.join(',')];
-
-  pageViews.value.forEach(page => {
-    csvRows.push(`"${page.page}",${page.views},"${page.avgTime}"`);
-  });
-
-  const csvContent = csvRows.join('\n');
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-
-  link.setAttribute('href', url);
-  link.setAttribute('download', `pages-${currentSite.value?.name || 'site'}-${new Date().toISOString().split('T')[0]}.csv`);
-  link.style.visibility = 'hidden';
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-
-  showMessage(t.analytics.exportSuccess, 'success');
-}
-
 
 watch(() => pageViews.value, (newPageViews) => {
   filteredPages.value = [...newPageViews];
@@ -2185,12 +2161,11 @@ function exportAnalyticsData() {
           }
         }
 
-        // Nettoyer et tronquer chaque valeur pour assurer la compatibilité CSV
         const pageUrl = (interaction as any).pageUrl || '';
         const cleanElementSelector = (interaction.elementSelector || '')
           .replace(/"/g, '""')
-          .replace(/[;\n\r]/g, ' ') // Remplacer les ; et sauts de ligne
-          .substring(0, 150); // Limiter la longueur
+          .replace(/[;\n\r]/g, ' ')
+          .substring(0, 150);
 
         const cleanPageUrl = pageUrl
           .replace(/"/g, '""')
@@ -2243,10 +2218,8 @@ function exportAnalyticsData() {
 }
 
 function downloadFile(content: string, type: string, filename: string) {
-  // Ajouter un BOM (Byte Order Mark) pour les fichiers CSV pour une meilleure compatibilité
   const bom = type.includes('csv') ? new Uint8Array([0xEF, 0xBB, 0xBF]) : new Uint8Array();
 
-  // Créer un blob avec BOM + contenu
   const blob = new Blob([bom, content], { type: `${type};charset=utf-8;` });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -2400,17 +2373,6 @@ function loadExclusions() {
   }
 }
 
-function getTimeColor(item: PageView) {
-  if (!item.hasDuration) return 'grey';
-
-  const seconds = item.avgTimeSeconds || 0;
-  if (seconds < 10) return 'error';
-  if (seconds < 30) return 'warning';
-  if (seconds < 60) return 'info';
-  if (seconds < 180) return 'success';
-  return 'primary';
-}
-
 const pageViewsTimeSeries = ref<Array<{ date: string, views: number }>>([]);
 const pagesTrackingData = ref<Array<{ date: string, page: string, views: number }>>([]);
 const selectedPage = ref<string | null>(null);
@@ -2443,14 +2405,38 @@ async function loadPageDistribution() {
     const result = await response.json();
 
     if (result.success && result.data) {
-      const pages = result.data.pages.map(page => ({
-        page: page.page,
-        views: page.views,
-        avgTime: '',
-        cleanPath: page.cleanPath,
-        isHome: page.isHome,
-        percentage: page.percentage
-      }));
+      // Créer un Map pour agréger les vues par URL normalisée
+      const pageMap = new Map();
+
+      result.data.pages.forEach(page => {
+        const normalizedUrl = normalizeUrl(page.page);
+        const existingPage = pageMap.get(normalizedUrl);
+
+        if (existingPage) {
+          existingPage.views += page.views;
+          existingPage.percentage = (existingPage.views / result.data.totalViews) * 100;
+        } else {
+          pageMap.set(normalizedUrl, {
+            page: normalizedUrl,
+            views: page.views,
+            percentage: page.percentage,
+            cleanPath: page.cleanPath,
+            isHome: page.isHome
+          });
+        }
+      });
+
+      // Convertir le Map en tableau et trier par nombre de vues
+      const pages = Array.from(pageMap.values())
+        .sort((a, b) => b.views - a.views)
+        .map(page => ({
+          page: page.page,
+          views: page.views,
+          avgTime: '',
+          cleanPath: page.cleanPath,
+          isHome: page.isHome,
+          percentage: page.percentage
+        }));
 
       pageViews.value = pages;
       filteredPages.value = [...pages];

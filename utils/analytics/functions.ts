@@ -289,13 +289,17 @@ function normalizeUrl(url: string): string {
       hostname = urlObj.hostname;
     }
 
-    const normalizedPath = pathname.replace(/^\/(fr|en)(\/|$)/, '$2');
+    pathname = pathname.split('#')[0];
 
-    if (!normalizedPath || normalizedPath === '') {
+    pathname = pathname.replace(/^\/(fr|en)\//, '/');
+
+    if (!pathname || pathname === '') {
       return hostname ? hostname + '/' : '/';
     }
 
-    return hostname ? hostname + normalizedPath : normalizedPath;
+    pathname = pathname.replace(/\/$/, '');
+
+    return hostname ? hostname + pathname : pathname;
   } catch (e) {
     console.error('Erreur lors de la normalisation de l\'URL:', e);
     return url;
@@ -351,13 +355,10 @@ function formatPagePath(url: string, cleanPath: string | null | undefined, isHom
 }
 
 export {
-  formatDate,
-  formatDuration,
-  formatUrl,
+  formatDate, formatDateToYYYYMMDD, formatDuration, formatPagePath, formatUrl,
   generateTrackingCode,
   getBrowserColor,
-  getBrowserIcon,
-  getColorByIndex,
+  getBrowserIcon, getChartColor, getColorByIndex,
   getDeviceIcon,
   getDeviceLabel,
   getFullDomain,
@@ -369,9 +370,6 @@ export {
   getSourceIcon,
   getSourceLabel,
   isLocalEnvironment,
-  normalizeUrl,
-  formatDateToYYYYMMDD,
-  getChartColor,
-  formatPagePath
+  normalizeUrl
 };
 
