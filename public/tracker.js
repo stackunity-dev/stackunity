@@ -737,34 +737,27 @@
       },
       
       getLocation: function(callback) {
-        
-        if (!navigator.geolocation) {
+        if (window.location.hostname === 'localhost') {
+          console.log('[StackUnity Tracker] Skip de la géolocalisation sur localhost');
           return callback(null);
         }
-        
-        try {
-          navigator.geolocation.getCurrentPosition(
-            function(position) {
-              
-              callback({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy
-              });
-            },
-            function(error) {
-              callback(null);
-            },
-            {
-              enableHighAccuracy: false,
-              timeout: 5000,
-              maximumAge: 0
-            }
-          );
-        } catch (e) {
-          console.log('[StackUnity DEBUG] Exception lors de la géolocalisation:', e);
-          callback(null);
-        }
+
+        fetch('https://ipapi.co/json/')
+          .then(response => response.json())
+          .then(data => {
+            callback({
+              latitude: data.latitude,
+              longitude: data.longitude,
+              accuracy: 10000,
+              country: data.country_name,
+              city: data.city,
+              region: data.region
+            });
+          })
+          .catch(error => {
+            console.log('[StackUnity Tracker] Erreur lors de la géolocalisation IP:', error);
+            callback(null);
+          });
       },
     };
 
@@ -796,7 +789,6 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          credentials: 'include',
           body: JSON.stringify(data),
           keepalive: state.isUnloading 
         }).then(response => {
