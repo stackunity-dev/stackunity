@@ -986,13 +986,6 @@
               const startTimeMs = state.startTime.getTime();
               const duration = Math.round((now.getTime() - startTimeMs) / 1000);
               
-              console.log('[StackUnity Tracker] Envoi mise à jour durée:', {
-                pageViewId: state.currentPageViewId,
-                duration: duration,
-                timestamp: now.toISOString(),
-                scrollDepth: state.scrollDepth
-              });
-              
               const pageVisitData = {
                 type: 'pageVisitDuration',
                 id: utils.generateUUID(),
@@ -1225,7 +1218,7 @@
         state.hasActivity = false;
         state.scrollDepth = 0;
         
-        utils.getLocation(function(locationData) {
+        utils.getLocationFromIP(function(locationData) {
           if (locationData) {
             const locationEvent = {
               type: 'geoLocation',
