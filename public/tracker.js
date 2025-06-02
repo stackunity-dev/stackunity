@@ -1501,7 +1501,7 @@
         state.hasActivity = true;
         state.lastActivity = new Date();
         setTimeout(() => {
-          api.flushBuffer();
+          tracker.flushEvents();
         }, 10);
       },
       
@@ -1765,7 +1765,7 @@
           state.buffer.push(sessionEndEvent);
         }
         
-        api.flushBuffer();
+        tracker.flushEvents();
         
         if (navigator.sendBeacon && state.buffer.length > 0) {
           try {
@@ -1825,7 +1825,7 @@
             utils.sendBounceEvent();
           }
           
-          api.flushBuffer();
+          tracker.flushEvents();
         } else if (document.visibilityState === 'visible') {
           state.tabHidden = false;
           state.hasActivity = true;
@@ -1893,7 +1893,7 @@
           };
           
           state.buffer.push(pageExitEvent);
-          api.flushBuffer();
+          tracker.flushEvents();
         }
         
         state.currentPageViewId = utils.generateUUID();
@@ -2211,11 +2211,7 @@
           events: eventsToSend
         };
         
-        // NOUVELLE APPROCHE : Utiliser sendBeacon ou Image tracking UNIQUEMENT
-        console.log('[StackUnity Tracker] Envoi via sendBeacon/Image pour éviter CORS');
-        
         try {
-          // Essayer sendBeacon en premier
           if (navigator.sendBeacon) {
             const blob = new Blob([JSON.stringify(dataToSend)], { type: 'application/json' });
             const success = navigator.sendBeacon(config.apiEndpoint, blob);
@@ -2228,7 +2224,6 @@
           console.warn('[StackUnity Tracker] sendBeacon échoué:', e);
         }
         
-        // Fallback : Image pixel tracking
         try {
           const queryParams = `data=${encodeURIComponent(JSON.stringify(dataToSend))}&t=${Date.now()}`;
           const img = new Image();

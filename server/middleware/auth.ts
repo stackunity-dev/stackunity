@@ -4,7 +4,6 @@ import { ServerTokenManager } from '../utils/ServerTokenManager'
 
 const publicRoutes = [
   '/api/auth/',
-  '/api/analytics/',
   '/api/newsletter/unsubscribe',
   '/api/newsletter/subscribe',
   '/api/health',
@@ -119,14 +118,9 @@ export default defineEventHandler(async (event: H3Event) => {
     setResponseHeaders(event, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Credentials': 'true'
     });
-
-    if (!url.includes('/analytics/')) {
-      setResponseHeaders(event, {
-        'Access-Control-Allow-Credentials': 'true'
-      });
-    }
 
   } catch (error: any) {
 
