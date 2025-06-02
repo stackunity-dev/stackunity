@@ -476,55 +476,52 @@
         return 'other';
       },
       
-      sendBounceEvent: function(forceSend = false) {
-        if (state.bounceDetected && !forceSend) return;
-        
-        state.bounceDetected = true;
-        const endTime = new Date();
-        const duration = Math.round((endTime.getTime() - state.startTime.getTime()) / 1000);
+      sendBounceEvent: function(force = false) {
+        if (state.isExcluded || utils.isLocalEnvironment()) return null;
+        if (!force && (state.hasActivity || !state.bounceDetected)) return null;
         
         const bounceEvent = {
-          type: 'sessionEnd',
+          type: 'interaction',
           id: utils.generateUUID(),
-          sessionId: state.sessionId,
-          endTime: endTime.toISOString(),
-          exitPage: window.location.href,
-          duration: duration,
-          isBounce: true,
-          isComplete: false,
-          reason: 'tab_closed'
+          interactionType: 'bounce',
+          pageViewId: state.currentPageViewId,
+          timestamp: new Date().toISOString(),
+          pageUrl: window.location.href,
+          duration: Math.round((new Date().getTime() - state.startTime.getTime()) / 1000),
+          userAgent: navigator.userAgent || 'unknown'
         };
         
-
-        if (navigator.sendBeacon) {
-          navigator.sendBeacon(config.apiEndpoint, JSON.stringify({
+        const imgSrc = `${config.apiEndpoint}/img?data=${encodeURIComponent(JSON.stringify({
+          websiteId: state.websiteId,
+          sessionId: state.sessionId,
+          visitorId: state.visitorId,
+          events: [bounceEvent]
+        }))}&t=${Date.now()}`;
+        
+        const img = new Image();
+        img.style.display = 'none';
+        img.style.position = 'absolute';
+        img.style.left = '-9999px';
+        img.src = imgSrc;
+        document.body.appendChild(img);
+        
+        // Nouvelle approche : sendBeacon/Image seulement
+        try {
+          const dataToSend = {
             websiteId: state.websiteId,
             sessionId: state.sessionId,
             visitorId: state.visitorId,
             events: [bounceEvent]
-          }));
-        }
-        
-        const img = new Image();
-        img.src = `${config.apiEndpoint}?emergency=1&websiteId=${encodeURIComponent(state.websiteId)}&sessionId=${encodeURIComponent(state.sessionId)}&visitorId=${encodeURIComponent(state.visitorId)}&bounce=1&url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(document.title)}&duration=${duration}&t=${Date.now()}`;
-        document.body.appendChild(img);
-        
-        try {
-          originalFetch(config.apiEndpoint, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              websiteId: state.websiteId,
-              sessionId: state.sessionId,
-              visitorId: state.visitorId,
-              events: [bounceEvent]
-            }),
-            credentials: 'omit',
-            keepalive: true
-          }).catch(() => {});
+          };
+          
+          if (navigator.sendBeacon) {
+            const blob = new Blob([JSON.stringify(dataToSend)], { type: 'application/json' });
+            navigator.sendBeacon(config.apiEndpoint, blob);
+          } else {
+            // Fallback: Image tracking (déjà fait ci-dessus)
+          }
         } catch (e) {
+          console.error('[StackUnity Tracker] Erreur envoi bounce:', e);
         }
         
         try {
@@ -780,41 +777,56 @@
 
     const api = {
       sendData: function(endpoint, data) {
+        console.log('[StackUnity Tracker] api.sendData - Utilisation sendBeacon/Image uniquement');
         
-        if (navigator.sendBeacon && state.isUnloading) {
-          try {
-            console.log('[StackUnity Tracker] Utilisation de Beacon API');
-            navigator.sendBeacon(endpoint, JSON.stringify(data));
-            return Promise.resolve();
-          } catch (e) {
-            console.error('[StackUnity Tracker] Échec de Beacon API:', e);
+        // NOUVELLE APPROCHE : sendBeacon ou Image tracking UNIQUEMENT 
+        try {
+          // Essayer sendBeacon en premier
+          if (navigator.sendBeacon) {
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const success = navigator.sendBeacon(endpoint, blob);
+            if (success) {
+              console.log('[StackUnity Tracker] api.sendData sendBeacon réussi');
+              return Promise.resolve();
+            }
           }
+        } catch (e) {
+          console.warn('[StackUnity Tracker] api.sendData sendBeacon échoué:', e);
         }
         
-        const hasOnlySubtleEvents = data.events && data.events.every(event => 
-          event.interactionType === 'input_change' || 
-          event.interactionType === 'scroll'
-        );
-        
-        if (hasOnlySubtleEvents && data.events && data.events.length < 5) {
-          console.log('[StackUnity Tracker] Utilisation de sendDataNoCors pour événements subtils');
-          return api.sendDataNoCors(endpoint, data);
+        // Fallback : Image pixel tracking
+        try {
+          const queryParams = `data=${encodeURIComponent(JSON.stringify(data))}&t=${Date.now()}`;
+          const img = new Image();
+          img.style.display = 'none';
+          img.style.position = 'absolute';
+          img.style.left = '-9999px';
+          
+          return new Promise((resolve, reject) => {
+            img.onload = function() {
+              console.log('[StackUnity Tracker] api.sendData Image pixel réussi');
+              if (img.parentNode) {
+                img.parentNode.removeChild(img);
+              }
+              resolve(undefined);
+            };
+            
+            img.onerror = function() {
+              console.error('[StackUnity Tracker] api.sendData Image pixel échoué');
+              if (img.parentNode) {
+                img.parentNode.removeChild(img);
+              }
+              reject(new Error('Image pixel failed'));
+            };
+            
+            img.src = `${endpoint}?${queryParams}`;
+            document.body.appendChild(img);
+          });
+          
+        } catch (error) {
+          console.error('[StackUnity Tracker] api.sendData erreur complète:', error);
+          return Promise.reject(error);
         }
-        
-        return originalFetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data),
-          credentials: 'omit',
-          keepalive: state.isUnloading 
-        }).then(response => {
-          return response;
-        }).catch(error => {
-          console.error('[StackUnity Tracker] Erreur fetch:', error);
-          throw error;
-        });
       },
       
       sendDataNoCors: function(endpoint, data) {
