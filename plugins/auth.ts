@@ -144,6 +144,11 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     window.fetch = async (input, init) => {
       const inputUrl = input instanceof Request ? input.url : input.toString();
 
+      // Exclure complètement les routes analytics de l'interceptor
+      if (inputUrl.includes('/api/analytics/')) {
+        return originalFetch(input, init);
+      }
+
       if (inputUrl.includes('/api/auth/check-trial')) {
         return originalFetch(input, init);
       }
