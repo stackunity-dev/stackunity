@@ -553,18 +553,32 @@
           if (storedBounces.length === 0) return;
           
           storedBounces.forEach(bounce => {
-            fetch(config.apiEndpoint, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
+            // Utiliser sendBeacon ou Image tracking au lieu de fetch
+            try {
+              const dataToSend = {
                 websiteId: bounce.websiteId,
                 sessionId: bounce.sessionId,
                 visitorId: bounce.visitorId,
                 events: [bounce.event]
-              })
-            }).catch(() => {});
+              };
+              
+              if (navigator.sendBeacon) {
+                const blob = new Blob([JSON.stringify(dataToSend)], { type: 'application/json' });
+                navigator.sendBeacon(config.apiEndpoint, blob);
+              } else {
+                // Fallback: Image tracking
+                const queryParams = `data=${encodeURIComponent(JSON.stringify(dataToSend))}&t=${Date.now()}`;
+                const img = new Image();
+                img.style.display = 'none';
+                img.src = `${config.apiEndpoint}?${queryParams}`;
+                document.body.appendChild(img);
+                setTimeout(() => {
+                  if (img.parentNode) img.parentNode.removeChild(img);
+                }, 1000);
+              }
+            } catch (e) {
+              console.error('[StackUnity Tracker] Erreur envoi bounce:', e);
+            }
           });
           
           localStorage.setItem('stackunity_pending_bounces', '[]');
@@ -745,7 +759,7 @@
           return callback(null);
         }
 
-        fetch('https://ipapi.co/json/')
+        originalFetch('https://ipapi.co/json/')
           .then(response => response.json())
           .then(data => {
             callback({
