@@ -22,7 +22,8 @@ const publicRoutes = [
   '/_nuxt/',
   '/robots.txt',
   '/sitemap.xml',
-  '/manifest.json'
+  '/manifest.json',
+  '/tracker.js'
 ]
 
 const adminRoutes = [
@@ -117,9 +118,14 @@ export default defineEventHandler(async (event: H3Event) => {
     setResponseHeaders(event, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Allow-Credentials': 'true'
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
     });
+
+    if (!url.includes('/analytics/')) {
+      setResponseHeaders(event, {
+        'Access-Control-Allow-Credentials': 'true'
+      });
+    }
 
   } catch (error: any) {
 
