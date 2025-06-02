@@ -4,6 +4,7 @@ import { ServerTokenManager } from '../utils/ServerTokenManager'
 
 const publicRoutes = [
   '/api/auth/',
+  '/api/analytics/',
   '/api/newsletter/unsubscribe',
   '/api/newsletter/subscribe',
   '/api/health',
