@@ -591,10 +591,46 @@
             return null;
           }
           
-          const response = await fetch('https://api.ipify.org?format=json');
-          const data = await response.json();
-          console.log('[StackUnity Tracker] IP récupérée avec succès');
-          return data.ip;
+          // Utiliser JSONP pour éviter CORS au lieu de fetch
+          return new Promise((resolve) => {
+            const script = document.createElement('script');
+            const callbackName = 'stackunity_ip_' + Date.now();
+            
+            // @ts-ignore
+            window[callbackName] = function(data) {
+              console.log('[StackUnity Tracker] IP récupérée avec succès');
+              resolve(data.ip || null);
+              
+              // Cleanup
+              document.head.removeChild(script);
+              // @ts-ignore
+              delete window[callbackName];
+            };
+            
+            script.src = `https://api.ipify.org?format=jsonp&callback=${callbackName}`;
+            script.onerror = function() {
+              console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'IP');
+              resolve(null);
+              document.head.removeChild(script);
+              // @ts-ignore
+              delete window[callbackName];
+            };
+            
+            document.head.appendChild(script);
+            
+            // Timeout de sécurité
+            setTimeout(() => {
+              if (script.parentNode) {
+                document.head.removeChild(script);
+                // @ts-ignore
+                if (window[callbackName]) {
+                  // @ts-ignore
+                  delete window[callbackName];
+                  resolve(null);
+                }
+              }
+            }, 5000);
+          });
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de la récupération de l\'IP:', e.message);
           return null;
@@ -751,27 +787,80 @@
       },
       
       getLocation: function(callback) {
-        if (window.location.hostname === 'localhost') {
-          console.log('[StackUnity Tracker] Skip de la géolocalisation sur localhost');
-          return callback(null);
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            function(position) {
+              callback({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy
+              });
+            },
+            function(error) {
+              console.log('[StackUnity Tracker] Géolocalisation refusée par l\'utilisateur, fallback vers IP');
+              utils.getLocationFromIP(callback);
+            },
+            { timeout: 5000, enableHighAccuracy: false, maximumAge: 60000 }
+          );
+        } else {
+          utils.getLocationFromIP(callback);
         }
+      },
 
-        originalFetch('https://ipapi.co/json/')
-          .then(response => response.json())
-          .then(data => {
-            callback({
-              latitude: data.latitude,
-              longitude: data.longitude,
-              accuracy: 10000,
-              country: data.country_name,
-              city: data.city,
-              region: data.region
-            });
-          })
-          .catch(error => {
-            console.log('[StackUnity Tracker] Erreur lors de la géolocalisation IP:', error);
+      getLocationFromIP: function(callback) {
+        // Utiliser JSONP pour éviter CORS au lieu de fetch
+        try {
+          const script = document.createElement('script');
+          const callbackName = 'stackunity_geo_' + Date.now();
+          
+          // @ts-ignore
+          window[callbackName] = function(data) {
+            if (data && data.latitude && data.longitude) {
+              callback({
+                latitude: data.latitude,
+                longitude: data.longitude,
+                accuracy: 10000,
+                country: data.country_name,
+                city: data.city,
+                region: data.region
+              });
+            } else {
+              callback(null);
+            }
+            
+            // Cleanup
+            document.head.removeChild(script);
+            // @ts-ignore
+            delete window[callbackName];
+          };
+          
+          script.src = `https://ipapi.co/json/?callback=${callbackName}`;
+          script.onerror = function() {
+            console.log('[StackUnity Tracker] Erreur lors de la géolocalisation IP');
             callback(null);
-          });
+            document.head.removeChild(script);
+            // @ts-ignore
+            delete window[callbackName];
+          };
+          
+          document.head.appendChild(script);
+          
+          // Timeout de sécurité
+          setTimeout(() => {
+            if (script.parentNode) {
+              document.head.removeChild(script);
+              // @ts-ignore
+              if (window[callbackName]) {
+                // @ts-ignore
+                delete window[callbackName];
+                callback(null);
+              }
+            }
+          }, 10000);
+          
+        } catch (error) {
+          console.log('[StackUnity Tracker] Erreur setup géolocalisation IP:', error);
+        }
       },
     };
 
