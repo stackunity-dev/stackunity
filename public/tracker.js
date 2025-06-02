@@ -2135,7 +2135,6 @@
             const blob = new Blob([JSON.stringify(dataToSend)], { type: 'application/json' });
             const success = navigator.sendBeacon(config.apiEndpoint, blob);
             if (success) {
-              console.log('[StackUnity Tracker] Envoi sendBeacon réussi');
               return;
             }
           }
@@ -2151,7 +2150,6 @@
           img.style.left = '-9999px';
           
           img.onload = function() {
-            console.log('[StackUnity Tracker] Envoi Image pixel réussi');
             if (img.parentNode) {
               img.parentNode.removeChild(img);
             }
