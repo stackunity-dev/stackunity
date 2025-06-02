@@ -2,8 +2,6 @@
   try {
     const baseUrl = 'https://stackunity.tech';
 
-    const originalFetch = window.fetch.bind(window);
-
     const config = {
       apiEndpoint: `${baseUrl}/api/analytics/collect`,
       flushInterval: 10 * 1000,
@@ -82,13 +80,11 @@
       },
       
       getReferrer: function() {
-        console.log('[StackUnity Tracker] Récupération du référent brut:', document.referrer || 'Aucun référent');
         return document.referrer || null;
       },
       
       getReferrerSource: function() {
         const referrer = document.referrer;
-        console.log('[StackUnity Tracker] Analyse du référent:', referrer || 'Direct');
         
         if (!referrer) return { source: 'direct', name: 'Direct' };
         
@@ -96,7 +92,6 @@
           const url = new URL(referrer);
           const hostname = url.hostname.toLowerCase();
           const fullReferrer = referrer.toLowerCase();
-          console.log('[StackUnity Tracker] Hostname référent:', hostname);
           
           // Détection plus complète des référents LinkedIn
           if (hostname.includes('linkedin') || 
@@ -105,7 +100,6 @@
               hostname.includes('linked.in') ||
               fullReferrer.includes('/linkedin.') ||
               fullReferrer.includes('linkedin/')) {
-            console.log('[StackUnity Tracker] Référent LinkedIn détecté:', hostname);
             return { source: 'linkedin', name: 'LinkedIn' };
           }
           
@@ -115,7 +109,6 @@
               hostname.includes('fbcdn.net') ||
               fullReferrer.includes('/facebook.') ||
               fullReferrer.includes('facebook/')) {
-            console.log('[StackUnity Tracker] Référent Facebook détecté:', hostname);
             return { source: 'facebook', name: 'Facebook' };
           }
           
@@ -125,7 +118,6 @@
               hostname.includes('x.com') ||
               fullReferrer.includes('/twitter.') ||
               fullReferrer.includes('twitter/')) {
-            console.log('[StackUnity Tracker] Référent Twitter détecté:', hostname);
             return { source: 'twitter', name: 'Twitter' };
           }
           
@@ -133,33 +125,28 @@
           if (hostname.includes('instagram') ||
               fullReferrer.includes('/instagram.') ||
               fullReferrer.includes('instagram/')) {
-            console.log('[StackUnity Tracker] Référent Instagram détecté:', hostname);
             return { source: 'instagram', name: 'Instagram' };
           }
           
           // Détection Google
           if (hostname.includes('google') ||
               hostname.includes('goo.gl')) {
-            console.log('[StackUnity Tracker] Référent Google détecté:', hostname);
             return { source: 'google', name: 'Google' };
           }
           
           // Détection YouTube
           if (hostname.includes('youtube') ||
               hostname.includes('youtu.be')) {
-            console.log('[StackUnity Tracker] Référent YouTube détecté:', hostname);
             return { source: 'youtube', name: 'YouTube' };
           }
           
           // Détection Bing
           if (hostname.includes('bing')) {
-            console.log('[StackUnity Tracker] Référent Bing détecté:', hostname);
             return { source: 'bing', name: 'Bing' };
           }
           
           // Si on arrive ici, c'est un référent externe mais pas un réseau social connu
           const domain = hostname.replace(/^www\./, '');
-          console.log('[StackUnity Tracker] Référent externe détecté:', domain);
           return { source: 'referral', name: domain };
         } catch (e) {
           console.error('[StackUnity Tracker] Erreur lors de l\'analyse du référent:', e);
@@ -587,7 +574,6 @@
       getUserIP: async function() {
         try {
           if (window.location.hostname !== 'localhost') {
-            console.log('[StackUnity Tracker] Skip de la récupération d\'IP en production');
             return null;
           }
           
@@ -598,7 +584,6 @@
             
             // @ts-ignore
             window[callbackName] = function(data) {
-              console.log('[StackUnity Tracker] IP récupérée avec succès');
               resolve(data.ip || null);
               
               // Cleanup
@@ -618,7 +603,6 @@
             
             document.head.appendChild(script);
             
-            // Timeout de sécurité
             setTimeout(() => {
               if (script.parentNode) {
                 document.head.removeChild(script);
@@ -640,7 +624,7 @@
       sendSyncXhr: function(endpoint, data) {
         try {
           const xhr = new XMLHttpRequest();
-          xhr.open('POST', endpoint, false); // false = synchrone
+          xhr.open('POST', endpoint, false); 
           xhr.setRequestHeader('Content-Type', 'application/json');
           
           const payload = {
@@ -785,30 +769,8 @@
       
       formatDate: function(dateString) {
       },
-      
-      getLocation: function(callback) {
-        if ('geolocation' in navigator) {
-          navigator.geolocation.getCurrentPosition(
-            function(position) {
-              callback({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy
-              });
-            },
-            function(error) {
-              console.log('[StackUnity Tracker] Géolocalisation refusée par l\'utilisateur, fallback vers IP');
-              utils.getLocationFromIP(callback);
-            },
-            { timeout: 5000, enableHighAccuracy: false, maximumAge: 60000 }
-          );
-        } else {
-          utils.getLocationFromIP(callback);
-        }
-      },
 
       getLocationFromIP: function(callback) {
-        // Utiliser JSONP pour éviter CORS au lieu de fetch
         try {
           const script = document.createElement('script');
           const callbackName = 'stackunity_geo_' + Date.now();
@@ -845,7 +807,6 @@
           
           document.head.appendChild(script);
           
-          // Timeout de sécurité
           setTimeout(() => {
             if (script.parentNode) {
               document.head.removeChild(script);
@@ -866,16 +827,12 @@
 
     const api = {
       sendData: function(endpoint, data) {
-        console.log('[StackUnity Tracker] api.sendData - Utilisation sendBeacon/Image uniquement');
         
-        // NOUVELLE APPROCHE : sendBeacon ou Image tracking UNIQUEMENT 
         try {
-          // Essayer sendBeacon en premier
           if (navigator.sendBeacon) {
             const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
             const success = navigator.sendBeacon(endpoint, blob);
             if (success) {
-              console.log('[StackUnity Tracker] api.sendData sendBeacon réussi');
               return Promise.resolve();
             }
           }
@@ -883,7 +840,6 @@
           console.warn('[StackUnity Tracker] api.sendData sendBeacon échoué:', e);
         }
         
-        // Fallback : Image pixel tracking
         try {
           const queryParams = `data=${encodeURIComponent(JSON.stringify(data))}&t=${Date.now()}`;
           const img = new Image();
@@ -893,7 +849,6 @@
           
           return new Promise((resolve, reject) => {
             img.onload = function() {
-              console.log('[StackUnity Tracker] api.sendData Image pixel réussi');
               if (img.parentNode) {
                 img.parentNode.removeChild(img);
               }
@@ -1209,11 +1164,9 @@
       
       trackPageView: function() {
         if (state.isExcluded || utils.isLocalEnvironment()) {
-          console.log('[StackUnity DEBUG] Tracking désactivé - isExcluded:', state.isExcluded, 'isLocalEnvironment:', utils.isLocalEnvironment());
           return;
         }
         
-        console.log('[StackUnity DEBUG] Début trackPageView');
         
         state.startTime = new Date();
         
@@ -1267,7 +1220,6 @@
           utm_term: utmParams.utm_term
         };
         
-        console.log('[StackUnity DEBUG] Données de pageView:', pageview);
         
         state.buffer.push(pageview);
         state.hasActivity = false;
@@ -1290,18 +1242,14 @@
             };
             
             state.buffer.push(locationEvent);
-            console.log('[StackUnity DEBUG] Événement de géolocalisation ajouté:', locationEvent);
-            
-            console.log('[StackUnity DEBUG] Envoi forcé des données de géolocalisation');
+
             tracker.flushEvents();
           } else {
-            console.log('[StackUnity DEBUG] Pas de données de géolocalisation disponibles');
           }
         });
         
         if (config.trackVisibility) {
           setTimeout(() => {
-            console.log('[StackUnity DEBUG] Configuration de la visibilité');
           }, 500);
         }
       },
@@ -1348,7 +1296,6 @@
           }
         }
         
-        // Récupérer le texte de l'élément
         let elementText = '';
         if (target.textContent) {
           elementText = target.textContent.trim().substring(0, 50);
@@ -1358,7 +1305,6 @@
           elementText = target.alt.trim().substring(0, 50);
         }
         
-        // Récupérer l'URL de la page actuelle avec gestion d'erreur
         let currentUrl = '';
         try {
           currentUrl = window.location.href || document.URL;
@@ -1367,12 +1313,10 @@
           currentUrl = 'https://stackunity.tech/fallback';
         }
         
-        // URL de fallback si toutes les méthodes échouent
-        if (!currentUrl) {
+          if (!currentUrl) {
           currentUrl = 'https://stackunity.tech/fallback';
         }
         
-        // Récupérer les dimensions de la page et du viewport
         const pageWidth = Math.max(
           document.body.scrollWidth,
           document.documentElement.scrollWidth,
@@ -1399,30 +1343,14 @@
           document.documentElement.clientHeight || 
           document.body.clientHeight;
         
-        // Position du scroll
         const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
-        // Coordonnées absolues du clic par rapport à la page entière
         const pageX = e.clientX + scrollLeft;
         const pageY = e.clientY + scrollTop;
         
-        // Coordonnées relatives en pourcentage
         const relativeX = (pageX / pageWidth * 100).toFixed(2);
         const relativeY = (pageY / pageHeight * 100).toFixed(2);
-        
-        console.log('[StackUnity DEBUG] Clic détecté:', {
-          selector,
-          elementText,
-          pageX,
-          pageY,
-          relativeX,
-          relativeY,
-          pageWidth,
-          pageHeight,
-          viewportWidth,
-          viewportHeight
-        });
         
         const clickData = {
           type: 'interaction',
@@ -1621,9 +1549,7 @@
         }
         
         if (target.type === 'password') return; 
-        
-        const identifier = target.name || target.id || target.getAttribute('placeholder') || 'unidentified-field';
-        tracker.handleInput(e);
+      
       },
       
       handleScroll: function() {
