@@ -2113,7 +2113,6 @@
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(dataToSend),
-            credentials: 'include',
             keepalive: true
           }).then(response => {
             return response.ok ? response.json() : Promise.reject('Erreur serveur');
@@ -2125,14 +2124,12 @@
         }
       },
       setupSession: function() {
-        // Détection de la session préexistante
         const storedSessionId = sessionStorage.getItem('stackunity_session_id') || '';
         if (storedSessionId) {
           state.sessionId = storedSessionId;
           return;
         }
         
-        // Création d'une nouvelle session
         state.sessionId = utils.generateUUID();
         sessionStorage.setItem('stackunity_session_id', state.sessionId);
 
