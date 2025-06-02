@@ -2096,36 +2096,52 @@
           events: eventsToSend
         };
         
-        if (isBeforeUnload) {
+        // NOUVELLE APPROCHE : Utiliser sendBeacon ou Image tracking UNIQUEMENT
+        console.log('[StackUnity Tracker] Envoi via sendBeacon/Image pour éviter CORS');
+        
+        try {
+          // Essayer sendBeacon en premier
           if (navigator.sendBeacon) {
             const blob = new Blob([JSON.stringify(dataToSend)], { type: 'application/json' });
-            navigator.sendBeacon(config.apiEndpoint, blob);
-          } else {
-            try {
-              const xhr = new XMLHttpRequest();
-              xhr.open('POST', config.apiEndpoint, false);
-              xhr.setRequestHeader('Content-Type', 'application/json');
-              xhr.send(JSON.stringify(dataToSend));
-            } catch (e) {
-              console.error('[StackUnity Tracker] Erreur XHR synchrone:', e);
+            const success = navigator.sendBeacon(config.apiEndpoint, blob);
+            if (success) {
+              console.log('[StackUnity Tracker] Envoi sendBeacon réussi');
+              return;
             }
           }
-        } else {
-          originalFetch(config.apiEndpoint, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(dataToSend),
-            credentials: 'omit',
-            keepalive: true
-          }).then(response => {
-            return response.ok ? response.json() : Promise.reject('Erreur serveur');
-          }).then(result => {
-          }).catch(error => {
-            console.error('[StackUnity Tracker] Erreur lors de l\'envoi des événements:', error);
+        } catch (e) {
+          console.warn('[StackUnity Tracker] sendBeacon échoué:', e);
+        }
+        
+        // Fallback : Image pixel tracking
+        try {
+          const queryParams = `data=${encodeURIComponent(JSON.stringify(dataToSend))}&t=${Date.now()}`;
+          const img = new Image();
+          img.style.display = 'none';
+          img.style.position = 'absolute';
+          img.style.left = '-9999px';
+          
+          img.onload = function() {
+            console.log('[StackUnity Tracker] Envoi Image pixel réussi');
+            if (img.parentNode) {
+              img.parentNode.removeChild(img);
+            }
+          };
+          
+          img.onerror = function() {
+            console.error('[StackUnity Tracker] Erreur Image pixel');
             state.buffer = [...eventsToSend, ...state.buffer];
-          });
+            if (img.parentNode) {
+              img.parentNode.removeChild(img);
+            }
+          };
+          
+          img.src = `${config.apiEndpoint}?${queryParams}`;
+          document.body.appendChild(img);
+          
+        } catch (error) {
+          console.error('[StackUnity Tracker] Erreur complète d\'envoi:', error);
+          state.buffer = [...eventsToSend, ...state.buffer];
         }
       },
       setupSession: function() {
