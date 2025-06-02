@@ -2113,6 +2113,7 @@
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(dataToSend),
+            credentials: 'omit',
             keepalive: true
           }).then(response => {
             return response.ok ? response.json() : Promise.reject('Erreur serveur');
