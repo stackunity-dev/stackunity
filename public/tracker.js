@@ -2,6 +2,8 @@
   try {
     const baseUrl = 'https://stackunity.tech';
 
+    const originalFetch = window.fetch.bind(window);
+
     const config = {
       apiEndpoint: `${baseUrl}/api/analytics/collect`,
       flushInterval: 10 * 1000,
@@ -508,7 +510,7 @@
         document.body.appendChild(img);
         
         try {
-          fetch(config.apiEndpoint, {
+          originalFetch(config.apiEndpoint, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -785,7 +787,7 @@
           return api.sendDataNoCors(endpoint, data);
         }
         
-        return fetch(endpoint, {
+        return originalFetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -2109,7 +2111,7 @@
             }
           }
         } else {
-          fetch(config.apiEndpoint, {
+          originalFetch(config.apiEndpoint, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
